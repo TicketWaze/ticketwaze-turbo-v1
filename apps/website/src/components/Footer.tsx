@@ -85,7 +85,6 @@ function Footer() {
               </div>
               <div className={"flex gap-4"}>
                 <FooterLink href={"/business"}>{t("organizers")}</FooterLink>
-                <FooterLink href={"/contact"}>{t("pricing")}</FooterLink>
               </div>
             </div>
           </div>

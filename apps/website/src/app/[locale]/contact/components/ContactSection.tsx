@@ -100,7 +100,7 @@ export default function ContactSection() {
         </TabsContent>
         <TabsContent
           value="support"
-          className="w-full flex flex-col gap-[4rem] lg:gap-[6rem]"
+          className="w-full flex flex-col lg:flex-row gap-[4rem] lg:gap-[6rem]"
         >
           <motion.h2
             initial={{ opacity: 0, y: 30 }}

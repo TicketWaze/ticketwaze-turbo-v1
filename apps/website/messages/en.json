@@ -73,16 +73,16 @@
     "faq": {
       "title-1": "Frequently Asked ",
       "title-2": "Questions",
-      "question-1": "How do I buy a ticket for an event?",
-      "answer-1": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in.",
-      "question-2": "I want to host an event, how do I get started?",
-      "answer-2": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in.",
-      "question-3": "How are payments and withdrawals handled?",
-      "answer-3": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in.",
-      "question-4": "Can I attend an event virtually?",
-      "answer-4": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in.",
-      "question-5": "What tools help manage my event or tickets?",
-      "answer-5": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in."
+      "question-1": "Is TicketWaze free to use?",
+      "answer-1": "Creating an account and browsing activities is free. Ticket prices and any applicable fees are shown clearly before checkout.",
+      "question-2": "Do I need an account to buy tickets?",
+      "answer-2": "Yes. You need a TicketWaze account to purchase tickets so you can access, manage, and validate them securely.",
+      "question-3": "Can I buy multiple tickets at once?",
+      "answer-3": "Yes, you can purchase multiple tickets in a single order, depending on the activity's limits.",
+      "question-4": "Can I get a refund?",
+      "answer-4": "Refunds depend on the activity's refund policy set by the organizer. Please check the activity details before purchasing.",
+      "question-5": "Is my payment information secure?",
+      "answer-5": "Yes. TicketWaze uses secure payment processing and does not store sensitive card information."
     },
     "footer": {
       "title-1": "Don’t miss what’s next",
@@ -195,9 +195,9 @@
       },
       "third": {
         "title": "Team Management",
-        "1": "Coupons & discount codes",
-        "2": "Sponsors (Pro & Premium)",
-        "3": "Performer & artist management"
+        "1": "Role-based access",
+        "2": "Staff ticket checking app",
+        "3": "Activity-level permissions"
       },
       "fourth": {
         "title": "AI-Powered Tools",
