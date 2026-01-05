@@ -1,5 +1,13 @@
 {
   "HomePage": {
+    "navbar": {
+      "close": "Close",
+      "select": "Select a languague",
+      "personal": "Personal",
+      "business": "Business",
+      "about": "About Us",
+      "contact": "Contact us"
+    },
     "hero": {
       "title": {
         "1": "Every",
