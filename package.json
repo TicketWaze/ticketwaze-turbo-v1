@@ -9,9 +9,13 @@
     "check-types": "turbo run check-types"
   },
   "devDependencies": {
+    "@types/luxon": "^3.7.1",
     "prettier": "^3.7.4",
     "turbo": "^2.7.2",
     "typescript": "5.9.2"
+  },
+  "dependencies": {
+    "luxon": "^3.6.1"
   },
   "engines": {
     "node": ">=18"

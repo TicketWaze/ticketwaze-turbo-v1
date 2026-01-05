@@ -1,0 +1,4 @@
+{
+  "extends": "@ticketwaze/typescript-config/base.json",
+  "include": ["./types.d.ts"]
+}

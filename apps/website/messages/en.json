@@ -1,0 +1,348 @@
+{
+  "HomePage": {
+    "hero": {
+      "title": {
+        "1": "Every",
+        "2": "ticket",
+        "3": "Every",
+        "4": "activity",
+        "5": "One",
+        "6": "platform"
+      },
+      "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+      "cta": {
+        "get": "Get ticket",
+        "create": "Create activity",
+        "waitlist": "Join the waitlist"
+      },
+      "slider": {
+        "1": "Appointments & Bookings",
+        "2": "Access Passes",
+        "3": "Sessions & Services",
+        "4": "Experiences & Activities"
+      }
+    },
+    "details1": {
+      "title": "Everything Ticketing, Made Simple",
+      "personal": {
+        "title": "Personal",
+        "item1": "Buy tickets in seconds",
+        "item2": "Pay with card or MonCash"
+      },
+      "business": {
+        "title": "Business",
+        "item1": "Create and sell tickets",
+        "item2": "Track sales & payouts"
+      }
+    },
+    "details2": {
+      "title1": "Built with Safety at the",
+      "title2": "Core",
+      "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+      "first": {
+        "title": "Encrypted payments",
+        "description": "All transactions are secured end-to-end, keeping your payment details private and protected at every step."
+      },
+      "second": {
+        "title": "Verified organisations",
+        "description": "Businesses go through verification checks, helping you trust who you’re buying tickets from."
+      },
+      "third": {
+        "title": "Scannable tickets",
+        "description": "Tickets come with unique QR codes that can be downloaded and scanned securely at entry points."
+      }
+    },
+    "details3": {
+      "title": "From Discovery to Access All in One Flow",
+      "description1": "Whether you’re joining an activity or offering one,",
+      "description2": "Ticketwaze",
+      "description3": "keeps the entire journey secure, and seamless.",
+      "cta": {
+        "started": "Get started",
+        "waitlist": "Join the waitlist"
+      }
+    },
+    "faq": {
+      "title-1": "Frequently Asked ",
+      "title-2": "Questions",
+      "question-1": "How do I buy a ticket for an event?",
+      "answer-1": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in.",
+      "question-2": "I want to host an event, how do I get started?",
+      "answer-2": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in.",
+      "question-3": "How are payments and withdrawals handled?",
+      "answer-3": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in.",
+      "question-4": "Can I attend an event virtually?",
+      "answer-4": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in.",
+      "question-5": "What tools help manage my event or tickets?",
+      "answer-5": "Head to the event page, choose your preferred ticket type (free, general, or VIP), and complete the checkout. Once confirmed, your ticket will be available via email and your attendee dashboard — ready for check-in."
+    },
+    "footer": {
+      "title-1": "Don’t miss what’s next",
+      "description": "From platform updates to new activities, we’ll keep you informed without the noise.",
+      "email": "Your email address",
+      "sub": "Subscribe to newsletter",
+      "explore": "Explore event",
+      "organize": "Organize event",
+      "join": "Join waitlist",
+      "quick": "QUICK LINKS",
+      "attendees": "Personal",
+      "organizers": "Business",
+      "pricing": "Contact",
+      "about": "About Us",
+      "contact": "CONTACT US",
+      "others": "OTHERS",
+      "help": "Help",
+      "legal": "Legal notices"
+    }
+  },
+  "WaitlistPage": {
+    "hero": {
+      "title": {
+        "1": "Every",
+        "2": "ticket",
+        "3": "Every",
+        "4": "activity",
+        "5": "One",
+        "6": "platform"
+      },
+      "description1": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+      "title-1": "Create, manage, and ",
+      "title-2": "experience events",
+      "soon": "Coming soon",
+      "description": "We’re working behind the scenes to bring you a whole new way to buy, manage, and enjoy tickets.",
+      "email": "Email Address",
+      "who": "Who are you joining as?",
+      "attendee": "Personal",
+      "organizer": "Business",
+      "join": "Join Waitlist"
+    }
+  },
+  "PersonalPage": {
+    "hero": {
+      "title": "Buy your tickets, your way",
+      "description": "From concerts to classes, travel to workshops, buy tickets securely and manage everything in one place.",
+      "cta": {
+        "explore": "Explore activities",
+        "waitlist": "Join the waitlist"
+      }
+    },
+    "details1": {
+      "title": "Where tickets, payments, and access come together",
+      "first": {
+        "title": "Buy & Pay",
+        "1": "Card and MonCash payments",
+        "2": "Buy for yourself or someone else",
+        "3": "Instant confirmation",
+        "4": "Downloadable tickets",
+        "5": "QR-based validation",
+        "6": "Ticket status tracking"
+      },
+      "second": {
+        "title": "Discover & Engage",
+        "1": "Search activities near you",
+        "2": "Follow organisations",
+        "3": "Like and share activities",
+        "4": "Report activities or organisations"
+      },
+      "third": {
+        "title": "Stay Connected",
+        "1": "Save activities to Google Calendar",
+        "2": "WhatsApp notifications",
+        "3": "Email alerts"
+      }
+    },
+    "discount": {
+      "title1": "Invite friends. Get",
+      "title2": "Rewarded.",
+      "earn": "Earn up",
+      "referral": "per referral",
+      "cta": {
+        "explore": "Get started",
+        "waitlist": "Join the waitlist"
+      }
+    }
+  },
+  "BusinessPage": {
+    "hero": {
+      "title": "Sell more tickets with less effort",
+      "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance — online and offline.",
+      "cta": {
+        "create": "Create your first activity",
+        "waitlist": "Join the waitlist"
+      }
+    },
+    "details1": {
+      "title": "What businesses can do with Ticketwaze",
+      "first": {
+        "title": "Activity Creation",
+        "1": "Physical & online activities",
+        "2": "Google Meet & Zoom support",
+        "3": "Multiple ticket types"
+      },
+      "second": {
+        "title": "Monetization & Financial Tools",
+        "1": "Coupons & discount codes",
+        "2": "Sponsors (Pro & Premium)",
+        "3": "Performer & artist management"
+      },
+      "third": {
+        "title": "Team Management",
+        "1": "Coupons & discount codes",
+        "2": "Sponsors (Pro & Premium)",
+        "3": "Performer & artist management"
+      },
+      "fourth": {
+        "title": "AI-Powered Tools",
+        "1": "Sales trend insights",
+        "2": "Demand prediction",
+        "3": "Audience behavior analysis"
+      }
+    },
+    "pricing": {
+      "title-1": "Choose a plan that fits your ",
+      "title-2": "Growth",
+      "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+      "free": {
+        "subtitle": "STARTER",
+        "title": "Free tickets",
+        "list": {
+          "1": "For free activities",
+          "2": "0–100 tickets",
+          "3": "No platform fees",
+          "4": "One ticket type",
+          "5": "One ticket per person"
+        },
+        "cta": "Start now!"
+      },
+      "pro": {
+        "subtitle": "PAID",
+        "tag": "MOST POPULAR",
+        "title": "For Paid tickets",
+        "list": {
+          "1": "Unlimited paid tickets",
+          "2": "Custom ticket types & discount codes",
+          "3": "Checking tools",
+          "4": "Priority support",
+          "5": "No upfront cost — pay as you earn"
+        },
+        "cta": "Get Started with pro!"
+      },
+      "entreprise": {
+        "subtitle": "FOR PREMIUM ORGANISATION",
+        "title": "PREMIUM",
+        "list": {
+          "1": "All Paid features +",
+          "2": "Dedicated account manager",
+          "3": "API access",
+          "4": "SLA-backed support",
+          "5": "Tailored onboarding",
+          "6": "Volume-based pricing available"
+        },
+        "cta": "Talk to sales!"
+      }
+    }
+  },
+  "AboutPage": {
+    "hero": {
+      "title": "Reimagining how tickets and access work",
+      "description": "TicketWaze was created to remove unnecessary friction from how access is bought and sold, from personal experiences to business operations, bringing payments, tickets, and management into one simple, reliable platform.",
+      "simple": "Simple",
+      "global": "Global-Ready",
+      "accessible": "Accessible",
+      "secured": "Secured"
+    },
+    "details1": {
+      "title1": "Built on principles that guide every",
+      "title2": "Decision",
+      "description": "These values shape how the platform is designed, built, and trusted.",
+      "first": {
+        "title": "Trust first",
+        "description": "Security, verification, and fraud prevention are built into the system — not added as an afterthought."
+      },
+      "second": {
+        "title": "User clarity over complexity",
+        "description": "Every flow is designed to be simple, intuitive, and easy to understand, even for first-time users."
+      },
+      "third": {
+        "title": "Cultural and language inclusion",
+        "description": "The platform is built to work across regions, languages, and payment behaviors — without forcing one global pattern."
+      },
+      "fourth": {
+        "title": "Financial transparency",
+        "description": "Clear pricing, visible payouts, and real-time tracking so users always know where their money is."
+      }
+    },
+    "details2": {
+      "title": "Adopted across regions, languages, and payments",
+      "region": "regions actively supported across local markets",
+      "languages": "languages available for users and organisations",
+      "payments": "payments methods enabled for seamless transactions"
+    },
+    "testimonials": {
+      "title": "Trusted by people and businesses",
+      "first": {
+        "description": "Buying tickets on TicketWaze feels effortless. I can pay quickly, save my tickets, and even share them with friends without stress.",
+        "name": "Mike Jane",
+        "role": "Individual User"
+      },
+      "second": {
+        "description": "TicketWaze helped us move from manual bookings to a structured system. Payments, access, and reporting are all in one place.",
+        "name": "Billy Jean",
+        "role": "Business"
+      },
+      "third": {
+        "description": "What sold us was the flexibility. We’re not limited to events — we sell sessions, passes, and experiences seamlessly.",
+        "name": "Bandana",
+        "role": "Experienced Organization"
+      }
+    }
+  },
+  "ContactPage": {
+    "hero": {
+      "title-1": "We're here to support you — whether you’re an",
+      "title-2": "Explorer",
+      "title-3": ", or",
+      "title-4": "Business.",
+      "simple": "Accessibility",
+      "global": "Empathy",
+      "accessible": "Trust",
+      "secured": "Responsive"
+    },
+    "section": {
+      "general": "General Inquiry",
+      "support": "Support/Help",
+      "text-1": "For general questions, partnerships, media, business collaborations, or non-urgent concerns.",
+      "text-2": "Account-related issues, activity help, ticketing, or technical support for both users and organizers.",
+      "genQuest": "General questions",
+      "media": "Media",
+      "partner": "Partnerships",
+      "business": "Business collaborations",
+      "nonUgent": "Non-urgent concerns.",
+      "account": "Account related issues",
+      "activity": "Activity help",
+      "ticketing": "Ticketing",
+      "technical": "Technical support",
+      "name": "Full Name",
+      "email": "Email Address",
+      "subject": "Subject",
+      "message": "Message",
+      "send": "Send Message",
+      "get": "Get support"
+    }
+  },
+  "LegalPage": {
+    "hero": {
+      "title-1": "We’re committed to protecting your",
+      "title-2": "Personal Information",
+      "title-3": "and how we use it.",
+      "simple": "safety",
+      "global": "privacy",
+      "accessible": "policies",
+      "secured": "user first"
+    },
+    "terms": {
+      "terms": "Terms of use",
+      "privacy": "Privacy Policy"
+    }
+  }
+}
