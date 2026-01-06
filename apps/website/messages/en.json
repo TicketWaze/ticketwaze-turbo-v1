@@ -349,8 +349,122 @@
       "secured": "user first"
     },
     "terms": {
-      "terms": "Terms of use",
-      "privacy": "Privacy Policy"
+      "terms": {
+        "title": "Terms of use",
+        "description": "These Terms of Use (“Terms”) govern your access to and use of the TicketWaze website, applications, and related services (collectively, the “Service”). TicketWaze (“we”, “us”, or “our”) provides an online platform that enables users to discover activities, purchase tickets, and enables organizers to create, manage, and sell tickets for activities. By accessing or using the Service, you agree to be bound by these Terms. If you do not agree, you must not use the Service.",
+        "1": {
+          "title": "Eligibility and Account Registration",
+          "description": "You must be at least 16 years old to use TicketWaze. By creating an account, you represent that the information you provide is accurate, complete, and up to date, and that you have the legal capacity to enter into these Terms. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. TicketWaze is not responsible for any loss or damage resulting from unauthorized access to your account."
+        },
+        "2": {
+          "title": "Use of the Service",
+          "description": "TicketWaze grants you a limited, non-exclusive, non-transferable, and revocable right to access and use the Service solely for lawful purposes and in accordance with these Terms. You agree not to misuse the Service, interfere with its operation, attempt unauthorized access, use automated systems without permission, or engage in any activity that violates applicable laws or infringes on the rights of others."
+        },
+        "3": {
+          "title": "Tickets and Purchases",
+          "description": "When you purchase a ticket through TicketWaze, you are entering into a transaction with the activity organizer, not TicketWaze. TicketWaze acts solely as a platform and intermediary for ticket distribution and payment processing. Activity details, pricing, refund policies, and entry conditions are determined by the organizer. You are responsible for reviewing activity information carefully before completing a purchase. All ticket sales are final unless otherwise stated by the activity organizer or required by law. TicketWaze does not guarantee the occurrence of any activity and is not responsible for activity cancellations, postponements, venue changes, or organizer actions. Refunds, if applicable, are subject to the organizer’s policies and payment processor timelines."
+        },
+        "4": {
+          "title": "Activity Organizers",
+          "description": "If you use TicketWaze as an activity organizer, you are solely responsible for the accuracy of your activity listings, the legality of your activity, compliance with applicable laws, and fulfillment of all obligations to attendees. You agree to honor ticket terms, pricing, refund policies, and activity descriptions as published on the platform. TicketWaze may charge service fees or commissions for organizer use of the platform. These fees are disclosed before publication or payout. TicketWaze reserves the right to withhold payouts in cases of suspected fraud, violations of these Terms, chargebacks, or legal requirements."
+        },
+        "5": {
+          "title": "Payments and Fees",
+          "description": "Payments on TicketWaze are processed through third-party payment providers. TicketWaze does not store full payment card information. You agree to comply with the terms of the applicable payment provider. TicketWaze is not responsible for errors, delays, or failures caused by third-party payment services. Service fees charged by TicketWaze are non-refundable unless otherwise required by law. Ticket prices, fees, and taxes may vary depending on the activity and location."
+        },
+        "6": {
+          "title": "Intellectual Property",
+          "description": "All content and materials available on TicketWaze, including logos, designs, text, graphics, software, and trademarks, are owned by or licensed to TicketWaze and are protected by intellectual property laws. You may not copy, modify, distribute, sell, or exploit any part of the Service without prior written consent from TicketWaze. By submitting content to the platform, including activity descriptions, images, or other materials, you grant TicketWaze a non-exclusive, worldwide, royalty-free license to use, display, reproduce, and distribute such content for the purpose of operating and promoting the Service."
+        },
+        "7": {
+          "title": "Prohibited Conduct",
+          "description": "You agree not to use TicketWaze for unlawful, fraudulent, misleading, or harmful purposes. This includes creating fake activity, selling invalid tickets, engaging in chargeback abuse, transmitting malicious code, harassing other users, or violating any applicable laws or regulations. TicketWaze reserves the right to investigate and take appropriate action, including suspending or terminating accounts, without prior notice."
+        },
+        "8": {
+          "title": "Suspension and Termination",
+          "description": "TicketWaze may suspend or terminate your access to the Service at any time, with or without notice, if we believe you have violated these Terms, engaged in fraudulent activity, or posed a risk to the platform or other users. You may stop using the Service at any time by closing your account. Certain provisions of these Terms will survive termination, including intellectual property rights, disclaimers, and limitations of liability."
+        },
+        "9": {
+          "title": "Disclaimer of Warranties",
+          "description": "The Service is provided on an “as is” and “as available” basis. TicketWaze makes no warranties, express or implied, regarding the availability, reliability, accuracy, or suitability of the Service. We do not guarantee that the Service will be uninterrupted, error-free, or secure."
+        },
+        "10": {
+          "title": "Limitation of Liability",
+          "description": "To the maximum extent permitted by law, TicketWaze shall not be liable for any indirect, incidental, consequential, special, or punitive damages, including loss of profits, data, or goodwill, arising from your use of or inability to use the Service. TicketWaze is not liable for disputes between attendees and activity organizers, activity cancellations, or third-party actions."
+        },
+        "11": {
+          "title": "Indemnification",
+          "description": "You agree to indemnify and hold harmless TicketWaze, its affiliates, directors, employees, and partners from any claims, damages, losses, liabilities, and expenses arising from your use of the Service, your violation of these Terms, or your violation of any rights of a third party."
+        },
+        "12": {
+          "title": "Third-Party Services and Links",
+          "description": "The Service may include links to third-party websites or services. TicketWaze does not control and is not responsible for the content, policies, or practices of third parties. Your use of third-party services is at your own risk."
+        },
+        "13": {
+          "title": "Governing Law",
+          "description": "These Terms are governed by and construed in accordance with the laws of the applicable jurisdiction where TicketWaze is legally registered, without regard to conflict of law principles."
+        },
+        "14": {
+          "title": "Changes to These Terms",
+          "description": "TicketWaze may update these Terms from time to time. Updated Terms will be posted on this page with a revised date. Your continued use of the Service after changes become effective constitutes acceptance of the updated Terms. Last updated: 01 Jan, 2026."
+        },
+        "15": {
+          "title": "Contact Information",
+          "description": "Have questions about this Terms of Use ?  Reach out to our privacy team through the official contact channels available on the platform or at "
+        }
+      },
+      "privacy": {
+        "title": "Privacy Policy",
+        "description": "TicketWaze (“TicketWaze”, “we”, “us”, or “our”) values your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, store, and share information when you access or use our website, applications, and services (collectively, the “Service”). By using TicketWaze, you agree to the practices described in this Privacy Policy.",
+        "1": {
+          "title": "Information We Collect",
+          "description": "When you use TicketWaze, we may collect personal information that you voluntarily provide, such as your name, email address, phone number, billing details, and any information you submit when creating an account, purchasing tickets, organizing activities, or contacting support. If you are an organizer, we may also collect information related to your organization, activities, and payout details. In addition to information you provide directly, we automatically collect certain technical and usage information when you access the Service. This may include your IP address, device type, browser information, operating system, pages visited, and interactions with the platform. This data helps us understand how the Service is used and improve performance and security. We may also collect approximate location information derived from your IP address in order to display relevant activities and improve user experience. Precise location data is only collected when you explicitly grant permission."
+        },
+        "2": {
+          "title": "How We Use Your Information",
+          "description": "TicketWaze uses personal information to operate and improve the Service, create and manage user accounts, process ticket purchases and payments, facilitate organizer payouts, communicate important updates, respond to customer support requests, personalize content, and detect or prevent fraudulent or unauthorized activity. We may also use your information for analytics and internal reporting to improve our platform and features. Where permitted by law, we may send you marketing or promotional communications related to TicketWaze. You can opt out of these communications at any time."
+        },
+        "3": {
+          "title": "Sharing and Disclosure",
+          "description": "We may share your information with trusted third-party service providers who help us operate the Service, such as payment processors, hosting providers, analytics services, and customer support tools. These providers are only authorized to use your data as necessary to perform services on our behalf. We may disclose personal information if required to comply with applicable laws, regulations, legal processes, or enforceable governmental requests. We may also share information to protect the rights, safety, and property of TicketWaze, our users, activity organisation, or the public, including for fraud prevention and security purposes. In the event of a business transaction such as a merger, acquisition, or asset sale, user information may be transferred as part of that transaction, subject to applicable privacy protections."
+        },
+        "4": {
+          "title": "Data Security",
+          "description": "We implement appropriate technical and organizational measures to protect personal information against unauthorized access, loss, misuse, or alteration. While we strive to use commercially acceptable means to protect your data, no method of transmission or storage is completely secure, and we cannot guarantee absolute security. While we do our best, no method is 100% secure—so please use strong passwords and protect your devices."
+        },
+        "5": {
+          "title": "Your Rights and Choices",
+          "description": "Depending on your location, you may have rights regarding your personal data, including the right to access, correct, or delete your information. You may also have the right to object to certain processing activities or request data portability. Requests can be made by contacting TicketWaze using the information provided below. We may need to verify your identity before fulfilling such requests. To exercise these rights, contact: "
+        },
+        "6": {
+          "title": "Cookies & Tracking",
+          "description": "TicketWaze uses cookies and similar technologies to ensure the proper functioning of the platform, remember user preferences, analyze traffic, and improve the overall experience. You can control or disable cookies through your browser settings, although doing so may affect certain features of the Service. Access is restricted to authorized personnel only."
+        },
+        "7": {
+          "title": "Data Retention",
+          "description": "We retain personal information only for as long as necessary to provide the Service, comply with legal obligations, resolve disputes, enforce agreements, and support legitimate business operations. When data is no longer required, we take reasonable steps to delete or anonymize it."
+        },
+        "8": {
+          "title": "Third-Party Services",
+          "description": "The Service may contain links to third-party websites or services that are not operated by TicketWaze. We are not responsible for the privacy practices or content of those third parties, and we encourage you to review their privacy policies separately."
+        },
+        "9": {
+          "title": "Children’s Privacy",
+          "description": "TicketWaze is not intended for individuals under the age of 16. We do not knowingly collect personal information from children. If we become aware that personal data of a child has been collected, we will take steps to delete it promptly."
+        },
+        "10": {
+          "title": "International Data Transfers",
+          "description": "Your information may be stored and processed in countries outside of your country of residence. By using the Service, you consent to the transfer of your information to countries that may have different data protection laws than your own."
+        },
+        "11": {
+          "title": "Policy Updates",
+          "description": "TicketWaze may update this Privacy Policy from time to time. Any changes will be posted on this page with an updated revision date. Continued use of the Service after changes become effective constitutes acceptance of the revised policy. Last updated: 01 Jan, 2026."
+        },
+        "12": {
+          "title": "Contact Us",
+          "description": "Have questions about this policy or how your data is handled?  Reach out to our privacy team through the official contact channels available on the platform or at "
+        }
+      }
     }
   }
 }
