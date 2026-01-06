@@ -88,7 +88,7 @@ export default function HeroSection() {
 
     const interval = setInterval(() => {
       setDesktopIndex((prev) => (prev + 1) % items.length);
-    }, 3000); // Change slide every 3 seconds
+    }, 2000); // Change slide every 3 seconds
 
     return () => clearInterval(interval);
   }, [isDesktopDragging, items.length]);
@@ -99,7 +99,7 @@ export default function HeroSection() {
 
     const interval = setInterval(() => {
       setMobileIndex((prev) => (prev + 1) % items.length);
-    }, 1000); // Change slide every 3 seconds
+    }, 2000); // Change slide every 3 seconds
 
     return () => clearInterval(interval);
   }, [isMobileDragging, items.length]);
