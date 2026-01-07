@@ -229,42 +229,43 @@
       "title-2": "Growth",
       "description": "Scale with confidence. Whether you’re just starting out or expanding to new markets, our platform adapts to your needs.",
       "free": {
-        "subtitle": "Perfect for free activities, meetups, and community events",
+        "subtitle": "$0 / month",
         "title": "Free",
         "list": {
-          "1": "For free activities",
-          "2": "Up to 100 tickets",
-          "3": "Basic activity page",
+          "1": "Basic analytics",
+          "2": "Up to 3 team members",
+          "3": "Email support",
           "4": "QR code ticket scanning",
-          "5": "Attendee list access",
+          "5": "Email support",
           "6": "No platform fees"
         },
         "cta": "Start now!"
       },
       "pro": {
-        "subtitle": "Attendee Service Fees Applies",
+        "subtitle": "$9.99 / MONTH",
         "tag": "MOST POPULAR",
-        "title": "Paid",
+        "title": "Pro",
         "list": {
-          "1": "Unlimited paid tickets",
-          "3": "Custom ticket types (VIP, etc...)",
-          "4": "Discount & promo codes",
-          "5": "Sales dashboard & check-in tools",
+          "1": "All Free features +",
+          "3": "Advanced analytics",
+          "4": "Up to 7 team members",
+          "5": "Export data",
           "6": "Priority support",
-          "2": "Up to 3 Team members"
+          "2": "Custom ticket types & discount codes"
         },
         "cta": "Get Started with pro!"
       },
       "entreprise": {
-        "subtitle": "For professional organizers who want better conversion and brand control.",
+        "subtitle": "$19.99 / MONTH",
         "title": "PREMIUM",
+        "verified": "This is a verification organisation",
         "list": {
-          "1": "All Paid features +",
+          "1": "All Pro features +",
           "2": "AI powered analytics",
-          "3": "Up to 10 Team members",
-          "4": "Advanced analytics",
+          "3": "AI-powered activity creation",
+          "4": "Up to 15 team members",
           "5": "Early access to new features",
-          "6": "Priority payment processing"
+          "6": "Verified organisation badge"
         },
         "cta": "Talk to sales!"
       }

@@ -1,6 +1,7 @@
 "use client";
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
+import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 
 function Pricing() {
   const t = useTranslations("BusinessPage.pricing");
@@ -42,7 +43,7 @@ function Pricing() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className={
-            "bg-neutral-100 rounded-[30px] p-4 w-full flex flex-col justify-between gap-8"
+            "bg-neutral-100 flex-1 rounded-[30px] p-4 w-full flex flex-col justify-between gap-8"
           }
         >
           <div className={"flex flex-col gap-8"}>
@@ -98,14 +99,14 @@ function Pricing() {
           {/* <LinkBlack href={"#"}>{t("free.cta")}</LinkBlack> */}
         </motion.div>
 
-        {/*  PAID*/}
+        {/*  PRO*/}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className={
-            "bg-white border-2 border-primary-500 rounded-[30px] p-4 w-full flex flex-col gap-8"
+            "bg-white flex-1 border-2 border-primary-500 rounded-[30px] p-4 w-full flex flex-col gap-8"
           }
         >
           <div
@@ -170,67 +171,74 @@ function Pricing() {
           {/* <LinkPrimary href={"#"}>{t("free.cta")}</LinkPrimary> */}
         </motion.div>
 
-        {/*  ENTREPRISE*/}
+        {/*  PREMIUM*/}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className={
-            "bg-neutral-100 rounded-[30px] p-4 w-full flex flex-col justify-between gap-8"
-          }
+          className="flex-1  p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]"
         >
-          <div className={"flex flex-col gap-8"}>
-            <div
-              className={"bg-white rounded-[20px] p-8 flex flex-col gap-[50px]"}
-            >
-              <span
+          <div
+            className={
+              "bg-neutral-100 rounded-[30px] p-4 w-full flex flex-col justify-between gap-8"
+            }
+          >
+            <div className={"flex flex-col gap-8 "}>
+              <div
                 className={
-                  "text-black font-medium text-[1.5rem] leading-[20px]"
+                  "bg-white rounded-[20px] p-8 flex flex-col gap-[50px]"
                 }
               >
-                {t("entreprise.subtitle")}
-              </span>
-              <span
+                <span
+                  className={
+                    "text-black font-medium text-[1.5rem] leading-[20px]"
+                  }
+                >
+                  {t("entreprise.subtitle")}
+                </span>
+                <span
+                  className={
+                    "text-black text-[2.5rem] lg:text-[5rem] leading-[100%] font-primary font-medium text-center"
+                  }
+                >
+                  {t("entreprise.title")}
+                </span>
+              </div>
+              <ul
                 className={
-                  "text-black text-[2.5rem] lg:text-[5rem] leading-[100%] font-primary font-medium text-center"
+                  "text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
                 }
               >
-                {t("entreprise.title")}
-              </span>
+                <li className={"flex items-center gap-6"}>
+                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                  <span>{t("entreprise.list.1")}</span>
+                </li>
+                <li className={"flex items-center gap-6"}>
+                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                  <span>{t("entreprise.list.6")}</span>
+                  <VerifiedOrganisationCheckMark />
+                </li>
+                <li className={"flex items-center gap-6"}>
+                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                  <span>{t("entreprise.list.2")}</span>
+                </li>
+                <li className={"flex items-center gap-6"}>
+                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                  <span>{t("entreprise.list.3")}</span>
+                </li>
+                <li className={"flex items-center gap-6"}>
+                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                  <span>{t("entreprise.list.4")}</span>
+                </li>
+                <li className={"flex items-center gap-6"}>
+                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                  <span>{t("entreprise.list.5")}</span>
+                </li>
+              </ul>
             </div>
-            <ul
-              className={
-                "text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
-              }
-            >
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                <span>{t("entreprise.list.1")}</span>
-              </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                <span>{t("entreprise.list.2")}</span>
-              </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                <span>{t("entreprise.list.3")}</span>
-              </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                <span>{t("entreprise.list.4")}</span>
-              </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                <span>{t("entreprise.list.5")}</span>
-              </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                <span>{t("entreprise.list.6")}</span>
-              </li>
-            </ul>
+            {/* <LinkBlack href={"#"}>{t("free.cta")}</LinkBlack> */}
           </div>
-          {/* <LinkBlack href={"#"}>{t("free.cta")}</LinkBlack> */}
         </motion.div>
       </div>
     </section>
