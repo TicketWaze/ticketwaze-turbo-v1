@@ -1,43 +1,65 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft2, ArrowRight2, Timer1 } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 
-const FULL_WIDTH_PX = 640;
 const COLLAPSED_WIDTH_PX = 150;
+const GAP_PX = 25;
 const MARGIN_PX = 2;
+
 export default function Details3() {
   const [index, setIndex] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [fullWidthPx, setFullWidthPx] = useState<number>(640);
   const t = useTranslations("HomePage.details3");
+
   const items = [
     {
       id: 1,
       number: "01",
-      title: "Find or create an activity",
-      description:
-        "Browse activities happening around you, search by location or interest, or set up your own in minutes by adding details, pricing, and access type—all from one place.",
+      title: t("first.title"),
+      description: t("first.description"),
       background: "#FFEFE2",
     },
     {
       id: 2,
       number: "02",
-      title: "Buy or sell tickets securely",
-      description:
-        "Purchase tickets for yourself or others using card or MonCash, or sell access with built-in fraud protection, payment encryption, and real-time confirmation.",
+      title: t("second.title"),
+      description: t("second.description"),
       background: "#68AAF9",
     },
     {
       id: 3,
       number: "03",
-      title: "Manage everything from your account",
-      description:
-        "Keep track of tickets, downloads, payments, sales, payouts, and notifications—so you always know what’s happening before, during, and after each activity.",
+      title: t("third.title"),
+      description: t("third.description"),
       background: "#F58CB7",
     },
   ];
+
+  useEffect(() => {
+    const calculateWidth = () => {
+      if (containerRef.current) {
+        const containerWidth = containerRef.current.offsetWidth;
+        // Calculate: containerWidth - (collapsed cards * width) - (gaps between cards) - (margins)
+        const collapsedCount = items.length - 1;
+        const totalCollapsedWidth = collapsedCount * COLLAPSED_WIDTH_PX;
+        const totalGaps = (items.length - 1) * GAP_PX;
+        const totalMargins = MARGIN_PX * 2;
+        const calculatedFullWidth =
+          containerWidth - totalCollapsedWidth - totalGaps - totalMargins;
+
+        setFullWidthPx(Math.max(calculatedFullWidth, 400)); // minimum 400px
+      }
+    };
+
+    calculateWidth();
+    window.addEventListener("resize", calculateWidth);
+    return () => window.removeEventListener("resize", calculateWidth);
+  }, [items.length]);
+
   return (
     <section className="bg-white py-[3rem] lg:py-[7.5rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col gap-[3.5rem] lg:gap-[10rem]">
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-4">
@@ -91,6 +113,7 @@ export default function Details3() {
       </div>
       <div className="hidden lg:flex flex-col gap-12">
         <div
+          ref={containerRef}
           className="overflow-x-auto scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
@@ -103,7 +126,7 @@ export default function Details3() {
                 animate={i === index ? "active" : "inactive"}
                 variants={{
                   active: {
-                    width: FULL_WIDTH_PX,
+                    width: fullWidthPx,
                     marginLeft: MARGIN_PX,
                     marginRight: MARGIN_PX,
                   },
@@ -114,7 +137,7 @@ export default function Details3() {
                   },
                 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="shrink-0 h-[480px]  "
+                className="shrink-0 h-[480px]"
               >
                 <div
                   className={`h-[480px] ${id === 1 && "bg-[#FFEFE2]"} ${id === 2 && "bg-[#68AAF9]"} ${id === 3 && "bg-[#F58CB7]"} rounded-[30px] w-full p-[5rem] flex flex-col justify-between items-start`}
@@ -143,8 +166,9 @@ export default function Details3() {
             ))}
           </div>
         </div>
-        <div className="flex items-center gap-8" ref={containerRef}>
-          {/* previous Button */}
+
+        {/* Navigation buttons remain the same */}
+        <div className="flex items-center gap-8">
           <motion.button
             disabled={index === 0}
             onClick={() => setIndex((i) => Math.max(0, i - 1))}
@@ -152,8 +176,6 @@ export default function Details3() {
           >
             <ArrowLeft2 size="20" color="#E45B00" variant="Bulk" />
           </motion.button>
-
-          {/* Next Button */}
           <motion.button
             disabled={index === items.length - 1}
             onClick={() => setIndex((i) => Math.min(items.length - 1, i + 1))}
@@ -195,6 +217,7 @@ export default function Details3() {
           );
         })}
       </ul>
+      ;
     </section>
   );
 }

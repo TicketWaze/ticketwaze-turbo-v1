@@ -46,7 +46,7 @@
     "details2": {
       "title1": "Built with Safety at the",
       "title2": "Core",
-      "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+      "description": "Our platform ensures every transaction, whether buying, selling, or managing tickets for activities, experiences, and events, is protected by advanced security standards.",
       "first": {
         "title": "Encrypted payments",
         "description": "All transactions are secured end-to-end, keeping your payment details private and protected at every step."
@@ -68,6 +68,18 @@
       "cta": {
         "started": "Get started",
         "waitlist": "Join the waitlist"
+      },
+      "first": {
+        "title": "Find or create an activity",
+        "description": "Browse activities happening around you, search by location or interest, or set up your own in minutes by adding details, pricing, and access type—all from one place."
+      },
+      "second": {
+        "title": "Buy or sell tickets securely",
+        "description": "Purchase tickets for yourself or others using card or MonCash, or sell access with built-in fraud protection, payment encryption, and real-time confirmation."
+      },
+      "third": {
+        "title": "Manage everything from your account",
+        "description": "Keep track of tickets, downloads, payments, sales, payouts, and notifications—so you always know what's happening before, during, and after each activity."
       }
     },
     "faq": {
@@ -209,42 +221,44 @@
     "pricing": {
       "title-1": "Choose a plan that fits your ",
       "title-2": "Growth",
-      "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+      "description": "Scale with confidence. Whether you’re just starting out or expanding to new markets, our platform adapts to your needs.",
       "free": {
-        "subtitle": "STARTER",
-        "title": "Free tickets",
+        "subtitle": "Perfect for free activities, meetups, and community events",
+        "title": "Free",
         "list": {
           "1": "For free activities",
-          "2": "0–100 tickets",
-          "3": "No platform fees",
-          "4": "One ticket type",
-          "5": "One ticket per person"
+          "2": "Up to 100 tickets",
+          "3": "Basic activity page",
+          "4": "QR code ticket scanning",
+          "5": "Attendee list access",
+          "6": "No platform fees"
         },
         "cta": "Start now!"
       },
       "pro": {
-        "subtitle": "PAID",
+        "subtitle": "Attendee Service Fees Applies",
         "tag": "MOST POPULAR",
-        "title": "For Paid tickets",
+        "title": "Paid",
         "list": {
           "1": "Unlimited paid tickets",
-          "2": "Custom ticket types & discount codes",
-          "3": "Checking tools",
-          "4": "Priority support",
-          "5": "No upfront cost — pay as you earn"
+          "3": "Custom ticket types (VIP, etc...)",
+          "4": "Discount & promo codes",
+          "5": "Sales dashboard & check-in tools",
+          "6": "Priority support",
+          "2": "Up to 3 Team members"
         },
         "cta": "Get Started with pro!"
       },
       "entreprise": {
-        "subtitle": "FOR PREMIUM ORGANISATION",
+        "subtitle": "For professional organizers who want better conversion and brand control.",
         "title": "PREMIUM",
         "list": {
           "1": "All Paid features +",
-          "2": "Dedicated account manager",
-          "3": "API access",
-          "4": "SLA-backed support",
-          "5": "Tailored onboarding",
-          "6": "Volume-based pricing available"
+          "2": "AI powered analytics",
+          "3": "Up to 10 Team members",
+          "4": "Advanced analytics",
+          "5": "Early access to new features",
+          "6": "Priority payment processing"
         },
         "cta": "Talk to sales!"
       }

@@ -13,8 +13,8 @@ import {
 export default function ContactSection() {
   const t = useTranslations("ContactPage.section");
   return (
-    <section className="bg-white py-[3rem] lg:py-[7.5rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center lg:items-start gap-[3.5rem] lg:gap-[100px]">
-      <Tabs defaultValue="general" className="flex flex-col gap-[50px] w-full">
+    <section className="bg-white py-[3rem] lg:py-[7.5rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center gap-[3.5rem] lg:gap-[100px]">
+      <Tabs defaultValue="general" className="flex flex-col gap-[50px] w-full ">
         <TabsList>
           <TabsTrigger value="general">{t("general")}</TabsTrigger>
           <TabsTrigger value="support">{t("support")}</TabsTrigger>
@@ -32,8 +32,8 @@ export default function ContactSection() {
           >
             {t("text-1")}
           </motion.h2>
-          <form className="flex-1 flex flex-col gap-[4rem]">
-            <div className="flex flex-col gap-[1.5rem]">
+          <form className="flex-1 flex flex-col items-center w-full gap-[4rem]">
+            <div className="flex flex-col gap-[1.5rem] w-full items-center">
               <motion.input
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -57,9 +57,10 @@ export default function ContactSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
+                className="w-full max-w-[493px]"
               >
                 <Select>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full max-w-[493px]">
                     <SelectValue placeholder={t("subject")} />
                   </SelectTrigger>
                   <SelectContent position="popper">
@@ -92,7 +93,7 @@ export default function ContactSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="px-12 py-8 w-full cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8"
+              className="px-12 py-8 w-full max-w-[493px] cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8"
             >
               {t("send")}
             </motion.button>
@@ -111,8 +112,8 @@ export default function ContactSection() {
           >
             {t("text-2")}
           </motion.h2>
-          <form className="flex-1 flex flex-col gap-[4rem]">
-            <div className="flex flex-col gap-[1.5rem]">
+          <form className="flex-1 flex flex-col items-center w-full gap-[4rem]">
+            <div className="flex flex-col w-full items-center gap-[1.5rem]">
               <motion.input
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -136,9 +137,10 @@ export default function ContactSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
+                className="w-full max-w-[493px]"
               >
                 <Select>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className="w-full max-w-[493px]">
                     <SelectValue placeholder={t("subject")} />
                   </SelectTrigger>
                   <SelectContent position="popper">
@@ -169,7 +171,7 @@ export default function ContactSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="px-12 py-8 w-full cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8"
+              className="px-12 py-8 w-full max-w-[493px] cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8"
             >
               {t("get")}
             </motion.button>

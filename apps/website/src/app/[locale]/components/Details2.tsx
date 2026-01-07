@@ -48,7 +48,7 @@ export default function Details2() {
           {t("description")}
         </motion.p>
       </div>
-      <ul className="hidden lg:flex flex-col lg:flex-row gap-8">
+      <ul className="hidden lg:flex justify-between w-full gap-8">
         {items.map(({ description, image, title }, index) => {
           return (
             <motion.li
@@ -57,7 +57,7 @@ export default function Details2() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.4 * (index + 1) }}
               key={title}
-              className="bg-deep-200 w-[340px] lg:w-auto flex-1 lg:max-w-[380px] rounded-[3rem] flex flex-col gap-[55px] overflow-hidden"
+              className="bg-deep-200 w-[340px] lg:w-auto flex-1 lg:max-w-[480px] rounded-[3rem] flex flex-col gap-[55px] overflow-hidden"
             >
               <div className="relative">
                 <Image src={bg} alt="background" />

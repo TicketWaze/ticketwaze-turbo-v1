@@ -36,7 +36,11 @@ function Pricing() {
         }
       >
         {/*  FREE*/}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className={
             "bg-neutral-100 rounded-[30px] p-4 w-full flex flex-col justify-between gap-8"
           }
@@ -85,13 +89,21 @@ function Pricing() {
                 <div className={"w-2 h-2 bg-black rounded-full"}></div>
                 <span>{t("free.list.5")}</span>
               </li>
+              <li className={"flex items-center gap-6"}>
+                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <span>{t("free.list.6")}</span>
+              </li>
             </ul>
           </div>
           {/* <LinkBlack href={"#"}>{t("free.cta")}</LinkBlack> */}
-        </div>
+        </motion.div>
 
-        {/*  PRO*/}
-        <div
+        {/*  PAID*/}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className={
             "bg-white border-2 border-primary-500 rounded-[30px] p-4 w-full flex flex-col gap-8"
           }
@@ -101,8 +113,12 @@ function Pricing() {
               "bg-primary-900 text-white rounded-[20px] p-8 flex flex-col gap-[50px]"
             }
           >
-            <div className={"flex items-center justify-between w-full"}>
-              <span className={" font-medium text-[1.5rem] leading-[20px]"}>
+            <div className={"flex items-start justify-between w-full"}>
+              <span
+                className={
+                  " font-medium flex-1 word-wrap text-[1.5rem] leading-[20px]"
+                }
+              >
                 {t("pro.subtitle")}
               </span>
               <span
@@ -146,12 +162,20 @@ function Pricing() {
               <div className={"w-2 h-2 bg-black rounded-full"}></div>
               <span>{t("pro.list.5")}</span>
             </li>
+            <li className={"flex items-center gap-6"}>
+              <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <span>{t("pro.list.6")}</span>
+            </li>
           </ul>
           {/* <LinkPrimary href={"#"}>{t("free.cta")}</LinkPrimary> */}
-        </div>
+        </motion.div>
 
         {/*  ENTREPRISE*/}
-        <div
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
           className={
             "bg-neutral-100 rounded-[30px] p-4 w-full flex flex-col justify-between gap-8"
           }
@@ -200,10 +224,14 @@ function Pricing() {
                 <div className={"w-2 h-2 bg-black rounded-full"}></div>
                 <span>{t("entreprise.list.5")}</span>
               </li>
+              <li className={"flex items-center gap-6"}>
+                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <span>{t("entreprise.list.6")}</span>
+              </li>
             </ul>
           </div>
           {/* <LinkBlack href={"#"}>{t("free.cta")}</LinkBlack> */}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -27,7 +27,7 @@ function Footer() {
     >
       <div
         className={
-          "py-[20px] lg:py-[38px] pl-[15px] lg:pl-[50px] flex flex-col lg:flex-row items-center gap-[50px] lg:gap-[78px] bg-[#5C1600] rounded-[20px]"
+          "py-[20px] lg:py-[38px] px-[15px] lg:px-[50px] flex flex-col lg:flex-row items-center gap-[50px] lg:gap-[78px] bg-[#5C1600] rounded-[20px]"
         }
       >
         <div className={"flex-1 max-w-[493px] flex flex-col items-start gap-8"}>
@@ -46,7 +46,7 @@ function Footer() {
             type="email"
             className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
           />
-          <button className="px-12 py-5 cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.4rem] leading-8">
+          <button className="px-12 py-8 cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.4rem] leading-8">
             {t("sub")}
           </button>
 
@@ -122,7 +122,7 @@ function Footer() {
                 </FooterLink>
                 <div
                   className={
-                    "px-8 lg:px-[30px] py-4 lg:py-8 rounded-[100px] bg-primary-800 text-[1.6rem] leading-[22.5px] flex items-center gap-4"
+                    "px-8 lg:px-[30px] w-fit py-4 lg:py-8 rounded-[100px] bg-primary-800 text-[1.6rem] leading-[22.5px] flex items-center gap-4"
                   }
                 >
                   <Location size={20} color={"#FFFFFF"} variant={"Bulk"} />
