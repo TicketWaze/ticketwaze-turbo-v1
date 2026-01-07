@@ -134,7 +134,13 @@
       "who": "Who are you joining as?",
       "attendee": "Personal",
       "organizer": "Business",
-      "join": "Join Waitlist"
+      "join": "Join Waitlist",
+      "errors": {
+        "email": "Enter a valid email address",
+        "entity": "Please select an entity",
+        "failed": "Failed to register to waitlist. If this error persist, please reach out to support",
+        "success": "You have been succesfully added to our waitlist"
+      }
     }
   },
   "PersonalPage": {
@@ -349,7 +355,21 @@
       "subject": "Subject",
       "message": "Message",
       "send": "Send Message",
-      "get": "Get support"
+      "get": "Get support",
+      "errors": {
+        "email": "Enter a valid email address",
+        "name": {
+          "min": "Fullname should be at least 2 characters",
+          "max": "Fullname cannot exceed 100 characters"
+        },
+        "subject": "Please select a subject",
+        "message": {
+          "min": "Message should be at least 10 characters",
+          "max": "Message cannot exceed 2000 characters"
+        },
+        "failed": "Failed to send message. If this error persist, please reach out to support",
+        "success": "Thanks for reaching support"
+      }
     }
   },
   "LegalPage": {

@@ -5,7 +5,7 @@ import WaitlistImgSm from "@/assets/images/waitlist-image-sm.svg";
 import HeroBg from "@/assets/images/hero-bg.svg";
 import Navbar from "@/components/Navbar";
 import { motion } from "motion/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Select,
   SelectContent,
@@ -13,9 +13,61 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "sonner";
+import { z } from "zod/v4";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import LoadingCircleSmall from "@/components/LoadingCircleSmall";
+import { useRouter } from "@/i18n/navigation";
 
 function Hero() {
   const t = useTranslations("WaitlistPage.hero");
+  const WaitlistSchema = z.object({
+    email: z.email({ error: t("errors.email") }),
+    entity: z.enum(["personal", "business"], { error: t("errors.entity") }),
+  });
+  type TWaitlistSchema = z.infer<typeof WaitlistSchema>;
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    resetField,
+    formState: { errors, isSubmitting },
+  } = useForm<TWaitlistSchema>({
+    resolver: zodResolver(WaitlistSchema),
+  });
+  const locale = useLocale();
+  const router = useRouter();
+  async function submitHandler(data: TWaitlistSchema) {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/waitlist`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            origin: process.env.NEXT_PUBLIC_WEBSITE_URL!,
+            "Accept-Language": locale,
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      const response = await request.json();
+      if (response.status === "success") {
+        toast.success(t("errors.success"));
+        resetField("email");
+        resetField("entity");
+        router.push("/");
+      } else {
+        toast.error(t("errors.failed"));
+        resetField("email");
+        resetField("entity");
+      }
+    } catch (error) {
+      toast.error(t("errors.failed"));
+    }
+  }
   return (
     <section className="bg-white py-[2.5rem] px-4 rounded-[3rem] flex flex-col gap-[6.5rem] items-center">
       <Navbar />
@@ -43,7 +95,8 @@ function Hero() {
         >
           {t("description")}
         </motion.p>
-        <motion.div
+        <motion.form
+          onSubmit={handleSubmit(submitHandler)}
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
@@ -51,23 +104,48 @@ function Hero() {
           className="flex flex-col gap-8 w-full items-center z-50 justify-center"
         >
           <div className="flex flex-col lg:flex-row gap-8 w-full">
-            <input
-              placeholder={t("email")}
-              type="email"
-              className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
-            />
-            <Select>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={t("who")} />
-              </SelectTrigger>
-              <SelectContent position="popper">
-                <SelectItem value="attendee">{t("attendee")}</SelectItem>
-                <SelectItem value="organisation">{t("organizer")}</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="w-full">
+              <input
+                disabled={isSubmitting}
+                {...register("email")}
+                placeholder={t("email")}
+                type="email"
+                className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
+              />
+              {errors.email && (
+                <span className="text-failure text-[1.2rem] pl-8 font-primary leading-8">
+                  {errors.email?.message}
+                </span>
+              )}
+            </div>
+            <div className="w-full">
+              <Select
+                disabled={isSubmitting}
+                onValueChange={(e) =>
+                  setValue("entity", e as "personal" | "business")
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={t("who")} />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectItem value="personal">{t("attendee")}</SelectItem>
+                  <SelectItem value="business">{t("organizer")}</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.entity && (
+                <span className="text-failure text-[1.2rem] pl-8 font-primary leading-8">
+                  {errors.entity?.message}
+                </span>
+              )}
+            </div>
           </div>
-          <button className="px-12 py-5 w-full cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8">
-            {t("join")}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-12 py-5 w-full cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8 disabled:cursor-not-allowed flex items-center justify-center disabled:bg-primary-500/50"
+          >
+            {isSubmitting ? <LoadingCircleSmall /> : t("join")}
           </button>
           {/* <Link
                   href={"/waitlist"}
@@ -78,7 +156,7 @@ function Hero() {
                     {t("cta.waitlist")}
                   </span>
                 </Link> */}
-        </motion.div>
+        </motion.form>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}

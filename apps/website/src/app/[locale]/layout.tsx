@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
 import "@ticketwaze/ui/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
+import { Toaster } from "sonner";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -39,7 +40,10 @@ export default async function RootLayout({
       <body
         className={`${bricolageGrotesque.variable} ${dmMono.variable} ${dmSans.className} bg-neutral-100 px-4 lg:px-[2.5rem] p-[2.5rem] flex flex-col gap-[2.5rem] font-sans`}
       >
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <Toaster richColors position="top-right" />
+          {children}
+        </NextIntlClientProvider>
       </body>
     </html>
   );
