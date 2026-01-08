@@ -100,6 +100,9 @@
       "title-1": "Don’t miss what’s next",
       "description": "From platform updates to new activities, we’ll keep you informed without the noise.",
       "email": "Your email address",
+      "emailError": "Enter a valid email address",
+      "success": "Thanks for subscribing to our newsletter !",
+      "failed": "Failed to subscribe to the newsletter. If this error persist, please reach out to support.",
       "sub": "Subscribe to newsletter",
       "explore": "Explore event",
       "organize": "Organize event",
@@ -202,20 +205,20 @@
       "first": {
         "title": "Activity Creation",
         "1": "Physical & online activities",
-        "2": "Google Meet & Zoom support",
+        "2": "Google Meet support",
         "3": "Multiple ticket types"
       },
       "second": {
         "title": "Monetization & Financial Tools",
         "1": "Coupons & discount codes",
-        "2": "Sponsors (Pro & Premium)",
+        "2": "Sponsors",
         "3": "Performer & artist management"
       },
       "third": {
         "title": "Team Management",
-        "1": "Role-based access",
-        "2": "Staff ticket checking app",
-        "3": "Activity-level permissions"
+        "1": "Role-based access control",
+        "2": "Secure ticket scanning for staff",
+        "3": "Control access at activity level"
       },
       "fourth": {
         "title": "AI-Powered Tools",
@@ -234,10 +237,9 @@
         "list": {
           "1": "Basic analytics",
           "2": "Up to 3 team members",
-          "3": "Email support",
-          "4": "QR code ticket scanning",
-          "5": "Email support",
-          "6": "No platform fees"
+          "3": "Up to 100 free tickets",
+          "4": "Email support",
+          "5": "Free forever"
         },
         "cta": "Start now!"
       },
@@ -247,25 +249,27 @@
         "title": "Pro",
         "list": {
           "1": "All Free features +",
-          "3": "Advanced analytics",
-          "4": "Up to 7 team members",
-          "5": "Export data",
-          "6": "Priority support",
-          "2": "Custom ticket types & discount codes"
+          "2": "Up to 7 team members",
+          "3": "Up to 300 free tickets",
+          "4": "Advanced analytics",
+          "5": "Up to 7 team members",
+          "6": "Custom ticket types & discount codes",
+          "7": "Priority support"
         },
         "cta": "Get Started with pro!"
       },
       "entreprise": {
         "subtitle": "$19.99 / MONTH",
         "title": "PREMIUM",
-        "verified": "This is a verification organisation",
+        "verified": "This is a verified organisation",
         "list": {
           "1": "All Pro features +",
-          "2": "AI powered analytics",
-          "3": "AI-powered activity creation",
-          "4": "Up to 15 team members",
-          "5": "Early access to new features",
-          "6": "Verified organisation badge"
+          "2": "Up to 15 team members",
+          "3": "Unlimited free tickets",
+          "4": "AI powered analytics",
+          "5": "AI-powered activity creation",
+          "6": "Early access to new features",
+          "7": "Verified organisation badge"
         },
         "cta": "Talk to sales!"
       }

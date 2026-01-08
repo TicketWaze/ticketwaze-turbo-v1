@@ -10,10 +10,53 @@ import { motion } from "motion/react";
 import whatsapp from "@/assets/icons/Whatsapp.svg";
 import x from "@/assets/icons/X.svg";
 import { useLocale, useTranslations } from "next-intl";
+import { email, z } from "zod/v4";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import LoadingCircleSmall from "./LoadingCircleSmall";
+import { toast } from "sonner";
 
 function Footer() {
   const t = useTranslations("HomePage.footer");
+  // TODO newsletter
+  const NewsletterSchema = z.object({
+    email: z.email({ error: t("emailError") }),
+  });
+  type TNewsletterSchema = z.infer<typeof NewsletterSchema>;
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<TNewsletterSchema>({
+    resolver: zodResolver(NewsletterSchema),
+  });
   const locale = useLocale();
+  async function subscribeToNewsletter(data: TNewsletterSchema) {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/support/newsletter`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            origin: process.env.NEXT_PUBLIC_WEBSITE_URL!,
+            "Accept-Language": locale,
+          },
+          body: JSON.stringify({ ...data, source: "website" }),
+        }
+      );
+      const response = await request.json();
+      if (response.status === "success") {
+        toast.success(t("success"));
+        reset();
+      } else {
+        toast.error(t("failed"));
+      }
+    } catch (error) {
+      toast.error(t("failed"));
+    }
+  }
   const date = new Date();
   return (
     <motion.footer
@@ -30,7 +73,10 @@ function Footer() {
           "py-[20px] lg:py-[38px] px-[15px] lg:px-[50px] flex flex-col lg:flex-row items-center gap-[50px] lg:gap-[78px] bg-[#5C1600] rounded-[20px]"
         }
       >
-        <div className={"flex-1 max-w-[493px] flex flex-col items-start gap-8"}>
+        <form
+          onSubmit={handleSubmit(subscribeToNewsletter)}
+          className={"flex-1 max-w-[493px] flex flex-col items-start gap-8"}
+        >
           <h2
             className={
               "font-primary text-[3.8rem] lg:text-[7.8rem] leading-[45px] text-start lg:leading-[90px] font-semibold"
@@ -41,13 +87,25 @@ function Footer() {
           <p className="text-[1.8rem] leading-[2.5rem] text-neutral-200">
             {t("description")}
           </p>
-          <input
-            placeholder={t("email")}
-            type="email"
-            className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
-          />
-          <button className="px-12 py-8 cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.4rem] leading-8">
-            {t("sub")}
+          <div className="w-full">
+            <input
+              {...register("email")}
+              placeholder={t("email")}
+              type="email"
+              className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
+            />
+            {errors.email && (
+              <span className="text-[1.4rem] font-primary text-white">
+                {errors.email.message}
+              </span>
+            )}
+          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="px-12 py-8 cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.4rem] leading-8 disabled:cursor-not-allowed disabled:bg-primary-500/50 "
+          >
+            {isSubmitting ? <LoadingCircleSmall /> : t("sub")}
           </button>
 
           <div className={"flex items-center flex-col lg:flex-row gap-8"}>
@@ -61,7 +119,7 @@ function Footer() {
             </LinkPrimary> */}
             <div></div>
           </div>
-        </div>
+        </form>
         <Image src={FooterImg} alt={"footer image"} className={"flex-1"} />
       </div>
       <div className={"px-[15px] "}>

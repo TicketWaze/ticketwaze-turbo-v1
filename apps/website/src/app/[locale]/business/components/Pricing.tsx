@@ -90,10 +90,6 @@ function Pricing() {
                 <div className={"w-2 h-2 bg-black rounded-full"}></div>
                 <span>{t("free.list.5")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                <span>{t("free.list.6")}</span>
-              </li>
             </ul>
           </div>
           {/* <LinkBlack href={"#"}>{t("free.cta")}</LinkBlack> */}
@@ -167,6 +163,10 @@ function Pricing() {
               <div className={"w-2 h-2 bg-black rounded-full"}></div>
               <span>{t("pro.list.6")}</span>
             </li>
+            <li className={"flex items-center gap-6"}>
+              <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <span>{t("pro.list.7")}</span>
+            </li>
           </ul>
           {/* <LinkPrimary href={"#"}>{t("free.cta")}</LinkPrimary> */}
         </motion.div>
@@ -216,11 +216,6 @@ function Pricing() {
                 </li>
                 <li className={"flex items-center gap-6"}>
                   <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                  <span>{t("entreprise.list.6")}</span>
-                  <VerifiedOrganisationCheckMark />
-                </li>
-                <li className={"flex items-center gap-6"}>
-                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
                   <span>{t("entreprise.list.2")}</span>
                 </li>
                 <li className={"flex items-center gap-6"}>
@@ -234,6 +229,15 @@ function Pricing() {
                 <li className={"flex items-center gap-6"}>
                   <div className={"w-2 h-2 bg-black rounded-full"}></div>
                   <span>{t("entreprise.list.5")}</span>
+                </li>
+                <li className={"flex items-center gap-6"}>
+                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                  <span>{t("entreprise.list.6")}</span>
+                </li>
+                <li className={"flex items-center gap-6"}>
+                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                  <span>{t("entreprise.list.7")}</span>
+                  <VerifiedOrganisationCheckMark />
                 </li>
               </ul>
             </div>

@@ -44,16 +44,16 @@ export default function Discount() {
           </span>
           <div className="relative inline-block self-center">
             {/* Background layers */}
-            <span className="absolute -top-24 text-[100px] lg:text-[150px] font-primary font-bold text-primary-500 leading-[100%] opacity-20">
-              10%
+            <span className="absolute -top-10 lg:-top-24 text-[50px] lg:text-[120px] font-primary font-bold text-primary-500 leading-[100%] opacity-20">
+              50 Tokens
             </span>
-            <span className="absolute  top-24 text-[100px] lg:text-[150px] font-primary font-bold text-primary-500 leading-[100%] opacity-20">
-              10%
+            <span className="absolute  top-10 lg:top-24 text-[50px] lg:text-[120px] font-primary font-bold text-primary-500 leading-[100%] opacity-20">
+              50 Tokens
             </span>
 
             {/* Main text */}
-            <span className="relative text-[100px] lg:text-[150px] font-primary font-bold text-primary-500 leading-[100%]">
-              10%
+            <span className="relative text-[50px] lg:text-[120px] font-primary font-bold text-primary-500 leading-[100%]">
+              50 Tokens
             </span>
           </div>
           <span className="font-semibold self-end text-[2.5rem] lg:text-[3rem] leading-12 text-primary-900 uppercase">
