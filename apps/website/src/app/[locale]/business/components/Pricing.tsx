@@ -2,6 +2,7 @@
 import { useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
+import { Link } from "@/i18n/navigation";
 
 function Pricing() {
   const t = useTranslations("BusinessPage.pricing");
@@ -92,7 +93,12 @@ function Pricing() {
               </li>
             </ul>
           </div>
-          {/* <LinkBlack href={"#"}>{t("free.cta")}</LinkBlack> */}
+          <Link
+            className="px-12 py-5 bg-black rounded-[10rem] text-white font-medium  text-[1.4rem] leading-8 text-center"
+            href={"/waitlist"}
+          >
+            {t("free.waitlist")}
+          </Link>
         </motion.div>
 
         {/*  PRO*/}
@@ -102,73 +108,80 @@ function Pricing() {
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           className={
-            "bg-white flex-1 border-2 border-primary-500 rounded-[30px] p-4 w-full flex flex-col gap-8"
+            "bg-white flex-1 border-2 border-primary-500 rounded-[30px] p-4 w-full flex flex-col gap-8 justify-between"
           }
         >
-          <div
-            className={
-              "bg-primary-900 text-white rounded-[20px] p-8 flex flex-col gap-[50px]"
-            }
-          >
-            <div className={"flex items-start justify-between w-full"}>
-              <span
-                className={
-                  " font-medium flex-1 word-wrap text-[1.5rem] leading-[20px]"
-                }
-              >
-                {t("pro.subtitle")}
-              </span>
-              <span
-                className={
-                  " font-bold text-[1.1rem] leading-[15px] px-[5px] py-[2.5px] bg-primary-500 rounded-[30px]"
-                }
-              >
-                {t("pro.tag")}
-              </span>
-            </div>
-            <span
+          <div className="flex flex-col gap-8">
+            <div
               className={
-                " text-[2.5rem] lg:text-[5rem] leading-[100%] font-primary font-medium text-center"
+                "bg-primary-900 text-white rounded-[20px] p-8 flex flex-col gap-[50px]"
               }
             >
-              {t("pro.title")}
-            </span>
-          </div>
-          <ul
-            className={
-              "text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
-            }
-          >
-            <li className={"flex items-center gap-6"}>
-              <div className={"w-2 h-2 bg-black rounded-full"}></div>
-              <span>{t("pro.list.1")}</span>
-            </li>
-            <li className={"flex items-center gap-6"}>
-              <div className={"w-2 h-2 bg-black rounded-full"}></div>
-              <span>{t("pro.list.2")}</span>
-            </li>
-            <li className={"flex items-center gap-6"}>
-              <div className={"w-2 h-2 bg-black rounded-full"}></div>
-              <span>{t("pro.list.3")}</span>
-            </li>
-            <li className={"flex items-center gap-6"}>
-              <div className={"w-2 h-2 bg-black rounded-full"}></div>
-              <span>{t("pro.list.4")}</span>
-            </li>
-            <li className={"flex items-center gap-6"}>
+              <div className={"flex items-start justify-between w-full"}>
+                <span
+                  className={
+                    " font-medium flex-1 word-wrap text-[1.5rem] leading-[20px]"
+                  }
+                >
+                  {t("pro.subtitle")}
+                </span>
+                <span
+                  className={
+                    " font-bold text-[1.1rem] leading-[15px] px-[5px] py-[2.5px] bg-primary-500 rounded-[30px]"
+                  }
+                >
+                  {t("pro.tag")}
+                </span>
+              </div>
+              <span
+                className={
+                  " text-[2.5rem] lg:text-[5rem] leading-[100%] font-primary font-medium text-center"
+                }
+              >
+                {t("pro.title")}
+              </span>
+            </div>
+            <ul
+              className={
+                "text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
+              }
+            >
+              <li className={"flex items-center gap-6"}>
+                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <span>{t("pro.list.1")}</span>
+              </li>
+              <li className={"flex items-center gap-6"}>
+                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <span>{t("pro.list.2")}</span>
+              </li>
+              <li className={"flex items-center gap-6"}>
+                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <span>{t("pro.list.3")}</span>
+              </li>
+              <li className={"flex items-center gap-6"}>
+                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <span>{t("pro.list.4")}</span>
+              </li>
+              {/* <li className={"flex items-center gap-6"}>
               <div className={"w-2 h-2 bg-black rounded-full"}></div>
               <span>{t("pro.list.5")}</span>
-            </li>
-            <li className={"flex items-center gap-6"}>
-              <div className={"w-2 h-2 bg-black rounded-full"}></div>
-              <span>{t("pro.list.6")}</span>
-            </li>
-            <li className={"flex items-center gap-6"}>
-              <div className={"w-2 h-2 bg-black rounded-full"}></div>
-              <span>{t("pro.list.7")}</span>
-            </li>
-          </ul>
-          {/* <LinkPrimary href={"#"}>{t("free.cta")}</LinkPrimary> */}
+            </li> */}
+              <li className={"flex items-center gap-6"}>
+                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <span>{t("pro.list.6")}</span>
+              </li>
+              <li className={"flex items-center gap-6"}>
+                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <span>{t("pro.list.7")}</span>
+              </li>
+            </ul>
+          </div>
+          <Link
+            className="px-12 py-5 bg-primary-500 rounded-[10rem] text-white font-medium  text-[1.4rem] leading-8 text-center"
+            href={"/waitlist"}
+          >
+            {t("pro.waitlist")}
+          </Link>
         </motion.div>
 
         {/*  PREMIUM*/}
@@ -195,14 +208,14 @@ function Pricing() {
                     "text-black font-medium text-[1.5rem] leading-[20px]"
                   }
                 >
-                  {t("entreprise.subtitle")}
+                  {t("premium.subtitle")}
                 </span>
                 <span
                   className={
                     "text-black text-[2.5rem] lg:text-[5rem] leading-[100%] font-primary font-medium text-center"
                   }
                 >
-                  {t("entreprise.title")}
+                  {t("premium.title")}
                 </span>
               </div>
               <ul
@@ -212,36 +225,41 @@ function Pricing() {
               >
                 <li className={"flex items-center gap-6"}>
                   <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                  <span>{t("entreprise.list.1")}</span>
+                  <span>{t("premium.list.1")}</span>
                 </li>
                 <li className={"flex items-center gap-6"}>
                   <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                  <span>{t("entreprise.list.2")}</span>
+                  <span>{t("premium.list.2")}</span>
                 </li>
                 <li className={"flex items-center gap-6"}>
                   <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                  <span>{t("entreprise.list.3")}</span>
+                  <span>{t("premium.list.3")}</span>
                 </li>
                 <li className={"flex items-center gap-6"}>
                   <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                  <span>{t("entreprise.list.4")}</span>
+                  <span>{t("premium.list.4")}</span>
                 </li>
                 <li className={"flex items-center gap-6"}>
                   <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                  <span>{t("entreprise.list.5")}</span>
+                  <span>{t("premium.list.5")}</span>
                 </li>
                 <li className={"flex items-center gap-6"}>
                   <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                  <span>{t("entreprise.list.6")}</span>
+                  <span>{t("premium.list.6")}</span>
                 </li>
                 <li className={"flex items-center gap-6"}>
                   <div className={"w-2 h-2 bg-black rounded-full"}></div>
-                  <span>{t("entreprise.list.7")}</span>
+                  <span>{t("premium.list.7")}</span>
                   <VerifiedOrganisationCheckMark />
                 </li>
               </ul>
             </div>
-            {/* <LinkBlack href={"#"}>{t("free.cta")}</LinkBlack> */}
+            <Link
+              className="px-12 py-5 bg-black rounded-[10rem] text-white font-medium  text-[1.4rem] leading-8 text-center"
+              href={"/waitlist"}
+            >
+              {t("premium.waitlist")}
+            </Link>
           </div>
         </motion.div>
       </div>

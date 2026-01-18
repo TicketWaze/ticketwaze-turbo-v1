@@ -150,7 +150,7 @@ export default function Details3() {
                   {i === index && (
                     <div className="flex flex-col items-start gap-[1.5rem]">
                       <span
-                        className={`${number === "01" && "text-primary-900"} ${number === "02" && "text-[#34557D]"} ${number === "03" && "text-[#7B465C]"} font-semibold text-[3.5rem] leading-[3.5rem] text-left`}
+                        className={`${number === "01" && "text-primary-900"} ${number === "02" && "text-[#34557D]"} ${number === "03" && "text-[#7B465C]"} font-semibold text-[3.5rem] leading-[3.5rem] text-left font-primary`}
                       >
                         {title}
                       </span>

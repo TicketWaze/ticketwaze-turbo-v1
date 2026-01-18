@@ -241,7 +241,8 @@
           "4": "Email support",
           "5": "Free forever"
         },
-        "cta": "Start now!"
+        "cta": "Start now!",
+        "waitlist": "Join the waitlist!"
       },
       "pro": {
         "subtitle": "$9.99 / MONTH",
@@ -252,13 +253,13 @@
           "2": "Up to 7 team members",
           "3": "Up to 300 free tickets",
           "4": "Advanced analytics",
-          "5": "Up to 7 team members",
           "6": "Custom ticket types & discount codes",
           "7": "Priority support"
         },
-        "cta": "Get Started with pro!"
+        "cta": "Get Started with pro!",
+        "waitlist": "Join the waitlist!"
       },
-      "entreprise": {
+      "premium": {
         "subtitle": "$19.99 / MONTH",
         "title": "PREMIUM",
         "verified": "This is a verified organisation",
@@ -271,7 +272,8 @@
           "6": "Early access to new features",
           "7": "Verified organisation badge"
         },
-        "cta": "Talk to sales!"
+        "cta": "Talk to sales!",
+        "waitlist": "Join the waitlist!"
       }
     }
   },
