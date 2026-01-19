@@ -10,7 +10,6 @@ import Image from "next/image";
 import US from "@/assets/flags/us.svg";
 import FR from "@/assets/flags/fr.svg";
 import { ArrowDown2 } from "iconsax-reactjs";
-import { useTranslations } from "next-intl";
 
 export default function SwitchLocale() {
   const router = useRouter();
@@ -40,13 +39,13 @@ export default function SwitchLocale() {
         <ArrowDown2 size="20" color="#000000" variant="Bulk" />
       </SelectTrigger>
       <SelectContent className={"bg-neutral-100"}>
-        {/* <SelectItem
+        <SelectItem
           className={`${locale === "fr" ? "bg-neutral-300 hover:bg-neutral-300" : ""} flex items-center gap-4`}
           value="fr"
         >
           <Image src={FR} alt={"french flag"} width={30} height={30} />
           <span>Français</span>
-        </SelectItem> */}
+        </SelectItem>
         <SelectItem
           className={`${locale === "en" ? "bg-neutral-300 hover:bg-neutral-300" : ""} flex items-center gap-4`}
           value="en"

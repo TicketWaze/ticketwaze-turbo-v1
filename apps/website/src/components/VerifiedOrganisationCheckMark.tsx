@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 function VerifiedOrganisationCheckMark() {
-  const t = useTranslations("BusinessPage.pricing.entreprise");
+  const t = useTranslations("BusinessPage.pricing.premium");
   return (
     <Tooltip>
       <TooltipTrigger asChild className="inline-block">

@@ -1,4 +1,8 @@
 {
+  "Metadata": {
+    "title": "Every ticket, Every activity, One platform",
+    "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform."
+  },
   "HomePage": {
     "navbar": {
       "close": "Close",

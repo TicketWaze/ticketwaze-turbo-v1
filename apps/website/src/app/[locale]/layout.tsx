@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
 import "@ticketwaze/ui/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { Toaster } from "sonner";
+import { getTranslations } from "next-intl/server";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -21,10 +22,18 @@ const dmSans = DM_Sans({
   weight: ["300", "400", "500"],
 });
 
-export const metadata: Metadata = {
-  title: "Every ticket, Every activity, One platform",
-  description:
-    "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Metadata");
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default async function RootLayout({
