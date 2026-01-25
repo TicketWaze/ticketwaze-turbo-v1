@@ -1,0 +1,742 @@
+{
+  "Metadata": {
+    "title": "Sell more tickets with less effort | Ticketwaze",
+    "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance — online and offline."
+  },
+  "Auth": {
+    "layout": {
+      "title": "Selling tickets made simple — nationwide & beyond",
+      "description": "Launch activities in minutes, sell tickets effortlessly, track sales, and manage attendees — all in one place"
+    },
+    "onboarding": {
+      "title": "Organisation Invitation",
+      "description": "You've been invited to join and organisation on TicketWaze — a platform for managing and selling event tickets with ease.",
+      "join": "Join",
+      "title2": "Get ready to sell tickets",
+      "description2": "Create activities, manage attendees, and track sales — everything starts here",
+      "alert": "We’ve set up a default organisation to get you started. Don’t worry — you’ll be able to change its information and customise it once it’s created.",
+      "action": "Get started"
+    },
+    "register": {
+      "title": "Create an Account",
+      "organizer": "Create an Account",
+      "description": "Please complete the form below to continue.",
+      "invalidToken": "This invitation link is no longer valid. It may have expired or already been used. Please request a new invite from the event organizer to continue.",
+      "login": "Log in",
+      "choice": {
+        "title": "Create Account",
+        "description": "Choose an option to continue and set up your account.",
+        "first": {
+          "title": "Attendee",
+          "description": "Easily browse, discover, and purchase tickets for a wide variety of events."
+        },
+        "second": {
+          "title": "Organizer",
+          "description": "Create and manage events effortlessly. Track ticket sales & monitor attendee data."
+        },
+        "cta": "Continue",
+        "footer": {
+          "text": "Already own an account?",
+          "cta": "Log in"
+        }
+      },
+      "placeholders": {
+        "firstname": "First Name",
+        "lastname": "Last Name",
+        "email": "Email Address",
+        "organisation_name": "Organisation Name",
+        "organisation_email": "Organisation Email",
+        "password": "Create Password",
+        "confirm": "Confirm Password"
+      },
+      "errors": {
+        "password_length": "Password must be at least 8 characters long",
+        "password_match": "Passwords don't match",
+        "firstname_length": "First name must be at least 2 characters",
+        "lastname_length": "Last name must be at least 2 characters",
+        "firstname_validation": "First name must contain only letters, spaces, or hyphens",
+        "lastname_validation": "Last name must contain only letters, spaces, or hyphens",
+        "email": "Email field cannot be blank"
+      },
+      "cta": {
+        "submit": "Create account",
+        "google": "Continue with Google"
+      },
+      "footer": "Back"
+    },
+    "verify": {
+      "title": "Verify Account",
+      "description": "A verification mail has been sent to",
+      "wrong": "Wrong email ?",
+      "footer": {
+        "text": "Didn't get a mail?",
+        "cta": "Resend"
+      }
+    },
+    "complete": {
+      "title": "Complete Account Set-up",
+      "description": "Please fill the form below to complete your account set-up.",
+      "becoming": {
+        "subtitle": "Create An Organisation",
+        "description": "Please fill the form below create a new organisation.",
+        "name": "Organisation's name",
+        "country": "Country",
+        "state": "State / Region / Province",
+        "city": "City",
+        "organisationDescription": "Share details about your organisation, what you do, and the events you host...",
+        "email": "Organisation Email",
+        "phone": "Phone number",
+        "website": "Website",
+        "currency": "Currency",
+        "back": "Back",
+        "submit": "Create organisation",
+        "errors": {
+          "name": {
+            "min": "Organisation name cannot be blank",
+            "max": "Name cannot exceed 30 characters"
+          },
+          "description": {
+            "min": "Description cannot be less than 150 characters",
+            "max": "Description cannot exceed 350 characters"
+          },
+          "country": "Select a country",
+          "state": "This field Cannot be blank",
+          "city": "City field cannot be blank",
+          "currency": "Please select a currency"
+        }
+      },
+      "placeholders": {
+        "username": "User Name",
+        "address": "Address",
+        "country": "Country",
+        "state": "State / Region / Province",
+        "city": "City",
+        "dob": "Date of Birth",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "no": "Rather not say",
+        "about": "About Organizer",
+        "email": "Contact Email Address",
+        "phone": "Phone Number",
+        "website": "Organisation Website Url",
+        "currency": "Currency",
+        "errors": {
+          "city": "City field cannot be blank",
+          "state": "This field Cannot be blank",
+          "gender": "This field is required",
+          "country": "Select a country",
+          "dob": "Please select a date",
+          "currency": "Please select a currency",
+          "phone": "Phone Number should be at least 8"
+        }
+      },
+      "cta": "Complete"
+    },
+    "login": {
+      "title": "Sign in your organisation",
+      "description": "Please enter you account details to continue",
+      "placeholders": {
+        "email": "Email Address",
+        "password": "Password"
+      },
+      "errors": {
+        "email": "Enter a valid email",
+        "password": "Password Field cannot be blank",
+        "wrong": "Email address or password is incorrect"
+      },
+      "forgot": "Forgot password",
+      "cta": {
+        "submit": "Sign in",
+        "google": "Continue with Google"
+      },
+      "footer": {
+        "text": "Don’t own an account ?",
+        "cta": "Sign up"
+      }
+    },
+    "forgot": {
+      "title": "Reset Password",
+      "description": "Please enter you account details to continue",
+      "back": "Back",
+      "errors": {
+        "email": "Enter a valid email address",
+        "notFound": "User not found. Please register"
+      },
+      "placeholders": {
+        "email": "Email Address"
+      },
+      "cta": "Reset"
+    },
+    "email_sent": {
+      "title": "Reset Password",
+      "description": "A password reset mail has been sent to",
+      "footer": {
+        "text": "Didn't get a mail?",
+        "cta": "Resend"
+      }
+    },
+    "new_password": {
+      "title": "Create Password",
+      "description": "Choose a new password for your account",
+      "back": "Back",
+      "placeholders": {
+        "password": "New password",
+        "confirm": "Confirm password"
+      },
+      "errors": {
+        "password_length": "Password should be at least 8 Characters",
+        "password_match": "Password doesn't match"
+      },
+      "cta": "Create"
+    },
+    "footer": {
+      "text": "Didn't get a mail?",
+      "cta": "Resend"
+    }
+  },
+  "Layout": {
+    "sidebar": {
+      "settings": "Settings",
+      "help": "Help",
+      "switch": "Organisations",
+      "switching": "Switch Organisation",
+      "new": "New organisation",
+      "login": "Log in",
+      "logout": "Log out",
+      "analytics": "Analytics",
+      "events": "Events",
+      "finance": "Finance",
+      "verified": "Verified organisation"
+    },
+    "topbar": {
+      "welcome": "Welcome Back",
+      "back": "Back",
+      "notification": "Notifications",
+      "view": "View"
+    },
+    "noAuth": "You haven’t purchased any tickets yet. Explore our events to find something you love!",
+    "noAccess": "Unfortunately, you don't currently have access to that page. It may be restricted to certain members of the organization. If you believe you should have access, I recommend reaching out to the appropriate team for assistance.",
+    "fetchFailedError": "We couldn’t retrieve the requested data at the moment. Please check your internet connection and try again. If the error persit, reach out"
+  },
+  "Analytics": {
+    "title": "Event Overview",
+    "description": "Track your event success with detailed analytics and trends",
+    "revenue": "Total Revenue",
+    "sold": "Tickets Sold",
+    "filters": {
+      "first": {
+        "all": "All events",
+        "date": "This month"
+      }
+    },
+    "content": {
+      "upcomingTitle": "Upcoming Events",
+      "view": "Event Views",
+      "followers": "Followers"
+    },
+    "tickets": {
+      "title": "Ticket Sales Insights",
+      "classes": "Ticket Classes Distribution",
+      "daily": "Daily Ticket Sales"
+    },
+    "event": {
+      "event_demographics": {
+        "title": "Events Demographics",
+        "gender_distribution": {
+          "title": "Gender Distribution",
+          "gender": {
+            "male": "Male",
+            "female": "Female",
+            "others": "Others"
+          }
+        },
+        "events_top": {
+          "title": "Top Events"
+        }
+      }
+    },
+    "feedback": {
+      "title": "Engagement & Feedback",
+      "action": {
+        "click_on_event": "Total Clicks on Event Page",
+        "social_media_shares": "Social Media Shares",
+        "add_favorite": "Add To Favorite",
+        "rated": "Arevage Rating",
+        "reviews": "Total Reviews"
+      }
+    }
+  },
+  "Finance": {
+    "title": "Finance",
+    "withdraw_btn": "Initiate Withdrawal",
+    "summary": "Summary",
+    "bank_details": "Bank Details",
+    "breakdown": "Breakdown",
+    "revenue": "Revenue",
+    "fee": "Platform fee",
+    "profit": "Profit",
+    "proceed": "Proceed",
+    "back": "Back",
+    "pin": "Withdrawal Pin",
+    "withdraw": "Withdraw",
+    "amounts": {
+      "revenue": "Total Revenue",
+      "profit": "Total Profit",
+      "balance": "Balance"
+    },
+    "filters": {
+      "all": "All status",
+      "pending": "Pending",
+      "successful": "Successful"
+    },
+    "search": "Search for transaction id",
+    "transactions": {
+      "title": "Recent Transactions",
+      "description": "Your ticket sales will appear here once transactions start rolling in.",
+      "table": {
+        "id": "Transaction ID",
+        "name": "Event Name",
+        "class": "Ticket Class",
+        "amount": "Amount paid",
+        "status": "Transaction Status",
+        "date": "Date Purchased"
+      },
+      "more": "View all",
+      "details": {
+        "title": "Transaction Details",
+        "name": "Attendee Name",
+        "email": "Email",
+        "event_name": "Event Name",
+        "date": "Date",
+        "time": "Time",
+        "location": "Location",
+        "ticket_class": "Ticket Class",
+        "price": "Price",
+        "ticket_id": "Ticket ID",
+        "total": "Total",
+        "transaction_id": "Transaction ID",
+        "payment_method": "Payment Method",
+        "payment_date": "Payment Date",
+        "transaction_status": "Transaction Status",
+        "check_status": "Checked-In Status",
+        "check_time": "Check-In Time",
+        "close": "Close",
+        "resend": "Resend Ticket"
+      }
+    },
+    "withdrawal": {
+      "title": "Withdrawal history",
+      "description": "Your withdrawal history will show up here once you've made a withdrawal request.",
+      "table": {
+        "id": "Withdrawal ID",
+        "name": "Bank Name",
+        "account": "Account Number",
+        "amount": "Amount",
+        "status": "Transaction Status",
+        "date": "Date Purchased"
+      }
+    }
+  },
+  "Events": {
+    "title": "Event Overview",
+    "search": "Search for event",
+    "create": "Create event",
+    "description": "Your events will show up here once you start creating events.",
+    "nothing": "Nothing to see here",
+    "from": "From",
+    "free": "Free",
+    "single_event": {
+      "close": "Close",
+      "edit": "Edit",
+      "check_in": "Check In",
+      "back": "Back",
+      "share": "Share Event",
+      "share_text": "Spread the word and invite your friends! Share this event on social media or via direct message.",
+      "create_ticket": "Create Ticket",
+      "ticket": "Ticket Classes",
+      "checkers": "Checkers",
+      "checkers_description": "Checkers are users assigned to verify tickets at event entrances. They scan and validate tickets to ensure only authorized attendees gain entry.",
+      "select_checkers": "Select Checkers",
+      "update_checker": "Update Checkers list",
+      "startChecking": "Start CheckIn",
+      "stopChecking": "Stop CheckIn",
+      "delete": "Delete Activity",
+      "deleteWarning": "You are about to permanently delete this activity. This action cannot be undone, and all related information will be lost. Do you wish to continue?",
+      "type": "Type the name of the activity to confirm",
+      "check_in_description": "Scan Qr code or enter the ticket ID below to verify and check in an attendee.",
+      "ticketID": "Ticket ID",
+      "revenue": "Total Revenue",
+      "sold": "Tickets Sold",
+      "left": "Tickets Left",
+      "count_down": "Event Count Down",
+      "day": "Days to go",
+      "more": "More",
+      "details": "Details",
+      "thumbnail": "Event Thumbnail",
+      "event_details": "Event Details",
+      "about": "About Event",
+      "mark_as_check": "Mark as checked in",
+      "export": "Export",
+      "discount": {
+        "subtitle": "Discount Codes",
+        "title": "Add discount code",
+        "back": "Back",
+        "code": "Code",
+        "type": "Type",
+        "fixed": "Fixed",
+        "more": "More",
+        "percentage": "Percentage",
+        "expires_in": "Expires In",
+        "expires_at": "Expires At",
+        "value": "Value",
+        "applies": "Applies to",
+        "quantity": "Quantity",
+        "days": "Days",
+        "start": "Start date",
+        "end": "End date",
+        "close": "Close",
+        "add": "Add",
+        "all": "All",
+        "active": "Active",
+        "inactive": "Inactive",
+        "times_used": "Times Used",
+        "mark_as_active": "Mark as active",
+        "mark_as_inactive": "Mark as inactive",
+        "nothing": "Your discount codes will show up here once you start creating them",
+        "errors": {
+          "code": {
+            "min": "Discount code cannot be less than 6 characters",
+            "max": "Discount code cannot exceed 10 characters"
+          },
+          "value": {
+            "min": "Value should be at least 1",
+            "negative": "Value cannot be negative"
+          },
+          "quantity": {
+            "min": "Quantity should be at least 1",
+            "negative": "Quantity cannot be negative"
+          },
+          "expiresIn": {
+            "min": "1 hour is the minimum",
+            "negative": "Hour cannot be negative"
+          }
+        }
+      },
+      "attendees": {
+        "back": "Back",
+        "subtitle": "Add Attendee",
+        "title": "Attendees",
+        "fullName": "Full name",
+        "email": "Email Address",
+        "close": "Close",
+        "add": "Add",
+        "more": "More",
+        "remove": "Remove access"
+      },
+      "artist": {
+        "add": "Add Performer",
+        "description": "You can upload a photo and link to their profile, Once added, the artist will appear in your event lineup.",
+        "noArtist": "Start adding performers to see your list come to life!",
+        "name": "Performer Name",
+        "link": "Link to profile or website",
+        "thumbnail": "Drop your thumbnail here or ",
+        "browse": "browse",
+        "resize": "Resize the image",
+        "errors": {
+          "name": "Performer name cannot be blank",
+          "link": "Please enter a valid Link",
+          "image": {
+            "required": "Performer should have a profile image",
+            "max": "Max file size is 200ko.",
+            "type": ".jpg, .jpeg, .png and .webp files are accepted."
+          }
+        }
+      },
+      "filters": {
+        "all": "All status",
+        "pending": "Pending",
+        "checked": "Checked-In"
+      },
+      "all": "All",
+      "search": "Search ticketID",
+      "table": {
+        "id": "ticket ID",
+        "name": "Buyer name",
+        "ticket_class": "Ticket Class",
+        "amount": "Amount Paid",
+        "check": "Check-in status",
+        "date_purchased": "Date purchased",
+        "description": "Once attendees start purchasing tickets, the details will appear here. Promote your event to drive sales!"
+      }
+    },
+    "create_event": {
+      "title": "Create Event",
+      "basic": "Basic Details",
+      "category_search": "Search for category",
+      "no_result": "They is no result for the keyword ",
+      "list": {
+        "inPerson": {
+          "title": "In-Person",
+          "description": "Events with location-based access like festivals, conferences, or meetups."
+        },
+        "meet": {
+          "title": "Google Meet",
+          "description": "Attend virtually with Google Meet — distance doesn’t matter."
+        },
+        "private": {
+          "title": "Private Activity",
+          "description": "Exclusive invitation-only activity with restricted access for select guests."
+        }
+      },
+      "date_time": "Date & Time",
+      "ticket": "Ticket",
+      "event_type": "Event Type",
+      "select_type": "Select event type",
+      "physical": "Physical",
+      "online": "Online",
+      "proceed": "Proceed",
+      "event_details": "Event Details",
+      "event_name": "Event name",
+      "description": "Tell attendees what your event is about, who's it for, and what they can expect.",
+      "event_tags": "Event tag",
+      "select_tags": "Select activity tag",
+      "location": "Location",
+      "address": "Address",
+      "city": "City",
+      "state": "State / Region / Province",
+      "country": "Country",
+      "coordinates": "Coordinates",
+      "thumbnail": "Event Thumbnail",
+      "thumbnail_text": "Drop your thumbnail here or ",
+      "resize": "Resize your image",
+      "browse": "browse",
+      "day": "Day",
+      "start_date": "Start date",
+      "start_time": "Start time",
+      "end_time": "End time",
+      "add_day": "Add day",
+      "back": "Back",
+      "ticket_class": "Ticket Class",
+      "class_name": "Name of ticket class",
+      "class_description": "Ticket description",
+      "price": "Price",
+      "quantity": "Quantity",
+      "add_class": "Add ticket class",
+      "event_link": "Online Platforms",
+      "leave_blank": "*Leave blank for free tickets",
+      "zoom": "Make it a zoom meeting",
+      "select_platform": "Select Online Platform",
+      "streaming_link": "Streaming/meeting Link",
+      "password": "Password (if needed)",
+      "mark_as_free": "Mark this activity as free",
+      "mark_as_refundable": "Mark tickets as refundable",
+      "currency": "Currency",
+      "general_default": "Enjoy full access without any cost! Join us for an unforgettable experience. Secure your spot today!",
+      "draft": "Save as draft",
+      "optional": "optional",
+      "errors": {
+        "basicDetails": {
+          "name": "Event name should be at leat 10 characters",
+          "no_special": "This field doesn't allow special characters",
+          "description": {
+            "min": "Event description cannot be less than 150 characters",
+            "max": "Event description cannot be more than 350 characters"
+          },
+          "address": "Address field cannot be blank",
+          "state": "This field Cannot be blank",
+          "city": "City field cannot be blank",
+          "country": "Select a country",
+          "longitude": "Select a place on the map",
+          "tags": "Select at least one tag",
+          "image": {
+            "required": "Event should have a cover image",
+            "max": "Max file size is 200ko.",
+            "type": ".jpg, .jpeg, .png and .webp files are accepted."
+          }
+        },
+        "dateAndTime": {
+          "startDate": "Start date field is required",
+          "startTime": "Start time field is required",
+          "endTime": "End time field is required"
+        },
+        "ticketClass": {
+          "name": "Select one ticket class name",
+          "description": "Ticket class description should be at least 20 characters",
+          "price": "Price cannot be empty",
+          "quantity": {
+            "empty": "Quantity cannot be empty",
+            "decimal": "Quantity cannot have decimal or trailling zero"
+          }
+        }
+      }
+    },
+    "filters": {
+      "first": {
+        "all": "All",
+        "ongoing": "Ongoing",
+        "upcoming": "Upcoming",
+        "history": "History"
+      },
+      "second": {
+        "location": "Location",
+        "date": "Date",
+        "popularity": "Popularity"
+      }
+    }
+  },
+  "Settings": {
+    "title": "Settings",
+    "help": "Help",
+    "logout": "Log out",
+    "switch": "Organisations",
+    "switching": "Switch Organisations",
+    "new": "New organisation",
+    "account": {
+      "title": "Account",
+      "back": "Back",
+      "edit": "Edit",
+      "save": "Save",
+      "resize": "Resize your image",
+      "subtitle": "User Information",
+      "setProfile": "Set profile image",
+      "personal": "Personal Information",
+      "placeholders": {
+        "firstname": "First Name",
+        "lastname": "Last Name",
+        "email": "Email Address",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "no": "Rather not say",
+        "dob": "Date of Birth",
+        "phone": "Phone Number"
+      },
+      "errors": {
+        "firstName": "First name cannot be blank",
+        "lastName": "Last name cannot be blank",
+        "phoneNumber": "Phone Number should be at least 8 characters"
+      },
+      "event": {
+        "title": "Event",
+        "attended": "Number of events attended",
+        "tickets": "Number of tickets bought",
+        "missed": "Number of events missed"
+      },
+      "account": {
+        "title": "Account",
+        "created": "Date created",
+        "delete": "Delete Account"
+      }
+    },
+    "profile": {
+      "title": "Profile",
+      "back": "Back",
+      "edit": "Edit",
+      "save": "Save",
+      "setProfile": "Set profile image",
+      "subtitle": "Organisation Profile",
+      "resize": "Resize your image",
+      "placeholders": {
+        "name": "Organisation Name",
+        "description": "Organisation Description",
+        "country": "Country",
+        "city": "City",
+        "state": "State/Region",
+        "website": "Organisation website"
+      },
+      "errors": {
+        "name": {
+          "min": "Organisation name cannot be blank",
+          "max": "Organisation name cannot be more than 30 characters"
+        },
+        "description": {
+          "min": "Organisation description cannot be less than 150 characters",
+          "max": "Organisation description cannot be more than 350 characters"
+        }
+      }
+    },
+    "team": {
+      "title": "Team",
+      "back": "Back",
+      "search": "Search for member",
+      "add": "Add member",
+      "active": "Active",
+      "invited": "Invited",
+      "you": "You",
+      "more": "More",
+      "edit": "Edit member",
+      "remove": "Remove member",
+      "remove_member": "Remove member",
+      "remove_invitation": "Remove invitation",
+      "confirm_text": "Are you sure you want to remove this member? They will lose all access to this organization.",
+      "confirm": "Yes, remove",
+      "joined_at": "Joined At",
+      "added_by": "Added By",
+      "last_login": "Last Login",
+      "table": {
+        "name": "Full Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status"
+      },
+      "errors": {
+        "name": "Name cannot be blank",
+        "email": "Enter a valid email address"
+      }
+    },
+    "security": {
+      "title": "Security",
+      "back": "Back",
+      "subtitle": "Change Password",
+      "reset": "Reset password",
+      "placeholders": {
+        "password": "Current Password",
+        "new": "New Password",
+        "confirm": "Confirm New Password"
+      },
+      "errors": {
+        "blank": "Field cannot be blank",
+        "password": "Password must be at least 8 characters",
+        "confirm": "Password must be the same"
+      },
+      "two_factor": "Two Factor Authentication",
+      "enable": "Enable"
+    },
+    "payment": {
+      "title": "Payment",
+      "edit": "Edit",
+      "save": "Save",
+      "back": "Back",
+      "subtitle": "Withdrawal Account",
+      "errors": {
+        "bank_name": "Bank name cannot be blank",
+        "bank_account_name": "Bank account name cannot be blank",
+        "bank_account_number": "Bank account number cannot be blank"
+      },
+      "bank": "Bank Details",
+      "bank_name": "Bank name",
+      "bank_account_name": "Bank account name",
+      "bank_account_number": "Bank account number",
+      "create_pin": "Create withdrawal pin",
+      "change_pin": "Change withdrawal pin",
+      "enter": "Enter Pin",
+      "confirm": "Confirm Pin",
+      "action": "Create Pin",
+      "reset": "Reset Withdrawal Pin",
+      "description": "A Withdrawal Pin reset mail has been sent to",
+      "no_mail": "Didn’t get a mail? ",
+      "resend": "Resend",
+      "new_pin": "Set New Pin"
+    },
+    "notification": {
+      "title": "Notification",
+      "back": "Back",
+      "email": "Email Notifications",
+      "ticket_sales": "Ticket Sales Updates",
+      "event_check_in": "Event Check-In Alerts",
+      "payment_update": "Payment Updates",
+      "platform": "Platform Announcements"
+    }
+  }
+}

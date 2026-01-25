@@ -1,0 +1,742 @@
+{
+  "Metadata": {
+    "title": "Vendez plus de billets avec moins d’efforts | Ticketwaze",
+    "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances — en ligne comme hors ligne."
+  },
+  "Auth": {
+    "layout": {
+      "title": "La billetterie simplifiée partout dans votre pays et au‑delà",
+      "description": "Lancez vos activités en quelques minutes, vendez vos billets sans effort, suivez vos ventes et gérez vos participants — tout en un seul endroit"
+    },
+    "onboarding": {
+      "title": "Organisation Invitation",
+      "description": "Vous avez été invité à rejoindre une organisation sur TicketWaze — une plateforme permettant de gérer et de vendre des billets d'événements en toute simplicité.",
+      "join": "Rejoindre",
+      "title2": "Préparez-vous à vendre vos billets",
+      "description2": "Créez des activités, gérez vos participants et suivez vos ventes — tout commence ici",
+      "alert": "Nous avons créé une organisation par défaut pour vous lancer. Pas d’inquiétude — vous pourrez modifier ses informations et la personnaliser une fois créée.",
+      "action": "Commencer"
+    },
+    "register": {
+      "title": "Créer un compte",
+      "organizer": "Créer un compte",
+      "description": "Veuillez compléter le formulaire ci-dessous pour continuer.",
+      "invalidToken": "Ce lien d’invitation n’est plus valide. Il a peut-être expiré ou déjà été utilisé. Veuillez demander une nouvelle invitation à l’organisateur de l’événement pour continuer.",
+      "login": "Se connecter",
+      "choice": {
+        "title": "Créer un compte",
+        "description": "Choisissez une option pour continuer et configurer votre compte.",
+        "first": {
+          "title": "Participant",
+          "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d'événements."
+        },
+        "second": {
+          "title": "Organisateur",
+          "description": "Créez et gérez des événements sans effort. Suivez les ventes de billets et surveillez les données des participants."
+        },
+        "cta": "Continuer",
+        "footer": {
+          "text": "Vous avez déjà un compte ?",
+          "cta": "Se connecter"
+        }
+      },
+      "placeholders": {
+        "firstname": "Prénom",
+        "lastname": "Nom de famille",
+        "email": "Adresse e-mail",
+        "organisation_name": "Nom de l'organisation",
+        "organisation_email": "E-mail de l'organisation",
+        "password": "Créer un mot de passe",
+        "confirm": "Confirmer le mot de passe"
+      },
+      "errors": {
+        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
+        "password_match": "Les mots de passe ne correspondent pas",
+        "firstname_length": "Le prénom doit contenir au moins 2 caractères",
+        "lastname_length": "Le nom de famille doit contenir au moins 2 caractères",
+        "firstname_validation": "Le prénom ne doit contenir que des lettres, espaces ou traits d'union",
+        "lastname_validation": "Le nom de famille ne doit contenir que des lettres, espaces ou traits d'union",
+        "email": "Le champ e-mail ne peut pas être vide"
+      },
+      "cta": {
+        "submit": "Créer un compte",
+        "google": "Continuer avec Google"
+      },
+      "footer": "Retour"
+    },
+    "verify": {
+      "title": "Vérifier le compte",
+      "description": "Un e-mail de vérification a été envoyé à",
+      "wrong": "Email incorrect?",
+      "footer": {
+        "text": "Vous n'avez pas reçu d'e-mail ?",
+        "cta": "Renvoyer"
+      }
+    },
+    "complete": {
+      "title": "Finaliser la configuration du compte",
+      "description": "Veuillez remplir le formulaire ci-dessous pour finaliser la configuration de votre compte.",
+      "becoming": {
+        "subtitle": "Créer une organisation",
+        "description": "Veuillez remplir le formulaire ci-dessous pour créer une nouvelle organisation.",
+        "name": "Nom de l'organisation",
+        "country": "Pays",
+        "state": "État / Région / Province",
+        "city": "Ville",
+        "organisationDescription": "Partagez des détails sur votre organisation, ce que vous faites et les événements que vous organisez...",
+        "email": "E-mail de l'organisation",
+        "phone": "Numéro de téléphone",
+        "website": "Site web",
+        "currency": "Devise",
+        "back": "Retour",
+        "submit": "Créer l'organisation",
+        "errors": {
+          "name": {
+            "min": "Le nom de l'organisation ne peut pas être vide",
+            "max": "Le nom ne peut pas dépasser 30 caractères"
+          },
+          "description": {
+            "min": "La description ne peut pas contenir moins de 150 caractères",
+            "max": "La description ne peut pas dépasser 350 caractères"
+          },
+          "country": "Sélectionnez un pays",
+          "state": "Ce champ ne peut pas être vide",
+          "city": "Le champ ville ne peut pas être vide",
+          "currency": "Veuillez sélectionner une devise"
+        }
+      },
+      "placeholders": {
+        "username": "Nom d'utilisateur",
+        "address": "Adresse",
+        "country": "Pays",
+        "state": "État / Région / Province",
+        "city": "Ville",
+        "dob": "Date de naissance",
+        "gender": "Genre",
+        "male": "Homme",
+        "female": "Femme",
+        "no": "Préfère ne pas dire",
+        "about": "À propos de l'organisateur",
+        "email": "Adresse e-mail de contact",
+        "phone": "Numéro de téléphone",
+        "website": "URL du site web de l'organisation",
+        "currency": "Devise",
+        "errors": {
+          "city": "Le champ ville ne peut pas être vide",
+          "state": "Ce champ ne peut pas être vide",
+          "gender": "Ce champ est obligatoire",
+          "country": "Sélectionnez un pays",
+          "dob": "Veuillez sélectionner une date",
+          "currency": "Veuillez sélectionner une devise",
+          "phone": "Le numéro de téléphone doit contenir au moins 8 chiffres"
+        }
+      },
+      "cta": "Terminer"
+    },
+    "login": {
+      "title": "Se connecter à votre organisation",
+      "description": "Veuillez saisir les détails de votre compte pour continuer",
+      "placeholders": {
+        "email": "Adresse e-mail",
+        "password": "Mot de passe"
+      },
+      "errors": {
+        "email": "Saisissez un e-mail valide",
+        "password": "Le champ mot de passe ne peut pas être vide",
+        "wrong": "Adresse email ou mot de passe incorrect"
+      },
+      "forgot": "Mot de passe oublié",
+      "cta": {
+        "submit": "Se connecter",
+        "google": "Continuer avec Google"
+      },
+      "footer": {
+        "text": "Vous n'avez pas de compte ?",
+        "cta": "S'inscrire"
+      }
+    },
+    "forgot": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Veuillez saisir les détails de votre compte pour continuer",
+      "back": "Retour",
+      "errors": {
+        "email": "Saisissez une adresse e-mail valide",
+        "notFound": "Utilisateur introuvable. Veuillez créer un compte"
+      },
+      "placeholders": {
+        "email": "Adresse e-mail"
+      },
+      "cta": "Réinitialiser"
+    },
+    "email_sent": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Un e-mail de réinitialisation du mot de passe a été envoyé à",
+      "footer": {
+        "text": "Vous n'avez pas reçu d'e-mail ?",
+        "cta": "Renvoyer"
+      }
+    },
+    "new_password": {
+      "title": "Créer un mot de passe",
+      "description": "Choisissez un nouveau mot de passe pour votre compte",
+      "back": "Retour",
+      "placeholders": {
+        "password": "Nouveau mot de passe",
+        "confirm": "Confirmer le mot de passe"
+      },
+      "errors": {
+        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
+        "password_match": "Le mot de passe ne correspond pas"
+      },
+      "cta": "Créer"
+    },
+    "footer": {
+      "text": "Vous n'avez pas reçu d'e-mail ?",
+      "cta": "Renvoyer"
+    }
+  },
+  "Layout": {
+    "sidebar": {
+      "settings": "Paramètres",
+      "help": "Aide",
+      "switch": "Organisations",
+      "switching": "Changer d'organisation",
+      "new": "Nouvelle organisation",
+      "login": "Se connecter",
+      "logout": "Se déconnecter",
+      "analytics": "Analyses",
+      "events": "Événements",
+      "finance": "Finance",
+      "verified": "Organisation vérifiée"
+    },
+    "topbar": {
+      "welcome": "Bon retour",
+      "back": "Retour",
+      "notification": "Notifications",
+      "view": "Voir"
+    },
+    "noAuth": "Vous n'avez encore acheté aucun billet. Explorez nos événements pour trouver quelque chose qui vous plaît !",
+    "noAccess": "Malheureusement, vous n'avez actuellement pas accès à cette page. Elle peut être réservée à certains membres de l'organisation. Si vous pensez que vous devriez y avoir accès, je recommande de contacter l'équipe appropriée pour obtenir de l'aide.",
+    "fetchFailedError": "Nous n’avons pas pu récupérer les données demandées pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, veuillez contacter le"
+  },
+  "Analytics": {
+    "title": "Aperçu des événements",
+    "description": "Suivez le succès de vos événements avec des analyses détaillées et des tendances",
+    "revenue": "Revenus totaux",
+    "sold": "Billets vendus",
+    "filters": {
+      "first": {
+        "all": "Tous les événements",
+        "date": "Ce mois-ci"
+      }
+    },
+    "content": {
+      "upcomingTitle": "Événements à venir",
+      "view": "Vues d'événement",
+      "followers": "Followers"
+    },
+    "tickets": {
+      "title": "Informations sur les ventes de billets",
+      "classes": "Distribution des classes de billets",
+      "daily": "Ventes de billets quotidiennes"
+    },
+    "event": {
+      "event_demographics": {
+        "title": "Données démographiques des événements",
+        "gender_distribution": {
+          "title": "Répartition par genre",
+          "gender": {
+            "male": "Homme",
+            "female": "Femme",
+            "others": "Autres"
+          }
+        },
+        "events_top": {
+          "title": "Meilleurs événements"
+        }
+      }
+    },
+    "feedback": {
+      "title": "Engagement et commentaires",
+      "action": {
+        "click_on_event": "Total de clics sur la page d'événement",
+        "social_media_shares": "Partages sur les réseaux sociaux",
+        "add_favorite": "Ajout aux favoris",
+        "rated": "Note moyenne",
+        "reviews": "Total des avis"
+      }
+    }
+  },
+  "Finance": {
+    "title": "Finance",
+    "withdraw_btn": "Initier un retrait",
+    "summary": "Résumé",
+    "bank_details": "Détails bancaires",
+    "breakdown": "Répartition",
+    "revenue": "Revenus",
+    "fee": "Frais de plateforme",
+    "profit": "Profit",
+    "proceed": "Procéder",
+    "back": "Retour",
+    "pin": "Code PIN de retrait",
+    "withdraw": "Retirer",
+    "amounts": {
+      "revenue": "Revenus totaux",
+      "profit": "Profit total",
+      "balance": "Solde"
+    },
+    "filters": {
+      "all": "Tous les statuts",
+      "pending": "En attente",
+      "successful": "Réussi"
+    },
+    "search": "Rechercher par ID de transaction",
+    "transactions": {
+      "title": "Transactions récentes",
+      "description": "Vos ventes de billets apparaîtront ici une fois que les transactions commenceront.",
+      "table": {
+        "id": "ID de transaction",
+        "name": "Nom de l'événement",
+        "class": "Classe de billet",
+        "amount": "Montant payé",
+        "status": "Statut de la transaction",
+        "date": "Date d'achat"
+      },
+      "more": "Voir tout",
+      "details": {
+        "title": "Détails de la transaction",
+        "name": "Nom du participant",
+        "email": "E-mail",
+        "event_name": "Nom de l'événement",
+        "date": "Date",
+        "time": "Heure",
+        "location": "Lieu",
+        "ticket_class": "Classe de billet",
+        "price": "Prix",
+        "ticket_id": "ID du billet",
+        "total": "Total",
+        "transaction_id": "ID de transaction",
+        "payment_method": "Méthode de paiement",
+        "payment_date": "Date de paiement",
+        "transaction_status": "Statut de la transaction",
+        "check_status": "Statut d'enregistrement",
+        "check_time": "Heure d'enregistrement",
+        "close": "Fermer",
+        "resend": "Renvoyer le billet"
+      }
+    },
+    "withdrawal": {
+      "title": "Historique des retraits",
+      "description": "Votre historique de retraits apparaîtra ici une fois que vous aurez fait une demande de retrait.",
+      "table": {
+        "id": "ID de retrait",
+        "name": "Nom de la banque",
+        "account": "Numéro de compte",
+        "amount": "Montant",
+        "status": "Statut de la transaction",
+        "date": "Date d'achat"
+      }
+    }
+  },
+  "Events": {
+    "title": "Aperçu des événements",
+    "search": "Rechercher un événement",
+    "create": "Créer un événement",
+    "description": "Vos événements apparaîtront ici une fois que vous commencerez à créer des événements.",
+    "nothing": "Rien à voir ici",
+    "from": "À partir de",
+    "free": "Gratuit",
+    "single_event": {
+      "close": "Fermer",
+      "edit": "Modifier",
+      "check_in": "Enregistrement",
+      "back": "Retour",
+      "share": "Partager",
+      "share_text": "Faites passer le mot et invitez vos amis ! Partagez cet événement sur les réseaux sociaux ou par message direct.",
+      "create_ticket": "Créer un billet",
+      "ticket": "Classes de billets",
+      "checkers": "Vérificateurs",
+      "checkers_description": "Les vérificateurs sont des utilisateurs chargés de vérifier les billets aux entrées des événements. Ils scannent et valident les billets pour s'assurer que seuls les participants autorisés peuvent entrer.",
+      "select_checkers": "Sélectionner les vérificateurs",
+      "update_checker": "Mettre à jour la liste des vérificateurs",
+      "startChecking": "Enregistrer",
+      "stopChecking": "Pause",
+      "delete": "Supprimer l'activité",
+      "deleteWarning": "Vous êtes sur le point de supprimer définitivement cette activité. Cette action est irréversible et toutes les informations associées seront perdues. Voulez-vous continuer ?",
+      "type": "Saisissez le nom de l’activité pour confirmer",
+      "check_in_description": "Scanner le code Qr ou saisissez l'ID du ticket ci-dessous pour vérifier et enregistrer un participant.",
+      "ticketID": "ID du billet",
+      "revenue": "Revenus totaux",
+      "sold": "Billets vendus",
+      "left": "Billets restants",
+      "count_down": "Compte à rebours",
+      "day": "Jours restants",
+      "more": "Plus",
+      "details": "Détails",
+      "thumbnail": "Miniature de l'événement",
+      "event_details": "Détails de l'événement",
+      "about": "À propos de l'événement",
+      "mark_as_check": "Marquer comme enregistré",
+      "export": "Exporter",
+      "discount": {
+        "subtitle": "Codes de réduction",
+        "title": "Ajouter un code",
+        "back": "Retour",
+        "code": "Code",
+        "type": "Type",
+        "fixed": "Fixe",
+        "more": "Plus",
+        "percentage": "Pourcentage",
+        "expires_in": "Expire dans",
+        "expires_at": "Expire le",
+        "value": "Valeur",
+        "applies": "S'applique à",
+        "quantity": "Quantité",
+        "days": "Jours",
+        "start": "Date de début",
+        "end": "Date de fin",
+        "close": "Fermer",
+        "add": "Ajouter",
+        "all": "Tous",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "times_used": "Fois utilisé",
+        "mark_as_active": "Marquer comme actif",
+        "mark_as_inactive": "Marquer comme inactif",
+        "nothing": "Vos codes de réduction apparaîtront ici une fois que vous commencerez à les créer",
+        "errors": {
+          "code": {
+            "min": "Le code de réduction ne peut pas contenir moins de 6 caractères",
+            "max": "Le code de réduction ne peut pas dépasser 10 caractères"
+          },
+          "value": {
+            "min": "La valeur doit être d'au moins 1",
+            "negative": "La valeur ne peut pas être négative"
+          },
+          "quantity": {
+            "min": "La quantité doit être d'au moins 1",
+            "negative": "La quantité ne peut pas être négative"
+          },
+          "expiresIn": {
+            "min": "1 heure est le minimum",
+            "negative": "L'heure ne peut pas être négative"
+          }
+        }
+      },
+      "attendees": {
+        "back": "Retour",
+        "subtitle": "Ajouter un participant",
+        "title": "Participants",
+        "fullName": "Nom complet",
+        "email": "Adresse e-mail",
+        "close": "Fermer",
+        "add": "Ajouter",
+        "more": "Plus",
+        "remove": "Retirer l'accès"
+      },
+      "artist": {
+        "add": "Ajouter un intervenant",
+        "description": "Vous pouvez téléverser une photo et ajouter un lien vers leur profil. Une fois ajouté, l’intervenant apparaîtra dans la programmation de votre événement.",
+        "noArtist": "Ajouter des intervenants pour donner vie à votre liste !",
+        "name": "Nom de l'intervenant",
+        "link": "Liens vers sont profile ou website",
+        "thumbnail": "Déposez votre miniature ici ou ",
+        "browse": "parcourir",
+        "resize": "Redimensionner votre image",
+        "errors": {
+          "name": "Entrez un nom valide",
+          "link": "Entrez un lien valide",
+          "image": {
+            "required": "L'intervenant doit avoir une image de profile",
+            "max": "La taille maximale du fichier est de 200ko.",
+            "type": "Les fichiers .jpg, .jpeg, .png et .webp sont acceptés."
+          }
+        }
+      },
+      "filters": {
+        "all": "Tous les statuts",
+        "pending": "En attente",
+        "checked": "Enregistré"
+      },
+      "all": "Tous",
+      "search": "Rechercher un ID de billet",
+      "table": {
+        "id": "ID du billet",
+        "name": "Nom de l'acheteur",
+        "ticket_class": "Classe de billet",
+        "amount": "Montant payé",
+        "check": "Statut",
+        "date_purchased": "Date d'achat",
+        "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre événement pour stimuler les ventes !"
+      }
+    },
+    "create_event": {
+      "title": "Créer un événement",
+      "basic": "Détails de base",
+      "category_search": "Rechercher une catégorie",
+      "no_result": "Il n'y a aucun résultat pour le mot-clé ",
+      "list": {
+        "inPerson": {
+          "title": "En présentiel",
+          "description": "Événements avec un accès basé sur un lieu, comme des festivals, des conférences ou des rencontres."
+        },
+        "meet": {
+          "title": "Google Meet",
+          "description": "Participez virtuellement avec Google Meet — la distance n’a pas d’importance."
+        },
+        "private": {
+          "title": "Activité privée",
+          "description": "Activité exclusive sur invitation uniquement, avec accès restreint pour des invités sélectionnés."
+        }
+      },
+      "date_time": "Date et heure",
+      "ticket": "Billet",
+      "event_type": "Type d'événement",
+      "select_type": "Sélectionner le type d'événement",
+      "physical": "Physique",
+      "online": "En ligne",
+      "proceed": "Procéder",
+      "event_details": "Détails de l'événement",
+      "event_name": "Nom de l'événement",
+      "description": "Dites aux participants de quoi parle votre événement, à qui il s'adresse et à quoi ils peuvent s'attendre.",
+      "event_tags": "Tag de l'événement",
+      "select_tags": "Sélectionner un tag de l'activité",
+      "location": "Lieu",
+      "address": "Adresse",
+      "city": "Ville",
+      "state": "État / Région / Province",
+      "country": "Pays",
+      "coordinates": "Coordonnées",
+      "thumbnail": "Miniature de l'événement",
+      "thumbnail_text": "Déposez votre miniature ici ou ",
+      "resize": "Redimensionner votre image",
+      "browse": "parcourir",
+      "day": "Jour",
+      "start_date": "Date de début",
+      "start_time": "Heure de début",
+      "end_time": "Heure de fin",
+      "add_day": "Ajouter un jour",
+      "back": "Retour",
+      "ticket_class": "Classe de billet",
+      "class_name": "Nom de la classe de billet",
+      "class_description": "Description du billet",
+      "price": "Prix",
+      "quantity": "Quantité",
+      "add_class": "Ajouter une classe de billet",
+      "event_link": "Plateformes en ligne",
+      "leave_blank": "*Laisser vide pour les billets gratuits",
+      "zoom": "Faire une réunion Zoom",
+      "select_platform": "Sélectionner la plateforme en ligne",
+      "streaming_link": "Lien de diffusion/réunion",
+      "password": "Mot de passe (si nécessaire)",
+      "mark_as_free": "Marquer cet activité comme gratuit",
+      "mark_as_refundable": "Marquer les tickets comme remboursable",
+      "currency": "Monnaie",
+      "general_default": "Rejoignez-nous pour une expérience inoubliable, totalement gratuite ! Réservez votre place dès maintenant !",
+      "draft": "Sauvegarder comme brouillon",
+      "optional": "optionnel",
+      "errors": {
+        "basicDetails": {
+          "name": "Le nom de l'événement doit contenir au moins 10 caractères",
+          "no_special": "Ce champ n'autorise pas les caractères spéciaux",
+          "description": {
+            "min": "La description de l'événement ne peut pas contenir moins de 150 caractères",
+            "max": "La description de l'événement ne peut pas contenir plus de 350 caractères"
+          },
+          "address": "Le champ adresse ne peut pas être vide",
+          "state": "Ce champ ne peut pas être vide",
+          "city": "Le champ ville ne peut pas être vide",
+          "country": "Sélectionnez un pays",
+          "longitude": "Sélectionnez un lieu sur la carte",
+          "tags": "Sélectionnez au moins un tag",
+          "image": {
+            "required": "L'événement doit avoir une image de couverture",
+            "max": "La taille maximale du fichier est de 200ko.",
+            "type": "Les fichiers .jpg, .jpeg, .png et .webp sont acceptés."
+          }
+        },
+        "dateAndTime": {
+          "startDate": "Le champ date de début est obligatoire",
+          "startTime": "Le champ heure de début est obligatoire",
+          "endTime": "Le champ heure de fin est obligatoire"
+        },
+        "ticketClass": {
+          "name": "Sélectionnez un nom de classe de billet",
+          "description": "La description de la classe de billet doit contenir au moins 20 caractères",
+          "price": "Le prix ne peut pas être vide",
+          "quantity": {
+            "empty": "La quantité ne peut pas être vide",
+            "decimal": "La quantité ne peut pas avoir de décimale ou de zéro final"
+          }
+        }
+      }
+    },
+    "filters": {
+      "first": {
+        "all": "Tous",
+        "ongoing": "En cours",
+        "upcoming": "À venir",
+        "history": "Historique"
+      },
+      "second": {
+        "location": "Lieu",
+        "date": "Date",
+        "popularity": "Popularité"
+      }
+    }
+  },
+  "Settings": {
+    "title": "Paramètres",
+    "help": "Aide",
+    "logout": "Se déconnecter",
+    "switch": "Organisations",
+    "switching": "Changer d'organisation",
+    "new": "Nouvelle organisation",
+    "account": {
+      "title": "Compte",
+      "back": "Retour",
+      "edit": "Modifier",
+      "save": "Sauvegarder",
+      "resize": "Redimensionner votre image",
+      "subtitle": "Informations utilisateur",
+      "setProfile": "Définir l'image de profil",
+      "personal": "Informations personnelles",
+      "placeholders": {
+        "firstname": "Prénom",
+        "lastname": "Nom de famille",
+        "email": "Adresse e-mail",
+        "gender": "Genre",
+        "male": "Homme",
+        "female": "Femme",
+        "no": "Préfère ne pas dire",
+        "dob": "Date de naissance",
+        "phone": "Numéro de téléphone"
+      },
+      "errors": {
+        "firstName": "Le prénom ne peut pas être vide",
+        "lastName": "Le nom de famille ne peut pas être vide",
+        "phoneNumber": "Le numéro de téléphone doit contenir au moins 8 caractères"
+      },
+      "event": {
+        "title": "Événement",
+        "attended": "Nombre d'événements auxquels j'ai assisté",
+        "tickets": "Nombre de billets achetés",
+        "missed": "Nombre d'événements manqués"
+      },
+      "account": {
+        "title": "Compte",
+        "created": "Date de création",
+        "delete": "Supprimer le compte"
+      }
+    },
+    "profile": {
+      "title": "Profil",
+      "back": "Retour",
+      "edit": "Modifier",
+      "save": "Sauvegarder",
+      "setProfile": "Définir l'image de profil",
+      "subtitle": "Profil de l'organisation",
+      "resize": "Redimensionner votre image",
+      "placeholders": {
+        "name": "Nom de l'organisation",
+        "description": "Description de l'organisation",
+        "country": "Pays",
+        "city": "Ville",
+        "state": "État/Région",
+        "website": "Site web de l'organisation"
+      },
+      "errors": {
+        "name": {
+          "min": "Le nom de l'organisation ne peut pas être vide",
+          "max": "Le nom de l'organisation ne peut pas dépasser 30 caractères"
+        },
+        "description": {
+          "min": "La description de l'organisation ne peut pas contenir moins de 150 caractères",
+          "max": "La description de l'organisation ne peut pas contenir plus de 350 caractères"
+        }
+      }
+    },
+    "team": {
+      "title": "Équipe",
+      "back": "Retour",
+      "search": "Rechercher un membre",
+      "add": "Ajouter un membre",
+      "active": "Actif",
+      "invited": "Invité",
+      "you": "Vous",
+      "more": "Plus",
+      "edit": "Modifier le membre",
+      "remove": "Supprimer le membre",
+      "remove_member": "Supprimer le membre",
+      "remove_invitation": "Supprimer l'invitation",
+      "confirm_text": "Êtes-vous sûr de vouloir supprimer ce membre ? Il perdra tout accès à cette organisation.",
+      "confirm": "Oui, supprimer",
+      "joined_at": "Rejoint le",
+      "added_by": "Ajouté par",
+      "last_login": "Dernière connexion",
+      "table": {
+        "name": "Nom complet",
+        "email": "E-mail",
+        "role": "Rôle",
+        "status": "Statut"
+      },
+      "errors": {
+        "name": "Le nom ne peut pas être vide",
+        "email": "Saisissez une adresse e-mail valide"
+      }
+    },
+    "security": {
+      "title": "Sécurité",
+      "back": "Retour",
+      "subtitle": "Changer le mot de passe",
+      "reset": "Réinitialiser le mot de passe",
+      "placeholders": {
+        "password": "Mot de passe actuel",
+        "new": "Nouveau mot de passe",
+        "confirm": "Confirmer le nouveau mot de passe"
+      },
+      "errors": {
+        "blank": "Le champ ne peut pas être vide",
+        "password": "Le mot de passe doit contenir au moins 8 caractères",
+        "confirm": "Le mot de passe doit être identique"
+      },
+      "two_factor": "Authentification à deux facteurs",
+      "enable": "Activer"
+    },
+    "payment": {
+      "title": "Paiement",
+      "edit": "Modifier",
+      "save": "Sauvegarder",
+      "back": "Retour",
+      "subtitle": "Compte de retrait",
+      "errors": {
+        "bank_name": "Le nom de la banque ne peut pas être vide",
+        "bank_account_name": "Le nom du compte bancaire ne peut pas être vide",
+        "bank_account_number": "Le numéro de compte bancaire ne peut pas être vide"
+      },
+      "bank": "Détails bancaires",
+      "bank_name": "Nom de la banque",
+      "bank_account_name": "Nom du compte bancaire",
+      "bank_account_number": "Numéro de compte bancaire",
+      "create_pin": "Créer un code PIN de retrait",
+      "change_pin": "Changer le code PIN de retrait",
+      "enter": "Saisir le code PIN",
+      "confirm": "Confirmer le code PIN",
+      "action": "Créer un code PIN",
+      "reset": "Réinitialiser le code PIN de retrait",
+      "description": "Un e-mail de réinitialisation du code PIN de retrait a été envoyé à",
+      "no_mail": "Vous n'avez pas reçu d'e-mail ? ",
+      "resend": "Renvoyer",
+      "new_pin": "Définir un nouveau code PIN"
+    },
+    "notification": {
+      "title": "Notification",
+      "back": "Retour",
+      "email": "Notifications par e-mail",
+      "ticket_sales": "Mises à jour des ventes de billets",
+      "event_check_in": "Alertes d'enregistrement d'événement",
+      "payment_update": "Mises à jour de paiement",
+      "platform": "Annonces de la plateforme"
+    }
+  }
+}
