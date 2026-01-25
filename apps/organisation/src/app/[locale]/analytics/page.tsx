@@ -34,8 +34,6 @@ export default async function AnalyticsPage() {
     },
   );
   const analytics = await request.json();
-  console.log(analytics);
-
   const authorized = await organisationPolicy.viewAnalytics(
     session?.user.userId!,
     currentOrganisationId!,

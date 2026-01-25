@@ -105,6 +105,7 @@ export default function AddMember() {
               {...register("fullName")}
               error={errors.fullName?.message}
               disabled={isSubmitting}
+              autoFocus={false}
             >
               {t("table.name")}
             </Input>
@@ -126,7 +127,7 @@ export default function AddMember() {
                     </SelectTrigger>
                     <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
                       <SelectGroup className={"divide-y"}>
-                        {Array.from({ length: 5 }).map((_, index) => {
+                        {Array.from({ length: 4 }).map((_, index) => {
                           return (
                             <SelectItem
                               key={index}

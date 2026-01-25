@@ -14,6 +14,7 @@ const iota = createPowerIota();
 
 export const UserActions = {
   "event:create": iota(),
+  "event:view": iota(),
   "event:delete": iota(),
   "event:update": iota(),
   "event:check-in": iota(),
@@ -33,7 +34,8 @@ export const UserActions = {
 
 export type UserAction = (typeof UserActions)[keyof typeof UserActions];
 
-const CheckInPermission = UserActions["event:check-in"];
+const CheckInPermission =
+  UserActions["event:check-in"] | UserActions["event:view"];
 
 const EventManagerPermission =
   CheckInPermission |
