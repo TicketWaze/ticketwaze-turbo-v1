@@ -13,7 +13,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowRight2, ArrowSwapHorizontal } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Organisation } from "@ticketwaze/typescript-config";
@@ -22,6 +22,7 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 export default function SwitchOrganisationMobile() {
   const t = useTranslations("Settings");
+  const locale = useLocale();
   const { data: session, update } = useSession();
   const [allOrganisations, setAllOrganisations] = useState<Organisation[]>([]);
   const [selectedOrganisation, setSelectedOrganisation] =
@@ -39,6 +40,8 @@ export default function SwitchOrganisationMobile() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session?.user.accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
         },
       },
     )

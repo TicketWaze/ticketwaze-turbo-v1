@@ -12,13 +12,13 @@ import {
   SecuritySafe,
   User,
 } from "iconsax-reactjs";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import Signout from "./Signout";
 import SwitchOrganisationMobile from "./SwitchOrganisationMobile";
 
 export default async function Settings() {
   const t = await getTranslations("Settings");
-
+  const locale = await getLocale();
   const links = [
     // {
     //   label: t("account.title"),
@@ -63,16 +63,20 @@ export default async function Settings() {
           );
         })}
         <li className="lg:hidden">
-          <SettingsCardLink Icon={I24Support} href={""} label={t("help")} />
+          <SettingsCardLink
+            Icon={I24Support}
+            href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/contact`}
+            label={t("help")}
+          />
         </li>
         <SwitchOrganisationMobile />
-        <li className="lg:hidden">
+        {/* <li className="lg:hidden">
           <SettingsCardLink
             Icon={Add}
             href={"/auth/create-organisation"}
             label={t("new")}
           />
-        </li>
+        </li> */}
         <Signout />
       </ul>
     </OrganizerLayout>

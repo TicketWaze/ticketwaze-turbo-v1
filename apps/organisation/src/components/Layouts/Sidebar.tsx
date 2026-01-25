@@ -143,7 +143,7 @@ function Sidebar({ className }: { className: string }) {
           {/* help */}
           <li>
             <Link
-              href={""}
+              href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/contact`}
               target={"_blank"}
               rel={"noreferrer"}
               className={"flex gap-4 items-center p-4"}
