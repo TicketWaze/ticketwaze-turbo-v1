@@ -617,6 +617,9 @@
         "lastName": "Last name cannot be blank",
         "phoneNumber": "Phone Number should be at least 8 characters"
       },
+      "language": {
+        "title": "App language"
+      },
       "event": {
         "title": "Activity",
         "attended": "Number of activities attended",
@@ -654,6 +657,12 @@
           "min": "Organisation description cannot be less than 150 characters",
           "max": "Organisation description cannot be more than 350 characters"
         }
+      },
+      "preferences": {
+        "title": "Organisation Preferences",
+        "currency": "Preferred Currency",
+        "notifications": "Preferred notification provider",
+        "none": "None"
       }
     },
     "team": {

@@ -54,7 +54,6 @@ export async function UpdateOrganisationProfileImage(
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
           "Accept-Language": locale,
           origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
@@ -293,6 +292,42 @@ export async function RemoveMemberQuery(
     const data = await res.json();
     if (data.status === "success") {
       revalidatePath("/settings/team");
+      return {
+        status: "success",
+      };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+export async function UpdateOrganisationCurrency(
+  organisationId: string,
+  accessToken: string,
+  body: unknown,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/currency`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify(body),
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath("/settings/profile");
       return {
         status: "success",
       };

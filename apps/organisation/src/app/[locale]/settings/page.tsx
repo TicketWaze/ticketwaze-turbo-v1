@@ -9,6 +9,7 @@ import {
   Notification,
   Profile2User,
   SecuritySafe,
+  Setting5,
   User,
 } from "iconsax-reactjs";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -19,11 +20,11 @@ export default async function Settings() {
   const t = await getTranslations("Settings");
   const locale = await getLocale();
   const links = [
-    // {
-    //   label: t("account.title"),
-    //   href: "/settings/account",
-    //   Icon: Setting5,
-    // },
+    {
+      label: t("account.title"),
+      href: "/settings/account",
+      Icon: Setting5,
+    },
     {
       label: t("profile.title"),
       href: "/settings/profile",

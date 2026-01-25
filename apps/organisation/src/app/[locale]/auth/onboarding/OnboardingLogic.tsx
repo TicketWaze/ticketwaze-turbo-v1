@@ -8,6 +8,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export default function OnboardingLogic({
   responseType,
@@ -162,25 +163,46 @@ export default function OnboardingLogic({
         <div className="flex flex-col items-center justify-between h-full pb-12">
           <div className=" flex flex-col  gap-32 pt-16 w-full">
             <div className="flex flex-col gap-8 items-center">
-              <h3 className="font-medium font-primary text-center text-[3.2rem] leading-14 text-black">
+              <motion.h3
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="font-medium font-primary text-center text-[3.2rem] leading-14 text-black"
+              >
                 {t("title2")}
-              </h3>
-              <p className="text-[1.8rem] text-center leading-10 text-neutral-700">
+              </motion.h3>
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="text-[1.8rem] text-center leading-10 text-neutral-700"
+              >
                 {t("description2")}
-              </p>
+              </motion.p>
             </div>
             <div className="flex items-center flex-col gap-20 lg:gap-12">
-              {" "}
-              <p className="font-primary text-center font-medium text-[1.8rem] leading-10 text-neutral-900">
-                {t("alert")}
-              </p>
-              <ButtonPrimary
-                disabled={isLoading}
-                onClick={CreateOrganisation}
-                className="w-full hidden lg:flex"
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="font-primary text-center font-medium text-[1.8rem] leading-10 text-neutral-900"
               >
-                {isLoading ? <LoadingCircleSmall /> : t("action")}
-              </ButtonPrimary>
+                {t("alert")}
+              </motion.p>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="w-full"
+              >
+                <ButtonPrimary
+                  disabled={isLoading}
+                  onClick={CreateOrganisation}
+                  className="w-full hidden lg:flex"
+                >
+                  {isLoading ? <LoadingCircleSmall /> : t("action")}
+                </ButtonPrimary>
+              </motion.div>
             </div>
           </div>
           <ButtonPrimary

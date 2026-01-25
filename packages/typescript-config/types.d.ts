@@ -126,7 +126,7 @@ export interface Organisation {
   city: string;
   profileImageUrl: string | null;
   socialLinks: Record<string, any> | null;
-  currencyId: string;
+  currency: string;
   bankName: string | null;
   bankAccountName: string | null;
   bankAccountNumber: string | null;

@@ -38,7 +38,9 @@ export default function FinancePageContent({
   const currentOrganisation = session?.activeOrganisation;
   const { orders, tickets } = transactions;
   const total = Object.values(orders).reduce(
-    (acc, order) => acc + order.usdPrice,
+    (acc, order) =>
+      acc +
+      (currentOrganisation?.currency === "HTG" ? order.amount : order.usdPrice),
     0,
   );
   const roundTotal = Math.round(total * 100) / 100;
@@ -66,7 +68,7 @@ export default function FinancePageContent({
                 "font-normal text-[1.6rem] lg:text-[20px] text-neutral-500"
               }
             >
-              USD
+              {session?.activeOrganisation.currency}
             </span>
           </p>
         </div>
@@ -90,14 +92,16 @@ export default function FinancePageContent({
               "font-medium text-[1.6rem] lg:text-[25px] leading-[30px] font-primary"
             }
           >
-            {currentOrganisation?.usdBalance}
+            {currentOrganisation?.currency === "HTG"
+              ? currentOrganisation.balance
+              : currentOrganisation?.usdBalance}
             <span
               className={
                 "font-normal text-[1.6rem] lg:text-[20px] text-neutral-500"
               }
             >
               {" "}
-              USD
+              {session?.activeOrganisation.currency}
             </span>
           </p>
         </div>

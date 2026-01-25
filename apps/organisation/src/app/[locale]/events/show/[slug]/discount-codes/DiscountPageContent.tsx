@@ -940,8 +940,8 @@ function DiscountDrawerContent({ event }: { event: Event }) {
   async function submitHandler(data: TDiscountCodeSchema) {
     const result = await CreateDiscountCode(
       event.eventId,
-      session?.user.accessToken ?? "",
-      { ...data, currencyId: session?.activeOrganisation.currencyId },
+      session?.user.accessToken!,
+      { ...data },
       pathname,
       locale,
     );

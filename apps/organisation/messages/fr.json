@@ -617,6 +617,9 @@
         "lastName": "Le nom de famille ne peut pas être vide",
         "phoneNumber": "Le numéro de téléphone doit contenir au moins 8 caractères"
       },
+      "language": {
+        "title": "Langue de l'application"
+      },
       "event": {
         "title": "Activitée",
         "attended": "Nombre d'activitées auxquels j'ai assisté",
@@ -654,6 +657,12 @@
           "min": "La description de l'organisation ne peut pas contenir moins de 150 caractères",
           "max": "La description de l'organisation ne peut pas contenir plus de 350 caractères"
         }
+      },
+      "preferences": {
+        "title": "Préférences de l'organisation",
+        "currency": "Devise préférée",
+        "notifications": "Fournisseur de notifications préféré",
+        "none": "Aucun"
       }
     },
     "team": {

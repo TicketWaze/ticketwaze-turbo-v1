@@ -223,7 +223,7 @@ function AttenteeDrawerContent({ event }: { event: Event }) {
     const result = await AddAttendee(
       event.eventId,
       session?.user.accessToken ?? "",
-      { ...data, currencyId: session?.activeOrganisation.currencyId },
+      { ...data },
       pathname,
       locale,
     );
