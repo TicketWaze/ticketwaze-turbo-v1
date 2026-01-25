@@ -10,7 +10,7 @@
     },
     "onboarding": {
       "title": "Organisation Invitation",
-      "description": "Vous avez été invité à rejoindre une organisation sur TicketWaze — une plateforme permettant de gérer et de vendre des billets d'événements en toute simplicité.",
+      "description": "Vous avez été invité à rejoindre une organisation sur TicketWaze — une plateforme permettant de gérer et de vendre des billets en toute simplicité.",
       "join": "Rejoindre",
       "title2": "Préparez-vous à vendre vos billets",
       "description2": "Créez des activités, gérez vos participants et suivez vos ventes — tout commence ici",
@@ -28,11 +28,11 @@
         "description": "Choisissez une option pour continuer et configurer votre compte.",
         "first": {
           "title": "Participant",
-          "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d'événements."
+          "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d'activitées."
         },
         "second": {
           "title": "Organisateur",
-          "description": "Créez et gérez des événements sans effort. Suivez les ventes de billets et surveillez les données des participants."
+          "description": "Créez et gérez des activitées sans effort. Suivez les ventes de billets et surveillez les données des participants."
         },
         "cta": "Continuer",
         "footer": {
@@ -83,7 +83,7 @@
         "country": "Pays",
         "state": "État / Région / Province",
         "city": "Ville",
-        "organisationDescription": "Partagez des détails sur votre organisation, ce que vous faites et les événements que vous organisez...",
+        "organisationDescription": "Partagez des détails sur votre organisation, ce que vous faites et les activitées que vous organisez...",
         "email": "E-mail de l'organisation",
         "phone": "Numéro de téléphone",
         "website": "Site web",
@@ -205,7 +205,7 @@
       "login": "Se connecter",
       "logout": "Se déconnecter",
       "analytics": "Analyses",
-      "events": "Événements",
+      "events": "Activitées",
       "finance": "Finance",
       "verified": "Organisation vérifiée"
     },
@@ -215,24 +215,24 @@
       "notification": "Notifications",
       "view": "Voir"
     },
-    "noAuth": "Vous n'avez encore acheté aucun billet. Explorez nos événements pour trouver quelque chose qui vous plaît !",
+    "noAuth": "Vous n'avez encore acheté aucun billet. Explorez nos activitées pour trouver quelque chose qui vous plaît !",
     "noAccess": "Malheureusement, vous n'avez actuellement pas accès à cette page. Elle peut être réservée à certains membres de l'organisation. Si vous pensez que vous devriez y avoir accès, je recommande de contacter l'équipe appropriée pour obtenir de l'aide.",
     "fetchFailedError": "Nous n’avons pas pu récupérer les données demandées pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, veuillez contacter le"
   },
   "Analytics": {
-    "title": "Aperçu des événements",
-    "description": "Suivez le succès de vos événements avec des analyses détaillées et des tendances",
+    "title": "Aperçu des activitées",
+    "description": "Suivez le succès de vos activitées avec des analyses détaillées et des tendances",
     "revenue": "Revenus totaux",
     "sold": "Billets vendus",
     "filters": {
       "first": {
-        "all": "Tous les événements",
+        "all": "Toutes les activitées",
         "date": "Ce mois-ci"
       }
     },
     "content": {
-      "upcomingTitle": "Événements à venir",
-      "view": "Vues d'événement",
+      "upcomingTitle": "Activitées à venir",
+      "view": "Vues d'activitée",
       "followers": "Followers"
     },
     "tickets": {
@@ -242,7 +242,7 @@
     },
     "event": {
       "event_demographics": {
-        "title": "Données démographiques des événements",
+        "title": "Données démographiques des activitées",
         "gender_distribution": {
           "title": "Répartition par genre",
           "gender": {
@@ -252,14 +252,14 @@
           }
         },
         "events_top": {
-          "title": "Meilleurs événements"
+          "title": "Meilleurs activitées"
         }
       }
     },
     "feedback": {
       "title": "Engagement et commentaires",
       "action": {
-        "click_on_event": "Total de clics sur la page d'événement",
+        "click_on_event": "Total de clics sur la page d'activitée",
         "social_media_shares": "Partages sur les réseaux sociaux",
         "add_favorite": "Ajout aux favoris",
         "rated": "Note moyenne",
@@ -296,7 +296,7 @@
       "description": "Vos ventes de billets apparaîtront ici une fois que les transactions commenceront.",
       "table": {
         "id": "ID de transaction",
-        "name": "Nom de l'événement",
+        "name": "Nom de l'activitée",
         "class": "Classe de billet",
         "amount": "Montant payé",
         "status": "Statut de la transaction",
@@ -307,7 +307,7 @@
         "title": "Détails de la transaction",
         "name": "Nom du participant",
         "email": "E-mail",
-        "event_name": "Nom de l'événement",
+        "event_name": "Nom de l'activitée",
         "date": "Date",
         "time": "Heure",
         "location": "Lieu",
@@ -339,10 +339,10 @@
     }
   },
   "Events": {
-    "title": "Aperçu des événements",
-    "search": "Rechercher un événement",
-    "create": "Créer un événement",
-    "description": "Vos événements apparaîtront ici une fois que vous commencerez à créer des événements.",
+    "title": "Aperçu des activitées",
+    "search": "Rechercher une activitée",
+    "create": "Créer une activitée",
+    "description": "Vos activitées apparaîtront ici une fois que vous commencerez à les créer.",
     "nothing": "Rien à voir ici",
     "from": "À partir de",
     "free": "Gratuit",
@@ -352,11 +352,11 @@
       "check_in": "Enregistrement",
       "back": "Retour",
       "share": "Partager",
-      "share_text": "Faites passer le mot et invitez vos amis ! Partagez cet événement sur les réseaux sociaux ou par message direct.",
+      "share_text": "Faites passer le mot et invitez vos amis ! Partagez cette activitée sur les réseaux sociaux ou par message direct.",
       "create_ticket": "Créer un billet",
       "ticket": "Classes de billets",
       "checkers": "Vérificateurs",
-      "checkers_description": "Les vérificateurs sont des utilisateurs chargés de vérifier les billets aux entrées des événements. Ils scannent et valident les billets pour s'assurer que seuls les participants autorisés peuvent entrer.",
+      "checkers_description": "Les vérificateurs sont des utilisateurs chargés de vérifier les billets aux entrées. Ils scannent et valident les billets pour s'assurer que seuls les participants autorisés peuvent entrer.",
       "select_checkers": "Sélectionner les vérificateurs",
       "update_checker": "Mettre à jour la liste des vérificateurs",
       "startChecking": "Enregistrer",
@@ -373,9 +373,9 @@
       "day": "Jours restants",
       "more": "Plus",
       "details": "Détails",
-      "thumbnail": "Miniature de l'événement",
-      "event_details": "Détails de l'événement",
-      "about": "À propos de l'événement",
+      "thumbnail": "Miniature de l'activitée",
+      "event_details": "Détails de l'activitée",
+      "about": "À propos de l'activitée",
       "mark_as_check": "Marquer comme enregistré",
       "export": "Exporter",
       "discount": {
@@ -436,7 +436,7 @@
       },
       "artist": {
         "add": "Ajouter un intervenant",
-        "description": "Vous pouvez téléverser une photo et ajouter un lien vers leur profil. Une fois ajouté, l’intervenant apparaîtra dans la programmation de votre événement.",
+        "description": "Vous pouvez téléverser une photo et ajouter un lien vers leur profil. Une fois ajouté, l’intervenant apparaîtra dans la programmation de votre activitée.",
         "noArtist": "Ajouter des intervenants pour donner vie à votre liste !",
         "name": "Nom de l'intervenant",
         "link": "Liens vers sont profile ou website",
@@ -467,18 +467,18 @@
         "amount": "Montant payé",
         "check": "Statut",
         "date_purchased": "Date d'achat",
-        "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre événement pour stimuler les ventes !"
+        "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activitée pour stimuler les ventes !"
       }
     },
     "create_event": {
-      "title": "Créer un événement",
+      "title": "Créer une activitée",
       "basic": "Détails de base",
       "category_search": "Rechercher une catégorie",
       "no_result": "Il n'y a aucun résultat pour le mot-clé ",
       "list": {
         "inPerson": {
           "title": "En présentiel",
-          "description": "Événements avec un accès basé sur un lieu, comme des festivals, des conférences ou des rencontres."
+          "description": "Activitées avec un accès basé sur un lieu, comme des festivals, des conférences ou des rencontres."
         },
         "meet": {
           "title": "Google Meet",
@@ -491,15 +491,15 @@
       },
       "date_time": "Date et heure",
       "ticket": "Billet",
-      "event_type": "Type d'événement",
-      "select_type": "Sélectionner le type d'événement",
+      "event_type": "Type d'activitée",
+      "select_type": "Sélectionner le type d'événeactivitéement",
       "physical": "Physique",
       "online": "En ligne",
       "proceed": "Procéder",
-      "event_details": "Détails de l'événement",
-      "event_name": "Nom de l'événement",
-      "description": "Dites aux participants de quoi parle votre événement, à qui il s'adresse et à quoi ils peuvent s'attendre.",
-      "event_tags": "Tag de l'événement",
+      "event_details": "Détails de l'activitée",
+      "event_name": "Nom de l'activitée",
+      "description": "Dites aux participants de quoi parle votre activitée, à qui il s'adresse et à quoi ils peuvent s'attendre.",
+      "event_tags": "Tag de l'activitée",
       "select_tags": "Sélectionner un tag de l'activité",
       "location": "Lieu",
       "address": "Adresse",
@@ -507,7 +507,7 @@
       "state": "État / Région / Province",
       "country": "Pays",
       "coordinates": "Coordonnées",
-      "thumbnail": "Miniature de l'événement",
+      "thumbnail": "Miniature de l'activitée",
       "thumbnail_text": "Déposez votre miniature ici ou ",
       "resize": "Redimensionner votre image",
       "browse": "parcourir",
@@ -537,11 +537,11 @@
       "optional": "optionnel",
       "errors": {
         "basicDetails": {
-          "name": "Le nom de l'événement doit contenir au moins 10 caractères",
+          "name": "Le nom de l'activitée doit contenir au moins 10 caractères",
           "no_special": "Ce champ n'autorise pas les caractères spéciaux",
           "description": {
-            "min": "La description de l'événement ne peut pas contenir moins de 150 caractères",
-            "max": "La description de l'événement ne peut pas contenir plus de 350 caractères"
+            "min": "La description de l'activitée ne peut pas contenir moins de 150 caractères",
+            "max": "La description de l'activitée ne peut pas contenir plus de 350 caractères"
           },
           "address": "Le champ adresse ne peut pas être vide",
           "state": "Ce champ ne peut pas être vide",
@@ -550,7 +550,7 @@
           "longitude": "Sélectionnez un lieu sur la carte",
           "tags": "Sélectionnez au moins un tag",
           "image": {
-            "required": "L'événement doit avoir une image de couverture",
+            "required": "L'activitée doit avoir une image de couverture",
             "max": "La taille maximale du fichier est de 200ko.",
             "type": "Les fichiers .jpg, .jpeg, .png et .webp sont acceptés."
           }
@@ -618,10 +618,10 @@
         "phoneNumber": "Le numéro de téléphone doit contenir au moins 8 caractères"
       },
       "event": {
-        "title": "Événement",
-        "attended": "Nombre d'événements auxquels j'ai assisté",
+        "title": "Activitée",
+        "attended": "Nombre d'activitées auxquels j'ai assisté",
         "tickets": "Nombre de billets achetés",
-        "missed": "Nombre d'événements manqués"
+        "missed": "Nombre d'activitées manqués"
       },
       "account": {
         "title": "Compte",
@@ -734,7 +734,7 @@
       "back": "Retour",
       "email": "Notifications par e-mail",
       "ticket_sales": "Mises à jour des ventes de billets",
-      "event_check_in": "Alertes d'enregistrement d'événement",
+      "event_check_in": "Alertes d'enregistrement d'activitée",
       "payment_update": "Mises à jour de paiement",
       "platform": "Annonces de la plateforme"
     }

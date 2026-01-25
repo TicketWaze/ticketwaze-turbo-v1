@@ -10,7 +10,7 @@
     },
     "onboarding": {
       "title": "Organisation Invitation",
-      "description": "You've been invited to join and organisation on TicketWaze — a platform for managing and selling event tickets with ease.",
+      "description": "You've been invited to join and organisation on TicketWaze — a platform for managing and selling tickets with ease.",
       "join": "Join",
       "title2": "Get ready to sell tickets",
       "description2": "Create activities, manage attendees, and track sales — everything starts here",
@@ -21,18 +21,18 @@
       "title": "Create an Account",
       "organizer": "Create an Account",
       "description": "Please complete the form below to continue.",
-      "invalidToken": "This invitation link is no longer valid. It may have expired or already been used. Please request a new invite from the event organizer to continue.",
+      "invalidToken": "This invitation link is no longer valid. It may have expired or already been used. Please request a new invite from the organisation to continue.",
       "login": "Log in",
       "choice": {
         "title": "Create Account",
         "description": "Choose an option to continue and set up your account.",
         "first": {
           "title": "Attendee",
-          "description": "Easily browse, discover, and purchase tickets for a wide variety of events."
+          "description": "Easily browse, discover, and purchase tickets for a wide variety of activities."
         },
         "second": {
           "title": "Organizer",
-          "description": "Create and manage events effortlessly. Track ticket sales & monitor attendee data."
+          "description": "Create and manage activities effortlessly. Track ticket sales & monitor attendee data."
         },
         "cta": "Continue",
         "footer": {
@@ -83,7 +83,7 @@
         "country": "Country",
         "state": "State / Region / Province",
         "city": "City",
-        "organisationDescription": "Share details about your organisation, what you do, and the events you host...",
+        "organisationDescription": "Share details about your organisation, what you do, and the activities you host...",
         "email": "Organisation Email",
         "phone": "Phone number",
         "website": "Website",
@@ -205,7 +205,7 @@
       "login": "Log in",
       "logout": "Log out",
       "analytics": "Analytics",
-      "events": "Events",
+      "events": "Activities",
       "finance": "Finance",
       "verified": "Verified organisation"
     },
@@ -215,24 +215,24 @@
       "notification": "Notifications",
       "view": "View"
     },
-    "noAuth": "You haven’t purchased any tickets yet. Explore our events to find something you love!",
+    "noAuth": "You haven’t purchased any tickets yet. Explore our activities to find something you love!",
     "noAccess": "Unfortunately, you don't currently have access to that page. It may be restricted to certain members of the organization. If you believe you should have access, I recommend reaching out to the appropriate team for assistance.",
     "fetchFailedError": "We couldn’t retrieve the requested data at the moment. Please check your internet connection and try again. If the error persit, reach out"
   },
   "Analytics": {
-    "title": "Event Overview",
-    "description": "Track your event success with detailed analytics and trends",
+    "title": "Activity Overview",
+    "description": "Track your success with detailed analytics and trends",
     "revenue": "Total Revenue",
     "sold": "Tickets Sold",
     "filters": {
       "first": {
-        "all": "All events",
+        "all": "All activities",
         "date": "This month"
       }
     },
     "content": {
-      "upcomingTitle": "Upcoming Events",
-      "view": "Event Views",
+      "upcomingTitle": "Upcoming Activities",
+      "view": "Activity Views",
       "followers": "Followers"
     },
     "tickets": {
@@ -242,7 +242,7 @@
     },
     "event": {
       "event_demographics": {
-        "title": "Events Demographics",
+        "title": "Activities Demographics",
         "gender_distribution": {
           "title": "Gender Distribution",
           "gender": {
@@ -252,14 +252,14 @@
           }
         },
         "events_top": {
-          "title": "Top Events"
+          "title": "Top Activities"
         }
       }
     },
     "feedback": {
       "title": "Engagement & Feedback",
       "action": {
-        "click_on_event": "Total Clicks on Event Page",
+        "click_on_event": "Total Clicks on Activity Page",
         "social_media_shares": "Social Media Shares",
         "add_favorite": "Add To Favorite",
         "rated": "Arevage Rating",
@@ -296,7 +296,7 @@
       "description": "Your ticket sales will appear here once transactions start rolling in.",
       "table": {
         "id": "Transaction ID",
-        "name": "Event Name",
+        "name": "Activity Name",
         "class": "Ticket Class",
         "amount": "Amount paid",
         "status": "Transaction Status",
@@ -307,7 +307,7 @@
         "title": "Transaction Details",
         "name": "Attendee Name",
         "email": "Email",
-        "event_name": "Event Name",
+        "event_name": "Activity Name",
         "date": "Date",
         "time": "Time",
         "location": "Location",
@@ -339,10 +339,10 @@
     }
   },
   "Events": {
-    "title": "Event Overview",
-    "search": "Search for event",
-    "create": "Create event",
-    "description": "Your events will show up here once you start creating events.",
+    "title": "Activity Overview",
+    "search": "Search for activity",
+    "create": "Create activity",
+    "description": "Your activities will show up here once you start creating.",
     "nothing": "Nothing to see here",
     "from": "From",
     "free": "Free",
@@ -351,12 +351,12 @@
       "edit": "Edit",
       "check_in": "Check In",
       "back": "Back",
-      "share": "Share Event",
-      "share_text": "Spread the word and invite your friends! Share this event on social media or via direct message.",
+      "share": "Share Activity",
+      "share_text": "Spread the word and invite your friends! Share this activity on social media or via direct message.",
       "create_ticket": "Create Ticket",
       "ticket": "Ticket Classes",
       "checkers": "Checkers",
-      "checkers_description": "Checkers are users assigned to verify tickets at event entrances. They scan and validate tickets to ensure only authorized attendees gain entry.",
+      "checkers_description": "Checkers are users assigned to verify tickets at entrances. They scan and validate tickets to ensure only authorized attendees gain entry.",
       "select_checkers": "Select Checkers",
       "update_checker": "Update Checkers list",
       "startChecking": "Start CheckIn",
@@ -369,13 +369,13 @@
       "revenue": "Total Revenue",
       "sold": "Tickets Sold",
       "left": "Tickets Left",
-      "count_down": "Event Count Down",
+      "count_down": "Activity Count Down",
       "day": "Days to go",
       "more": "More",
       "details": "Details",
-      "thumbnail": "Event Thumbnail",
-      "event_details": "Event Details",
-      "about": "About Event",
+      "thumbnail": "Activity Thumbnail",
+      "event_details": "Activity Details",
+      "about": "About Activity",
       "mark_as_check": "Mark as checked in",
       "export": "Export",
       "discount": {
@@ -436,7 +436,7 @@
       },
       "artist": {
         "add": "Add Performer",
-        "description": "You can upload a photo and link to their profile, Once added, the artist will appear in your event lineup.",
+        "description": "You can upload a photo and link to their profile, Once added, the artist will appear in your activity lineup.",
         "noArtist": "Start adding performers to see your list come to life!",
         "name": "Performer Name",
         "link": "Link to profile or website",
@@ -467,18 +467,18 @@
         "amount": "Amount Paid",
         "check": "Check-in status",
         "date_purchased": "Date purchased",
-        "description": "Once attendees start purchasing tickets, the details will appear here. Promote your event to drive sales!"
+        "description": "Once attendees start purchasing tickets, the details will appear here. Promote your activity to drive sales!"
       }
     },
     "create_event": {
-      "title": "Create Event",
+      "title": "Create Activity",
       "basic": "Basic Details",
       "category_search": "Search for category",
       "no_result": "They is no result for the keyword ",
       "list": {
         "inPerson": {
           "title": "In-Person",
-          "description": "Events with location-based access like festivals, conferences, or meetups."
+          "description": "Activities with location-based access like festivals, conferences, or meetups."
         },
         "meet": {
           "title": "Google Meet",
@@ -491,15 +491,15 @@
       },
       "date_time": "Date & Time",
       "ticket": "Ticket",
-      "event_type": "Event Type",
-      "select_type": "Select event type",
+      "event_type": "Activity Type",
+      "select_type": "Select activity type",
       "physical": "Physical",
       "online": "Online",
       "proceed": "Proceed",
-      "event_details": "Event Details",
-      "event_name": "Event name",
-      "description": "Tell attendees what your event is about, who's it for, and what they can expect.",
-      "event_tags": "Event tag",
+      "event_details": "Activity Details",
+      "event_name": "Activity name",
+      "description": "Tell attendees what your activity is about, who's it for, and what they can expect.",
+      "event_tags": "Activity tag",
       "select_tags": "Select activity tag",
       "location": "Location",
       "address": "Address",
@@ -507,7 +507,7 @@
       "state": "State / Region / Province",
       "country": "Country",
       "coordinates": "Coordinates",
-      "thumbnail": "Event Thumbnail",
+      "thumbnail": "Activity Thumbnail",
       "thumbnail_text": "Drop your thumbnail here or ",
       "resize": "Resize your image",
       "browse": "browse",
@@ -537,11 +537,11 @@
       "optional": "optional",
       "errors": {
         "basicDetails": {
-          "name": "Event name should be at leat 10 characters",
+          "name": "Activity name should be at leat 10 characters",
           "no_special": "This field doesn't allow special characters",
           "description": {
-            "min": "Event description cannot be less than 150 characters",
-            "max": "Event description cannot be more than 350 characters"
+            "min": "Activity description cannot be less than 150 characters",
+            "max": "Activity description cannot be more than 350 characters"
           },
           "address": "Address field cannot be blank",
           "state": "This field Cannot be blank",
@@ -550,7 +550,7 @@
           "longitude": "Select a place on the map",
           "tags": "Select at least one tag",
           "image": {
-            "required": "Event should have a cover image",
+            "required": "Activity should have a cover image",
             "max": "Max file size is 200ko.",
             "type": ".jpg, .jpeg, .png and .webp files are accepted."
           }
@@ -618,10 +618,10 @@
         "phoneNumber": "Phone Number should be at least 8 characters"
       },
       "event": {
-        "title": "Event",
-        "attended": "Number of events attended",
+        "title": "Activity",
+        "attended": "Number of activities attended",
         "tickets": "Number of tickets bought",
-        "missed": "Number of events missed"
+        "missed": "Number of activities missed"
       },
       "account": {
         "title": "Account",
@@ -734,7 +734,7 @@
       "back": "Back",
       "email": "Email Notifications",
       "ticket_sales": "Ticket Sales Updates",
-      "event_check_in": "Event Check-In Alerts",
+      "event_check_in": "Activity Check-In Alerts",
       "payment_update": "Payment Updates",
       "platform": "Platform Announcements"
     }
