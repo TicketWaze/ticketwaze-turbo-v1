@@ -13,7 +13,7 @@ export default function Signout() {
         onClick={() =>
           signOut({
             redirect: true,
-            redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/${session?.user.userPreference.appLanguage}`,
+            redirectTo: `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${session?.user.userPreference.appLanguage}`,
           })
         }
       >

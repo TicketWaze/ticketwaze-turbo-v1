@@ -61,7 +61,7 @@ export default function OnboardingLogic({
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.user.accessToken}`,
             "Accept-Language": locale,
-            Origin: process.env.NEXT_PUBLIC_APP_URL ?? "",
+            Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
           },
         },
       );
@@ -70,7 +70,7 @@ export default function OnboardingLogic({
         await update({
           activeOrganisation: organisation,
         });
-        window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/${user.userPreference.appLanguage}/analytics`;
+        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${user.userPreference.appLanguage}/analytics`;
       }
     } catch (error) {
       console.error("Failed to join organisation:", error);
@@ -89,7 +89,7 @@ export default function OnboardingLogic({
             "Content-Type": "application/json",
             Authorization: `Bearer ${session?.user.accessToken}`,
             "Accept-Language": locale,
-            Origin: process.env.NEXT_PUBLIC_APP_URL!,
+            Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
           },
         },
       );
@@ -98,7 +98,7 @@ export default function OnboardingLogic({
         await update({
           activeOrganisation: res.user.organisations[0],
         });
-        window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/${res.user.userPreference.appLanguage}/analytics`;
+        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${res.user.userPreference.appLanguage}/analytics`;
       } else {
         toast.error("Failed to Creare Organisation");
       }
