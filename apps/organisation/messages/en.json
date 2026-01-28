@@ -5,8 +5,8 @@
   },
   "Auth": {
     "layout": {
-      "title": "Selling tickets made simple — nationwide & beyond",
-      "description": "Launch activities in minutes, sell tickets effortlessly, track sales, and manage attendees — all in one place"
+      "title": "Sell more tickets with less effort",
+      "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance."
     },
     "onboarding": {
       "title": "Organisation Invitation",
@@ -728,6 +728,9 @@
       "bank_account_name": "Bank account name",
       "bank_account_number": "Bank account number",
       "create_pin": "Create withdrawal pin",
+      "pinMismatch": "Pins should be the same",
+      "pinCreated": "Pin Created succesfully",
+      "pinFailed": "Failed to create pin. Please try again. If the error persist, check your internet connection or reach out to support.",
       "change_pin": "Change withdrawal pin",
       "enter": "Enter Pin",
       "confirm": "Confirm Pin",
@@ -736,7 +739,13 @@
       "description": "A Withdrawal Pin reset mail has been sent to",
       "no_mail": "Didn’t get a mail? ",
       "resend": "Resend",
-      "new_pin": "Set New Pin"
+      "new_pin": "Set New Pin",
+      "clearBanking": "Clear banking informations",
+      "deleteBankinfWarning": "You are about to permanently delete your banking informations. This action cannot be undone, and all related information will be lost. Do you wish to continue?",
+      "type": "Type the name of the organisation to confirm",
+      "noBankingInfo": "You currently have no banking informations! Please insert some before trying to delete. If you think this was an error, please reach out support.",
+      "failedDelete": "Failed to delete banking informations. Please check your internet connection. If this error persist, please reach out to support",
+      "successDelete": "Banking information deleted succesfully"
     },
     "notification": {
       "title": "Notification",

@@ -5,8 +5,8 @@
   },
   "Auth": {
     "layout": {
-      "title": "La billetterie simplifiée partout dans votre pays et au‑delà",
-      "description": "Lancez vos activités en quelques minutes, vendez vos billets sans effort, suivez vos ventes et gérez vos participants — tout en un seul endroit"
+      "title": "Vendez plus de billets avec moins d’efforts",
+      "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances."
     },
     "onboarding": {
       "title": "Organisation Invitation",
@@ -728,6 +728,9 @@
       "bank_account_name": "Nom du compte bancaire",
       "bank_account_number": "Numéro de compte bancaire",
       "create_pin": "Créer un code PIN de retrait",
+      "pinMismatch": "Les codes PIN doivent être identiques",
+      "pinCreated": "Code PIN créé avec succès",
+      "pinFailed": "Échec de la création du code PIN. Veuillez réessayer. Si l'erreur persiste, vérifiez votre connexion Internet ou contactez le support.",
       "change_pin": "Changer le code PIN de retrait",
       "enter": "Saisir le code PIN",
       "confirm": "Confirmer le code PIN",
@@ -736,7 +739,13 @@
       "description": "Un e-mail de réinitialisation du code PIN de retrait a été envoyé à",
       "no_mail": "Vous n'avez pas reçu d'e-mail ? ",
       "resend": "Renvoyer",
-      "new_pin": "Définir un nouveau code PIN"
+      "new_pin": "Définir un nouveau code PIN",
+      "clearBanking": "Effacer les informations bancaires",
+      "deleteBankinfWarning": "Vous êtes sur le point de supprimer définitivement vos informations bancaires. Cette action est irréversible et toutes les données associées seront perdues. Voulez-vous continuer ?",
+      "type": "Saisissez le nom de l’organisation pour confirmer",
+      "noBankingInfo": "Vous n’avez actuellement aucune information bancaire ! Veuillez en ajouter avant d’essayer de supprimer. Si vous pensez qu’il s’agit d’une erreur, veuillez contacter le support.",
+      "failedDelete": "Échec de la suppression des informations bancaires. Veuillez vérifier votre connexion Internet. Si l’erreur persiste, veuillez contacter le support.",
+      "successDelete": "Informations bancaires supprimées avec succès"
     },
     "notification": {
       "title": "Notification",

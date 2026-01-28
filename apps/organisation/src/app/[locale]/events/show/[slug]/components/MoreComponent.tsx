@@ -10,12 +10,11 @@ import {
   HamburgerMenu,
   MoreCircle,
   Profile2User,
-  SecurityUser,
   TicketDiscount,
   Trash,
 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import EventDrawerContent from "./EventDrawerContent";
 import {
   Dialog,
@@ -27,15 +26,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Controller, useForm } from "react-hook-form";
-import Select from "react-select";
+import { useForm } from "react-hook-form";
 import { Event, User } from "@ticketwaze/typescript-config";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DeleteEvent, UpdateCheckersListAction } from "@/actions/EventActions";
 import { toast } from "sonner";
 import PageLoader from "@/components/PageLoader";
-import { ButtonPrimary, ButtonRed } from "@/components/shared/buttons";
+import { ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { Input } from "@/components/shared/Inputs";
 export default function MoreComponent({
@@ -190,7 +188,7 @@ export default function MoreComponent({
                   </Link>
                 </li>
               )}
-              {event.eventType !== "meet" && authorized && (
+              {/* {event.eventType !== "meet" && authorized && (
                 <li>
                   <Dialog>
                     <DialogTrigger className="w-full">
@@ -284,7 +282,7 @@ export default function MoreComponent({
                     </DialogContent>
                   </Dialog>
                 </li>
-              )}
+              )} */}
               <li>
                 <Dialog>
                   <DialogTrigger className="w-full">

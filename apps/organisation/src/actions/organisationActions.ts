@@ -340,3 +340,72 @@ export async function UpdateOrganisationCurrency(
     };
   }
 }
+
+export async function CreateWithdrawalPin(
+  organisationId: string,
+  accessToken: string,
+  body: unknown,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/withdrawal-pin`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify(body),
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath("/settings/payment");
+      return {
+        status: "success",
+      };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+export async function DeleteBankingInformations(
+  organisationId: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/banking-informations`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath("/settings/payment");
+      return {
+        status: "success",
+      };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}

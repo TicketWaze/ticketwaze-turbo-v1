@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import TopBar from "@/components/shared/TopBar";
 import { LinkPrimary } from "@/components/shared/Links";
+import { Add } from "iconsax-reactjs";
+import { Link } from "@/i18n/navigation";
 
 export default async function EventPage() {
   const t = await getTranslations("Events");
@@ -35,12 +37,13 @@ export default async function EventPage() {
             <LinkPrimary className="hidden lg:block" href="/events/create">
               {t("create")}
             </LinkPrimary>
-            <LinkPrimary
-              className="lg:hidden absolute bottom-40 right-8 "
+            <Link
+              className="lg:hidden absolute bottom-43 right-10 w-[60px] h-[60px] bg-primary-500 rounded-full flex items-center justify-center"
               href="/events/create"
             >
-              {t("create")}
-            </LinkPrimary>
+              {/* {t("create")} */}
+              <Add size="32" color="#ffffff" />
+            </Link>
           </>
         )}
       </TopBar>

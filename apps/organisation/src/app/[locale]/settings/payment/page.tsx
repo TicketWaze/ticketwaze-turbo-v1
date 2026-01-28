@@ -6,6 +6,7 @@ import TopBar from "@/components/shared/TopBar";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import { auth } from "@/lib/auth";
 import { Organisation } from "@ticketwaze/typescript-config";
+import PinHandler from "./PinHandler";
 
 export default async function Page() {
   const t = await getTranslations("Settings.payment");
@@ -30,6 +31,9 @@ export default async function Page() {
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
         <TopBar title={t("title")}>
+          <div className="hidden lg:block">
+            <PinHandler organisation={organisation} />
+          </div>
           <ButtonPrimary form="payment-form">{t("save")}</ButtonPrimary>
         </TopBar>
       </div>

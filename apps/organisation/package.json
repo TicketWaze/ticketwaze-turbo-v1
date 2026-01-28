@@ -23,6 +23,7 @@
     "clsx": "^2.1.1",
     "html5-qrcode": "^2.3.8",
     "iconsax-reactjs": "^0.0.8",
+    "input-otp": "^1.4.2",
     "lucide-react": "^0.562.0",
     "mapbox-gl": "^3.18.1",
     "motion": "^12.27.2",

@@ -150,7 +150,7 @@ export default function CheckingDialog({
     <>
       <PageLoader isLoading={isLoading} />
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger>
+        <DialogTrigger className="w-full lg:w-fit">
           <span className="px-[15px] py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
             <Scanner variant={"Bulk"} color={"#737C8A"} size={20} />
             {t("check_in")}

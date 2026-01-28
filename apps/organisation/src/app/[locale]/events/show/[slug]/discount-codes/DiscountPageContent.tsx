@@ -39,12 +39,12 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Add,
   CloseCircle,
   Money3,
   MoreCircle,
   RefreshCircle,
   TickCircle,
-  TicketDiscount,
 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
@@ -95,7 +95,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
     }
   }
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col h-full gap-8">
       <TopBar title={t("subtitle")}>
         <Drawer direction={"right"}>
           <DrawerTrigger asChild className={"w-full hidden lg:flex"}>
@@ -107,13 +107,15 @@ export default function DiscountPageContent({ event }: { event: Event }) {
       <Drawer direction={"right"}>
         <DrawerTrigger
           asChild
-          className={"lg:hidden absolute bottom-40 right-8"}
+          className={"lg:hidden absolute bottom-43 right-10"}
         >
-          <ButtonPrimary>{t("title")}</ButtonPrimary>
+          <button className="lg:hidden absolute bottom-43 right-10 w-[60px] h-[60px] bg-primary-500 rounded-full flex items-center justify-center">
+            <Add size="32" color="#ffffff" />
+          </button>
         </DrawerTrigger>
         <DiscountDrawerContent event={event} />
       </Drawer>
-      <div>
+      <div className="h-full">
         <Tabs defaultValue="all" className="w-full h-full ">
           <div className={"flex justify-between"}>
             <TabsList

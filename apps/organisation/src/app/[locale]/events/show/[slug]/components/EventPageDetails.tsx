@@ -102,8 +102,8 @@ export default function EventPageDetails({
   });
   const eventLink =
     event.eventType === "private"
-      ? `https://app.ticketwaze.com/${locale}/explore/private/${Slugify(event.eventName)}`
-      : `https://app.ticketwaze.com/${locale}/explore/${Slugify(event.eventName)}`;
+      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${Slugify(event.eventName)}`
+      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${Slugify(event.eventName)}`;
 
   async function MarkEventAsActive() {
     setIsLoading(true);
@@ -353,12 +353,12 @@ export default function EventPageDetails({
         </li>
       </ul>
 
-      <div className="flex lg:hidden items-center justify-between">
+      <div className="flex lg:hidden items-center w-full  gap-4 justify-between">
         {event.isActive ? (
           <ButtonRed
             disabled={isLoading}
             onClick={MarkEventAsInactive}
-            className="px-[15px] py-[7.5px] flex items-center gap-4"
+            className="px-[15px] py-[7.5px] flex flex-1 items-center gap-4"
           >
             <ScanBarcode size="20" variant="Bulk" color={"#de0028"} />
             {isLoading ? <LoadingCircleSmall /> : t("stopChecking")}
@@ -367,16 +367,124 @@ export default function EventPageDetails({
           <ButtonPrimary
             disabled={isLoading}
             onClick={MarkEventAsActive}
-            className="px-[15px] py-[7.5px] flex items-center gap-4"
+            className="px-[15px] py-[7.5px] flex flex-1 items-center gap-4"
           >
             <ScanBarcode size="20" variant="Bulk" color={"#fff"} />
             {isLoading ? <LoadingCircleSmall /> : t("startChecking")}
           </ButtonPrimary>
         )}
-        {!(event.eventType === "meet") ? (
-          <CheckingDialog event={event} user={user} />
-        ) : (
-          <div></div>
+        <div className="flex-1 w-full">
+          {!(event.eventType === "meet") ? (
+            <CheckingDialog event={event} user={user} />
+          ) : (
+            <div></div>
+          )}
+        </div>
+      </div>
+      <div className="flex lg:hidden items-center w-full gap-8 justify-between">
+        {daysLeft !== null && daysLeft > 0 && (
+          <Dialog>
+            <DialogTrigger className="w-full">
+              <span className="px-[15px] py-[7.5px] w-full border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
+                <Send2 variant={"Bulk"} color={"#737C8A"} size={20} />
+                {t("share")}
+              </span>
+            </DialogTrigger>
+            <DialogContent className={"w-[360px] lg:w-[520px] "}>
+              <DialogHeader>
+                <DialogTitle
+                  className={
+                    "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                  }
+                >
+                  {t("share")}
+                </DialogTitle>
+                <DialogDescription className={"sr-only"}>
+                  <span>Share event</span>
+                </DialogDescription>
+              </DialogHeader>
+              <div
+                className={
+                  "flex flex-col w-auto justify-center items-center gap-[30px]"
+                }
+              >
+                <p
+                  className={
+                    "font-sans text-[1.8rem] leading-[25px] text-[#cdcdcd] text-center w-[320px] lg:w-full"
+                  }
+                >
+                  {t("share_text")}
+                </p>
+                <div
+                  className={
+                    "border w-auto border-neutral-100 rounded-[100px] p-4 flex  items-center gap-4"
+                  }
+                >
+                  <span
+                    className={
+                      "lg:hidden text-neutral-700 text-[1.8rem] max-w-[335px]"
+                    }
+                  >
+                    {TruncateUrl(eventLink, 22)}
+                  </span>
+                  <span
+                    className={
+                      "hidden lg:block text-neutral-700 text-[1.8rem] max-w-[335px]"
+                    }
+                  >
+                    {TruncateUrl(eventLink)}
+                  </span>
+                  <button
+                    onClick={async () => {
+                      try {
+                        await navigator.clipboard.writeText(eventLink);
+                        toast.success("Url copied to clipboard");
+                      } catch (e) {
+                        toast.error("Failed to copy url");
+                      }
+                    }}
+                    className={
+                      "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-[20px] bg-primary-50 cursor-pointer flex"
+                    }
+                  >
+                    <Copy size="20" color="#e45b00" variant="Bulk" />
+                    Copy
+                  </button>
+                </div>
+                <div className="flex items-center gap-12">
+                  <Link
+                    href={`https://wa.me/?text=${encodeURIComponent(`*Check this out — it’s worth your time!* \nSomething exciting is happening and I wanted you to be part of it.\nTap the link to explore - Reserve your spot now! \n${eventLink}`)}`}
+                    target="_blank"
+                    className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full"
+                  >
+                    <Image src={Whatsapp} alt="whatsapp Icon" />
+                  </Link>
+                  {/* <div className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full">
+                      <Image src={Instagram} alt="instagram Icon" />
+                    </div> */}
+                  <Link
+                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+                      `Check this out — it’s worth your time! 🚀\nSomething exciting is happening and I wanted you to be part of it.\nReserve your spot now: ${eventLink}`,
+                    )}`}
+                    target="_blank"
+                    className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full"
+                  >
+                    <Image src={Twitter} alt="Twitter Icon" />
+                  </Link>
+                  {/* <div className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full">
+                      <Image src={Tiktok} alt="tiktok Icon" />
+                    </div> */}
+                  <Link
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(eventLink)}`}
+                    target="_blank"
+                    className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full"
+                  >
+                    <Image src={Linkedin} alt="LinkedIn Icon" />
+                  </Link>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         )}
         <MoreComponent
           authorized={authorized}
@@ -682,6 +790,7 @@ export default function EventPageDetails({
                 >
                   {t("table.description")}
                 </p>
+                <div></div>
               </div>
             </div>
           )}
