@@ -45,17 +45,9 @@ export function makeEditInPersonSchema(isFree: boolean, t: TranslateFn) {
       .mime(["image/jpeg", "image/jpg", "image/png", "image/webp"]),
     eventDays: z.array(
       z.object({
-        // startDate: z
-        //   .string()
-        //   .min(1, t("errors.dateAndTime.startDate"))
-        //   .transform((val) => new Date(val).toISOString()),
-        startTime: z
+        dateTime: z
           .string()
           .min(1, t("errors.dateAndTime.startTime"))
-          .transform((val) => new Date(val).toISOString()),
-        endTime: z
-          .string()
-          .min(1, t("errors.dateAndTime.endTime"))
           .transform((val) => new Date(val).toISOString()),
       }),
     ),

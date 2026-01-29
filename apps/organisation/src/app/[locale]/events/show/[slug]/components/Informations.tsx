@@ -12,6 +12,7 @@ import { useTranslations } from "next-intl";
 import React from "react";
 import Separator from "@/components/shared/Separator";
 import { ButtonAccent } from "@/components/shared/buttons";
+import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 
 export default function Informations({
   ticket,
@@ -77,7 +78,7 @@ export default function Informations({
               >
                 {t("transactions.details.date")}{" "}
                 <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {FormatDate(ticket.event.eventDays[0]?.startDate ?? "")}
+                  {FormatDate(ticket.event.eventDays[0]?.dateTime ?? "")}
                 </span>
               </p>
               <p
@@ -87,8 +88,7 @@ export default function Informations({
               >
                 {t("transactions.details.time")}{" "}
                 <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {ticket.event.eventDays[0]?.startDate} -{" "}
-                  {ticket.event.eventDays[0]?.endTime}
+                  {`${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}`}
                 </span>
               </p>
               <p

@@ -520,7 +520,7 @@ function Informations({
               >
                 {t("transactions.details.date")}{" "}
                 <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {FormatDate(ticket.event.eventDays[0]?.startDate ?? "")}
+                  {FormatDate(ticket.event.eventDays[0]?.dateTime ?? "")}
                 </span>
               </p>
               <p
@@ -530,9 +530,7 @@ function Informations({
               >
                 {t("transactions.details.time")}{" "}
                 <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {`${TimesTampToDateTime(ticket.event.eventDays[0]?.startDate ?? "").hour}:${TimesTampToDateTime(ticket.event.eventDays[0]?.startDate ?? "").minute}`}{" "}
-                  -{" "}
-                  {`${TimesTampToDateTime(ticket.event.eventDays[0]?.endTime ?? "").hour}:${TimesTampToDateTime(ticket.event.eventDays[0]?.endTime ?? "").minute}`}
+                  {`${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}`}
                 </span>
               </p>
               <p

@@ -4,14 +4,13 @@ import React from "react";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import type { EditPrivateFormValues } from "./types";
 import { Trash } from "iconsax-reactjs";
+import { toast } from "sonner";
 
 type Props = {
   register: UseFormRegister<EditPrivateFormValues>;
   errors: any;
-  eventDays: { startTime: string; endTime: string }[];
-  setEventDays: React.Dispatch<
-    React.SetStateAction<{ startTime: string; endTime: string }[]>
-  >;
+  eventDays: { dateTime: string }[];
+  setEventDays: React.Dispatch<React.SetStateAction<{ dateTime: string }[]>>;
   setValue: UseFormSetValue<EditPrivateFormValues>;
   t: (s: string) => string;
 };
@@ -60,27 +59,11 @@ export default function StepDateTime({
               <input
                 type="datetime-local"
                 className="w-full outline-none text-[1.5rem]"
-                {...register(`eventDays.${index}.startTime` as const)}
+                {...register(`eventDays.${index}.dateTime` as const)}
               />
             </div>
             <span className="text-[1.2rem] px-8 py-2 text-failure">
-              {errors.eventDays?.[index]?.startTime?.message}
-            </span>
-          </div>
-
-          <div>
-            <div className="bg-neutral-100 w-full rounded-[5rem] py-4 px-8">
-              <span className="text-neutral-600 text-[1.2rem]">
-                {t("end_time")}
-              </span>
-              <input
-                type="datetime-local"
-                className="w-full outline-none text-[1.5rem]"
-                {...register(`eventDays.${index}.endTime` as const)}
-              />
-            </div>
-            <span className="text-[1.2rem] px-8 py-2 text-failure">
-              {errors.eventDays?.[index]?.endTime?.message}
+              {errors.eventDays?.[index]?.dateTime?.message}
             </span>
           </div>
         </div>
@@ -90,12 +73,8 @@ export default function StepDateTime({
         <div />
         <button
           type="button"
-          onClick={() =>
-            setEventDays((prev) => [
-              ...prev,
-              { startDate: "", startTime: "", endTime: "" },
-            ])
-          }
+          onClick={() => toast.info("coming")}
+          // onClick={() => setEventDays((prev) => [...prev, { dateTime: "" }])}
           className="cursor-pointer flex gap-4 items-center"
         >
           <span className="text-[1.5rem] leading-8 text-primary-500">

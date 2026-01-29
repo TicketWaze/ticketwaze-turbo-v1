@@ -99,8 +99,7 @@ export default function UpdateMeetEventForm({ event }: { event: Event }) {
         };
 
         return {
-          startTime: formatLocalDateTime(eventDay.startDate),
-          endTime: formatLocalDateTime(eventDay.endTime),
+          dateTime: formatLocalDateTime(eventDay.dateTime),
         };
       }),
       ticketTypes: event.eventTicketTypes.map((ticketType) => ({
@@ -230,9 +229,7 @@ export default function UpdateMeetEventForm({ event }: { event: Event }) {
   }
 
   // eventDays + ticketClasses local state (for dynamic add/remove UI)
-  const [eventDays, setEventDays] = useState<
-    { startTime: string; endTime: string }[]
-  >(
+  const [eventDays, setEventDays] = useState<{ dateTime: string }[]>(
     event.eventDays.map((eventDay) => {
       const formatLocalDateTime = (date: string | Date) => {
         const d = new Date(date);
@@ -245,8 +242,7 @@ export default function UpdateMeetEventForm({ event }: { event: Event }) {
       };
 
       return {
-        startTime: formatLocalDateTime(eventDay.startDate),
-        endTime: formatLocalDateTime(eventDay.endTime),
+        dateTime: formatLocalDateTime(eventDay.dateTime),
       };
     }),
   );

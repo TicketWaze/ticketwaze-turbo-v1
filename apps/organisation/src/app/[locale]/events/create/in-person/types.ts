@@ -7,9 +7,9 @@ export type TicketType = {
 };
 
 export type EventDay = {
-  startTime: string; // ISO string after transform
+  dateTime: string; // ISO string after transform
   // startTime?: string; // (kept commented since original had it)
-  endTime: string; // ISO string after transform
+  // endTime: string; // ISO string after transform
 };
 
 export type CreateInPersonFormValues = {

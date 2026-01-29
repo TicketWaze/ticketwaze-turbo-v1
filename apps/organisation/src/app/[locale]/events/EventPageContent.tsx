@@ -29,7 +29,7 @@ export default function EventPageContent({ events }: { events: Event[] }) {
           {events.length === 0 && (
             <div
               className={
-                "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
+                "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center justify-center h-full gap-[5rem]"
               }
             >
               <div
@@ -71,8 +71,8 @@ function UpcomingContent({ events }: { events: Event[] }) {
   const t = useTranslations("Events");
   const upcoming = events.filter((event) => {
     const today = DateTime.now();
-    const eventStart = event.eventDays?.[0]?.startDate
-      ? DateTime.fromISO(event.eventDays[0].startDate)
+    const eventStart = event.eventDays?.[0]?.dateTime
+      ? DateTime.fromISO(event.eventDays[0].dateTime)
       : null;
     const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
     return daysLeft && daysLeft >= 0;
@@ -91,7 +91,7 @@ function UpcomingContent({ events }: { events: Event[] }) {
       {upcoming.length === 0 && (
         <div
           className={
-            "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
+            "w-[330px] lg:w-[460px] h-full mx-auto flex flex-col items-center justify-center gap-[5rem]"
           }
         >
           <div
@@ -126,8 +126,8 @@ function HistoryContent({ events }: { events: Event[] }) {
   const t = useTranslations("Events");
   const history = events.filter((event) => {
     const today = DateTime.now();
-    const eventStart = event.eventDays?.[0]?.startDate
-      ? DateTime.fromISO(event.eventDays[0].startDate)
+    const eventStart = event.eventDays?.[0]?.dateTime
+      ? DateTime.fromISO(event.eventDays[0].dateTime)
       : null;
     const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
     return daysLeft && daysLeft < 0;
@@ -146,7 +146,7 @@ function HistoryContent({ events }: { events: Event[] }) {
       {history.length === 0 && (
         <div
           className={
-            "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
+            "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center justify-center h-full gap-[5rem]"
           }
         >
           <div

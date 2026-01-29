@@ -88,7 +88,7 @@ export default function CreateInPersonEventForm() {
       latitude: "",
       eventTagId: "",
       eventImage: undefined as unknown as File,
-      eventDays: [{ startTime: "", endTime: "" }],
+      eventDays: [{ dateTime: "" }],
       ticketTypes: [
         {
           ticketTypeName: "",
@@ -199,9 +199,9 @@ export default function CreateInPersonEventForm() {
   }
 
   // eventDays + ticketClasses local state (for dynamic add/remove UI)
-  const [eventDays, setEventDays] = useState<
-    { startTime: string; endTime: string }[]
-  >([{ startTime: "", endTime: "" }]);
+  const [eventDays, setEventDays] = useState<{ dateTime: string }[]>([
+    { dateTime: "" },
+  ]);
   const [ticketClasses, setTicketClasses] = useState<
     {
       ticketTypeName: string;

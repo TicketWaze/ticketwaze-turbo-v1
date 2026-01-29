@@ -3,6 +3,7 @@ import Logo from "@/assets/images/logo-horizontal-orange-org.svg";
 import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
 import { Chart1, I24Support, Warning2 } from "iconsax-reactjs";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function GlobalError({
   error,
@@ -11,6 +12,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const router = useRouter();
   return (
     // global-error must include html and body tags
     <html>
@@ -50,11 +52,19 @@ export default function GlobalError({
               </div>
             </div>
             <div className="w-full flex flex-col lg:flex-row items-center gap-6">
-              <ButtonPrimary className="flex-1 w-full flex items-center gap-4">
+              <ButtonPrimary
+                onClick={() => router.push("/analytics")}
+                className="flex-1 w-full flex items-center gap-4"
+              >
                 <Chart1 size="24" color="#fff" variant="Bulk" />
                 Analytics
               </ButtonPrimary>
-              <ButtonBlack className="flex-1 w-full flex items-center gap-4">
+              <ButtonBlack
+                onClick={() =>
+                  router.push(`${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`)
+                }
+                className="flex-1 w-full flex items-center gap-4"
+              >
                 <I24Support size="24" color="#fff" variant="Bulk" />
                 Support
               </ButtonBlack>

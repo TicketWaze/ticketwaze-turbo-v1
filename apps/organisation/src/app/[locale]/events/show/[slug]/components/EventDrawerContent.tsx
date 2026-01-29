@@ -21,7 +21,7 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 export default function EventDrawerContent({ event }: { event: Event }) {
   const t = useTranslations("Events.single_event");
-  const startDate = new Date(event.eventDays?.[0]?.startDate ?? "");
+  const startDate = new Date(event.eventDays?.[0]?.dateTime ?? "");
   const { data: session } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -125,9 +125,7 @@ export default function EventDrawerContent({ event }: { event: Event }) {
                     "font-normal text-[1.4rem] leading-8 text-deep-200"
                   }
                 >
-                  {`${TimesTampToDateTime(event.eventDays[0]?.startDate ?? "").hour}:${TimesTampToDateTime(event.eventDays[0]?.startDate ?? "").minute}`}{" "}
-                  -{" "}
-                  {`${TimesTampToDateTime(event.eventDays[0]?.endTime ?? "").hour}:${TimesTampToDateTime(event.eventDays[0]?.endTime ?? "").minute}`}
+                  {`${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}`}
                 </span>
               </div>
               <div className={"flex items-center gap-[5px] "}>

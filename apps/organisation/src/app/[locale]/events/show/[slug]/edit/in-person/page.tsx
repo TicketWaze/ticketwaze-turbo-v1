@@ -1,5 +1,5 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import CreateInPersonEventForm from "./EditInPersonEventForm";
+import EditInPersonEventForm from "./EditInPersonEventForm";
 import { Event } from "@ticketwaze/typescript-config";
 
 export default async function EditEvent({
@@ -15,7 +15,7 @@ export default async function EditEvent({
   const event: Event = eventResponse.event;
   return (
     <OrganizerLayout title="Edit Event">
-      <CreateInPersonEventForm event={event} />
+      <EditInPersonEventForm event={event} />
     </OrganizerLayout>
   );
 }

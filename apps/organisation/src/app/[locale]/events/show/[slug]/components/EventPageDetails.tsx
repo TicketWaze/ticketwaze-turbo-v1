@@ -87,8 +87,8 @@ export default function EventPageDetails({
   });
 
   const today = DateTime.now();
-  const eventStart = event.eventDays?.[0]?.startDate
-    ? DateTime.fromISO(event.eventDays[0].startDate)
+  const eventStart = event.eventDays?.[0]?.dateTime
+    ? DateTime.fromISO(event.eventDays[0].dateTime)
     : null;
   const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
   const roundedDays = Math.ceil(daysLeft && daysLeft > 0 ? daysLeft : 0);

@@ -490,6 +490,7 @@
         }
       },
       "date_time": "Date & Time",
+      "coming": "Coming soon!",
       "ticket": "Ticket",
       "event_type": "Activity Type",
       "select_type": "Select activity type",
@@ -557,7 +558,7 @@
         },
         "dateAndTime": {
           "startDate": "Start date field is required",
-          "startTime": "Start time field is required",
+          "startTime": "Date and time field is required",
           "endTime": "End time field is required"
         },
         "ticketClass": {
@@ -677,6 +678,7 @@
       "edit": "Edit member",
       "remove": "Remove member",
       "remove_member": "Remove member",
+      "noSelfDelete": "You cannot remove yourself from your organisation. If you don't want to be part of this organisation, transfert the ownership or delete the organisation.",
       "remove_invitation": "Remove invitation",
       "confirm_text": "Are you sure you want to remove this member? They will lose all access to this organization.",
       "confirm": "Yes, remove",

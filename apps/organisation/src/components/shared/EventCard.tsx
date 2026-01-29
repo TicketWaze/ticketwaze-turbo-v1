@@ -4,12 +4,12 @@ import { Calendar2, Google, Location } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { englishEventTags, frenchEventTags } from "@/lib/EventTags";
-import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 import Slugify from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
-  const date = TimesTampToDateTime(event.eventDays[0]?.startDate ?? "");
+  // const date = TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "");
+  const date = new Date(event.eventDays[0].dateTime);
   const slug = Slugify(event.eventName);
   const locale = useLocale();
   const eventTags = locale === "fr" ? frenchEventTags : englishEventTags;
@@ -76,11 +76,12 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
             <span
               className={"font-medium text-[1rem] text-deep-100 leading-[15px]"}
             >
-              {date.day}
+              {date.toLocaleDateString(locale)}
+              {/* {date.day < 10 ? `0${date.day}` : date.day}
               {"/"}
-              {date.month}
+              {date.month < 10 ? `0${date.month}` : date.month}
               {"/"}
-              {date.year}
+              {date.year} */}
             </span>
           </div>
           {event.eventType === "meet" ? (

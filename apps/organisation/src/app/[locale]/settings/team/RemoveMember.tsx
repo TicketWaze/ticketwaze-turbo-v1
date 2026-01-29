@@ -21,6 +21,28 @@ export default function RemoveMember({ email }: { email: string }) {
   const locale = useLocale();
   const CloseDialogRef = useRef<HTMLSpanElement>(null);
   const [isLoading, setIsLoading] = useState(false);
+  async function removeMember() {
+    setIsLoading(true);
+    if (session?.user.userId === organisation?.userId) {
+      toast.warning(t("noSelfDelete"));
+      setIsLoading(false);
+      CloseDialogRef.current?.click();
+      return;
+    }
+    const result = await RemoveMemberQuery(
+      organisation?.organisationId ?? "",
+      session?.user.accessToken ?? "",
+      email,
+      locale,
+    );
+    if (result.status === "success") {
+      toast.success("Member Revoked");
+    } else {
+      toast.error(result.error);
+    }
+    setIsLoading(false);
+    CloseDialogRef.current?.click();
+  }
   return (
     <DialogContent className={"w-xl lg:w-208 "}>
       <DialogHeader>
@@ -47,22 +69,7 @@ export default function RemoveMember({ email }: { email: string }) {
 
       <DialogFooter>
         <span
-          onClick={async () => {
-            setIsLoading(true);
-            const result = await RemoveMemberQuery(
-              organisation?.organisationId ?? "",
-              session?.user.accessToken ?? "",
-              email,
-              locale,
-            );
-            if (result.status === "success") {
-              toast.success("Member Revoked");
-            } else {
-              toast.error(result.error);
-            }
-            setIsLoading(false);
-            CloseDialogRef.current?.click();
-          }}
+          onClick={removeMember}
           className={
             "border-failure text-failure bg-[#FCE5EA] px-12 py-10 border-2 rounded-[100px] text-center  font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center w-full mt-12"
           }

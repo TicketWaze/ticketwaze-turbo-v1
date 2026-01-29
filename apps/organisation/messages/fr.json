@@ -557,7 +557,7 @@
         },
         "dateAndTime": {
           "startDate": "Le champ date de début est obligatoire",
-          "startTime": "Le champ heure de début est obligatoire",
+          "startTime": "Les champs date et heure de début sont obligatoire",
           "endTime": "Le champ heure de fin est obligatoire"
         },
         "ticketClass": {
@@ -677,6 +677,7 @@
       "edit": "Modifier le membre",
       "remove": "Supprimer le membre",
       "remove_member": "Supprimer le membre",
+      "noSelfDelete": "Vous ne pouvez pas vous retirer de votre organisation. Si vous ne souhaitez plus en faire partie, transférez la propriété ou supprimez l'organisation.",
       "remove_invitation": "Supprimer l'invitation",
       "confirm_text": "Êtes-vous sûr de vouloir supprimer ce membre ? Il perdra tout accès à cette organisation.",
       "confirm": "Oui, supprimer",

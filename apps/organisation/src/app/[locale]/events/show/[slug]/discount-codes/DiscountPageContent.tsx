@@ -261,7 +261,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                             <span
                               className={`${isActive ? "text-success" : "text-failure"}`}
                             >
-                              {expires.toLocaleString()}
+                              {expires.toLocaleDateString(locale)}
                             </span>
                           </TableCell>
                           <TableCell

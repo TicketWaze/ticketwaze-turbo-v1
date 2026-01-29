@@ -71,7 +71,7 @@ export default function CreateOnlineEventForm() {
       eventDescription: "",
       eventTagId: "",
       eventImage: undefined as unknown as File,
-      eventDays: [{ startTime: "", endTime: "" }],
+      eventDays: [{ dateTime: "" }],
       ticketTypes: [
         {
           ticketTypeName: "general",
@@ -178,9 +178,9 @@ export default function CreateOnlineEventForm() {
   }
 
   // eventDays + ticketClasses local state (for dynamic add/remove UI)
-  const [eventDays, setEventDays] = useState<
-    { startTime: string; endTime: string }[]
-  >([{ startTime: "", endTime: "" }]);
+  const [eventDays, setEventDays] = useState<{ dateTime: string }[]>([
+    { dateTime: "" },
+  ]);
   const [ticketClasses, setTicketClasses] = useState<
     {
       ticketTypeName: string;
