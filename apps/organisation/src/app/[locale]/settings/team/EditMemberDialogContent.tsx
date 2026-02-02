@@ -53,6 +53,12 @@ export default function EditMemberDialogContent({
   const [isLoading, setIsLoading] = useState(false);
   async function submitHandler(data: TAddMemberSchema) {
     setIsLoading(true);
+    if (session?.user.userId === organisation?.userId) {
+      toast.warning(t("noSelfChange"));
+      setIsLoading(false);
+      CloseDialogRef.current?.click();
+      return;
+    }
     const result = await EditMemberAction(
       organisation?.organisationId ?? "",
       userId,

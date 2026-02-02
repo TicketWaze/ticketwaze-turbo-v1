@@ -376,6 +376,84 @@ export async function CreateWithdrawalPin(
     };
   }
 }
+
+export async function ChangeWithdrawalPin(
+  organisationId: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/withdrawal-pin`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath("/settings/payment");
+      return {
+        status: "success",
+      };
+    } else if (data.status === "waiting") {
+      revalidatePath("/settings/payment");
+      return {
+        status: "waiting",
+        nextAllowedAt: data.nextAllowedAt,
+      };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+export async function NewWithdrawalPin(
+  organisationId: string,
+  accessToken: string,
+  locale: string,
+  changePinToken: string,
+  body: unknown,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/withdrawal-pin/${changePinToken}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify(body),
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath("/settings/payment");
+      return {
+        status: "success",
+      };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
 export async function DeleteBankingInformations(
   organisationId: string,
   accessToken: string,

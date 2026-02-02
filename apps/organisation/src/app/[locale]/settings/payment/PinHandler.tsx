@@ -1,5 +1,5 @@
 "use client";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -24,9 +24,14 @@ import { Organisation } from "@ticketwaze/typescript-config";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod/v4";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateWithdrawalPin } from "@/actions/organisationActions";
+import {
+  ChangeWithdrawalPin,
+  CreateWithdrawalPin,
+} from "@/actions/organisationActions";
 import { toast } from "sonner";
-import { LinkAccent } from "@/components/shared/Links";
+import { InfoCircle } from "iconsax-reactjs";
+import PageLoader from "@/components/PageLoader";
+import maskEmail from "@/lib/maskEmail";
 
 export default function PinHandler({
   organisation,
@@ -54,6 +59,7 @@ export default function PinHandler({
   } = useForm<TCreatePinSchema>({
     resolver: zodResolver(CreatePinSchema),
   });
+  const [isLoading, setIsLoading] = useState(false);
   async function createPin(data: TCreatePinSchema) {
     const response = await CreateWithdrawalPin(
       organisation.organisationId,
@@ -68,10 +74,87 @@ export default function PinHandler({
       toast.error(t("pinFailed"));
     }
   }
+  async function changePin() {
+    setIsLoading(true);
+    const result = await ChangeWithdrawalPin(
+      organisation.organisationId,
+      session?.user.accessToken!,
+      locale,
+    );
+    if (result.status === "success") {
+      toast.success(
+        `${t("description")} ${maskEmail(organisation.organisationEmail)}`,
+      );
+      closeRef.current?.click();
+    } else if (result.status === "waiting") {
+      const date = new Date(result.nextAllowedAt);
+      const now = new Date();
+      const diff = date.getTime() - now.getTime();
+      const hoursRemaining = Math.floor(diff / (1000 * 60 * 60));
+      const minutesRemaining = Math.ceil(
+        (diff % (1000 * 60 * 60)) / (1000 * 60),
+      );
+      toast.info(
+        `${t("newRequest")} ${hoursRemaining > 0 ? `${hoursRemaining}h` : ""} ${minutesRemaining}m`,
+      );
+    } else {
+      toast.error(result.error);
+    }
+    setIsLoading(false);
+  }
   return (
     <>
+      <PageLoader isLoading={isLoading} />
       {organisation.withdrawalPin ? (
-        <LinkAccent href="#">{t("change_pin")}</LinkAccent>
+        <Dialog>
+          <DialogTrigger asChild>
+            <ButtonAccent>{t("change_pin")}</ButtonAccent>
+          </DialogTrigger>
+          <DialogContent className={"w-[360px] lg:w-[520px] "}>
+            <DialogHeader>
+              <DialogTitle
+                className={
+                  "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                }
+              >
+                {t("change_pin")}
+              </DialogTitle>
+              <DialogDescription className={"sr-only"}>
+                <span>Add artist</span>
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-8 flex flex-col gap-8 items-center">
+              <div
+                className={
+                  "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+                }
+              >
+                <div
+                  className={
+                    "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+                  }
+                >
+                  <InfoCircle size="30" color="#0d0d0d" variant="Bulk" />
+                </div>
+              </div>
+              <p
+                className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
+              >
+                {t("changePinAlert")}
+              </p>
+            </div>
+            <DialogFooter>
+              <ButtonPrimary
+                onClick={changePin}
+                disabled={isLoading}
+                className="w-full"
+              >
+                {isLoading ? <LoadingCircleSmall /> : t("proceed")}
+              </ButtonPrimary>
+              <DialogClose ref={closeRef} className="sr-only"></DialogClose>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       ) : (
         <Dialog>
           <DialogTrigger asChild>
