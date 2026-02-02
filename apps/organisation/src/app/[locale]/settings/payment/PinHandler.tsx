@@ -108,7 +108,7 @@ export default function PinHandler({
       {organisation.withdrawalPin ? (
         <Dialog>
           <DialogTrigger asChild>
-            <ButtonAccent>{t("change_pin")}</ButtonAccent>
+            <ButtonAccent className="w-full">{t("change_pin")}</ButtonAccent>
           </DialogTrigger>
           <DialogContent className={"w-[360px] lg:w-[520px] "}>
             <DialogHeader>

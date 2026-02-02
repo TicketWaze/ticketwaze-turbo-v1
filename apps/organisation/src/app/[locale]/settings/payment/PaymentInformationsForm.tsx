@@ -106,7 +106,7 @@ export default function PaymentInformationsForm({
   return (
     <div
       className={
-        "flex flex-col overflow-y-scroll gap-16 w-full h-full  lg:w-212 mx-auto"
+        "flex flex-col overflow-y-scroll overflow-x-hidden gap-16 w-full h-full  lg:w-212 mx-auto"
       }
     >
       <PageLoader isLoading={isLoading || isSubmitting} />
@@ -159,7 +159,7 @@ export default function PaymentInformationsForm({
           </Input>
         </div>
       </form>
-      <div className="lg:hidden">
+      <div className="lg:hidden w-full">
         <PinHandler organisation={organisation} />
       </div>
       <Dialog>
