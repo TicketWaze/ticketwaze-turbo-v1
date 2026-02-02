@@ -482,7 +482,9 @@
         },
         "meet": {
           "title": "Google Meet",
-          "description": "Participez virtuellement avec Google Meet — la distance n’a pas d’importance."
+          "description": "Participez virtuellement avec Google Meet — la distance n’a pas d’importance.",
+          "warning": "Pour créer un événement Google Meet, nous utiliserons votre compte Google et demanderons l’accès à votre calendrier. En poursuivant, vous acceptez de nous accorder l’autorisation d’accéder à vos événements de calendrier et de les gérer via votre compte Google. Veuillez noter que si vous retirez cet accès, les utilisateurs ne pourront plus acheter de billets pour vos événements Meet.",
+          "fetchFailedError": "Nous n’avons pas pu récupérer les données demandées pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, veuillez contacter le support."
         },
         "private": {
           "title": "Activité privée",
@@ -533,6 +535,7 @@
       "mark_as_refundable": "Marquer les tickets comme remboursable",
       "currency": "Monnaie",
       "general_default": "Rejoignez-nous pour une expérience inoubliable, totalement gratuite ! Réservez votre place dès maintenant !",
+      "meet_default": "Rejoignez notre Meet! Connectez-vous et profitez d’une expérience unique.",
       "draft": "Sauvegarder comme brouillon",
       "optional": "optionnel",
       "errors": {

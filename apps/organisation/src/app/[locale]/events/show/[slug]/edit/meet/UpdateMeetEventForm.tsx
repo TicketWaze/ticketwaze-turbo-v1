@@ -18,7 +18,7 @@ import { motion } from "framer-motion";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { UpdateOnlineEvent } from "@/actions/EventActions";
+import { UpdateGoogleMeetEvent } from "@/actions/EventActions";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
@@ -141,7 +141,7 @@ export default function UpdateMeetEventForm({ event }: { event: Event }) {
       formData.append("ticketTypes", JSON.stringify(data.ticketTypes));
     }
 
-    const result = await UpdateOnlineEvent(
+    const result = await UpdateGoogleMeetEvent(
       organisation?.organisationId ?? "",
       session?.user.accessToken ?? "",
       formData,
@@ -429,14 +429,12 @@ export default function UpdateMeetEventForm({ event }: { event: Event }) {
               register={register}
               errors={errors}
               ticketClasses={ticketClasses}
-              setTicketClasses={setTicketClasses}
               isFree={isFree}
               setIsFree={setIsfree}
               isRefundable={isRefundable}
               setIsRefundable={setIsRefundable}
               setValue={setValue}
               t={(k) => t(k)}
-              control={control}
             />
           </motion.div>
         )}

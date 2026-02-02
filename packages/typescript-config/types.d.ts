@@ -137,6 +137,8 @@ export interface Organisation {
   isVerified: boolean;
   isPublished: boolean;
   membershipTierId: string;
+  googleAccessToken: string;
+  googleRefreshToken: string;
   events: Event[];
   followers: User[];
   createdAt: DateTime;

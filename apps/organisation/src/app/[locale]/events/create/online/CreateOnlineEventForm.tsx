@@ -75,7 +75,7 @@ export default function CreateOnlineEventForm() {
       ticketTypes: [
         {
           ticketTypeName: "general",
-          ticketTypeDescription: "",
+          ticketTypeDescription: t("meet_default"),
           ticketTypePrice: "",
           ticketTypeQuantity: "100",
         },

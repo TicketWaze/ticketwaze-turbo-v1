@@ -1,20 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Control,
-  Controller,
-  UseFormRegister,
-  UseFormSetValue,
-} from "react-hook-form";
-import {
-  Select as UISelect,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-  Select,
-} from "@/components/ui/select";
-import { AddCircle, Trash } from "iconsax-reactjs";
+import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import type { EditMeetFormValues } from "./types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Event } from "@ticketwaze/typescript-config";
@@ -31,30 +17,18 @@ type Props = {
     ticketTypeQuantity: string;
   }[];
   setValue: UseFormSetValue<EditMeetFormValues>;
-  setTicketClasses: React.Dispatch<
-    React.SetStateAction<
-      {
-        ticketTypeName: string;
-        ticketTypeDescription: string;
-        ticketTypePrice: string;
-        ticketTypeQuantity: string;
-      }[]
-    >
-  >;
   isFree: boolean;
   isRefundable: boolean;
   setIsFree: React.Dispatch<React.SetStateAction<boolean>>;
   setIsRefundable: React.Dispatch<React.SetStateAction<boolean>>;
   t: (s: string) => string;
   event: Event;
-  control: Control<EditMeetFormValues>;
 };
 
 export default function StepTicket({
   register,
   errors,
   ticketClasses,
-  setTicketClasses,
   isFree,
   setIsFree,
   isRefundable,
@@ -62,16 +36,8 @@ export default function StepTicket({
   t,
   setValue,
   event,
-  control,
 }: Props) {
   const [currency, setCurrency] = useState(event.currency);
-  const [ticketClassDescriptionWordCount, setTicketClassDescriptionWordCount] =
-    useState(0);
-  function handleTicketClassWordCount(
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ) {
-    setTicketClassDescriptionWordCount(e.target.value.length);
-  }
   return (
     <div className="flex flex-col gap-12">
       {/* set free */}
@@ -92,10 +58,10 @@ export default function StepTicket({
                   if (prev === true) {
                     setValue("ticketTypes", [
                       {
-                        ticketTypeName: "",
-                        ticketTypeDescription: "",
+                        ticketTypeName: "general",
+                        ticketTypeDescription: t("meet_default"),
                         ticketTypePrice: "",
-                        ticketTypeQuantity: "",
+                        ticketTypeQuantity: "100",
                       },
                     ]);
                     setCurrency("HTG");
@@ -193,75 +159,17 @@ export default function StepTicket({
                 <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
                   {t("ticket_class")}
                 </span>
-                {index > 0 && (
-                  <Trash
-                    variant={"Bulk"}
-                    color={"#DE0028"}
-                    className={"cursor-pointer"}
-                    onClick={() => {
-                      const updated = ticketClasses.filter(
-                        (_, i) => i !== index,
-                      );
-                      setTicketClasses(updated);
-                    }}
-                    size={20}
-                  />
-                )}
               </div>
 
-              <div>
-                <Controller
-                  control={control}
-                  name={`ticketTypes.${index}.ticketTypeName`}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      value={field.value}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
-                        <SelectValue placeholder={t("city")} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value={"general"}>General</SelectItem>
-                        <SelectItem value={"vip"}>VIP</SelectItem>
-                        <SelectItem value={"vvip"}>Premium VIP</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                <span className="text-[1.2rem] px-8 py-2 text-failure">
-                  {errors?.ticketTypes?.[index]?.ticketTypeName?.message}
-                </span>
-              </div>
-
-              <div>
-                <textarea
-                  className="h-[150px] text-[1.5rem] resize-none bg-neutral-100 w-full rounded-[2rem] p-8"
-                  placeholder={t("class_description")}
-                  maxLength={100}
-                  minLength={20}
-                  {...register(
-                    `ticketTypes.${index}.ticketTypeDescription` as const,
-                  )}
-                  onChange={handleTicketClassWordCount}
-                />
-                <div className="flex items-center justify-between">
-                  <span className="text-[1.2rem] px-8 py-2 text-failure">
-                    {
-                      errors?.ticketTypes?.[index]?.ticketTypeDescription
-                        ?.message
-                    }
-                  </span>
-                  {ticketClassDescriptionWordCount > 0 && (
-                    <span
-                      className={`text-[1.2rem] text-nowrap self-end px-8 py-2 ${ticketClassDescriptionWordCount < 20 ? "text-failure" : "text-success"}`}
-                    >
-                      {ticketClassDescriptionWordCount} / 100
-                    </span>
-                  )}
-                </div>
-              </div>
+              <Input defaultValue={"General"} disabled readOnly>
+                {t("class_name")}
+              </Input>
+              <textarea
+                className="h-[150px] text-[1.5rem] placeholder:text-neutral-600 disabled:cursor-not-allowed resize-none bg-neutral-100 w-full rounded-[2rem] p-8"
+                placeholder={t("meet_default")}
+                disabled
+                readOnly
+              />
 
               <div className="flex flex-col lg:flex-row gap-4">
                 <div className="flex-1">
@@ -284,47 +192,13 @@ export default function StepTicket({
                 </div>
 
                 <div className="flex-1">
-                  <input
-                    className="flex-1 bg-neutral-100 text-[1.5rem] w-full rounded-[5rem] p-8"
-                    type="number"
-                    step="1"
-                    placeholder={t("quantity")}
-                    {...register(
-                      `ticketTypes.${index}.ticketTypeQuantity` as const,
-                    )}
-                  />
-                  <span className="text-[1.2rem] lg:hidden px-8 py-2 text-failure">
-                    {errors?.ticketTypes?.[index]?.ticketTypeQuantity?.message}
-                  </span>
+                  <Input defaultValue="100" readOnly disabled>
+                    {t("quantity")}
+                  </Input>
                 </div>
               </div>
             </div>
           ))}
-
-          {!isFree && ticketClasses.length <= 2 && (
-            <div className="w-full max-w-[540px] mx-auto flex justify-between ">
-              <div></div>
-              <button
-                onClick={() =>
-                  setTicketClasses((prev) => [
-                    ...prev,
-                    {
-                      ticketTypeName: "",
-                      ticketTypeDescription: "",
-                      ticketTypePrice: "",
-                      ticketTypeQuantity: "",
-                    },
-                  ])
-                }
-                className=" cursor-pointer flex gap-4 items-center"
-              >
-                <AddCircle color={"#E45B00"} variant={"Bulk"} size={"20"} />
-                <span className="text-[1.5rem] leading-8 text-primary-500">
-                  {t("add_class")}
-                </span>
-              </button>
-            </div>
-          )}
         </>
       )}
       <div></div>

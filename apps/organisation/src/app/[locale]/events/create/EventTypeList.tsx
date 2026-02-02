@@ -1,9 +1,9 @@
 "use client";
-import { useRouter } from "@/i18n/navigation";
-import { SearchNormal } from "iconsax-reactjs";
+import { Link, useRouter } from "@/i18n/navigation";
+import { InfoCircle, SearchNormal } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import InPerson from "@/assets/images/in-person.jpg";
 import GoogleMeet from "@/assets/images/meet.jpg";
 import Private from "@/assets/images/private.jpeg";
@@ -14,12 +14,30 @@ import { toast } from "sonner";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import { ButtonPrimary } from "@/components/shared/buttons";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import PageLoader from "@/components/PageLoader";
+import { Organisation } from "@ticketwaze/typescript-config";
 
-export default function EventTypeList() {
+export default function EventTypeList({
+  organisation,
+}: {
+  organisation: Organisation;
+}) {
   const t = useTranslations("Events.create_event");
   const { data: session } = useSession();
-  const [selected, setSelected] = useState("");
   const [query, setQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const closeRef = useRef<HTMLButtonElement>(null);
   const eventTypes = [
     {
       title: t("list.inPerson.title"),
@@ -59,31 +77,44 @@ export default function EventTypeList() {
     return category.title.toLowerCase().includes(search);
   });
 
-  async function Proceed() {
-    if (selected === "meet") {
-      const request = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/google/callback`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.accessToken}`,
-          },
-        },
-      );
-      const response = await request.json();
-      if (response.status === "success") {
-        router.push(response.authorizationUrl);
+  async function proceedGoogleMeet() {
+    setIsLoading(true);
+    try {
+      if (
+        organisation.googleRefreshToken &&
+        organisation.googleRefreshToken.length !== 0
+      ) {
+        router.push("/events/create/online");
       } else {
-        toast.error(response.message);
+        const request = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/events/google/callback`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session?.user.accessToken}`,
+            },
+          },
+        );
+        const response = await request.json();
+        if (response.status === "success") {
+          closeRef.current?.click();
+          router.push(response.authorizationUrl);
+        } else {
+          toast.error(response.message);
+          setIsLoading(false);
+        }
       }
-    } else {
-      router.push(`/events/create/${selected}`);
+    } catch (error) {
+      closeRef.current?.click();
+      toast.error(t("list.meet.fetchFailedError"));
+      setIsLoading(false);
     }
   }
 
   return (
     <div className="flex flex-col gap-8 overflow-y-scroll">
+      <PageLoader isLoading={isLoading} />
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")}>
           <div
@@ -116,42 +147,99 @@ export default function EventTypeList() {
             />
             <SearchNormal size="20" color="#737c8a" variant="Bulk" />
           </div>
-          <ButtonPrimary
-            className="hidden lg:block"
-            onClick={Proceed}
-            disabled={!selected}
-          >
-            {t("proceed")}
-          </ButtonPrimary>
-          <ButtonPrimary
-            className="lg:hidden fixed bottom-40 right-8 z-50 "
-            onClick={Proceed}
-            disabled={!selected}
-          >
-            {t("proceed")}
-          </ButtonPrimary>
-          {/* <ButtonPrimary className='fixed bottom-36 left-0 w-[90vw] mx-auto z-50 lg:hidden' disabled={!selected}>{t('proceed')}</ButtonPrimary> */}
         </TopBar>
       </div>
       <ul className="list overflow-y-scroll py-2 px-2">
         {filteredCategories.map((category, index) => {
+          if (category.value === "meet") {
+            return (
+              <li key={index}>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div
+                      className={`h-[165px] cursor-pointer lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300 `}
+                    >
+                      <Image
+                        src={category.image}
+                        alt={category.title}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        width={255}
+                        height={191}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/10" />
+                      <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
+                        <h3 className="text-[2.6rem] font-primary leading-[30px] font-bold">
+                          {category.title}
+                        </h3>
+                        <p className="text-[1.5rem] text-neutral-300">
+                          {category.description}
+                        </p>
+                      </div>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className={"w-[360px] lg:w-[520px] "}>
+                    <DialogHeader>
+                      <DialogTitle
+                        className={
+                          "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                        }
+                      >
+                        {category.title}
+                      </DialogTitle>
+                      <DialogDescription className={"sr-only"}>
+                        <span>Add artist</span>
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-8 flex flex-col gap-8 items-center">
+                      <div
+                        className={
+                          "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+                        }
+                      >
+                        <div
+                          className={
+                            "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+                          }
+                        >
+                          <InfoCircle
+                            size="30"
+                            color="#0d0d0d"
+                            variant="Bulk"
+                          />
+                        </div>
+                      </div>
+                      <p
+                        className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
+                      >
+                        {t("list.meet.warning")}
+                      </p>
+                    </div>
+                    <DialogFooter>
+                      <ButtonPrimary
+                        onClick={proceedGoogleMeet}
+                        disabled={isLoading}
+                        className="w-full"
+                      >
+                        {isLoading ? <LoadingCircleSmall /> : t("proceed")}
+                      </ButtonPrimary>
+                      <DialogClose
+                        ref={closeRef}
+                        className="sr-only"
+                      ></DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </li>
+            );
+          }
           return (
             <li key={index}>
-              <label className="block relative cursor-pointer group">
-                <input
-                  type="radio"
-                  name="eventType"
-                  value={category.value}
-                  checked={selected === category.value}
-                  onChange={() => setSelected(category.value)}
-                  className="sr-only"
-                />
+              <Link
+                href={`/events/create/${category.value}`}
+                className="block relative cursor-pointer group"
+              >
                 <div
-                  className={`h-[165px] lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300 ${
-                    selected === category.value
-                      ? "ring-4 ring-primary-500"
-                      : "ring-0"
-                  }`}
+                  className={`h-[165px] lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300`}
                 >
                   <Image
                     src={category.image}
@@ -170,7 +258,7 @@ export default function EventTypeList() {
                     </p>
                   </div>
                 </div>
-              </label>
+              </Link>
             </li>
           );
         })}

@@ -44,13 +44,6 @@ export default function StepTicket({
   setValue,
 }: Props) {
   const [currency, setCurrency] = useState("HTG");
-  const [ticketClassDescriptionWordCount, setTicketClassDescriptionWordCount] =
-    useState(0);
-  function handleTicketClassWordCount(
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ) {
-    setTicketClassDescriptionWordCount(e.target.value.length);
-  }
   return (
     <div className="flex flex-col gap-12">
       {/* set free */}
@@ -70,10 +63,10 @@ export default function StepTicket({
                   if (prev === true) {
                     setValue("ticketTypes", [
                       {
-                        ticketTypeName: "",
-                        ticketTypeDescription: "",
+                        ticketTypeName: "general",
+                        ticketTypeDescription: t("meet_default"),
                         ticketTypePrice: "",
-                        ticketTypeQuantity: "",
+                        ticketTypeQuantity: "100",
                       },
                     ]);
                     setCurrency("HTG");
@@ -167,38 +160,15 @@ export default function StepTicket({
             </span>
           </div>
 
-          <Input
-            {...register(`ticketTypes.0.ticketTypeName`)}
-            disabled
-            readOnly
-          >
+          <Input defaultValue={"General"} disabled readOnly>
             {t("class_name")}
           </Input>
-          <div className="">
-            <textarea
-              className={
-                "h-[150px] resize-none bg-neutral-100 w-full rounded-[2rem] p-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 "
-              }
-              placeholder={t("class_description")}
-              {...register(`ticketTypes.0.ticketTypeDescription`)}
-              onChange={handleTicketClassWordCount}
-              maxLength={100}
-              minLength={20}
-            />
-            <div className="flex items-center justify-between">
-              <span className={"text-[1.2rem] px-8 py-2 text-failure"}>
-                {errors &&
-                  errors.ticketTypes?.[0]?.ticketTypeDescription?.message}
-              </span>
-              {ticketClassDescriptionWordCount > 0 && (
-                <span
-                  className={`text-[1.2rem] self-end px-8 py-2 ${ticketClassDescriptionWordCount < 20 ? "text-failure" : "text-success"}`}
-                >
-                  {ticketClassDescriptionWordCount} / 100
-                </span>
-              )}
-            </div>
-          </div>
+          <textarea
+            className="h-[150px] text-[1.5rem] placeholder:text-neutral-600 disabled:cursor-not-allowed resize-none bg-neutral-100 w-full rounded-[2rem] p-8"
+            placeholder={t("meet_default")}
+            disabled
+            readOnly
+          />
 
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1">
@@ -217,12 +187,7 @@ export default function StepTicket({
                 {errors.ticketTypes?.[0]?.ticketTypePrice?.message}
               </span>
             </div>
-            <Input
-              {...register(`ticketTypes.0.ticketTypeQuantity`)}
-              className="flex-1"
-              readOnly
-              disabled
-            >
+            <Input defaultValue="100" readOnly disabled>
               {t("quantity")}
             </Input>
           </div>

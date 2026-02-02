@@ -1,5 +1,4 @@
 "use client";
-import { useRouter } from "@/i18n/navigation";
 import Slugify from "@/lib/Slugify";
 import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 import { Event } from "@ticketwaze/typescript-config";
@@ -11,45 +10,13 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { Calendar2, Clock, Edit2, Location } from "iconsax-reactjs";
-import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useState } from "react";
-import { toast } from "sonner";
-import { ButtonPrimary } from "@/components/shared/buttons";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { LinkPrimary } from "@/components/shared/Links";
 
 export default function EventDrawerContent({ event }: { event: Event }) {
   const t = useTranslations("Events.single_event");
   const startDate = new Date(event.eventDays?.[0]?.dateTime ?? "");
-  const { data: session } = useSession();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  async function Proceed() {
-    setIsLoading(true);
-    if (event.eventType === "meet") {
-      const request = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/google/callback/edit/${event.eventId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.accessToken}`,
-          },
-        },
-      );
-      const response = await request.json();
-      if (response.status === "success") {
-        router.push(response.authorizationUrl);
-      } else {
-        toast.error(response.message);
-      }
-    } else {
-      router.push(
-        `/events/show/${Slugify(event.eventName)}/edit/${event.eventType}`,
-      );
-    }
-  }
   return (
     <DrawerContent className={"my-6 p-[30px] rounded-[30px]  lg:w-[580px]"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
@@ -149,15 +116,12 @@ export default function EventDrawerContent({ event }: { event: Event }) {
         </div>
       </div>
       <DrawerFooter className="lg:flex-row">
-        <ButtonPrimary
-          onClick={Proceed}
-          disabled={isLoading}
-          // href={`${Slugify(event.eventName)}/edit/${event.eventType}`}
+        <LinkPrimary
+          href={`/events/show/${Slugify(event.eventName)}/edit/${event.eventType}`}
           className="flex-1 gap-4"
         >
-          <Edit2 variant={"Bulk"} color={"#ffffff"} size={20} />{" "}
-          {isLoading ? <LoadingCircleSmall /> : t("edit")}
-        </ButtonPrimary>
+          <Edit2 variant={"Bulk"} color={"#ffffff"} size={20} /> {t("edit")}
+        </LinkPrimary>
         <DrawerClose className={" cursor-pointer w-full flex-1"}>
           <div
             className={

@@ -482,7 +482,9 @@
         },
         "meet": {
           "title": "Google Meet",
-          "description": "Attend virtually with Google Meet — distance doesn’t matter."
+          "description": "Attend virtually with Google Meet — distance doesn’t matter.",
+          "warning": "To create a Google Meet event, we’ll use your Google account and request access to your calendar. If you proceed, you agree to grant us permission to access and manage your calendar events through your Google account. Please note that if you remove this access, users will no longer be able to purchase tickets for your Meet events.",
+          "fetchFailedError": "We couldn’t retrieve the requested data at the moment. Please check your internet connection and try again. If the error persit, reach out support."
         },
         "private": {
           "title": "Private Activity",
@@ -534,6 +536,7 @@
       "mark_as_refundable": "Mark tickets as refundable",
       "currency": "Currency",
       "general_default": "Enjoy full access without any cost! Join us for an unforgettable experience. Secure your spot today!",
+      "meet_default": "Join our Meet session with full access! Connect, and enjoy anywhere. Reserve your place today!",
       "draft": "Save as draft",
       "optional": "optional",
       "errors": {
