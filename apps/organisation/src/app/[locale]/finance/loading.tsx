@@ -8,7 +8,8 @@ export default function Loading() {
       <div className="flex flex-col gap-4">
         <div className="bg-neutral-200 w-80 h-8 rounded-xl animate-pulse"></div>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols- lg:grid-cols-3 gap-8">
+        <div className="bg-neutral-200 h-50 w-full rounded-xl animate-pulse"></div>
         <div className="bg-neutral-200 h-50 w-full rounded-xl animate-pulse"></div>
         <div className="bg-neutral-200 h-50 w-full rounded-xl animate-pulse"></div>
       </div>

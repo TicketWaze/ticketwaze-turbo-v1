@@ -35,9 +35,10 @@ export async function UpdateOrganisationProfile(
     } else {
       throw new Error(response.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -76,9 +77,9 @@ export async function UpdateOrganisationProfileImage(
         message: data.message,
       };
     }
-  } catch (err: any) {
+  } catch (err: unknown) {
     return {
-      error: err?.message ?? "An unknown error occurred",
+      error: err instanceof Error ? err.message : "An unknown error occurred",
     };
   }
 }
@@ -118,9 +119,10 @@ export async function UpdateOrganisationPaymentInformation(
     } else {
       throw new Error(response.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -155,9 +157,10 @@ export async function UpdateOrganisationNotificationPreferences(
       revalidatePath("/settings/notification");
       throw new Error(response.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -191,9 +194,10 @@ export async function AddMemberAction(
     } else {
       throw new Error(data.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -227,9 +231,10 @@ export async function EditMemberAction(
     } else {
       throw new Error(data.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -263,9 +268,10 @@ export async function RemoveInvitation(
     } else {
       throw new Error(data.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -298,9 +304,10 @@ export async function RemoveMemberQuery(
     } else {
       throw new Error(data.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -334,9 +341,10 @@ export async function UpdateOrganisationCurrency(
     } else {
       throw new Error(data.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -370,9 +378,10 @@ export async function CreateWithdrawalPin(
     } else {
       throw new Error(data.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -410,9 +419,10 @@ export async function ChangeWithdrawalPin(
     } else {
       throw new Error(data.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -447,9 +457,10 @@ export async function NewWithdrawalPin(
     } else {
       throw new Error(data.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }
@@ -481,9 +492,50 @@ export async function DeleteBankingInformations(
     } else {
       throw new Error(data.message);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+/*
+  ====================FINANCE===================
+*/
+export async function BankWithdrawalRequest(
+  organisationId: string,
+  accessToken: string,
+  locale: string,
+  body: unknown,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/transactions/withdrawal`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify(body),
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath("/settings/finance");
+      return {
+        status: "success",
+      };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
     };
   }
 }

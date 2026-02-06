@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import TopBar from "@/components/shared/TopBar";
+import InitiateWithdrawalButton from "./InitiateWithdrawalButton";
 
 export default async function FinancePage() {
   const t = await getTranslations("Finance");
@@ -24,15 +25,15 @@ export default async function FinancePage() {
   );
   const transactions = await request.json();
   const authorized = await organisationPolicy.viewFinance(
-    session?.user.userId!,
-    session?.activeOrganisation.organisationId!,
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
   );
   return (
     <OrganizerLayout title="Finance">
       <TopBar title={t("title")}>
-        {/* <LinkPrimary className={'hidden lg:block'} href={'/finance/initiate-withdrawal'}>
-            {t('withdraw_btn')}
-          </LinkPrimary> */}
+        <div className="hidden lg:block">
+          <InitiateWithdrawalButton organisation={transactions.organisation} />
+        </div>
       </TopBar>
       {authorized ? (
         <FinancePageContent transactions={transactions} />

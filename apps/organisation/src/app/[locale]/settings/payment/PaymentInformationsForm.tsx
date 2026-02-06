@@ -88,7 +88,7 @@ export default function PaymentInformationsForm({
     try {
       const response = await DeleteBankingInformations(
         organisation.organisationId,
-        session?.user.accessToken!,
+        session?.user.accessToken ?? "",
         locale,
       );
       if (response.status === "success") {
@@ -97,7 +97,7 @@ export default function PaymentInformationsForm({
       } else {
         throw new Error();
       }
-    } catch (error) {
+    } catch {
       toast.error(t("failedDelete"));
     }
     setIsloading(false);

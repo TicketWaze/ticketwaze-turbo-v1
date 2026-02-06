@@ -131,9 +131,13 @@ export interface Organisation {
   bankAccountName: string | null;
   bankAccountNumber: string | null;
   organisationPhoneNumber: string;
-  balance: number;
-  usdBalance: number;
+  pendingBalance: number;
+  availableBalance: number;
+  usdPendingBalance: number;
+  usdAvailableBalance: number;
   withdrawalPin: string | null;
+  moncashNumber: string | null;
+  natcashNumber: string | null;
   isVerified: boolean;
   isPublished: boolean;
   membershipTierId: string;
@@ -269,6 +273,17 @@ export interface DiscountCode {
   usageLimit: number;
   usageCount: number;
   isActive: boolean;
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
+
+export interface WithdrawalRequest {
+  withdrawalRequestId: string;
+  organisationId: string;
+  accountType: string;
+  amount: number;
+  usdAmount: number;
+  status: "PENDING" | "SUCCESSFUL" | "FAILED";
   createdAt: DateTime;
   updatedAt: DateTime;
 }

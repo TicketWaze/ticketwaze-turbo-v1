@@ -1,13 +1,12 @@
 "use client"; // Error boundaries must be Client Components
 import Logo from "@/assets/images/logo-horizontal-orange-org.svg";
 import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
-import { Chart1, I24Support, Warning2 } from "iconsax-reactjs";
+import { I24Support, Logout, Warning2 } from "iconsax-reactjs";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function GlobalError({
   error,
-  reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -53,11 +52,11 @@ export default function GlobalError({
             </div>
             <div className="w-full flex flex-col lg:flex-row items-center gap-6">
               <ButtonPrimary
-                onClick={() => router.push("/analytics")}
+                onClick={() => router.replace("/auth/login")}
                 className="flex-1 w-full flex items-center gap-4"
               >
-                <Chart1 size="24" color="#fff" variant="Bulk" />
-                Analytics
+                <Logout size="24" color="#fff" variant="Bulk" />
+                Logout
               </ButtonPrimary>
               <ButtonBlack
                 onClick={() =>

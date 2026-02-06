@@ -21,8 +21,16 @@ import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import FormatDate from "@/lib/FormatDate";
 import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
-import { Event, Order, Ticket } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  Order,
+  Organisation,
+  Ticket,
+  WithdrawalRequest,
+} from "@ticketwaze/typescript-config";
 import { ButtonAccent } from "@/components/shared/buttons";
+import InitiateWithdrawalButton from "./InitiateWithdrawalButton";
+import TruncateUrl from "@/lib/TruncateUrl";
 
 interface OrganisationTicket extends Ticket {
   event: Event;
@@ -31,11 +39,16 @@ interface OrganisationTicket extends Ticket {
 export default function FinancePageContent({
   transactions,
 }: {
-  transactions: { tickets: OrganisationTicket[]; orders: Order[] };
+  transactions: {
+    tickets: OrganisationTicket[];
+    orders: Order[];
+    organisation: Organisation;
+    withdrawalRequests: WithdrawalRequest[];
+  };
 }) {
   const t = useTranslations("Finance");
   const { data: session } = useSession();
-  const currentOrganisation = session?.activeOrganisation;
+  const currentOrganisation = transactions.organisation;
   const { orders, tickets } = transactions;
   const total = Object.values(orders).reduce(
     (acc, order) =>
@@ -72,20 +85,11 @@ export default function FinancePageContent({
             </span>
           </p>
         </div>
-        {/*<div className={'pl-[25px]'}>*/}
-        {/*  <span className={'text-[14px] text-neutral-600 leading-[20px] pb-[5px]'}>*/}
-        {/*    {finance.amounts.profit}*/}
-        {/*  </span>*/}
-        {/*  <p className={'font-medium text-[1.6rem] lg:text-[25px] leading-[30px] font-primary'}>*/}
-        {/*    193,570,219{' '}*/}
-        {/*    <span className={'font-normal text-[1.6rem] lg:text-[20px] text-neutral-500'}>HTG</span>*/}
-        {/*  </p>*/}
-        {/*</div>*/}
         <div className={"pl-[25px]"}>
           <span
             className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
           >
-            {t("amounts.balance")}
+            {t("amounts.pendingBalance")}
           </span>
           <p
             className={
@@ -93,8 +97,32 @@ export default function FinancePageContent({
             }
           >
             {currentOrganisation?.currency === "HTG"
-              ? currentOrganisation.balance
-              : currentOrganisation?.usdBalance}
+              ? transactions.organisation.pendingBalance
+              : transactions.organisation.usdPendingBalance}
+            <span
+              className={
+                "font-normal text-[1.6rem] lg:text-[20px] text-neutral-500"
+              }
+            >
+              {" "}
+              {session?.activeOrganisation.currency}
+            </span>
+          </p>
+        </div>
+        <div className={"pl-0 lg:pl-[25px]"}>
+          <span
+            className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
+          >
+            {t("amounts.availableBalance")}
+          </span>
+          <p
+            className={
+              "font-medium text-[1.6rem] lg:text-[25px] leading-[30px] font-primary"
+            }
+          >
+            {currentOrganisation?.currency === "HTG"
+              ? transactions.organisation.availableBalance
+              : transactions.organisation.usdAvailableBalance}
             <span
               className={
                 "font-normal text-[1.6rem] lg:text-[20px] text-neutral-500"
@@ -106,11 +134,9 @@ export default function FinancePageContent({
           </p>
         </div>
       </div>
-      {/* {isAdmin && ( */}
-      {/* <LinkPrimary className={'lg:hidden py-[7.5px]'} href={'/finance/initiate-withdrawal'}>
-        {t('withdraw_btn')}
-      </LinkPrimary> */}
-      {/* )} */}
+      <div className="lg:hidden py-[7.5px]">
+        <InitiateWithdrawalButton organisation={transactions.organisation} />
+      </div>
       <div className={"flex flex-col gap-8"}>
         <div
           className={
@@ -349,7 +375,7 @@ export default function FinancePageContent({
           >
             {t("withdrawal.title")}
           </span>
-          <div className={"flex items-center gap-4"}>
+          {/* <div className={"flex items-center gap-4"}>
             <div
               className={
                 "bg-neutral-100 rounded-[30px] flex items-center gap-2 w-full lg:w-auto lg:min-w-[243px] px-[1.5rem] py-4"
@@ -363,14 +389,14 @@ export default function FinancePageContent({
               />
               <SearchNormal size="20" color="#737c8a" variant="Bulk" />
             </div>
-          </div>
+          </div> */}
         </div>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead
                 className={
-                  "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold  text-[1.1rem] hidden lg:table-cell pb-[15px] leading-[15px] text-deep-100 uppercase"
                 }
               >
                 {t("withdrawal.table.id")}
@@ -391,14 +417,14 @@ export default function FinancePageContent({
               </TableHead>
               <TableHead
                 className={
-                  "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
                 }
               >
                 {t("withdrawal.table.amount")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
                 }
               >
                 {t("withdrawal.table.status")}
@@ -412,35 +438,126 @@ export default function FinancePageContent({
               </TableHead>
             </TableRow>
           </TableHeader>
+          <TableBody>
+            {transactions.withdrawalRequests.map((request) => {
+              return (
+                <TableRow key={request.withdrawalRequestId}>
+                  <TableCell
+                    className={
+                      "text-[1.5rem] hidden lg:table-cell py-[15px] leading-8 text-neutral-900"
+                    }
+                  >
+                    <Drawer direction={"right"}>
+                      <DrawerTrigger>
+                        <span className={"cursor-pointer"}>
+                          {TruncateUrl(request.withdrawalRequestId, 14)}
+                        </span>
+                      </DrawerTrigger>
+                      {/* <Informations ticket={ticket} order={order as Order} /> */}
+                    </Drawer>
+                  </TableCell>
+                  <TableCell
+                    className={"text-[1.5rem] leading-8 text-neutral-900"}
+                  >
+                    <Drawer direction={"right"}>
+                      <DrawerTrigger>
+                        <span className={"cursor-pointer"}>
+                          {request.accountType === "bank" &&
+                            TruncateUrl(
+                              currentOrganisation?.bankName ?? "",
+                              14,
+                            )}
+                        </span>
+                      </DrawerTrigger>
+                      {/* <Informations ticket={ticket} order={order as Order} /> */}
+                    </Drawer>
+                  </TableCell>
+                  <TableCell
+                    className={"text-[1.5rem] leading-8 text-neutral-900"}
+                  >
+                    {request.accountType === "bank" && (
+                      <span className={"cursor-pointer"}>
+                        {TruncateUrl(
+                          currentOrganisation?.bankAccountNumber ?? "",
+                          14,
+                        )}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell
+                    className={
+                      "text-[1.5rem] hidden lg:table-cell font-medium leading-8 text-neutral-900"
+                    }
+                  >
+                    {currentOrganisation?.currency === "USD"
+                      ? request.usdAmount
+                      : request.amount}{" "}
+                    {currentOrganisation?.currency}
+                  </TableCell>
+                  <TableCell>
+                    {request.status.toUpperCase() === "SUCCESSFUL" && (
+                      <span
+                        className={
+                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[10px] rounded-[30px] bg-[#349C2E]/20"
+                        }
+                      >
+                        {t("filters.successful")}
+                      </span>
+                    )}
+                    {request.status.toUpperCase() === "PENDING" && (
+                      <span
+                        className={
+                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[10px] rounded-[30px] bg-[#EA961C]/20"
+                        }
+                      >
+                        {t("filters.pending")}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell
+                    className={
+                      "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                    }
+                  >
+                    {FormatDate(request.createdAt)}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
         </Table>
-        <div
-          className={
-            "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
-          }
-        >
+        {transactions.withdrawalRequests.length === 0 && (
           <div
             className={
-              "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+              "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
             }
           >
             <div
               className={
-                "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
               }
             >
-              <Money3 size="50" color="#0d0d0d" variant="Bulk" />
+              <div
+                className={
+                  "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                }
+              >
+                <Money3 size="50" color="#0d0d0d" variant="Bulk" />
+              </div>
+            </div>
+            <div
+              className={"flex flex-col gap-[3rem] items-center text-center"}
+            >
+              <p
+                className={
+                  "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                }
+              >
+                {t("withdrawal.description")}
+              </p>
             </div>
           </div>
-          <div className={"flex flex-col gap-[3rem] items-center text-center"}>
-            <p
-              className={
-                "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
-              }
-            >
-              {t("withdrawal.description")}
-            </p>
-          </div>
-        </div>
+        )}
         {/*<Link*/}
         {/*  href={'#'}*/}
         {/*  className={*/}

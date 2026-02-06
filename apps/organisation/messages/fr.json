@@ -272,8 +272,26 @@
   "Finance": {
     "title": "Finance",
     "withdraw_btn": "Initier un retrait",
+    "noPinWarning": "Pour votre sécurité et afin de garantir le bon traitement de vos transactions, un code PIN de retrait doit être créé avant toute demande de retrait. Ce code PIN constitue une couche de protection supplémentaire, protégeant votre compte contre tout accès non autorisé. Veuillez prendre un moment pour configurer votre code PIN de retrait dès maintenant. Une fois établi, vous pourrez effectuer vos demandes de retrait en toute confiance, sachant que vos fonds sont protégés par des mesures de sécurité renforcées.",
+    "noBankingInfo": "Nous ne pouvons pas traiter votre demande car des informations bancaires obligatoires manquent dans votre profil. Afin d’assurer le succès de vos transactions et le respect des normes de sécurité, veuillez mettre à jour vos coordonnées bancaires. Une fois toutes les informations requises fournies, vous pourrez procéder à vos retraits ou autres opérations sur votre compte.",
+    "pendingAlert": "Veuillez noter que vous ne pouvez retirer que les fonds figurant dans votre solde disponible. Tout solde en attente affiché sur votre compte est encore en cours de traitement et appartient toujours à l’organisation jusqu’à ce que toutes les vérifications et validations nécessaires soient terminées. Une fois les transactions en attente entièrement traitées, les fonds seront transférés dans votre solde disponible, où ils pourront alors être retirés.",
     "summary": "Résumé",
-    "bank_details": "Détails bancaires",
+    "bank_details": "Coordonnées bancaires",
+    "security": "Sécurité",
+    "bank": "Compte bancaire",
+    "moncash": "Compte Moncash",
+    "natcash": "Compte Natcash",
+    "soon": "Bientôt disponible",
+    "accountTypeError": "Veuillez sélectionner un compte pour effectuer un retrait",
+    "errors": {
+      "noPin": "Veuillez saisir un code PIN valide",
+      "noPinConfirmation": "Veuillez saisir une confirmation de code PIN valide",
+      "pinNotSame": "Le code PIN et sa confirmation doivent être identiques",
+      "incorrectPin": "Le code PIN de retrait saisi est incorrect. Veuillez réessayer.",
+      "Unauthorized": "Vous n’êtes pas autorisé à effectuer cette action. Pour votre sécurité, l’accès est réservé uniquement aux utilisateurs autorisés. Si vous pensez qu’il s’agit d’une erreur, veuillez contacter le service client pour obtenir de l’aide.",
+      "insufficient": "Votre solde disponible est insuffisant pour effectuer cette demande de retrait. Veuillez vous assurer que vous disposez de fonds suffisants sur votre compte avant de tenter un nouveau retrait."
+    },
+    "withdrawSuccess": "Votre demande de retrait a été soumise avec succès et est en cours de traitement.",
     "breakdown": "Répartition",
     "revenue": "Revenus",
     "fee": "Frais de plateforme",
@@ -281,11 +299,13 @@
     "proceed": "Procéder",
     "back": "Retour",
     "pin": "Code PIN de retrait",
+    "confirmPin": "Confirmer PIN de retrait",
     "withdraw": "Retirer",
     "amounts": {
-      "revenue": "Revenus totaux",
-      "profit": "Profit total",
-      "balance": "Solde"
+      "revenue": "Revenu total",
+      "profit": "Bénéfice total",
+      "pendingBalance": "Solde en attente",
+      "availableBalance": "Solde disponible"
     },
     "filters": {
       "all": "Tous les statuts",
@@ -336,7 +356,7 @@
         "account": "Numéro de compte",
         "amount": "Montant",
         "status": "Statut de la transaction",
-        "date": "Date d'achat"
+        "date": "Date"
       }
     }
   },

@@ -272,8 +272,26 @@
   "Finance": {
     "title": "Finance",
     "withdraw_btn": "Initiate Withdrawal",
+    "noPinWarning": "For your security and to ensure smooth processing of your transactions, a Withdrawal PIN must be created before any withdrawal request can be initiated. This PIN serves as an additional layer of protection, safeguarding your account against unauthorized access. Please take a moment to set up your Withdrawal PIN now. Once established, you will be able to proceed confidently with your withdrawal requests, knowing that your funds are protected by enhanced security measures.",
+    "noBankingInfo": "We are unable to process your request because required banking information is missing from your account profile. To ensure successful transactions and compliance with security standards, please update your banking details. Once all mandatory information has been provided, you will be able to proceed with your withdrawal or other account activities.",
+    "pendingAlert": "Please note that you may only withdraw funds from your Available Balance. Any Pending Balance displayed in your account remains under processing and still belongs to the organization until all necessary verifications and clearances are completed. Once the pending transactions are fully processed, the funds will be transferred into your Available Balance, at which point they can be withdrawn.",
     "summary": "Summary",
     "bank_details": "Bank Details",
+    "security": "Security",
+    "bank": "Bank account",
+    "moncash": "Moncash account",
+    "natcash": "Natcash account",
+    "soon": "Coming soon",
+    "accountTypeError": "Please select an account to perform withdrawal",
+    "errors": {
+      "noPin": "Please enter a valid Pin",
+      "noPinConfirmation": "Please enter a valid Pin confirmation",
+      "pinNotSame": "Pin and Pin confirmation should be the same",
+      "incorrectPin": "The Withdrawal PIN you entered is incorrect. Please try again.",
+      "Unauthorized": "You are not authorized to perform this action. For your security, access is restricted to authorized users only. If you believe this is an error, please contact customer support for assistance.",
+      "insufficient": "Your Available Balance is insufficient to complete this withdrawal request. Please ensure that you have enough funds in your account before attempting another withdrawal."
+    },
+    "withdrawSuccess": "Your withdrawal request has been successfully submitted and is now being processed.",
     "breakdown": "Breakdown",
     "revenue": "Revenue",
     "fee": "Platform fee",
@@ -281,11 +299,13 @@
     "proceed": "Proceed",
     "back": "Back",
     "pin": "Withdrawal Pin",
+    "confirmPin": "Confirm Withdrawal Pin",
     "withdraw": "Withdraw",
     "amounts": {
       "revenue": "Total Revenue",
       "profit": "Total Profit",
-      "balance": "Balance"
+      "pendingBalance": "Pending balance",
+      "availableBalance": "Available Balance"
     },
     "filters": {
       "all": "All status",
@@ -336,7 +356,7 @@
         "account": "Account Number",
         "amount": "Amount",
         "status": "Transaction Status",
-        "date": "Date Purchased"
+        "date": "Date"
       }
     }
   },

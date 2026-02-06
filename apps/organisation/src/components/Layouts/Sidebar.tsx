@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import Logo from "@/assets/images/logo-horizontal-orange-org.svg";
 import Image from "next/image";
 import {
-  Add,
   ArrowSwapHorizontal,
   Chart1,
   I24Support,
@@ -50,6 +49,7 @@ function Sidebar({ className }: { className: string }) {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (!session?.user?.accessToken) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${organisation?.organisationId}`,
@@ -66,7 +66,12 @@ function Sidebar({ className }: { className: string }) {
       .then((res) => res.json())
       .then((res) => setAllOrganisations(res.organisations))
       .finally(() => setIsLoading(false));
-  }, [session?.user?.accessToken, session?.activeOrganisation]);
+  }, [
+    session?.user.accessToken,
+    session?.activeOrganisation,
+    organisation?.organisationId,
+    locale,
+  ]);
 
   const links = [
     {
