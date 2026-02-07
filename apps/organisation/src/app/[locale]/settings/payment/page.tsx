@@ -3,7 +3,6 @@ import { getTranslations, getLocale } from "next-intl/server";
 import PaymentInformationsForm from "./PaymentInformationsForm";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
-import { ButtonPrimary } from "@/components/shared/buttons";
 import { auth } from "@/lib/auth";
 import { Organisation } from "@ticketwaze/typescript-config";
 import PinHandler from "./PinHandler";
@@ -34,7 +33,6 @@ export default async function Page() {
           <div className="hidden lg:block">
             <PinHandler organisation={organisation} />
           </div>
-          <ButtonPrimary form="payment-form">{t("save")}</ButtonPrimary>
         </TopBar>
       </div>
       <PaymentInformationsForm organisation={organisation} />

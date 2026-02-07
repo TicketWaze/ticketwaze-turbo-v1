@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -32,6 +32,8 @@ import { toast } from "sonner";
 import { InfoCircle } from "iconsax-reactjs";
 import PageLoader from "@/components/PageLoader";
 import maskEmail from "@/lib/maskEmail";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 export default function PinHandler({
   organisation,
@@ -42,6 +44,18 @@ export default function PinHandler({
   const locale = useLocale();
   const { data: session } = useSession();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const searchParams = useSearchParams();
+  const action = searchParams.get("action");
+  const redirectTo = searchParams.get("redirectTo");
+  const [isPinOpen, setIsPinOpen] = useState(false);
+  useEffect(
+    function () {
+      if (action === "pin") {
+        setIsPinOpen(true);
+      }
+    },
+    [action],
+  );
   const CreatePinSchema = z
     .object({
       withdrawalPin: z.string(),
@@ -60,15 +74,20 @@ export default function PinHandler({
     resolver: zodResolver(CreatePinSchema),
   });
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
   async function createPin(data: TCreatePinSchema) {
     const response = await CreateWithdrawalPin(
       organisation.organisationId,
-      session?.user.accessToken!,
+      session?.user.accessToken ?? "",
       data,
       locale,
     );
     if (response.status === "success") {
       toast.success(t("pinCreated"));
+      if (redirectTo && redirectTo.trim().length > 0) {
+        setIsLoading(true);
+        router.push(`${redirectTo}`);
+      }
       closeRef.current?.click();
     } else {
       toast.error(t("pinFailed"));
@@ -78,7 +97,7 @@ export default function PinHandler({
     setIsLoading(true);
     const result = await ChangeWithdrawalPin(
       organisation.organisationId,
-      session?.user.accessToken!,
+      session?.user.accessToken ?? "",
       locale,
     );
     if (result.status === "success") {
@@ -156,11 +175,9 @@ export default function PinHandler({
           </DialogContent>
         </Dialog>
       ) : (
-        <Dialog>
+        <Dialog open={isPinOpen} onOpenChange={setIsPinOpen}>
           <DialogTrigger asChild>
-            <ButtonAccent className="w-full hidden lg:flex">
-              {t("create_pin")}
-            </ButtonAccent>
+            <ButtonAccent className="w-full">{t("create_pin")}</ButtonAccent>
           </DialogTrigger>
           <DialogContent className={"w-[360px] lg:w-[377px] "}>
             <DialogHeader>
@@ -233,7 +250,7 @@ export default function PinHandler({
             </div>
             <DialogFooter className="mt-8">
               <ButtonPrimary
-                onClick={handleSubmit(createPin)}
+                onClick={() => handleSubmit(createPin)}
                 disabled={isSubmitting}
                 className="w-full"
               >

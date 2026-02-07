@@ -134,7 +134,7 @@ export default function FinancePageContent({
           </p>
         </div>
       </div>
-      <div className="lg:hidden py-[7.5px]">
+      <div className="lg:hidden w-full py-[7.5px]">
         <InitiateWithdrawalButton organisation={transactions.organisation} />
       </div>
       <div className={"flex flex-col gap-8"}>

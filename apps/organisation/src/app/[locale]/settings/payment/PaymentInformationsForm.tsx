@@ -26,6 +26,8 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import PinHandler from "./PinHandler";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 export default function PaymentInformationsForm({
   organisation,
@@ -36,6 +38,11 @@ export default function PaymentInformationsForm({
   const locale = useLocale();
   const { data: session } = useSession();
   const closeRef = useRef<HTMLButtonElement>(null);
+  const searchParams = useSearchParams();
+  const action = searchParams.get("action");
+  const redirectTo = searchParams.get("redirectTo");
+  const router = useRouter();
+  const [isLoading, setIsloading] = useState(false);
   const PaymentDetailsSchema = z.object({
     bankName: z.string().min(1, t("errors.bank_name")),
     bankAccountName: z.string().min(1, t("errors.bank_account_name")),
@@ -67,13 +74,17 @@ export default function PaymentInformationsForm({
 
     if (result.status === "success") {
       toast.success("Success");
+      if (redirectTo && redirectTo.trim().length > 0) {
+        setIsloading(true);
+        router.push(`${redirectTo}`);
+      }
     } else {
       toast.error(result.error);
     }
   }
 
   const [organisationName, setOrganisationName] = useState("");
-  const [isLoading, setIsloading] = useState(false);
+
   async function clearBankingInfo() {
     if (
       !organisation.bankName ||
@@ -113,7 +124,7 @@ export default function PaymentInformationsForm({
       <form
         id="payment-form"
         onSubmit={handleSubmit(submitHandler)}
-        className={"flex h-[70vh] flex-col gap-8"}
+        className={"flex flex-col gap-8"}
       >
         <span
           className={"pb-4 font-medium text-[1.8rem] leading-10 text-deep-100"}
@@ -138,6 +149,7 @@ export default function PaymentInformationsForm({
             type="text"
             disabled={isSubmitting}
             error={errors.bankName?.message}
+            autoFocus={action === "banking"}
           >
             {t("bank_name")}
           </Input>
@@ -157,6 +169,7 @@ export default function PaymentInformationsForm({
           >
             {t("bank_account_number")}
           </Input>
+          <ButtonPrimary type="submit">{t("save")}</ButtonPrimary>
         </div>
       </form>
       <div className="lg:hidden w-full">

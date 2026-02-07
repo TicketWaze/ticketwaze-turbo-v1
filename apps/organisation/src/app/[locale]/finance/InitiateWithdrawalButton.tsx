@@ -25,11 +25,12 @@ export default function InitiateWithdrawalButton({
   const t = useTranslations("Finance");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
   if (!organisation.withdrawalPin) {
     return (
       <Dialog>
         <DialogTrigger asChild>
-          <ButtonPrimary>{t("withdraw_btn")}</ButtonPrimary>
+          <ButtonPrimary className="w-full">{t("withdraw_btn")}</ButtonPrimary>
         </DialogTrigger>
         <DialogContent className={"w-[360px] lg:w-[520px] "}>
           <DialogHeader>
@@ -68,7 +69,9 @@ export default function InitiateWithdrawalButton({
             <ButtonPrimary
               onClick={() => {
                 setIsLoading(true);
-                router.push("/settings/payment");
+                router.push(
+                  `/settings/payment?redirectTo=/finance&redirectAction=withdrawal&action=pin`,
+                );
               }}
               disabled={isLoading}
               className="w-full"
@@ -87,7 +90,7 @@ export default function InitiateWithdrawalButton({
     return (
       <Dialog>
         <DialogTrigger asChild>
-          <ButtonPrimary>{t("withdraw_btn")}</ButtonPrimary>
+          <ButtonPrimary className="w-full">{t("withdraw_btn")}</ButtonPrimary>
         </DialogTrigger>
         <DialogContent className={"w-[360px] lg:w-[520px] "}>
           <DialogHeader>
@@ -126,7 +129,9 @@ export default function InitiateWithdrawalButton({
             <ButtonPrimary
               onClick={() => {
                 setIsLoading(true);
-                router.push("/settings/payment");
+                router.push(
+                  `/settings/payment?redirectTo=/finance&redirectAction=withdrawal&action=banking`,
+                );
               }}
               disabled={isLoading}
               className="w-full"
@@ -139,7 +144,7 @@ export default function InitiateWithdrawalButton({
     );
   } else {
     return (
-      <LinkPrimary href={"/finance/initiate-withdrawal"}>
+      <LinkPrimary className="w-full" href={"/finance/initiate-withdrawal"}>
         {t("withdraw_btn")}
       </LinkPrimary>
     );
