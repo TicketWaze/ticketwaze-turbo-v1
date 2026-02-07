@@ -250,7 +250,7 @@ export default function PinHandler({
             </div>
             <DialogFooter className="mt-8">
               <ButtonPrimary
-                onClick={() => handleSubmit(createPin)}
+                onClick={handleSubmit(createPin)}
                 disabled={isSubmitting}
                 className="w-full"
               >
