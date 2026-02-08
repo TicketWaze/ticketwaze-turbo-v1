@@ -29,7 +29,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useAuthInterceptor } from "@/hooks/useAuthInterceptor";
 import { cn } from "@/lib/utils";
-import { Organisation } from "@ticketwaze/typescript-config";
+import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 import { ButtonPrimary } from "../shared/buttons";
 import LoadingCircleSmall from "../shared/LoadingCircleSmall";
 
@@ -42,6 +42,7 @@ function Sidebar({ className }: { className: string }) {
 
   const organisation = session?.activeOrganisation;
   const [allOrganisations, setAllOrganisations] = useState<Organisation[]>([]);
+  const [membershipTier, setMembershipTier] = useState<MembershipTier | null>();
   const [selectedOrganisation, setSelectedOrganisation] =
     useState<Organisation>();
   const locale = useLocale();
@@ -64,7 +65,10 @@ function Sidebar({ className }: { className: string }) {
       },
     )
       .then((res) => res.json())
-      .then((res) => setAllOrganisations(res.organisations))
+      .then((res) => {
+        setAllOrganisations(res.organisations);
+        setMembershipTier(res.membershipTier);
+      })
       .finally(() => setIsLoading(false));
   }, [
     session?.user.accessToken,
@@ -280,11 +284,15 @@ function Sidebar({ className }: { className: string }) {
             </button>
           </li>
           {/* Premium + Organisation */}
-          <li>
-            <div className="mx-2 mb-2 rounded-[1.2rem] p-[.2rem] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+
+          {/* Non Premium Organisation */}
+          {membershipTier?.membershipName === "free" ? (
+            <li>
               <Link
-                href="/settings/profile"
-                className="flex items-center gap-4 bg-neutral-100 p-4 rounded-[10px]"
+                href={"/settings/profile"}
+                className={
+                  "flex items-center gap-4 bg-neutral-100 p-4 mx-2 mb-2 rounded-[10px]"
+                }
               >
                 {organisation?.profileImageUrl ? (
                   <Image
@@ -311,42 +319,44 @@ function Sidebar({ className }: { className: string }) {
                   </span>
                 </div>
               </Link>
-            </div>
-          </li>
-          {/* Non Premium Organisation */}
-          <li className="hidden">
-            <Link
-              href={"/settings/profile"}
-              className={
-                "flex items-center gap-4 bg-neutral-100 p-4 mx-2 mb-2 rounded-[10px]"
-              }
-            >
-              {organisation?.profileImageUrl ? (
-                <Image
-                  src={organisation.profileImageUrl}
-                  width={35}
-                  height={35}
-                  alt={organisation.organisationName}
-                  className="rounded-full"
-                />
-              ) : (
-                <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
-                  {organisation?.organisationName.slice()[0]?.toUpperCase()}
-                </span>
-              )}
+            </li>
+          ) : (
+            <li>
+              <div className="mx-2 mb-2 rounded-[1.2rem] p-[.2rem] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+                <Link
+                  href="/settings/profile"
+                  className="flex items-center gap-4 bg-neutral-100 p-4 rounded-[10px]"
+                >
+                  {organisation?.profileImageUrl ? (
+                    <Image
+                      src={organisation.profileImageUrl}
+                      width={35}
+                      height={35}
+                      alt={organisation.organisationName}
+                      className="rounded-full"
+                    />
+                  ) : (
+                    <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
+                      {organisation?.organisationName.slice()[0]?.toUpperCase()}
+                    </span>
+                  )}
 
-              <div
-                className={"text-neutral-700 text-[1.5rem] flex-1 leading-8"}
-              >
-                <span>
-                  {organisation?.organisationName}{" "}
-                  {organisation?.isVerified ? (
-                    <VerifierOrganisationCheckMark />
-                  ) : null}
-                </span>
+                  <div
+                    className={
+                      "text-neutral-700 text-[1.5rem] flex-1 leading-8"
+                    }
+                  >
+                    <span>
+                      {organisation?.organisationName}{" "}
+                      {organisation?.isVerified ? (
+                        <VerifierOrganisationCheckMark />
+                      ) : null}
+                    </span>
+                  </div>
+                </Link>
               </div>
-            </Link>
-          </li>
+            </li>
+          )}
         </ul>
       </div>
     </aside>

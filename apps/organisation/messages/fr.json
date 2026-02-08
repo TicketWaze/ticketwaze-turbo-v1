@@ -209,7 +209,8 @@
       "analytics": "Analyses",
       "events": "Activitées",
       "finance": "Finance",
-      "verified": "Organisation vérifiée"
+      "verified": "Organisation vérifiée",
+      "upgrade": "Mettre à niveau l’abonnement"
     },
     "topbar": {
       "welcome": "Bon retour",
@@ -221,11 +222,15 @@
     "noAccess": "Malheureusement, vous n'avez actuellement pas accès à cette page. Elle peut être réservée à certains membres de l'organisation. Si vous pensez que vous devriez y avoir accès, je recommande de contacter l'équipe appropriée pour obtenir de l'aide.",
     "parameterMissing": "Cette page ne peut pas être affichée car certaines informations requises pour le rendu de la vue sont manquantes. Veuillez vérifier vos données et réessayer.",
     "back": "Retour",
-    "fetchFailedError": "Nous n’avons pas pu récupérer les données demandées pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, veuillez contacter le"
+    "fetchFailedError": "Nous n’avons pas pu récupérer les données demandées pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, veuillez contacter le",
+    "proFeature": "Ceci est une fonctionnalité Pro"
   },
   "Analytics": {
     "title": "Aperçu des activitées",
     "description": "Suivez le succès de vos activitées avec des analyses détaillées et des tendances",
+    "upgrade": "Mettre à niveau l’abonnement",
+    "upgradeAlert": "Vous êtes actuellement sur le plan Gratuit, qui inclut uniquement des analyses de base. Pour débloquer des informations avancées et consulter des analyses plus détaillées, veuillez mettre à niveau votre abonnement.",
+    "noActivity": "Aucune Activitée",
     "revenue": "Revenus totaux",
     "sold": "Billets vendus",
     "filters": {
@@ -499,6 +504,8 @@
       "basic": "Détails de base",
       "category_search": "Rechercher une catégorie",
       "no_result": "Il n'y a aucun résultat pour le mot-clé ",
+      "proFeature": "La création d’activités privées fait partie de notre offre Pro+. Avec Pro+, vous débloquez la possibilité de garder vos activités entièrement confidentielles, ce qui vous donne un contrôle accru et une tranquillité d’esprit totale dans la gestion et le partage de vos événements. La mise à niveau ne vous ouvre pas seulement l’accès à la création privée, elle vous permet également de profiter de l’ensemble des fonctionnalités avancées conçues pour rendre votre expérience plus fluide, plus sécurisée et plus personnalisée. Si la confidentialité et l’exclusivité sont importantes pour vous, Pro+ est l’abonnement qui répond à vos attentes.",
+      "upgrade": "Mettre à niveau l’abonnement",
       "list": {
         "inPerson": {
           "title": "En présentiel",
@@ -825,6 +832,7 @@
           "2": "Jusqu’à 7 membres d’équipe",
           "3": "Jusqu’à 300 billets gratuits par activité",
           "4": "Analyses avancées",
+          "5": "Activitée privée",
           "6": "Types de billets personnalisés & codes de réduction",
           "7": "Support prioritaire"
         },

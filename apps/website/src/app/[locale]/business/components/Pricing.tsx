@@ -162,10 +162,10 @@ function Pricing() {
                 <div className={"w-2 h-2 bg-black rounded-full"}></div>
                 <span>{t("pro.list.4")}</span>
               </li>
-              {/* <li className={"flex items-center gap-6"}>
-              <div className={"w-2 h-2 bg-black rounded-full"}></div>
-              <span>{t("pro.list.5")}</span>
-            </li> */}
+              <li className={"flex items-center gap-6"}>
+                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <span>{t("pro.list.5")}</span>
+              </li>
               <li className={"flex items-center gap-6"}>
                 <div className={"w-2 h-2 bg-black rounded-full"}></div>
                 <span>{t("pro.list.6")}</span>

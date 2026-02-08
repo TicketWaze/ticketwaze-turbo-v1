@@ -209,7 +209,8 @@
       "analytics": "Analytics",
       "events": "Activities",
       "finance": "Finance",
-      "verified": "Verified organisation"
+      "verified": "Verified organisation",
+      "upgrade": "Upgrade membership"
     },
     "topbar": {
       "welcome": "Welcome Back",
@@ -221,11 +222,15 @@
     "noAccess": "Unfortunately, you don't currently have access to that page. It may be restricted to certain members of the organization. If you believe you should have access, I recommend reaching out to the appropriate team for assistance.",
     "parameterMissing": "This page cannot be displayed because some required information is missing to render the view. Please verify your data and try again.",
     "back": "Go back",
-    "fetchFailedError": "We couldn’t retrieve the requested data at the moment. Please check your internet connection and try again. If the error persit, reach out"
+    "fetchFailedError": "We couldn’t retrieve the requested data at the moment. Please check your internet connection and try again. If the error persit, reach out",
+    "proFeature": "This is a Pro feature"
   },
   "Analytics": {
     "title": "Activity Overview",
     "description": "Track your success with detailed analytics and trends",
+    "upgrade": "Upgrade membership",
+    "upgradeAlert": "You’re currently on the Free plan, which includes only basic analytics. To unlock advanced insights and see more detailed analytics, please upgrade your membership.",
+    "noActivity": "No Activity",
     "revenue": "Total Revenue",
     "sold": "Tickets Sold",
     "filters": {
@@ -499,6 +504,8 @@
       "basic": "Basic Details",
       "category_search": "Search for category",
       "no_result": "They is no result for the keyword ",
+      "proFeature": "Private activity creation is part of our premium Pro+ membership. With Pro+, you unlock the ability to keep your activities fully private, giving you greater control and peace of mind over how you manage and share your events. Upgrading not only grants access to private activity creation, but also ensures you enjoy the full suite of advanced features designed to make your experience smoother, more secure, and more personalized. If privacy and exclusivity matter to you, Pro+ is the membership tier that delivers.",
+      "upgrade": "Upgrade membership",
       "list": {
         "inPerson": {
           "title": "In-Person",
@@ -826,6 +833,7 @@
           "2": "Up to 7 team members",
           "3": "Up to 300 free tickets per activity",
           "4": "Advanced analytics",
+          "5": "Private Activity",
           "6": "Custom ticket types & discount codes",
           "7": "Priority support"
         },

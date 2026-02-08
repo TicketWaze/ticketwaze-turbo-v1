@@ -2,7 +2,7 @@ import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import { getLocale, getTranslations } from "next-intl/server";
 import EventTypeList from "./EventTypeList";
 import { auth } from "@/lib/auth";
-import { Organisation } from "@ticketwaze/typescript-config";
+import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 
 export default async function CreatePage() {
   const t = await getTranslations("Events.create_event");
@@ -22,9 +22,13 @@ export default async function CreatePage() {
   );
   const response = await request.json();
   const organisation: Organisation = response.organisation;
+  const membershipTier: MembershipTier = response.membershipTier;
   return (
     <OrganizerLayout title={t("title")}>
-      <EventTypeList organisation={organisation} />
+      <EventTypeList
+        organisation={organisation}
+        membershipTier={membershipTier}
+      />
     </OrganizerLayout>
   );
 }

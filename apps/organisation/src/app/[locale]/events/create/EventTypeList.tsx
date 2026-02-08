@@ -1,6 +1,6 @@
 "use client";
 import { Link, useRouter } from "@/i18n/navigation";
-import { InfoCircle, SearchNormal } from "iconsax-reactjs";
+import { Crown, InfoCircle, SearchNormal } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -26,12 +26,15 @@ import {
 } from "@/components/ui/dialog";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import PageLoader from "@/components/PageLoader";
-import { Organisation } from "@ticketwaze/typescript-config";
+import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
+import { LinkPrimary } from "@/components/shared/Links";
 
 export default function EventTypeList({
   organisation,
+  membershipTier,
 }: {
   organisation: Organisation;
+  membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event");
   const { data: session } = useSession();
@@ -105,7 +108,7 @@ export default function EventTypeList({
           setIsLoading(false);
         }
       }
-    } catch (error) {
+    } catch {
       closeRef.current?.click();
       toast.error(t("list.meet.fetchFailedError"));
       setIsLoading(false);
@@ -234,31 +237,108 @@ export default function EventTypeList({
           }
           return (
             <li key={index}>
-              <Link
-                href={`/events/create/${category.value}`}
-                className="block relative cursor-pointer group"
-              >
-                <div
-                  className={`h-[165px] lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300`}
+              {membershipTier.membershipName === "free" &&
+              category.value === "private" ? (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <div
+                      className={`h-[165px] cursor-pointer lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300 `}
+                    >
+                      <Image
+                        src={category.image}
+                        alt={category.title}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        width={255}
+                        height={191}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/10" />
+                      <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
+                        <h3 className="text-[2.6rem] font-primary leading-[30px] font-bold">
+                          {category.title}
+                        </h3>
+                        <p className="text-[1.5rem] text-neutral-300">
+                          {category.description}
+                        </p>
+                      </div>
+                    </div>
+                  </DialogTrigger>
+                  <DialogContent className={"w-[360px] lg:w-[520px] "}>
+                    <DialogHeader>
+                      <DialogTitle
+                        className={
+                          "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                        }
+                      >
+                        {category.title}
+                      </DialogTitle>
+                      <DialogDescription className={"sr-only"}>
+                        <span>Add artist</span>
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-8 flex flex-col gap-8 items-center">
+                      <div
+                        className={
+                          "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+                        }
+                      >
+                        <div
+                          className={
+                            "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+                          }
+                        >
+                          <Crown size="30" color="#0d0d0d" variant="Bulk" />
+                        </div>
+                      </div>
+                      <p
+                        className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
+                      >
+                        {t("proFeature")}
+                      </p>
+                    </div>
+                    <DialogFooter>
+                      <div className="flex-1 p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+                        <LinkPrimary
+                          className="bg-transparent gap-4 py-2 items-center"
+                          href="/settings/subscriptions/upgrade"
+                        >
+                          <Crown size="24" color="#fff" variant="Bulk" />
+                          {t("upgrade")}
+                        </LinkPrimary>
+                      </div>
+                      <DialogClose
+                        ref={closeRef}
+                        className="sr-only"
+                      ></DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              ) : (
+                <Link
+                  href={`/events/create/${category.value}`}
+                  className="block relative cursor-pointer group"
                 >
-                  <Image
-                    src={category.image}
-                    alt={category.title}
-                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    width={255}
-                    height={191}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/10" />
-                  <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
-                    <h3 className="text-[2.6rem] font-primary leading-[30px] font-bold">
-                      {category.title}
-                    </h3>
-                    <p className="text-[1.5rem] text-neutral-300">
-                      {category.description}
-                    </p>
+                  <div
+                    className={`h-[165px] lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300`}
+                  >
+                    <Image
+                      src={category.image}
+                      alt={category.title}
+                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      width={255}
+                      height={191}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/10" />
+                    <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
+                      <h3 className="text-[2.6rem] font-primary leading-[30px] font-bold">
+                        {category.title}
+                      </h3>
+                      <p className="text-[1.5rem] text-neutral-300">
+                        {category.description}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              )}
             </li>
           );
         })}
