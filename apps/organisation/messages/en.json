@@ -14,8 +14,10 @@
       "join": "Join",
       "title2": "Get ready to sell tickets",
       "description2": "Create activities, manage attendees, and track sales — everything starts here",
-      "alert": "We’ve set up a default organisation to get you started. Don’t worry — you’ll be able to change its information and customise it once it’s created.",
-      "action": "Get started"
+      "alert": "We’ve noticed that you are not currently part of any organisation. By continuing, you agree to create a new organisation under your name, where you will be assigned as the administrator. ",
+      "alert2": "This organisation will be set up with default information. Don’t worry, these default details can be updated at any time. By proceeding, you confirm your agreement to our Privacy Policy and Terms of Use. If you prefer not to continue, simply click the Explore button.",
+      "action": "Get started",
+      "back": "Explore Ticketwaze"
     },
     "register": {
       "title": "Create an Account",
@@ -786,6 +788,66 @@
       "event_check_in": "Activity Check-In Alerts",
       "payment_update": "Payment Updates",
       "platform": "Platform Announcements"
+    },
+    "subscriptions": {
+      "title": "Subscriptions",
+      "back": "Back",
+      "upgrade": "Upgrade membership",
+      "history": "Subscriptions history",
+      "soon": "Coming soon",
+      "description": "You haven’t subscribed to any membership plan yet. Once you activate a subscription, your history will appear here.",
+      "table": {
+        "id": "Transaction ID",
+        "tier": "Membership tier",
+        "amount": "Amount paid",
+        "status": "Transaction Status",
+        "date": "Date Purchased"
+      },
+      "free": {
+        "subtitle": "$0 / month",
+        "title": "Free",
+        "list": {
+          "1": "Basic analytics",
+          "2": "Up to 3 team members",
+          "3": "Up to 100 free tickets per activity",
+          "4": "Email support",
+          "5": "Free forever"
+        },
+        "cta": "Start now!",
+        "waitlist": "Join the waitlist!"
+      },
+      "pro": {
+        "subtitle": "$9.99 / MONTH",
+        "tag": "CURRENT",
+        "most": "MOST POPULAR",
+        "title": "Pro",
+        "list": {
+          "1": "All Free features +",
+          "2": "Up to 7 team members",
+          "3": "Up to 300 free tickets per activity",
+          "4": "Advanced analytics",
+          "6": "Custom ticket types & discount codes",
+          "7": "Priority support"
+        },
+        "cta": "Get Started with pro!",
+        "waitlist": "Join the waitlist!"
+      },
+      "premium": {
+        "subtitle": "$19.99 / MONTH",
+        "title": "PREMIUM",
+        "verified": "This is a verified organisation",
+        "list": {
+          "1": "All Pro features +",
+          "2": "Up to 15 team members",
+          "3": "Unlimited free tickets",
+          "4": "AI powered analytics",
+          "5": "AI-powered activity creation",
+          "6": "Early access to new features",
+          "7": "Verified organisation badge"
+        },
+        "cta": "Talk to sales!",
+        "waitlist": "Join the waitlist!"
+      }
     }
   }
 }

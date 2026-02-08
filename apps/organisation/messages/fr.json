@@ -14,8 +14,10 @@
       "join": "Rejoindre",
       "title2": "Préparez-vous à vendre vos billets",
       "description2": "Créez des activités, gérez vos participants et suivez vos ventes — tout commence ici",
-      "alert": "Nous avons créé une organisation par défaut pour vous lancer. Pas d’inquiétude — vous pourrez modifier ses informations et la personnaliser une fois créée.",
-      "action": "Commencer"
+      "alert": "Nous avons remarqué que vous ne faites actuellement partie d’aucune organisation. En continuant, vous acceptez de créer une nouvelle organisation à votre nom, dont vous serez l’administrateur.",
+      "alert2": "Cette organisation sera configurée avec des informations par défaut. Ne vous inquiétez pas, ces informations pourront être modifiées à tout moment. En poursuivant, vous confirmez votre accord avec notre Politique de confidentialité et nos Conditions d’utilisation. Si vous préférez ne pas continuer, cliquez simplement sur le bouton Explorer.",
+      "action": "Commencer",
+      "back": "Explorer Ticketwaze"
     },
     "register": {
       "title": "Créer un compte",
@@ -785,6 +787,66 @@
       "event_check_in": "Alertes d'enregistrement d'activitée",
       "payment_update": "Mises à jour de paiement",
       "platform": "Annonces de la plateforme"
+    },
+    "subscriptions": {
+      "title": "Abonnements",
+      "back": "Retour",
+      "upgrade": "Mettre à niveau l’abonnement",
+      "history": "Historique des abonnements",
+      "soon": "Bientôt disponible",
+      "description": "Vous n’avez souscrit à aucun plan d’abonnement pour le moment. Dès que vous activerez un abonnement, votre historique apparaîtra ici.",
+      "table": {
+        "id": "ID de transaction",
+        "tier": "Niveau d’abonnement",
+        "amount": "Montant payé",
+        "status": "Statut de la transaction",
+        "date": "Date d’achat"
+      },
+      "free": {
+        "subtitle": "0 $ / mois",
+        "title": "Gratuit",
+        "list": {
+          "1": "Analyses de base",
+          "2": "Jusqu’à 3 membres d’équipe",
+          "3": "Jusqu’à 100 billets gratuits par activité",
+          "4": "Support par e‑mail",
+          "5": "Gratuit pour toujours"
+        },
+        "cta": "Commencer maintenant !",
+        "waitlist": "Rejoindre la liste d’attente !"
+      },
+      "pro": {
+        "subtitle": "9,99 $ / MOIS",
+        "tag": "ACTUEL",
+        "most": "LE PLUS POPULAIRE",
+        "title": "Pro",
+        "list": {
+          "1": "Toutes les fonctionnalités Gratuites +",
+          "2": "Jusqu’à 7 membres d’équipe",
+          "3": "Jusqu’à 300 billets gratuits par activité",
+          "4": "Analyses avancées",
+          "6": "Types de billets personnalisés & codes de réduction",
+          "7": "Support prioritaire"
+        },
+        "cta": "Commencer avec Pro !",
+        "waitlist": "Rejoindre la liste d’attente !"
+      },
+      "premium": {
+        "subtitle": "19,99 $ / MOIS",
+        "title": "Premium",
+        "verified": "Ceci est une organisation vérifiée",
+        "list": {
+          "1": "Toutes les fonctionnalités Pro +",
+          "2": "Jusqu’à 15 membres d’équipe",
+          "3": "Billets gratuits illimités",
+          "4": "Analyses assistées par IA",
+          "5": "Création d’activités assistée par IA",
+          "6": "Accès anticipé aux nouvelles fonctionnalités",
+          "7": "Badge d’organisation vérifiée"
+        },
+        "cta": "Contacter les ventes !",
+        "waitlist": "Rejoindre la liste d’attente !"
+      }
     }
   }
 }

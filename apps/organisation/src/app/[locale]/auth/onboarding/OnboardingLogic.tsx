@@ -9,6 +9,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { LinkSecondary } from "@/components/shared/Links";
 
 export default function OnboardingLogic({
   responseType,
@@ -40,7 +41,7 @@ export default function OnboardingLogic({
               activeOrganisation: user.organisations[0],
             });
             window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${user.userPreference.appLanguage}/analytics`;
-          } catch (error) {
+          } catch {
             toast.error("Failed to load organisation");
           }
         } else {
@@ -161,7 +162,7 @@ export default function OnboardingLogic({
       )}
       {createOrganisation && (
         <div className="flex flex-col items-center justify-between h-full pb-12">
-          <div className=" flex flex-col  gap-32 pt-16 w-full">
+          <div className=" flex flex-col  gap-15 pt-16 w-full">
             <div className="flex flex-col gap-8 items-center">
               <motion.h3
                 initial={{ opacity: 0, y: 30 }}
@@ -185,9 +186,17 @@ export default function OnboardingLogic({
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="font-primary text-center font-medium text-[1.8rem] leading-10 text-neutral-900"
+                className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
               >
                 {t("alert")}
+              </motion.p>
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
+              >
+                {t("alert2")}
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -203,15 +212,50 @@ export default function OnboardingLogic({
                   {isLoading ? <LoadingCircleSmall /> : t("action")}
                 </ButtonPrimary>
               </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="w-full pb-4"
+              >
+                <LinkSecondary
+                  href={process.env.NEXT_PUBLIC_WEBSITE_URL!}
+                  className="w-full hidden lg:flex justify-center items-center"
+                >
+                  {t("back")}
+                </LinkSecondary>
+              </motion.div>
             </div>
           </div>
-          <ButtonPrimary
-            onClick={CreateOrganisation}
-            className="w-full lg:hidden"
-            disabled={isLoading}
-          >
-            {isLoading ? <LoadingCircleSmall /> : t("action")}
-          </ButtonPrimary>
+          <div className="lg:hidden flex flex-col gap-8 w-full">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="w-full lg:hidden"
+            >
+              <ButtonPrimary
+                onClick={CreateOrganisation}
+                className="w-full lg:hidden"
+                disabled={isLoading}
+              >
+                {isLoading ? <LoadingCircleSmall /> : t("action")}
+              </ButtonPrimary>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="w-full lg:hidden"
+            >
+              <LinkSecondary
+                href={process.env.NEXT_PUBLIC_WEBSITE_URL!}
+                className="w-full flex justify-center items-center"
+              >
+                {t("back")}
+              </LinkSecondary>
+            </motion.div>
+          </div>
         </div>
       )}
 

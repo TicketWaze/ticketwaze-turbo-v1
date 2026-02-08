@@ -287,3 +287,41 @@ export interface WithdrawalRequest {
   createdAt: DateTime;
   updatedAt: DateTime;
 }
+
+export interface OrganisationSubscription {
+  organisationSubscriptionId: string;
+  organisationId: string;
+  subscriptionName: string;
+  membershipTier: string;
+  amountPaid: number;
+  usdAmountPaid: number;
+  status: string;
+  endsAt: DateTime;
+  paymentMethod: string;
+  stripeSubscriptionId: string | null;
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
+
+export interface MembershipTier {
+  membershipTierId: string;
+  membershipName: string;
+  membershipDescription: string;
+  teamMember: number;
+  freeTickets: number;
+  emailSupport: boolean;
+  analytics: string;
+  customTicketTypes: boolean;
+  discountCodes: boolean;
+  prioritySupport: boolean;
+  aiFeatures: boolean;
+  earlyAccess: boolean;
+  verifiedBadge: boolean;
+  customBranding: boolean;
+  membershipPrice: number;
+  membershipUsdPrice: number;
+  apiAccess: boolean;
+  dedicatedAccountManager: boolean;
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
