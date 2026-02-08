@@ -31,7 +31,6 @@ function Hero() {
     register,
     handleSubmit,
     setValue,
-    reset,
     resetField,
     formState: { errors, isSubmitting },
   } = useForm<TWaitlistSchema>({
@@ -51,7 +50,7 @@ function Hero() {
             "Accept-Language": locale,
           },
           body: JSON.stringify(data),
-        }
+        },
       );
       const response = await request.json();
       if (response.status === "success") {
@@ -60,11 +59,11 @@ function Hero() {
         resetField("entity");
         router.push("/");
       } else {
-        toast.error(t("errors.failed"));
+        toast.error(response.message);
         resetField("email");
         resetField("entity");
       }
-    } catch (error) {
+    } catch {
       toast.error(t("errors.failed"));
     }
   }
