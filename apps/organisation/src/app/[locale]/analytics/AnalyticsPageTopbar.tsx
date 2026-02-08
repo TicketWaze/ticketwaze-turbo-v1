@@ -48,13 +48,8 @@ export default function AnalyticsPageTopbar({
                   className="bg-transparent gap-4 py-2 items-center"
                   href="/settings/subscriptions/upgrade"
                 >
-                  <Crown
-                    size="24"
-                    color="#fff"
-                    className="hidden lg:block"
-                    variant="Bulk"
-                  />
-                  {t("upgrade")}
+                  <Crown size="24" color="#fff" variant="Bulk" />
+                  <span className="hidden lg:inline">{t("upgrade")}</span>
                 </LinkPrimary>
               </div>
             )}
