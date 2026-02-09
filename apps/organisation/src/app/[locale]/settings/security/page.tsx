@@ -1,6 +1,6 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import { getTranslations } from "next-intl/server";
-import ChangePasswordForm from "./ChangePasswordForm";
+// import ChangePasswordForm from "./ChangePasswordForm";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 
@@ -17,7 +17,7 @@ export default async function Page() {
           "flex flex-col overflow-y-scroll overflow-x-hidden gap-16 w-full lg:w-212 mx-auto"
         }
       >
-        <ChangePasswordForm />
+        {/* <ChangePasswordForm /> */}
         <div></div>
         {/* <Toggle2Factor /> */}
       </div>
