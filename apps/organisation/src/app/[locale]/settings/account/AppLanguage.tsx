@@ -46,7 +46,7 @@ export default function AppLanguage({
       <RadioGroup className="flex flex-col gap-6" defaultValue={locale}>
         <div
           onClick={() => switchLanguagePreference("en")}
-          className="flex items-center justify-between gap-3"
+          className="flex items-center justify-between gap-3 cursor-pointer"
         >
           <span className="text-[1.6rem] text-deep-100">English</span>
           <RadioGroupItem value={"en"} />
@@ -54,7 +54,7 @@ export default function AppLanguage({
         <Separator />
         <div
           onClick={() => switchLanguagePreference("fr")}
-          className="flex items-center justify-between gap-3"
+          className="flex items-center justify-between gap-3 cursor-pointer"
         >
           <span className="text-[1.6rem] text-deep-100">Français</span>
           <RadioGroupItem value={"fr"} />
