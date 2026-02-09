@@ -9,7 +9,6 @@ import {
   MoneySend,
   Notification,
   Profile2User,
-  SecuritySafe,
   Setting5,
   User,
 } from "iconsax-reactjs";
@@ -22,24 +21,19 @@ export default async function Settings() {
   const locale = await getLocale();
   const links = [
     {
-      label: t("account.title"),
-      href: "/settings/account",
-      Icon: Setting5,
-    },
-    {
       label: t("profile.title"),
       href: "/settings/profile",
       Icon: User,
     },
     {
+      label: t("subscriptions.title"),
+      href: "/settings/subscriptions",
+      Icon: MoneySend,
+    },
+    {
       label: t("team.title"),
       href: "/settings/team",
       Icon: Profile2User,
-    },
-    {
-      label: t("security.title"),
-      href: "/settings/security",
-      Icon: SecuritySafe,
     },
     {
       label: t("payment.title"),
@@ -52,10 +46,15 @@ export default async function Settings() {
       Icon: Notification,
     },
     {
-      label: t("subscriptions.title"),
-      href: "/settings/subscriptions",
-      Icon: MoneySend,
+      label: t("account.title"),
+      href: "/settings/account",
+      Icon: Setting5,
     },
+    // {
+    //   label: t("security.title"),
+    //   href: "/settings/security",
+    //   Icon: SecuritySafe,
+    // },
   ];
   return (
     <OrganizerLayout title={t("title")}>

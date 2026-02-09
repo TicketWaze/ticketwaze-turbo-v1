@@ -636,6 +636,10 @@
       "subtitle": "User Information",
       "setProfile": "Set profile image",
       "personal": "Personal Information",
+      "profileAlert": "Please sign in to your user dashboard to view or update the information linked to your profile. Once signed in, you’ll be able to review your details and make any necessary changes directly from your dashboard.",
+      "securityTip": "Security tip",
+      "2faTip": "Two‑factor authentication (2FA) cannot be disabled because your account is either the owner of, or belongs to, an organization. For security and compliance reasons, organization accounts must always keep 2FA enabled.",
+      "profileLink": "Link to your profile",
       "placeholders": {
         "firstname": "First Name",
         "lastname": "Last Name",
@@ -747,6 +751,9 @@
         "confirm": "Password must be the same"
       },
       "two_factor": "Two Factor Authentication",
+      "securityTip": "Security tip",
+      "2faTip": "Two‑factor authentication (2FA) cannot be disabled because your account is either the owner of, or belongs to, an organization. For security and compliance reasons, organization accounts must always keep 2FA enabled.",
+      "passwordTip": "After updating your password, you'll need to sign in again on all you devices for security puposes.",
       "enable": "Enable"
     },
     "payment": {

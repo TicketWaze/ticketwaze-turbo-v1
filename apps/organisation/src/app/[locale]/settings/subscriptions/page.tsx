@@ -11,6 +11,7 @@ import {
 } from "@ticketwaze/typescript-config";
 import { LinkPrimary } from "@/components/shared/Links";
 import { Crown } from "iconsax-reactjs";
+import BackButton from "@/components/shared/BackButton";
 
 export default async function SubscriptionPage() {
   const t = await getTranslations("Settings.subscriptions");
@@ -41,6 +42,7 @@ export default async function SubscriptionPage() {
   const membershipTier: MembershipTier = response.membershipTier;
   return (
     <OrganizerLayout title="">
+      <BackButton text={t("back")} />
       <TopBar title={t("title")}>
         <div className="flex-1 hidden lg:block p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
           <LinkPrimary

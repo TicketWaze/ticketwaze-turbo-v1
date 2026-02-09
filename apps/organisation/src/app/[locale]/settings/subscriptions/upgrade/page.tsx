@@ -6,6 +6,7 @@ import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { getLocale, getTranslations } from "next-intl/server";
 import SubscriptionUpgradePageContent from "./SubscriptionUpgradePageContent";
 import { MembershipTier } from "@ticketwaze/typescript-config";
+import BackButton from "@/components/shared/BackButton";
 
 export default async function SubscriptionUpgradePage() {
   const t = await getTranslations("Settings.subscriptions");
@@ -34,6 +35,7 @@ export default async function SubscriptionUpgradePage() {
   const membershipTier: MembershipTier = response.membershipTier;
   return (
     <OrganizerLayout title="" className="">
+      <BackButton text={t("back")} />
       <TopBar title={t("upgrade")} />
       <SubscriptionUpgradePageContent membershipTier={membershipTier} />
       <div></div>
