@@ -1,7 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { auth } from "@/lib/auth";
-import type { NextFetchEvent, NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 // Create the intl middleware first
 const intlMiddleware = createMiddleware(routing);
@@ -12,7 +12,7 @@ export default auth((req) => {
 
   // Extract locale from pathname
   const pathnameLocale = req.nextUrl.pathname.split("/")[1];
-  const locale = routing.locales.includes(pathnameLocale as any)
+  const locale = routing.locales.includes(pathnameLocale as "en" | "fr")
     ? pathnameLocale
     : routing.defaultLocale;
 

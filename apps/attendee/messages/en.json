@@ -1,0 +1,630 @@
+{
+  "Auth": {
+    "layout": {
+      "title": "Ticketing Made Simple. Experiences Made Unforgettable.",
+      "description": "Your time, your passion and  your adventures made more accessible than ever. Connects to activities you care about, with a seamless experience from start to finish."
+    },
+    "choice": {
+      "title": "Welcome to TicketWaze",
+      "description": "Choose an option to continue and set up your account.",
+      "cta": "Continue",
+      "attendee": {
+        "title": "Attendee",
+        "description": "Easily browse, discover, and purchase tickets for a wide variety of events."
+      },
+      "organisation": {
+        "title": "Organisation",
+        "description": "Create and manage activities effortlessly. Track ticket sales & monitor attendee data."
+      }
+    },
+    "login": {
+      "title": "Sign In",
+      "description": "Please enter you account details to continue",
+      "placeholders": {
+        "email": "Email Address",
+        "password": "Password"
+      },
+      "errors": {
+        "email": "Enter a valid email",
+        "password": "Password must be at least 8 characters"
+      },
+      "forgot": "Forgot password",
+      "cta": {
+        "submit": "Sign in",
+        "or": "Or",
+        "google": "Continue with Google"
+      },
+      "footer": {
+        "text": "Don’t own an account?",
+        "cta": "Sign up"
+      }
+    },
+    "register": {
+      "title": "Create an Account",
+      "organizer": "Create an Account",
+      "description": "Please complete the form below to continue.",
+      "referral": " thought you might like it here.",
+      "choice": {
+        "title": "Create Account",
+        "description": "Choose an option to continue and set up your account.",
+        "first": {
+          "title": "Attendee",
+          "description": "Easily browse, discover, and purchase tickets for a wide variety of events."
+        },
+        "second": {
+          "title": "Organizer",
+          "description": "Create and manage events effortlessly. Track ticket sales & monitor attendee data."
+        },
+        "cta": "Continue",
+        "footer": {
+          "text": "Already own an account?",
+          "cta": "Log in"
+        }
+      },
+      "placeholders": {
+        "firstname": "First Name",
+        "lastname": "Last Name",
+        "email": "Email Address",
+        "organisation_name": "Organisation Name",
+        "organisation_email": "Organisation Email",
+        "password": "Create Password",
+        "confirm": "Confirm Password"
+      },
+      "errors": {
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "password_length": "Password must be at least 8 characters long",
+        "password_match": "Passwords don't match",
+        "firstname_length": "First name must be at least 2 characters",
+        "lastname_length": "Last name must be at least 2 characters",
+        "firstname_validation": "First name must contain only letters, spaces, or hyphens",
+        "lastname_validation": "Last name must contain only letters, spaces, or hyphens",
+        "email": "Email field cannot be blank"
+      },
+      "cta": {
+        "submit": "Create account",
+        "google": "Continue with Google"
+      },
+      "footer": "Back"
+    },
+    "verify": {
+      "title": "Verify Account",
+      "description": "A verification mail has been sent to",
+      "wrong": "Wrong email ?",
+      "footer": {
+        "text": "Didn't get a mail?",
+        "cta": "Resend"
+      }
+    },
+    "complete": {
+      "title": "Complete Account Set-up",
+      "description": "Please fill the form below to complete your account set-up.",
+      "referral": " thought you might like it here.",
+      "becoming": {
+        "subtitle": "Create An Organisation",
+        "description": "Please fill the form below create a new organisation.",
+        "name": "Organisation's name",
+        "country": "Country",
+        "state": "State / Region / Province",
+        "city": "City",
+        "organisationDescription": "Share details about your organisation, what you do, and the events you host...",
+        "email": "Organisation Email",
+        "phone": "Phone number",
+        "website": "Website",
+        "currency": "Currency",
+        "back": "Back",
+        "submit": "Create organisation",
+        "errors": {
+          "name": {
+            "min": "Organisation name cannot be blank",
+            "max": "Name cannot exceed 30 characters"
+          },
+          "description": {
+            "min": "Description cannot be less than 150 characters",
+            "max": "Description cannot exceed 350 characters"
+          },
+          "country": "Select a country",
+          "state": "This field Cannot be blank",
+          "city": "City field cannot be blank",
+          "currency": "Please select a currency"
+        }
+      },
+      "placeholders": {
+        "username": "User Name",
+        "address": "Address",
+        "country": "Country",
+        "state": "State / Region / Province",
+        "city": "City",
+        "dob": "Date of Birth",
+        "gender": "Gender",
+        "male": "Male",
+        "female": "Female",
+        "no": "Rather not say",
+        "about": "About Organizer",
+        "email": "Contact Email Address",
+        "phone": "Phone Number",
+        "website": "Organisation Website Url",
+        "currency": "Currency",
+        "errors": {
+          "city": "City field cannot be blank",
+          "state": "This field Cannot be blank",
+          "gender": "This field is required",
+          "country": "Select a country",
+          "dob": "Please select a date",
+          "currency": "Please select a currency",
+          "phone": "Phone Number should be at least 8"
+        }
+      },
+      "cta": "Complete"
+    },
+    "onboarding": {
+      "title": "Welcome to TicketWaze",
+      "description": "Let’s get to know you better so we can personalize your experience.",
+      "previous": "Previous",
+      "next": "Next",
+      "submit": "Submit",
+      "error": "Please select an option",
+      "onboarded": "User already onboarded",
+      "first": {
+        "question": "How do you plan to use Ticketwaze",
+        "1": "To buy tickets",
+        "2": "To sell or manage tickets",
+        "3": "Both"
+      },
+      "second": {
+        "question": "What types of tickets are you most interested in?",
+        "1": "Concerts & Festivals",
+        "2": "Sports & Competitions",
+        "3": "Movies & Entertainment",
+        "4": "Conferences & Seminars"
+      },
+      "third": {
+        "question": "Which currency do you prefer?",
+        "1": "USD - United States Dollar",
+        "2": "HTG - Haitian Gourde"
+      },
+      "fourth": {
+        "question": "Would you like to receive notifications about trending activities and exclusive offers?",
+        "1": "Yes",
+        "2": "No"
+      },
+      "fith": {
+        "question": "How would you like to receive updates",
+        "1": "Email notifications",
+        "2": "Whatsapp notifications",
+        "3": "None"
+      },
+      "sixth": {
+        "question": "Are you representing an organisation or business? (ex: Sumfest, Banj...)",
+        "1": "Yes",
+        "2": "No, I am an individual"
+      }
+    },
+    "forgot": {
+      "title": "Reset Password",
+      "description": "Please enter you account details to continue",
+      "back": "Back",
+      "errors": {
+        "email": "Enter a valid email address"
+      },
+      "placeholders": {
+        "email": "Email Address"
+      },
+      "cta": "Reset"
+    },
+    "email_sent": {
+      "title": "Reset Password",
+      "description": "A password reset mail has been sent to",
+      "footer": {
+        "text": "Didn't get a mail?",
+        "cta": "Resend"
+      }
+    },
+    "new_password": {
+      "title": "Create Password",
+      "description": "Choose a new password for your account",
+      "placeholders": {
+        "password": "Password",
+        "confirm": "Confirm password"
+      },
+      "errors": {
+        "password_length": "Password should be at least 8 Characters",
+        "password_match": "Password doesn't match"
+      },
+      "cta": "Create"
+    },
+    "footer": {
+      "text": "Didn't get a mail?",
+      "cta": "Resend"
+    }
+  },
+  "Layout": {
+    "sidebar": {
+      "more": "More",
+      "help": "Help",
+      "logout": "Logout",
+      "verified": "This is a verified organisation",
+      "links": {
+        "title1": "Activites",
+        "explore": "Explore",
+        "upcoming": "Upcoming",
+        "wallet": "Wallet",
+        "history": "History",
+        "organizers": "Organisations",
+        "title2": "User",
+        "more": "More",
+        "profile": "Profile",
+        "preferences": "Preferences",
+        "settings": "Settings"
+      }
+    },
+    "topbar": {
+      "welcome": "Welcome Back",
+      "back": "Back",
+      "notification": "Notifications",
+      "view": "View"
+    },
+    "noAuth": {
+      "title": "You are not Logged in",
+      "description": "Access your account to securely manage tickets, complete actions, and enjoy a seamless experience.",
+      "cancel": "Cancel",
+      "proceed": "Proceed"
+    }
+  },
+  "Explore": {
+    "title": "Explore Activities",
+    "subtitle": "Welcome Back ",
+    "search": "Search for activity",
+    "noResult": "There's no result for ",
+    "noEvent": "Looks like there are no upcoming activities at the moment. Check back later or explore other categories to discover exciting activities near you!",
+    "liked": "Liked activities",
+    "filters": {
+      "first": {
+        "1": "All",
+        "2": "Music",
+        "3": "Conference",
+        "4": "Sport"
+      },
+      "second": {
+        "1": "Category",
+        "2": "Location",
+        "3": {
+          "title": "Date",
+          "1": "This week",
+          "2": "This month",
+          "3": "Next month",
+          "4": "This Year"
+        }
+      }
+    }
+  },
+  "Wallet": {
+    "title": "Wallet",
+    "subtitle": "Welcome Back ",
+    "amounts": {
+      "available": "Available Balance",
+      "pending": "Pending Balance"
+    },
+    "ticketwazeToken": "Ticketwaze token",
+    "token": "token(s)",
+    "invitedUser": "Invited User",
+    "user": "user(s)",
+    "referralTitle": "Invite Friends",
+    "referralDescription": "Grow Our Community Together Help your friends discover amazing tickets and experiences, and earn 5 points for each successful referral!",
+    "copy": "Copy",
+    "filters": {
+      "all": "All status",
+      "pending": "Pending",
+      "successful": "Successful"
+    },
+    "search": "Search for transaction id",
+    "transactions": {
+      "title": "Recent Transactions",
+      "description": "Your orders will appear here once transactions start rolling in.",
+      "table": {
+        "id": "Transaction ID",
+        "provider": "Provider",
+        "class": "Tickets",
+        "amount": "Amount paid",
+        "status": "Transaction Status",
+        "date": "Date Purchased"
+      },
+      "more": "View all",
+      "details": {
+        "title": "Transaction Details",
+        "name": "Attendee Name",
+        "email": "Email",
+        "event_name": "Activity Name",
+        "date": "Date",
+        "time": "Time",
+        "location": "Location",
+        "ticket_class": "Tickets Amount",
+        "price": "Price",
+        "ticket_id": "Ticket ID",
+        "total": "Total",
+        "transaction_id": "Transaction ID",
+        "payment_method": "Payment Method",
+        "payment_date": "Created At",
+        "transaction_status": "Transaction Status",
+        "check_status": " Status",
+        "check_time": "Check-In Time",
+        "close": "Close",
+        "resend": "Resend Ticket"
+      }
+    },
+    "withdrawal": {
+      "title": "Withdrawal history",
+      "description": "Your withdrawal history will show up here once you've made a withdrawal request.",
+      "table": {
+        "id": "Withdrawal ID",
+        "name": "Bank Name",
+        "provider": "Provider",
+        "account": "Account Number",
+        "amount": "Amount",
+        "status": "Transaction Status",
+        "date": "Date Purchased"
+      }
+    }
+  },
+  "Upcoming": {
+    "title": "Upcoming Activities",
+    "subtitle": "Welcome Back ",
+    "search": "Search for upcoming activity",
+    "description": "There are no upcoming activity right now. Stay tuned to discover and book the next ones!",
+    "noResult": "There's no result for "
+  },
+  "History": {
+    "title": "Activities history",
+    "subtitle": "Welcome Back ",
+    "search": "Search for activity",
+    "description": "You haven’t attended any activities yet. Once you join an activity, it will appear here for you to revisit your past experiences."
+  },
+  "Event": {
+    "from": "From",
+    "free": "Free",
+    "back": "Back",
+    "notInvited": "Access Restricted: This is a private activity visible only to invited participants.",
+    "share": "Share activity",
+    "share_text": "Spread the word and invite your friends! Share this activity on social media or via direct message.",
+    "copy": "Copy",
+    "buy": "Buy ticket",
+    "buy_more": "Buy more ticket",
+    "about": "About event",
+    "contact": "Contact Information",
+    "details": "Activity details",
+    "followers": "Followers",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "viewProfile": "View profile",
+    "more": "More",
+    "reportEvent": "Report activity",
+    "reportOrganisation": "Report Organisation",
+    "reportEventDescription": "Help us keep the platform safe. Share details about any issues with this activity.",
+    "reportOrganisationDescription": "Help us keep the platform safe. Share details about any issues with this organisation.",
+    "inappropriateContent": "Inappropriate Content",
+    "misleadingInformation": "Misleading Information",
+    "fraud": "Fraud or Scam Concerns",
+    "venue": "Venue or Date Issues",
+    "other": "Other",
+    "question": "What issue do you have with this activity?",
+    "question2": "What issue do you have with this organisation?",
+    "message": "Message",
+    "pleaseSpecifyReason": "Please Specify a valid reason",
+    "validStatus": "You must select a valid reason",
+    "reportOrg": "Report Organisation",
+    "sold": "Sold",
+    "direction": "Direction",
+    "open": "Open map",
+    "date": "Date",
+    "time": "Time",
+    "location": "Location",
+    "download": "Download ticket",
+    "rate": "Rate activity",
+    "feedback": "Write feedback",
+    "send": "Send feedback",
+    "use": "Ticket used",
+    "not_used": "Ticket not used",
+    "ticket": "Ticket",
+    "ticketId": "Ticket ID",
+    "name": "Full Name",
+    "email": "Email",
+    "ticketWarning1": "Your ticket is personal—don’t share it.",
+    "ticketWarning2": "This ticket is non-refundable",
+    "liked": "Liked activities"
+  },
+  "Checkout": {
+    "back": "Back",
+    "free": "Free",
+    "purchased": "Ticket purchased",
+    "purchased_cta": "Opening upcoming activities ...",
+    "purchased_text": "Your purchase is confirmed! Access it anytime in upcoming activities or check your email for a copy",
+    "ticket": {
+      "title": "Buy Ticket",
+      "quantity": "Quantity",
+      "summary": "Summary",
+      "select": "Select a ticket type to continue",
+      "left": "tickets left",
+      "soldout": "Sold out",
+      "platform": "fees + tax / ticket",
+      "discount": "Apply discount code",
+      "discount_code": "Discount Code",
+      "apply": "Apply",
+      "error": "Select at least one ticket",
+      "ticketWarning": "Tickets are non-refundable. All sales are final."
+    },
+    "recipient": {
+      "title": "Recipient",
+      "someone": "I’m purchasing this ticket for someone else",
+      "error": "Please fill in attendee information for all tickets marked for someone else",
+      "warning": "Please double-check the information before submitting. If these details are incorrect, the person may not be able to access their ticket.",
+      "email": "Email Address",
+      "name": "Full Name"
+    },
+    "payment": {
+      "title": "Payment",
+      "payment": "Make payment",
+      "wallet": "Pay with Ticketwaze wallet",
+      "card": "Pay with card",
+      "paypal": "Pay with PayPal",
+      "moncash": "Pay with MonCash",
+      "nopayment": "This activity is completely free of charge. No payment is required to complete your registration. Just continue to confirm your ticket and you’re all set.",
+      "secured": "Your security matters to us. Every transaction is processed through encrypted channels and monitored in real time to prevent fraud and ensure your personal information remains protected. Our systems are supervised by trusted partners and comply with the highest industry standards for data and payment security.",
+      "paymentType": "Select a payment provider",
+      "placeholders": {
+        "name": "Card Name",
+        "expiry": "Expiry",
+        "number": "Card number"
+      }
+    },
+    "footer": {
+      "ticket": "Ticket",
+      "recipient": "Recipient",
+      "payment": "Payment",
+      "continue": "Continue"
+    }
+  },
+  "Liked": {
+    "title": "Like activities",
+    "back": "Back",
+    "noEvent": "You haven’t liked any activities yet. Browse upcoming activities and tap the ❤️ to save your favorites!",
+    "filters": {
+      "saved": "Saved",
+      "liked": "Liked"
+    }
+  },
+  "Profile": {
+    "title": "Profile",
+    "edit": "Edit Profile",
+    "save": "Save changes",
+    "setProfile": "Set profile image",
+    "resize": "Resize Image",
+    "personal": "Personal Information",
+    "placeholders": {
+      "firstname": "Firstname",
+      "lastname": "Lastname",
+      "email": "Email Address",
+      "state": "State / Region / Province",
+      "city": "City",
+      "country": "Country",
+      "dob": "Date of Birth",
+      "phone": "Phone number",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "no": "Rather not say",
+      "blood": "Blood group"
+    },
+    "event": {
+      "title": "Event",
+      "attended": "Number of activities attended",
+      "tickets": "Number of tickets bought",
+      "missed": "Number of activities missed"
+    },
+    "account": {
+      "title": "Account",
+      "created": "Date created",
+      "delete": "Delete Account"
+    },
+    "errors": {
+      "firstname_length": "First name must be at least 2 characters",
+      "lastname_length": "Last name must be at least 2 characters",
+      "firstname_validation": "First name must contain only letters, spaces, or hyphens",
+      "lastname_validation": "Last name must contain only letters, spaces, or hyphens",
+      "city": "City field cannot be blank",
+      "state": "This field Cannot be blank",
+      "gender": "This field is required",
+      "country": "Select a country",
+      "dob": "Please select a date",
+      "currency": "Please select a currency",
+      "phone": "Phone Number should be at least 8"
+    },
+    "others": {
+      "title": "Others",
+      "privacy": "Privacy policy",
+      "terms": "Terms of use"
+    }
+  },
+  "Preferences": {
+    "title": "Preferences",
+    "categories": {
+      "title": "Preferred Categories"
+    },
+    "email": {
+      "title": "Email Notifications",
+      "upcoming": "Notify me about upcoming activities I’ve purchased tickets for.",
+      "preferred": "Notify me about new activities in my preferred categories.",
+      "follow": "Notify me when a followed organizer adds new activities."
+    },
+    "user": {
+      "title": "App Preferences",
+      "currency": "Preferred Currency",
+      "notifications": "Preferred notification provider",
+      "none": "None"
+    }
+  },
+  "Settings": {
+    "title": "Settings",
+    "password": {
+      "title": "Change Password",
+      "cta": "Change Password",
+      "tips": {
+        "title": "Security tip",
+        "description": "After updating your password, you'll need to sign in again on all you devices for security puposes."
+      },
+      "errors": {
+        "blank": "Field cannot be blank",
+        "password": "Password must me at least 8 characters",
+        "confirm": "Password must be the same"
+      }
+    },
+    "errors": {
+      "characters": "At least 8 characters",
+      "capital": "At least one capital letter",
+      "special": "At least one special character"
+    },
+    "placeholders": {
+      "password": "Current Password",
+      "new": "New Password",
+      "confirm": "Confirm New Password"
+    },
+    "security": {
+      "title": "Security",
+      "2fa": "2FA"
+    },
+    "language": {
+      "title": "App language"
+    },
+    "others": {
+      "title": "Others",
+      "privacy": "Privacy policy",
+      "terms": "Terms of use"
+    }
+  },
+  "Organizers": {
+    "title": "Organisations",
+    "subtitle": "Welcome Back ",
+    "back": "Back",
+    "search": "Search for organisations",
+    "filters": {
+      "all": "All",
+      "popular": "Popular",
+      "following": "Following"
+    },
+    "event": "activity",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "profile": {
+      "upcoming": "Upcoming activities",
+      "noUpcoming": "No upcoming activity",
+      "rating": "rating",
+      "followers": "followers",
+      "events": "Activities",
+      "follow": "Follow",
+      "unfollow": "Unfollow",
+      "about": "About organisation",
+      "contact": "Contact Information",
+      "noResult": "There's no result for "
+    }
+  }
+}

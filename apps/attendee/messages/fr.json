@@ -1,0 +1,631 @@
+{
+  "Auth": {
+    "layout": {
+      "title": "Chaque billet, Chaque activité, Une seule plateforme",
+      "description": "Concerts, cours, voyages ou ateliers : achetez vos billets en toute sécurité et gérez tout depuis un seul espace."
+    },
+    "choice": {
+      "title": "Bienvenue sur TicketWaze",
+      "description": "Choisissez une option pour continuer et configurer votre compte.",
+      "cta": "Continuer",
+      "attendee": {
+        "title": "Participant",
+        "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d’événements."
+      },
+      "organisation": {
+        "title": "Organisation",
+        "description": "Créez et gérez vos activités en toute simplicité. Suivez les ventes de billets et analysez les données des participants."
+      }
+    },
+    "login": {
+      "title": "Se connecter",
+      "description": "Veuillez saisir les détails de votre compte pour continuer",
+      "placeholders": {
+        "email": "Adresse e-mail",
+        "password": "Mot de passe"
+      },
+      "errors": {
+        "email": "Saisissez un e-mail valide",
+        "password": "Le mot de passe doit contenir au moins 8 caractères"
+      },
+      "forgot": "Mot de passe oublié",
+      "cta": {
+        "submit": "Se connecter",
+        "or": "Ou",
+        "google": "Continuer avec Google"
+      },
+      "footer": {
+        "text": "Vous n'avez pas de compte ?",
+        "cta": "S'inscrire"
+      }
+    },
+    "register": {
+      "title": "Créer un compte",
+      "organizer": "Créer un compte",
+      "description": "Veuillez compléter le formulaire ci-dessous pour continuer.",
+      "referral": " a pensée que vous aimeriez être ici.",
+      "choice": {
+        "title": "Créer un compte",
+        "description": "Choisissez une option pour continuer et configurer votre compte.",
+        "first": {
+          "title": "Participant",
+          "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d'événements."
+        },
+        "second": {
+          "title": "Organisateur",
+          "description": "Créez et gérez des événements sans effort. Suivez les ventes de billets et surveillez les données des participants."
+        },
+        "cta": "Continuer",
+        "footer": {
+          "text": "Vous avez déjà un compte ?",
+          "cta": "Se connecter"
+        }
+      },
+      "placeholders": {
+        "firstname": "Prénom",
+        "lastname": "Nom de famille",
+        "email": "Adresse e-mail",
+        "organisation_name": "Nom de l'organisation",
+        "organisation_email": "E-mail de l'organisation",
+        "password": "Créer un mot de passe",
+        "confirm": "Confirmer le mot de passe"
+      },
+      "errors": {
+        "characters": "Au moins 8 caractères",
+        "capital": "Au moins une lettre majuscule",
+        "special": "Au moins un caractère spécial",
+        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
+        "password_match": "Les mots de passe ne correspondent pas",
+        "firstname_length": "Le prénom doit contenir au moins 2 caractères",
+        "lastname_length": "Le nom de famille doit contenir au moins 2 caractères",
+        "firstname_validation": "Le prénom ne doit contenir que des lettres, espaces ou traits d'union",
+        "lastname_validation": "Le nom de famille ne doit contenir que des lettres, espaces ou traits d'union",
+        "email": "Le champ e-mail ne peut pas être vide"
+      },
+      "cta": {
+        "submit": "Créer un compte",
+        "google": "Continuer avec Google"
+      },
+      "footer": "Retour"
+    },
+    "verify": {
+      "title": "Vérifier le compte",
+      "description": "Un e-mail de vérification a été envoyé à",
+      "wrong": "Email incorrect?",
+      "footer": {
+        "text": "Vous n'avez pas reçu d'e-mail ?",
+        "cta": "Renvoyer"
+      }
+    },
+    "complete": {
+      "title": "Finaliser la configuration du compte",
+      "description": "Veuillez remplir le formulaire ci-dessous pour finaliser la configuration de votre compte.",
+      "referral": " a pensée que vous aimeriez être ici.",
+      "becoming": {
+        "subtitle": "Créer une organisation",
+        "description": "Veuillez remplir le formulaire ci-dessous pour créer une nouvelle organisation.",
+        "name": "Nom de l'organisation",
+        "country": "Pays",
+        "state": "État / Région / Province",
+        "city": "Ville",
+        "organisationDescription": "Partagez des détails sur votre organisation, ce que vous faites et les événements que vous organisez...",
+        "email": "E-mail de l'organisation",
+        "phone": "Numéro de téléphone",
+        "website": "Site web",
+        "currency": "Devise",
+        "back": "Retour",
+        "submit": "Créer l'organisation",
+        "errors": {
+          "name": {
+            "min": "Le nom de l'organisation ne peut pas être vide",
+            "max": "Le nom ne peut pas dépasser 30 caractères"
+          },
+          "description": {
+            "min": "La description ne peut pas contenir moins de 150 caractères",
+            "max": "La description ne peut pas dépasser 350 caractères"
+          },
+          "country": "Sélectionnez un pays",
+          "state": "Ce champ ne peut pas être vide",
+          "city": "Le champ ville ne peut pas être vide",
+          "currency": "Veuillez sélectionner une devise"
+        }
+      },
+      "placeholders": {
+        "username": "Nom d'utilisateur",
+        "address": "Adresse",
+        "country": "Pays",
+        "state": "État / Région / Province",
+        "city": "Ville",
+        "dob": "Date de naissance",
+        "gender": "Genre",
+        "male": "Homme",
+        "female": "Femme",
+        "no": "Préfère ne pas dire",
+        "about": "À propos de l'organisateur",
+        "email": "Adresse e-mail de contact",
+        "phone": "Numéro de téléphone",
+        "website": "URL du site web de l'organisation",
+        "currency": "Devise",
+        "errors": {
+          "city": "Le champ ville ne peut pas être vide",
+          "state": "Ce champ ne peut pas être vide",
+          "gender": "Ce champ est obligatoire",
+          "country": "Sélectionnez un pays",
+          "dob": "Veuillez sélectionner une date",
+          "currency": "Veuillez sélectionner une devise",
+          "phone": "Le numéro de téléphone doit contenir au moins 8 chiffres"
+        }
+      },
+      "cta": "Terminer"
+    },
+    "onboarding": {
+      "title": "Bienvenue sur TicketWaze",
+      "description": "Apprenons à mieux vous connaître pour personnaliser votre expérience.",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "submit": "Valider",
+      "error": "Veuillez sélectionner une option",
+      "onboarded": "Utilisateur déjà intégré",
+      "first": {
+        "question": "Comment comptez-vous utiliser TicketWaze ?",
+        "1": "Pour acheter des billets",
+        "2": "Pour vendre ou gérer des billets",
+        "3": "Les deux"
+      },
+      "second": {
+        "question": "Quels types de billets vous intéressent le plus ?",
+        "1": "Concerts et festivals",
+        "2": "Sports et compétitions",
+        "3": "Cinéma et divertissement",
+        "4": "Conférences et séminaires"
+      },
+      "third": {
+        "question": "Quelle devise préférez-vous ?",
+        "1": "USD - Dollar américain",
+        "2": "HTG - Gourde haïtienne"
+      },
+      "fourth": {
+        "question": "Souhaitez-vous recevoir des notifications sur les activités tendance et les offres exclusives ?",
+        "1": "Oui",
+        "2": "Non"
+      },
+      "fith": {
+        "question": "Comment souhaitez-vous recevoir les mises à jour ?",
+        "1": "Notifications par e-mail",
+        "2": "Notifications par WhatsApp",
+        "3": "Aucune"
+      },
+      "sixth": {
+        "question": "Représentez-vous une organisation ou une entreprise ? (ex: Sumfest, Banj...)",
+        "1": "Oui",
+        "2": "Non, je suis un particulier"
+      }
+    },
+    "forgot": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Veuillez saisir les détails de votre compte pour continuer",
+      "back": "Retour",
+      "errors": {
+        "email": "Saisissez une adresse e-mail valide"
+      },
+      "placeholders": {
+        "email": "Adresse e-mail"
+      },
+      "cta": "Réinitialiser"
+    },
+    "email_sent": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Un e-mail de réinitialisation du mot de passe a été envoyé à",
+      "footer": {
+        "text": "Vous n'avez pas reçu d'e-mail ?",
+        "cta": "Renvoyer"
+      }
+    },
+    "new_password": {
+      "title": "Créer un mot de passe",
+      "description": "Choisissez un nouveau mot de passe pour votre compte",
+      "placeholders": {
+        "password": "Mot de passe",
+        "confirm": "Confirmer le mot de passe"
+      },
+      "errors": {
+        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
+        "password_match": "Le mot de passe ne correspond pas"
+      },
+      "cta": "Créer"
+    },
+    "footer": {
+      "text": "Vous n'avez pas reçu d'e-mail ?",
+      "cta": "Renvoyer"
+    }
+  },
+  "Layout": {
+    "sidebar": {
+      "more": "Plus",
+      "help": "Aide",
+      "logout": "Déconnexion",
+      "verified": "Ceci est une organisation vérifiée",
+      "links": {
+        "title1": "Événements",
+        "explore": "Explorer",
+        "upcoming": "À venir",
+        "wallet": "Portefeuille",
+        "liked": "Portefeuille",
+        "history": "Historique",
+        "organizers": "Organisateurs",
+        "title2": "Utilisateur",
+        "more": "Plus",
+        "profile": "Profil",
+        "preferences": "Préférences",
+        "settings": "Paramètres"
+      }
+    },
+    "topbar": {
+      "welcome": "Bon retour",
+      "back": "Retour",
+      "notification": "Notifications",
+      "view": "Voir"
+    },
+    "noAuth": {
+      "title": "Vous n'êtes pas connecté",
+      "description": "Accédez à votre compte pour gérer vos billets en toute sécurité, effectuer des actions et profiter d’une expérience événementielle fluide.",
+      "cancel": "Annuler",
+      "proceed": "Continuer"
+    }
+  },
+  "Explore": {
+    "title": "Explorer les événements",
+    "subtitle": "Bon retour ",
+    "search": "Rechercher un événement",
+    "noResult": "Il n'y a aucun résultat pour ",
+    "noEvent": "Il n'y a pas d'événements à venir pour le moment. Revenez plus tard ou explorez d'autres catégories pour découvrir des événements passionnants près de chez vous !",
+    "liked": "Événements aimés",
+    "filters": {
+      "first": {
+        "1": "Tous",
+        "2": "Musique",
+        "3": "Conférence",
+        "4": "Sport"
+      },
+      "second": {
+        "1": "Catégorie",
+        "2": "Lieu",
+        "3": {
+          "title": "Date",
+          "1": "Cette semaine",
+          "2": "Ce mois-ci",
+          "3": "Le mois prochain",
+          "4": "Cette année"
+        }
+      }
+    }
+  },
+  "Wallet": {
+    "title": "Portefeuille",
+    "subtitle": "Bon retour",
+    "amounts": {
+      "available": "Solde disponible",
+      "pending": "Solde en attente"
+    },
+    "ticketwazeToken": "Jeton Ticketwaze",
+    "token": "jeton(s)",
+    "invitedUser": "Utilisateur invité",
+    "user": "utilisateur(s)",
+    "referralTitle": "Invitez des amis",
+    "referralDescription": "Faisons grandir notre communauté ensemble. Aidez vos amis à découvrir des billets et des expériences exceptionnels, et gagnez 5 points pour chaque recommandation réussie !",
+    "copy": "Copier",
+    "filters": {
+      "all": "Tous les statuts",
+      "pending": "En attente",
+      "successful": "Réussi"
+    },
+    "search": "Rechercher un identifiant de transaction",
+    "transactions": {
+      "title": "Transactions récentes",
+      "description": "Vos commandes apparaîtront ici dès que les transactions commenceront à arriver.",
+      "table": {
+        "id": "ID de transaction",
+        "provider": "Fournisseur",
+        "class": "Billets",
+        "amount": "Montant payé",
+        "status": "Statut de la transaction",
+        "date": "Date d'achat"
+      },
+      "more": "Voir tout",
+      "details": {
+        "title": "Détails de la transaction",
+        "name": "Nom du participant",
+        "email": "E-mail",
+        "event_name": "Nom de l'événement",
+        "date": "Date",
+        "time": "Heure",
+        "location": "Lieu",
+        "ticket_class": "Nombre de billets",
+        "price": "Prix",
+        "ticket_id": "ID du billet",
+        "total": "Total",
+        "transaction_id": "ID de transaction",
+        "payment_method": "Méthode de paiement",
+        "payment_date": "Créé le",
+        "transaction_status": "Statut de la transaction",
+        "check_status": "Statut",
+        "check_time": "Heure de validation",
+        "close": "Fermer",
+        "resend": "Renvoyer le billet"
+      }
+    },
+    "withdrawal": {
+      "title": "Historique des retraits",
+      "description": "Votre historique de retraits s'affichera ici une fois que vous aurez effectué une demande de retrait.",
+      "table": {
+        "id": "ID de retrait",
+        "name": "Nom de la banque",
+        "provider": "Fournisseur",
+        "account": "Numéro de compte",
+        "amount": "Montant",
+        "status": "Statut de la transaction",
+        "date": "Date d'achat"
+      }
+    }
+  },
+  "Upcoming": {
+    "title": "Événements à venir",
+    "subtitle": "Bon retour ",
+    "search": "Rechercher un événement à venir",
+    "description": "Il n'y a aucun événement à venir pour le moment. Restez à l'écoute pour découvrir et réserver les prochains !",
+    "noResult": "Il n'y a aucun résultat pour "
+  },
+  "History": {
+    "title": "Historique des événements",
+    "search": "Rechercher un événement",
+    "subtitle": "Bon retour ",
+    "description": "Vous n’avez encore participé à aucun événement. Une fois que vous aurez assisté à un événement, il apparaîtra ici pour que vous puissiez revivre vos expériences passées."
+  },
+  "Event": {
+    "from": "À partir de",
+    "free": "Gratuit",
+    "back": "Retour",
+    "notInvited": "Accès restreint : il s'agit d'une activité privée visible uniquement par les participants invités.",
+    "share": "Partager",
+    "share_text": "Faites passer le mot et invitez vos amis ! Partagez cet événement sur les réseaux sociaux ou par message direct.",
+    "copy": "Copier",
+    "buy": "Acheter un billet",
+    "buy_more": "Acheter plus",
+    "about": "À propos de l'événement",
+    "contact": "Informations de contact",
+    "details": "Détails de l'événement",
+    "followers": "Abonnés",
+    "follow": "Suivre",
+    "unfollow": "Ne plus suivre",
+    "viewProfile": "Voir le profil",
+    "more": "Plus",
+    "reportEvent": "Signaler l'événement",
+    "reportOrganisation": "Signaler cet Organisation",
+    "reportEventDescription": "Aidez-nous à maintenir la sécurité de la plateforme. Partagez les détails sur tout problème avec cet événement.",
+    "reportOrganisationDescription": "Aidez-nous à maintenir la sécurité de la plateforme. Partagez les détails sur tout problème avec cet organisation.",
+    "inappropriateContent": "Contenu inapproprié",
+    "misleadingInformation": "Informations trompeuses",
+    "fraud": "Préoccupations de fraude ou d'arnaque",
+    "venue": "Problèmes de lieu ou de date",
+    "other": "Autre",
+    "question": "Quel problème rencontrez-vous avec cet événement ?",
+    "question2": "Quel problème rencontrez-vous avec cette organisation ?",
+    "message": "Message",
+    "pleaseSpecifyReason": "Veuillez préciser une raison valable",
+    "validStatus": "Vous devez sélectionner une raison valide",
+    "reportOrg": "Signaler l'organisation",
+    "sold": "Vendu",
+    "direction": "Direction",
+    "open": "Ouvrir la carte",
+    "date": "Date",
+    "time": "Heure",
+    "location": "Lieu",
+    "download": "Télécharger",
+    "rate": "Évaluer l'événement",
+    "feedback": "Écrire un commentaire",
+    "send": "Envoyer le commentaire",
+    "use": "Billet utilisé",
+    "not_used": "Billet non utilisé",
+    "ticket": "Billet",
+    "ticketId": "ID du billet",
+    "name": "Nom complet",
+    "email": "E-mail",
+    "ticketWarning1": "Votre billet est personnel — ne le partagez pas.",
+    "ticketWarning2": "Ce billet est non remboursable",
+    "liked": "Événements aimés"
+  },
+  "Checkout": {
+    "back": "Retour",
+    "free": "Gratuit",
+    "purchased": "Billet acheté",
+    "purchased_cta": "Ouverture des événements à venir...",
+    "purchased_text": "Votre achat est confirmé ! Vous pouvez y accéder à tout moment dans les Événements à venir ou vérifier votre e-mail pour une copie.",
+    "ticket": {
+      "title": "Acheter un billet",
+      "quantity": "Quantité",
+      "summary": "Résumé",
+      "select": "Sélectionnez un type de billet pour continuer",
+      "left": "tickets restant",
+      "soldout": "Rupture de stock",
+      "platform": "Frais + taxes / ticket",
+      "discount": "Appliquer un code de réduction",
+      "discount_code": "Code de réduction",
+      "apply": "Appliquer",
+      "error": "Sélectionnez au moins un billet",
+      "ticketWarning": "Les billets ne sont pas remboursables. Toutes les ventes sont définitives"
+    },
+    "recipient": {
+      "title": "Destinataire",
+      "someone": "J'achète ce billet pour quelqu'un d'autre",
+      "error": "Veuillez renseigner les informations relatives aux participants pour tous les billets marqués pour quelqu'un d'autre",
+      "warning": "Veuillez vérifier les informations avant de soumettre votre demande. Si elles sont incorrectes, la personne pourrait ne pas pouvoir accéder à son ticket.",
+      "email": "Adresse e-mail",
+      "name": "Nom complet"
+    },
+    "payment": {
+      "title": "Paiement",
+      "payment": "Effectuer le paiement",
+      "wallet": "Portefeuille Ticketwaze",
+      "card": "Payer par carte",
+      "paypal": "Payer avec PayPal",
+      "moncash": "Payer avec MonCash",
+      "nopayment": "Cet événement est entièrement gratuit. Aucun paiement n'est requis pour finaliser votre inscription. Continuez simplement pour confirmer votre billet et le tour est joué.",
+      "secured": "Votre sécurité est notre priorité. Toutes les transactions sont effectuées via des canaux cryptés et sont surveillées en temps réel afin de prévenir toute fraude et de garantir la protection de vos informations personnelles. Nos systèmes sont supervisés par des partenaires de confiance et respectent les normes les plus strictes en matière de sécurité des paiements et des données.",
+      "paymentType": "Sélétionner un moyen de paiement",
+      "placeholders": {
+        "name": "Nom sur la carte",
+        "expiry": "Expiration",
+        "number": "Numéro de carte"
+      }
+    },
+    "footer": {
+      "ticket": "Billet",
+      "recipient": "Destinataire",
+      "payment": "Paiement",
+      "continue": "Continuer"
+    }
+  },
+  "Liked": {
+    "title": "Événements aimées",
+    "back": "Retour",
+    "noEvent": "Vous n'avez aimé aucun événement. Parcourez les événements à venir et appuyez sur ❤️ pour enregistrer vos favoris !",
+    "filters": {
+      "saved": "Sauvegardés",
+      "liked": "Aimés"
+    }
+  },
+  "Profile": {
+    "title": "Profil",
+    "edit": "Modifier le profil",
+    "save": "Sauvegarder les modifications",
+    "setProfile": "Définir l'image de profil",
+    "resize": "Redimensionner l'image",
+    "personal": "Informations personnelles",
+    "placeholders": {
+      "firstname": "Prénom",
+      "lastname": "Nom de famille",
+      "email": "Adresse e-mail",
+      "state": "État / Région / Province",
+      "city": "Ville",
+      "country": "Pays",
+      "dob": "Date de naissance",
+      "phone": "Numéro de téléphone",
+      "gender": "Genre",
+      "male": "Homme",
+      "female": "Femme",
+      "no": "Préfère ne pas dire",
+      "blood": "Groupe sanguin"
+    },
+    "event": {
+      "title": "Événement",
+      "attended": "Nombre d'événements auxquels j'ai assisté",
+      "tickets": "Nombre de billets achetés",
+      "missed": "Nombre d'événements manqués"
+    },
+    "account": {
+      "title": "Compte",
+      "created": "Date de création",
+      "delete": "Supprimer le compte"
+    },
+    "errors": {
+      "firstname_length": "Le prénom doit contenir au moins 2 caractères",
+      "lastname_length": "Le nom de famille doit contenir au moins 2 caractères",
+      "firstname_validation": "Le prénom ne doit contenir que des lettres, espaces ou traits d'union",
+      "lastname_validation": "Le nom de famille ne doit contenir que des lettres, espaces ou traits d'union",
+      "city": "Le champ ville ne peut pas être vide",
+      "state": "Ce champ ne peut pas être vide",
+      "gender": "Ce champ est obligatoire",
+      "country": "Sélectionnez un pays",
+      "dob": "Veuillez sélectionner une date",
+      "currency": "Veuillez sélectionner une devise",
+      "phone": "Le numéro de téléphone doit contenir au moins 8 chiffres"
+    },
+    "others": {
+      "title": "Autres",
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions d'utilisation"
+    }
+  },
+  "Preferences": {
+    "title": "Préférences",
+    "categories": {
+      "title": "Catégories préférées"
+    },
+    "email": {
+      "title": "Notifications par e-mail",
+      "upcoming": "Me notifier des événements à venir pour lesquels j'ai acheté des billets.",
+      "preferred": "Me notifier des nouveaux événements dans mes catégories préférées.",
+      "follow": "Me notifier quand un organisateur que je suis ajoute de nouveaux événements."
+    },
+    "user": {
+      "title": "Préférences de l'application",
+      "currency": "Devise préférée",
+      "notifications": "Fournisseur de notifications préféré",
+      "none": "Aucun"
+    }
+  },
+  "Settings": {
+    "title": "Paramètres",
+    "password": {
+      "title": "Changer le mot de passe",
+      "cta": "Changer le mot de passe",
+      "tips": {
+        "title": "Conseil de sécurité",
+        "description": "Après avoir mis à jour votre mot de passe, vous devrez vous reconnecter sur tous vos appareils pour des raisons de sécurité."
+      },
+      "errors": {
+        "blank": "Le champ ne peut pas être vide",
+        "password": "Le mot de passe doit contenir au moins 8 caractères",
+        "confirm": "Le mot de passe doit être identique"
+      }
+    },
+    "errors": {
+      "characters": "Au moins 8 caractères",
+      "capital": "Au moins une lettre majuscule",
+      "special": "Au moins un caractère spécial"
+    },
+    "placeholders": {
+      "password": "Mot de passe actuel",
+      "new": "Nouveau mot de passe",
+      "confirm": "Confirmer le nouveau mot de passe"
+    },
+    "security": {
+      "title": "Sécurité",
+      "2fa": "Authentification à deux facteurs"
+    },
+    "language": {
+      "title": "Langue de l'application"
+    },
+    "others": {
+      "title": "Autres",
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions d'utilisation"
+    }
+  },
+  "Organizers": {
+    "title": "Organisation",
+    "subtitle": "Bon retour ",
+    "back": "Retour",
+    "search": "Rechercher des organisations",
+    "filters": {
+      "all": "Tous",
+      "popular": "Populaires",
+      "following": "Suivis"
+    },
+    "event": "activités",
+    "follow": "Suivre",
+    "unfollow": "Ne plus suivre",
+    "profile": {
+      "upcoming": "Activités à venir",
+      "noUpcoming": "Aucune activité à venir",
+      "rating": "note",
+      "followers": "abonnés",
+      "events": "Activités",
+      "follow": "Suivre",
+      "unfollow": "Ne plus suivre",
+      "about": "À propos de l'organisation",
+      "contact": "Informations de contact",
+      "noResult": "Il n'y a aucun résultat pour "
+    }
+  }
+}
