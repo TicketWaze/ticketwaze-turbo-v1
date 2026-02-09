@@ -635,6 +635,10 @@
       "subtitle": "Informations utilisateur",
       "setProfile": "Définir l'image de profil",
       "personal": "Informations personnelles",
+      "profileAlert": "Veuillez vous connecter à votre tableau de bord afin de consulter ou de mettre à jour les informations liées à votre profil. Une fois connecté, vous pourrez vérifier vos données et effectuer les modifications nécessaires directement depuis votre tableau de bord.",
+      "securityTip": "Conseil de sécurité",
+      "2faTip": "L’authentification à deux facteurs (2FA) ne peut pas être désactivée, car votre compte est propriétaire ou membre d’une organisation. Pour des raisons de sécurité et de conformité, les comptes organisationnels doivent toujours conserver la 2FA activée.",
+      "profileLink": "Lien vers votre profil",
       "placeholders": {
         "firstname": "Prénom",
         "lastname": "Nom de famille",
@@ -746,6 +750,9 @@
         "confirm": "Le mot de passe doit être identique"
       },
       "two_factor": "Authentification à deux facteurs",
+      "securityTip": "Conseil de sécurité",
+      "2faTip": "L’authentification à deux facteurs (2FA) ne peut pas être désactivée, car votre compte est propriétaire ou membre d’une organisation. Pour des raisons de sécurité et de conformité, les comptes organisationnels doivent toujours conserver la 2FA activée.",
+      "passwordTip": "Après avoir mis à jour votre mot de passe, vous devrez vous reconnecter sur tous vos appareils pour des raisons de sécurité.",
       "enable": "Activer"
     },
     "payment": {
