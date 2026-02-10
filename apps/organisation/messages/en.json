@@ -14,7 +14,7 @@
       "join": "Join",
       "title2": "Get ready to sell tickets",
       "description2": "Create activities, manage attendees, and track sales — everything starts here",
-      "alert": "We’ve noticed that you are not currently part of any organisation. By continuing, you agree to create a new organisation under your name, where you will be assigned as the administrator. ",
+      "alert": "We’ve noticed that you are not currently part of any organisation. By continuing, you agree to create a new organisation under your name, where you will be assigned as the administrator.",
       "alert2": "This organisation will be set up with default information. Don’t worry, these default details can be updated at any time. By proceeding, you confirm your agreement to our Privacy Policy and Terms of Use. If you prefer not to continue, simply click the Explore button.",
       "action": "Get started",
       "back": "Explore Ticketwaze"
@@ -204,6 +204,7 @@
       "switch": "Organisations",
       "switching": "Switch Organisation",
       "new": "New organisation",
+      "newDescription": "By continuing, you agree to create a new organisation under your name, where you will be assigned as the administrator. This organisation will be set up with default information. Don’t worry, these default details can be updated at any time. By proceeding, you confirm your agreement to our Privacy Policy and Terms of Use. If you prefer not to continue, simply close this modal.",
       "login": "Log in",
       "logout": "Log out",
       "analytics": "Analytics",

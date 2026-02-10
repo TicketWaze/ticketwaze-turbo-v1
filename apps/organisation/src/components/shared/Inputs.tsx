@@ -27,7 +27,7 @@ export function Input({
         {...props}
         placeholder=" "
         disabled={isLoading ?? disabled ?? false}
-        className={`peer transition-all duration-300 delay-200 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 disabled:text-neutral-700 disabled:border-none disabled:cursor-not-allowed ${isLoading ? "animate-pulse" : null}`}
+        className={`peer transition-all disabled:text-neutral-600 disabled:cursor-not-allowed duration-300 delay-200 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 disabled:text-neutral-700 disabled:border-none disabled:cursor-not-allowed ${isLoading ? "animate-pulse" : null}`}
       />
       <label className="absolute left-8 top-8 text-[1.5rem] text-neutral-600 transition-all duration-200 ease-in-out peer-placeholder-shown:top-8 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-[1.2rem] peer-focus:text-neutral-600 cursor-text pointer-events-none ">
         {children}

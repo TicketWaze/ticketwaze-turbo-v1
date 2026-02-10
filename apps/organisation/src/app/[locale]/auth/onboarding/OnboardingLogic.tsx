@@ -72,11 +72,10 @@ export default function OnboardingLogic({
         await update({
           activeOrganisation: organisation,
         });
-        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${user.userPreference.appLanguage}/analytics`;
+        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/analytics`;
       }
     } catch (error) {
-      console.error("Failed to join organisation:", error);
-      toast.error("Failed to Join Organisation");
+      toast.error(`Failed to Join Organisation : ${(error as Error).message}`);
     }
     setIsloading(false);
   }
@@ -118,16 +117,29 @@ export default function OnboardingLogic({
       {invitedOrganisations && (
         <div className=" flex flex-col gap-32 pt-16 w-full">
           <div className="flex flex-col gap-8 items-center">
-            <h3 className="font-medium font-primary text-[3.2rem] leading-14 text-black">
+            <motion.h3
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="font-medium font-primary text-[3.2rem] leading-14 text-black"
+            >
               {t("title")}
-            </h3>
-            <p className="text-[1.8rem] text-center leading-10 text-neutral-700">
+            </motion.h3>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="text-[1.8rem] text-center leading-10 text-neutral-700"
+            >
               {t("description")}
-            </p>
+            </motion.p>
           </div>
           {invitedOrganisations.map((organisation) => {
             return (
-              <div
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
                 key={organisation.organisationId}
                 className="flex items-center justify-between gap-3 bg-neutral-100 px-6 py-8 rounded-[15px] w-full"
               >
@@ -155,7 +167,7 @@ export default function OnboardingLogic({
                 >
                   {isLoading ? <LoadingCircleSmall /> : t("join")}
                 </ButtonPrimary>
-              </div>
+              </motion.div>
             );
           })}
         </div>

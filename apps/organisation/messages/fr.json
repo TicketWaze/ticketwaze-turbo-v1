@@ -204,6 +204,7 @@
       "switch": "Organisations",
       "switching": "Changer d'organisation",
       "new": "Nouvelle organisation",
+      "newDescription": " En continuant, vous acceptez de créer une nouvelle organisation à votre nom, dont vous serez l’administrateur. Cette organisation sera configurée avec des informations par défaut. Ne vous inquiétez pas, ces informations pourront être modifiées à tout moment. En poursuivant, vous confirmez votre accord avec notre Politique de confidentialité et nos Conditions d’utilisation. Si vous préférez ne pas continuer, fermez simplement cette fenêtre.",
       "login": "Se connecter",
       "logout": "Se déconnecter",
       "analytics": "Analyses",

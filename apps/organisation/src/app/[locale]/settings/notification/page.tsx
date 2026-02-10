@@ -4,11 +4,16 @@ import NotificationForm from "./NotificationForm";
 import { auth } from "@/lib/auth";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
+import { organisationPolicy } from "@/lib/role/organisationPolicy";
 
 export default async function Page() {
   const t = await getTranslations("Settings.notification");
   const locale = await getLocale();
   const session = await auth();
+  const authorized = await organisationPolicy.updateOrganisationInformations(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
   const organisation = session?.activeOrganisation;
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisation?.organisationId}/notifications-preferences`,
@@ -31,6 +36,7 @@ export default async function Page() {
       </div>
       <NotificationForm
         notificationPreferences={notificationPreferences.preferences}
+        authorized={authorized}
       />
     </OrganizerLayout>
   );

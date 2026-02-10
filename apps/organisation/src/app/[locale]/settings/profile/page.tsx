@@ -8,11 +8,16 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 import CurrencyPreference from "./CurrencyPreference";
 import { auth } from "@/lib/auth";
 import { Organisation } from "@ticketwaze/typescript-config";
+import { organisationPolicy } from "@/lib/role/organisationPolicy";
 
 export default async function ProfilePage() {
   const t = await getTranslations("Settings.profile");
   const locale = await getLocale();
   const session = await auth();
+  const authorized = await organisationPolicy.updateOrganisationInformations(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation.organisationId}`,
     {
@@ -32,7 +37,9 @@ export default async function ProfilePage() {
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
         <TopBar title={t("title")}>
-          <ButtonPrimary form="profile-form">{t("save")}</ButtonPrimary>
+          {authorized && (
+            <ButtonPrimary form="profile-form">{t("save")}</ButtonPrimary>
+          )}
         </TopBar>
       </div>
       <div
@@ -40,9 +47,12 @@ export default async function ProfilePage() {
           "flex flex-col gap-16 w-full lg:w-212 mx-auto overflow-y-scroll overflow-x-hidden h-full"
         }
       >
-        <ProfileImage />
-        <ProfileForm />
-        <CurrencyPreference organisation={organisation} />
+        <ProfileImage authorized={authorized} />
+        <ProfileForm authorized={authorized} />
+        <CurrencyPreference
+          organisation={organisation}
+          authorized={authorized}
+        />
         <div></div>
       </div>
     </OrganizerLayout>

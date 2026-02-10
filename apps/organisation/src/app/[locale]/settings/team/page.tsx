@@ -9,12 +9,17 @@ import {
 } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
+import { organisationPolicy } from "@/lib/role/organisationPolicy";
 
 export default async function Page() {
   const t = await getTranslations("Settings.team");
   const locale = await getLocale();
   const session = await auth();
   const organisationId = session?.activeOrganisation.organisationId;
+  const authorized = await organisationPolicy.manageTeam(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/team`,
     {
@@ -34,11 +39,13 @@ export default async function Page() {
     <OrganizerLayout title={t("title")}>
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
-        <TopBar title={t("title")}>
-          <AddMember />
-        </TopBar>
+        <TopBar title={t("title")}>{authorized && <AddMember />}</TopBar>
       </div>
-      <MemberList members={members} waitlistMembers={waitlistMembers} />
+      <MemberList
+        members={members}
+        waitlistMembers={waitlistMembers}
+        authorized={authorized}
+      />
     </OrganizerLayout>
   );
 }

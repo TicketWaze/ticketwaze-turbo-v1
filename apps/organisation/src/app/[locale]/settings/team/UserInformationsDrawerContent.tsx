@@ -16,8 +16,10 @@ import Separator from "@/components/shared/Separator";
 
 export default function UserInformation({
   member,
+  authorized,
 }: {
   member: OrganisationMember;
+  authorized: boolean;
 }) {
   const t = useTranslations("Settings.team");
   const { data: session } = useSession();
@@ -32,7 +34,7 @@ export default function UserInformation({
               "font-primary font-medium text-center text-[2.6rem] leading-12 text-black"
             }
           >
-            {member.firstName}
+            {member.firstName} {member.lastName}
           </span>
         </DrawerTitle>
         <DrawerDescription className={"w-full"}>
@@ -129,40 +131,40 @@ export default function UserInformation({
         </DrawerDescription>
       </div>
 
-      {/* {isAdmin && ( */}
-      <DrawerFooter>
-        <div className={"flex gap-8 w-full items-center"}>
-          <Dialog>
-            <DialogTrigger className={"w-full flex-1"}>
-              <span
-                className={
-                  "w-full border-failure text-failure bg-[#FCE5EA] px-4 py-6 border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
-                }
-              >
-                {t("remove")}
-              </span>
-            </DialogTrigger>
-            <RemoveMember email={member.email} />
-          </Dialog>
-          <Dialog>
-            <DialogTrigger className={"w-full flex-1"}>
-              <span
-                className={
-                  "w-full bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 hover:border-primary-600 px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
-                }
-              >
-                {t("edit")}
-              </span>
-            </DialogTrigger>
-            <EditMemberDialogContent
-              userId={member.userId}
-              defaultRole={member.role}
-              user={session?.user as User}
-            />
-          </Dialog>
-        </div>
-      </DrawerFooter>
-      {/* )} */}
+      {authorized && (
+        <DrawerFooter>
+          <div className={"flex gap-8 w-full items-center"}>
+            <Dialog>
+              <DialogTrigger className={"w-full flex-1"}>
+                <span
+                  className={
+                    "w-full border-failure text-failure bg-[#FCE5EA] px-4 py-6 border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
+                  }
+                >
+                  {t("remove")}
+                </span>
+              </DialogTrigger>
+              <RemoveMember email={member.email} />
+            </Dialog>
+            <Dialog>
+              <DialogTrigger className={"w-full flex-1"}>
+                <span
+                  className={
+                    "w-full bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 hover:border-primary-600 px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
+                  }
+                >
+                  {t("edit")}
+                </span>
+              </DialogTrigger>
+              <EditMemberDialogContent
+                userId={member.userId}
+                defaultRole={member.role}
+                user={session?.user as User}
+              />
+            </Dialog>
+          </div>
+        </DrawerFooter>
+      )}
     </DrawerContent>
   );
 }

@@ -22,9 +22,7 @@ export const UserActions = {
   "finance:update": iota(),
   "finance:view": iota(),
 
-  "team:add": iota(),
-  "team:update": iota(),
-  "team:delete": iota(),
+  "team:manage": iota(),
 
   "settings:update": iota(),
   "analytics:view": iota(),
@@ -47,10 +45,7 @@ const FinancePermission =
   UserActions["finance:update"] | UserActions["finance:view"];
 
 const StaffPermission =
-  UserActions["team:add"] |
-  UserActions["analytics:view"] |
-  UserActions["team:update"] |
-  UserActions["finance:view"];
+  UserActions["analytics:view"] | UserActions["finance:view"];
 
 const AdminPermission =
   CheckInPermission |
@@ -58,7 +53,7 @@ const AdminPermission =
   FinancePermission |
   StaffPermission |
   UserActions["organisation:delete"] |
-  UserActions["team:delete"] |
+  UserActions["team:manage"] |
   UserActions["organisation:update"];
 
 export const OrganisationPermissions: Record<TRole, number> = {

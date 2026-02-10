@@ -20,8 +20,9 @@ import getCroppedImg from "@/lib/GetCroppedImage";
 import { UpdateOrganisationProfileImage } from "@/actions/organisationActions";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import Image from "next/image";
 
-function ProfileImage() {
+function ProfileImage({ authorized }: { authorized: boolean }) {
   const t = useTranslations("Settings.profile");
   const { data: session, update } = useSession();
   const [isUploading, setIsUploading] = useState(false);
@@ -147,7 +148,7 @@ function ProfileImage() {
             "w-32 h-32 lg:w-64 lg:h-64 border-2 border-primary-600 overflow-hidden rounded-[25px] lg:rounded-[50px]"
           }
         >
-          <img
+          <Image
             alt={organisation.organisationName}
             className={"w-full h-full object-cover object-top"}
             src={organisation.profileImageUrl}
@@ -177,34 +178,36 @@ function ProfileImage() {
         ) : (
           <div className="h-20 w-full bg-primary-50/40 rounded-[30px] animate-pulse"></div>
         )}
-        <form
-          encType={"multipart/form-data"}
-          className={
-            "px-6 lg:px-12 py-4 relative rounded-[100px] flex items-center justify-center gap-2 bg-black"
-          }
-        >
-          {isUploading ? (
-            <LoadingCircleSmall />
-          ) : (
-            <>
-              <ImageIcon size="20" color="#ffffff" variant="Bulk" />
-              <span
-                className={"font-semibold text-[1.5rem] leading-8 text-white"}
-              >
-                {t("setProfile")}
-              </span>
-            </>
-          )}
-          <input
-            type={"file"}
-            accept={"image/*"}
-            name={"user-profile"}
-            onChange={handleFileChange}
+        {authorized && (
+          <form
+            encType={"multipart/form-data"}
             className={
-              "absolute top-0 left-0 w-full h-full opacity-0 z-50 cursor-pointer "
+              "px-6 lg:px-12 py-4 relative rounded-[100px] flex items-center justify-center gap-2 bg-black"
             }
-          />
-        </form>
+          >
+            {isUploading ? (
+              <LoadingCircleSmall />
+            ) : (
+              <>
+                <ImageIcon size="20" color="#ffffff" variant="Bulk" />
+                <span
+                  className={"font-semibold text-[1.5rem] leading-8 text-white"}
+                >
+                  {t("setProfile")}
+                </span>
+              </>
+            )}
+            <input
+              type={"file"}
+              accept={"image/*"}
+              name={"user-profile"}
+              onChange={handleFileChange}
+              className={
+                "absolute top-0 left-0 w-full h-full opacity-0 z-50 cursor-pointer "
+              }
+            />
+          </form>
+        )}
       </div>
     </div>
   );

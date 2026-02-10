@@ -11,6 +11,13 @@ export default async function FinancePage() {
   const t = await getTranslations("Finance");
   const locale = await getLocale();
   const session = await auth();
+  const authorized = await organisationPolicy.viewFinance(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
+  if (!authorized) {
+    return <UnauthorizedView />;
+  }
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/transactions`,
     {
@@ -24,10 +31,6 @@ export default async function FinancePage() {
     },
   );
   const transactions = await request.json();
-  const authorized = await organisationPolicy.viewFinance(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
   return (
     <OrganizerLayout title="Finance">
       <TopBar title={t("title")}>
@@ -35,11 +38,7 @@ export default async function FinancePage() {
           <InitiateWithdrawalButton organisation={transactions.organisation} />
         </div>
       </TopBar>
-      {authorized ? (
-        <FinancePageContent transactions={transactions} />
-      ) : (
-        <UnauthorizedView />
-      )}
+      <FinancePageContent transactions={transactions} />
     </OrganizerLayout>
   );
 }

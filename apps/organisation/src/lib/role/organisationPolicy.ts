@@ -2,19 +2,9 @@ import { UserActions } from "./organisationRole";
 import { can, getUserRole } from "./permission";
 
 export class OrganisationPolicy {
-  async addMember(userId: string, organisationId: string): Promise<boolean> {
+  async manageTeam(userId: string, organisationId: string): Promise<boolean> {
     const role = await getUserRole(userId, organisationId);
-    return can(role, UserActions["team:add"]);
-  }
-
-  async removeMember(userId: string, organisationId: string): Promise<boolean> {
-    const role = await getUserRole(userId, organisationId);
-    return can(role, UserActions["team:delete"]);
-  }
-
-  async updateMember(userId: string, organisationId: string): Promise<boolean> {
-    const role = await getUserRole(userId, organisationId);
-    return can(role, UserActions["team:update"]);
+    return can(role, UserActions["team:manage"]);
   }
 
   async updateOrganisationInformations(

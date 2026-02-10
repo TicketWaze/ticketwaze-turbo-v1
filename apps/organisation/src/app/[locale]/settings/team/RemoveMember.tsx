@@ -23,7 +23,7 @@ export default function RemoveMember({ email }: { email: string }) {
   const [isLoading, setIsLoading] = useState(false);
   async function removeMember() {
     setIsLoading(true);
-    if (session?.user.userId === organisation?.userId) {
+    if (session?.user.email === email) {
       toast.warning(t("noSelfDelete"));
       setIsLoading(false);
       CloseDialogRef.current?.click();

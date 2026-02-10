@@ -10,8 +10,10 @@ import { Organisation } from "@ticketwaze/typescript-config";
 
 export default function CurrencyPreference({
   organisation,
+  authorized,
 }: {
   organisation: Organisation;
+  authorized: boolean;
 }) {
   const t = useTranslations("Settings.profile.preferences");
   const locale = useLocale();
@@ -20,8 +22,8 @@ export default function CurrencyPreference({
   async function updateCurrency(currency: string) {
     setIsLoading(true);
     const response = await UpdateOrganisationCurrency(
-      session?.activeOrganisation.organisationId!,
-      session?.user.accessToken!,
+      session?.activeOrganisation.organisationId ?? "",
+      session?.user.accessToken ?? "",
       {
         currency,
       },
@@ -47,6 +49,7 @@ export default function CurrencyPreference({
         {t("currency")}
       </span>
       <RadioGroup
+        disabled={!authorized}
         defaultValue={organisation.currency}
         onValueChange={(e) => updateCurrency(e)}
         className="flex gap-6 w-full justify-between lg:justify-around"

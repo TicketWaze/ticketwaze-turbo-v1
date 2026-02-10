@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 import { ButtonPrimary } from "../shared/buttons";
 import LoadingCircleSmall from "../shared/LoadingCircleSmall";
+import CreateOrganisationDialog from "./CreateOrganisationDialog";
 
 function Sidebar({ className }: { className: string }) {
   const t = useTranslations("Layout.sidebar");
@@ -114,6 +115,9 @@ function Sidebar({ className }: { className: string }) {
     CloseRef.current?.click();
     router.refresh();
   }
+  const hasOrganisation = allOrganisations.filter(
+    (organisation) => organisation.userId === session?.user.userId,
+  );
 
   return (
     <aside className={cn("flex-col hidden lg:flex", className)}>
@@ -164,106 +168,107 @@ function Sidebar({ className }: { className: string }) {
             </Link>
           </li>
           {/* switch organisation */}
-          {isLoading ? null : allOrganisations &&
-            allOrganisations?.length > 1 ? (
-            <li className="">
-              <Dialog>
-                <DialogTrigger>
-                  <div className={"flex gap-4 items-center p-4 cursor-pointer"}>
-                    <ArrowSwapHorizontal
-                      size="20"
-                      color="#737c8a"
-                      variant="Bulk"
-                    />
-                    <span
-                      className={"text-neutral-700 text-[1.5rem] leading-8"}
-                    >
-                      {t("switching")}
-                    </span>
-                  </div>
-                </DialogTrigger>
-                <DialogContent
-                  className={"w-xl lg:w-208 flex flex-col gap-16 "}
-                >
-                  <DialogHeader>
-                    <DialogTitle
-                      className={
-                        "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
-                      }
-                    >
-                      {t("switch")}
-                    </DialogTitle>
-                    <DialogDescription className={"sr-only"}>
-                      <span>Share event</span>
-                    </DialogDescription>
-                  </DialogHeader>
-                  <RadioGroup
-                    className="flex flex-col gap-8"
-                    defaultValue={session?.activeOrganisation.organisationId}
-                  >
-                    {allOrganisations.map((organisation) => {
-                      return (
-                        <div
-                          key={organisation.organisationId}
-                          className="flex items-center justify-between gap-3"
+          {isLoading
+            ? null
+            : allOrganisations &&
+              allOrganisations?.length > 1 && (
+                <li className="">
+                  <Dialog>
+                    <DialogTrigger>
+                      <div
+                        className={"flex gap-4 items-center p-4 cursor-pointer"}
+                      >
+                        <ArrowSwapHorizontal
+                          size="20"
+                          color="#737c8a"
+                          variant="Bulk"
+                        />
+                        <span
+                          className={"text-neutral-700 text-[1.5rem] leading-8"}
                         >
-                          <div className="flex items-center gap-4">
-                            {organisation?.profileImageUrl ? (
-                              <Image
-                                src={organisation.profileImageUrl}
-                                width={35}
-                                height={35}
-                                alt={organisation.organisationName}
-                                className="rounded-full"
-                              />
-                            ) : (
-                              <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-120 font-primary">
-                                {organisation?.organisationName
-                                  .slice()[0]
-                                  ?.toUpperCase()}
-                              </span>
-                            )}
-                            <span className="text-[1.6rem]">
-                              {organisation.organisationName}
-                            </span>
-                          </div>
-                          <RadioGroupItem
-                            onClick={() =>
-                              setSelectedOrganisation(organisation)
-                            }
-                            value={organisation.organisationId}
-                          />
-                        </div>
-                      );
-                    })}
-                  </RadioGroup>
-                  <DialogFooter>
-                    <DialogClose ref={CloseRef}></DialogClose>
-                    <ButtonPrimary
-                      onClick={() =>
-                        switchOrganisation(selectedOrganisation as Organisation)
-                      }
-                      disabled={isLoading}
-                      className="w-full"
+                          {t("switching")}
+                        </span>
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent
+                      className={"w-xl lg:w-208 flex flex-col gap-16 "}
                     >
-                      {loading ? <LoadingCircleSmall /> : t("switching")}
-                    </ButtonPrimary>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </li>
-          ) : (
-            <li>
-              {/* <Link
-                href={"/auth/create-organisation"}
-                className={"flex gap-4 items-center p-4 cursor-pointer"}
-              >
-                <Add size="20" color="#737c8a" variant="Bulk" />
-                <span className={"text-neutral-700 text-[1.5rem] leading-8"}>
-                  {t("new")}
-                </span>
-              </Link> */}
-            </li>
+                      <DialogHeader>
+                        <DialogTitle
+                          className={
+                            "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
+                          }
+                        >
+                          {t("switch")}
+                        </DialogTitle>
+                        <DialogDescription className={"sr-only"}>
+                          <span>Share event</span>
+                        </DialogDescription>
+                      </DialogHeader>
+                      <RadioGroup
+                        className="flex flex-col gap-8"
+                        defaultValue={
+                          session?.activeOrganisation.organisationId
+                        }
+                      >
+                        {allOrganisations.map((organisation) => {
+                          return (
+                            <div
+                              key={organisation.organisationId}
+                              className="flex items-center justify-between gap-3"
+                            >
+                              <div className="flex items-center gap-4">
+                                {organisation?.profileImageUrl ? (
+                                  <Image
+                                    src={organisation.profileImageUrl}
+                                    width={35}
+                                    height={35}
+                                    alt={organisation.organisationName}
+                                    className="rounded-full"
+                                  />
+                                ) : (
+                                  <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-120 font-primary">
+                                    {organisation?.organisationName
+                                      .slice()[0]
+                                      ?.toUpperCase()}
+                                  </span>
+                                )}
+                                <span className="text-[1.6rem]">
+                                  {organisation.organisationName}
+                                </span>
+                              </div>
+                              <RadioGroupItem
+                                onClick={() =>
+                                  setSelectedOrganisation(organisation)
+                                }
+                                value={organisation.organisationId}
+                              />
+                            </div>
+                          );
+                        })}
+                      </RadioGroup>
+                      <DialogFooter>
+                        <DialogClose ref={CloseRef}></DialogClose>
+                        <ButtonPrimary
+                          onClick={() =>
+                            switchOrganisation(
+                              selectedOrganisation as Organisation,
+                            )
+                          }
+                          disabled={isLoading}
+                          className="w-full"
+                        >
+                          {loading ? <LoadingCircleSmall /> : t("switching")}
+                        </ButtonPrimary>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </li>
+              )}
+          {hasOrganisation.length === 0 && (
+            <CreateOrganisationDialog
+              setSelectedOrganisation={setSelectedOrganisation}
+            />
           )}
 
           {/* logout */}
@@ -286,41 +291,7 @@ function Sidebar({ className }: { className: string }) {
           {/* Premium + Organisation */}
 
           {/* Non Premium Organisation */}
-          {membershipTier?.membershipName === "free" ? (
-            <li>
-              <Link
-                href={"/settings/profile"}
-                className={
-                  "flex items-center gap-4 bg-neutral-100 p-4 mx-2 mb-2 rounded-[10px]"
-                }
-              >
-                {organisation?.profileImageUrl ? (
-                  <Image
-                    src={organisation.profileImageUrl}
-                    width={35}
-                    height={35}
-                    alt={organisation.organisationName}
-                    className="rounded-full"
-                  />
-                ) : (
-                  <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
-                    {organisation?.organisationName.slice()[0]?.toUpperCase()}
-                  </span>
-                )}
-
-                <div
-                  className={"text-neutral-700 text-[1.5rem] flex-1 leading-8"}
-                >
-                  <span>
-                    {organisation?.organisationName}{" "}
-                    {organisation?.isVerified ? (
-                      <VerifierOrganisationCheckMark />
-                    ) : null}
-                  </span>
-                </div>
-              </Link>
-            </li>
-          ) : (
+          {membershipTier?.membershipName !== "free" ? (
             <li>
               <div className="mx-2 mb-2 rounded-[1.2rem] p-[.2rem] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
                 <Link
@@ -355,6 +326,40 @@ function Sidebar({ className }: { className: string }) {
                   </div>
                 </Link>
               </div>
+            </li>
+          ) : (
+            <li>
+              <Link
+                href={"/settings/profile"}
+                className={
+                  "flex items-center gap-4 bg-neutral-100 p-4 mx-2 mb-2 rounded-[10px]"
+                }
+              >
+                {organisation?.profileImageUrl ? (
+                  <Image
+                    src={organisation.profileImageUrl}
+                    width={35}
+                    height={35}
+                    alt={organisation.organisationName}
+                    className="rounded-full"
+                  />
+                ) : (
+                  <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
+                    {organisation?.organisationName.slice()[0]?.toUpperCase()}
+                  </span>
+                )}
+
+                <div
+                  className={"text-neutral-700 text-[1.5rem] flex-1 leading-8"}
+                >
+                  <span>
+                    {organisation?.organisationName}{" "}
+                    {organisation?.isVerified ? (
+                      <VerifierOrganisationCheckMark />
+                    ) : null}
+                  </span>
+                </div>
+              </Link>
             </li>
           )}
         </ul>

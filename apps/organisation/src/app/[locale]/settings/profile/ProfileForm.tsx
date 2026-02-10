@@ -10,7 +10,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 
-export default function ProfileForm() {
+export default function ProfileForm({ authorized }: { authorized: boolean }) {
   const t = useTranslations("Settings.profile");
   const { data: session, update } = useSession();
   const organisation = session?.activeOrganisation;
@@ -84,13 +84,14 @@ export default function ProfileForm() {
         error={errors.organisationName?.message}
         type="text"
         isLoading={isSubmitting}
+        disabled={!authorized}
       >
         {t("placeholders.name")}
       </Input>
       <div>
         <textarea
           {...register("organisationDescription")}
-          disabled={isSubmitting}
+          disabled={isSubmitting || !authorized}
           className={`bg-neutral-100 w-full rounded-[2rem] resize-none h-60 p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 {isLoading ? 'animate-pulse' : null}`}
           minLength={150}
           maxLength={350}
