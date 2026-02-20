@@ -6,7 +6,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Warning2 } from "iconsax-reactjs";
 import { signOut, useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -17,7 +16,6 @@ export default function ChangePassword() {
   const changePasswordSchema = z
     .object({
       currentPassword: z.string().min(1, t("password.errors.blank")),
-      // password: z.string().min(8, t("password.errors.password")),
       password: z
         .string()
         .min(8, { message: t("password.errors.password") })
@@ -81,12 +79,7 @@ export default function ChangePassword() {
         >
           {t("placeholders.password")}
         </PasswordInput>
-        <PasswordInput
-          t={t}
-          validate
-          {...register("password")}
-          // error={errors.password?.message}
-        >
+        <PasswordInput t={t} validate {...register("password")}>
           {t("placeholders.new")}
         </PasswordInput>
         <PasswordInput
