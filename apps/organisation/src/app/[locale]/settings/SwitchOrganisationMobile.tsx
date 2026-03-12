@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import { useRouter } from "@/i18n/navigation";
 import {
@@ -49,7 +50,11 @@ export default function SwitchOrganisationMobile() {
       .then((res) => res.json())
       .then((res) => setAllOrganisations(res.organisations))
       .finally(() => setIsLoading(false));
-  }, [session?.user?.accessToken]);
+  }, [
+    session?.user?.accessToken,
+    locale,
+    session?.activeOrganisation.organisationId,
+  ]);
 
   const router = useRouter();
   const CloseRef = useRef<HTMLButtonElement>(null);
@@ -173,7 +178,7 @@ export default function SwitchOrganisationMobile() {
       {hasOrganisation.length === 0 && (
         <div
           className={
-            "py-14 px-6 rounded-[10px] w-full bg-neutral-100 hover:bg-primary-50 flex justify-between transition-all duration-500 cursor-pointer group"
+            "py-14 px-6 lg:hidden rounded-[10px] w-full bg-neutral-100 hover:bg-primary-50 flex justify-between transition-all duration-500 cursor-pointer group"
           }
         >
           <CreateOrganisationDialog

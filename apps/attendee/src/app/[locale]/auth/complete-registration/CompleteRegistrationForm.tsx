@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import { useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -35,31 +36,34 @@ export default function CompleteRegistrationForm({
   const [isInvited, setIsInvited] = useState(false);
   const [invitedBy, setInvitedBy] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
-  useEffect(function () {
-    if (referralCode && referralCode !== "") {
-      setIsLoading(true);
-      fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/referral/${referralCode}`,
-        {
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
+  useEffect(
+    function () {
+      if (referralCode && referralCode !== "") {
+        setIsLoading(true);
+        fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/referral/${referralCode}`,
+          {
+            method: "GET",
+            cache: "no-store",
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        },
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status === "success") {
-            setIsInvited(true);
-            setInvitedBy(data.fullName);
-          } else {
-            toast.error("Invalid referral code");
-          }
-        })
-        .finally(() => setIsLoading(false));
-    }
-  }, []);
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              setIsInvited(true);
+              setInvitedBy(data.fullName);
+            } else {
+              toast.error("Invalid referral code");
+            }
+          })
+          .finally(() => setIsLoading(false));
+      }
+    },
+    [referralCode],
+  );
   const t = useTranslations("Auth.complete");
   const CompleteRegistrationSchema = z.object({
     country: z.string({ error: t("placeholders.errors.country") }),
@@ -145,9 +149,13 @@ export default function CompleteRegistrationForm({
     }
   }
   const availableCountries = countries.map((country) => country.name);
-  const availableState = countries.map((country) => country.state).flat();
-  const [selectedState, setSelectedState] = useState<string>("Sud");
-  const cities = availableState.filter((state) => state.name === selectedState);
+  const [selectedCountry, setSelectedCountry] = useState<string>("Haiti");
+  const [selectedState, setSelectedState] = useState<string>("");
+  const availableStatesForCountry =
+    countries.find((c) => c.name === selectedCountry)?.state ?? [];
+  const citiesForState =
+    availableStatesForCountry.find((s) => s.name === selectedState)?.cities ??
+    [];
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
@@ -202,7 +210,13 @@ export default function CompleteRegistrationForm({
               >
                 <Select
                   defaultValue="Haiti"
-                  onValueChange={(e) => setValue("country", e)}
+                  onValueChange={(e) => {
+                    setValue("country", e);
+                    setSelectedCountry(e);
+                    setSelectedState(""); // reset state/city when country changes
+                    setValue("state", "");
+                    setValue("city", "");
+                  }}
                 >
                   <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leading-[20px]">
                     <SelectValue placeholder={t("placeholders.country")} />
@@ -248,7 +262,7 @@ export default function CompleteRegistrationForm({
                     </SelectTrigger>
                     <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
                       <SelectGroup>
-                        {availableState.map((state, i) => {
+                        {availableStatesForCountry.map((state, i) => {
                           return (
                             <SelectItem
                               className={"text-[1.4rem] text-deep-100"}
@@ -275,7 +289,7 @@ export default function CompleteRegistrationForm({
                     </SelectTrigger>
                     <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
                       <SelectGroup>
-                        {cities[0].cities.map((city, i) => {
+                        {citiesForState.map((city, i) => {
                           return (
                             <SelectItem
                               className={"text-[1.4rem] text-deep-100"}
