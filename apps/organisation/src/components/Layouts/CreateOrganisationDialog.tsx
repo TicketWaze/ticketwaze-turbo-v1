@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import LoadingCircleSmall from "../shared/LoadingCircleSmall";
 import PageLoader from "../PageLoader";
 import { Organisation } from "@ticketwaze/typescript-config";
-import { useRouter } from "@/i18n/navigation";
 
 export default function CreateOrganisationDialog({
   setSelectedOrganisation,
@@ -32,7 +31,6 @@ export default function CreateOrganisationDialog({
   const locale = useLocale();
   const { data: session, update } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
   async function CreateOrganisation() {
     setIsLoading(true);
     try {

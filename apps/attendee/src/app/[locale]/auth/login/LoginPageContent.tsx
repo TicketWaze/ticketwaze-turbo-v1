@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/immutability */
 "use client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,11 +9,10 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
 import { motion } from "framer-motion";
-import Google from "@/assets/icons/google.svg";
-import Image from "next/image";
+// import Google from "@/assets/icons/google.svg";
 import { useSearchParams } from "next/navigation";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
-import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
+import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { LinkAccent } from "@/components/shared/Links";
 
@@ -60,14 +60,14 @@ export default function LoginPageContent() {
     }
     setIsloading(false);
   }
-  async function googleLogin() {
-    setIsloading(true);
-    await signIn("google", {
-      redirect: true,
-      callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
-    });
-    setIsloading(false);
-  }
+  // async function googleLogin() {
+  //   setIsloading(true);
+  //   await signIn("google", {
+  //     redirect: true,
+  //     callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
+  //   });
+  //   setIsloading(false);
+  // }
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
@@ -149,7 +149,7 @@ export default function LoginPageContent() {
             >
               {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
             </ButtonPrimary>
-            <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
+            {/* <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
               {t("cta.or")}
             </span>
             <ButtonBlack
@@ -166,7 +166,7 @@ export default function LoginPageContent() {
                   {t("cta.google")}
                 </>
               )}
-            </ButtonBlack>
+            </ButtonBlack> */}
           </motion.div>
         </div>
       </div>
@@ -185,15 +185,15 @@ export default function LoginPageContent() {
             {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
           </ButtonPrimary>
         </motion.div>
-        <motion.span
+        {/* <motion.span
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.85 }}
           className="text-neutral-700 lg:hidden text-center text-[1.8rem] leading-8"
         >
           {t("cta.or")}
-        </motion.span>
-        <motion.div
+        </motion.span> */}
+        {/* <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.9 }}
@@ -214,7 +214,7 @@ export default function LoginPageContent() {
               </>
             )}
           </ButtonBlack>
-        </motion.div>
+        </motion.div> */}
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}
