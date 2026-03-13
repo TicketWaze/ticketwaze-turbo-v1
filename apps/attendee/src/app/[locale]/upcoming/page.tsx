@@ -25,7 +25,7 @@ export default async function UpcomingPage() {
   }
 
   return (
-    <AttendeeLayout title="Upcoming">
+    <AttendeeLayout title="Upcoming" className="overflow-x-hidden">
       <UpcomingPageContent events={events} />
     </AttendeeLayout>
   );

@@ -263,7 +263,7 @@ export default function WalletPageContent({
           </Dialog>
         </div>
       </div>
-      <div className="flex flex-col gap-10 overflow-y-scroll h-full">
+      <div className="flex flex-col gap-10 overflow-y-scroll overflow-x-hidden h-full">
         <div className={"flex flex-col gap-8"}>
           <div
             className={

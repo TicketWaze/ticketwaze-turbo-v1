@@ -12,7 +12,7 @@ export default async function HistoryPage() {
   }
   const t = await getTranslations("History");
   return (
-    <AttendeeLayout title="HistoryPage">
+    <AttendeeLayout title="HistoryPage" className="overflow-x-hidden">
       <>
         <header className="w-full flex items-center justify-between">
           {/* {!mobileSearch && ( */}

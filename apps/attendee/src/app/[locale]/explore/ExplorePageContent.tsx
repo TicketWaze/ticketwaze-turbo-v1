@@ -8,7 +8,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Link } from "@/i18n/navigation";
-import Slugify from "@/lib/Slugify";
 import TruncateUrl from "@/lib/TruncateUrl";
 import { Event, UserWallet } from "@ticketwaze/typescript-config";
 import {
@@ -41,7 +40,7 @@ export default function ExplorePageContent({
   const [mobileSearch, setMobileSearch] = useState(false);
   return (
     <>
-      <header className="w-full flex items-center justify-between">
+      <header className="w-full flex items-center justify-between ">
         {!mobileSearch && (
           <div className="flex flex-col gap-[5px]">
             {session?.user && (
@@ -163,7 +162,6 @@ export default function ExplorePageContent({
         <>
           <ul className="list pt-4 overflow-y-scroll">
             {filteredEvents.map((event) => {
-              const slug = Slugify(event.eventName);
               return (
                 <li key={event.eventId}>
                   <EventCard

@@ -40,6 +40,7 @@ export default function EmailNotifications({
         ...body,
         currency: userPreferences.currency,
         notifications: userPreferences.notifications,
+        appLanguage: locale,
       },
       locale,
     );
@@ -58,7 +59,7 @@ export default function EmailNotifications({
         <div className={"flex items-center justify-between"}>
           <p
             className={
-              "text-[1.6rem] leading-[22px] text-deep-100 max-w-[280px] lg:max-w-[380px]"
+              "text-[1.6rem] leading-[22px] text-deep-100 max-w-[200px] lg:max-w-[380px]"
             }
           >
             {t("email.upcoming")}
@@ -78,7 +79,7 @@ export default function EmailNotifications({
         <div className={"flex items-center justify-between"}>
           <p
             className={
-              "text-[1.6rem] leading-[22px] text-deep-100 max-w-[280px] lg:max-w-[380px]"
+              "text-[1.6rem] leading-[22px] text-deep-100 max-w-[200px] lg:max-w-[380px]"
             }
           >
             {t("email.preferred")}
@@ -98,7 +99,7 @@ export default function EmailNotifications({
         <div className={"flex items-center justify-between"}>
           <p
             className={
-              "text-[1.6rem] leading-[22px] text-deep-100 max-w-[280px] lg:max-w-[380px]"
+              "text-[1.6rem] leading-[22px] text-deep-100 max-w-[200px] lg:max-w-[380px]"
             }
           >
             {t("email.follow")}

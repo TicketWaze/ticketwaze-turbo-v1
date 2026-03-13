@@ -8,7 +8,6 @@ import {
   UserSquare,
   HamburgerMenu,
   Setting5,
-  Setting,
   I24Support,
   Logout,
   MoneyRecive,
@@ -70,11 +69,11 @@ export default function MobileNavigation({
           path: `/preferences`,
           Icon: Setting5,
         },
-        {
-          label: t("links.settings"),
-          path: `/settings`,
-          Icon: Setting,
-        },
+        // {
+        //   label: t("links.settings"),
+        //   path: `/settings`,
+        //   Icon: Setting,
+        // },
       ]
     : [];
 
