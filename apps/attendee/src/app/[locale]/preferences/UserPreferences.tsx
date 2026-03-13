@@ -1,6 +1,7 @@
 "use client";
 import { UpdateUserPreferences } from "@/actions/userActions";
 import PageLoader from "@/components/PageLoader";
+import Separator from "@/components/shared/Separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { UserPreference } from "@ticketwaze/typescript-config";
 import { useSession } from "next-auth/react";
@@ -69,14 +70,27 @@ export default function UserPreferences({
           <RadioGroup
             defaultValue={userPreferences.currency}
             onValueChange={(e) => updateCurrency(e)}
-            className="flex gap-6 w-full justify-between lg:justify-around"
+            className="flex flex-col gap-6 w-full justify-between lg:justify-around"
           >
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[1.4rem] text-deep-100">Gourdes</span>
+              <span
+                className={
+                  "text-[1.6rem] leading-[22px] text-deep-100 max-w-[280px] lg:max-w-[380px]"
+                }
+              >
+                Gourdes
+              </span>
               <RadioGroupItem value={"HTG"} />
             </div>
+            <Separator />
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[1.4rem] text-deep-100">Dollard US</span>
+              <span
+                className={
+                  "text-[1.6rem] leading-[22px] text-deep-100 max-w-[280px] lg:max-w-[380px]"
+                }
+              >
+                Dollard US
+              </span>
               <RadioGroupItem value={"USD"} />
             </div>
           </RadioGroup>
@@ -88,19 +102,28 @@ export default function UserPreferences({
           <RadioGroup
             defaultValue={userPreferences.notifications}
             onValueChange={(e) => updateNotification(e)}
-            className="flex flex-col lg:flex-row gap-10 lg:gap-6 w-full justify-between"
+            className="flex flex-col gap-6 w-full justify-between"
           >
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[1.4rem] text-deep-100">Email</span>
+              <span
+                className={
+                  "text-[1.6rem] leading-[22px] text-deep-100 max-w-[280px] lg:max-w-[380px]"
+                }
+              >
+                Email
+              </span>
               <RadioGroupItem value={"email"} />
             </div>
+            <Separator />
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[1.4rem] text-deep-100">Whatsapp</span>
+              <span
+                className={
+                  "text-[1.6rem] leading-[22px] text-deep-100 max-w-[280px] lg:max-w-[380px]"
+                }
+              >
+                Whatsapp
+              </span>
               <RadioGroupItem value={"whatsapp"} />
-            </div>
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-[1.4rem] text-deep-100">{t("none")}</span>
-              <RadioGroupItem value={"none"} />
             </div>
           </RadioGroup>
         </div>

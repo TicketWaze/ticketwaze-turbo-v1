@@ -21,7 +21,7 @@ export default async function Explore() {
   const walletResponse = await walletRequest.json();
   const wallet: UserWallet = walletResponse.wallet;
   return (
-    <AttendeeLayout title="Explore">
+    <AttendeeLayout title="Explore" className="overflow-x-hidden">
       <ExplorePageContent events={events} wallet={wallet} />
     </AttendeeLayout>
   );
