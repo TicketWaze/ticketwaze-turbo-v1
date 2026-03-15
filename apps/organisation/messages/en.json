@@ -507,10 +507,85 @@
       "no_result": "They is no result for the keyword ",
       "proFeature": "Private activity creation is part of our Pro+ membership. With Pro+, you unlock the ability to keep your activities fully private, giving you greater control and peace of mind over how you manage and share your events. Upgrading not only grants access to private activity creation, but also ensures you enjoy the full suite of advanced features designed to make your experience smoother, more secure, and more personalized. If privacy and exclusivity matter to you, Pro+ is the membership tier that delivers.",
       "upgrade": "Upgrade membership",
+      "tagTip": {
+        "title": "Tip",
+        "description": "Hashtags help people discover your activity more easily. By adding relevant hashtags, you make it easier for users to find your event when they search or explore similar activities on the platform. Choose keywords that describe your event, theme, location, or audience (for example: #networking, #concert, #haiti)"
+      },
       "list": {
         "inPerson": {
+          "back": "Back",
           "title": "In-Person",
-          "description": "Activities with location-based access like festivals, conferences, or meetups."
+          "description": "Activities with location-based access like festivals, conferences, or meetups.",
+          "categories": {
+            "conference": {
+              "title": "Conference",
+              "value": "conference"
+            },
+            "concert": {
+              "title": "Concert",
+              "value": "concert"
+            },
+            "festival": {
+              "title": "Festival",
+              "value": "festival"
+            },
+            "comedy": {
+              "title": "Comedy",
+              "value": "comedy"
+            },
+            "theater": {
+              "title": "Theater",
+              "value": "theater_performance"
+            },
+            "tournament": {
+              "title": "Tournament",
+              "value": "tournament"
+            },
+            "workshop": {
+              "title": "Workshop",
+              "value": "workshop"
+            },
+            "seminar": {
+              "title": "Seminar",
+              "value": "seminar"
+            },
+            "networking": {
+              "title": "Networking",
+              "value": "networking"
+            },
+            "startup": {
+              "title": "Startup",
+              "value": "startup"
+            },
+            "food_festival": {
+              "title": "Food Festival",
+              "value": "food"
+            },
+            "art": {
+              "title": "Art",
+              "value": "art"
+            },
+            "cultural": {
+              "title": "Cultural",
+              "value": "cultural"
+            },
+            "charity": {
+              "title": "Charity",
+              "value": "charity"
+            },
+            "fundraiser": {
+              "title": "Fundraiser",
+              "value": "fundraiser"
+            },
+            "meetup": {
+              "title": "Meetup",
+              "value": "meetup"
+            },
+            "community": {
+              "title": "Community",
+              "value": "community"
+            }
+          }
         },
         "meet": {
           "title": "Google Meet",
@@ -521,8 +596,25 @@
         "private": {
           "title": "Private Activity",
           "description": "Exclusive invitation-only activity with restricted access for select guests."
+        },
+        "reservations": {
+          "title": "Reservations",
+          "description": "Designed for barbershops, restaurants, hostels, cinema, medical services and other service providers."
+        },
+        "transportations": {
+          "title": "Transportations",
+          "description": "Allows travelers to purchase tickets for scheduled trips between destinations."
+        },
+        "tours": {
+          "title": "Tours & experiences",
+          "description": "Activities such as city tours, cultural visits, outdoor adventures and hands-on experiences."
+        },
+        "sports": {
+          "title": "Sports",
+          "description": "Live sports events and thrilling matches. Allow fans to buy tickets for sporting competitions and games"
         }
       },
+      "tagPlaceholder": "Type a hashtag and press enter or spacebar",
       "date_time": "Date & Time",
       "coming": "Coming soon!",
       "ticket": "Ticket",

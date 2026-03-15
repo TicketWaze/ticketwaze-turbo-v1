@@ -7,7 +7,9 @@ import { useRef, useState } from "react";
 import InPerson from "@/assets/images/in-person.jpg";
 import GoogleMeet from "@/assets/images/meet.jpg";
 import Private from "@/assets/images/private.jpeg";
-import cinema from "@/assets/images/cinema.jpg";
+import Reservations from "@/assets/images/reservations.jpg";
+import Transportations from "@/assets/images/transportations.jpg";
+import Tours from "@/assets/images/tours.jpg";
 import match from "@/assets/images/match.jpg";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -60,18 +62,30 @@ export default function EventTypeList({
       image: Private,
       value: "private",
     },
-    // {
-    //     title: 'Cinema',
-    //     description: 'Watch the latest movies on the big screen.',
-    //     image: cinema,
-    //     value: 'cinema',
-    // },
-    // {
-    //     title: 'Match',
-    //     description: 'Live sports events and thrilling matches.',
-    //     image: match,
-    //     value: 'match',
-    // },
+    {
+      title: t("list.reservations.title"),
+      description: t("list.reservations.description"),
+      image: Reservations,
+      value: "reservations",
+    },
+    {
+      title: t("list.transportations.title"),
+      description: t("list.transportations.description"),
+      image: Transportations,
+      value: "transportations",
+    },
+    {
+      title: t("list.tours.title"),
+      description: t("list.tours.description"),
+      image: Tours,
+      value: "tours",
+    },
+    {
+      title: t("list.sports.title"),
+      description: t("list.sports.description"),
+      image: match,
+      value: "sports",
+    },
   ];
   const router = useRouter();
 
@@ -234,15 +248,125 @@ export default function EventTypeList({
                 </Dialog>
               </li>
             );
-          }
-          return (
-            <li key={index}>
-              {membershipTier.membershipName === "free" &&
-              category.value === "private" ? (
-                <Dialog>
-                  <DialogTrigger asChild>
+          } else if (
+            category.value === "reservations" ||
+            category.value === "transportations" ||
+            category.value === "tours" ||
+            category.value === "sports"
+          ) {
+            return (
+              <div
+                key={index}
+                onClick={() => toast.info(t("coming"))}
+                className="block relative cursor-pointer group"
+              >
+                <div
+                  className={`h-[165px] lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300`}
+                >
+                  <Image
+                    src={category.image}
+                    alt={category.title}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    width={255}
+                    height={191}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/10" />
+                  <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
+                    <h3 className="text-[2.6rem] font-primary leading-[30px] font-bold">
+                      {category.title}
+                    </h3>
+                    <p className="text-[1.5rem] text-neutral-300">
+                      {category.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          } else {
+            return (
+              <li key={index}>
+                {membershipTier.membershipName === "free" &&
+                category.value === "private" ? (
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div
+                        className={`h-[165px] cursor-pointer lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300 `}
+                      >
+                        <Image
+                          src={category.image}
+                          alt={category.title}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          width={255}
+                          height={191}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/10" />
+                        <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
+                          <h3 className="text-[2.6rem] font-primary leading-[30px] font-bold">
+                            {category.title}
+                          </h3>
+                          <p className="text-[1.5rem] text-neutral-300">
+                            {category.description}
+                          </p>
+                        </div>
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className={"w-[360px] lg:w-[520px] "}>
+                      <DialogHeader>
+                        <DialogTitle
+                          className={
+                            "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                          }
+                        >
+                          {category.title}
+                        </DialogTitle>
+                        <DialogDescription className={"sr-only"}>
+                          <span>Add artist</span>
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-8 flex flex-col gap-8 items-center">
+                        <div
+                          className={
+                            "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+                          }
+                        >
+                          <div
+                            className={
+                              "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+                            }
+                          >
+                            <Crown size="30" color="#0d0d0d" variant="Bulk" />
+                          </div>
+                        </div>
+                        <p
+                          className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
+                        >
+                          {t("proFeature")}
+                        </p>
+                      </div>
+                      <DialogFooter>
+                        <div className="flex-1 p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+                          <LinkPrimary
+                            className="bg-transparent gap-4 py-2 items-center"
+                            href="/settings/subscriptions/upgrade"
+                          >
+                            <Crown size="24" color="#fff" variant="Bulk" />
+                            {t("upgrade")}
+                          </LinkPrimary>
+                        </div>
+                        <DialogClose
+                          ref={closeRef}
+                          className="sr-only"
+                        ></DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                ) : (
+                  <Link
+                    href={`/events/create/${category.value}`}
+                    className="block relative cursor-pointer group"
+                  >
                     <div
-                      className={`h-[165px] cursor-pointer lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300 `}
+                      className={`h-[165px] lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300`}
                     >
                       <Image
                         src={category.image}
@@ -261,86 +385,11 @@ export default function EventTypeList({
                         </p>
                       </div>
                     </div>
-                  </DialogTrigger>
-                  <DialogContent className={"w-[360px] lg:w-[520px] "}>
-                    <DialogHeader>
-                      <DialogTitle
-                        className={
-                          "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
-                        }
-                      >
-                        {category.title}
-                      </DialogTitle>
-                      <DialogDescription className={"sr-only"}>
-                        <span>Add artist</span>
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="py-8 flex flex-col gap-8 items-center">
-                      <div
-                        className={
-                          "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
-                        }
-                      >
-                        <div
-                          className={
-                            "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
-                          }
-                        >
-                          <Crown size="30" color="#0d0d0d" variant="Bulk" />
-                        </div>
-                      </div>
-                      <p
-                        className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
-                      >
-                        {t("proFeature")}
-                      </p>
-                    </div>
-                    <DialogFooter>
-                      <div className="flex-1 p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
-                        <LinkPrimary
-                          className="bg-transparent gap-4 py-2 items-center"
-                          href="/settings/subscriptions/upgrade"
-                        >
-                          <Crown size="24" color="#fff" variant="Bulk" />
-                          {t("upgrade")}
-                        </LinkPrimary>
-                      </div>
-                      <DialogClose
-                        ref={closeRef}
-                        className="sr-only"
-                      ></DialogClose>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              ) : (
-                <Link
-                  href={`/events/create/${category.value}`}
-                  className="block relative cursor-pointer group"
-                >
-                  <div
-                    className={`h-[165px] lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300`}
-                  >
-                    <Image
-                      src={category.image}
-                      alt={category.title}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      width={255}
-                      height={191}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/10" />
-                    <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
-                      <h3 className="text-[2.6rem] font-primary leading-[30px] font-bold">
-                        {category.title}
-                      </h3>
-                      <p className="text-[1.5rem] text-neutral-300">
-                        {category.description}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              )}
-            </li>
-          );
+                  </Link>
+                )}
+              </li>
+            );
+          }
         })}
       </ul>
       {filteredCategories.length === 0 && (

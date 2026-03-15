@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
@@ -62,7 +64,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
         "country",
         "longitude",
         "latitude",
-        "eventTagId",
+        "activityTags",
         "eventImage",
       ],
     },
@@ -93,7 +95,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       country: event.country,
       longitude: event.longitude,
       latitude: event.latitude,
-      eventTagId: event.eventTagId,
+      activityTags: event.activityTags,
       eventImage: undefined as unknown as File,
       eventDays: event.eventDays.map((eventDay) => {
         const formatLocalDateTime = (date: string | Date) => {
@@ -134,7 +136,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     formData.append("country", data.country);
     formData.append("longitude", data.longitude);
     formData.append("latitude", data.latitude);
-    formData.append("eventTagId", data.eventTagId);
+    formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("eventImage", data.eventImage);
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
@@ -284,9 +286,9 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
-  const position: [number, number] = [-72.2852, 18.9712];
 
   useEffect(() => {
+    const position: [number, number] = [-72.2852, 18.9712];
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN ?? "";
     mapRef.current = new mapboxgl.Map({
       // @ts-ignore
@@ -323,7 +325,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     return () => {
       mapRef.current?.remove();
     };
-  }, [setValue]);
+  }, [setValue, event.latitude, event.longitude]);
 
   return (
     <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
@@ -455,6 +457,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
               handleFileChange={handleFileChange}
               mapContainerRef={mapContainerRef}
               setValue={setValue}
+              getValues={getValues}
               event={event}
             />
           </motion.div>

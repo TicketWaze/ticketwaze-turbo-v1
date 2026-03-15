@@ -3,16 +3,13 @@ import { Link } from "@/i18n/navigation";
 import { Calendar2, Google, Location } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
-import { englishEventTags, frenchEventTags } from "@/lib/EventTags";
 import Slugify from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
-  // const date = TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "");
   const date = new Date(event.eventDays[0].dateTime);
   const slug = Slugify(event.eventName);
   const locale = useLocale();
-  const eventTags = locale === "fr" ? frenchEventTags : englishEventTags;
   const t = useTranslations("Events");
   const price =
     event.currency === "USD"
@@ -23,41 +20,33 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
       href={`/events/show/${slug}`}
       className={`flex flex-row items-center lg:items-stretch lg:mb-8 lg:ml-4 lg:flex-col gap-4 w-full ${!aside && "lg:max-w-[350px]"} bg-white shadow-lg rounded-[1rem] overflow-hidden pb-4 pl-4 lg:pl-0`}
     >
-      <Image
-        src={event.eventImageUrl}
-        className={
-          "h-[155px] lg:h-[191px] flex-1 lg:flex-auto w-[155px] lg:w-full object-cover object-left-top rounded-[1rem] "
-        }
-        alt={event.eventName}
-        height={191}
-        width={255}
-      />
+      <div className="relative">
+        <Image
+          src={event.eventImageUrl}
+          className={
+            "h-[155px] lg:h-[191px] flex-1 lg:flex-auto w-[155px] lg:w-full object-cover object-left-top rounded-[1rem] "
+          }
+          alt={event.eventName}
+          height={191}
+          width={255}
+        />
+        <div
+          key={event.eventType}
+          className="bg-primary-50 block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-primary-500 font-primary font-bold leading-[15px] w-fit"
+        >
+          {event.eventType.toUpperCase()}
+        </div>
+      </div>
+
       <div
         className={
           "px-4 flex flex-1 lg:flex-auto flex-col gap-[1.5rem] lg:gap-4"
         }
       >
-        <ul className="lg:flex  items-center gap-4">
-          {eventTags
-            .filter((tag) => tag.id === event.eventTagId)
-            .map((tag) => (
-              <li
-                key={tag.id}
-                className="bg-primary-50 hidden lg:block py-1 px-4 rounded-[30px] text-[1rem] text-primary-500 font-primary leading-[15px]"
-              >
-                {tag.tag}
-              </li>
-            ))}
-          {eventTags
-            .filter((tag) => tag.id === event.eventTagId)
-            .map((tag) => (
-              <li
-                key={tag.id}
-                className="bg-primary-50 lg:hidden justify-self-start py-1 px-4 rounded-[30px] text-[1rem] text-primary-500 font-primary w-auto leading-[15px]"
-              >
-                {tag.tag}
-              </li>
-            ))}
+        <ul className="flex gap-2 text-primary-500 font-medium">
+          {event.activityTags.map((tag, key) => {
+            return <li key={key}>#{tag}</li>;
+          })}
         </ul>
         <h1
           className={

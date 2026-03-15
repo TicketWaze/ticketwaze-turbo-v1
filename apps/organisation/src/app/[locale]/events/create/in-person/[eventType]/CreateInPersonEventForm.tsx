@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
@@ -32,7 +34,11 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
 
-export default function CreateInPersonEventForm() {
+export default function CreateInPersonEventForm({
+  eventType,
+}: {
+  eventType: string;
+}) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
   const { data: session } = useSession();
@@ -56,7 +62,7 @@ export default function CreateInPersonEventForm() {
         "country",
         "longitude",
         "latitude",
-        "eventTagId",
+        "activityTags",
         "eventImage",
       ],
     },
@@ -75,6 +81,7 @@ export default function CreateInPersonEventForm() {
     control,
     trigger,
     formState: { errors, isSubmitting },
+    getValues,
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
     values: {
@@ -86,9 +93,9 @@ export default function CreateInPersonEventForm() {
       country: "Haiti",
       longitude: "",
       latitude: "",
-      eventTagId: "",
       eventImage: undefined as unknown as File,
       eventDays: [{ dateTime: "" }],
+      activityTags: [],
       ticketTypes: [
         {
           ticketTypeName: "",
@@ -111,10 +118,11 @@ export default function CreateInPersonEventForm() {
     formData.append("country", data.country);
     formData.append("longitude", data.longitude);
     formData.append("latitude", data.latitude);
-    formData.append("eventTagId", data.eventTagId);
     formData.append("eventImage", data.eventImage);
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
+    formData.append("eventType", eventType);
+    formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("isRefundable", JSON.stringify(isRefundable));
     if (isFree) {
       formData.append(
@@ -148,6 +156,7 @@ export default function CreateInPersonEventForm() {
   type FieldName = keyof TForm;
 
   const next = async () => {
+    console.log(errors);
     const fields = steps[currentStep]?.fields;
     const output = await trigger(fields as FieldName[], { shouldFocus: true });
     if (!output) return;
@@ -222,12 +231,12 @@ export default function CreateInPersonEventForm() {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
-  const position: [number, number] = [-72.2852, 18.9712];
 
   useEffect(() => {
+    const position: [number, number] = [-72.2852, 18.9712];
     mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN ?? "";
     mapRef.current = new mapboxgl.Map({
-      // @ts-ignore
+      // @ts-expect-error
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v11",
       center: position,
@@ -383,6 +392,7 @@ export default function CreateInPersonEventForm() {
               handleFileChange={handleFileChange}
               mapContainerRef={mapContainerRef}
               setValue={setValue}
+              getValues={getValues}
             />
           </motion.div>
         )}

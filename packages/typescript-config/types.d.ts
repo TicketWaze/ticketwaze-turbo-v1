@@ -214,9 +214,11 @@ export interface Event {
   latitude: string;
   eventImageUrl: string;
   eventType: string;
+  eventCategory: string;
   isPublished: boolean;
   isActive: boolean;
   currency: string;
+  activityTags: string[];
   eventDays: EventDay[];
   eventTicketTypes: EventTicketType[];
   eventTagId: string;
