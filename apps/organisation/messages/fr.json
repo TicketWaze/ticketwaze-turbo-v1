@@ -501,49 +501,94 @@
       }
     },
     "create_event": {
-      "title": "Créer une activitée",
+      "title": "Créer une activité",
       "basic": "Détails de base",
       "category_search": "Rechercher une catégorie",
-      "no_result": "Il n'y a aucun résultat pour le mot-clé ",
-      "proFeature": "La création d’activités privées fait partie de notre offre Pro+. Avec Pro+, vous débloquez la possibilité de garder vos activités entièrement confidentielles, ce qui vous donne un contrôle accru et une tranquillité d’esprit totale dans la gestion et le partage de vos événements. La mise à niveau ne vous ouvre pas seulement l’accès à la création privée, elle vous permet également de profiter de l’ensemble des fonctionnalités avancées conçues pour rendre votre expérience plus fluide, plus sécurisée et plus personnalisée. Si la confidentialité et l’exclusivité sont importantes pour vous, Pro+ est l’abonnement qui répond à vos attentes.",
+      "no_result": "Aucun résultat pour le mot-clé ",
+      "proFeature": "La création d’activités privées fait partie de notre abonnement Pro+. Avec Pro+, vous débloquez la possibilité de garder vos activités entièrement privées, vous offrant un meilleur contrôle et une tranquillité d’esprit dans la gestion et le partage de vos événements. La mise à niveau vous donne non seulement accès à la création d’activités privées, mais vous assure également de profiter de l’ensemble des fonctionnalités avancées conçues pour rendre votre expérience plus fluide, plus sécurisée et plus personnalisée. Si la confidentialité et l’exclusivité comptent pour vous, Pro+ est le niveau d’abonnement qui répond à vos attentes.",
       "upgrade": "Mettre à niveau l’abonnement",
+      "tagTip": {
+        "title": "Astuce",
+        "description": "Les hashtags aident les gens à découvrir plus facilement votre activité. En ajoutant des hashtags pertinents, vous facilitez la recherche de votre événement par les utilisateurs lorsqu’ils explorent des activités similaires sur la plateforme. Choisissez des mots-clés décrivant votre événement, son thème, son lieu ou son public (par exemple : #networking, #concert, #haiti)"
+      },
       "list": {
         "inPerson": {
+          "back": "Retour",
           "title": "En présentiel",
-          "description": "Activitées avec un accès basé sur un lieu, comme des festivals, des conférences ou des rencontres."
+          "description": "Activités avec accès basé sur un lieu comme festivals, conférences ou rencontres.",
+          "categories": {
+            "conference": { "title": "Conférence", "value": "conference" },
+            "concert": { "title": "Concert", "value": "concert" },
+            "festival": { "title": "Festival", "value": "festival" },
+            "comedy": { "title": "Comédie", "value": "comedy" },
+            "theater": { "title": "Théâtre", "value": "theater_performance" },
+            "tournament": { "title": "Tournoi", "value": "tournament" },
+            "workshop": { "title": "Atelier", "value": "workshop" },
+            "seminar": { "title": "Séminaire", "value": "seminar" },
+            "networking": { "title": "Réseautage", "value": "networking" },
+            "startup": { "title": "Startup", "value": "startup" },
+            "food_festival": {
+              "title": "Festival gastronomique",
+              "value": "food"
+            },
+            "art": { "title": "Art", "value": "art" },
+            "cultural": { "title": "Culturel", "value": "cultural" },
+            "charity": { "title": "Caritatif", "value": "charity" },
+            "fundraiser": { "title": "Levée de fonds", "value": "fundraiser" },
+            "meetup": { "title": "Rencontre", "value": "meetup" },
+            "community": { "title": "Communauté", "value": "community" }
+          }
         },
         "meet": {
           "title": "Google Meet",
           "description": "Participez virtuellement avec Google Meet — la distance n’a pas d’importance.",
-          "warning": "Pour créer un événement Google Meet, nous utiliserons votre compte Google et demanderons l’accès à votre calendrier. En poursuivant, vous acceptez de nous accorder l’autorisation d’accéder à vos événements de calendrier et de les gérer via votre compte Google. Veuillez noter que si vous retirez cet accès, les utilisateurs ne pourront plus acheter de billets pour vos événements Meet.",
-          "fetchFailedError": "Nous n’avons pas pu récupérer les données demandées pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, veuillez contacter le support."
+          "warning": "Pour créer un événement Google Meet, nous utiliserons votre compte Google et demanderons l’accès à votre calendrier. En poursuivant, vous acceptez de nous accorder la permission d’accéder et de gérer vos événements de calendrier via votre compte Google. Veuillez noter que si vous retirez cet accès, les utilisateurs ne pourront plus acheter de billets pour vos événements Meet.",
+          "fetchFailedError": "Impossible de récupérer les données demandées pour le moment. Vérifiez votre connexion internet et réessayez. Si l’erreur persiste, contactez le support."
         },
         "private": {
           "title": "Activité privée",
           "description": "Activité exclusive sur invitation uniquement, avec accès restreint pour des invités sélectionnés."
+        },
+        "reservations": {
+          "title": "Réservations",
+          "description": "Conçu pour les barbiers, restaurants, auberges, cinémas, services médicaux et autres prestataires."
+        },
+        "transportations": {
+          "title": "Transports",
+          "description": "Permet aux voyageurs d’acheter des billets pour des trajets programmés entre destinations."
+        },
+        "tours": {
+          "title": "Visites & expériences",
+          "description": "Activités telles que visites de ville, découvertes culturelles, aventures en plein air et expériences pratiques."
+        },
+        "sports": {
+          "title": "Sports",
+          "description": "Événements sportifs en direct et matchs palpitants. Permet aux fans d’acheter des billets pour des compétitions et des jeux."
         }
       },
-      "date_time": "Date et heure",
+      "tagPlaceholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d’espace",
+      "date_time": "Date & heure",
+      "coming": "Bientôt disponible !",
       "ticket": "Billet",
-      "event_type": "Type d'activitée",
-      "select_type": "Sélectionner le type d'événeactivitéement",
-      "physical": "Physique",
+      "event_type": "Type d’activité",
+      "select_type": "Sélectionnez le type d’activité",
+      "physical": "Présentiel",
       "online": "En ligne",
-      "proceed": "Procéder",
-      "event_details": "Détails de l'activitée",
-      "event_name": "Nom de l'activitée",
-      "description": "Dites aux participants de quoi parle votre activitée, à qui il s'adresse et à quoi ils peuvent s'attendre.",
-      "event_tags": "Tag de l'activitée",
-      "select_tags": "Sélectionner un tag de l'activité",
+      "proceed": "Continuer",
+      "event_details": "Détails de l’activité",
+      "event_name": "Nom de l’activité",
+      "description": "Expliquez aux participants en quoi consiste votre activité, à qui elle s’adresse et ce qu’ils peuvent en attendre.",
+      "event_tags": "Tag de l’activité",
+      "select_tags": "Sélectionnez un tag d’activité",
       "location": "Lieu",
       "address": "Adresse",
       "city": "Ville",
       "state": "État / Région / Province",
       "country": "Pays",
       "coordinates": "Coordonnées",
-      "thumbnail": "Miniature de l'activitée",
+      "thumbnail": "Miniature de l’activité",
       "thumbnail_text": "Déposez votre miniature ici ou ",
-      "resize": "Redimensionner votre image",
+      "resize": "Redimensionnez votre image",
       "browse": "parcourir",
       "day": "Jour",
       "start_date": "Date de début",
@@ -551,57 +596,57 @@
       "end_time": "Heure de fin",
       "add_day": "Ajouter un jour",
       "back": "Retour",
-      "ticket_class": "Classe de billet",
-      "class_name": "Nom de la classe de billet",
+      "ticket_class": "Catégorie de billet",
+      "class_name": "Nom de la catégorie de billet",
       "class_description": "Description du billet",
       "price": "Prix",
       "quantity": "Quantité",
-      "add_class": "Ajouter une classe de billet",
+      "add_class": "Ajouter une catégorie de billet",
       "event_link": "Plateformes en ligne",
-      "leave_blank": "*Laisser vide pour les billets gratuits",
-      "zoom": "Faire une réunion Zoom",
-      "select_platform": "Sélectionner la plateforme en ligne",
+      "leave_blank": "*Laissez vide pour des billets gratuits",
+      "zoom": "En faire une réunion Zoom",
+      "select_platform": "Sélectionnez une plateforme en ligne",
       "streaming_link": "Lien de diffusion/réunion",
       "password": "Mot de passe (si nécessaire)",
-      "mark_as_free": "Marquer cet activité comme gratuit",
-      "mark_as_refundable": "Marquer les tickets comme remboursable",
-      "currency": "Monnaie",
-      "general_default": "Rejoignez-nous pour une expérience inoubliable, totalement gratuite ! Réservez votre place dès maintenant !",
-      "meet_default": "Rejoignez notre Meet! Connectez-vous et profitez d’une expérience unique.",
-      "draft": "Sauvegarder comme brouillon",
+      "mark_as_free": "Marquer cette activité comme gratuite",
+      "mark_as_refundable": "Marquer les billets comme remboursables",
+      "currency": "Devise",
+      "general_default": "Profitez d’un accès complet sans aucun coût ! Rejoignez-nous pour une expérience inoubliable. Réservez votre place dès aujourd’hui !",
+      "meet_default": "Participez à notre session Meet avec un accès complet ! Connectez-vous et profitez de partout. Réservez votre place dès aujourd’hui !",
+      "draft": "Enregistrer comme brouillon",
       "optional": "optionnel",
       "errors": {
         "basicDetails": {
-          "name": "Le nom de l'activitée doit contenir au moins 10 caractères",
-          "no_special": "Ce champ n'autorise pas les caractères spéciaux",
+          "name": "Le nom de l’activité doit comporter au moins 10 caractères",
+          "no_special": "Ce champ n’autorise pas les caractères spéciaux",
           "description": {
-            "min": "La description de l'activitée ne peut pas contenir moins de 150 caractères",
-            "max": "La description de l'activitée ne peut pas contenir plus de 350 caractères"
+            "min": "La description de l’activité ne peut pas contenir moins de 150 caractères",
+            "max": "La description de l’activité ne peut pas dépasser 350 caractères"
           },
           "address": "Le champ adresse ne peut pas être vide",
           "state": "Ce champ ne peut pas être vide",
           "city": "Le champ ville ne peut pas être vide",
           "country": "Sélectionnez un pays",
           "longitude": "Sélectionnez un lieu sur la carte",
-          "tags": "Sélectionnez au moins un tag",
+          "tags": "Insérez au moins un tag",
           "image": {
-            "required": "L'activitée doit avoir une image de couverture",
+            "required": "L’activité doit avoir une image de couverture",
             "max": "La taille maximale du fichier est de 200ko.",
             "type": "Les fichiers .jpg, .jpeg, .png et .webp sont acceptés."
           }
         },
         "dateAndTime": {
-          "startDate": "Le champ date de début est obligatoire",
-          "startTime": "Les champs date et heure de début sont obligatoire",
-          "endTime": "Le champ heure de fin est obligatoire"
+          "startDate": "Le champ date de début est requis",
+          "startTime": "Le champ date et heure est requis",
+          "endTime": "Le champ heure de fin est requis"
         },
         "ticketClass": {
-          "name": "Sélectionnez un nom de classe de billet",
-          "description": "La description de la classe de billet doit contenir au moins 20 caractères",
+          "name": "Sélectionnez un nom de catégorie de billet",
+          "description": "La description de la catégorie de billet doit comporter au moins 20 caractères",
           "price": "Le prix ne peut pas être vide",
           "quantity": {
             "empty": "La quantité ne peut pas être vide",
-            "decimal": "La quantité ne peut pas avoir de décimale ou de zéro final"
+            "decimal": "La quantité ne peut pas contenir de décimales ni de zéro final"
           }
         }
       }

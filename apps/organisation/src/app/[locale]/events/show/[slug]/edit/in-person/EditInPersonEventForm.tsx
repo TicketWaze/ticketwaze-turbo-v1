@@ -86,7 +86,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     formState: { errors, isSubmitting },
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
-    values: {
+    defaultValues: {
       eventName: event.eventName,
       eventDescription: event.eventDescription,
       address: event.address,
