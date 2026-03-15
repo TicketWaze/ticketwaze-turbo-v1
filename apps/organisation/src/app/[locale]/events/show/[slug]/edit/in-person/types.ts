@@ -19,10 +19,10 @@ export type EditInPersonFormValues = {
   country: string;
   longitude: string;
   latitude: string;
-  eventTagId: string;
   eventImage: File;
   eventDays: EventDay[];
   ticketTypes: TicketType[];
+  activityTags: string[];
   eventCurrency: string;
 };
 

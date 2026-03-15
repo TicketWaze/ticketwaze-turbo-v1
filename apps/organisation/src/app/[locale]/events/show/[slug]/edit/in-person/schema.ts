@@ -33,7 +33,7 @@ export function makeEditInPersonSchema(isFree: boolean, t: TranslateFn) {
       .min(1, t("errors.basicDetails.country")),
     longitude: z.string().min(3, t("errors.basicDetails.longitude")),
     latitude: z.string(),
-    eventTagId: z.string().min(1, t("errors.basicDetails.tags")),
+    activityTags: z.array(z.string()),
     eventImage: z
       .file({
         error: (issue) =>

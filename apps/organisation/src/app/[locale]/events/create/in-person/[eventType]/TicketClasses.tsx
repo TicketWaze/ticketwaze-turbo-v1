@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
@@ -190,6 +191,7 @@ export default function StepTicket({
                         (_, i) => i !== index,
                       );
                       setTicketClasses(updated);
+                      setValue("ticketTypes", updated);
                     }}
                     size={20}
                   />
