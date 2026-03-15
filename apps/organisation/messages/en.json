@@ -676,7 +676,7 @@
           "city": "City field cannot be blank",
           "country": "Select a country",
           "longitude": "Select a place on the map",
-          "tags": "Select at least one tag",
+          "tags": "Insert at least one tag",
           "image": {
             "required": "Activity should have a cover image",
             "max": "Max file size is 200ko.",

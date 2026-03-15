@@ -311,6 +311,11 @@ export default function BasicDetails({
             />
           </div>
         </div>
+        {errors.activityTags && (
+          <span className={"text-[1.2rem] px-8 text-failure"}>
+            {errors.activityTags?.message}
+          </span>
+        )}
       </div>
 
       {/* image */}

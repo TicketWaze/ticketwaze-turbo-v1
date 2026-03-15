@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React from "react";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";

@@ -84,7 +84,7 @@ export default function CreateInPersonEventForm({
     getValues,
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
-    values: {
+    defaultValues: {
       eventName: "",
       eventDescription: "",
       address: "",

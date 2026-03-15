@@ -1,5 +1,6 @@
 // forms/CreateInPersonEvent.schema.ts
-import * as z from "zod";
+
+import z from "zod";
 import type { TranslateFn } from "./types";
 
 /**
@@ -33,7 +34,7 @@ export function makeCreateInPersonSchema(isFree: boolean, t: TranslateFn) {
       .min(1, t("errors.basicDetails.country")),
     longitude: z.string().min(3, t("errors.basicDetails.longitude")),
     latitude: z.string(),
-    activityTags: z.array(z.string()),
+    activityTags: z.array(z.string()).min(1, t("errors.basicDetails.tags")),
     eventImage: z
       .file({
         error: (issue) =>
