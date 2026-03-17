@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Layer, Star, User as UserIcon } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
@@ -46,9 +47,9 @@ export default function OrganizerActions({
           </div>
         </div>
         {isFollowing.length > 0 ? (
-          <Unfollow user={user} organisationId={organisation.organisationId} />
+          <Unfollow organisationId={organisation.organisationId} />
         ) : (
-          <Follow user={user} organisationId={organisation.organisationId} />
+          <Follow organisationId={organisation.organisationId} />
         )}
       </div>
       <div className="flex lg:hidden gap-8 items-center">

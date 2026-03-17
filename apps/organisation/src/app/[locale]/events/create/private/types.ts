@@ -17,8 +17,7 @@ export type CreatePrivateFormValues = {
   state: string;
   city: string;
   country: string;
-  longitude: string;
-  latitude: string;
+  location: { lat: number; lng: number };
   eventTagId: string;
   eventImage: File;
   eventDays: EventDay[];

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 "use client";
 import { ArrowRight2, Warning2 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
@@ -80,7 +81,7 @@ export default function ReportOrganisationComponent({
   const pathname = usePathname();
   const locale = useLocale();
   const closeReportRef = useRef<HTMLButtonElement>(null);
-  async function ReportEvent(data: TReportEventSchema) {
+  async function ReportOrganisation(data: TReportEventSchema) {
     setIsLoading(true);
     const message = data.status === t("other") ? data.otherReason : data.status;
     const result = await AddReportOrganisation(
@@ -245,7 +246,7 @@ export default function ReportOrganisationComponent({
                 <ButtonPrimary
                   type="submit"
                   className="w-full flex-1"
-                  onClick={handleSubmit(ReportEvent)}
+                  onClick={handleSubmit(ReportOrganisation)}
                 >
                   {isLoading ? <LoadingCircleSmall /> : t("reportEvent")}
                 </ButtonPrimary>
@@ -259,7 +260,7 @@ export default function ReportOrganisationComponent({
             <div className="flex items-center gap-4 cursor-pointer">
               <Warning2 size="20" color="#DE0028" variant="Bulk" />
               <span className="text-[1.4rem] leading-8 text-failure">
-                {t("reportEvent")}
+                {t("reportOrganisation")}
               </span>
             </div>
           </DialogTrigger>

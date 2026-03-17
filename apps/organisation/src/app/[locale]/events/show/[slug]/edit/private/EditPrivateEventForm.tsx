@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
@@ -22,8 +23,6 @@ import { UpdatePrivateEvent } from "@/actions/EventActions";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
 import StepBasic from "./BasicDetails";
 import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
@@ -60,8 +59,7 @@ export default function EditPrivateEventForm({ event }: { event: Event }) {
         "state",
         "city",
         "country",
-        "longitude",
-        "latitude",
+        "location",
         "eventTagId",
         "eventImage",
       ],
@@ -78,21 +76,19 @@ export default function EditPrivateEventForm({ event }: { event: Event }) {
     register,
     handleSubmit,
     setValue,
-    getValues,
     control,
     trigger,
     formState: { errors, isSubmitting },
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
-    values: {
+    defaultValues: {
       eventName: event.eventName,
       eventDescription: event.eventDescription,
       address: event.address,
       state: event.state,
       city: event.city,
       country: event.country,
-      longitude: event.longitude,
-      latitude: event.latitude,
+      location: event.location,
       eventTagId: event.eventTagId,
       eventImage: undefined as unknown as File,
       eventDays: event.eventDays.map((eventDay) => {
@@ -132,8 +128,7 @@ export default function EditPrivateEventForm({ event }: { event: Event }) {
     formData.append("state", data.state);
     formData.append("city", data.city);
     formData.append("country", data.country);
-    formData.append("longitude", data.longitude);
-    formData.append("latitude", data.latitude);
+    formData.append("location", JSON.stringify(data.location));
     formData.append("eventTagId", data.eventTagId);
     formData.append("eventImage", data.eventImage);
     formData.append("eventDays", JSON.stringify(data.eventDays));
@@ -280,51 +275,6 @@ export default function EditPrivateEventForm({ event }: { event: Event }) {
     }),
   );
 
-  // MAP
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markerRef = useRef<mapboxgl.Marker | null>(null);
-  const position: [number, number] = [-72.2852, 18.9712];
-
-  useEffect(() => {
-    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN ?? "";
-    mapRef.current = new mapboxgl.Map({
-      // @ts-ignore
-      container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: position,
-      zoom: 6,
-      attributionControl: false,
-    });
-    if (markerRef.current) {
-      markerRef.current.setLngLat([
-        Number(event.longitude),
-        Number(event.latitude),
-      ]);
-    } else {
-      markerRef.current = new mapboxgl.Marker({ color: "red" })
-        .setLngLat([Number(event.longitude), Number(event.latitude)])
-        .addTo(mapRef.current!);
-    }
-
-    mapRef.current.on("click", (e) => {
-      const { lng, lat } = e.lngLat;
-      setValue("longitude", String(lng));
-      setValue("latitude", String(lat));
-      if (markerRef.current) {
-        markerRef.current.setLngLat([lng, lat]);
-      } else {
-        markerRef.current = new mapboxgl.Marker({ color: "red" })
-          .setLngLat([lng, lat])
-          .addTo(mapRef.current!);
-      }
-    });
-    // cleanup on unmount
-    return () => {
-      mapRef.current?.remove();
-    };
-  }, [setValue]);
-
   return (
     <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
       <div className="absolute bottom-4 z-[9999] w-full hidden lg:block">
@@ -453,7 +403,6 @@ export default function EditPrivateEventForm({ event }: { event: Event }) {
               errors={errors}
               imagePreview={imagePreview}
               handleFileChange={handleFileChange}
-              mapContainerRef={mapContainerRef}
               setValue={setValue}
               event={event}
             />

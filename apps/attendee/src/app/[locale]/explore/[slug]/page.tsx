@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import Image from "next/image";
 import EventActions from "./EventActions";
@@ -23,7 +24,7 @@ import { Link, redirect } from "@/i18n/navigation";
 import AddToCalendar from "./AddToCalendar";
 import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 import { Metadata } from "next";
-import { Event, User } from "@ticketwaze/typescript-config";
+import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Capitalize from "@/lib/Capitalize";
 
@@ -124,7 +125,7 @@ export default async function EventPage({
     (follower: any) => follower.userId === session?.user.userId,
   );
 
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${event.latitude},${event.longitude}`;
+  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`;
 
   return (
     <AttendeeLayout title={event.eventName}>
@@ -146,7 +147,6 @@ export default async function EventPage({
             </div>
             <EventActions
               event={event}
-              user={session?.user as User}
               isFavorite={favoriteResponse.isFavorite}
             />
             <Separator />
@@ -270,15 +270,9 @@ export default async function EventPage({
                     </div>
                   </div>
                   {isFollowing.length > 0 ? (
-                    <Unfollow
-                      user={session?.user as User}
-                      organisationId={event.organisationId}
-                    />
+                    <Unfollow organisationId={event.organisationId} />
                   ) : (
-                    <Follow
-                      user={session?.user as User}
-                      organisationId={event.organisationId}
-                    />
+                    <Follow organisationId={event.organisationId} />
                   )}
                 </div>
                 {/*  date*/}
@@ -379,7 +373,7 @@ export default async function EventPage({
                         <RouteSquare variant="Bulk" color="#E45B00" size={20} />
                       </Link>
                     </div>
-                    <Map event={event} />
+                    <Map location={event.location} />
                     <div></div>
                   </div>
                 </>
@@ -437,15 +431,9 @@ export default async function EventPage({
                   </div>
                 </Link>
                 {isFollowing.length > 0 ? (
-                  <Unfollow
-                    user={session?.user as User}
-                    organisationId={event.organisationId}
-                  />
+                  <Unfollow organisationId={event.organisationId} />
                 ) : (
-                  <Follow
-                    user={session?.user as User}
-                    organisationId={event.organisationId}
-                  />
+                  <Follow organisationId={event.organisationId} />
                 )}
               </div>
               {/*  date*/}
@@ -544,7 +532,7 @@ export default async function EventPage({
                       <RouteSquare variant="Bulk" color="#E45B00" size={20} />
                     </Link>
                   </div>
-                  <Map event={event} />
+                  <Map location={event.location} />
                   <div></div>
                 </div>
               </>

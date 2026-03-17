@@ -127,7 +127,7 @@ export default async function UpcomingEventPage({
                 <RouteSquare variant="Bulk" color="#E45B00" size={20} />
               </Link>
             </div>
-            <MapComponent event={event} />
+            <MapComponent location={event.location} />
           </div>
 
           <div className="flex flex-col gap-4">
