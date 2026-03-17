@@ -320,6 +320,12 @@ export default function CompleteRegistrationForm({
                   className={
                     "bg-neutral-100 w-full relative rounded-[5rem] py-4 px-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
                   }
+                  onClick={(e) => {
+                    const input = e.currentTarget.querySelector(
+                      'input[type="date"]',
+                    ) as HTMLInputElement;
+                    input?.showPicker();
+                  }}
                 >
                   {/* <span className={"text-neutral-600 text-[1.2rem]"}>
                     {t("placeholders.dob")}
