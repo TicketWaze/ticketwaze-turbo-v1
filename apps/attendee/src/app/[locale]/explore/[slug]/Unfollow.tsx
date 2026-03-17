@@ -2,26 +2,25 @@
 import { UnfollowOrganisationAction } from "@/actions/userActions";
 import PageLoader from "@/components/PageLoader";
 import { usePathname } from "@/i18n/navigation";
-import { User } from "@ticketwaze/typescript-config";
+import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 
 export default function Unfollow({
-  user,
   organisationId,
 }: {
-  user: User;
   organisationId: string;
 }) {
   const t = useTranslations("Event");
   const locale = useLocale();
   const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
+  const { data: session } = useSession();
   async function FollowOrganisation() {
     setIsLoading(true);
     const response = await UnfollowOrganisationAction(
-      user.accessToken,
+      session?.user?.accessToken as string,
       organisationId,
       pathname,
       locale,

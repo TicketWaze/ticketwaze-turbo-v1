@@ -18,7 +18,7 @@ import Twitter from "@/assets/icons/twitter.svg";
 import Linkedin from "@/assets/icons/linkedIn.svg";
 import ReportEventComponent from "./ReportEventComponent";
 import ReportOrganisationComponent from "./ReportOrganisationComponent";
-import { Event, User } from "@ticketwaze/typescript-config";
+import { Event } from "@ticketwaze/typescript-config";
 import PageLoader from "@/components/PageLoader";
 import {
   Dialog,
@@ -37,11 +37,9 @@ import { LinkPrimary } from "@/components/shared/Links";
 
 export default function EventActions({
   event,
-  user,
   isFavorite,
 }: {
   event: Event;
-  user: User;
   isFavorite: boolean;
 }) {
   const t = useTranslations("Event");
@@ -57,7 +55,7 @@ export default function EventActions({
   async function AddToFavorite() {
     setIsLoading(true);
     const result = await AddEventToFavorite(
-      user.accessToken,
+      session?.user?.accessToken as string,
       event.eventId,
       event.organisationId,
       pathname,
@@ -71,7 +69,7 @@ export default function EventActions({
   async function RemoveToFavorite() {
     setIsLoading(true);
     const result = await RemoveEventToFavorite(
-      user.accessToken,
+      session?.user?.accessToken as string,
       event.eventId,
       pathname,
       locale,
@@ -86,6 +84,7 @@ export default function EventActions({
     <div className="flex items-center justify-between">
       <PageLoader isLoading={isLoading} />
       <div className="flex  gap-8">
+        {/* SHARE */}
         <Dialog>
           <DialogTrigger>
             <span className="px-[15px] py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">

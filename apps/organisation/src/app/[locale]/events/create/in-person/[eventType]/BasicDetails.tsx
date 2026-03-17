@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useRef, useState } from "react";
@@ -21,6 +22,7 @@ import countries from "@/lib/Countries";
 import { Input } from "@/components/shared/Inputs";
 import { KeyboardEvent, ChangeEvent } from "react";
 import { Warning2 } from "iconsax-reactjs";
+import LocationPicker from "@/lib/LocationPicker";
 
 type Props = {
   register: UseFormRegister<CreateInPersonFormValues>;
@@ -28,7 +30,7 @@ type Props = {
   errors: any;
   imagePreview: string | null;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  mapContainerRef: React.RefObject<HTMLDivElement | null>;
+  // mapContainerRef: React.RefObject<HTMLDivElement | null>;
   setValue: UseFormSetValue<CreateInPersonFormValues>;
   getValues: UseFormGetValues<CreateInPersonFormValues>;
 };
@@ -39,7 +41,7 @@ export default function BasicDetails({
   errors,
   imagePreview,
   handleFileChange,
-  mapContainerRef,
+  // mapContainerRef,
   setValue,
   getValues,
 }: Props) {
@@ -257,14 +259,13 @@ export default function BasicDetails({
             {errors.country?.message}
           </span>
         </div>
-        <div className="w-full h-[300px] relative">
-          <div
-            style={{ height: "100%" }}
-            ref={mapContainerRef}
-            className="map-container"
+        <div>
+          <LocationPicker
+            height="480px"
+            onLocationSelect={(location) => setValue("location", location!)}
           />
           <span className="text-[1.2rem] px-8 py-2 text-failure">
-            {errors.longitude?.message}
+            {errors.location?.lat?.message}
           </span>
         </div>
       </div>

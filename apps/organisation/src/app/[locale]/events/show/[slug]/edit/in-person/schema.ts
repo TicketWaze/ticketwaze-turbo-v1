@@ -31,8 +31,17 @@ export function makeEditInPersonSchema(isFree: boolean, t: TranslateFn) {
             : t("errors.basicDetails.country"),
       })
       .min(1, t("errors.basicDetails.country")),
-    longitude: z.string().min(3, t("errors.basicDetails.longitude")),
-    latitude: z.string(),
+    location: z
+      .object({
+        lat: z
+          .number({ error: t("errors.basicDetails.longitude") })
+          .min(-90, { error: t("errors.basicDetails.longitude") })
+          .max(90, { error: t("errors.basicDetails.longitude") }),
+        lng: z.number().min(-180).max(180),
+      })
+      .refine((val) => val !== undefined, {
+        message: t("errors.basicDetails.longitude"),
+      }),
     activityTags: z.array(z.string()),
     eventImage: z
       .file({

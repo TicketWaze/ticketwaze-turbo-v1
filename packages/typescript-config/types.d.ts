@@ -210,8 +210,7 @@ export interface Event {
   state: string;
   city: string;
   country: string;
-  longitude: string;
-  latitude: string;
+  location: { lat: number; lng: number };
   eventImageUrl: string;
   eventType: string;
   eventCategory: string;

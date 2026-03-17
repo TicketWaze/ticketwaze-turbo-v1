@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft2 } from "iconsax-reactjs";
 import {
@@ -24,8 +23,6 @@ import { CreateInPersonEvent } from "@/actions/EventActions";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
-import mapboxgl from "mapbox-gl";
-import "mapbox-gl/dist/mapbox-gl.css";
 import StepBasic from "./BasicDetails";
 import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
@@ -60,8 +57,7 @@ export default function CreateInPersonEventForm({
         "state",
         "city",
         "country",
-        "longitude",
-        "latitude",
+        "location",
         "activityTags",
         "eventImage",
       ],
@@ -91,8 +87,7 @@ export default function CreateInPersonEventForm({
       state: "",
       city: "",
       country: "Haiti",
-      longitude: "",
-      latitude: "",
+      location: { lat: undefined, lng: undefined },
       eventImage: undefined as unknown as File,
       eventDays: [{ dateTime: "" }],
       activityTags: [],
@@ -116,8 +111,7 @@ export default function CreateInPersonEventForm({
     formData.append("state", data.state);
     formData.append("city", data.city);
     formData.append("country", data.country);
-    formData.append("longitude", data.longitude);
-    formData.append("latitude", data.latitude);
+    formData.append("location", JSON.stringify(data.location));
     formData.append("eventImage", data.eventImage);
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
@@ -226,41 +220,6 @@ export default function CreateInPersonEventForm({
       ticketTypeQuantity: "",
     },
   ]);
-
-  // MAP
-  const mapContainerRef = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markerRef = useRef<mapboxgl.Marker | null>(null);
-
-  useEffect(() => {
-    const position: [number, number] = [-72.2852, 18.9712];
-    mapboxgl.accessToken = process.env.NEXT_PUBLIC_MAPBOX_PUBLIC_TOKEN ?? "";
-    mapRef.current = new mapboxgl.Map({
-      // @ts-expect-error
-      container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: position,
-      zoom: 6,
-      attributionControl: false,
-    });
-
-    mapRef.current.on("click", (e) => {
-      const { lng, lat } = e.lngLat;
-      setValue("longitude", String(lng));
-      setValue("latitude", String(lat));
-      if (markerRef.current) {
-        markerRef.current.setLngLat([lng, lat]);
-      } else {
-        markerRef.current = new mapboxgl.Marker({ color: "red" })
-          .setLngLat([lng, lat])
-          .addTo(mapRef.current!);
-      }
-    });
-    // cleanup on unmount
-    return () => {
-      mapRef.current?.remove();
-    };
-  }, [setValue]);
 
   return (
     <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
@@ -390,7 +349,7 @@ export default function CreateInPersonEventForm({
               errors={errors}
               imagePreview={imagePreview}
               handleFileChange={handleFileChange}
-              mapContainerRef={mapContainerRef}
+              // mapContainerRef={mapContainerRef}
               setValue={setValue}
               getValues={getValues}
             />

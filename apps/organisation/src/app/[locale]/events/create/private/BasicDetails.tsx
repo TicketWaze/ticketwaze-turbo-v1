@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
 import {
@@ -18,6 +20,7 @@ import {
 import { englishEventTags, frenchEventTags } from "@/lib/EventTags";
 import countries from "@/lib/Countries";
 import { Input } from "@/components/shared/Inputs";
+import LocationPicker from "@/lib/LocationPicker";
 
 type Props = {
   register: UseFormRegister<CreatePrivateFormValues>;
@@ -26,7 +29,6 @@ type Props = {
   organisationCountry?: string;
   imagePreview: string | null;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  mapContainerRef: React.RefObject<HTMLDivElement | null>;
   setValue: UseFormSetValue<CreatePrivateFormValues>;
 };
 
@@ -37,7 +39,6 @@ export default function BasicDetails({
   organisationCountry,
   imagePreview,
   handleFileChange,
-  mapContainerRef,
   setValue,
 }: Props) {
   const t = useTranslations("Events.create_event");
@@ -217,14 +218,13 @@ export default function BasicDetails({
             {errors.country?.message}
           </span>
         </div>
-        <div className="w-full h-[300px] relative">
-          <div
-            style={{ height: "100%" }}
-            ref={mapContainerRef}
-            className="map-container"
+        <div>
+          <LocationPicker
+            height="480px"
+            onLocationSelect={(location) => setValue("location", location!)}
           />
           <span className="text-[1.2rem] px-8 py-2 text-failure">
-            {errors.longitude?.message}
+            {errors.location?.lat?.message}
           </span>
         </div>
       </div>
@@ -249,7 +249,7 @@ export default function BasicDetails({
                   <SelectValue placeholder={t("select_tags")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {eventTags.map((tag, i) => (
+                  {eventTags.map((tag) => (
                     <SelectItem
                       key={tag.id}
                       value={tag.id}
