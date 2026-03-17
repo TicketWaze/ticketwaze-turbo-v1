@@ -1,3 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
 import {
@@ -19,6 +21,7 @@ import { englishEventTags, frenchEventTags } from "@/lib/EventTags";
 import countries from "@/lib/Countries";
 import { Event } from "@ticketwaze/typescript-config";
 import { Input } from "@/components/shared/Inputs";
+import LocationPicker from "@/lib/LocationPicker";
 
 type Props = {
   register: UseFormRegister<EditPrivateFormValues>;
@@ -26,7 +29,6 @@ type Props = {
   errors: any;
   imagePreview: string | null;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  mapContainerRef: React.RefObject<HTMLDivElement | null>;
   setValue: UseFormSetValue<EditPrivateFormValues>;
   event: Event;
 };
@@ -37,7 +39,6 @@ export default function BasicDetails({
   errors,
   imagePreview,
   handleFileChange,
-  mapContainerRef,
   setValue,
   event,
 }: Props) {
@@ -221,14 +222,14 @@ export default function BasicDetails({
             {errors.country?.message}
           </span>
         </div>
-        <div className="w-full h-[300px] relative">
-          <div
-            style={{ height: "100%" }}
-            ref={mapContainerRef}
-            className="map-container"
+        <div>
+          <LocationPicker
+            height="480px"
+            initialValue={event.location}
+            onLocationSelect={(location) => setValue("location", location!)}
           />
           <span className="text-[1.2rem] px-8 py-2 text-failure">
-            {errors.longitude?.message}
+            {errors.location?.lat?.message}
           </span>
         </div>
       </div>
@@ -252,7 +253,7 @@ export default function BasicDetails({
                   <SelectValue placeholder={t("select_tags")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {eventTags.map((tag, i) => (
+                  {eventTags.map((tag) => (
                     <SelectItem
                       key={tag.id}
                       value={tag.id}

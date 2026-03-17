@@ -117,6 +117,7 @@ export default function NoAuthDialog() {
                 <Input
                   error={errors.email?.message}
                   type="email"
+                  autoFocus={false}
                   {...register("email")}
                 >
                   {t("placeholders.email")}

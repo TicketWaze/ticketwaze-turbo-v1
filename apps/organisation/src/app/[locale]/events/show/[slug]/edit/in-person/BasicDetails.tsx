@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useRef, useState } from "react";
@@ -22,6 +23,7 @@ import { Event } from "@ticketwaze/typescript-config";
 import { Input } from "@/components/shared/Inputs";
 import { KeyboardEvent, ChangeEvent } from "react";
 import { Warning2 } from "iconsax-reactjs";
+import LocationPicker from "@/lib/LocationPicker";
 
 type Props = {
   register: UseFormRegister<EditInPersonFormValues>;
@@ -29,7 +31,6 @@ type Props = {
   errors: any;
   imagePreview: string | null;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  mapContainerRef: React.RefObject<HTMLDivElement | null>;
   setValue: UseFormSetValue<EditInPersonFormValues>;
   getValues: UseFormGetValues<EditInPersonFormValues>;
   event: Event;
@@ -41,7 +42,6 @@ export default function BasicDetails({
   errors,
   imagePreview,
   handleFileChange,
-  mapContainerRef,
   setValue,
   getValues,
   event,
@@ -239,7 +239,7 @@ export default function BasicDetails({
                 defaultValue={availableCountries[0]}
                 disabled
               >
-                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
+                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
                   <SelectValue placeholder={t("country")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -258,18 +258,20 @@ export default function BasicDetails({
               </Select>
             )}
           />
-          <span className="text-[1.2rem] px-8 py-2 text-failure">
-            {errors.country?.message}
-          </span>
+          {errors.country && (
+            <span className="text-[1.2rem] px-8 py-2 text-failure">
+              {errors.country?.message}
+            </span>
+          )}
         </div>
-        <div className="w-full h-[300px] relative">
-          <div
-            style={{ height: "100%" }}
-            ref={mapContainerRef}
-            className="map-container"
+        <div>
+          <LocationPicker
+            height="480px"
+            initialValue={event.location}
+            onLocationSelect={(location) => setValue("location", location!)}
           />
           <span className="text-[1.2rem] px-8 py-2 text-failure">
-            {errors.longitude?.message}
+            {errors.location?.lat?.message}
           </span>
         </div>
       </div>

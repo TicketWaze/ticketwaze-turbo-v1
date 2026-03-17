@@ -19,8 +19,7 @@ export type CreateInPersonFormValues = {
   state: string;
   city: string;
   country: string;
-  longitude: string;
-  latitude: string;
+  location: { lat: number; lng: number };
   eventImage: File;
   eventDays: EventDay[];
   activityTags: string[];
