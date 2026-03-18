@@ -12,6 +12,7 @@ import {
   MapMouseEvent,
 } from "@vis.gl/react-google-maps";
 import { LocationAdd } from "iconsax-reactjs";
+import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 export interface SelectedLocation {
   lat: number;
@@ -173,12 +174,12 @@ export default function LocationPicker({
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!}>
       <div className="tw-picker">
         {!mapVisible ? (
-          <button className="tw-button" onClick={handleOpen}>
+          <button className="tw-button font-primary font-medium text-[2.2rem] transition-all duration-500 leading-12 text-neutral-900" onClick={handleOpen}>
             <LocationAdd size="24" variant="Bulk" />
             {internalValue ? "Change location" : "Pick a location"}
           </button>
         ) : locating ? (
-          <div className="tw-locating">Detecting your location…</div>
+          <div className="flex items-center justify-center p-6"><LoadingCircleSmall/></div>
         ) : (
           <div className="tw-map-wrap h-[300px]">
             <MapLayer
