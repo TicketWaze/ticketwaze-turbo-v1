@@ -52,6 +52,7 @@ export function PasswordInput({
     minLength: password.length >= 8,
     hasCapital: /[A-Z]/.test(password),
     hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+    hasNumber:/[0-9]/.test(password),
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,8 +103,8 @@ export function PasswordInput({
         </div>
       </div>
       {password && validate && (
-        <div className="px-8 py-4 space-y-2">
-          <div className="flex items-center gap-3">
+        <div className="grid grid-col lg:grid-cols-2  px-8 py-4 space-y-2">
+          <div className="flex-1 flex items-center gap-3">
             {passwordChecks.minLength ? (
               <Verify size="20" color="#349C2E" variant="Bulk" />
             ) : (
@@ -139,6 +140,19 @@ export function PasswordInput({
               className={`text-[1.2rem] ${passwordChecks.hasSpecial ? "text-success" : "text-neutral-600"}`}
             >
               {t("errors.special")}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {passwordChecks.hasNumber ? (
+              <Verify size="20" color="#349C2E" variant="Bulk" />
+            ) : (
+              <div className="w-8 h-8 rounded-full border-2 border-neutral-400" />
+            )}
+            <span
+              className={` text-[1.2rem] ${passwordChecks.hasNumber ? "text-success" : "text-neutral-600"}`}
+            >
+              {t("errors.number")}
             </span>
           </div>
         </div>

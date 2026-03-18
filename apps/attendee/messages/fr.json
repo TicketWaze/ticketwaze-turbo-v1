@@ -74,6 +74,7 @@
         "characters": "Au moins 8 caractères",
         "capital": "Au moins une lettre majuscule",
         "special": "Au moins un caractère spécial",
+        "number": "Au moins un chiffre",
         "password_length": "Le mot de passe doit contenir au moins 8 caractères",
         "password_match": "Les mots de passe ne correspondent pas",
         "firstname_length": "Le prénom doit contenir au moins 2 caractères",
