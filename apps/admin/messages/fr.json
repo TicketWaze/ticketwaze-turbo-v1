@@ -1,0 +1,27 @@
+{
+  "Layout": {
+    "sidebar": {
+      "more": "Plus",
+      "help": "Aide",
+      "logout": "Déconnexion",
+      "links": {
+        "title1": "Utilisateurs",
+        "analytics": "Analyses",
+        "attendees": "Participants",
+        "organisations": "Organisations",
+        "title2": "Opérations",
+        "activities": "Activités",
+        "tickets": "Billets",
+        "payments": "Paiements",
+        "payouts": "Versements"
+      }
+    },
+    "topbar": {
+      "welcome": "Bon retour",
+      "back": "Retour",
+      "notification": "Notifications",
+      "view": "Voir"
+    }
+  },
+  "attendees": {}
+}

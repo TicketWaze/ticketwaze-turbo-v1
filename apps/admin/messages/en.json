@@ -1,0 +1,27 @@
+{
+  "Layout": {
+    "sidebar": {
+      "more": "More",
+      "help": "Help",
+      "logout": "Logout",
+      "links": {
+        "title1": "Users",
+        "analytics": "Analytics",
+        "attendees": "Attendees",
+        "organisations": "Organisations",
+        "title2": "Operations",
+        "activities": "Activities",
+        "tickets": "Tickets",
+        "payments": "Payments",
+        "payouts": "Payouts"
+      }
+    },
+    "topbar": {
+      "welcome": "Welcome Back",
+      "back": "Back",
+      "notification": "Notifications",
+      "view": "View"
+    }
+  },
+  "attendees": {}
+}
