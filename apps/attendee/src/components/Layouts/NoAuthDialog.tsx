@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/immutability */
 "use client";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
@@ -45,6 +45,7 @@ export default function NoAuthDialog() {
   });
   const [isLoading, setIsloading] = useState(false);
   const { update } = useSession();
+  const pathname = usePathname();
   const router = useRouter();
   async function submitHandler(data: TLoginSchema) {
     setIsloading(true);
@@ -52,7 +53,7 @@ export default function NoAuthDialog() {
       email: data.email,
       password: data.password,
       redirect: false,
-      callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
+      callbackUrl: process.env.NEXT_PUBLIC_ATTENDEE_URL,
     });
     if (result?.error) {
       toast.error("Login failed");
@@ -62,7 +63,7 @@ export default function NoAuthDialog() {
         router.push("/auth/onboarding");
       } else {
         const locale = data?.user.userPreference.appLanguage;
-        window.location.href = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore`;
+        window.location.href = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/${pathname}`;
       }
     }
     resetField("password");

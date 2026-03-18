@@ -43,18 +43,25 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
           "px-4 flex flex-1 lg:flex-auto flex-col gap-[1.5rem] lg:gap-4"
         }
       >
-        <ul className="flex gap-2 text-primary-500 font-medium">
+        <ul className="hidden lg:flex gap-2 text-primary-500 font-medium">
           {event.activityTags.map((tag, key) => {
             return <li key={key}>#{tag}</li>;
           })}
         </ul>
-        <h1
-          className={
-            "font-bold font-primary text-[1.2rem] text-deep-100 leading-[17px]"
-          }
-        >
-          {event.eventName}
-        </h1>
+        <div className="flex flex-col w-full gap-1">
+          <h1
+            className={
+              "font-bold font-primary text-[1.2rem] text-deep-100 leading-[17px]"
+            }
+          >
+            {event.eventName}
+          </h1>
+          <ul className="flex gap-2 lg:hidden text-primary-500 font-medium">
+            {event.activityTags.slice(0, 2).map((tag, key) => {
+              return <li key={key}>#{tag}</li>;
+            })}
+          </ul>
+        </div>
         <div
           className={
             "flex flex-col lg:flex-row gap-[1.5rem]  lg:items-center justify-between"

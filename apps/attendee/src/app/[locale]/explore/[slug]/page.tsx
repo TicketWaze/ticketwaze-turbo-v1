@@ -198,7 +198,7 @@ export default async function EventPage({
                   {organisation.organisationEmail}
                 </span>
               </div>
-              <div className={"flex items-center gap-4"}>
+              {/* <div className={"flex items-center gap-4"}>
                 <Call size="20" color="#737c8a" variant="Bulk" />
                 <span
                   className={
@@ -207,7 +207,7 @@ export default async function EventPage({
                 >
                   {organisation.organisationPhoneNumber}
                 </span>
-              </div>
+              </div> */}
               {organisation.organisationWebsite && (
                 <div className={"flex items-center gap-4"}>
                   <Global size="20" color="#737c8a" variant="Bulk" />
@@ -291,9 +291,9 @@ export default async function EventPage({
                   >
                     {FormatDate(event.eventDays[0].dateTime)}
                   </span>
-                  {event.eventType !== "meet" && (
+                  {/* {event.eventType !== "meet" && (
                     <AddToCalendar event={event} />
-                  )}
+                  )} */}
                 </div>
                 {/*  time*/}
                 <div className={"flex items-center gap-[5px]"}>
@@ -452,7 +452,7 @@ export default async function EventPage({
                 >
                   {FormatDate(event.eventDays[0].dateTime)}
                 </span>
-                {event.eventType !== "meet" && <AddToCalendar event={event} />}
+                {/* {event.eventType !== "meet" && <AddToCalendar event={event} />} */}
               </div>
               {/*  time*/}
               <div className={"flex items-center gap-[5px]"}>
