@@ -633,6 +633,8 @@
       "city": "City",
       "state": "State / Region / Province",
       "country": "Country",
+      "location_update": "Change location",
+      "location_pick": "Pick a location",
       "coordinates": "Coordinates",
       "thumbnail": "Activity Thumbnail",
       "thumbnail_text": "Upload your thumbnail, ",

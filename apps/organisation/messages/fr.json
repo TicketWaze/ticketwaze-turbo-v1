@@ -585,6 +585,8 @@
       "city": "Ville",
       "state": "État / Région / Province",
       "country": "Pays",
+      "location_update": "Modifier l'emplacement",
+      "location_pick": "Choisir un emplacement",
       "coordinates": "Coordonnées",
       "thumbnail": "Miniature de l’activité",
       "thumbnail_text": "Téléversez votre miniature, ",
