@@ -224,7 +224,6 @@ export default function BasicDetails({
         </div>
         <div>
           <LocationPicker
-            height="480px"
             initialValue={event.location}
             onLocationSelect={(location) => setValue("location", location!)}
           />

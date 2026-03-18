@@ -1,14 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
-import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import {
-  Select as UISelect,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-} from "@/components/ui/select";
+  UseFormRegister,
+  UseFormSetValue,
+  useFieldArray,
+  Control,
+} from "react-hook-form";
 import { AddCircle, Trash } from "iconsax-reactjs";
 import type { CreateInPersonFormValues } from "./types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -18,50 +16,32 @@ import { Input } from "@/components/shared/Inputs";
 type Props = {
   register: UseFormRegister<CreateInPersonFormValues>;
   errors: any;
-  ticketClasses: {
-    ticketTypeName: string;
-    ticketTypeDescription: string;
-    ticketTypePrice: string;
-    ticketTypeQuantity: string;
-  }[];
   setValue: UseFormSetValue<CreateInPersonFormValues>;
-  setTicketClasses: React.Dispatch<
-    React.SetStateAction<
-      {
-        ticketTypeName: string;
-        ticketTypeDescription: string;
-        ticketTypePrice: string;
-        ticketTypeQuantity: string;
-      }[]
-    >
-  >;
   isFree: boolean;
   isRefundable: boolean;
   setIsFree: React.Dispatch<React.SetStateAction<boolean>>;
   setIsRefundable: React.Dispatch<React.SetStateAction<boolean>>;
   t: (s: string) => string;
+  control: Control<CreateInPersonFormValues>;
 };
 
 export default function StepTicket({
   register,
   errors,
-  ticketClasses,
-  setTicketClasses,
   isFree,
   setIsFree,
   isRefundable,
   setIsRefundable,
   t,
   setValue,
+  control,
 }: Props) {
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "ticketTypes",
+  });
   const [currency, setCurrency] = useState("HTG");
-  const [ticketClassDescriptionWordCount, setTicketClassDescriptionWordCount] =
-    useState(0);
-  function handleTicketClassWordCount(
-    e: React.ChangeEvent<HTMLTextAreaElement>,
-  ) {
-    setTicketClassDescriptionWordCount(e.target.value.length);
-  }
+  const [wordCounts, setWordCounts] = useState<number[]>(fields.map(() => 0));
   return (
     <div className="flex flex-col gap-12">
       {/* set free */}
@@ -172,9 +152,9 @@ export default function StepTicket({
         </div>
       ) : (
         <>
-          {ticketClasses.map((_, index) => (
+          {fields.map((field, index) => (
             <div
-              key={index}
+              key={field.id}
               className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100"
             >
               <div className="flex items-center justify-between">
@@ -187,36 +167,22 @@ export default function StepTicket({
                     color={"#DE0028"}
                     className={"cursor-pointer"}
                     onClick={() => {
-                      const updated = ticketClasses.filter(
-                        (_, i) => i !== index,
+                      remove(index);
+                      setWordCounts((prev) =>
+                        prev.filter((_, i) => i !== index),
                       );
-                      setTicketClasses(updated);
-                      setValue("ticketTypes", updated);
                     }}
                     size={20}
                   />
                 )}
               </div>
 
-              <div>
-                <UISelect
-                  onValueChange={(e) =>
-                    setValue(`ticketTypes.${index}.ticketTypeName`, e)
-                  }
-                >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12">
-                    <SelectValue placeholder={t("class_name")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={"general"}>General</SelectItem>
-                    <SelectItem value={"vip"}>VIP</SelectItem>
-                    <SelectItem value={"vvip"}>Premium VIP</SelectItem>
-                  </SelectContent>
-                </UISelect>
-                <span className="text-[1.2rem] px-8 py-2 text-failure">
-                  {errors?.ticketTypes?.[index]?.ticketTypeName?.message}
-                </span>
-              </div>
+              <Input
+                {...register(`ticketTypes.${index}.ticketTypeName` as const)}
+                error={errors?.ticketTypes?.[index]?.ticketTypeName?.message}
+              >
+                {t("class_name")}
+              </Input>
 
               <div>
                 <textarea
@@ -227,7 +193,13 @@ export default function StepTicket({
                   {...register(
                     `ticketTypes.${index}.ticketTypeDescription` as const,
                   )}
-                  onChange={handleTicketClassWordCount}
+                  onChange={(e) =>
+                    setWordCounts((prev) => {
+                      const next = [...prev];
+                      next[index] = e.target.value.length;
+                      return next;
+                    })
+                  }
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-[1.2rem] px-8 py-2 text-failure">
@@ -236,11 +208,11 @@ export default function StepTicket({
                         ?.message
                     }
                   </span>
-                  {ticketClassDescriptionWordCount > 0 && (
+                  {(wordCounts[index] ?? 0) > 0 && (
                     <span
-                      className={`text-[1.2rem] text-nowrap self-end px-8 py-2 ${ticketClassDescriptionWordCount < 20 ? "text-failure" : "text-success"}`}
+                      className={`text-[1.2rem] text-nowrap self-end px-8 py-2 ${(wordCounts[index] ?? 0) < 20 ? "text-failure" : "text-success"}`}
                     >
-                      {ticketClassDescriptionWordCount} / 100
+                      {wordCounts[index]} / 100
                     </span>
                   )}
                 </div>
@@ -284,21 +256,19 @@ export default function StepTicket({
             </div>
           ))}
 
-          {!isFree && ticketClasses.length <= 2 && (
+          {!isFree && fields.length <= 2 && (
             <div className="w-full max-w-[540px] mx-auto flex justify-between ">
               <div></div>
               <button
-                onClick={() =>
-                  setTicketClasses((prev) => [
-                    ...prev,
-                    {
-                      ticketTypeName: "",
-                      ticketTypeDescription: "",
-                      ticketTypePrice: "",
-                      ticketTypeQuantity: "",
-                    },
-                  ])
-                }
+                onClick={() => {
+                  append({
+                    ticketTypeName: "",
+                    ticketTypeDescription: "",
+                    ticketTypePrice: "",
+                    ticketTypeQuantity: "",
+                  });
+                  setWordCounts((prev) => [...prev, 0]);
+                }}
                 className=" cursor-pointer flex gap-4 items-center"
               >
                 <AddCircle color={"#E45B00"} variant={"Bulk"} size={"20"} />

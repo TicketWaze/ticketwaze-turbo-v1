@@ -220,7 +220,6 @@ export default function BasicDetails({
         </div>
         <div>
           <LocationPicker
-            height="480px"
             onLocationSelect={(location) => setValue("location", location!)}
           />
           <span className="text-[1.2rem] px-8 py-2 text-failure">
