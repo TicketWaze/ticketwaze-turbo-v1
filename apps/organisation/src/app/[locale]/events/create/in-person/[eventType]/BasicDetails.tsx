@@ -146,7 +146,42 @@ export default function BasicDetails({
         >
           {t("address")}
         </Input>
-
+        <div>
+          <Controller
+            control={control}
+            name="country"
+            render={({ field }) => (
+              <Select
+                {...field}
+                value={field.value}
+                onValueChange={field.onChange}
+                defaultValue={availableCountries[0]}
+              >
+                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
+                  <SelectValue placeholder={t("country")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableCountries.map((country) => {
+                    return (
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        key={country}
+                        value={country}
+                      >
+                        {country}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.country && (
+            <span className="text-[1.2rem] px-8 py-2 text-failure">
+              {errors.country?.message}
+            </span>
+          )}
+        </div>
         <div className="flex flex-col lg:flex-row w-full gap-[15px] items-center justify-between">
           <div className="flex-1 w-full">
             <Controller
@@ -224,44 +259,8 @@ export default function BasicDetails({
             )}
           </div>
         </div>
-
-        <div>
-          <Controller
-            control={control}
-            name="country"
-            render={({ field }) => (
-              <Select
-                {...field}
-                value={field.value}
-                onValueChange={field.onChange}
-                defaultValue={availableCountries[0]}
-              >
-                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
-                  <SelectValue placeholder={t("country")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableCountries.map((country) => {
-                    return (
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        key={country}
-                        value={country}
-                      >
-                        {country}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            )}
-          />
-          <span className="text-[1.2rem] px-8 py-2 text-failure">
-            {errors.country?.message}
-          </span>
-        </div>
         <div>
           <LocationPicker
-            height="480px"
             onLocationSelect={(location) => setValue("location", location!)}
           />
           <span className="text-[1.2rem] px-8 py-2 text-failure">

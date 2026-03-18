@@ -641,7 +641,7 @@
           "endTime": "Le champ heure de fin est requis"
         },
         "ticketClass": {
-          "name": "Sélectionnez un nom de catégorie de billet",
+          "name": "Le nom de la catégorie de billet doit comporter au moins 3 caractères",
           "description": "La description de la catégorie de billet doit comporter au moins 20 caractères",
           "price": "Le prix ne peut pas être vide",
           "quantity": {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
@@ -76,7 +77,6 @@ export default function UpdateMeetEventForm({ event }: { event: Event }) {
     register,
     handleSubmit,
     setValue,
-    getValues,
     control,
     trigger,
     formState: { errors, isSubmitting },
@@ -147,7 +147,6 @@ export default function UpdateMeetEventForm({ event }: { event: Event }) {
       formData,
       locale,
       event.eventId,
-      event.eventName,
     );
     if (result.status === "success") {
       toast.success("success");

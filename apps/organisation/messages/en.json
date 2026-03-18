@@ -689,7 +689,7 @@
           "endTime": "End time field is required"
         },
         "ticketClass": {
-          "name": "Select one ticket class name",
+          "name": "Ticket class description should be at least 3 characters",
           "description": "Ticket class description should be at least 20 characters",
           "price": "Price cannot be empty",
           "quantity": {

@@ -19,11 +19,11 @@ import {
 import type { EditInPersonFormValues } from "./types";
 import { useTranslations } from "next-intl";
 import countries from "@/lib/Countries";
-import { Event } from "@ticketwaze/typescript-config";
 import { Input } from "@/components/shared/Inputs";
 import { KeyboardEvent, ChangeEvent } from "react";
 import { Warning2 } from "iconsax-reactjs";
 import LocationPicker from "@/lib/LocationPicker";
+import { Event } from "@ticketwaze/typescript-config";
 
 type Props = {
   register: UseFormRegister<EditInPersonFormValues>;
@@ -31,6 +31,7 @@ type Props = {
   errors: any;
   imagePreview: string | null;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  // mapContainerRef: React.RefObject<HTMLDivElement | null>;
   setValue: UseFormSetValue<EditInPersonFormValues>;
   getValues: UseFormGetValues<EditInPersonFormValues>;
   event: Event;
@@ -42,12 +43,13 @@ export default function BasicDetails({
   errors,
   imagePreview,
   handleFileChange,
+  // mapContainerRef,
   setValue,
   getValues,
   event,
 }: Props) {
   const t = useTranslations("Events.create_event");
-  const [wordCount, setWordCount] = useState(event.eventDescription.length);
+  const [wordCount, setWordCount] = useState(0);
   function handleWordCount(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setWordCount(e.target.value.length);
   }
@@ -55,6 +57,7 @@ export default function BasicDetails({
   const availableState = countries.map((country) => country.state).flat();
   const [selectedState, setSelectedState] = useState<string>(event.state);
   const cities = availableState.filter((state) => state.name === selectedState);
+
   // tags handler
   const [tags, setTags] = useState<string[]>(getValues("activityTags"));
   const [input, setInput] = useState<string>("");
@@ -146,7 +149,42 @@ export default function BasicDetails({
         >
           {t("address")}
         </Input>
-
+        <div>
+          <Controller
+            control={control}
+            name="country"
+            render={({ field }) => (
+              <Select
+                {...field}
+                value={field.value}
+                onValueChange={field.onChange}
+                defaultValue={availableCountries[0]}
+              >
+                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
+                  <SelectValue placeholder={t("country")} />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableCountries.map((country) => {
+                    return (
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        key={country}
+                        value={country}
+                      >
+                        {country}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+            )}
+          />
+          {errors.country && (
+            <span className="text-[1.2rem] px-8 py-2 text-failure">
+              {errors.country?.message}
+            </span>
+          )}
+        </div>
         <div className="flex flex-col lg:flex-row w-full gap-[15px] items-center justify-between">
           <div className="flex-1 w-full">
             <Controller
@@ -162,7 +200,6 @@ export default function BasicDetails({
                     setValue("city", "");
                   }}
                   defaultValue={"sud"}
-                  disabled
                 >
                   <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
                     <SelectValue placeholder={t("state")} />
@@ -198,7 +235,6 @@ export default function BasicDetails({
                   {...field}
                   value={field.value}
                   onValueChange={field.onChange}
-                  disabled
                 >
                   <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
                     <SelectValue placeholder={t("city")} />
@@ -226,47 +262,8 @@ export default function BasicDetails({
             )}
           </div>
         </div>
-
-        <div>
-          <Controller
-            control={control}
-            name="country"
-            render={({ field }) => (
-              <Select
-                {...field}
-                value={field.value}
-                onValueChange={field.onChange}
-                defaultValue={availableCountries[0]}
-                disabled
-              >
-                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
-                  <SelectValue placeholder={t("country")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableCountries.map((country) => {
-                    return (
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        key={country}
-                        value={country}
-                      >
-                        {country}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.country && (
-            <span className="text-[1.2rem] px-8 py-2 text-failure">
-              {errors.country?.message}
-            </span>
-          )}
-        </div>
         <div>
           <LocationPicker
-            height="480px"
             initialValue={event.location}
             onLocationSelect={(location) => setValue("location", location!)}
           />
