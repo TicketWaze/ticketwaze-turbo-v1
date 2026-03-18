@@ -65,7 +65,8 @@ export default function RegisterPageComponent({
         .refine((password) => /[A-Z]/.test(password))
         .refine((password) =>
           /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
-        ),
+        )
+        .refine((password) => /[0-9]/.test(password)),
       password_confirmation: z.string(),
     })
     .refine((data) => data.password === data.password_confirmation, {
