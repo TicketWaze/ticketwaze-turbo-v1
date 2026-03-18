@@ -199,21 +199,6 @@ export default function CreatePrivateEventForm() {
   const [eventDays, setEventDays] = useState<{ dateTime: string }[]>([
     { dateTime: "" },
   ]);
-  const [ticketClasses, setTicketClasses] = useState<
-    {
-      ticketTypeName: string;
-      ticketTypeDescription: string;
-      ticketTypePrice: string;
-      ticketTypeQuantity: string;
-    }[]
-  >([
-    {
-      ticketTypeName: "",
-      ticketTypeDescription: "",
-      ticketTypePrice: "",
-      ticketTypeQuantity: "",
-    },
-  ]);
 
   return (
     <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
@@ -376,14 +361,13 @@ export default function CreatePrivateEventForm() {
             <StepTicket
               register={register}
               errors={errors}
-              ticketClasses={ticketClasses}
-              setTicketClasses={setTicketClasses}
               isFree={isFree}
               setIsFree={setIsfree}
               isRefundable={isRefundable}
               setIsRefundable={setIsRefundable}
               setValue={setValue}
               t={(k) => t(k)}
+              control={control}
             />
           </motion.div>
         )}

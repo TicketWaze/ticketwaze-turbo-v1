@@ -214,7 +214,7 @@ export interface Event {
   eventImageUrl: string;
   eventType: string;
   eventCategory: string;
-  isPublished: boolean;
+  adminStatus: "review" | "approved" | "rejected";
   isActive: boolean;
   currency: string;
   activityTags: string[];

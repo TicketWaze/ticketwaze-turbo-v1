@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import Slugify from "@/lib/Slugify";
 import { revalidatePath } from "next/cache";
@@ -48,7 +49,6 @@ export async function UpdateGoogleMeetEvent(
   body: FormData,
   locale: string,
   eventId: string,
-  eventName: string,
 ) {
   try {
     const request = await fetch(
@@ -83,6 +83,40 @@ export async function UpdateGoogleMeetEvent(
 /*
   ====================IN PERSON===================
 */
+export async function ValidateBasicDetailsInPerson(
+  organisationId: string,
+  accessToken: string,
+  body: FormData,
+  locale: string,
+  requestType: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/validation/in-person/basic-details/${organisationId}/${requestType}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: body,
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      return {
+        status: "success",
+      };
+    } else {
+      throw new Error(response.error.messages[0].message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
 
 export async function CreateInPersonEvent(
   organisationId: string,

@@ -112,14 +112,12 @@ interface LocationPickerProps {
   value?: SelectedLocation | null; // 👈 controlled value
   initialValue?: SelectedLocation | null; // 👈 fallback
   onLocationSelect?: (location: SelectedLocation | null) => void;
-  height?: string;
 }
 
 export default function LocationPicker({
   value,
   initialValue = null,
   onLocationSelect,
-  height = "500px",
 }: LocationPickerProps) {
   const [internalValue, setInternalValue] = useState<SelectedLocation | null>(
     value ?? initialValue,
@@ -182,7 +180,7 @@ export default function LocationPicker({
         ) : locating ? (
           <div className="tw-locating">Detecting your location…</div>
         ) : (
-          <div className="tw-map-wrap" style={{ height }}>
+          <div className="tw-map-wrap h-[300px]">
             <MapLayer
               value={internalValue}
               onLocationSelect={handleSelect}

@@ -62,7 +62,7 @@ export function makeEditInPersonSchema(isFree: boolean, t: TranslateFn) {
     ),
     ticketTypes: z.array(
       z.object({
-        ticketTypeName: z.string().min(1, t("errors.ticketClass.name")),
+        ticketTypeName: z.string().min(3, t("errors.ticketClass.name")),
         ticketTypeDescription: z
           .string()
           .min(20, t("errors.ticketClass.description"))

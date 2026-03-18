@@ -19,7 +19,10 @@ import { motion } from "framer-motion";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { UpdateInPersonEvent } from "@/actions/EventActions";
+import {
+  UpdateInPersonEvent,
+  ValidateBasicDetailsInPerson,
+} from "@/actions/EventActions";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
@@ -166,11 +169,43 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
   };
 
   type FieldName = keyof TForm;
+  const [isLoading, setIsLoading] = useState(false);
 
   const next = async () => {
     const fields = steps[currentStep]?.fields;
     const output = await trigger(fields as FieldName[], { shouldFocus: true });
     if (!output) return;
+    if (currentStep === 0) {
+      // validate basic details
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("eventName", getValues("eventName"));
+      formData.append("eventDescription", getValues("eventDescription"));
+      formData.append("address", getValues("address"));
+      formData.append("state", getValues("state"));
+      formData.append("city", getValues("city"));
+      formData.append("country", getValues("country"));
+      formData.append("location", JSON.stringify(getValues("location")));
+      formData.append("eventImage", getValues("eventImage"));
+      formData.append("eventType", event.eventType);
+      formData.append(
+        "activityTags",
+        JSON.stringify(getValues("activityTags")),
+      );
+      const result = await ValidateBasicDetailsInPerson(
+        organisation?.organisationId ?? "",
+        session?.user.accessToken ?? "",
+        formData,
+        locale,
+        "update",
+      );
+      if (result.status !== "success") {
+        setIsLoading(false);
+        toast.error(result.error);
+        return;
+      }
+      setIsLoading(false);
+    }
     if (currentStep === steps.length - 1) {
       await handleSubmit(processForm)();
       return;
@@ -178,7 +213,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     setPreviousStep(currentStep);
     setCurrentStep((s) => s + 1);
   };
-
   const prev = () => {
     if (currentStep > 0) {
       setPreviousStep(currentStep);
@@ -255,26 +289,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       };
     }),
   );
-  const [ticketClasses, setTicketClasses] = useState<
-    {
-      ticketTypeName: string;
-      ticketTypeDescription: string;
-      ticketTypePrice: string;
-      ticketTypeQuantity: string;
-    }[]
-  >(
-    event.eventTicketTypes.map((ticketType) => {
-      return {
-        ticketTypeDescription: ticketType.ticketTypeDescription,
-        ticketTypeName: ticketType.ticketTypeName,
-        ticketTypePrice:
-          event.currency === "USD"
-            ? String(ticketType.usdPrice)
-            : String(ticketType.ticketTypePrice),
-        ticketTypeQuantity: String(ticketType.ticketTypeQuantity),
-      };
-    }),
-  );
 
   return (
     <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
@@ -282,9 +296,9 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
         <ButtonPrimary
           onClick={next}
           className=" w-full max-w-[530px] mx-auto  "
-          disabled={isSubmitting}
+          disabled={isSubmitting || isLoading}
         >
-          {isSubmitting ? <LoadingCircleSmall /> : t("proceed")}
+          {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
         </ButtonPrimary>
       </div>
 
@@ -293,8 +307,8 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
           <div className="text-[2.2rem] text-neutral-600">
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
-          <ButtonPrimary onClick={next}>
-            {isSubmitting ? <LoadingCircleSmall /> : t("proceed")}
+          <ButtonPrimary onClick={next} disabled={isSubmitting || isLoading}>
+            {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
           </ButtonPrimary>
         </div>
       </div>
@@ -440,8 +454,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
               event={event}
               register={register}
               errors={errors}
-              ticketClasses={ticketClasses}
-              setTicketClasses={setTicketClasses}
               isFree={isFree}
               setIsFree={setIsfree}
               isRefundable={isRefundable}
