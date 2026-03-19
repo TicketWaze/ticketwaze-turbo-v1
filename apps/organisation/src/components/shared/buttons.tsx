@@ -1,15 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import { cn } from "@/lib/utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   className?: string;
+  ref?: any;
 }
 
-function Button({ className, children, ...props }: ButtonProps) {
+function Button({ className, children, ref, ...props }: ButtonProps) {
   return (
     <button
       {...props}
+      ref={ref}
       className={cn(
         "px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center",
         className,

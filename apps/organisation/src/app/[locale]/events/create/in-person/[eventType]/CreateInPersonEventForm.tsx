@@ -126,10 +126,12 @@ export default function CreateInPersonEventForm({
         "ticketTypes",
         JSON.stringify([
           {
-            ticketTypeName: "general",
+            ticketTypeName: "General",
             ticketTypeDescription: t("general_default"),
             ticketTypePrice: "",
-            ticketTypeQuantity: "100",
+            ticketTypeQuantity: String(
+              session?.activeOrganisation.membershipTier.freeTickets,
+            ),
           },
         ]),
       );
@@ -243,10 +245,10 @@ export default function CreateInPersonEventForm({
 
   return (
     <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
-      <div className="absolute bottom-4 z-[9999] w-full hidden lg:block">
+      <div className="absolute bottom-4 z-9999 w-full hidden lg:block">
         <ButtonPrimary
           onClick={next}
-          className=" w-full max-w-[530px] mx-auto  "
+          className=" w-full max-w-212 mx-auto  "
           disabled={isSubmitting || isLoading}
         >
           {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
@@ -254,7 +256,7 @@ export default function CreateInPersonEventForm({
       </div>
 
       <div className="fixed lg:hidden bottom-36 w-full px-8 z-50 left-0">
-        <div className=" lg:hidden bg-white mx-auto border border-neutral-100 px-4 py-[5px] flex justify-between items-center rounded-[100px]">
+        <div className=" lg:hidden bg-white mx-auto border border-neutral-100 px-4 py-2 flex justify-between items-center rounded-[100px]">
           <div className="text-[2.2rem] text-neutral-600">
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
@@ -268,15 +270,15 @@ export default function CreateInPersonEventForm({
         <BackButton text={t("back")}>
           <div className="flex justify-between">
             <div className="hidden lg:flex items-center gap-4">
-              <span className="text-primary-500 font-medium text-[1.5rem] leading-[3rem] ">
+              <span className="text-primary-500 font-medium text-[1.5rem] leading-12 ">
                 {t("basic")}
               </span>
-              <div className="w-[161px] h-[5px] rounded-[100px] bg-neutral-100" />
-              <span className="text-neutral-500 font-medium text-[1.5rem] leading-[3rem] ">
+              <div className="w-[16.1rem] h-2 rounded-[100px] bg-neutral-100" />
+              <span className="text-neutral-500 font-medium text-[1.5rem] leading-12 ">
                 {t("date_time")}
               </span>
-              <div className="w-[161px] h-[5px] rounded-[100px] bg-neutral-100" />
-              <span className="text-neutral-500 font-medium text-[1.5rem] leading-[3rem] ">
+              <div className="w-[16.1rem] h-2 rounded-[100px] bg-neutral-100" />
+              <span className="text-neutral-500 font-medium text-[1.5rem] leading-12 ">
                 {t("ticket")}
               </span>
             </div>
@@ -286,9 +288,9 @@ export default function CreateInPersonEventForm({
         <div className="flex items-center justify-between">
           <button
             onClick={prev}
-            className="flex max-w-[80px] cursor-pointer items-center gap-4"
+            className="flex max-w-32 cursor-pointer items-center gap-4"
           >
-            <div className="w-[35px] h-[35px] rounded-full bg-neutral-100 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center">
               <ArrowLeft2 size="20" color="#0d0d0d" variant="Bulk" />
             </div>
             <span className="text-neutral-700 font-normal text-[1.4rem] leading-8">
@@ -296,18 +298,18 @@ export default function CreateInPersonEventForm({
             </span>
           </button>
           <div className="hidden lg:flex items-center gap-4">
-            <span className="text-primary-500 font-medium text-[1.5rem] leading-[3rem] ">
+            <span className="text-primary-500 font-medium text-[1.5rem] leading-12 ">
               {t("basic")}
             </span>
-            <div className="w-[161px] h-[5px] rounded-[100px] bg-primary-500" />
-            <span className="text-primary-500 font-medium text-[1.5rem] leading-[3rem] ">
+            <div className="w-[16.1rem] h-2 rounded-[100px] bg-primary-500" />
+            <span className="text-primary-500 font-medium text-[1.5rem] leading-12 ">
               {t("date_time")}
             </span>
             <div
-              className={`w-[161px] h-[5px] rounded-[100px] ${currentStep === 2 ? "bg-primary-500" : "bg-neutral-100"}`}
+              className={`w-[16.1rem] h-2 rounded-[100px] ${currentStep === 2 ? "bg-primary-500" : "bg-neutral-100"}`}
             />
             <span
-              className={`${currentStep === 2 ? "text-primary-500" : "text-neutral-500"} font-medium text-[1.5rem] leading-[3rem]`}
+              className={`${currentStep === 2 ? "text-primary-500" : "text-neutral-500"} font-medium text-[1.5rem] leading-12`}
             >
               {t("ticket")}
             </span>
@@ -328,7 +330,7 @@ export default function CreateInPersonEventForm({
               This action cannot be undone
             </DialogDescription>
             {imageSrc && (
-              <div className="relative w-full h-[300px]">
+              <div className="relative w-full h-120">
                 <Cropper
                   image={imageSrc}
                   crop={crop}
@@ -343,7 +345,7 @@ export default function CreateInPersonEventForm({
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild onClick={cropImage}>
-              <span className="bg-primary-500 px-[3rem] py-[15px] border-2 border-transparent rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer flex items-center justify-center w-full">
+              <span className="bg-primary-500 px-12 py-6 border-2 border-transparent rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center w-full">
                 {t("resize")}
               </span>
             </DialogClose>

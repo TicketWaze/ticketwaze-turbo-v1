@@ -1,8 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/immutability */
 "use client";
 import PageLoader from "@/components/PageLoader";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { Organisation, User } from "@ticketwaze/typescript-config";
+import { Organisation } from "@ticketwaze/typescript-config";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
@@ -11,15 +13,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { LinkSecondary } from "@/components/shared/Links";
 
-export default function OnboardingLogic({
-  responseType,
-  user,
-  organisations,
-}: {
-  responseType: "invite" | "login" | "create";
-  user: User;
-  organisations: Organisation[];
-}) {
+export default function OnboardingLogic({ response }: { response: any }) {
   const t = useTranslations("Auth.onboarding");
   const [invitedOrganisations, setInvitedOrganisation] = useState<
     Organisation[] | undefined
@@ -30,17 +24,20 @@ export default function OnboardingLogic({
   const [isLoading, setIsloading] = useState(false);
   useEffect(() => {
     const handleOnboarding = async () => {
-      if (responseType === "invite") {
-        setInvitedOrganisation(organisations);
-      } else if (responseType === "create") {
+      if (response.type === "invite") {
+        setInvitedOrganisation(response.organisations);
+      } else if (response.type === "create") {
         setCreateOrganisation(true);
       } else {
-        if (user?.organisations[0]?.organisationId) {
+        if (response.user?.organisations?.[0]?.organisationId) {
           try {
             await update({
-              activeOrganisation: user.organisations[0],
+              activeOrganisation: {
+                ...response.user.organisations[0],
+                membershipTier: response.membershipTier,
+              },
             });
-            window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${user.userPreference.appLanguage}/analytics`;
+            window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${response.user.userPreference.appLanguage}/analytics`;
           } catch {
             toast.error("Failed to load organisation");
           }
@@ -50,7 +47,14 @@ export default function OnboardingLogic({
       }
     };
     handleOnboarding();
-  }, []);
+  }, [
+    response.membershipTier,
+    response.organisations,
+    response.type,
+    response.user?.organisations, // ✅ optional chaining
+    response.user?.userPreference?.appLanguage, // ✅ optional chaining
+    update,
+  ]);
 
   async function JoinOrganisation(organisation: Organisation) {
     setIsloading(true);
@@ -97,7 +101,10 @@ export default function OnboardingLogic({
       const res = await req.json();
       if (res.status === "success") {
         await update({
-          activeOrganisation: res.user.organisations[0],
+          activeOrganisation: {
+            ...res.user.organisations[0],
+            membershipTier: res.membershipTier,
+          },
         });
         window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${res.user.userPreference.appLanguage}/analytics`;
       } else {

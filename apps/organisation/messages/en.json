@@ -665,6 +665,8 @@
       "meet_default": "Join our Meet session with full access! Connect, and enjoy anywhere. Reserve your place today!",
       "draft": "Save as draft",
       "optional": "optional",
+      "pro": "This is Pro+ feature",
+      "freeTip": "When you set an activity as Free, the system will automatically mark it as Refundable. This ensures consistency across all free activities and avoids manual adjustments.",
       "errors": {
         "basicDetails": {
           "name": "Activity name should be at leat 10 characters",
@@ -808,6 +810,7 @@
       "invited": "Invited",
       "you": "You",
       "more": "More",
+      "teamLimit": "Upgrade your membership to add more team members.",
       "edit": "Edit member",
       "remove": "Remove member",
       "remove_member": "Remove member",

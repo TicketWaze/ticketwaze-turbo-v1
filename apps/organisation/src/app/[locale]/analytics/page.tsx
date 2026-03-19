@@ -325,7 +325,7 @@ export default async function AnalyticsPage() {
                 </div>
               )}
             </div>
-            <div className={"flex flex-col gap-9 gap-4 lg:pl-10 lg:pb-8 "}>
+            <div className={"flex flex-col gap-9 lg:pl-10 lg:pb-8 "}>
               <span
                 className={
                   "text-[14px] text-black-100 font-medium lg:text-[15px]"
@@ -386,7 +386,7 @@ export default async function AnalyticsPage() {
                 {t("upgradeAlert")}
               </span>
             </div>
-            <div className="flex-1 p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+            <div className="flex-1 p-[.2rem] rounded-[30px] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
               <LinkPrimary
                 className="bg-transparent gap-4 py-2 items-center"
                 href="/settings/subscriptions/upgrade"

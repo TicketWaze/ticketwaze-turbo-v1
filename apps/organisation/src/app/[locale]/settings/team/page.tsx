@@ -35,11 +35,14 @@ export default async function Page() {
   const response = await request.json();
   const members: OrganisationMember[] = response.members;
   const waitlistMembers: WaitlistMember[] = response.waitlistMembers;
+  const totalMembers = members.length + waitlistMembers.length;
   return (
     <OrganizerLayout title={t("title")}>
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
-        <TopBar title={t("title")}>{authorized && <AddMember />}</TopBar>
+        <TopBar title={t("title")}>
+          {authorized && <AddMember totalMembers={totalMembers} />}
+        </TopBar>
       </div>
       <MemberList
         members={members}

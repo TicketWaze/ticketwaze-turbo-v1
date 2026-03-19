@@ -7,11 +7,13 @@ import {
   useFieldArray,
   Control,
 } from "react-hook-form";
-import { AddCircle, Trash } from "iconsax-reactjs";
+import { AddCircle, Trash, Warning2 } from "iconsax-reactjs";
 import type { EditInPersonFormValues } from "./types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import { Input } from "@/components/shared/Inputs";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import { Event } from "@ticketwaze/typescript-config";
 
 type Props = {
@@ -45,23 +47,40 @@ export default function StepTicket({
   });
   const [currency, setCurrency] = useState("HTG");
   const [wordCounts, setWordCounts] = useState<number[]>(fields.map(() => 0));
+  const { data: session } = useSession();
+  function addClass() {
+    if (session?.activeOrganisation.membershipTier.membershipName === "free") {
+      toast.info(t("pro"));
+      return;
+    } else {
+      append({
+        ticketTypeName: "",
+        ticketTypeDescription: "",
+        ticketTypePrice: "",
+        ticketTypeQuantity: "",
+      });
+      setWordCounts((prev) => [...prev, 0]);
+    }
+  }
   return (
     <div className="flex flex-col gap-12">
       {/* set free */}
-      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
+      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
         <div className="flex items-center justify-between">
-          <p className="text-[1.6rem] leading-[22px] text-deep-100 max-w-[380px]">
+          <p className="text-[1.6rem] leading-8 text-deep-100 max-w-152">
             {t("mark_as_free")}
           </p>
-          <label className="relative inline-block h-[30px] w-[50px] cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-primary-500 has-[:disabled]:cursor-not-allowed">
+          <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 has-disabled:cursor-not-allowed">
             <input
               className="peer sr-only"
               id="free-event"
               type="checkbox"
+              disabled
               checked={isFree}
               onChange={() =>
                 setIsFree((prev) => {
                   if (prev === true) {
+                    setIsRefundable(false);
                     setValue("ticketTypes", [
                       {
                         ticketTypeName: "",
@@ -72,12 +91,16 @@ export default function StepTicket({
                     ]);
                     setCurrency("HTG");
                   } else {
+                    setIsRefundable(true);
                     setValue("ticketTypes", [
                       {
-                        ticketTypeName: "general",
+                        ticketTypeName: "General",
                         ticketTypeDescription: t("general_default"),
                         ticketTypePrice: "",
-                        ticketTypeQuantity: "100",
+                        ticketTypeQuantity: String(
+                          session?.activeOrganisation.membershipTier
+                            .freeTickets,
+                        ),
                       },
                     ]);
                   }
@@ -88,29 +111,39 @@ export default function StepTicket({
             <ToggleIcon />
           </label>
         </div>
-      </div>
-      {/* set refundable */}
-      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <div className="flex items-center justify-between">
-          <p className="text-[1.6rem] leading-[22px] text-deep-100 max-w-[380px]">
-            {t("mark_as_refundable")}
-          </p>
-          <label className="relative inline-block h-[30px] w-[50px] cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-primary-500 has-[:disabled]:cursor-not-allowed">
-            <input
-              className="peer sr-only"
-              id="free-event"
-              type="checkbox"
-              checked={isRefundable}
-              onChange={() => setIsRefundable((prev) => !prev)}
-            />
-            <ToggleIcon />
-          </label>
+        <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+          <Warning2 size="24" color="#737C8A" variant="Bulk" />
+          <div>
+            <p className="text-[1.2rem] leading-8 text-neutral-800">
+              {t("freeTip")}
+            </p>
+          </div>
         </div>
       </div>
+      {/* set refundable */}
+      {!isFree && (
+        <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
+          <div className="flex items-center justify-between">
+            <p className="text-[1.6rem] leading-8 text-deep-100 max-w-152">
+              {t("mark_as_refundable")}
+            </p>
+            <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 has-disabled:cursor-not-allowed">
+              <input
+                className="peer sr-only"
+                id="free-event"
+                type="checkbox"
+                checked={isRefundable}
+                onChange={() => setIsRefundable((prev) => !prev)}
+              />
+              <ToggleIcon />
+            </label>
+          </div>
+        </div>
+      )}
 
       {!isFree && (
-        <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-          <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
+        <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
+          <span className="font-semibold text-[16px] leading-8 text-deep-100">
             {t("currency")}
           </span>
           <RadioGroup
@@ -134,12 +167,12 @@ export default function StepTicket({
       )}
 
       {isFree ? (
-        <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
+        <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
           <Input defaultValue={"general"} disabled readOnly>
             {t("class_name")}
           </Input>
           <textarea
-            className="h-[150px] text-[1.5rem] placeholder:text-neutral-600 resize-none bg-neutral-100 w-full rounded-[2rem] p-8"
+            className="h-60 text-[1.5rem] placeholder:text-neutral-600 resize-none bg-neutral-100 w-full rounded-4xl p-8"
             placeholder={t("general_default")}
             disabled
             readOnly
@@ -158,10 +191,10 @@ export default function StepTicket({
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100"
+              className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100"
             >
               <div className="flex items-center justify-between">
-                <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
+                <span className="font-semibold text-[16px] leading-8 text-deep-100">
                   {t("ticket_class")}
                 </span>
                 {index > 0 && (
@@ -189,7 +222,7 @@ export default function StepTicket({
 
               <div>
                 <textarea
-                  className="h-[150px] text-[1.5rem] resize-none bg-neutral-100 w-full rounded-[2rem] p-8"
+                  className="h-60 text-[1.5rem] resize-none bg-neutral-100 w-full rounded-4xl p-8"
                   placeholder={t("class_description")}
                   maxLength={100}
                   minLength={20}
@@ -260,18 +293,11 @@ export default function StepTicket({
           ))}
 
           {!isFree && fields.length <= 2 && (
-            <div className="w-full max-w-[540px] mx-auto flex justify-between ">
+            <div className="w-full max-w-216 mx-auto flex justify-between ">
               <div></div>
               <button
-                onClick={() => {
-                  append({
-                    ticketTypeName: "",
-                    ticketTypeDescription: "",
-                    ticketTypePrice: "",
-                    ticketTypeQuantity: "",
-                  });
-                  setWordCounts((prev) => [...prev, 0]);
-                }}
+                type="button"
+                onClick={addClass}
                 className=" cursor-pointer flex gap-4 items-center"
               >
                 <AddCircle color={"#E45B00"} variant={"Bulk"} size={"20"} />
