@@ -90,8 +90,8 @@ export default function MemberList({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {members.map((member, key: number) => (
-            <TableRow key={key}>
+          {members.map((member) => (
+            <TableRow key={member.userId}>
               <TableCell
                 className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
               >
@@ -241,8 +241,8 @@ export default function MemberList({
           ))}
 
           {/* Waitlist member */}
-          {waitlistMembers.map((member, key: number) => (
-            <TableRow key={key}>
+          {waitlistMembers.map((member) => (
+            <TableRow key={member.email}>
               <TableCell
                 className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
               >
@@ -339,23 +339,12 @@ export default function MemberList({
                                   />
                                 </span>
                               </DialogTrigger>
-                              <DialogContent className={"w-xl lg:w-208 "}>
-                                <DialogHeader>
-                                  <DialogTitle
-                                    className={
-                                      "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
-                                    }
-                                  >
-                                    {t("remove_invitation")}
-                                  </DialogTitle>
-                                  <DialogDescription className={"sr-only"}>
-                                    <span>Remove member</span>
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <RemoveInvitationDialogContent
-                                  email={member.email}
-                                />
-                              </DialogContent>
+                              <DialogDescription className={"sr-only"}>
+                                <span>Remove member</span>
+                              </DialogDescription>
+                              <RemoveInvitationDialogContent
+                                email={member.email}
+                              />
                             </Dialog>
                           </li>
                         </ul>

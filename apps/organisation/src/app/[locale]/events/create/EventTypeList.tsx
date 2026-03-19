@@ -168,7 +168,7 @@ export default function EventTypeList({
       </div>
       <ul className="list overflow-y-scroll py-2 px-2">
         {filteredCategories.map((category, index) => {
-          if (category.value === "meet") {
+          if (category.value === "test") {
             return (
               <li key={index}>
                 <Dialog>
@@ -249,6 +249,7 @@ export default function EventTypeList({
               </li>
             );
           } else if (
+            category.value === "meet" ||
             category.value === "reservations" ||
             category.value === "transportations" ||
             category.value === "tours" ||

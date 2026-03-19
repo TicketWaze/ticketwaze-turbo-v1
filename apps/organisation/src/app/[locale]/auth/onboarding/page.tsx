@@ -20,19 +20,12 @@ export default async function OnboardingPage() {
       },
     );
     const response = await request.json();
-    const responseType: "invite" | "login" | "create" = response.type;
-    const user = response.user;
-    const organisations = response.organisations;
     return (
       <>
-        <OnboardingLogic
-          responseType={responseType}
-          user={user}
-          organisations={organisations}
-        />
+        <OnboardingLogic response={response} />
       </>
     );
-  } catch (error) {
+  } catch {
     return <FetchFailedErrorView />;
   }
 }

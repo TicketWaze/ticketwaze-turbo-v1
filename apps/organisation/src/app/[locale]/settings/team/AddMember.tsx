@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 "use client";
 import {
   Dialog,
@@ -28,7 +29,7 @@ import { toast } from "sonner";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { Input } from "@/components/shared/Inputs";
 
-export default function AddMember() {
+export default function AddMember({ totalMembers }: { totalMembers: number }) {
   const t = useTranslations("Settings.team");
 
   const AddMemberSchema = z.object({
@@ -58,6 +59,12 @@ export default function AddMember() {
   const [isLoading, setIsLoading] = useState(false);
 
   async function submitHandler(data: TAddMemberSchema) {
+    if (
+      totalMembers === session?.activeOrganisation.membershipTier.teamMember
+    ) {
+      toast.info(t("teamLimit"));
+      return;
+    }
     setIsLoading(true);
     const result = await AddMemberAction(
       organisation?.organisationId ?? "",

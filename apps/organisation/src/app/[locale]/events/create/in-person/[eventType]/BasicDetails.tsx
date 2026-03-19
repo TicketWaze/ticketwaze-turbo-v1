@@ -9,6 +9,7 @@ import {
   UseFormSetValue,
   UseFormGetValues,
 } from "react-hook-form";
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -23,6 +24,7 @@ import { Input } from "@/components/shared/Inputs";
 import { KeyboardEvent, ChangeEvent } from "react";
 import { Warning2 } from "iconsax-reactjs";
 import LocationPicker from "@/lib/LocationPicker";
+import UploadDocument from "@/assets/icons/document-upload.svg";
 
 type Props = {
   register: UseFormRegister<CreateInPersonFormValues>;
@@ -96,8 +98,8 @@ export default function BasicDetails({
   return (
     <div className="flex flex-col gap-12">
       {/* Event details */}
-      <div className="p-[15px] max-w-[540px] w-full mx-auto rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
+      <div className="p-6 max-w-216 w-full mx-auto rounded-[15px] flex flex-col gap-6 border border-neutral-100">
+        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
           {t("event_details")}
         </span>
         <Input
@@ -112,7 +114,7 @@ export default function BasicDetails({
           <textarea
             {...register("eventDescription")}
             className={
-              "bg-neutral-100 w-full rounded-[2rem] h-[150px] resize-none p-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
+              "bg-neutral-100 w-full rounded-4xl h-60 resize-none p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
             }
             placeholder={t("description")}
             minLength={150}
@@ -135,8 +137,8 @@ export default function BasicDetails({
       </div>
 
       {/* location */}
-      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
+      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
+        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
           {t("location")}
         </span>
         <Input
@@ -157,7 +159,7 @@ export default function BasicDetails({
                 onValueChange={field.onChange}
                 defaultValue={availableCountries[0]}
               >
-                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
+                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
                   <SelectValue placeholder={t("country")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -182,7 +184,7 @@ export default function BasicDetails({
             </span>
           )}
         </div>
-        <div className="flex flex-col lg:flex-row w-full gap-[15px] items-center justify-between">
+        <div className="flex flex-col lg:flex-row w-full gap-6 items-center justify-between">
           <div className="flex-1 w-full">
             <Controller
               control={control}
@@ -198,7 +200,7 @@ export default function BasicDetails({
                   }}
                   defaultValue={"sud"}
                 >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
+                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
                     <SelectValue placeholder={t("state")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -233,7 +235,7 @@ export default function BasicDetails({
                   value={field.value}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
+                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
                     <SelectValue placeholder={t("city")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -270,8 +272,8 @@ export default function BasicDetails({
       </div>
 
       {/* tags */}
-      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
+      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
+        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
           {t("event_tags")}
         </span>
         <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
@@ -284,7 +286,7 @@ export default function BasicDetails({
         </div>
         <div className="w-full">
           <div
-            className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-[20px] text-[1.5rem] leading-[20px] text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
+            className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
             onClick={() => inputRef.current?.focus()}
           >
             {tags.map((tag) => (
@@ -302,7 +304,7 @@ export default function BasicDetails({
               onChange={handleChange}
               onKeyDown={handleKeyDown}
               placeholder={t("tagPlaceholder")}
-              className="flex-1 outline-none min-w-[120px] bg-transparent placeholder:text-neutral-600"
+              className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
             />
           </div>
         </div>
@@ -314,17 +316,17 @@ export default function BasicDetails({
       </div>
 
       {/* image */}
-      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
+      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
+        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
           {t("thumbnail")}
         </span>
 
         {imagePreview ? (
-          <div className="relative w-full h-[300px]">
+          <div className="relative w-full h-120">
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-full h-[300px] object-cover object-top rounded-[1rem]"
+              className="w-full h-120 object-cover object-top rounded-2xl"
             />
             <input
               type="file"
@@ -334,14 +336,22 @@ export default function BasicDetails({
             />
           </div>
         ) : (
-          <div className="py-[6rem] px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
+          <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
             <div className="flex flex-col items-center gap-4 ">
-              <p className="text-[1.5rem] leading-[20px] text-neutral-500 ">
-                {t("thumbnail_text")}{" "}
-                <span className="font-medium text-primary-500">
-                  {t("browse")}
-                </span>
-              </p>
+              <div className="flex flex-col gap-4 items-center">
+                <Image
+                  src={UploadDocument}
+                  alt="upload"
+                  width={24}
+                  height={24}
+                />
+                <p className="text-[1.5rem] leading-6 text-neutral-500 ">
+                  {t("thumbnail_text")}{" "}
+                  <span className="font-medium text-primary-500">
+                    {t("browse")}
+                  </span>
+                </p>
+              </div>
               <input
                 type="file"
                 accept="image/*"

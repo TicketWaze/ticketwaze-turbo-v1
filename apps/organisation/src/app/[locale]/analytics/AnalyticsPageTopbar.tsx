@@ -43,7 +43,7 @@ export default function AnalyticsPageTopbar({
               {isVerified && <VerifierOrganisationCheckMark />}
             </h3>
             {membershipTier.membershipName === "free" && (
-              <div className=" p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+              <div className=" p-[.2rem] rounded-[30px] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
                 <LinkPrimary
                   className="bg-transparent gap-4 py-2 items-center"
                   href="/settings/subscriptions/upgrade"
