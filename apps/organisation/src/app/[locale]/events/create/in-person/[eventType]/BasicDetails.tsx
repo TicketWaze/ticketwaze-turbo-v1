@@ -9,6 +9,7 @@ import {
   UseFormSetValue,
   UseFormGetValues,
 } from "react-hook-form";
+import Image from "next/image";
 import {
   Select,
   SelectContent,
@@ -23,6 +24,7 @@ import { Input } from "@/components/shared/Inputs";
 import { KeyboardEvent, ChangeEvent } from "react";
 import { Warning2 } from "iconsax-reactjs";
 import LocationPicker from "@/lib/LocationPicker";
+import UploadDocument  from "@/assets/icons/document-upload.svg";
 
 type Props = {
   register: UseFormRegister<CreateInPersonFormValues>;
@@ -336,12 +338,15 @@ export default function BasicDetails({
         ) : (
           <div className="py-[6rem] px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
             <div className="flex flex-col items-center gap-4 ">
-              <p className="text-[1.5rem] leading-[20px] text-neutral-500 ">
-                {t("thumbnail_text")}{" "}
-                <span className="font-medium text-primary-500">
-                  {t("browse")}
-                </span>
-              </p>
+              <div className="flex flex-col gap-4 items-center">
+                <Image src={UploadDocument} alt="upload" width={24} height={24} />
+                <p className="text-[1.5rem] leading-[20px] text-neutral-500 ">
+                  {t("thumbnail_text")}{" "}
+                  <span className="font-medium text-primary-500">
+                    {t("browse")}
+                  </span>
+                </p>
+              </div>
               <input
                 type="file"
                 accept="image/*"
