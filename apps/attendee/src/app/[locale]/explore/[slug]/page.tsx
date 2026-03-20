@@ -233,7 +233,10 @@ export default async function EventPage({
                 </span>
                 {/*  organizer*/}
                 <div className={"flex items-center justify-between w-full"}>
-                  <div className={"flex items-center gap-4"}>
+                  <Link
+                    href={`/organisations/${organisation.organisationId}`}
+                    className={"flex items-center gap-4"}
+                  >
                     {organisation?.profileImageUrl ? (
                       <Image
                         src={organisation.profileImageUrl}
@@ -268,7 +271,7 @@ export default async function EventPage({
                         {organisation.followers.length} {t("followers")}
                       </span>
                     </div>
-                  </div>
+                  </Link>
                   {isFollowing.length > 0 ? (
                     <Unfollow organisationId={event.organisationId} />
                   ) : (
@@ -394,7 +397,7 @@ export default async function EventPage({
               {/*  organizer*/}
               <div className={"flex items-center justify-between w-full"}>
                 <Link
-                  href={`/organizers/${organisation.organisationId}`}
+                  href={`/organisations/${organisation.organisationId}`}
                   className={"flex items-center gap-4"}
                 >
                   {organisation?.profileImageUrl ? (

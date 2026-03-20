@@ -5,12 +5,12 @@ import {
   Star,
   Ticket,
   User,
-  UserSquare,
   HamburgerMenu,
   Setting5,
   I24Support,
   Logout,
   MoneyRecive,
+  Building,
 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { signOut, useSession } from "next-auth/react";
@@ -61,8 +61,8 @@ export default function MobileNavigation({
         },
         {
           label: t("links.organizers"),
-          path: `/organizers`,
-          Icon: UserSquare,
+          path: `/organisations`,
+          Icon: Building,
         },
         {
           label: t("links.preferences"),

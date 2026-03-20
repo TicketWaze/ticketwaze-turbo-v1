@@ -253,7 +253,7 @@
         "wallet": "Portefeuille",
         "liked": "Portefeuille",
         "history": "Historique",
-        "organizers": "Organisateurs",
+        "organizers": "Organisations",
         "title2": "Utilisateur",
         "more": "Plus",
         "profile": "Profil",
@@ -621,6 +621,7 @@
     "event": "activités",
     "follow": "Suivre",
     "unfollow": "Ne plus suivre",
+    "noFollowed": "Vous ne suivez encore aucune organisation. Explorez et suivez des organisations pour rester informé de leurs événements et activités. ",
     "profile": {
       "upcoming": "Activités à venir",
       "noUpcoming": "Aucune activité à venir",

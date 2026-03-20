@@ -620,6 +620,7 @@
     "event": "activity",
     "follow": "Follow",
     "unfollow": "Unfollow",
+    "noFollowed": "You’re not following any organisations yet. Discover and follow organisations to stay updated on their latest events and activities.",
     "profile": {
       "upcoming": "Upcoming activities",
       "noUpcoming": "No upcoming activity",
