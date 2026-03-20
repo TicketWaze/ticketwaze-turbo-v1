@@ -16,11 +16,12 @@ export default async function ProfilePage() {
     },
   });
   const response = await request.json();
-  const userPreferences: UserPreference = response.preferences;
+  const userPreferences: UserPreference = response.userPreferences;
   const locale = await getLocale();
   if (!session) {
     redirect({ href: "/auth/login", locale });
   }
+  console.log(userPreferences);
 
   return (
     <AttendeeLayout title={t("title")}>

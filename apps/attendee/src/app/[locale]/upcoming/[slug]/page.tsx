@@ -6,11 +6,12 @@ import EventActions from "./EventActions";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import { Link } from "@/i18n/navigation";
 import MapComponent from "./MapComponent";
-import { Call, Global, RouteSquare, Sms } from "iconsax-reactjs";
+import { Global, RouteSquare, Sms, Warning2 } from "iconsax-reactjs";
 import TicketViewer from "./TicketViewer";
 import { Ticket, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
+import ReturnFreeTicketView from "./ReturnFreeTicketView";
 
 export default async function UpcomingEventPage({
   params,
@@ -67,7 +68,7 @@ export default async function UpcomingEventPage({
                 className="rounded-full"
               />
             ) : (
-              <span className="w-[35px] h-[35px] flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-[30px] font-primary">
+              <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
                 {organisation?.organisationName.slice()[0]?.toUpperCase()}
               </span>
             )}
@@ -82,7 +83,7 @@ export default async function UpcomingEventPage({
           </div>
           <Link
             href={`/organizers/${organisation.organisationId}`}
-            className="border-2 py-[7.5px] px-[15px] lg:px-12 rounded-[100px] border-black font-semibold text-[1.5rem] "
+            className="border-2 py-[7.5px] px-6 lg:px-12 rounded-[100px] border-black font-semibold text-[1.5rem] "
           >
             {t("viewProfile")}
           </Link>
@@ -91,7 +92,7 @@ export default async function UpcomingEventPage({
       <main className="w-full gap-8 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:min-h-0 overflow-y-auto h-full">
         {/* Left column content */}
         <div className="flex flex-col gap-8 lg:overflow-y-auto min-h-0">
-          <div className="w-full max-h-[298px] overflow-hidden rounded-[10px] flex-shrink-0">
+          <div className="w-full max-h-[29.8rem] overflow-hidden rounded-[10px] shrink-0">
             <Image
               src={event.eventImageUrl}
               width={580}
@@ -146,27 +147,45 @@ export default async function UpcomingEventPage({
               {t("contact")}
             </span>
           </div>
-          <div className="flex flex-col gap-[5px]">
+          <div className="flex flex-col gap-2">
             <div className="flex items-center gap-4">
               <Sms size="20" color="#737c8a" variant="Bulk" />
-              <span className="font-normal text-[1.5rem] leading-[30px] text-neutral-700">
+              <span className="font-normal text-[1.5rem] leading-12 text-neutral-700">
                 {organisation.organisationEmail}
               </span>
             </div>
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <Call size="20" color="#737c8a" variant="Bulk" />
               <span className="font-normal text-[1.5rem] leading-[30px] text-neutral-700">
                 {organisation.organisationPhoneNumber}
               </span>
-            </div>
+            </div> */}
             {organisation.organisationWebsite && (
               <div className="flex items-center gap-4">
                 <Global size="20" color="#737c8a" variant="Bulk" />
-                <span className="font-normal text-[1.5rem] leading-[30px] text-neutral-700">
+                <span className="font-normal text-[1.5rem] leading-12 text-neutral-700">
                   {organisation.organisationWebsite}
                 </span>
               </div>
             )}
+            <div></div>
+            <div></div>
+            <div></div>
+            {tickets[0].isRefundable && event.isFree && <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+              <Warning2 size="24" color="#737C8A" variant="Bulk" />
+              <div>
+                <p className="text-[1.2rem] leading-8 text-neutral-800">
+                  {t("freeTicketReturnWarning")}
+                </p>
+              </div>
+            </div>}
+            {tickets[0].isRefundable && event.isFree && (
+              <ReturnFreeTicketView ticket={tickets[0]} />
+            )}
+
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
 
           {/* Tickets on mobile */}

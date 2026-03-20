@@ -318,7 +318,9 @@
     "filters": {
       "all": "Tous les statuts",
       "pending": "En attente",
-      "successful": "Réussi"
+      "successful": "Réussi",
+      "returned": "Rendu",
+      "failed": "Echoué"
     },
     "search": "Rechercher un identifiant de transaction",
     "transactions": {
@@ -398,7 +400,7 @@
     "followers": "Abonnés",
     "follow": "Suivre",
     "unfollow": "Ne plus suivre",
-    "viewProfile": "Voir le profil",
+    "viewProfile": "Profil",
     "more": "Plus",
     "reportEvent": "Signaler l'événement",
     "reportOrganisation": "Signaler cet Organisation",
@@ -433,7 +435,10 @@
     "email": "E-mail",
     "ticketWarning1": "Votre billet est personnel — ne le partagez pas.",
     "ticketWarning2": "Ce billet est non remboursable",
-    "liked": "Événements aimés"
+    "liked": "Événements aimés",
+    "return": "Rendre le billet",
+    "returnDescription": "En rendant votre billet, vous le remettez définitivement à l'organisation. Cette action est irréversible : vous ne pourrez plus récupérer le billet par la suite. Veuillez noter que les frais de plateforme et de transaction ne sont pas remboursables.",
+    "freeTicketReturnWarning": "Cette activitée est gratuit. Si vous rendez votre billet, vous ne pourrez pas en acheter un autre par la suite."
   },
   "Checkout": {
     "back": "Retour",

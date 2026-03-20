@@ -86,8 +86,10 @@ export default function StepTicket({
                       },
                     ]);
                     setCurrency("HTG");
+                    setValue("isFree", false);
                   } else {
                     setIsRefundable(true);
+                    setValue("isFree", true);
                     setValue("ticketTypes", [
                       {
                         ticketTypeName: "General",

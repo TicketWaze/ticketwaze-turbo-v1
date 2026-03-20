@@ -318,7 +318,9 @@
     "filters": {
       "all": "All status",
       "pending": "Pending",
-      "successful": "Successful"
+      "successful": "Successful",
+      "failed": "Failed",
+      "returned": "Returned"
     },
     "search": "Search for transaction id",
     "transactions": {

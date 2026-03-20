@@ -415,6 +415,24 @@ export default function WalletPageContent({
                               {t("filters.pending")}
                             </span>
                           )}
+                          {order?.status === "RETURNED" && (
+                            <span
+                              className={
+                                "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-failure  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                              }
+                            >
+                              {t("filters.returned")}
+                            </span>
+                          )}
+                          {order?.status === "FAILED" && (
+                            <span
+                              className={
+                                "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-failure  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                              }
+                            >
+                              {t("filters.failed")}
+                            </span>
+                          )}
                         </DrawerTrigger>
                         <WalletOrderDrawerContent order={order} />
                       </Drawer>

@@ -97,7 +97,8 @@ export interface Ticket {
   ticketPrice: number;
   ticketUsdPrice: number;
   organisationId: string;
-  status: "PENDING" | "CHECKED";
+  isRefundable: boolean;
+  status: "PENDING" | "CHECKED" | "RETURNED";
   createdAt: DateTime;
   updatedAt: DateTime;
 }
@@ -159,7 +160,7 @@ export interface Order {
   usdPrice: number;
   orderName: string;
   provider: string;
-  status: "PENDING" | "SUCCESSFUL";
+  status: "PENDING" | "SUCCESSFUL" | "FAILED" | "RETURNED";
   tickets: Ticket[];
   createdAt: DateTime;
   updatedAt: DateTime;
@@ -217,6 +218,7 @@ export interface Event {
   eventCategory: string;
   adminStatus: "review" | "approved" | "rejected";
   isActive: boolean;
+  isFree: boolean;
   currency: string;
   activityTags: string[];
   eventDays: EventDay[];

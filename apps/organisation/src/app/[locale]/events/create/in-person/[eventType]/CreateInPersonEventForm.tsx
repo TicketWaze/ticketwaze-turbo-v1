@@ -103,6 +103,7 @@ export default function CreateInPersonEventForm({
         },
       ],
       eventCurrency: "HTG",
+      isFree: false,
     },
   });
   // submission
@@ -119,6 +120,7 @@ export default function CreateInPersonEventForm({
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
     formData.append("eventType", eventType);
+    formData.append("isFree", JSON.stringify(data.isFree));
     formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("isRefundable", JSON.stringify(isRefundable));
     if (isFree) {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -40,7 +41,7 @@ export default function CheckoutFlow({
 }) {
   const t = useTranslations("Checkout");
   const locale = useLocale();
-  const isFree = event.eventTicketTypes[0].ticketTypePrice == 0;
+  const isFree = event.isFree;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [previousStep, setPreviousStep] = useState(0);

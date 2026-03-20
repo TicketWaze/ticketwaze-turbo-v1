@@ -50,29 +50,31 @@ export default function FinancePageContent({
   const { data: session } = useSession();
   const currentOrganisation = transactions.organisation;
   const { orders, tickets } = transactions;
-  const total = Object.values(orders).reduce(
-    (acc, order) =>
-      acc +
-      (currentOrganisation?.currency === "HTG" ? order.amount : order.usdPrice),
-    0,
-  );
+  const total = Object.values(orders)
+    .filter((order) => order.status !== "FAILED")
+    .reduce(
+      (acc, order) =>
+        acc +
+        (currentOrganisation?.currency === "HTG"
+          ? order.amount
+          : order.usdPrice),
+      0,
+    );
   const roundTotal = Math.round(total * 100) / 100;
   return (
-    <div className={"flex flex-col gap-[3rem] overflow-y-scroll"}>
+    <div className={"flex flex-col gap-12 overflow-y-scroll overflow-x-hidden"}>
       <div
         className={
           "grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b"
         }
       >
-        <div className={"pb-[30px]"}>
-          <span
-            className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
-          >
+        <div className={"pb-12"}>
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
             {t("amounts.revenue")}
           </span>
           <p
             className={
-              "font-medium text-[1.6rem] lg:text-[25px] leading-[30px] font-primary"
+              "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
             {roundTotal}{" "}
@@ -85,15 +87,13 @@ export default function FinancePageContent({
             </span>
           </p>
         </div>
-        <div className={"pl-[25px]"}>
-          <span
-            className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
-          >
+        <div className={"pl-10"}>
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
             {t("amounts.pendingBalance")}
           </span>
           <p
             className={
-              "font-medium text-[1.6rem] lg:text-[25px] leading-[30px] font-primary"
+              "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
             {currentOrganisation?.currency === "HTG"
@@ -109,15 +109,13 @@ export default function FinancePageContent({
             </span>
           </p>
         </div>
-        <div className={"pl-0 lg:pl-[25px]"}>
-          <span
-            className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
-          >
+        <div className={"pl-0 lg:pl-10"}>
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
             {t("amounts.availableBalance")}
           </span>
           <p
             className={
-              "font-medium text-[1.6rem] lg:text-[25px] leading-[30px] font-primary"
+              "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
             {currentOrganisation?.currency === "HTG"
@@ -145,20 +143,20 @@ export default function FinancePageContent({
         >
           <span
             className={
-              "font-primary  w-full font-medium text-[18px] leading-[25px] text-black"
+              "font-primary  w-full font-medium text-[18px] leading-10 text-black"
             }
           >
             {t("transactions.title")}
           </span>
           <div
             className={
-              "bg-neutral-100 rounded-[30px] flex items-center gap-2 w-full lg:w-auto lg:min-w-[243px] px-[1.5rem] py-4"
+              "bg-neutral-100 rounded-[30px] flex items-center gap-2 w-full lg:w-auto lg:min-w-[24.3rem] px-6 py-4"
             }
           >
             <input
               placeholder={t("search")}
               className={
-                "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
               }
             />
             <SearchNormal size="20" color="#737c8a" variant="Bulk" />
@@ -169,42 +167,35 @@ export default function FinancePageContent({
             <TableRow>
               <TableHead
                 className={
-                  "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("transactions.table.id")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("transactions.table.name")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
-                }
-              >
-                {t("transactions.table.class")}
-              </TableHead>
-              <TableHead
-                className={
-                  "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("transactions.table.amount")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("transactions.table.status")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("transactions.table.date")}
@@ -212,21 +203,19 @@ export default function FinancePageContent({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tickets.map((ticket) => {
-              const [order] = orders.filter(
-                (order) => ticket.orderId === order.orderId,
+            {orders.map((order) => {
+              const [ticket] = tickets.filter(
+                (ticket) => ticket.orderId === order.orderId,
               );
               return (
-                <TableRow key={ticket.ticketId}>
+                <TableRow key={order.orderId}>
                   <TableCell
-                    className={
-                      "text-[1.5rem] py-[15px] leading-8 text-neutral-900"
-                    }
+                    className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
                   >
                     <Drawer direction={"right"}>
                       <DrawerTrigger>
                         <span className={"cursor-pointer"}>
-                          {ticket.ticketName}
+                          {TruncateUrl(order.orderName, 15)}
                         </span>
                       </DrawerTrigger>
                       <Informations ticket={ticket} order={order as Order} />
@@ -238,40 +227,11 @@ export default function FinancePageContent({
                     <Drawer direction={"right"}>
                       <DrawerTrigger>
                         <span className={"cursor-pointer"}>
-                          {ticket.event.eventName}
+                          {TruncateUrl(ticket.event.eventName, 20)}
                         </span>
                       </DrawerTrigger>
                       <Informations ticket={ticket} order={order as Order} />
                     </Drawer>
-                  </TableCell>
-                  <TableCell className={"hidden lg:table-cell"}>
-                    {ticket.ticketType.toUpperCase() === "GENERAL" && (
-                      <span
-                        className={
-                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                        }
-                      >
-                        general
-                      </span>
-                    )}
-                    {ticket.ticketType.toUpperCase() === "VIP" && (
-                      <span
-                        className={
-                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                        }
-                      >
-                        vip
-                      </span>
-                    )}
-                    {ticket.ticketType.toUpperCase() === "VVIP" && (
-                      <span
-                        className={
-                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-deep-100  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                        }
-                      >
-                        Premium vip
-                      </span>
-                    )}
                   </TableCell>
                   <TableCell
                     className={
@@ -279,27 +239,27 @@ export default function FinancePageContent({
                     }
                   >
                     {ticket.event.currency === "USD"
-                      ? ticket.ticketUsdPrice
-                      : ticket.ticketPrice}{" "}
+                      ? order.usdPrice
+                      : order.amount}{" "}
                     {ticket.event.currency}
                   </TableCell>
                   <TableCell className={"hidden lg:table-cell"}>
                     {order?.status === "SUCCESSFUL" && (
                       <span
                         className={
-                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                          "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
                         }
                       >
                         {t("filters.successful")}
                       </span>
                     )}
-                    {order?.status === "PENDING" && (
+                    {order?.status === "RETURNED" && (
                       <span
                         className={
-                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                          "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-failure  px-2 rounded-[30px] bg-failure/10"
                         }
                       >
-                        {t("filters.pending")}
+                        {t("filters.returned")}
                       </span>
                     )}
                   </TableCell>
@@ -308,38 +268,36 @@ export default function FinancePageContent({
                       "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
                     }
                   >
-                    {FormatDate(ticket.createdAt)}
+                    {FormatDate(order.createdAt)}
                   </TableCell>
                 </TableRow>
               );
             })}
           </TableBody>
         </Table>
-        {tickets.length === 0 && (
+        {orders.length === 0 && (
           <div
             className={
-              "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
+              "w-132 lg:w-184 mx-auto flex flex-col items-center gap-20"
             }
           >
             <div
               className={
-                "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
               }
             >
               <div
                 className={
-                  "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                  "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
                 }
               >
                 <Money3 size="50" color="#0d0d0d" variant="Bulk" />
               </div>
             </div>
-            <div
-              className={"flex flex-col gap-[3rem] items-center text-center"}
-            >
+            <div className={"flex flex-col gap-12 items-center text-center"}>
               <p
                 className={
-                  "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                  "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
                 }
               >
                 {t("transactions.description")}
@@ -352,7 +310,7 @@ export default function FinancePageContent({
             <Link
               href={"/finance/transactions"}
               className={
-                "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-[20px]"
+                "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-8"
               }
             >
               {t("transactions.more")}
@@ -362,6 +320,7 @@ export default function FinancePageContent({
         )} */}
         <div></div>
       </div>
+      {/* WITHDRAWAL */}
       <div className={"flex flex-col gap-8"}>
         <div
           className={
@@ -370,7 +329,7 @@ export default function FinancePageContent({
         >
           <span
             className={
-              "font-primary font-medium text-left text-[18px] leading-[25px] text-black"
+              "font-primary font-medium text-left text-[18px] leading-10 text-black"
             }
           >
             {t("withdrawal.title")}
@@ -384,7 +343,7 @@ export default function FinancePageContent({
               <input
                 placeholder={t("search")}
                 className={
-                  "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
                 }
               />
               <SearchNormal size="20" color="#737c8a" variant="Bulk" />
@@ -396,42 +355,42 @@ export default function FinancePageContent({
             <TableRow>
               <TableHead
                 className={
-                  "font-bold  text-[1.1rem] hidden lg:table-cell pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold  text-[1.1rem] hidden lg:table-cell pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("withdrawal.table.id")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("withdrawal.table.name")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("withdrawal.table.account")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("withdrawal.table.amount")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("withdrawal.table.status")}
               </TableHead>
               <TableHead
                 className={
-                  "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                  "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("withdrawal.table.date")}
@@ -444,7 +403,7 @@ export default function FinancePageContent({
                 <TableRow key={request.withdrawalRequestId}>
                   <TableCell
                     className={
-                      "text-[1.5rem] hidden lg:table-cell py-[15px] leading-8 text-neutral-900"
+                      "text-[1.5rem] hidden lg:table-cell py-6 leading-8 text-neutral-900"
                     }
                   >
                     <Drawer direction={"right"}>
@@ -498,7 +457,7 @@ export default function FinancePageContent({
                     {request.status.toUpperCase() === "SUCCESSFUL" && (
                       <span
                         className={
-                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[10px] rounded-[30px] bg-[#349C2E]/20"
+                          "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-4 rounded-[30px] bg-[#349C2E]/20"
                         }
                       >
                         {t("filters.successful")}
@@ -507,7 +466,7 @@ export default function FinancePageContent({
                     {request.status.toUpperCase() === "PENDING" && (
                       <span
                         className={
-                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[10px] rounded-[30px] bg-[#EA961C]/20"
+                          "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-4 rounded-[30px] bg-[#EA961C]/20"
                         }
                       >
                         {t("filters.pending")}
@@ -529,28 +488,26 @@ export default function FinancePageContent({
         {transactions.withdrawalRequests.length === 0 && (
           <div
             className={
-              "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
+              "w-132 lg:w-184 mx-auto flex flex-col items-center gap-20"
             }
           >
             <div
               className={
-                "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
               }
             >
               <div
                 className={
-                  "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                  "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
                 }
               >
                 <Money3 size="50" color="#0d0d0d" variant="Bulk" />
               </div>
             </div>
-            <div
-              className={"flex flex-col gap-[3rem] items-center text-center"}
-            >
+            <div className={"flex flex-col gap-12 items-center text-center"}>
               <p
                 className={
-                  "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                  "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
                 }
               >
                 {t("withdrawal.description")}
@@ -561,7 +518,7 @@ export default function FinancePageContent({
         {/*<Link*/}
         {/*  href={'#'}*/}
         {/*  className={*/}
-        {/*    'text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-[20px]'*/}
+        {/*    'text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-8'*/}
         {/*  }*/}
         {/*>*/}
         {/*  {finance.transactions.more}*/}
@@ -583,12 +540,12 @@ function Informations({
   const t = useTranslations("Finance");
   const checkingTime = new Date(ticket.updatedAt.toString());
   return (
-    <DrawerContent className={"my-6 p-[30px] rounded-[30px] w-full"}>
+    <DrawerContent className={"my-6 p-12 rounded-[30px] w-full"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
-        <DrawerTitle className={"pb-[40px]"}>
+        <DrawerTitle className={"pb-16"}>
           <span
             className={
-              "font-primary font-medium text-center text-[2.6rem] leading-[30px] text-black"
+              "font-primary font-medium text-center text-[2.6rem] leading-12 text-black"
             }
           >
             Transaction Details
@@ -599,21 +556,21 @@ function Informations({
             <div className={"w-full flex flex-col gap-8"}>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.name")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {ticket.fullName}
                 </span>
               </p>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.email")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {ticket.email}
                 </span>
               </p>
@@ -622,43 +579,43 @@ function Informations({
             <div className={"w-full flex flex-col gap-8"}>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.event_name")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {ticket.event.eventName}
                 </span>
               </p>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.date")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {FormatDate(ticket.event.eventDays[0]?.dateTime ?? "")}
                 </span>
               </p>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.time")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {`${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}`}
                 </span>
               </p>
               <p
                 className={
-                  "flex justify-between items-start text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.location")}{" "}
                 <span
                   className={
-                    "text-deep-100 font-medium leading-[20px] max-w-[399px] text-right"
+                    "text-deep-100 font-medium leading-8 max-w-[39.9rem] text-right"
                   }
                 >
                   {ticket.event.address}
@@ -669,26 +626,11 @@ function Informations({
             <div className={"w-full flex flex-col gap-8"}>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
-                }
-              >
-                {t("transactions.details.ticket_class")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  1X{" "}
-                  <span
-                    className={`py-[3px] px-[5px] bg-[#f5f5f5] ${ticket.ticketType.toUpperCase() === "GENERAL" && "text-[#EF1870]"} ${ticket.ticketType.toUpperCase() === "VIP" && "text-[#7A19C7]"} ${ticket.ticketType.toUpperCase() === "VVIP" && "text-deep-100"} rounded-[30px]`}
-                  >
-                    {ticket.ticketType.toUpperCase()}
-                  </span>
-                </span>
-              </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.price")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {ticket.event.currency === "USD"
                     ? ticket.ticketUsdPrice
                     : ticket.ticketPrice}{" "}
@@ -697,84 +639,94 @@ function Informations({
               </p>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("transactions.details.ticket_id")}{" "}
-                <span className={"text-primary-500 font-bold leading-[20px]"}>
-                  {ticket.ticketName}
+                {t("transactions.table.id")}{" "}
+                <span className={"text-primary-500 font-bold leading-8"}>
+                  {order.orderName}
                 </span>
               </p>
             </div>
             <Separator />
             <div className={"w-full flex flex-col gap-8"}>
-              {/* <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
-                }
-              >
-                {t("transactions.details.payment_method")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {order.provider}
-                </span>
-              </p> */}
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
-                }
-              >
-                {t("transactions.details.payment_date")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {FormatDate(order.createdAt)}
-                </span>
-              </p>
-              {/* <p
-              className={
-                'flex justify-between items-start text-[1.4rem] leading-[20px] text-neutral-600'
-              }
-            >
-              {t('transactions.details.transaction_status')}{' '}
-              <span className={'text-deep-100 font-medium leading-[20px] max-w-[399px] text-right'}>
-                <span
-                  className={
-                    'py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]'
-                  }
-                >
-                  {t('filters.successful')}
-                </span>
-              </span>
-            </p> */}
-            </div>
-            <Separator />
-            <div className={"w-full flex flex-col gap-8"}>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
-                }
-              >
-                {t("transactions.details.check_status")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  <span
-                    className={`py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase ${ticket.status === "CHECKED" ? "text-success" : "text-warning"} px-[5px] rounded-[30px] bg-[#f5f5f5]`}
-                  >
-                    {ticket.status}
-                  </span>
-                </span>
-              </p>
-              {ticket.status === "CHECKED" && (
+              {order.provider !== "free" && (
                 <p
                   className={
-                    "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                   }
                 >
-                  {t("transactions.details.check_time")}{" "}
-                  <span className={"text-deep-100 font-medium leading-[20px]"}>
-                    {checkingTime.toTimeString()}
+                  {t("transactions.details.payment_method")}{" "}
+                  <span className={"text-deep-100 font-medium leading-8"}>
+                    {order.provider}
                   </span>
                 </p>
               )}
-              <div></div>
+              <p
+                className={
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
+                {t("transactions.details.payment_date")}{" "}
+                <span className={"text-deep-100 font-medium leading-8"}>
+                  {FormatDate(order.createdAt)}
+                </span>
+              </p>
+              <p
+                className={
+                  "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
+                {t("transactions.details.transaction_status")}{" "}
+                <span
+                  className={
+                    "text-deep-100 font-medium leading-8 max-w-[39.9rem] text-right"
+                  }
+                >
+                  <span
+                    className={`py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase ${order.status === "SUCCESSFUL" && "text-[#349C2E]"} ${order.status === "FAILED" && "text-warning"} ${order.status === "RETURNED" && "text-failure"}  px-2 rounded-[30px] bg-[#f5f5f5]`}
+                  >
+                    {order.status === "SUCCESSFUL" && t("filters.successful")}
+                    {order.status === "RETURNED" && t("filters.returned")}
+                    {order.status === "PENDING" && t("filters.pendig")}
+                  </span>
+                </span>
+              </p>
             </div>
+            {order.status !== "RETURNED" && (
+              <>
+                <Separator />
+                <div className={"w-full flex flex-col gap-8"}>
+                  <p
+                    className={
+                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                    }
+                  >
+                    {t("transactions.details.check_status")}{" "}
+                    <span className={"text-deep-100 font-medium leading-8"}>
+                      <span
+                        className={`py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase ${ticket.status === "CHECKED" ? "text-success" : "text-warning"} px-2 rounded-[30px] bg-[#f5f5f5]`}
+                      >
+                        {ticket.status}
+                      </span>
+                    </span>
+                  </p>
+                  {ticket.status === "CHECKED" && (
+                    <p
+                      className={
+                        "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                      }
+                    >
+                      {t("transactions.details.check_time")}{" "}
+                      <span className={"text-deep-100 font-medium leading-8"}>
+                        {checkingTime.toTimeString()}
+                      </span>
+                    </p>
+                  )}
+                  <div></div>
+                </div>
+              </>
+            )}
           </div>
         </DrawerDescription>
       </div>
@@ -786,9 +738,6 @@ function Informations({
               {t("transactions.details.close")}
             </ButtonAccent>
           </DrawerClose>
-          {/* <ButtonPrimary className={"flex-1"}>
-            {t("transactions.details.resend")}
-          </ButtonPrimary> */}
         </div>
       </DrawerFooter>
     </DrawerContent>
@@ -797,8 +746,8 @@ function Informations({
 
 export function Separator() {
   return (
-    <div className={"w-full py-[15px]"}>
-      <div className={"bg-neutral-200 w-full h-[2px]"}></div>
+    <div className={"w-full py-6"}>
+      <div className={"bg-neutral-200 w-full h-[.2rem]"}></div>
     </div>
   );
 }
