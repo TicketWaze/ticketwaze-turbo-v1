@@ -47,14 +47,7 @@ export default function OnboardingLogic({ response }: { response: any }) {
       }
     };
     handleOnboarding();
-  }, [
-    response.membershipTier,
-    response.organisations,
-    response.type,
-    response.user?.organisations, // ✅ optional chaining
-    response.user?.userPreference?.appLanguage, // ✅ optional chaining
-    update,
-  ]);
+  }, []);
 
   async function JoinOrganisation(organisation: Organisation) {
     setIsloading(true);

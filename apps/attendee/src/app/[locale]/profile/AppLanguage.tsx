@@ -33,14 +33,14 @@ export default function AppLanguage({
     if (response.status !== "success") {
       toast.error(response.message);
     } else {
-      window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/${appLanguage}${pathname}`;
+      window.location.href = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${appLanguage}${pathname}`;
     }
     setIsLoading(false);
   }
   return (
     <div className="flex flex-col gap-6">
       <PageLoader isLoading={isLoading} />
-      <span className="font-medium text-[1.8rem] mb-4 leading-[25px] text-deep-100">
+      <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
         {t("language.title")}
       </span>
       <RadioGroup className="flex flex-col gap-6" defaultValue={locale}>

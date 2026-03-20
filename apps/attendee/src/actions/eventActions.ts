@@ -2,6 +2,44 @@
 
 import { revalidatePath } from "next/cache";
 
+export async function ReturnFreeTicketAction(
+  accessToken: string,
+  locale: string,
+  ticketId: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/payments/return/free/${ticketId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
+        },
+      },
+    );
+    const data = await res.json();
+
+    if (data.status === "success") {
+      revalidatePath("upcoming");
+      return {
+        status: "success",
+      };
+    } else {
+      return {
+        status: "failed",
+        message: data.message,
+      };
+    }
+  } catch (err: unknown) {
+    return {
+      error: err instanceof Error ? err.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function AddEventToFavorite(
   accessToken: string,
   eventId: string,

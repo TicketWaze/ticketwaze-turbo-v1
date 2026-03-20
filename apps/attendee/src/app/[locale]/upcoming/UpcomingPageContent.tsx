@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import UpcomingCard from "@/components/UpcomingCard";
 import Slugify from "@/lib/Slugify";
@@ -21,14 +22,14 @@ export default function UpcomingPageContent({ events }: { events: any }) {
     <>
       <header className="w-full flex items-center justify-between">
         {!mobileSearch && (
-          <div className="flex flex-col gap-[5px]">
+          <div className="flex flex-col gap-2">
             {session?.user && (
               <span className="text-[1.6rem] leading-8 text-neutral-600">
                 {t("subtitle")}{" "}
                 <span className="text-deep-100">{session?.user.firstName}</span>
               </span>
             )}
-            <span className="font-primary font-medium text-[1.8rem] lg:text-[2.6rem] leading-[2.5rem] lg:leading-12 text-black">
+            <span className="font-primary font-medium text-[1.8rem] lg:text-[2.6rem] leading-10 lg:leading-12 text-black">
               {t("title")}
             </span>
           </div>
@@ -37,13 +38,13 @@ export default function UpcomingPageContent({ events }: { events: any }) {
           {mobileSearch && (
             <div
               className={
-                "bg-neutral-100 w-full rounded-[30px] flex items-center justify-between lg:hidden px-[1.5rem] py-4"
+                "bg-neutral-100 w-full rounded-[30px] flex items-center justify-between lg:hidden px-6 py-4"
               }
             >
               <input
                 placeholder={t("search")}
                 className={
-                  "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
                 }
                 autoFocus
                 onChange={(e) => setQuery(e.target.value)}
@@ -60,13 +61,13 @@ export default function UpcomingPageContent({ events }: { events: any }) {
           )}
           <div
             className={
-              "hidden bg-neutral-100 rounded-[30px] lg:flex items-center justify-between w-[243px] px-[1.5rem] py-4"
+              "hidden bg-neutral-100 rounded-[30px] lg:flex items-center justify-between w-[24.3rem] px-6 py-4"
             }
           >
             <input
               placeholder={t("search")}
               className={
-                "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
               }
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -76,7 +77,7 @@ export default function UpcomingPageContent({ events }: { events: any }) {
             <button
               onClick={() => setMobileSearch(!mobileSearch)}
               className={
-                "w-[35px] h-[35px] bg-neutral-100 rounded-full flex lg:hidden items-center justify-center"
+                "w-14 h-14 bg-neutral-100 rounded-full flex lg:hidden items-center justify-center"
               }
             >
               <SearchNormal size="20" color="#737c8a" variant="Bulk" />
@@ -87,8 +88,8 @@ export default function UpcomingPageContent({ events }: { events: any }) {
       <ul className="list pt-4">
         {filteredEvents.map((event: any) => {
           const today = DateTime.now();
-          const eventStart = event.eventDays?.[0]?.startDate
-            ? DateTime.fromISO(event.eventDays[0].startDate)
+          const eventStart = event.eventDays?.[0]?.dateTime
+            ? DateTime.fromISO(event.eventDays[0].dateTime)
             : null;
           const daysLeft = eventStart
             ? eventStart.diff(today, "days").days
@@ -111,9 +112,9 @@ export default function UpcomingPageContent({ events }: { events: any }) {
         })}
       </ul>
       {events.length > 0 && filteredEvents.length === 0 && (
-        <div className="flex flex-col h-full justify-center items-center gap-[30px]">
-          <div className="h-[120px] w-[120px] bg-neutral-100 rounded-full flex items-center justify-center">
-            <div className="w-[90px] h-[90px] bg-neutral-200 flex items-center justify-center rounded-full">
+        <div className="flex flex-col h-full justify-center items-center gap-12">
+          <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
+            <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
               <Star size="50" color="#0D0D0D" variant="Bulk" />
             </div>
           </div>
@@ -125,26 +126,26 @@ export default function UpcomingPageContent({ events }: { events: any }) {
       {events.length === 0 && (
         <div
           className={
-            "w-[330px] lg:w-[460px] mx-auto h-full flex flex-col items-center justify-center gap-[5rem]"
+            "w-132 lg:w-184 mx-auto h-full flex flex-col items-center justify-center gap-20"
           }
         >
           <div
             className={
-              "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+              "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
             }
           >
             <div
               className={
-                "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
               }
             >
               <Money3 size="50" color="#0d0d0d" variant="Bulk" />
             </div>
           </div>
-          <div className={"flex flex-col gap-[3rem] items-center text-center"}>
+          <div className={"flex flex-col gap-12 items-center text-center"}>
             <p
               className={
-                "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
               }
             >
               {t("description")}

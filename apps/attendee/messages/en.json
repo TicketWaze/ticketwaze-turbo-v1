@@ -317,7 +317,9 @@
     "filters": {
       "all": "All status",
       "pending": "Pending",
-      "successful": "Successful"
+      "successful": "Successful",
+      "returned": "Returned",
+      "failed": "Failed"
     },
     "search": "Search for transaction id",
     "transactions": {
@@ -432,7 +434,10 @@
     "email": "Email",
     "ticketWarning1": "Your ticket is personal—don’t share it.",
     "ticketWarning2": "This ticket is non-refundable",
-    "liked": "Liked activities"
+    "liked": "Liked activities",
+    "return": "Return Ticket",
+    "returnDescription": "By returning your ticket, you’ll permanently release it back to the organisation. This action is irreversible, meaning you won’t be able to reclaim the ticket later. Please note that platform and transaction fees are not refundable.",
+    "freeTicketReturnWarning": "This is a free activity. If you return your ticket, you won’t be able to purchase another one afterward."
   },
   "Checkout": {
     "back": "Back",

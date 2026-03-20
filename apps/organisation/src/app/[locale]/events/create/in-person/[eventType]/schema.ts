@@ -88,5 +88,6 @@ export function makeCreateInPersonSchema(isFree: boolean, t: TranslateFn) {
       }),
     ),
     eventCurrency: z.string(),
+    isFree: z.boolean(),
   });
 }

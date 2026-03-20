@@ -221,7 +221,7 @@ export default async function EventPage({
                 </div>
               )}
             </div>
-            <Separator />
+
             <div className="lg:hidden flex flex-col gap-8">
               <div className={"flex flex-col gap-8"}>
                 <span

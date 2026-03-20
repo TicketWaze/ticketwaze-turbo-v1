@@ -25,6 +25,7 @@ export type CreateInPersonFormValues = {
   activityTags: string[];
   ticketTypes: TicketType[];
   eventCurrency: string;
+  isFree: boolean;
 };
 
 // Small helper to allow passing translation function

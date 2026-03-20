@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import { useRef, useState } from "react";
 import UpcomingTicket from "./UpcomingTicket";
@@ -109,7 +110,7 @@ export default function TicketViewer({
         >
           <div
             className={
-              "w-full h-[250px] lg:h-[296px] relative  bg-neutral-100 p-[15px] pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center "
+              "w-full h-auto relative  bg-neutral-100 p-[15px] pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center "
             }
           >
             <Image
@@ -119,7 +120,7 @@ export default function TicketViewer({
             />
             <div
               className={
-                "flex items-center justify-between pt-[15px] gap-4 w-full"
+                "flex items-center justify-between pt-[15px] gap-4 pb-4 w-full"
               }
             >
               <span className="text-neutral-600">
@@ -179,7 +180,7 @@ export default function TicketViewer({
           </span>
           <QRCodeCanvas
             value={tickets[currentIndex].ticketId}
-            size={128}
+            size={300}
             level="H"
           />
         </div>
