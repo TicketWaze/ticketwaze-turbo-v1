@@ -171,17 +171,21 @@ export default async function UpcomingEventPage({
             <div></div>
             <div></div>
             <div></div>
-            {tickets[0].isRefundable && event.isFree && <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
-              <Warning2 size="24" color="#737C8A" variant="Bulk" />
-              <div>
-                <p className="text-[1.2rem] leading-8 text-neutral-800">
-                  {t("freeTicketReturnWarning")}
-                </p>
-              </div>
-            </div>}
-            {tickets[0].isRefundable && event.isFree && (
-              <ReturnFreeTicketView ticket={tickets[0]} />
-            )}
+            <div className=" flex-col w-full gap-3 hidden lg:flex">
+              {tickets[0].isRefundable && event.isFree && (
+                <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+                  <Warning2 size="24" color="#737C8A" variant="Bulk" />
+                  <div>
+                    <p className="text-[1.2rem] leading-8 text-neutral-800">
+                      {t("freeTicketReturnWarning")}
+                    </p>
+                  </div>
+                </div>
+              )}
+              {tickets[0].isRefundable && event.isFree && (
+                <ReturnFreeTicketView ticket={tickets[0]} />
+              )}
+            </div>
 
             <div></div>
             <div></div>
@@ -191,6 +195,24 @@ export default async function UpcomingEventPage({
           {/* Tickets on mobile */}
           <div className="lg:hidden flex flex-col gap-4">
             <TicketViewer tickets={tickets} event={event} />
+          </div>
+          <div className="flex lg:hidden flex-col w-full gap-3 ">
+            {tickets[0].isRefundable && event.isFree && (
+              <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+                <Warning2 size="24" color="#737C8A" variant="Bulk" />
+                <div>
+                  <p className="text-[1.2rem] leading-8 text-neutral-800">
+                    {t("freeTicketReturnWarning")}
+                  </p>
+                </div>
+              </div>
+            )}
+            {tickets[0].isRefundable && event.isFree && (
+              <ReturnFreeTicketView ticket={tickets[0]} />
+            )}
+            <div></div>
+            <div></div>
+            <div></div>
           </div>
         </div>
 
