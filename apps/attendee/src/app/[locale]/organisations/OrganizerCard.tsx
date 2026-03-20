@@ -25,7 +25,7 @@ function OrganizerCard({
   const t = useTranslations("Organizers");
   return (
     <Link
-      href={`organizers/${id}`}
+      href={`organisations/${id}`}
       className={
         "flex items-stretch flex-col gap-4 w-full lg:max-w-[350px] bg-white shadow-lg rounded-[1rem] overflow-hidden pb-4"
       }

@@ -2,7 +2,13 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import OrganizerCard from "./OrganizerCard";
-import { CloseCircle, SearchNormal, Ticket } from "iconsax-reactjs";
+import {
+  Building,
+  CloseCircle,
+  Money3,
+  SearchNormal,
+  Ticket,
+} from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { Organisation } from "@ticketwaze/typescript-config";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -138,41 +144,74 @@ export default function OrganizersContents({
             </div>
           )}
         </TabsContent>
-        {session?.user && (
-          <TabsContent value="following">
-            <ul className="list pt-4">
-              {filteredFollowedOrganisations.map((organisation) => {
-                const events = organisation.events.length;
-                return (
-                  <li key={organisation.organisationId}>
-                    <OrganizerCard
-                      image={organisation.profileImageUrl}
-                      title={organisation.organisationName}
-                      number={events}
-                      id={organisation.organisationId}
-                      city={organisation.city}
-                      country={organisation.country}
-                      isVerified={organisation.isVerified}
-                    />
-                  </li>
-                );
-              })}
-            </ul>
-            {filteredFollowedOrganisations.length === 0 && (
-              <div className="flex flex-col items-center gap-[30px]">
-                <div className="h-[120px] w-[120px] bg-neutral-100 rounded-full flex items-center justify-center">
-                  <div className="w-[90px] h-[90px] bg-neutral-200 flex items-center justify-center rounded-full">
-                    <Ticket size="50" color="#0D0D0D" variant="Bulk" />
+        <TabsContent value="following">
+          {followedOrganisations.length > 0 ? (
+            <>
+              <ul className="list pt-4">
+                {filteredFollowedOrganisations.map((organisation) => {
+                  const events = organisation.events.length;
+                  return (
+                    <li key={organisation.organisationId}>
+                      <OrganizerCard
+                        image={organisation.profileImageUrl}
+                        title={organisation.organisationName}
+                        number={events}
+                        id={organisation.organisationId}
+                        city={organisation.city}
+                        country={organisation.country}
+                        isVerified={organisation.isVerified}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
+              {filteredFollowedOrganisations.length === 0 && (
+                <div className="flex flex-col items-center gap-[30px]">
+                  <div className="h-[120px] w-[120px] bg-neutral-100 rounded-full flex items-center justify-center">
+                    <div className="w-[90px] h-[90px] bg-neutral-200 flex items-center justify-center rounded-full">
+                      <Ticket size="50" color="#0D0D0D" variant="Bulk" />
+                    </div>
                   </div>
+                  <span className="font-primary text-[1.8rem] leading-8 text-neutral-600">
+                    {t("profile.noResult")}{" "}
+                    <span className="text-deep-100">{query}</span>
+                  </span>
                 </div>
-                <span className="font-primary text-[1.8rem] leading-8 text-neutral-600">
-                  {t("profile.noResult")}{" "}
-                  <span className="text-deep-100">{query}</span>
-                </span>
+              )}
+            </>
+          ) : (
+            <div
+              className={
+                "w-[330px] lg:w-[460px] mx-auto h-full justify-center flex flex-col items-center gap-[5rem]"
+              }
+            >
+              <div
+                className={
+                  "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                }
+              >
+                <div
+                  className={
+                    "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                  }
+                >
+                  <Building size="50" color="#0d0d0d" variant="Bulk" />
+                </div>
               </div>
-            )}
-          </TabsContent>
-        )}
+              <div
+                className={"flex flex-col gap-[3rem] items-center text-center"}
+              >
+                <p
+                  className={
+                    "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                  }
+                >
+                  {t("noFollowed")}
+                </p>
+              </div>
+            </div>
+          )}
+        </TabsContent>
       </Tabs>
     </>
   );

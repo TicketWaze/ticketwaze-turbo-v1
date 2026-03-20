@@ -2,6 +2,7 @@
 import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-orange.svg";
 import Image from "next/image";
 import {
+  Building,
   Clock,
   I24Support,
   Logout,
@@ -10,7 +11,6 @@ import {
   Star,
   Ticket,
   User,
-  UserSquare,
 } from "iconsax-reactjs";
 import { Link } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -44,8 +44,8 @@ function Sidebar({ className }: { className: string }) {
     },
     {
       label: t("links.organizers"),
-      path: `/organizers`,
-      Icon: UserSquare,
+      path: `/organisations`,
+      Icon: Building,
     },
   ];
   const userLinks = [
