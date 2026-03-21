@@ -1,4 +1,30 @@
 {
+   "Auth": {
+     "layout":{
+      "badge": "Administrator"
+    },
+    "login": {
+      "title": "Sign In",
+      "description": "Please enter you account details to continue",
+      "placeholders": {
+        "email": "Organisation Email Address",
+        "password": "Password"
+      },
+      "errors": {
+        "email": "Enter a valid email",
+        "password": "Password must be at least 8 characters"
+      },
+      "reset": "Reset password",
+      "cta": {
+        "submit": "Sign in",
+        "or": "Or",
+        "google": "Continue with Google"
+      },
+      "footer": {
+        "cta": "Back"
+      }
+    }
+  },
   "Layout": {
     "sidebar": {
       "more": "Plus",

@@ -1,3 +1,6 @@
+import Layout from "../layout";
+import LoginPageContent from "./LoginPageContent";
+
 export default function LoginPage() {
-  return <div>LoginPage</div>;
+  return <LoginPageContent />;
 }
