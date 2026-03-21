@@ -4,24 +4,24 @@
       "badge": "Administrator"
     },
     "login": {
-      "title": "Sign In",
-      "description": "Please enter you account details to continue",
+      "title": "Se connecter",
+      "description": "Veuillez saisir les détails de votre compte pour continuer",
       "placeholders": {
-        "email": "Organisation Email Address",
-        "password": "Password"
+        "email": "Adresse e-mail de l'Organisation",
+        "password": "Mot de passe"
       },
       "errors": {
-        "email": "Enter a valid email",
-        "password": "Password must be at least 8 characters"
+        "email": "Saisissez un e-mail valide",
+        "password": "Le mot de passe doit contenir au moins 8 caractères"
       },
-      "reset": "Reset password",
+      "reset": "Réinitialiser le mot de passe",
       "cta": {
-        "submit": "Sign in",
-        "or": "Or",
-        "google": "Continue with Google"
+        "submit": "Se connecter",
+        "or": "Ou",
+        "google": "Continuer avec Google"
       },
       "footer": {
-        "cta": "Back"
+        "cta": "Retour"
       }
     }
   },
