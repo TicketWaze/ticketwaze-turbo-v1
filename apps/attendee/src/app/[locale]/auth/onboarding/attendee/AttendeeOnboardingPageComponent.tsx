@@ -22,7 +22,7 @@ interface OnboardingData {
 
 type StepErrors = Partial<Record<keyof OnboardingData, string>>;
 
-const TOTAL_STEPS = 3;
+const TOTAL_STEPS = 6;
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function AttendeeOnboardingPageComponent() {
@@ -174,7 +174,7 @@ export default function AttendeeOnboardingPageComponent() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="w-full flex flex-col items-center justify-between h-full py-12">
+    <div className="w-full flex flex-col items-center justify-between gap-12 py-12">
       <div className="flex flex-col gap-4">
         {/* Title */}
         <motion.h3
@@ -366,6 +366,14 @@ export default function AttendeeOnboardingPageComponent() {
               className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
             >
               {t("last.1")}
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
+            >
+              {t("last.2")}
             </motion.p>
             <motion.p
               initial={{ opacity: 0, y: 30 }}
