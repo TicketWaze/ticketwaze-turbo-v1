@@ -161,45 +161,148 @@
     },
     "onboarding": {
       "title": "Welcome to TicketWaze",
-      "description": "Let’s get to know you better so we can personalize your experience.",
+      "description": "Best for a platform that handles business and enterprise users",
+      "setup": "Let's set up your Ticketwaze experience",
       "previous": "Previous",
       "next": "Next",
       "submit": "Submit",
+      "started": "Let's begin",
+      "finish": "Explore Ticketwaze",
       "error": "Please select an option",
       "onboarded": "User already onboarded",
+      "attendee": {
+        "title": "Discovering",
+        "description": "I'm here to browse activities, purchase tickets, access to personalized recommendations and a streamlined checkout experience.",
+        "errors": {
+          "interests": "Please select at least one interest.",
+          "groupSize": "Please select how you usually attend activities.",
+          "travel": "Please select your travel preference.",
+          "currency": "Please select your preferred currency.",
+          "referral": "Please let us know how you heard about us."
+        }
+      },
+      "organisation": {
+        "title": "Selling tickets or managing bookings",
+        "description": "I represent a business that creates activities, offers booking, rents out vehicles or equipment, or sells tickets to the public."
+      },
+      "invited": {
+        "title": "Joining an existing organization",
+        "description": "I've been invited to join an organisation on Ticketwaze. I need to set up my individual account and connect to my team with the appropriate permissions."
+      },
       "first": {
-        "question": "How do you plan to use Ticketwaze",
-        "1": "To buy tickets",
-        "2": "To sell or manage tickets",
-        "3": "Both"
+        "1": "Thank you for choosing Ticketwaze. You're joining a platform built to streamline the way organisations sell tickets, manage bookings, and connect with their audience—while giving attendees a seamless way to discover and access experiences.",
+        "2": "Before you proceed, we'll ask you a few brief questions to understand how you intend to use Ticketwaze. Your answers will help us configure your dashboard, tailor your permissions, and ensure you're directed to the correct environment, whether you're here to manage activities as an organisation or to discover and book experiences as an attendee.",
+        "3": "This setup should take no more than two minutes. You can always adjust these preferences later from your account settings."
       },
       "second": {
-        "question": "What types of tickets are you most interested in?",
-        "1": "Concerts & Festivals",
-        "2": "Sports & Competitions",
-        "3": "Movies & Entertainment",
-        "4": "Conferences & Seminars"
+        "question": "What are you interested in?",
+        "musics": "Musics",
+        "theater": "Theater",
+        "arts": "Arts",
+        "sports": "Sports",
+        "business": "Business",
+        "networking": "Networking",
+        "online": "Online",
+        "rentals": "Rentals",
+        "transport": "Transport",
+        "booking": "Booking"
       },
       "third": {
-        "question": "Which currency do you prefer?",
-        "1": "USD - United States Dollar",
-        "2": "HTG - Haitian Gourde"
+        "question": "How do you usually book tickets?",
+        "solo": "I go to activities by myself.",
+        "small": "I usually buy 2–4 tickets.",
+        "group": "I buy for large groups or corporate outings."
       },
       "fourth": {
-        "question": "Would you like to receive notifications about trending activities and exclusive offers?",
-        "1": "Yes",
-        "2": "No"
+        "question": "Do you want to discover local activities or are you planning to travel?",
+        "local": "Show me activities near my current city.",
+        "travel": "I am looking for experiences in specific destinations.",
+        "everything": "Show me everything!"
       },
-      "fith": {
-        "question": "How would you like to receive updates",
-        "1": "Email notifications",
-        "2": "Whatsapp notifications",
-        "3": "None"
+      "fifth": {
+        "question": "What is your preferred currency?",
+        "usd": "USD - United States Dollar",
+        "htg": "HTG - Haitian Gourde"
       },
       "sixth": {
-        "question": "Are you representing an organisation or business? (ex: Sumfest, Banj...)",
-        "1": "Yes",
-        "2": "No, I am an individual"
+        "question": "How did you hear about us?",
+        "media": "Social Media",
+        "friend": "Friend/Colleague",
+        "advertisement": "Advertisement"
+      },
+      "last": {
+        "1": "Thank you for completing the setup. Your interests and preferences will be used to personalize activities recommendations, show relevant listings, and improve your overall experience on Ticketwaze. You can review or update your preferences at any time from your account settings.",
+        "2": "Please note: Ticketwaze does not share your personal data or interest profile with third parties without your explicit consent. Any communication from organisations will be subject to your notification preferences, which you can adjust at any time.",
+        "3": "By proceeding, you acknowledge that you have read and agree to our Terms of Use and Privacy Policy. If you have any questions or concerns, please reach out to our support team via the Help Center or email us at support@ticketwaze.com."
+      },
+      "invitedIntro": {
+        "1": "Before you can access the organisation dashboard and begin collaborating, you'll need to set up your individual Ticketwaze account.",
+        "2": "This quick setup allows us to personalize your experience, establish your account credentials, and securely link you to the organisation. You'll be asked a few questions to configure your profile and confirm your role preferences."
+      },
+      "invitedLast": {
+        "1": "Thank you for completing your account setup. Your dashboard will be configured to reflect the permissions and access level assigned to your role within the organisation.",
+        "2": "Please note: Your access is limited to the features and data permitted by your assigned role. If you believe you require additional access or if your responsibilities change, please contact the organisation owner or admin to adjust your permissions. Ticketwaze does not share your personal information or activity data with third parties without your explicit consent.",
+        "3": "Important: We will now redirect you to the organisation dashboard. For security purposes, you will be required to log in again using your freshly created Ticketwaze account credentials before accessing your dashboard.",
+        "4": "By proceeding, you acknowledge that you have read and agree to our Terms of Use and Privacy Policy. Your use of the organisation dashboard is also subject to the organisation's internal policies as defined by the account owner. If you have any questions or concerns, please reach out to our support team via the Help Center or email us at support@ticketwaze.com."
+      },
+      "organisations": {
+        "errors": {
+          "name": "Please enter your organisation name.",
+          "type": "Please select your organisation type.",
+          "service": "Please select at least one service.",
+          "team": "Please select your team size.",
+          "referral": "Please let us know how you heard about us."
+        },
+        "title": "Welcome to TicketWaze",
+        "description": "Best for a platform that handles business and enterprise users",
+        "setup": "Let's set up your Ticketwaze workspace",
+        "previous": "Previous",
+        "next": "Next",
+        "submit": "Submit",
+        "started": "Let's begin",
+        "finish": "Explore Ticketwaze",
+        "error": "Please select an option",
+        "onboarded": "User already onboarded",
+        "first": {
+          "question": "What is the name of your organisation?"
+        },
+        "second": {
+          "question": "What type of organisation are you building",
+          "single": "I am a solo entrepreneur, DJ, or instructor.",
+          "agency": "I have a team managing multiple activities.",
+          "entreprise": "I represent a venue, stadium, or large company."
+        },
+        "third": {
+          "question": "What type of services do you primarily offer?",
+          "musics": "Musics",
+          "theater": "Theater",
+          "arts": "Arts",
+          "sports": "Sports",
+          "business": "Business",
+          "networking": "Networking",
+          "online": "Online",
+          "rentals": "Rentals",
+          "transport": "Transport",
+          "booking": "Booking"
+        },
+        "fourth": {
+          "question": "How large is your organisation?",
+          "solo": "Just me (1 person)",
+          "small": "Small team (2–10 people)",
+          "large": "Large team (10+ people)"
+        },
+        "fifth": {
+          "question": "How did you hear about us?",
+          "media": "Social Media",
+          "friend": "Friend/Colleague",
+          "advertisement": "Advertisement"
+        },
+        "last": {
+          "1": "Thank you for completing the setup. Your organisation profile will be configured based on your selected services, team structure, and preferences. You can now begin creating activities, managing bookings, and inviting team members to collaborate.",
+          "2": "Important: We will now redirect you to the organisation dashboard. For security purposes, you will be required to log in again using your freshly created Ticketwaze account credentials before accessing your dashboard.",
+          "3": "Please note: Ticketwaze does not share your organisation's data or sales information with third parties without your explicit consent. Payouts will be processed according to your need, subject to verification and applicable processing timelines. You can review or update your organisation settings, and team roles at any time from your dashboard.",
+          "4": "By proceeding, you confirm that you have read and agree to our Terms of Use, Seller Agreement, and Privacy Policy. These documents outline your responsibilities as an organiser, including refund policies, payout terms, and platform fees. If you have any questions or concerns, please reach out to our seller support team via the Help Center or email us at organisations@ticketwaze.com."
+        }
       }
     },
     "forgot": {

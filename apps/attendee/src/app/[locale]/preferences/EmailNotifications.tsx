@@ -39,7 +39,7 @@ export default function EmailNotifications({
       {
         ...body,
         currency: userPreferences.currency,
-        notifications: userPreferences.notifications,
+        // notifications: userPreferences.notifications,
         appLanguage: locale,
       },
       locale,
