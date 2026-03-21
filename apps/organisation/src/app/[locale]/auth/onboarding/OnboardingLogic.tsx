@@ -29,7 +29,7 @@ export default function OnboardingLogic({ response }: { response: any }) {
       } else if (response.type === "create") {
         setCreateOrganisation(true);
       } else {
-        if (response.user?.organisations?.[0]?.organisationId) {
+        if (response.user?.organisations[0].organisationId) {
           try {
             await update({
               activeOrganisation: {
@@ -37,7 +37,7 @@ export default function OnboardingLogic({ response }: { response: any }) {
                 membershipTier: response.membershipTier,
               },
             });
-            window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${response.user.userPreference.appLanguage}/analytics`;
+            window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/analytics`;
           } catch {
             toast.error("Failed to load organisation");
           }

@@ -43,7 +43,7 @@ export default async function AccountPage() {
         {/* <UserProfileForm user={user} accessToken={accessToken ?? ""} /> */}
         <ChangePasswordForm />
         <Toggle2Factor />
-        <AppLanguage userPreferences={userPreferences} />
+        {/* <AppLanguage userPreferences={userPreferences} /> */}
         <div className="flex flex-col gap-4 items-center">
           <p className="font-primary text-[1.4rem] text-neutral-500 text-center">
             {t("profileAlert")}

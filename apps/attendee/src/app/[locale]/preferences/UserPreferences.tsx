@@ -95,7 +95,7 @@ export default function UserPreferences({
             </div>
           </RadioGroup>
         </div>
-        <div className="flex flex-col gap-6">
+        {/* <div className="flex flex-col gap-6">
           <span className="font-medium text-[1.8rem] mb-4 leading-[25px] text-deep-100">
             {t("notifications")}
           </span>
@@ -126,7 +126,7 @@ export default function UserPreferences({
               <RadioGroupItem value={"whatsapp"} />
             </div>
           </RadioGroup>
-        </div>
+        </div> */}
       </form>
     </>
   );

@@ -62,15 +62,15 @@ export interface UserPreference {
   userPreferenceId: string;
   userId: string;
   appLanguage: string;
-  upcomingEvents: boolean;
-  newEventsPreferredCategories: boolean;
   newEventsFollowedOrganizer: boolean;
-  intent: "buyer" | "seller" | "both";
-  interest: string[];
+  newEventsPreferredCategories: boolean;
+  upcomingEvents: boolean;
   currency: "HTG" | "USD";
-  recommendation: boolean;
+  interests: string[];
+  groupSize: "solo" | "small" | "group";
+  referralSource: string;
+  travelPreference: string;
   isOnboarded: boolean;
-  notifications: "email" | "whatsapp" | "none";
   createdAt: DateTime;
   updatedAt: DateTime;
 }

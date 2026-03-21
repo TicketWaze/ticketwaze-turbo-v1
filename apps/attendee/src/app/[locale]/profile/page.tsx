@@ -21,7 +21,6 @@ export default async function ProfilePage() {
   if (!session) {
     redirect({ href: "/auth/login", locale });
   }
-  console.log(userPreferences);
 
   return (
     <AttendeeLayout title={t("title")}>
