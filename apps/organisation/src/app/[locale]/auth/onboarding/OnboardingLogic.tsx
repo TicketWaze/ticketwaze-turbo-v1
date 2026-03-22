@@ -11,7 +11,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { LinkSecondary } from "@/components/shared/Links";
+import { LinkPrimary, LinkSecondary } from "@/components/shared/Links";
 
 export default function OnboardingLogic({ response }: { response: any }) {
   const t = useTranslations("Auth.onboarding");
@@ -73,38 +73,6 @@ export default function OnboardingLogic({ response }: { response: any }) {
       }
     } catch (error) {
       toast.error(`Failed to Join Organisation : ${(error as Error).message}`);
-    }
-    setIsloading(false);
-  }
-  async function CreateOrganisation() {
-    setIsloading(true);
-    try {
-      const req = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/onboarding/createOrganisation`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.accessToken}`,
-            "Accept-Language": locale,
-            Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-          },
-        },
-      );
-      const res = await req.json();
-      if (res.status === "success") {
-        await update({
-          activeOrganisation: {
-            ...res.user.organisations[0],
-            membershipTier: res.membershipTier,
-          },
-        });
-        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${res.user.userPreference.appLanguage}/analytics`;
-      } else {
-        toast.error("Failed to Creare Organisation");
-      }
-    } catch (error) {
-      toast.error("Failed to Creare Organisation : " + error);
     }
     setIsloading(false);
   }
@@ -210,19 +178,26 @@ export default function OnboardingLogic({ response }: { response: any }) {
               >
                 {t("alert2")}
               </motion.p>
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
+              >
+                {t("alert3")}
+              </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
                 className="w-full"
               >
-                <ButtonPrimary
-                  disabled={isLoading}
-                  onClick={CreateOrganisation}
+                <LinkPrimary
+                  href="/auth/onboarding/organisation"
                   className="w-full hidden lg:flex"
                 >
                   {isLoading ? <LoadingCircleSmall /> : t("action")}
-                </ButtonPrimary>
+                </LinkPrimary>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -246,13 +221,12 @@ export default function OnboardingLogic({ response }: { response: any }) {
               transition={{ duration: 0.5, delay: 0.5 }}
               className="w-full lg:hidden"
             >
-              <ButtonPrimary
-                onClick={CreateOrganisation}
+              <LinkPrimary
+                href="/auth/onboarding/organisation"
                 className="w-full lg:hidden"
-                disabled={isLoading}
               >
                 {isLoading ? <LoadingCircleSmall /> : t("action")}
-              </ButtonPrimary>
+              </LinkPrimary>
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 30 }}

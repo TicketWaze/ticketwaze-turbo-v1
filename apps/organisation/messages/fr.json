@@ -9,15 +9,75 @@
       "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances."
     },
     "onboarding": {
-      "title": "Organisation Invitation",
-      "description": "Vous avez été invité à rejoindre une organisation sur TicketWaze — une plateforme permettant de gérer et de vendre des billets en toute simplicité.",
+      "title": "Invitation à une organisation",
+      "description": "Vous avez été invité à rejoindre une organisation sur TicketWaze — une plateforme pour gérer et vendre des billets en toute simplicité.",
       "join": "Rejoindre",
-      "title2": "Préparez-vous à vendre vos billets",
+      "title2": "Préparez-vous à vendre des billets",
       "description2": "Créez des activités, gérez vos participants et suivez vos ventes — tout commence ici",
-      "alert": "Nous avons remarqué que vous ne faites actuellement partie d’aucune organisation. En continuant, vous acceptez de créer une nouvelle organisation à votre nom, dont vous serez l’administrateur.",
-      "alert2": "Cette organisation sera configurée avec des informations par défaut. Ne vous inquiétez pas, ces informations pourront être modifiées à tout moment. En poursuivant, vous confirmez votre accord avec notre Politique de confidentialité et nos Conditions d’utilisation. Si vous préférez ne pas continuer, cliquez simplement sur le bouton Explorer.",
+      "alert": "Nous avons remarqué que vous ne faites actuellement partie d’aucune organisation. En continuant, vous acceptez de créer une nouvelle organisation à votre nom, où vous serez désigné comme administrateur. Cela vous permettra de commencer à vendre des billets, gérer des activités et collaborer avec votre équipe.",
+      "alert2": "Avant de pouvoir accéder au tableau de bord de votre organisation, vous devez effectuer une configuration rapide pour paramétrer votre compte TicketWaze individuel. Quelques questions vous seront posées afin de personnaliser votre expérience et définir les préférences de votre organisation.",
+      "alert3": "En poursuivant, vous reconnaissez avoir lu et accepté nos Conditions d’utilisation, notre Contrat de vendeur et notre Politique de confidentialité. Ces documents précisent vos responsabilités en tant qu’organisation, notamment les politiques de remboursement, les modalités de paiement et les frais de plateforme.",
       "action": "Commencer",
-      "back": "Explorer Ticketwaze"
+      "back": "Annuler",
+      "organisations": {
+        "errors": {
+          "name": "Veuillez saisir le nom de votre organisation.",
+          "type": "Veuillez sélectionner le type de votre organisation.",
+          "service": "Veuillez sélectionner au moins un service.",
+          "team": "Veuillez indiquer la taille de votre équipe.",
+          "referral": "Veuillez nous dire comment vous nous avez connus."
+        },
+        "title": "Bienvenue sur TicketWaze",
+        "description": "Idéal pour une plateforme destinée aux entreprises et aux utilisateurs professionnels",
+        "setup": "Configurons votre espace de travail TicketWaze",
+        "previous": "Précédent",
+        "next": "Suivant",
+        "submit": "Valider",
+        "started": "Commençons",
+        "finish": "Explorer TicketWaze",
+        "error": "Veuillez sélectionner une option",
+        "onboarded": "Utilisateur déjà enregistré",
+        "first": {
+          "question": "Quel est le nom de votre organisation ?"
+        },
+        "second": {
+          "question": "Quel type d’organisation souhaitez-vous créer ?",
+          "single": "Je suis un entrepreneur solo, DJ ou formateur.",
+          "agency": "J’ai une équipe qui gère plusieurs activités.",
+          "entreprise": "Je représente un lieu, un stade ou une grande entreprise."
+        },
+        "third": {
+          "question": "Quels types de services proposez-vous principalement ?",
+          "musics": "Musique",
+          "theater": "Théâtre",
+          "arts": "Arts",
+          "sports": "Sports",
+          "business": "Affaires",
+          "networking": "Réseautage",
+          "online": "En ligne",
+          "rentals": "Location",
+          "transport": "Transport",
+          "booking": "Réservation"
+        },
+        "fourth": {
+          "question": "Quelle est la taille de votre organisation ?",
+          "solo": "Juste moi (1 personne)",
+          "small": "Petite équipe (2–10 personnes)",
+          "large": "Grande équipe (10+ personnes)"
+        },
+        "fifth": {
+          "question": "Comment avez-vous entendu parler de nous ?",
+          "media": "Réseaux sociaux",
+          "friend": "Ami/Collègue",
+          "advertisement": "Publicité"
+        },
+        "last": {
+          "1": "Merci d’avoir terminé la configuration. Le profil de votre organisation sera paramétré en fonction des services choisis, de la structure de votre équipe et de vos préférences. Vous pouvez désormais commencer à créer des activités, gérer des réservations et inviter des membres de votre équipe à collaborer.",
+          "2": "Important : nous allons maintenant vous rediriger vers le tableau de bord de l’organisation. Pour des raisons de sécurité, vous devrez vous reconnecter avec vos identifiants TicketWaze fraîchement créés avant d’accéder à votre tableau de bord.",
+          "3": "Veuillez noter : TicketWaze ne partage pas les données ou informations de vente de votre organisation avec des tiers sans votre consentement explicite. Les paiements seront traités selon vos besoins, sous réserve de vérification et des délais de traitement applicables. Vous pouvez consulter ou modifier les paramètres de votre organisation et les rôles de votre équipe à tout moment depuis votre tableau de bord.",
+          "4": "En poursuivant, vous confirmez avoir lu et accepté nos Conditions d’utilisation, notre Contrat de vendeur et notre Politique de confidentialité. Ces documents précisent vos responsabilités en tant qu’organisateur, notamment les politiques de remboursement, les modalités de paiement et les frais de plateforme. Si vous avez des questions ou des préoccupations, veuillez contacter notre équipe d’assistance vendeur via le Centre d’aide ou par email à organisations@ticketwaze.com."
+        }
+      }
     },
     "register": {
       "title": "Créer un compte",
@@ -621,6 +681,10 @@
       "optional": "optionnel",
       "pro": "Il s'agit d'une fonctionnalité Pro+",
       "freeTip": "Lorsque vous définissez une activitée comme gratuite, le système l’indiquera automatiquement comme remboursable. Cela garantit une cohérence pour toutes les activitées gratuits et évite les ajustements manuels.",
+      "general": {
+        "name": "Général",
+        "description": "Vivez une expérience unique et mémorable avec votre billet Ticketwaze!"
+      },
       "errors": {
         "basicDetails": {
           "name": "Le nom de l’activité doit comporter au moins 10 caractères",

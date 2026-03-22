@@ -96,8 +96,14 @@ export default function CreateInPersonEventForm({
       activityTags: [],
       ticketTypes: [
         {
-          ticketTypeName: "",
-          ticketTypeDescription: "",
+          ticketTypeName: session?.activeOrganisation.membershipTier
+            .customTicketTypes
+            ? ""
+            : t("general.name"),
+          ticketTypeDescription: session?.activeOrganisation.membershipTier
+            .customTicketTypes
+            ? ""
+            : t("general.description"),
           ticketTypePrice: "",
           ticketTypeQuantity: "",
         },
