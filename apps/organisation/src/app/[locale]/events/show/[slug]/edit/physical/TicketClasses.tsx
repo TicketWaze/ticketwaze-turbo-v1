@@ -216,6 +216,9 @@ export default function StepTicket({
               <Input
                 {...register(`ticketTypes.${index}.ticketTypeName` as const)}
                 error={errors?.ticketTypes?.[index]?.ticketTypeName?.message}
+                disabled={
+                  !session?.activeOrganisation.membershipTier.customTicketTypes
+                }
               >
                 {t("class_name")}
               </Input>
@@ -235,6 +238,10 @@ export default function StepTicket({
                       next[index] = e.target.value.length;
                       return next;
                     })
+                  }
+                  disabled={
+                    !session?.activeOrganisation.membershipTier
+                      .customTicketTypes
                   }
                 />
                 <div className="flex items-center justify-between">

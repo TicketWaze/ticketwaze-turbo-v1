@@ -729,6 +729,10 @@
       "optional": "optional",
       "pro": "This is Pro+ feature",
       "freeTip": "When you set an activity as Free, the system will automatically mark it as Refundable. This ensures consistency across all free activities and avoids manual adjustments.",
+      "general": {
+        "name": "General",
+        "description": "Live a unique and memorable experience with your Ticketwaze ticket!"
+      },
       "errors": {
         "basicDetails": {
           "name": "Activity name should be at leat 10 characters",
@@ -758,6 +762,10 @@
           "name": "Ticket class description should be at least 3 characters",
           "description": "Ticket class description should be at least 20 characters",
           "price": "Price cannot be empty",
+          "general": {
+            "name": "General",
+            "description": "Live a unique and memorable experience with your Ticketwaze ticket!"
+          },
           "quantity": {
             "empty": "Quantity cannot be empty",
             "decimal": "Quantity cannot have decimal or trailling zero"

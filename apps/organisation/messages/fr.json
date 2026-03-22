@@ -681,6 +681,10 @@
       "optional": "optionnel",
       "pro": "Il s'agit d'une fonctionnalité Pro+",
       "freeTip": "Lorsque vous définissez une activitée comme gratuite, le système l’indiquera automatiquement comme remboursable. Cela garantit une cohérence pour toutes les activitées gratuits et évite les ajustements manuels.",
+      "general": {
+        "name": "Général",
+        "description": "Vivez une expérience unique et mémorable avec votre billet Ticketwaze!"
+      },
       "errors": {
         "basicDetails": {
           "name": "Le nom de l’activité doit comporter au moins 10 caractères",
