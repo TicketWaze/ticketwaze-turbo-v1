@@ -2,7 +2,7 @@
 import { Link, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -13,7 +13,6 @@ import { useSearchParams } from "next/navigation";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { LinkAccent } from "@/components/shared/Links";
 
 export default function LoginPageContent() {
   const t = useTranslations("Auth.login");
@@ -38,40 +37,43 @@ export default function LoginPageContent() {
   const [isLoading, setIsloading] = useState(false);
   const { update } = useSession();
   const router = useRouter();
-  async function submitHandler(data:TLoginSchema) {
-    setIsloading(true);
-    const result = await signIn("credentials", {
-      email: data.email,
-      password: data.password,
-      redirect: false,
-      callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
-    })
-    if (result?.error) {
-      toast.error("Login failed") //en fr file
-    } else {
-      const data = await update();
-      if (!data?.user.userPreference) {
-        router.push("/auth/onboarding");
-      } else {
-        const locale = data?.user.userPreference.appLanguage;
-        window.location.href = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore`;
-      }
-    }
-    setIsloading(false);
+  const locale = useLocale();
+  async function submitHandler(data: TLoginSchema) {
+    toast.success("success");
+    window.location.href = `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/analytics`;
+    // setIsloading(true);
+    // const result = await signIn("credentials", {
+    //   email: data.email,
+    //   password: data.password,
+    //   redirect: false,
+    //   callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
+    // });
+    // if (result?.error) {
+    //   toast.error("Login failed"); //en fr file
+    // } else {
+    //   const data = await update();
+    //   if (!data?.user.userPreference) {
+    //     router.push("/auth/onboarding");
+    //   } else {
+    //     const locale = data?.user.userPreference.appLanguage;
+    //     window.location.href = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore`;
+    //   }
+    // }
+    // setIsloading(false);
   }
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
-      className="flex flex-col items-center h-full pb-4"
+      className="flex flex-col items-center justify-between gap-8 h-full pb-4"
     >
-      <div className="flex-1 flex lg:justify-center flex-col w-full pt-[4.5rem]">
+      <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
         <div className="flex flex-col gap-16 items-center">
           <div className="flex flex-col gap-8 items-center">
             <motion.h3
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="font-medium font-primary text-[3.2rem] leading-[3.5rem] text-black"
+              className="font-medium font-primary text-[3.2rem] leading-14 text-black"
             >
               {t("title")}
             </motion.h3>
@@ -79,7 +81,7 @@ export default function LoginPageContent() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-[1.8rem] text-center leading-[2.5rem] text-neutral-700"
+              className="text-[1.8rem] text-center leading-10 text-neutral-700"
             >
               {t("description")}
             </motion.p>
@@ -140,82 +142,19 @@ export default function LoginPageContent() {
             >
               {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
             </ButtonPrimary>
-            {/* <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
-              {t("cta.or")}
-            </span>
-            <ButtonBlack
-              type="button"
-              onClick={googleLogin}
-              disabled={isLoading}
-              className="flex items-center justify-center gap-4 mb-10"
-            >
-              {isLoading ? (
-                <LoadingCircleSmall />
-              ) : (
-                <>
-                  <Image src={Google} alt="google login" />
-                  {t("cta.google")}
-                </>
-              )}
-            </ButtonBlack> */}
           </motion.div>
         </div>
       </div>
-      <div className="flex flex-col gap-6 w-full">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.8 }}
-          className="lg:hidden"
-        >
-          <ButtonPrimary
-            type="submit"
-            disabled={isLoading}
-            className="w-full lg:hidden"
-          >
-            {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
-          </ButtonPrimary>
-        </motion.div>
-        {/* <motion.span
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.85 }}
-          className="text-neutral-700 lg:hidden text-center text-[1.8rem] leading-8"
-        >
-          {t("cta.or")}
-        </motion.span> */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.9 }}
-          className="lg:hidden"
-        >
-          <ButtonBlack
-            type="button"
-            onClick={googleLogin}
-            disabled={isLoading}
-            className="flex items-center w-full justify-center gap-4"
-          >
-            {isLoading ? (
-              <LoadingCircleSmall />
-            ) : (
-              <>
-                <Image src={Google} alt="google login" />
-                {t("cta.google")}
-              </>
-            )}
-          </ButtonBlack>
-        </motion.div> */}
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 1 }}
-          className="w-full lg:w-fit flex self-center items-center justify-between gap-4 lg:gap-[1.8rem] rounded-[100px] lg:mb-[50px]"
-        >
-          <LinkAccent href="/auth/#" className="">{t("footer.cta")}</LinkAccent>
-        </motion.div>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.8 }}
+        className="lg:hidden w-full"
+      >
+        <ButtonPrimary type="submit" disabled={isLoading} className="w-full ">
+          {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
+        </ButtonPrimary>
+      </motion.div>
     </form>
   );
 }
