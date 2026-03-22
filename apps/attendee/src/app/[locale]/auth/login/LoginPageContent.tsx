@@ -52,7 +52,11 @@ export default function LoginPageContent() {
     } else {
       const data = await update();
       if (!data?.user.userPreference) {
-        router.push("/auth/onboarding");
+        if (data?.user?.organisations && data.user.organisations.length > 0) {
+          router.push("/auth/onboarding/attendee");
+        } else {
+          router.push("/auth/onboarding");
+        }
       } else {
         const locale = data?.user.userPreference.appLanguage;
         window.location.href = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore`;

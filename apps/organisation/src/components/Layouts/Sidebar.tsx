@@ -277,7 +277,7 @@ function Sidebar({ className }: { className: string }) {
               onClick={() =>
                 signOut({
                   redirect: true,
-                  redirectTo: `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${session?.user.userPreference.appLanguage}/auth/login`,
+                  redirectTo: `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/login`,
                 })
               }
               className={"flex gap-4 items-center cursor-pointer p-4"}
