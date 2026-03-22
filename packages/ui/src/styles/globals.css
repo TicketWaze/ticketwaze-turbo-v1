@@ -27,6 +27,12 @@ input:not(:placeholder-shown) + label {
   width: 100%;
   /* background-size: 700px; */
 }
+.bg-admin-auth {
+  background-image: url("./auth-bg.png");
+  background-repeat: no-repeat;
+  background-position: left -10px bottom -100px;
+  width: 100%;
+}
 
 @keyframes fadeInTop {
   from {
