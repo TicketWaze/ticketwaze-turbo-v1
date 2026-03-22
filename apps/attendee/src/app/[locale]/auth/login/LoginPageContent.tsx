@@ -77,14 +77,14 @@ export default function LoginPageContent() {
       onSubmit={handleSubmit(submitHandler)}
       className="flex flex-col items-center h-full pb-4"
     >
-      <div className="flex-1 flex lg:justify-center flex-col w-full pt-[4.5rem]">
+      <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
         <div className="flex flex-col gap-16 items-center">
           <div className="flex flex-col gap-8 items-center">
             <motion.h3
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="font-medium font-primary text-[3.2rem] leading-[3.5rem] text-black"
+              className="font-medium font-primary text-[3.2rem] leading-14 text-black"
             >
               {t("title")}
             </motion.h3>
@@ -92,7 +92,7 @@ export default function LoginPageContent() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-[1.8rem] text-center leading-[2.5rem] text-neutral-700"
+              className="text-[1.8rem] text-center leading-10 text-neutral-700"
             >
               {t("description")}
             </motion.p>
@@ -226,7 +226,7 @@ export default function LoginPageContent() {
           transition={{ duration: 0.5, delay: 1 }}
           className="border border-neutral-100 w-full lg:w-auto p-4 pl-6 flex items-center justify-between gap-4 lg:gap-[1.8rem] rounded-[100px]"
         >
-          <span className="text-[1.8rem] leading-[2.5rem] text-neutral-700">
+          <span className="text-[1.8rem] leading-10 text-neutral-700">
             {t("footer.text")}
           </span>
           <LinkAccent href="/auth/register">{t("footer.cta")}</LinkAccent>
