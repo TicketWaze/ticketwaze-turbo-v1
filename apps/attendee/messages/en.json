@@ -154,7 +154,8 @@
           "country": "Select a country",
           "dob": "Please select a date",
           "currency": "Please select a currency",
-          "phone": "Phone Number should be at least 8"
+          "phone": "Phone Number should be at least 8",
+          "underage": "You must be at least 16 years old to register."
         }
       },
       "cta": "Complete"
@@ -432,8 +433,8 @@
         "id": "Transaction ID",
         "provider": "Provider",
         "class": "Tickets",
-        "amount": "Amount paid",
-        "status": "Transaction Status",
+        "amount": "Amount",
+        "status": "Status",
         "date": "Date Purchased"
       },
       "more": "View all",

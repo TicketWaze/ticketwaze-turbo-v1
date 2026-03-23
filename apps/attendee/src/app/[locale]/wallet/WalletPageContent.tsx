@@ -47,7 +47,7 @@ export default function WalletPageContent({
   });
   const referralLink = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/auth/register?referral=${session?.user.referralCode}`;
   return (
-    <div className="flex flex-col gap-10 overflow-y-hidden">
+    <div className="flex flex-col gap-10 overflow-hidden">
       <header className="w-full flex items-center justify-between">
         <div className="flex flex-col gap-[5px]">
           {session?.user && (
@@ -297,7 +297,7 @@ export default function WalletPageContent({
               <TableRow>
                 <TableHead
                   className={
-                    "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                    "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
                   }
                 >
                   {t("transactions.table.id")}
@@ -345,7 +345,7 @@ export default function WalletPageContent({
                   <TableRow key={order.orderId}>
                     <TableCell
                       className={
-                        "text-[1.5rem] hidden lg:table-cell py-[15px] leading-8 text-neutral-900"
+                        "text-[1.5rem] py-6 leading-8 text-neutral-900"
                       }
                     >
                       <Drawer direction={"right"}>
@@ -359,7 +359,7 @@ export default function WalletPageContent({
                     </TableCell>
                     <TableCell
                       className={
-                        "text-[1.5rem] py-[15px] hidden lg:table-cell leading-8 text-neutral-900"
+                        "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
                       }
                     >
                       <Drawer direction={"right"}>
@@ -385,7 +385,7 @@ export default function WalletPageContent({
                     >
                       <Drawer direction={"right"}>
                         <DrawerTrigger>
-                          <span className={"cursor-pointer py-[15px]"}>
+                          <span className={"cursor-pointer py-6"}>
                             {session?.user.userPreference.currency === "USD"
                               ? `${order.usdPrice} USD`
                               : `${order.amount} HTG`}
@@ -394,7 +394,7 @@ export default function WalletPageContent({
                         <WalletOrderDrawerContent order={order} />
                       </Drawer>
                     </TableCell>
-                    <TableCell className="py-[15px]">
+                    <TableCell className="py-6">
                       <Drawer direction={"right"}>
                         <DrawerTrigger>
                           {order?.status === "SUCCESSFUL" && (
