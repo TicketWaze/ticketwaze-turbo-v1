@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/immutability */
 "use client";
 import PageLoader from "@/components/PageLoader";
-import { ButtonPrimary } from "@/components/shared/buttons";
+import { ButtonPrimary, ButtonSecondary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { Organisation } from "@ticketwaze/typescript-config";
 import { useSession } from "next-auth/react";
@@ -12,6 +11,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { LinkPrimary, LinkSecondary } from "@/components/shared/Links";
+import { useRouter } from "@/i18n/navigation";
 
 export default function OnboardingLogic({ response }: { response: any }) {
   const t = useTranslations("Auth.onboarding");
@@ -22,6 +22,7 @@ export default function OnboardingLogic({ response }: { response: any }) {
   const { data: session, update } = useSession();
   const locale = useLocale();
   const [isLoading, setIsloading] = useState(false);
+  const router = useRouter();
   useEffect(() => {
     const handleOnboarding = async () => {
       if (response.type === "invite") {
@@ -77,6 +78,29 @@ export default function OnboardingLogic({ response }: { response: any }) {
     setIsloading(false);
   }
 
+  async function cancelInviation(organisation: Organisation) {
+    setIsloading(true);
+    const req = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/invite/${organisation.organisationId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.accessToken}`,
+          "Accept-Language": locale,
+          Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const res = await req.json();
+    if (res.status === "success") {
+      router.push(`${process.env.NEXT_PUBLIC_ATTENDEE_URL}/`);
+    } else {
+      toast.error(res.message);
+    }
+    setIsloading(false);
+  }
+
   return (
     <div
       className={`h-full flex flex-col items-center ${!invitedOrganisations && !createOrganisation && "justify-center"} w-full `}
@@ -109,7 +133,7 @@ export default function OnboardingLogic({ response }: { response: any }) {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
                 key={organisation.organisationId}
-                className="flex items-center justify-between gap-3 bg-neutral-100 px-6 py-8 rounded-[15px] w-full"
+                className="flex flex-col items-center justify-between gap-3 bg-neutral-100 px-6 py-8 rounded-[15px] w-full"
               >
                 <div className="flex items-center gap-4">
                   {organisation?.profileImageUrl ? (
@@ -129,12 +153,21 @@ export default function OnboardingLogic({ response }: { response: any }) {
                     {organisation.organisationName}
                   </span>
                 </div>
-                <ButtonPrimary
-                  disabled={isLoading}
-                  onClick={() => JoinOrganisation(organisation)}
-                >
-                  {isLoading ? <LoadingCircleSmall /> : t("join")}
-                </ButtonPrimary>
+                <div className="flex w-full gap-8">
+                  <ButtonSecondary
+                    onClick={() => cancelInviation(organisation)}
+                    className="flex-1"
+                  >
+                    {isLoading ? <LoadingCircleSmall /> : t("back")}
+                  </ButtonSecondary>
+                  <ButtonPrimary
+                    disabled={isLoading}
+                    onClick={() => JoinOrganisation(organisation)}
+                    className="flex-1"
+                  >
+                    {isLoading ? <LoadingCircleSmall /> : t("join")}
+                  </ButtonPrimary>
+                </div>
               </motion.div>
             );
           })}

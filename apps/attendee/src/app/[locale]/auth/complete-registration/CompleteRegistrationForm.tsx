@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable react-hooks/incompatible-library */
 "use client";
 import { useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -36,6 +36,7 @@ export default function CompleteRegistrationForm({
   const [isInvited, setIsInvited] = useState(false);
   const [invitedBy, setInvitedBy] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
+
   useEffect(
     function () {
       if (referralCode && referralCode !== "") {
@@ -69,7 +70,22 @@ export default function CompleteRegistrationForm({
     country: z.string({ error: t("placeholders.errors.country") }),
     city: z.string().min(1, { error: t("placeholders.errors.city") }),
     state: z.string().min(1, { error: t("placeholders.errors.state") }),
-    dateOfBirth: z.string().min(1, { error: t("placeholders.errors.dob") }),
+    dateOfBirth: z
+      .string()
+      .min(1, { error: t("placeholders.errors.dob") })
+      .refine(
+        (date) => {
+          const birthDate = new Date(date + "T12:00:00");
+          const today = new Date();
+          const age = today.getFullYear() - birthDate.getFullYear();
+          const monthDiff = today.getMonth() - birthDate.getMonth();
+          const dayDiff = today.getDate() - birthDate.getDate();
+          const exactAge =
+            monthDiff < 0 || (monthDiff === 0 && dayDiff < 0) ? age - 1 : age;
+          return exactAge >= 16;
+        },
+        { message: t("placeholders.errors.underage") },
+      ),
     gender: z.string({ error: t("placeholders.errors.gender") }),
   });
   type TCompleteRegistrationSchema = z.infer<typeof CompleteRegistrationSchema>;
@@ -163,7 +179,7 @@ export default function CompleteRegistrationForm({
       className="flex flex-col items-center justify-between gap-20 w-full h-full pb-4 "
     >
       <div className={"flex flex-col gap-16 w-full"}>
-        <div className="flex-1 flex lg:justify-center flex-col w-full pt-[4.5rem]">
+        <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
           <div className="flex flex-col gap-16 items-center">
             <div className="flex flex-col gap-1 items-center">
               <div className="flex flex-col gap-8 items-center">
@@ -171,7 +187,7 @@ export default function CompleteRegistrationForm({
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="font-medium text-center font-primary text-[3.2rem] leading-[3.5rem] text-black"
+                  className="font-medium text-center font-primary text-[3.2rem] leading-14 text-black"
                 >
                   {t("title")}
                 </motion.h3>
@@ -179,7 +195,7 @@ export default function CompleteRegistrationForm({
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className="text-[1.8rem] text-center leading-[2.5rem] text-neutral-700"
+                  className="text-[1.8rem] text-center leading-10 text-neutral-700"
                 >
                   {t("description")}
                 </motion.p>
@@ -196,7 +212,7 @@ export default function CompleteRegistrationForm({
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.45 }}
-                  className="text-success text-[1.5rem] text-center leading-[2.5rem]"
+                  className="text-success text-[1.5rem] text-center leading-10"
                 >
                   <span className="font-semibold">{invitedBy}</span>
                   {t("referral")}
@@ -219,7 +235,7 @@ export default function CompleteRegistrationForm({
                     setValue("city", "");
                   }}
                 >
-                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leading-[20px]">
+                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leading-8">
                     <SelectValue placeholder={t("placeholders.country")} />
                   </SelectTrigger>
                   <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
@@ -249,7 +265,7 @@ export default function CompleteRegistrationForm({
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className={"flex gap-[1.5rem]"}
+                className={"flex gap-6"}
               >
                 <div className="flex-1">
                   <Select
@@ -258,7 +274,7 @@ export default function CompleteRegistrationForm({
                       setSelectedState(e);
                     }}
                   >
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leading-[20px]">
+                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leadin-8">
                       <SelectValue placeholder={t("placeholders.state")} />
                     </SelectTrigger>
                     <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
@@ -285,7 +301,7 @@ export default function CompleteRegistrationForm({
                 </div>
                 <div className="flex-1">
                   <Select onValueChange={(e) => setValue("city", e)}>
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leading-[20px]">
+                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leadin-8">
                       <SelectValue placeholder={t("placeholders.city")} />
                     </SelectTrigger>
                     <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
@@ -318,7 +334,7 @@ export default function CompleteRegistrationForm({
               >
                 <div
                   className={
-                    "bg-neutral-100 w-full relative rounded-[5rem] py-4 px-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
+                    "bg-neutral-100 w-full relative rounded-[5rem] py-4 px-8 text-[1.5rem] leadin-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
                   }
                   onClick={(e) => {
                     const input = e.currentTarget.querySelector(
@@ -332,8 +348,16 @@ export default function CompleteRegistrationForm({
                   </span> */}
                   <input
                     type={"date"}
+                    id="birthdate"
+                    max={
+                      new Date(
+                        new Date().setFullYear(new Date().getFullYear() - 16),
+                      )
+                        .toISOString()
+                        .split("T")[0]
+                    }
                     className={
-                      "w-full outline-none py-4 [&::-webkit-datetime-edit]:invisible w-full"
+                      "w-full outline-none py-4 [&::-webkit-datetime-edit]:invisible"
                     }
                     {...register("dateOfBirth")}
                   />
@@ -348,7 +372,7 @@ export default function CompleteRegistrationForm({
                       })}
                     </span>
                   ) : (
-                    <span className="px-8 absolute inset-0 flex items-center pointer-events-none text-[1.4rem] text-neutral-700 leading-[20px]">
+                    <span className="px-8 absolute inset-0 flex items-center pointer-events-none text-[1.4rem] text-neutral-700 leadin-8">
                       {t("placeholders.dob")}
                     </span>
                   )}
@@ -365,7 +389,7 @@ export default function CompleteRegistrationForm({
                 transition={{ duration: 0.5, delay: 0.8 }}
               >
                 <Select onValueChange={(e) => setValue("gender", e)}>
-                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leading-[20px]">
+                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leadin-8">
                     <SelectValue placeholder={t("placeholders.gender")} />
                   </SelectTrigger>
                   <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
@@ -444,7 +468,7 @@ export default function CompleteRegistrationForm({
         >
           <p
             className={
-              "text-[2.2rem] font-normal leading-[3rem] text-center text-neutral-700"
+              "text-[2.2rem] font-normal leading-12 text-center text-neutral-700"
             }
           >
             <span className={"text-primary-500"}>2</span>/2

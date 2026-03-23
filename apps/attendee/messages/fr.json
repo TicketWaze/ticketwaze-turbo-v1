@@ -154,7 +154,8 @@
           "country": "Sélectionnez un pays",
           "dob": "Veuillez sélectionner une date",
           "currency": "Veuillez sélectionner une devise",
-          "phone": "Le numéro de téléphone doit contenir au moins 8 chiffres"
+          "phone": "Le numéro de téléphone doit contenir au moins 8 chiffres",
+          "underage": "Vous devez avoir au moins 16 ans pour vous inscrire."
         }
       },
       "cta": "Terminer"
@@ -433,8 +434,8 @@
         "id": "ID de transaction",
         "provider": "Fournisseur",
         "class": "Billets",
-        "amount": "Montant payé",
-        "status": "Statut de la transaction",
+        "amount": "Montant",
+        "status": "Statut",
         "date": "Date d'achat"
       },
       "more": "Voir tout",

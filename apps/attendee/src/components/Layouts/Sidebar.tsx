@@ -102,7 +102,9 @@ function Sidebar({ className }: { className: string }) {
       )}
     >
       <div className={"flex-1 pt-12 flex flex-col gap-16 "}>
-        <Image src={Logo} alt={"Ticket Waze Logo"} width={140} height={40} />
+        <Link href={"/"}>
+          <Image src={Logo} alt={"Ticket Waze Logo"} width={140} height={40} />
+        </Link>
         <nav>
           <div
             className={`mb-4 uppercase font-medium text-[1.4rem] leading-8 ${isEventGroupActive() ? "text-neutral-900" : "text-neutral-600"}`}
