@@ -4,7 +4,7 @@ import { Call, Global, Sms, Ticket } from "iconsax-reactjs";
 import { getLocale, getTranslations } from "next-intl/server";
 import Image from "next/image";
 import OrganizerActions from "./OrganizerActions";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import { redirect } from "@/i18n/navigation";
 import { Event, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
@@ -126,14 +126,9 @@ export default async function OrganizerProfile({
             </span>
             <ul className="flex flex-col gap-8">
               {upcomingEvents.map((event) => {
-                const slug = Slugify(event.eventName);
                 return (
                   <li key={event.eventId} className="lg:pr-4">
-                    <EventCard
-                      aside={true}
-                      // href={`/explore/${slug}`}
-                      event={event}
-                    />
+                    <EventCard aside={true} event={event} />
                   </li>
                 );
               })}
@@ -159,14 +154,9 @@ export default async function OrganizerProfile({
           </span>
           <ul className="flex flex-col gap-8">
             {upcomingEvents.map((event) => {
-              const slug = Slugify(event.eventName);
               return (
                 <li key={event.eventId} className="lg:pr-4">
-                  <EventCard
-                    aside={true}
-                    // href={`/explore/${slug}`}
-                    event={event}
-                  />
+                  <EventCard aside={true} event={event} />
                 </li>
               );
             })}

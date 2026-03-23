@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import moncash from "./moncash.svg";
 import { FreeEventTicket } from "@/actions/paymentActions";
 import { useRouter } from "@/i18n/navigation";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import { Event, EventTicketType, User } from "@ticketwaze/typescript-config";
 import PageLoader from "@/components/PageLoader";
 import BackButton from "@/components/shared/BackButton";
@@ -217,7 +217,7 @@ export default function CheckoutFlow({
       locale,
     );
     if (result.status === "success") {
-      router.push(`/upcoming/${Slugify(event.eventName)}`);
+      router.push(`/upcoming/${slugify(event.eventName, event.eventId)}`);
     } else {
       toast.error(result.message);
     }
@@ -307,7 +307,7 @@ export default function CheckoutFlow({
     );
     const response = await request.json();
     if (response.status === "success") {
-      router.push(`/upcoming/${Slugify(event.eventName)}`);
+      router.push(`/upcoming/${slugify(event.eventName, event.eventId)}`);
     } else {
       setIsLoading(false);
       toast.error(response.message);

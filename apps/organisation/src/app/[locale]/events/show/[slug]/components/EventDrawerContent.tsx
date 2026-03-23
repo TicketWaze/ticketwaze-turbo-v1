@@ -1,5 +1,5 @@
 "use client";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 import { Event } from "@ticketwaze/typescript-config";
 import {
@@ -117,7 +117,7 @@ export default function EventDrawerContent({ event }: { event: Event }) {
       </div>
       <DrawerFooter className="lg:flex-row">
         <LinkPrimary
-          href={`/events/show/${Slugify(event.eventName)}/edit/${event.eventCategory}`}
+          href={`/events/show/${slugify(event.eventName, event.eventId)}/edit/${event.eventCategory}`}
           className="flex-1 gap-4"
         >
           <Edit2 variant={"Bulk"} color={"#ffffff"} size={20} /> {t("edit")}

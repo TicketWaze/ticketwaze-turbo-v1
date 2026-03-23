@@ -1,5 +1,5 @@
-"use client"; // Error boundaries must be Client Components
-import Logo from "@/assets/images/logo-horizontal-orange-org.svg";
+"use client";
+import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-orange.svg";
 import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
 import { I24Support, Logout, Warning2 } from "iconsax-reactjs";
 import Image from "next/image";
@@ -17,30 +17,28 @@ export default function GlobalError({
     <html>
       <body className="w-full h-dvh overflow-hidden flex flex-col items-center justify-center bg-neutral-200 p-8">
         <div className="bg-white rounded-[3rem] h-full w-full flex flex-col items-center justify-center">
-          <div className="max-w-[700px] mx-auto overflow-y-scroll flex flex-col gap-16 p-4 lg:p-8 items-center ">
+          <div className="max-w-280 mx-auto overflow-y-scroll flex flex-col gap-16 p-4 lg:p-8 items-center ">
             <Image src={Logo} alt="Ticketwaze" />
             <div
               className={
-                " h-full w-full justify-center mx-auto flex flex-col items-center gap-[3rem]"
+                " h-full w-full justify-center mx-auto flex flex-col items-center gap-12"
               }
             >
               <div
                 className={
-                  "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                  "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
                 }
               >
                 <div
                   className={
-                    "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                    "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
                   }
                 >
                   <Warning2 size="50" color="#0d0d0d" variant="Bulk" />
                 </div>
               </div>
-              <div
-                className={"flex flex-col gap-[3rem] items-center text-center"}
-              >
-                <p className={"text-[1.8rem] leading-[25px] text-neutral-600 "}>
+              <div className={"flex flex-col gap-12 items-center text-center"}>
+                <p className={"text-[1.8rem] leading-10 text-neutral-600 "}>
                   Something went wrong while processing your request. This may
                   be due to a temporary issue, a weak internet connection, or an
                   unexpected error in the system. Please try again after a short

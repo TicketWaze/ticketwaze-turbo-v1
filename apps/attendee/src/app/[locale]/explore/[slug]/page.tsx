@@ -27,6 +27,7 @@ import { Metadata } from "next";
 import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Capitalize from "@/lib/Capitalize";
+import { extractIdFromSlug } from "@/lib/slugify";
 
 export async function generateMetadata({
   params,
@@ -34,8 +35,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const eventId = extractIdFromSlug(slug);
   const eventRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
@@ -51,10 +53,11 @@ export default async function EventPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const eventId = extractIdFromSlug(slug);
   const session = await auth();
   const locale = await getLocale();
   const eventRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;

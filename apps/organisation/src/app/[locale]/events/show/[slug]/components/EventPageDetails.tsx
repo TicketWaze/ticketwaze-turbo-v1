@@ -31,7 +31,7 @@ import { toast } from "sonner";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import { DateTime } from "luxon";
 import FormatDate from "@/lib/FormatDate";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import {
   Event,
   EventPerformer,
@@ -103,8 +103,8 @@ export default function EventPageDetails({
   });
   const eventLink =
     event.eventType === "private"
-      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${Slugify(event.eventName)}`
-      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${Slugify(event.eventName)}`;
+      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${slugify(event.eventName, event.eventId)}`
+      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`;
 
   async function MarkEventAsActive() {
     setIsLoading(true);

@@ -1,10 +1,8 @@
-/* eslint-disable react-hooks/immutability */
 "use client";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
@@ -21,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
+import { useState } from "react";
 
 export default function NoAuthDialog() {
   const t = useTranslations("Auth.login");
@@ -32,7 +31,6 @@ export default function NoAuthDialog() {
   const error = searchParams.get("error");
   const errorMessage = error ? decodeURIComponent(error) : null;
   if (errorMessage) toast.error("AccessDenied");
-
   type TLoginSchema = z.infer<typeof LoginSchema>;
 
   const {
@@ -62,21 +60,20 @@ export default function NoAuthDialog() {
       if (!data?.user.userPreference) {
         router.push("/auth/onboarding");
       } else {
-        const locale = data?.user.userPreference.appLanguage;
-        window.location.href = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/${pathname}`;
+        router.push(`/${pathname}`, {
+          locale: data?.user.userPreference.appLanguage,
+        });
       }
     }
     resetField("password");
     setIsloading(false);
   }
   return (
-    <DialogContent
-      className={"w-[360px] lg:w-[520px] max-h-[90vh] overflow-y-scroll "}
-    >
+    <DialogContent className={"w-xl lg:w-208 max-h-[90vh] overflow-y-scroll "}>
       <DialogHeader>
         <DialogTitle
           className={
-            "font-medium hidden border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+            "font-medium hidden border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
           }
         >
           {t("title")}
@@ -96,7 +93,7 @@ export default function NoAuthDialog() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="font-medium font-primary text-[3.2rem] leading-[3.5rem] text-black"
+                className="font-medium font-primary text-[3.2rem] leading-14 text-black"
               >
                 {t("title")}
               </motion.h3>
@@ -104,7 +101,7 @@ export default function NoAuthDialog() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
-                className="text-[1.8rem] text-center leading-[2.5rem] text-neutral-700"
+                className="text-[1.8rem] text-center leading-10 text-neutral-700"
               >
                 {t("description")}
               </motion.p>
@@ -225,23 +222,13 @@ export default function NoAuthDialog() {
             transition={{ duration: 0.5, delay: 1 }}
             className="border border-neutral-100 w-full lg:w-auto p-4 pl-6 flex items-center justify-between gap-4 lg:gap-[1.8rem] rounded-[100px]"
           >
-            <span className="text-[1.8rem] leading-[2.5rem] text-neutral-700">
+            <span className="text-[1.8rem] leading-10 text-neutral-700">
               {t("footer.text")}
             </span>
             <LinkAccent href="/auth/register">{t("footer.cta")}</LinkAccent>
           </motion.div>
         </div>
       </form>
-      {/* <DialogFooter className="pt-8">
-        <DialogClose className="w-full">
-          <span className="bg-primary-50 border-primary-500 hover:border-primary-200  text-primary-500 px-[3rem] py-[15px] border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center">
-            {t("cancel")}
-          </span>
-        </DialogClose>
-        <LinkPrimary className="w-full" href="/auth/login">
-          {t("proceed")}
-        </LinkPrimary>
-      </DialogFooter> */}
     </DialogContent>
   );
 }

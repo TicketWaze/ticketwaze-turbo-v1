@@ -31,7 +31,7 @@ import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
 import { makeEditInPersonSchema } from "./schema";
 import { Event } from "@ticketwaze/typescript-config";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
@@ -163,7 +163,9 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     );
     if (result.status === "success") {
       toast.success("success");
-      redirect(`/events/show/${Slugify(result.event.eventName)}`);
+      redirect(
+        `/events/show/${slugify(result.event.eventName, result.event.eventId)}`,
+      );
     }
     if (result.error) toast.error(result.error);
   };

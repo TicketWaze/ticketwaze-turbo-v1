@@ -3,12 +3,12 @@ import { Link } from "@/i18n/navigation";
 import { Calendar2, Google, Location } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import { Event } from "@ticketwaze/typescript-config";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
   const date = new Date(event.eventDays[0].dateTime);
-  const slug = Slugify(event.eventName);
+  const slug = slugify(event.eventName, event.eventId);
   const locale = useLocale();
   const t = useTranslations("Event");
   const price =

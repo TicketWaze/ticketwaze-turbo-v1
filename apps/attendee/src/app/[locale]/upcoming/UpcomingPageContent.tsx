@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import UpcomingCard from "@/components/UpcomingCard";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import { CloseCircle, Money3, SearchNormal, Star } from "iconsax-reactjs";
 import { DateTime } from "luxon";
 import { useSession } from "next-auth/react";
@@ -97,7 +97,7 @@ export default function UpcomingPageContent({ events }: { events: any }) {
           const roundedDays = Math.ceil(
             daysLeft && daysLeft > 0 ? daysLeft : 0,
           );
-          const slug = Slugify(event.eventName);
+          const slug = slugify(event.eventName, event.eventId);
           return (
             <li key={event.eventId}>
               <UpcomingCard
