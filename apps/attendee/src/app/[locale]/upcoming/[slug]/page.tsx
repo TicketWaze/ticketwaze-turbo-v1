@@ -12,6 +12,7 @@ import { Ticket, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
 import ReturnFreeTicketView from "./ReturnFreeTicketView";
+import { extractIdFromSlug } from "@/lib/slugify";
 
 export default async function UpcomingEventPage({
   params,
@@ -19,10 +20,11 @@ export default async function UpcomingEventPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const eventId = extractIdFromSlug(slug);
   const t = await getTranslations("Event");
   const session = await auth();
   const eventRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/upcoming/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/events/upcoming/${eventId}`,
     {
       method: "GET",
       headers: {

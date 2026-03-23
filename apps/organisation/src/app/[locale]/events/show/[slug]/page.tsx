@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { Event, EventPerformer, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
+import { extractIdFromSlug } from "@/lib/slugify";
 
 export default async function Page({
   params,
@@ -12,9 +13,10 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const eventId = extractIdFromSlug(slug);
   const t = await getTranslations("Events.single_event");
   const eventRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;

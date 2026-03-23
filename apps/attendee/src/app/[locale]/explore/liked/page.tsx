@@ -3,7 +3,6 @@ import BackButton from "@/components/shared/BackButton";
 import EventCard from "@/components/shared/EventCard";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/lib/auth";
-import Slugify from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 import { Heart } from "iconsax-reactjs";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -37,13 +36,9 @@ export default async function LikedPage() {
       </div>
       <ul className="list pt-4">
         {events.map((event) => {
-          const slug = Slugify(event.eventName);
           return (
             <li key={event.eventId}>
-              <EventCard
-                // href={`/explore/${slug}`}
-                event={event}
-              />
+              <EventCard event={event} />
             </li>
           );
         })}

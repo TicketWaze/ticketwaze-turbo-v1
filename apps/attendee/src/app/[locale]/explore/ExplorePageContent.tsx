@@ -8,10 +8,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Link } from "@/i18n/navigation";
-import TruncateUrl from "@/lib/TruncateUrl";
 import { Event, UserWallet } from "@ticketwaze/typescript-config";
 import {
-  AddCircle,
   CloseCircle,
   Heart,
   Money3,
@@ -24,7 +22,7 @@ import { useState } from "react";
 
 export default function ExplorePageContent({
   events,
-  wallet,
+  // wallet,
 }: {
   events: Event[];
   wallet: UserWallet;
@@ -131,7 +129,7 @@ export default function ExplorePageContent({
               </Dialog>
             )}
             {/* Wallet */}
-            {session?.user && (
+            {/* {session && session?.user && (
               <Link
                 href={"/wallet"}
                 className="bg-neutral-200 text-black text-[1.4rem] hidden lg:flex gap-4 px-3 py-[6px] rounded-[3rem] items-center"
@@ -154,7 +152,7 @@ export default function ExplorePageContent({
                   className="hidden lg:block"
                 />
               </Link>
-            )}
+            )} */}
           </div>
         </div>
       </header>

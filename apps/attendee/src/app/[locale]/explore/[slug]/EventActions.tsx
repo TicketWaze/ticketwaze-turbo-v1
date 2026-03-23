@@ -5,7 +5,7 @@ import {
 } from "@/actions/eventActions";
 import NoAuthDialog from "@/components/Layouts/NoAuthDialog";
 import { Link, usePathname } from "@/i18n/navigation";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import TruncateUrl from "@/lib/TruncateUrl";
 import { Copy, Heart, MoreCircle, Send2 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
@@ -248,7 +248,9 @@ export default function EventActions({
         </Popover>
       </div>
       {session?.user ? (
-        <LinkPrimary href={`/explore/${Slugify(event.eventName)}/checkout`}>
+        <LinkPrimary
+          href={`/explore/${slugify(event.eventName, event.eventId)}/checkout`}
+        >
           {t("buy")}
         </LinkPrimary>
       ) : (

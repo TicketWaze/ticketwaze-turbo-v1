@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import { revalidatePath } from "next/cache";
 
 /*
@@ -65,7 +65,9 @@ export async function UpdateGoogleMeetEvent(
     );
     const response = await request.json();
     if (response.status === "success") {
-      revalidatePath(`/events/show/${Slugify(response.event.eventName)}`);
+      revalidatePath(
+        `/events/show/${slugify(response.event.eventName, response.event.eventId)}`,
+      );
       return {
         status: "success",
         event: response.event,
@@ -175,7 +177,9 @@ export async function UpdateInPersonEvent(
     );
     const response = await request.json();
     if (response.status === "success") {
-      revalidatePath(`/events/show/${Slugify(response.event.eventName)}`);
+      revalidatePath(
+        `/events/show/${slugify(response.event.eventName, response.event.eventId)}`,
+      );
       return {
         status: "success",
         event: response.event,
@@ -250,7 +254,9 @@ export async function UpdatePrivateEvent(
     );
     const response = await request.json();
     if (response.status === "success") {
-      revalidatePath(`/events/show/${Slugify(response.event.eventName)}`);
+      revalidatePath(
+        `/events/show/${slugify(response.event.eventName, response.event.eventId)}`,
+      );
       return {
         status: "success",
         event: response.event,

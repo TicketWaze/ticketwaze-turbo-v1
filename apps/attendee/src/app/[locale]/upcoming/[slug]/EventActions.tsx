@@ -4,7 +4,7 @@ import {
   RemoveEventToFavorite,
 } from "@/actions/eventActions";
 import { usePathname } from "@/i18n/navigation";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/slugify";
 import TruncateUrl from "@/lib/TruncateUrl";
 import { Copy, Heart, MoreCircle, Send2 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
@@ -118,8 +118,8 @@ export default function EventActions({
                 >
                   {TruncateUrl(
                     event.eventType === "private"
-                      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${Slugify(event.eventName)}`
-                      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${Slugify(event.eventName)}`,
+                      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${slugify(event.eventName, event.eventId)}`
+                      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`,
                     22,
                   )}
                 </span>
@@ -130,8 +130,8 @@ export default function EventActions({
                 >
                   {TruncateUrl(
                     event.eventType === "private"
-                      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${Slugify(event.eventName)}`
-                      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${Slugify(event.eventName)}`,
+                      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${slugify(event.eventName, event.eventId)}`
+                      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`,
                   )}
                 </span>
                 <button
@@ -139,8 +139,8 @@ export default function EventActions({
                     try {
                       await navigator.clipboard.writeText(
                         event.eventType === "private"
-                          ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${Slugify(event.eventName)}`
-                          : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${Slugify(event.eventName)}`,
+                          ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${slugify(event.eventName, event.eventId)}`
+                          : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`,
                       );
                       toast.success("Url copied to clipboard");
                     } catch (e) {
