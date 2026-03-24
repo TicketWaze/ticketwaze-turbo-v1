@@ -10,7 +10,7 @@
       "cta": "Continuer",
       "attendee": {
         "title": "Participant",
-        "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d’événements."
+        "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d’activités."
       },
       "organisation": {
         "title": "Organisation",
@@ -49,11 +49,11 @@
         "description": "Choisissez une option pour continuer et configurer votre compte.",
         "first": {
           "title": "Participant",
-          "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d'événements."
+          "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d'activités."
         },
         "second": {
           "title": "Organisateur",
-          "description": "Créez et gérez des événements sans effort. Suivez les ventes de billets et surveillez les données des participants."
+          "description": "Créez et gérez des activités sans effort. Suivez les ventes de billets et surveillez les données des participants."
         },
         "cta": "Continuer",
         "footer": {
@@ -109,7 +109,7 @@
         "country": "Pays",
         "state": "État / Région / Province",
         "city": "Ville",
-        "organisationDescription": "Partagez des détails sur votre organisation, ce que vous faites et les événements que vous organisez...",
+        "organisationDescription": "Partagez des détails sur votre organisation, ce que vous faites et les  activités que vous organisez...",
         "email": "E-mail de l'organisation",
         "phone": "Numéro de téléphone",
         "website": "Site web",
@@ -351,7 +351,7 @@
       "logout": "Déconnexion",
       "verified": "Ceci est une organisation vérifiée",
       "links": {
-        "title1": "Événements",
+        "title1": "Activités",
         "explore": "Explorer",
         "upcoming": "À venir",
         "wallet": "Portefeuille",
@@ -379,12 +379,12 @@
     }
   },
   "Explore": {
-    "title": "Explorer les événements",
+    "title": "Explorer les activités",
     "subtitle": "Bon retour ",
-    "search": "Rechercher un événement",
+    "search": "Rechercher une activité",
     "noResult": "Il n'y a aucun résultat pour ",
-    "noEvent": "Il n'y a pas d'événements à venir pour le moment. Revenez plus tard ou explorez d'autres catégories pour découvrir des événements passionnants près de chez vous !",
-    "liked": "Événements aimés",
+    "noEvent": "Il n'y a pas d'activités à venir pour le moment. Revenez plus tard ou explorez d'autres catégories pour découvrir des activités passionnantes près de chez vous !",
+    "liked": "Activités aimées",
     "filters": {
       "first": {
         "1": "Tous",
@@ -443,7 +443,7 @@
         "title": "Détails de la transaction",
         "name": "Nom du participant",
         "email": "E-mail",
-        "event_name": "Nom de l'événement",
+        "event_name": "Nom de l'activité",
         "date": "Date",
         "time": "Heure",
         "location": "Lieu",
@@ -476,17 +476,17 @@
     }
   },
   "Upcoming": {
-    "title": "Événements à venir",
+    "title": "Activités à venir",
     "subtitle": "Bon retour ",
-    "search": "Rechercher un événement à venir",
-    "description": "Il n'y a aucun événement à venir pour le moment. Restez à l'écoute pour découvrir et réserver les prochains !",
+    "search": "Rechercher une activité à venir",
+    "description": "Il n'y a aucune activité à venir pour le moment. Restez à l'écoute pour découvrir et réserver les prochains !",
     "noResult": "Il n'y a aucun résultat pour "
   },
   "History": {
-    "title": "Historique des événements",
-    "search": "Rechercher un événement",
+    "title": "Historique des activités",
+    "search": "Rechercher une activité",
     "subtitle": "Bon retour ",
-    "description": "Vous n’avez encore participé à aucun événement. Une fois que vous aurez assisté à un événement, il apparaîtra ici pour que vous puissiez revivre vos expériences passées."
+    "description": "Vous n’avez encore participé à aucun activité. Une fois que vous aurez assisté à une activité, il apparaîtra ici pour que vous puissiez revivre vos expériences passées."
   },
   "Event": {
     "from": "À partir de",
@@ -494,28 +494,28 @@
     "back": "Retour",
     "notInvited": "Accès restreint : il s'agit d'une activité privée visible uniquement par les participants invités.",
     "share": "Partager",
-    "share_text": "Faites passer le mot et invitez vos amis ! Partagez cet événement sur les réseaux sociaux ou par message direct.",
+    "share_text": "Faites passer le mot et invitez vos amis ! Partagez cette activité sur les réseaux sociaux ou par message direct.",
     "copy": "Copier",
     "buy": "Acheter",
     "buy_more": "Acheter plus",
-    "about": "À propos de l'événement",
+    "about": "À propos de l'activité",
     "contact": "Informations de contact",
-    "details": "Détails de l'événement",
+    "details": "Détails de l'activité",
     "followers": "Abonnés",
     "follow": "Suivre",
-    "unfollow": "Ne plus suivre",
+    "unfollow": "Desabonner",
     "viewProfile": "Profil",
     "more": "Plus",
-    "reportEvent": "Signaler l'événement",
+    "reportEvent": "Signaler l'activité",
     "reportOrganisation": "Signaler cet Organisation",
-    "reportEventDescription": "Aidez-nous à maintenir la sécurité de la plateforme. Partagez les détails sur tout problème avec cet événement.",
+    "reportEventDescription": "Aidez-nous à maintenir la sécurité de la plateforme. Partagez les détails sur tout problème avec cette activité.",
     "reportOrganisationDescription": "Aidez-nous à maintenir la sécurité de la plateforme. Partagez les détails sur tout problème avec cet organisation.",
     "inappropriateContent": "Contenu inapproprié",
     "misleadingInformation": "Informations trompeuses",
     "fraud": "Préoccupations de fraude ou d'arnaque",
     "venue": "Problèmes de lieu ou de date",
     "other": "Autre",
-    "question": "Quel problème rencontrez-vous avec cet événement ?",
+    "question": "Quel problème rencontrez-vous avec cette activité ?",
     "question2": "Quel problème rencontrez-vous avec cette organisation ?",
     "message": "Message",
     "pleaseSpecifyReason": "Veuillez préciser une raison valable",
@@ -528,7 +528,7 @@
     "time": "Heure",
     "location": "Lieu",
     "download": "Télécharger",
-    "rate": "Évaluer l'événement",
+    "rate": "Évaluer l'activité",
     "feedback": "Écrire un commentaire",
     "send": "Envoyer le commentaire",
     "use": "Billet utilisé",
@@ -539,7 +539,7 @@
     "email": "E-mail",
     "ticketWarning1": "Votre billet est personnel — ne le partagez pas.",
     "ticketWarning2": "Ce billet est non remboursable",
-    "liked": "Événements aimés",
+    "liked": "Activités aimées",
     "return": "Rendre le billet",
     "returnDescription": "En rendant votre billet, vous le remettez définitivement à l'organisation. Cette action est irréversible : vous ne pourrez plus récupérer le billet par la suite. Veuillez noter que les frais de plateforme et de transaction ne sont pas remboursables.",
     "freeTicketReturnWarning": "Cette activitée est gratuit. Si vous rendez votre billet, vous ne pourrez pas en acheter un autre par la suite."
@@ -548,8 +548,8 @@
     "back": "Retour",
     "free": "Gratuit",
     "purchased": "Billet acheté",
-    "purchased_cta": "Ouverture des événements à venir...",
-    "purchased_text": "Votre achat est confirmé ! Vous pouvez y accéder à tout moment dans les Événements à venir ou vérifier votre e-mail pour une copie.",
+    "purchased_cta": "Ouverture des activités à venir...",
+    "purchased_text": "Votre achat est confirmé ! Vous pouvez y accéder à tout moment dans les Activités à venir ou vérifier votre e-mail pour une copie.",
     "ticket": {
       "title": "Acheter un billet",
       "quantity": "Quantité",
@@ -579,7 +579,7 @@
       "card": "Payer par carte",
       "paypal": "Payer avec PayPal",
       "moncash": "Payer avec MonCash",
-      "nopayment": "Cet événement est entièrement gratuit. Aucun paiement n'est requis pour finaliser votre inscription. Continuez simplement pour confirmer votre billet et le tour est joué.",
+      "nopayment": "Cette activité est entièrement gratuit. Aucun paiement n'est requis pour finaliser votre inscription. Continuez simplement pour confirmer votre billet et le tour est joué.",
       "secured": "Votre sécurité est notre priorité. Toutes les transactions sont effectuées via des canaux cryptés et sont surveillées en temps réel afin de prévenir toute fraude et de garantir la protection de vos informations personnelles. Nos systèmes sont supervisés par des partenaires de confiance et respectent les normes les plus strictes en matière de sécurité des paiements et des données.",
       "paymentType": "Sélétionner un moyen de paiement",
       "placeholders": {
@@ -596,19 +596,19 @@
     }
   },
   "Liked": {
-    "title": "Événements aimées",
+    "title": "Activités aimées",
     "back": "Retour",
-    "noEvent": "Vous n'avez aimé aucun événement. Parcourez les événements à venir et appuyez sur ❤️ pour enregistrer vos favoris !",
+    "noEvent": "Vous n'avez aimée aucune activité. Parcourez les activités à venir et appuyez sur ❤️ pour enregistrer vos favoris !",
     "filters": {
-      "saved": "Sauvegardés",
-      "liked": "Aimés"
+      "saved": "Sauvegardées",
+      "liked": "Aimée"
     }
   },
   "Profile": {
     "title": "Profil",
     "edit": "Modifier le profil",
-    "save": "Sauvegarder les modifications",
-    "setProfile": "Définir l'image de profil",
+    "save": "Sauvegarder",
+    "setProfile": "Modifier l'image",
     "resize": "Redimensionner l'image",
     "personal": "Informations personnelles",
     "placeholders": {
@@ -627,10 +627,10 @@
       "blood": "Groupe sanguin"
     },
     "event": {
-      "title": "Événement",
-      "attended": "Nombre d'événements auxquels j'ai assisté",
+      "title": "Activité",
+      "attended": "Nombre d'activités auxquelles j'ai assisté",
       "tickets": "Nombre de billets achetés",
-      "missed": "Nombre d'événements manqués"
+      "missed": "Nombre d'activités manquées"
     },
     "account": {
       "title": "Compte",
@@ -663,9 +663,9 @@
     },
     "email": {
       "title": "Notifications par e-mail",
-      "upcoming": "Me notifier des événements à venir pour lesquels j'ai acheté des billets.",
-      "preferred": "Me notifier des nouveaux événements dans mes catégories préférées.",
-      "follow": "Me notifier quand un organisateur que je suis ajoute de nouveaux événements."
+      "upcoming": "Me notifier des activités à venir pour lesquelles j'ai acheté des billets.",
+      "preferred": "Me notifier des nouvelles activités dans mes catégories préférées.",
+      "follow": "Me notifier quand un organisateur que je suis ajoute de nouvelles activités."
     },
     "user": {
       "title": "Préférences de l'application",
@@ -724,8 +724,8 @@
     },
     "event": "activités",
     "follow": "Suivre",
-    "unfollow": "Ne plus suivre",
-    "noFollowed": "Vous ne suivez encore aucune organisation. Explorez et suivez des organisations pour rester informé de leurs événements et activités. ",
+    "unfollow": "Desabonner",
+    "noFollowed": "Vous ne suivez encore aucune organisation. Explorez et suivez des organisations pour rester informé de leurs activités. ",
     "profile": {
       "upcoming": "Activités à venir",
       "noUpcoming": "Aucune activité à venir",
@@ -733,7 +733,7 @@
       "followers": "abonnés",
       "events": "Activités",
       "follow": "Suivre",
-      "unfollow": "Ne plus suivre",
+      "unfollow": "Desabonner",
       "about": "À propos de l'organisation",
       "contact": "Informations de contact",
       "noResult": "Il n'y a aucun résultat pour "

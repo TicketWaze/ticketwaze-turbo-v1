@@ -1,7 +1,7 @@
 {
   "Metadata": {
     "title": "Chaque billet, chaque activité, une seule plateforme",
-    "description": "Achetez, vendez et gérez vos billets pour activités, expériences et événements, en ligne ou en personne, sur une plateforme sécurisée et unique."
+    "description": "Achetez, vendez et gérez vos billets pour activités et expériences, en ligne ou en personne, sur une plateforme sécurisée et unique."
   },
   "HomePage": {
     "navbar": {
@@ -108,8 +108,8 @@
       "success": "Merci pour votre inscription à notre newsletter !",
       "failed": "Échec de l’inscription à la newsletter. Si le problème persiste, contactez notre support.",
       "sub": "S’abonner à la newsletter",
-      "explore": "Découvrir un événement",
-      "organize": "Organiser un événement",
+      "explore": "Découvrir une activité",
+      "organize": "Organiser une activité",
       "join": "Rejoindre la liste d’attente",
       "quick": "LIENS RAPIDES",
       "attendees": "Particuliers",
@@ -132,9 +132,9 @@
         "5": "Une seule",
         "6": "plateforme"
       },
-      "description1": "Achetez, vendez et gérez vos billets pour activités, expériences et événements, en ligne ou en personne, sur une plateforme unique et sécurisée.",
+      "description1": "Achetez, vendez et gérez vos billets pour activités et expériences, en ligne ou en personne, sur une plateforme unique et sécurisée.",
       "title-1": "Créez, gérez et",
-      "title-2": "vivez vos événements",
+      "title-2": "vivez vos activités",
       "soon": "Bientôt disponible",
       "description": "Nous travaillons en coulisses pour vous offrir une nouvelle façon d’acheter, gérer et profiter de vos billets.",
       "email": "Adresse e-mail",
@@ -331,7 +331,7 @@
         "role": "Entreprise"
       },
       "third": {
-        "description": "Ce qui nous a convaincus, c’est la flexibilité. Nous ne sommes pas limités aux événements — nous vendons aussi des sessions, des pass et des expériences en toute fluidité.",
+        "description": "Ce qui nous a convaincus, c’est la flexibilité. Nous ne sommes pas limités aux activités — nous vendons aussi des sessions, des pass et des expériences en toute fluidité.",
         "name": "Bandana",
         "role": "Organisation expérimentée"
       }

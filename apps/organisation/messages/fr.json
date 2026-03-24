@@ -83,7 +83,7 @@
       "title": "Créer un compte",
       "organizer": "Créer un compte",
       "description": "Veuillez compléter le formulaire ci-dessous pour continuer.",
-      "invalidToken": "Ce lien d’invitation n’est plus valide. Il a peut-être expiré ou déjà été utilisé. Veuillez demander une nouvelle invitation à l’organisateur de l’événement pour continuer.",
+      "invalidToken": "Ce lien d’invitation n’est plus valide. Il a peut-être expiré ou déjà été utilisé. Veuillez demander une nouvelle invitation à l’organisateur de l’activité pour continuer.",
       "login": "Se connecter",
       "choice": {
         "title": "Créer un compte",
@@ -567,7 +567,7 @@
       "basic": "Détails de base",
       "category_search": "Rechercher une catégorie",
       "no_result": "Aucun résultat pour le mot-clé ",
-      "proFeature": "La création d’activités privées fait partie de notre abonnement Pro+. Avec Pro+, vous débloquez la possibilité de garder vos activités entièrement privées, vous offrant un meilleur contrôle et une tranquillité d’esprit dans la gestion et le partage de vos événements. La mise à niveau vous donne non seulement accès à la création d’activités privées, mais vous assure également de profiter de l’ensemble des fonctionnalités avancées conçues pour rendre votre expérience plus fluide, plus sécurisée et plus personnalisée. Si la confidentialité et l’exclusivité comptent pour vous, Pro+ est le niveau d’abonnement qui répond à vos attentes.",
+      "proFeature": "La création d’activités privées fait partie de notre abonnement Pro+. Avec Pro+, vous débloquez la possibilité de garder vos activités entièrement privées, vous offrant un meilleur contrôle et une tranquillité d’esprit dans la gestion et le partage de vos activités. La mise à niveau vous donne non seulement accès à la création d’activités privées, mais vous assure également de profiter de l’ensemble des fonctionnalités avancées conçues pour rendre votre expérience plus fluide, plus sécurisée et plus personnalisée. Si la confidentialité et l’exclusivité comptent pour vous, Pro+ est le niveau d’abonnement qui répond à vos attentes.",
       "upgrade": "Mettre à niveau l’abonnement",
       "tagTip": {
         "title": "Astuce",
