@@ -28,7 +28,7 @@ import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
 import { EditPrivateSchema } from "./schema";
 import { Event } from "@ticketwaze/typescript-config";
-import { slugify } from "@/lib/slugify";
+import { slugify } from "@/lib/Slugify";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";

@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { Calendar2, Google, Location } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
-import { slugify } from "@/lib/slugify";
+import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {

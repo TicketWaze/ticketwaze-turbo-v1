@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { Event, EventPerformer, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
-import { extractIdFromSlug } from "@/lib/slugify";
+import { extractIdFromSlug } from "@/lib/Slugify";
 
 export default async function Page({
   params,

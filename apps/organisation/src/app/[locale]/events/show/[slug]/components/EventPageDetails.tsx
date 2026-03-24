@@ -31,7 +31,7 @@ import { toast } from "sonner";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import { DateTime } from "luxon";
 import FormatDate from "@/lib/FormatDate";
-import { slugify } from "@/lib/slugify";
+import { slugify } from "@/lib/Slugify";
 import {
   Event,
   EventPerformer,

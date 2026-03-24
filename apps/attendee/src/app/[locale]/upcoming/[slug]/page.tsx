@@ -12,7 +12,7 @@ import { Ticket, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
 import ReturnFreeTicketView from "./ReturnFreeTicketView";
-import { extractIdFromSlug } from "@/lib/slugify";
+import { extractIdFromSlug } from "@/lib/Slugify";
 
 export default async function UpcomingEventPage({
   params,

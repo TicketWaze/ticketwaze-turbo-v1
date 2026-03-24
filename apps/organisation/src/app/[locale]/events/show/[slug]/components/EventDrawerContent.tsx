@@ -1,5 +1,5 @@
 "use client";
-import { slugify } from "@/lib/slugify";
+import { slugify } from "@/lib/Slugify";
 import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 import { Event } from "@ticketwaze/typescript-config";
 import {

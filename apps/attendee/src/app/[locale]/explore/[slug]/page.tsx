@@ -27,7 +27,7 @@ import { Metadata } from "next";
 import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Capitalize from "@/lib/Capitalize";
-import { extractIdFromSlug } from "@/lib/slugify";
+import { extractIdFromSlug } from "@/lib/Slugify";
 
 export async function generateMetadata({
   params,

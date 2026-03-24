@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import UpcomingCard from "@/components/UpcomingCard";
-import { slugify } from "@/lib/slugify";
+import { slugify } from "@/lib/Slugify";
 import { CloseCircle, Money3, SearchNormal, Star } from "iconsax-reactjs";
 import { DateTime } from "luxon";
 import { useSession } from "next-auth/react";

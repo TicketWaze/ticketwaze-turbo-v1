@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-import { slugify } from "@/lib/slugify";
+import { slugify } from "@/lib/Slugify";
 import { revalidatePath } from "next/cache";
 
 /*

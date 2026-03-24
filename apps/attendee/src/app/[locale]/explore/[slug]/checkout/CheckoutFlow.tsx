@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import moncash from "./moncash.svg";
 import { FreeEventTicket } from "@/actions/paymentActions";
 import { useRouter } from "@/i18n/navigation";
-import { slugify } from "@/lib/slugify";
+import { slugify } from "@/lib/Slugify";
 import { Event, EventTicketType, User } from "@ticketwaze/typescript-config";
 import PageLoader from "@/components/PageLoader";
 import BackButton from "@/components/shared/BackButton";

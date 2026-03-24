@@ -5,7 +5,7 @@ import {
 } from "@/actions/eventActions";
 import NoAuthDialog from "@/components/Layouts/NoAuthDialog";
 import { Link, usePathname } from "@/i18n/navigation";
-import { slugify } from "@/lib/slugify";
+import { slugify } from "@/lib/Slugify";
 import TruncateUrl from "@/lib/TruncateUrl";
 import { Copy, Heart, MoreCircle, Send2 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";

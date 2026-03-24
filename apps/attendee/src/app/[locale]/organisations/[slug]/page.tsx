@@ -4,7 +4,7 @@ import { Call, Global, Sms, Ticket } from "iconsax-reactjs";
 import { getLocale, getTranslations } from "next-intl/server";
 import Image from "next/image";
 import OrganizerActions from "./OrganizerActions";
-import { slugify } from "@/lib/slugify";
+import { slugify } from "@/lib/Slugify";
 import { redirect } from "@/i18n/navigation";
 import { Event, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
