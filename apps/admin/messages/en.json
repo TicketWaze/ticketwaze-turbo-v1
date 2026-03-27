@@ -50,5 +50,40 @@
       "view": "View"
     }
   },
+  
+  "Activities": {
+    "title": "Activities Overview",
+    "total": "Total Activities",
+    "active": "Active Activities",
+    "suspended": "Suspended Activities",
+    "filters": {
+      "period": {
+        "actual": "This month"
+      },
+      "list": {
+        "status": "All status",
+        "period": "All time"
+      }
+    },
+    "list": {
+      "title": "Activities list",
+      "table": {
+        "name": "Activity name",
+        "organizer": "Organizer",
+        "start": "Start date",
+        "sold": "Tickets sold",
+        "status": "Status",
+        "created": "Created on"
+      },
+      "filters": {
+        "past": "Past",
+        "ongoing": "Ongoing",
+        "upcoming": "Upcoming",
+        "active": "Active"
+      },
+      "no activities": "Once events are published by organizers, they will appear here for review and tracking."
+    }
+  },
+
   "attendees": {}
 }
