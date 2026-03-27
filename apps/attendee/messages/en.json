@@ -691,7 +691,8 @@
     "errors": {
       "characters": "At least 8 characters",
       "capital": "At least one capital letter",
-      "special": "At least one special character"
+      "special": "At least one special character",
+      "number": "At least one number"
     },
     "placeholders": {
       "password": "Current Password",

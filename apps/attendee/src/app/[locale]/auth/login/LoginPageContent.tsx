@@ -16,7 +16,11 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { LinkAccent } from "@/components/shared/Links";
 
-export default function LoginPageContent() {
+export default function LoginPageContent({
+  email,
+}: {
+  email: string | undefined;
+}) {
   const t = useTranslations("Auth.login");
   const LoginSchema = z.object({
     email: z.email(t("errors.email")),
@@ -35,6 +39,7 @@ export default function LoginPageContent() {
     formState: { errors },
   } = useForm<TLoginSchema>({
     resolver: zodResolver(LoginSchema),
+    defaultValues: { email },
   });
   const [isLoading, setIsloading] = useState(false);
   const { update } = useSession();
