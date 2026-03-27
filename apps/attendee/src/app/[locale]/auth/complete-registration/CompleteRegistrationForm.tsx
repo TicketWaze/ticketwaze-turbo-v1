@@ -357,7 +357,7 @@ export default function CompleteRegistrationForm({
                         .split("T")[0]
                     }
                     className={
-                      "w-full outline-none py-4 [&::-webkit-datetime-edit]:invisible"
+                      "w-full outline-none py-4 [&::-webkit-datetime-edit]:invisible [&::-webkit-date-and-time-value]:invisible"
                     }
                     {...register("dateOfBirth")}
                   />

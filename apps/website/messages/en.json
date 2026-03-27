@@ -108,8 +108,8 @@
       "success": "Thanks for subscribing to our newsletter !",
       "failed": "Failed to subscribe to the newsletter. If this error persist, please reach out to support.",
       "sub": "Subscribe to newsletter",
-      "explore": "Explore event",
-      "organize": "Organize event",
+      "explore": "Explore activity",
+      "organize": "Organize activity",
       "join": "Join waitlist",
       "quick": "QUICK LINKS",
       "attendees": "Personal",
@@ -331,7 +331,7 @@
         "role": "Business"
       },
       "third": {
-        "description": "What sold us was the flexibility. We’re not limited to events — we sell sessions, passes, and experiences seamlessly.",
+        "description": "What sold us was the flexibility. We’re not limited to  activities — we sell sessions, passes, and experiences seamlessly.",
         "name": "Bandana",
         "role": "Experienced Organization"
       }
