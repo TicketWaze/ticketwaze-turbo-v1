@@ -2,13 +2,12 @@ import type { NextConfig } from "next";
 import createNextIntlPlugin from "next-intl/plugin";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   reactCompiler: true,
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "rose-managing-bird-871.mypinata.cloud",
+        hostname: String(process.env.NEXT_PUBLIC_CLOUDFRONT_HOSTNAME!),
       },
       {
         protocol: "https",

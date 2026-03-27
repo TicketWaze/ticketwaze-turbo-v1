@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { UpdateUserProfileImage } from "@/actions/userActions";
 import getCroppedImg from "@/lib/GetCroppedImage";
@@ -143,6 +144,8 @@ function ProfileImage({
             alt={user.firstName}
             className={"w-full h-full object-cover object-top"}
             src={user.profileImageUrl}
+            width={120}
+            height={120}
             loading={"eager"}
           />
         </div>
