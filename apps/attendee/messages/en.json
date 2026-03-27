@@ -10,7 +10,7 @@
       "cta": "Continue",
       "attendee": {
         "title": "Attendee",
-        "description": "Easily browse, discover, and purchase tickets for a wide variety of events."
+        "description": "Easily browse, discover, and purchase tickets for a wide variety of activities."
       },
       "organisation": {
         "title": "Organisation",
@@ -49,11 +49,11 @@
         "description": "Choose an option to continue and set up your account.",
         "first": {
           "title": "Attendee",
-          "description": "Easily browse, discover, and purchase tickets for a wide variety of events."
+          "description": "Easily browse, discover, and purchase tickets for a wide variety of activities."
         },
         "second": {
           "title": "Organizer",
-          "description": "Create and manage events effortlessly. Track ticket sales & monitor attendee data."
+          "description": "Create and manage activities effortlessly. Track ticket sales & monitor attendee data."
         },
         "cta": "Continue",
         "footer": {
@@ -109,7 +109,7 @@
         "country": "Country",
         "state": "State / Region / Province",
         "city": "City",
-        "organisationDescription": "Share details about your organisation, what you do, and the events you host...",
+        "organisationDescription": "Share details about your organisation, what you do, and the activities you host...",
         "email": "Organisation Email",
         "phone": "Phone number",
         "website": "Website",
@@ -351,7 +351,7 @@
       "logout": "Logout",
       "verified": "This is a verified organisation",
       "links": {
-        "title1": "Activites",
+        "title1": "Activity",
         "explore": "Explore",
         "upcoming": "Upcoming",
         "wallet": "Wallet",
@@ -497,7 +497,7 @@
     "copy": "Copy",
     "buy": "Buy ticket",
     "buy_more": "Buy more ticket",
-    "about": "About event",
+    "about": "About activity",
     "contact": "Contact Information",
     "details": "Activity details",
     "followers": "Followers",
@@ -626,7 +626,7 @@
       "blood": "Blood group"
     },
     "event": {
-      "title": "Event",
+      "title": "Activity",
       "attended": "Number of activities attended",
       "tickets": "Number of tickets bought",
       "missed": "Number of activities missed"
@@ -724,7 +724,7 @@
     "event": "activity",
     "follow": "Follow",
     "unfollow": "Unfollow",
-    "noFollowed": "You’re not following any organisations yet. Discover and follow organisations to stay updated on their latest events and activities.",
+    "noFollowed": "You’re not following any organisations yet. Discover and follow organisations to stay updated on their latest activities.",
     "profile": {
       "upcoming": "Upcoming activities",
       "noUpcoming": "No upcoming activity",

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 
@@ -39,8 +40,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             return null;
           }
           return data.user;
-        } catch (error) {
-          console.error("Authorize error:", error);
+        } catch {
           return null;
         }
       },
@@ -73,7 +73,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.activeOrganisation = (token as any).activeOrganisation ?? null;
       return session;
     },
-    redirect({ url, baseUrl }) {
+    redirect({ url }) {
       return url;
     },
   },

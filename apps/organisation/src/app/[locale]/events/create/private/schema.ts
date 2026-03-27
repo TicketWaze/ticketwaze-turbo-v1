@@ -50,7 +50,7 @@ export function makeCreatePrivateSchema(isFree: boolean, t: TranslateFn) {
             ? t("errors.basicDetails.image.required")
             : t("errors.basicDetails.image.required"),
       })
-      .max(504800, t("errors.basicDetails.image.max"))
+      // .max(504800, t("errors.basicDetails.image.max"))
       .mime(["image/jpeg", "image/jpg", "image/png", "image/webp"]),
     eventDays: z.array(
       z.object({

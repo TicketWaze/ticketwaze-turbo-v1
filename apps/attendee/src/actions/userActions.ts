@@ -52,7 +52,6 @@ export async function UpdateUserProfileImage(
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
           "Accept-Language": locale,
           origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,

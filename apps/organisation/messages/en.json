@@ -9,8 +9,8 @@
       "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance."
     },
     "onboarding": {
-      "title": "Organisation Invitation",
-      "description": "You've been invited to join and organisation on TicketWaze — a platform for managing and selling tickets with ease.",
+      "title": "Your Invitations",
+      "description": "Here you can find all your invitations to join organizations on TicketWaze — choose which ones you’d like to accept or decline with ease.",
       "join": "Join",
       "title2": "Get ready to sell tickets",
       "description2": "Create activities, manage attendees, and track sales — everything starts here",
@@ -567,7 +567,7 @@
       "basic": "Basic Details",
       "category_search": "Search for category",
       "no_result": "They is no result for the keyword ",
-      "proFeature": "Private activity creation is part of our Pro+ membership. With Pro+, you unlock the ability to keep your activities fully private, giving you greater control and peace of mind over how you manage and share your events. Upgrading not only grants access to private activity creation, but also ensures you enjoy the full suite of advanced features designed to make your experience smoother, more secure, and more personalized. If privacy and exclusivity matter to you, Pro+ is the membership tier that delivers.",
+      "proFeature": "Private activity creation is part of our Pro+ membership. With Pro+, you unlock the ability to keep your activities fully private, giving you greater control and peace of mind over how you manage and share your activities. Upgrading not only grants access to private activity creation, but also ensures you enjoy the full suite of advanced features designed to make your experience smoother, more secure, and more personalized. If privacy and exclusivity matter to you, Pro+ is the membership tier that delivers.",
       "upgrade": "Upgrade membership",
       "tagTip": {
         "title": "Tip",

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import PageLoader from "@/components/PageLoader";
@@ -107,7 +108,7 @@ export default function OnboardingLogic({ response }: { response: any }) {
     >
       <PageLoader isLoading={isLoading} />
       {invitedOrganisations && (
-        <div className=" flex flex-col gap-32 pt-16 w-full">
+        <div className=" flex flex-col gap-12 pt-16 w-full">
           <div className="flex flex-col gap-8 items-center">
             <motion.h3
               initial={{ opacity: 0, y: 30 }}
@@ -126,51 +127,55 @@ export default function OnboardingLogic({ response }: { response: any }) {
               {t("description")}
             </motion.p>
           </div>
-          {invitedOrganisations.map((organisation) => {
-            return (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.4 }}
-                key={organisation.organisationId}
-                className="flex flex-col items-center justify-between gap-3 bg-neutral-100 px-6 py-8 rounded-[15px] w-full"
-              >
-                <div className="flex items-center gap-4">
-                  {organisation?.profileImageUrl ? (
-                    <Image
-                      src={organisation.profileImageUrl}
-                      width={35}
-                      height={35}
-                      alt={organisation.organisationName}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
-                      {organisation?.organisationName.slice()[0]?.toUpperCase()}
+          <ul className="flex flex-col gap-10 w-full">
+            {invitedOrganisations.map((organisation) => {
+              return (
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.4 }}
+                  key={organisation.organisationId}
+                  className="flex flex-col items-center justify-between gap-8 bg-neutral-100 px-6 py-8 rounded-[15px] w-full"
+                >
+                  <div className="flex items-center gap-4">
+                    {organisation?.profileImageUrl ? (
+                      <Image
+                        src={organisation.profileImageUrl}
+                        width={35}
+                        height={35}
+                        alt={organisation.organisationName}
+                        className="rounded-full"
+                      />
+                    ) : (
+                      <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
+                        {organisation?.organisationName
+                          .slice()[0]
+                          ?.toUpperCase()}
+                      </span>
+                    )}
+                    <span className="text-[1.6rem]">
+                      {organisation.organisationName}
                     </span>
-                  )}
-                  <span className="text-[1.6rem]">
-                    {organisation.organisationName}
-                  </span>
-                </div>
-                <div className="flex w-full gap-8">
-                  <ButtonSecondary
-                    onClick={() => cancelInviation(organisation)}
-                    className="flex-1"
-                  >
-                    {isLoading ? <LoadingCircleSmall /> : t("back")}
-                  </ButtonSecondary>
-                  <ButtonPrimary
-                    disabled={isLoading}
-                    onClick={() => JoinOrganisation(organisation)}
-                    className="flex-1"
-                  >
-                    {isLoading ? <LoadingCircleSmall /> : t("join")}
-                  </ButtonPrimary>
-                </div>
-              </motion.div>
-            );
-          })}
+                  </div>
+                  <div className="flex w-full gap-8">
+                    <ButtonSecondary
+                      onClick={() => cancelInviation(organisation)}
+                      className="flex-1"
+                    >
+                      {isLoading ? <LoadingCircleSmall /> : t("back")}
+                    </ButtonSecondary>
+                    <ButtonPrimary
+                      disabled={isLoading}
+                      onClick={() => JoinOrganisation(organisation)}
+                      className="flex-1"
+                    >
+                      {isLoading ? <LoadingCircleSmall /> : t("join")}
+                    </ButtonPrimary>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </ul>
         </div>
       )}
       {createOrganisation && (

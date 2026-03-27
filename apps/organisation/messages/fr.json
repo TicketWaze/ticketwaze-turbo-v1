@@ -9,8 +9,8 @@
       "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances."
     },
     "onboarding": {
-      "title": "Invitation à une organisation",
-      "description": "Vous avez été invité à rejoindre une organisation sur TicketWaze — une plateforme pour gérer et vendre des billets en toute simplicité.",
+      "title": "Vos invitations",
+      "description": "Retrouvez ici toutes vos invitations à rejoindre des organisations sur TicketWaze — choisissez celles que vous souhaitez accepter ou refuser en toute simplicité.",
       "join": "Rejoindre",
       "title2": "Préparez-vous à vendre des billets",
       "description2": "Créez des activités, gérez vos participants et suivez vos ventes — tout commence ici",
@@ -83,18 +83,18 @@
       "title": "Créer un compte",
       "organizer": "Créer un compte",
       "description": "Veuillez compléter le formulaire ci-dessous pour continuer.",
-      "invalidToken": "Ce lien d’invitation n’est plus valide. Il a peut-être expiré ou déjà été utilisé. Veuillez demander une nouvelle invitation à l’organisateur de l’événement pour continuer.",
+      "invalidToken": "Ce lien d’invitation n’est plus valide. Il a peut-être expiré ou déjà été utilisé. Veuillez demander une nouvelle invitation à l’organisateur de l’activité pour continuer.",
       "login": "Se connecter",
       "choice": {
         "title": "Créer un compte",
         "description": "Choisissez une option pour continuer et configurer votre compte.",
         "first": {
           "title": "Participant",
-          "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d'activitées."
+          "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d'activités."
         },
         "second": {
           "title": "Organisateur",
-          "description": "Créez et gérez des activitées sans effort. Suivez les ventes de billets et surveillez les données des participants."
+          "description": "Créez et gérez des activités sans effort. Suivez les ventes de billets et surveillez les données des participants."
         },
         "cta": "Continuer",
         "footer": {
@@ -145,7 +145,7 @@
         "country": "Pays",
         "state": "État / Région / Province",
         "city": "Ville",
-        "organisationDescription": "Partagez des détails sur votre organisation, ce que vous faites et les activitées que vous organisez...",
+        "organisationDescription": "Partagez des détails sur votre organisation, ce que vous faites et les activités que vous organisez...",
         "email": "E-mail de l'organisation",
         "phone": "Numéro de téléphone",
         "website": "Site web",
@@ -268,7 +268,7 @@
       "login": "Se connecter",
       "logout": "Se déconnecter",
       "analytics": "Analyses",
-      "events": "Activitées",
+      "events": "Activités",
       "finance": "Finance",
       "verified": "Organisation vérifiée",
       "upgrade": "Mettre à niveau l’abonnement"
@@ -279,7 +279,7 @@
       "notification": "Notifications",
       "view": "Voir"
     },
-    "noAuth": "Vous n'avez encore acheté aucun billet. Explorez nos activitées pour trouver quelque chose qui vous plaît !",
+    "noAuth": "Vous n'avez encore acheté aucun billet. Explorez nos activités pour trouver quelque chose qui vous plaît !",
     "noAccess": "Malheureusement, vous n'avez actuellement pas accès à cette page. Elle peut être réservée à certains membres de l'organisation. Si vous pensez que vous devriez y avoir accès, je recommande de contacter l'équipe appropriée pour obtenir de l'aide.",
     "parameterMissing": "Cette page ne peut pas être affichée car certaines informations requises pour le rendu de la vue sont manquantes. Veuillez vérifier vos données et réessayer.",
     "back": "Retour",
@@ -287,22 +287,22 @@
     "proFeature": "Ceci est une fonctionnalité Pro"
   },
   "Analytics": {
-    "title": "Aperçu des activitées",
-    "description": "Suivez le succès de vos activitées avec des analyses détaillées et des tendances",
+    "title": "Aperçu des activités",
+    "description": "Suivez le succès de vos activités avec des analyses détaillées et des tendances",
     "upgrade": "Mettre à niveau l’abonnement",
     "upgradeAlert": "Vous êtes actuellement sur le plan Gratuit, qui inclut uniquement des analyses de base. Pour débloquer des informations avancées et consulter des analyses plus détaillées, veuillez mettre à niveau votre abonnement.",
-    "noActivity": "Aucune Activitée",
+    "noActivity": "Aucune Activité",
     "revenue": "Revenus totaux",
     "sold": "Billets vendus",
     "filters": {
       "first": {
-        "all": "Toutes les activitées",
+        "all": "Toutes les activités",
         "date": "Ce mois-ci"
       }
     },
     "content": {
-      "upcomingTitle": "Activitées à venir",
-      "view": "Vues d'activitée",
+      "upcomingTitle": "Activités à venir",
+      "view": "Vues d'activité",
       "followers": "Followers"
     },
     "tickets": {
@@ -312,7 +312,7 @@
     },
     "event": {
       "event_demographics": {
-        "title": "Données démographiques des activitées",
+        "title": "Données démographiques des activités",
         "gender_distribution": {
           "title": "Répartition par genre",
           "gender": {
@@ -322,14 +322,14 @@
           }
         },
         "events_top": {
-          "title": "Meilleurs activitées"
+          "title": "Meilleurs activités"
         }
       }
     },
     "feedback": {
       "title": "Engagement et commentaires",
       "action": {
-        "click_on_event": "Total de clics sur la page d'activitée",
+        "click_on_event": "Total de clics sur la page d'activité",
         "social_media_shares": "Partages sur les réseaux sociaux",
         "add_favorite": "Ajout aux favoris",
         "rated": "Note moyenne",
@@ -388,7 +388,7 @@
       "description": "Vos ventes de billets apparaîtront ici une fois que les transactions commenceront.",
       "table": {
         "id": "ID de transaction",
-        "name": "Nom de l'activitée",
+        "name": "Nom de l'activité",
         "class": "Classe de billet",
         "amount": "Montant payé",
         "status": "Statut de la transaction",
@@ -399,7 +399,7 @@
         "title": "Détails de la transaction",
         "name": "Nom du participant",
         "email": "E-mail",
-        "event_name": "Nom de l'activitée",
+        "event_name": "Nom de l'activité",
         "date": "Date",
         "time": "Heure",
         "location": "Lieu",
@@ -431,10 +431,10 @@
     }
   },
   "Events": {
-    "title": "Aperçu des activitées",
-    "search": "Rechercher une activitée",
-    "create": "Créer une activitée",
-    "description": "Vos activitées apparaîtront ici une fois que vous commencerez à les créer.",
+    "title": "Aperçu des activités",
+    "search": "Rechercher une activité",
+    "create": "Créer une activité",
+    "description": "Vos activités apparaîtront ici une fois que vous commencerez à les créer.",
     "nothing": "Rien à voir ici",
     "from": "À partir de",
     "free": "Gratuit",
@@ -444,7 +444,7 @@
       "check_in": "Enregistrement",
       "back": "Retour",
       "share": "Partager",
-      "share_text": "Faites passer le mot et invitez vos amis ! Partagez cette activitée sur les réseaux sociaux ou par message direct.",
+      "share_text": "Faites passer le mot et invitez vos amis ! Partagez cette activité sur les réseaux sociaux ou par message direct.",
       "create_ticket": "Créer un billet",
       "ticket": "Classes de billets",
       "checkers": "Vérificateurs",
@@ -465,9 +465,9 @@
       "day": "Jours restants",
       "more": "Plus",
       "details": "Détails",
-      "thumbnail": "Miniature de l'activitée",
-      "event_details": "Détails de l'activitée",
-      "about": "À propos de l'activitée",
+      "thumbnail": "Miniature de l'activité",
+      "event_details": "Détails de l'activité",
+      "about": "À propos de l'activité",
       "mark_as_check": "Marquer comme enregistré",
       "export": "Exporter",
       "discount": {
@@ -528,7 +528,7 @@
       },
       "artist": {
         "add": "Ajouter un intervenant",
-        "description": "Vous pouvez téléverser une photo et ajouter un lien vers leur profil. Une fois ajouté, l’intervenant apparaîtra dans la programmation de votre activitée.",
+        "description": "Vous pouvez téléverser une photo et ajouter un lien vers leur profil. Une fois ajouté, l’intervenant apparaîtra dans la programmation de votre activité.",
         "noArtist": "Ajouter des intervenants pour donner vie à votre liste !",
         "name": "Nom de l'intervenant",
         "link": "Liens vers sont profile ou website",
@@ -559,7 +559,7 @@
         "amount": "Montant payé",
         "check": "Statut",
         "date_purchased": "Date d'achat",
-        "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activitée pour stimuler les ventes !"
+        "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !"
       }
     },
     "create_event": {
@@ -567,7 +567,7 @@
       "basic": "Détails de base",
       "category_search": "Rechercher une catégorie",
       "no_result": "Aucun résultat pour le mot-clé ",
-      "proFeature": "La création d’activités privées fait partie de notre abonnement Pro+. Avec Pro+, vous débloquez la possibilité de garder vos activités entièrement privées, vous offrant un meilleur contrôle et une tranquillité d’esprit dans la gestion et le partage de vos événements. La mise à niveau vous donne non seulement accès à la création d’activités privées, mais vous assure également de profiter de l’ensemble des fonctionnalités avancées conçues pour rendre votre expérience plus fluide, plus sécurisée et plus personnalisée. Si la confidentialité et l’exclusivité comptent pour vous, Pro+ est le niveau d’abonnement qui répond à vos attentes.",
+      "proFeature": "La création d’activités privées fait partie de notre abonnement Pro+. Avec Pro+, vous débloquez la possibilité de garder vos activités entièrement privées, vous offrant un meilleur contrôle et une tranquillité d’esprit dans la gestion et le partage de vos activités. La mise à niveau vous donne non seulement accès à la création d’activités privées, mais vous assure également de profiter de l’ensemble des fonctionnalités avancées conçues pour rendre votre expérience plus fluide, plus sécurisée et plus personnalisée. Si la confidentialité et l’exclusivité comptent pour vous, Pro+ est le niveau d’abonnement qui répond à vos attentes.",
       "upgrade": "Mettre à niveau l’abonnement",
       "tagTip": {
         "title": "Astuce",
@@ -680,7 +680,7 @@
       "draft": "Enregistrer comme brouillon",
       "optional": "optionnel",
       "pro": "Il s'agit d'une fonctionnalité Pro+",
-      "freeTip": "Lorsque vous définissez une activitée comme gratuite, le système l’indiquera automatiquement comme remboursable. Cela garantit une cohérence pour toutes les activitées gratuits et évite les ajustements manuels.",
+      "freeTip": "Lorsque vous définissez une activité comme gratuite, le système l’indiquera automatiquement comme remboursable. Cela garantit une cohérence pour toutes les activités gratuits et évite les ajustements manuels.",
       "general": {
         "name": "Général",
         "description": "Vivez une expérience unique et mémorable avec votre billet Ticketwaze!"
@@ -775,10 +775,10 @@
         "title": "Langue de l'application"
       },
       "event": {
-        "title": "Activitée",
-        "attended": "Nombre d'activitées auxquels j'ai assisté",
+        "title": "Activité",
+        "attended": "Nombre d'activités auxquels j'ai assisté",
         "tickets": "Nombre de billets achetés",
-        "missed": "Nombre d'activitées manqués"
+        "missed": "Nombre d'activités manquées"
       },
       "account": {
         "title": "Compte",
@@ -915,7 +915,7 @@
       "back": "Retour",
       "email": "Notifications par e-mail",
       "ticket_sales": "Mises à jour des ventes de billets",
-      "event_check_in": "Alertes d'enregistrement d'activitée",
+      "event_check_in": "Alertes d'enregistrement d'activité",
       "payment_update": "Mises à jour de paiement",
       "platform": "Annonces de la plateforme"
     },
@@ -956,7 +956,7 @@
           "2": "Jusqu’à 7 membres d’équipe",
           "3": "Jusqu’à 300 billets gratuits par activité",
           "4": "Analyses avancées",
-          "5": "Activitée privée",
+          "5": "Activité privée",
           "6": "Types de billets personnalisés & codes de réduction",
           "7": "Support prioritaire"
         },
