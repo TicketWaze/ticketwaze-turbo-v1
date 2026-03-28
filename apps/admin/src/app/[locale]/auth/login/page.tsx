@@ -1,4 +1,3 @@
-import Layout from "../layout";
 import LoginPageContent from "./LoginPageContent";
 
 export default function LoginPage() {
