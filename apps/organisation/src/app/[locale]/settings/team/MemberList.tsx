@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/popover";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
-import { Edit2, MoreCircle, Trash } from "iconsax-reactjs";
+import { ArrowSwapHorizontal, Edit2, MoreCircle, Trash } from "iconsax-reactjs";
 import {
   Dialog,
   DialogContent,
@@ -32,9 +32,9 @@ import RemoveMember from "./RemoveMember";
 import EditMemberDialogContent from "./EditMemberDialogContent";
 import {
   OrganisationMember,
-  User,
   WaitlistMember,
 } from "@ticketwaze/typescript-config";
+import TransfertOwnershipView from "./TransfertOwnershipView";
 
 export default function MemberList({
   members,
@@ -98,7 +98,7 @@ export default function MemberList({
                 <Drawer direction={"right"}>
                   <DrawerTrigger>
                     <span className={"cursor-pointer flex items-center gap-4"}>
-                      {member.firstName} {member.lastName}
+                      {member.firstName}
                       {session?.user.userId === member.userId && (
                         <span
                           className={
@@ -192,11 +192,7 @@ export default function MemberList({
                                     color={"#E45B00"}
                                   />
                                 </DialogTrigger>
-                                <EditMemberDialogContent
-                                  userId={member.userId}
-                                  defaultRole={member.role}
-                                  user={session?.user as User}
-                                />
+                                <EditMemberDialogContent member={member} />
                               </Dialog>
                             </li>
                             <li>
@@ -227,6 +223,39 @@ export default function MemberList({
                                     </DialogDescription>
                                   </DialogHeader>
                                   <RemoveMember email={member.email} />
+                                </DialogContent>
+                              </Dialog>
+                            </li>
+                            <li>
+                              <Dialog>
+                                <DialogTrigger className={"w-full flex-1"}>
+                                  <span
+                                    className={`font-normal w-full cursor-pointer group text-[1.4rem] py-4 leading-8 text-failure flex items-center justify-between gap-4`}
+                                  >
+                                    <span className={""}>{t("transfer")}</span>
+                                    <ArrowSwapHorizontal
+                                      size="20"
+                                      variant="Bulk"
+                                      color={"#DE0028"}
+                                    />
+                                  </span>
+                                </DialogTrigger>
+                                <DialogContent className={"w-xl lg:w-208 "}>
+                                  <DialogHeader>
+                                    <DialogTitle
+                                      className={
+                                        "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
+                                      }
+                                    >
+                                      {t("transfer")}
+                                    </DialogTitle>
+                                    <DialogDescription className={"sr-only"}>
+                                      <span>Remove member</span>
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <TransfertOwnershipView
+                                    email={member.email}
+                                  />
                                 </DialogContent>
                               </Dialog>
                             </li>

@@ -15,6 +15,10 @@ export default async function FinancePage() {
     session?.user.userId ?? "",
     session?.activeOrganisation.organisationId ?? "",
   );
+  const authorizedUpdate = await organisationPolicy.updateFinance(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
   if (!authorized) {
     return <UnauthorizedView />;
   }
@@ -34,11 +38,18 @@ export default async function FinancePage() {
   return (
     <OrganizerLayout title="Finance">
       <TopBar title={t("title")}>
-        <div className="hidden lg:block">
-          <InitiateWithdrawalButton organisation={transactions.organisation} />
-        </div>
+        {authorizedUpdate && (
+          <div className="hidden lg:block">
+            <InitiateWithdrawalButton
+              organisation={transactions.organisation}
+            />
+          </div>
+        )}
       </TopBar>
-      <FinancePageContent transactions={transactions} />
+      <FinancePageContent
+        transactions={transactions}
+        authorizedUpdate={authorizedUpdate}
+      />
     </OrganizerLayout>
   );
 }

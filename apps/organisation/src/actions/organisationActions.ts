@@ -312,6 +312,42 @@ export async function RemoveMemberQuery(
   }
 }
 
+export async function TransfertOwnershipQuery(
+  organisationId: string,
+  accessToken: string,
+  email: string,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/transfert-ownership/${email}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath("/settings/team");
+      return {
+        status: "success",
+      };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function UpdateOrganisationCurrency(
   organisationId: string,
   accessToken: string,
