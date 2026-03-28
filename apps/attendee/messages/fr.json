@@ -692,7 +692,8 @@
     "errors": {
       "characters": "Au moins 8 caractères",
       "capital": "Au moins une lettre majuscule",
-      "special": "Au moins un caractère spécial"
+      "special": "Au moins un caractère spécial",
+      "number": "Au moins un chiffre"
     },
     "placeholders": {
       "password": "Mot de passe actuel",

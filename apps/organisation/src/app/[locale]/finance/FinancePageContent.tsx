@@ -38,6 +38,7 @@ interface OrganisationTicket extends Ticket {
 
 export default function FinancePageContent({
   transactions,
+  authorizedUpdate,
 }: {
   transactions: {
     tickets: OrganisationTicket[];
@@ -45,6 +46,7 @@ export default function FinancePageContent({
     organisation: Organisation;
     withdrawalRequests: WithdrawalRequest[];
   };
+  authorizedUpdate: boolean;
 }) {
   const t = useTranslations("Finance");
   const { data: session } = useSession();
@@ -132,9 +134,12 @@ export default function FinancePageContent({
           </p>
         </div>
       </div>
-      <div className="lg:hidden w-full py-[7.5px]">
-        <InitiateWithdrawalButton organisation={transactions.organisation} />
-      </div>
+      {authorizedUpdate && (
+        <div className="lg:hidden w-full py-[7.5px]">
+          <InitiateWithdrawalButton organisation={transactions.organisation} />
+        </div>
+      )}
+
       <div className={"flex flex-col gap-8"}>
         <div
           className={

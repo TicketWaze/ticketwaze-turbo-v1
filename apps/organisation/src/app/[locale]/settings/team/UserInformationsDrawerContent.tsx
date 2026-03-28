@@ -156,11 +156,7 @@ export default function UserInformation({
                   {t("edit")}
                 </span>
               </DialogTrigger>
-              <EditMemberDialogContent
-                userId={member.userId}
-                defaultRole={member.role}
-                user={session?.user as User}
-              />
+              <EditMemberDialogContent member={member} />
             </Dialog>
           </div>
         </DrawerFooter>

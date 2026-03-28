@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -22,8 +23,10 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 
 export default function RegisterPageComponent({
   referralCode,
+  email,
 }: {
   referralCode: string | undefined;
+  email: string | undefined;
 }) {
   const [isInvited, setIsInvited] = useState(false);
   const [invitedBy, setInvitedBy] = useState<string | undefined>();
@@ -80,6 +83,7 @@ export default function RegisterPageComponent({
     formState: { errors, isSubmitting },
   } = useForm<TRegisterSchema>({
     resolver: zodResolver(RegisterSchema),
+    defaultValues: { email },
   });
   const router = useRouter();
   const pathname = usePathname();

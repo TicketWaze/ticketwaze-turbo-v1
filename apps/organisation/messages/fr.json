@@ -840,6 +840,9 @@
       "joined_at": "Rejoint le",
       "added_by": "Ajouté par",
       "last_login": "Dernière connexion",
+      "transfer": "Transférer la propriété",
+      "confirm_transfert": "Le transfert de propriété donnera au nouveau propriétaire le contrôle total de cette organisation sur Ticketwaze. Vous perdrez l’accès administratif et cette action est irréversible.",
+      "confirm2": "Oui, transférer",
       "table": {
         "name": "Nom complet",
         "email": "E-mail",

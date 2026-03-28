@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 "use client";
 import {
   DialogContent,
@@ -23,17 +24,13 @@ import { EditMemberAction } from "@/actions/organisationActions";
 import { useSession } from "next-auth/react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { User } from "@ticketwaze/typescript-config";
+import { OrganisationMember } from "@ticketwaze/typescript-config";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 export default function EditMemberDialogContent({
-  userId,
-  defaultRole,
-  user,
+  member,
 }: {
-  userId: string;
-  defaultRole: string;
-  user: User;
+  member: OrganisationMember;
 }) {
   const t = useTranslations("Settings.team");
   const locale = useLocale();
@@ -44,7 +41,7 @@ export default function EditMemberDialogContent({
   const { control, handleSubmit } = useForm<TAddMemberSchema>({
     resolver: zodResolver(AddMemberSchema),
     values: {
-      role: defaultRole,
+      role: member.role,
     },
   });
   const { data: session } = useSession();
@@ -53,7 +50,7 @@ export default function EditMemberDialogContent({
   const [isLoading, setIsLoading] = useState(false);
   async function submitHandler(data: TAddMemberSchema) {
     setIsLoading(true);
-    if (session?.user.email === user.email) {
+    if (session?.user.email === member.email) {
       toast.warning(t("noSelfChange"));
       setIsLoading(false);
       CloseDialogRef.current?.click();
@@ -61,8 +58,8 @@ export default function EditMemberDialogContent({
     }
     const result = await EditMemberAction(
       organisation?.organisationId ?? "",
-      userId,
-      user.accessToken,
+      member.userId,
+      session?.user.accessToken ?? "",
       data.role,
       locale,
     );
@@ -105,7 +102,7 @@ export default function EditMemberDialogContent({
                   </SelectTrigger>
                   <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
                     <SelectGroup className={"divide-y"}>
-                      {Array.from({ length: 5 }).map((_, index) => {
+                      {Array.from({ length: 4 }).map((_, index) => {
                         return (
                           <SelectItem
                             key={index}
