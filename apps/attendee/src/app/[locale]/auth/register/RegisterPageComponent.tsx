@@ -110,8 +110,15 @@ export default function RegisterPageComponent({
     }
   }
   const switchLocale = (newLocale: string) => {
-    router.replace(pathname, { locale: newLocale });
-    router.refresh();
+    if (email) {
+      router.push(
+        `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${newLocale}/auth/register?email=${email}`,
+      );
+    } else {
+      router.push(
+        `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${newLocale}/auth/register`,
+      );
+    }
   };
   return (
     <form
@@ -119,7 +126,7 @@ export default function RegisterPageComponent({
       className="flex flex-col items-center justify-between gap-20 w-full h-full pb-4 "
     >
       <div className={"flex flex-col gap-16 w-full"}>
-        <div className="flex-1 flex lg:justify-center flex-col w-full pt-[4.5rem]">
+        <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
           <div className="flex flex-col gap-16 items-center">
             <div className="flex flex-col gap-1 items-center">
               <div className="flex flex-col gap-8 items-center">
@@ -177,7 +184,7 @@ export default function RegisterPageComponent({
                         />
                         <span
                           className={
-                            "text-[1.4rem] leading-[20px] font-medium text-deep-100"
+                            "text-[1.4rem] leading-8 font-medium text-deep-100"
                           }
                         >
                           English
@@ -193,7 +200,7 @@ export default function RegisterPageComponent({
                         />
                         <span
                           className={
-                            "text-[1.4rem] leading-[20px] font-medium text-deep-100"
+                            "text-[1.4rem] leading-8 font-medium text-deep-100"
                           }
                         >
                           Francais
