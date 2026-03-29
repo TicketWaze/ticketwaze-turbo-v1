@@ -52,14 +52,14 @@ export default function FinancePageContent({
   const { data: session } = useSession();
   const currentOrganisation = transactions.organisation;
   const { orders, tickets } = transactions;
-  const total = Object.values(orders)
-    .filter((order) => order.status !== "FAILED")
+  const total = Object.values(tickets)
+    .filter((ticket) => ticket.status !== "RETURNED")
     .reduce(
-      (acc, order) =>
+      (acc, ticket) =>
         acc +
         (currentOrganisation?.currency === "HTG"
-          ? order.amount
-          : order.usdPrice),
+          ? ticket.ticketPrice
+          : ticket.ticketUsdPrice),
       0,
     );
   const roundTotal = Math.round(total * 100) / 100;
