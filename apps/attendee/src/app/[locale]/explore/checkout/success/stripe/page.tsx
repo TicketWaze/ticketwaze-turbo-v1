@@ -6,9 +6,10 @@ import { User } from "@ticketwaze/typescript-config";
 export default async function SuccessStripe({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ orderId: string | undefined }>;
 }) {
-  const orderId = searchParams?.orderId;
+  const { orderId } = await searchParams;
+  console.log(orderId);
   const session = await auth();
   return (
     <AttendeeLayout className="items-center justify-center" title="">
