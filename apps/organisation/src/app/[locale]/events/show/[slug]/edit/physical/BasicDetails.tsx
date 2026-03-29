@@ -328,7 +328,7 @@ export default function BasicDetails({
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-full h-[300px] object-cover object-top rounded-[1rem]"
+              className="w-full h-[300px] object-cover object-top rounded-2xl"
             />
             <input
               type="file"
@@ -338,9 +338,9 @@ export default function BasicDetails({
             />
           </div>
         ) : (
-          <div className="py-[6rem] px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
+          <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
             <div className="flex flex-col items-center gap-4 ">
-              <p className="text-[1.5rem] leading-[20px] text-neutral-500 ">
+              <p className="text-[1.5rem] leading-8 text-neutral-500 ">
                 {t("thumbnail_text")}{" "}
                 <span className="font-medium text-primary-500">
                   {t("browse")}

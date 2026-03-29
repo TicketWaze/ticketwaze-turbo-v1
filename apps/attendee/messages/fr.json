@@ -540,9 +540,11 @@
     "ticketWarning1": "Votre billet est personnel — ne le partagez pas.",
     "ticketWarning2": "Ce billet est non remboursable",
     "liked": "Activités aimées",
-    "return": "Rendre le billet",
+    "return": "Rendre les billets",
     "returnDescription": "En rendant votre billet, vous le remettez définitivement à l'organisation. Cette action est irréversible : vous ne pourrez plus récupérer le billet par la suite. Veuillez noter que les frais de plateforme et de transaction ne sont pas remboursables.",
-    "freeTicketReturnWarning": "Cette activité est gratuit. Si vous rendez votre billet, vous ne pourrez pas en acheter un autre par la suite."
+    "freeTicketReturnWarning": "Cette activité est gratuit. Si vous rendez votre billet, vous ne pourrez pas en acheter un autre par la suite.",
+    "selectAll": "Tout selectionner",
+    "continue": "Poursuivre"
   },
   "Checkout": {
     "back": "Retour",
@@ -692,7 +694,8 @@
     "errors": {
       "characters": "Au moins 8 caractères",
       "capital": "Au moins une lettre majuscule",
-      "special": "Au moins un caractère spécial"
+      "special": "Au moins un caractère spécial",
+      "number": "Au moins un chiffre"
     },
     "placeholders": {
       "password": "Mot de passe actuel",

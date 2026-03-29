@@ -38,6 +38,7 @@ interface OrganisationTicket extends Ticket {
 
 export default function FinancePageContent({
   transactions,
+  authorizedUpdate,
 }: {
   transactions: {
     tickets: OrganisationTicket[];
@@ -45,19 +46,20 @@ export default function FinancePageContent({
     organisation: Organisation;
     withdrawalRequests: WithdrawalRequest[];
   };
+  authorizedUpdate: boolean;
 }) {
   const t = useTranslations("Finance");
   const { data: session } = useSession();
   const currentOrganisation = transactions.organisation;
   const { orders, tickets } = transactions;
-  const total = Object.values(orders)
-    .filter((order) => order.status !== "FAILED")
+  const total = Object.values(tickets)
+    .filter((ticket) => ticket.status !== "RETURNED")
     .reduce(
-      (acc, order) =>
+      (acc, ticket) =>
         acc +
         (currentOrganisation?.currency === "HTG"
-          ? order.amount
-          : order.usdPrice),
+          ? ticket.ticketPrice
+          : ticket.ticketUsdPrice),
       0,
     );
   const roundTotal = Math.round(total * 100) / 100;
@@ -132,9 +134,12 @@ export default function FinancePageContent({
           </p>
         </div>
       </div>
-      <div className="lg:hidden w-full py-[7.5px]">
-        <InitiateWithdrawalButton organisation={transactions.organisation} />
-      </div>
+      {authorizedUpdate && (
+        <div className="lg:hidden w-full py-[7.5px]">
+          <InitiateWithdrawalButton organisation={transactions.organisation} />
+        </div>
+      )}
+
       <div className={"flex flex-col gap-8"}>
         <div
           className={

@@ -40,6 +40,45 @@ export async function ReturnFreeTicketAction(
   }
 }
 
+export async function ReturnPaidTicketAction(
+  accessToken: string,
+  locale: string,
+  tickets: string[],
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/payments/return/paid`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
+        },
+        body: JSON.stringify({ tickets }),
+      },
+    );
+    const data = await res.json();
+
+    if (data.status === "success") {
+      revalidatePath("upcoming");
+      return {
+        status: "success",
+      };
+    } else {
+      return {
+        status: "failed",
+        message: data.message,
+      };
+    }
+  } catch (err: unknown) {
+    return {
+      error: err instanceof Error ? err.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function AddEventToFavorite(
   accessToken: string,
   eventId: string,

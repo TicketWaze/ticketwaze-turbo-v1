@@ -10,13 +10,7 @@ import type { TranslateFn } from "./types";
  */
 export function makeCreateInPersonSchema(isFree: boolean, t: TranslateFn) {
   return z.object({
-    eventName: z
-      .string()
-      .min(10, t("errors.basicDetails.name"))
-      .max(50)
-      .regex(/^[a-zA-Z0-9 ]+$/, {
-        message: t("errors.basicDetails.no_special"),
-      }),
+    eventName: z.string().min(10, t("errors.basicDetails.name")).max(150),
     eventDescription: z
       .string()
       .min(150, t("errors.basicDetails.description.min"))

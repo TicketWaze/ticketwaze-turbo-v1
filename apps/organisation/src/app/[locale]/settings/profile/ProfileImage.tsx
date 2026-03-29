@@ -152,6 +152,8 @@ function ProfileImage({ authorized }: { authorized: boolean }) {
             alt={organisation.organisationName}
             className={"w-full h-full object-cover object-top"}
             src={organisation.profileImageUrl}
+            width={160}
+            height={160}
             loading={"eager"}
             key={organisation.profileImageUrl}
           />

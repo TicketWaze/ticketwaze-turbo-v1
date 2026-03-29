@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { UpdateOrganisationCurrency } from "@/actions/organisationActions";
 import PageLoader from "@/components/PageLoader";
 import { Organisation } from "@ticketwaze/typescript-config";
+import Separator from "@/components/shared/Separator";
 
 export default function CurrencyPreference({
   organisation,
@@ -52,14 +53,15 @@ export default function CurrencyPreference({
         disabled={!authorized}
         defaultValue={organisation.currency}
         onValueChange={(e) => updateCurrency(e)}
-        className="flex gap-6 w-full justify-between lg:justify-around"
+        className="flex flex-col gap-6 w-full justify-between lg:justify-around"
       >
         <div className="flex items-center justify-between gap-3">
-          <span className="text-[1.4rem] text-deep-100">Gourdes</span>
+          <span className="text-[1.6rem] text-deep-200">Gourdes</span>
           <RadioGroupItem value={"HTG"} />
         </div>
+        <Separator />
         <div className="flex items-center justify-between gap-3">
-          <span className="text-[1.4rem] text-deep-100">Dollard US</span>
+          <span className="text-[1.6rem] text-deep-200">Dollard US</span>
           <RadioGroupItem value={"USD"} />
         </div>
       </RadioGroup>

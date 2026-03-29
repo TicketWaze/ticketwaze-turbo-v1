@@ -36,6 +36,14 @@ export class OrganisationPolicy {
     return can(role, UserActions["finance:view"]);
   }
 
+  async updateFinance(
+    userId: string,
+    organisationId: string,
+  ): Promise<boolean> {
+    const role = await getUserRole(userId, organisationId);
+    return can(role, UserActions["finance:update"]);
+  }
+
   async createEvent(userId: string, organisationId: string): Promise<boolean> {
     const role = await getUserRole(userId, organisationId);
     return can(role, UserActions["event:create"]);

@@ -131,7 +131,7 @@ export default function UserInformation({
         </DrawerDescription>
       </div>
 
-      {authorized && (
+      {authorized && session?.user.email !== member.email && (
         <DrawerFooter>
           <div className={"flex gap-8 w-full items-center"}>
             <Dialog>
@@ -156,11 +156,7 @@ export default function UserInformation({
                   {t("edit")}
                 </span>
               </DialogTrigger>
-              <EditMemberDialogContent
-                userId={member.userId}
-                defaultRole={member.role}
-                user={session?.user as User}
-              />
+              <EditMemberDialogContent member={member} />
             </Dialog>
           </div>
         </DrawerFooter>

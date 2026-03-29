@@ -53,14 +53,53 @@ export default function WalletOrderDrawerContent({ order }: { order: Order }) {
               </p>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.ticket_class")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {order.tickets.length}
                 </span>
               </p>
+              {order.tickets.map((ticket) => {
+                return (
+                  <p
+                    key={ticket.ticketId}
+                    className={
+                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                    }
+                  >
+                    1X {ticket.ticketType} - {ticket.ticketName}{" "}
+                    {ticket.status === "PENDING" && (
+                      <span
+                        className={
+                          "text-warning bg-warning/10 px-2 py-1 rounded-full lowercase font-medium leading-8"
+                        }
+                      >
+                        {ticket.status}
+                      </span>
+                    )}
+                    {ticket.status === "RETURNED" && (
+                      <span
+                        className={
+                          "text-failure bg-failure/10 px-2 py-1 rounded-full lowercase font-medium leading-8"
+                        }
+                      >
+                        {ticket.status}
+                      </span>
+                    )}
+                    {ticket.status === "CHECKED" && (
+                      <span
+                        className={
+                          "text-success bg-success/10 px-2 py-1 rounded-full lowercase font-medium leading-8"
+                        }
+                      >
+                        {ticket.status}
+                      </span>
+                    )}
+                  </p>
+                );
+              })}
             </div>
             <Separator />
             <div className={"w-full flex flex-col gap-8"}>

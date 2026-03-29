@@ -539,9 +539,11 @@
     "ticketWarning1": "Your ticket is personal—don’t share it.",
     "ticketWarning2": "This ticket is non-refundable",
     "liked": "Liked activities",
-    "return": "Return Ticket",
+    "return": "Return Tickets",
     "returnDescription": "By returning your ticket, you’ll permanently release it back to the organisation. This action is irreversible, meaning you won’t be able to reclaim the ticket later. Please note that platform and transaction fees are not refundable.",
-    "freeTicketReturnWarning": "This is a free activity. If you return your ticket, you won’t be able to purchase another one afterward."
+    "freeTicketReturnWarning": "This is a free activity. If you return your ticket, you won’t be able to purchase another one afterward.",
+    "selectAll": "Select All",
+    "continue": "Proceed"
   },
   "Checkout": {
     "back": "Back",
@@ -691,7 +693,8 @@
     "errors": {
       "characters": "At least 8 characters",
       "capital": "At least one capital letter",
-      "special": "At least one special character"
+      "special": "At least one special character",
+      "number": "At least one number"
     },
     "placeholders": {
       "password": "Current Password",

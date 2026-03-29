@@ -13,6 +13,7 @@ import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
 import ReturnFreeTicketView from "./ReturnFreeTicketView";
 import { extractIdFromSlug } from "@/lib/Slugify";
+import ReturnPaidTicketView from "./ReturnPaidTicketView";
 
 export default async function UpcomingEventPage({
   params,
@@ -187,6 +188,9 @@ export default async function UpcomingEventPage({
               {tickets[0].isRefundable && event.isFree && (
                 <ReturnFreeTicketView ticket={tickets[0]} />
               )}
+              {tickets[0].isRefundable && !event.isFree && (
+                <ReturnPaidTicketView tickets={tickets} />
+              )}
             </div>
 
             <div></div>
@@ -211,6 +215,9 @@ export default async function UpcomingEventPage({
             )}
             {tickets[0].isRefundable && event.isFree && (
               <ReturnFreeTicketView ticket={tickets[0]} />
+            )}
+            {tickets[0].isRefundable && !event.isFree && (
+              <ReturnPaidTicketView tickets={tickets} />
             )}
             <div></div>
             <div></div>
