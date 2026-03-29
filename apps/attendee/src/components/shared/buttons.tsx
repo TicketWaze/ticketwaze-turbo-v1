@@ -11,7 +11,7 @@ function Button({ className, children, ...props }: ButtonProps) {
     <button
       {...props}
       className={cn(
-        "px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center",
+        "px-12 py-6 border-2 border-transparent disabled:cursor-not-allowed rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center",
         className,
       )}
     >
