@@ -229,12 +229,12 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-
   useEffect(() => {
     const loadExistingImage = async () => {
       if (event.eventImageUrl) {
         try {
-          const response = await fetch(event.eventImageUrl);
+          const proxiedUrl = `/api/proxy-image?url=${encodeURIComponent(event.eventImageUrl)}`;
+          const response = await fetch(proxiedUrl);
           const blob = await response.blob();
           const file = new File([blob], "event-image.jpg", {
             type: blob.type || "image/jpeg",
