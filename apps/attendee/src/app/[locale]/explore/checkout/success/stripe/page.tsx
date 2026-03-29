@@ -29,6 +29,11 @@ export default async function SuccessStripe({
       href: `/upcoming/${slugify(response.event.eventName, response.event.eventId)}`,
       locale,
     });
+  } else if (response.status === "duplicate") {
+    redirect({
+      href: `/upcoming/${slugify(response.event.eventName, response.event.eventId)}`,
+      locale,
+    });
   } else {
     redirect({
       href: `/explore/${slugify(response.event.eventName, response.event.eventId)}`,
