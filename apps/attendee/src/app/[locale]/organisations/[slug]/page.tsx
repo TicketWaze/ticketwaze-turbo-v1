@@ -10,6 +10,7 @@ import { Event, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
 import EventCard from "@/components/shared/EventCard";
+import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 
 export default async function OrganizerProfile({
   params,
@@ -44,12 +45,13 @@ export default async function OrganizerProfile({
       <div className="flex flex-col gap-4">
         <BackButton text={t("back")} />
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
-          {organisation.organisationName}
+          {organisation.organisationName}{" "}
+          {organisation.isVerified && <VerifiedOrganisationCheckMark />}
         </span>
       </div>
       <main className="w-full gap-8 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:min-h-0 overflow-y-auto h-full">
         <div className="flex flex-col gap-8 overflow-y-auto min-h-0">
-          <div className="w-full max-h-[298px] overflow-hidden rounded-[10px] flex-shrink-0">
+          <div className="w-full max-h-[298px] overflow-hidden rounded-[10px] shrink-0">
             {organisation.profileImageUrl ? (
               <Image
                 src={organisation.profileImageUrl}

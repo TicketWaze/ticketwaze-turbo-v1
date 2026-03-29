@@ -29,6 +29,21 @@ import Capitalize from "@/lib/Capitalize";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import { Input } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
+import { loadStripe } from "@stripe/stripe-js";
+import {
+  EmbeddedCheckoutProvider,
+  EmbeddedCheckout,
+} from "@stripe/react-stripe-js";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
+);
 
 export default function CheckoutFlow({
   event,
@@ -255,19 +270,17 @@ export default function CheckoutFlow({
     }
     setIsLoading(false);
   }
-
-  async function CardPayment() {
+  const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(
+    null,
+  );
+  const [stripeDialogOpen, setStripeDialogOpen] = useState(false);
+  async function StripePayment() {
     setIsLoading(true);
     const values = getValues();
-
-    // Filter out attendees who haven't filled in their info (when "someone else" is checked)
     const validAttendees = values.attendees.filter((attendee: any) => {
-      // If it's for someone else, they must have filled name and email
-      // If not for someone else, we'll use the current user's info (handled by backend)
       return !attendee.isForSomeoneElse || (attendee.name && attendee.email);
     });
 
-    // Send the flat attendees array: [{ticketTypeId, name, email}, ...]
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/stripe`,
       {
@@ -281,7 +294,8 @@ export default function CheckoutFlow({
     );
     const response = await request.json();
     if (response.status === "success") {
-      router.push(response.redirectUrl);
+      setStripeClientSecret(response.clientSecret); // 👈 from backend
+      setStripeDialogOpen(true); // 👈 open dialog
     } else {
       toast.error(response.message);
     }
@@ -318,7 +332,7 @@ export default function CheckoutFlow({
     if (paymentType === "moncash") {
       await MoncashPayment();
     } else if (paymentType === "card") {
-      await CardPayment();
+      await StripePayment();
     } else if (paymentType === "wallet") {
       await WalletPayment();
     } else {
@@ -746,7 +760,7 @@ export default function CheckoutFlow({
                     {/* Wallet */}
                     <button
                       className={`flex items-center justify-between cursor-pointer p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 transition-all ease-in-out duration-300 ${paymentType === "wallet" && "border-2 border-primary-500"}`}
-                      onClick={() => setPaymentType("wallet")}
+                      onClick={WalletPayment}
                     >
                       <div className={"flex items-center gap-4"}>
                         <MoneyRecive size="20" color="#0d0d0d" variant="Bulk" />
@@ -763,7 +777,7 @@ export default function CheckoutFlow({
                     {/* MONCASH */}
                     <button
                       className={`flex items-center justify-between cursor-pointer p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 transition-all ease-in-out duration-300 ${paymentType === "moncash" && "border-2 border-primary-500"}`}
-                      onClick={() => setPaymentType("moncash")}
+                      onClick={MoncashPayment}
                     >
                       <div className={"flex items-center gap-4"}>
                         <Image src={moncash} alt={"Logo of moncash"} />
@@ -779,7 +793,7 @@ export default function CheckoutFlow({
                     </button>
                     {/* CARD */}
                     <button
-                      onClick={() => setPaymentType("card")}
+                      onClick={StripePayment}
                       className={`flex items-center w-full justify-between cursor-pointer p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 transition-all ease-in-out duration-300 ${paymentType === "card" && "border-2 border-primary-500"}`}
                     >
                       <div
@@ -873,11 +887,29 @@ export default function CheckoutFlow({
           <div className="text-[2.2rem] lg:hidden leading-12 text-neutral-600">
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
-          <ButtonPrimary disabled={isLoading} onClick={next}>
+          <ButtonPrimary
+            disabled={isLoading || currentStep === 2}
+            onClick={next}
+          >
             {t("footer.continue")}
           </ButtonPrimary>
         </div>
       </div>
+      <Dialog open={stripeDialogOpen} onOpenChange={setStripeDialogOpen}>
+        <DialogContent className="max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("payment.card")}</DialogTitle>
+          </DialogHeader>
+          {stripeClientSecret && (
+            <EmbeddedCheckoutProvider
+              stripe={stripePromise}
+              options={{ clientSecret: stripeClientSecret }}
+            >
+              <EmbeddedCheckout />
+            </EmbeddedCheckoutProvider>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

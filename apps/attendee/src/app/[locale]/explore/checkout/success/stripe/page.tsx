@@ -8,13 +8,14 @@ import PageLoader from "@/components/PageLoader";
 export default async function SuccessStripe({
   searchParams,
 }: {
-  searchParams: Promise<{ orderId: string | undefined }>;
+  searchParams: Promise<{ session_id: string | undefined }>;
 }) {
-  const { orderId } = await searchParams;
+  const { session_id } = await searchParams;
   const session = await auth();
   const locale = await getLocale();
+
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/payments/stripe/success/${orderId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/payments/stripe/success/${session_id}`,
     {
       method: "GET",
       headers: {
@@ -24,17 +25,19 @@ export default async function SuccessStripe({
     },
   );
   const response = await request.json();
-  if (response.status === "success") {
+
+  if (response.status === "success" || response.status === "duplicate") {
     redirect({
       href: `/upcoming/${slugify(response.event.eventName, response.event.eventId)}`,
       locale,
     });
   } else {
     redirect({
-      href: `/explore/${slugify(response.event.eventName, response.event.eventId)}`,
+      href: `/explore`,
       locale,
     });
   }
+
   return (
     <AttendeeLayout className="items-center justify-center" title="">
       <PageLoader isLoading={true} />
