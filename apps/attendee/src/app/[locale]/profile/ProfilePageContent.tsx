@@ -124,7 +124,7 @@ export default function ProfilePageContent({
               {t("placeholders.country")}
             </Input>
             <Input
-              defaultValue={FormatDate(user.dateOfBirth)}
+              defaultValue={FormatDate(user.dateOfBirth, locale, "local")}
               disabled
               readOnly
             >
@@ -198,7 +198,7 @@ export default function ProfilePageContent({
               {t("account.created")}
             </span>
             <span className="text-[1.6rem] font-medium leading-8 text-deep-100">
-              {FormatDate(user.createdAt)}
+              {FormatDate(user.createdAt, locale, "local")}
             </span>
           </div>
           <ButtonRed>{t("account.delete")}</ButtonRed>

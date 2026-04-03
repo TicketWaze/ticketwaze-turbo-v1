@@ -694,7 +694,11 @@ export default function EventPageDetails({
                         "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
                       }
                     >
-                      {FormatDate(ticket.createdAt)}
+                      {FormatDate(
+                        ticket.createdAt,
+                        locale,
+                        ticket.event.eventDays[0].timezone,
+                      )}
                     </TableCell>
                     {/* <TableCell className={'text-[1.5rem] leading-8 text-neutral-900'}>
                         <Popover>
@@ -964,7 +968,11 @@ export default function EventPageDetails({
                             "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
                           }
                         >
-                          {FormatDate(ticket.createdAt)}
+                          {FormatDate(
+                            ticket.createdAt,
+                            locale,
+                            ticket.event.eventDays[0].timezone,
+                          )}
                         </TableCell>
                         {/* <TableCell className={'text-[1.5rem] leading-8 text-neutral-900'}>
                         <Popover>

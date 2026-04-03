@@ -1,7 +1,7 @@
 "use client";
 import { Money3, SearchNormal, Gift, Copy } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import FormatDate from "@/lib/FormatDate";
 import TruncateUrl from "@/lib/TruncateUrl";
@@ -39,6 +39,7 @@ export default function WalletPageContent({
   wallet: UserWallet;
 }) {
   const t = useTranslations("Wallet");
+  const locale = useLocale();
   const { data: session } = useSession();
   const [query, setQuery] = useState("");
   const filteredOrders = orders.filter((order) => {
@@ -442,7 +443,7 @@ export default function WalletPageContent({
                         "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
                       }
                     >
-                      {FormatDate(order.createdAt)}
+                      {FormatDate(order.createdAt, locale, "local")}
                     </TableCell>
                   </TableRow>
                 );

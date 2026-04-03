@@ -75,7 +75,7 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
             <span
               className={"font-medium text-[1rem] text-deep-100 leading-[15px]"}
             >
-              {formatDate(date.eventDate, locale)}
+              {formatDate(date.eventDate, locale, date.timezone)}
             </span>
           </div>
           {event.eventType === "meet" ? (

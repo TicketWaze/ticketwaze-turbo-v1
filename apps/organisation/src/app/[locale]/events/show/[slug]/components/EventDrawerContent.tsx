@@ -80,7 +80,11 @@ export default function EventDrawerContent({ event }: { event: Event }) {
                           "font-normal text-[1.4rem] leading-8 text-deep-200"
                         }
                       >
-                        {formatDate(eventDate.eventDate, locale)}
+                        {formatDate(
+                          eventDate.eventDate,
+                          locale,
+                          eventDate.timezone,
+                        )}
                       </span>
                     </div>
                     <div className={"flex items-center gap-[5px]"}>

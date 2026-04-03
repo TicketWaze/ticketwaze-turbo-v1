@@ -4,26 +4,35 @@ import { DateTime } from "luxon";
 
 export default function AddToCalendar({ event }: { event: Event }) {
   const firstDay = event.eventDays.find((day) => day.dayNumber === 1);
-
   if (!firstDay) return null;
 
-  // Build proper DateTime objects
-  const start = DateTime.fromISO(
-    `${firstDay.eventDate}T${firstDay.startTime}`,
+  const [year, month, day] = firstDay.eventDate
+    .split("T")[0]
+    .split("-")
+    .map(Number);
+  const [startHour, startMinute] = firstDay.startTime.split(":").map(Number);
+  const [endHour, endMinute] = firstDay.endTime.split(":").map(Number);
+
+  const start = DateTime.fromObject(
+    { year, month, day, hour: startHour, minute: startMinute },
     { zone: firstDay.timezone },
   );
 
-  const end = DateTime.fromISO(`${firstDay.eventDate}T${firstDay.endTime}`, {
-    zone: firstDay.timezone,
-  });
+  const end = DateTime.fromObject(
+    { year, month, day, hour: endHour, minute: endMinute },
+    { zone: firstDay.timezone },
+  );
 
-  // Format for Google Calendar: YYYYMMDDTHHmmssZ (UTC)
-  const formattedStart = start.toUTC().toFormat("yyyyLLdd'T'HHmmss'Z'");
-  const formattedEnd = end.toUTC().toFormat("yyyyLLdd'T'HHmmss'Z'");
+  if (!start.isValid || !end.isValid) return null;
+
+  const formattedStart = start.toFormat("yyyyLLdd'T'HHmmss");
+  const formattedEnd = end.toFormat("yyyyLLdd'T'HHmmss");
 
   const addLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
     event.eventName,
-  )}&dates=${formattedStart}/${formattedEnd}&details=${encodeURIComponent(
+  )}&dates=${formattedStart}/${formattedEnd}&ctz=${encodeURIComponent(
+    firstDay.timezone,
+  )}&details=${encodeURIComponent(
     event.eventDescription,
   )}&location=${encodeURIComponent(event.address)}`;
 

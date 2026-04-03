@@ -1,5 +1,5 @@
 "use client";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import FormatDate from "@/lib/FormatDate";
 import {
@@ -15,6 +15,7 @@ import { Order } from "@ticketwaze/typescript-config";
 
 export default function WalletOrderDrawerContent({ order }: { order: Order }) {
   const t = useTranslations("Wallet");
+  const locale = useLocale();
   const { data: session } = useSession();
   return (
     <DrawerContent className={"my-6 p-[30px] rounded-[30px] w-full"}>
@@ -149,7 +150,7 @@ export default function WalletOrderDrawerContent({ order }: { order: Order }) {
               >
                 {t("transactions.details.payment_date")}{" "}
                 <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {FormatDate(order.createdAt)}
+                  {FormatDate(order.createdAt, locale, "local")}
                 </span>
               </p>
             </div>
