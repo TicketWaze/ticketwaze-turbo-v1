@@ -285,6 +285,7 @@ export default async function EventPage({
                 <ul className="flex flex-col w-full gap-6">
                   {" "}
                   {event.eventDays.map((eventDate) => {
+                    console.log(eventDate.timezone);
                     return (
                       <li key={eventDate.eventDayId}>
                         {/*  date*/}
@@ -305,7 +306,11 @@ export default async function EventPage({
                               "font-normal text-[1.4rem] leading-8 text-deep-200"
                             }
                           >
-                            {formatDate(eventDate.eventDate, locale)}
+                            {formatDate(
+                              eventDate.eventDate,
+                              locale,
+                              eventDate.timezone,
+                            )}
                           </span>
                           {/* {event.eventType !== "meet" && (
                     <AddToCalendar event={event} />
@@ -488,7 +493,11 @@ export default async function EventPage({
                             "font-normal text-[1.4rem] leading-8 text-deep-200"
                           }
                         >
-                          {formatDate(eventDate.eventDate, locale)}
+                          {formatDate(
+                            eventDate.eventDate,
+                            locale,
+                            eventDate.timezone,
+                          )}
                         </span>
                         {event.eventType !== "online" && (
                           <AddToCalendar event={event} />

@@ -2,9 +2,17 @@ import { DateTime } from "luxon";
 
 export default function formatDate(
   entry: DateTime | string,
-  locale: string = "en",
+  locale: string,
+  timezone: string,
 ) {
-  const date = typeof entry === "string" ? DateTime.fromISO(entry) : entry;
+  let date: DateTime;
+
+  if (typeof entry === "string") {
+    const parsed = DateTime.fromISO(entry, { zone: "utc" });
+    date = parsed.setZone(timezone, { keepLocalTime: true });
+  } else {
+    date = entry.setZone(timezone, { keepLocalTime: true });
+  }
 
   const localeMap: Record<string, string> = {
     en: "en-US",

@@ -7,11 +7,11 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from "@/components/ui/drawer";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import EditMemberDialogContent from "./EditMemberDialogContent";
 import { useSession } from "next-auth/react";
 import RemoveMember from "./RemoveMember";
-import { OrganisationMember, User } from "@ticketwaze/typescript-config";
+import { OrganisationMember } from "@ticketwaze/typescript-config";
 import Separator from "@/components/shared/Separator";
 
 export default function UserInformation({
@@ -22,6 +22,7 @@ export default function UserInformation({
   authorized: boolean;
 }) {
   const t = useTranslations("Settings.team");
+  const locale = useLocale();
   const { data: session } = useSession();
   return (
     <DrawerContent
@@ -94,7 +95,7 @@ export default function UserInformation({
             >
               {t("joined_at")}
               <span className={"text-deep-100 font-medium leading-8"}>
-                {FormatDate(member.joinedAt)}
+                {FormatDate(member.joinedAt, locale, "local")}
               </span>
             </span>
             <span
@@ -124,7 +125,7 @@ export default function UserInformation({
               >
                 {member.lastLogin === null
                   ? "N/A"
-                  : FormatDate(member.lastLogin)}
+                  : FormatDate(member.lastLogin, locale, "local")}
               </span>
             </span>
           </span>

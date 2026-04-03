@@ -63,6 +63,7 @@ export default function FinancePageContent({
       0,
     );
   const roundTotal = Math.round(total * 100) / 100;
+  const locale = useLocale();
   return (
     <div className={"flex flex-col gap-12 overflow-y-scroll overflow-x-hidden"}>
       <div
@@ -273,7 +274,11 @@ export default function FinancePageContent({
                       "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
                     }
                   >
-                    {FormatDate(order.createdAt)}
+                    {FormatDate(
+                      order.createdAt,
+                      locale,
+                      ticket.event.eventDays[0].timezone,
+                    )}
                   </TableCell>
                 </TableRow>
               );
@@ -483,7 +488,7 @@ export default function FinancePageContent({
                       "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
                     }
                   >
-                    {FormatDate(request.createdAt)}
+                    {FormatDate(request.createdAt, locale, "local")}
                   </TableCell>
                 </TableRow>
               );
@@ -604,6 +609,10 @@ function Informations({
                     ticket.event.eventDays.filter(
                       (day) => day.dayNumber === 1,
                     )[0].eventDate,
+                    locale,
+                    ticket.event.eventDays.filter(
+                      (day) => day.dayNumber === 1,
+                    )[0].timezone,
                   )}
                 </span>
               </p>
@@ -703,7 +712,7 @@ function Informations({
               >
                 {t("transactions.details.payment_date")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {FormatDate(order.createdAt)}
+                  {FormatDate(order.createdAt, locale, "local")}
                 </span>
               </p>
               <p

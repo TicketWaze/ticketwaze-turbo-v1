@@ -95,7 +95,7 @@ export default function UserProfileForm({
         {t("placeholders.email")}
       </Input>
       <Input
-        defaultValue={FormatDate(user.dateOfBirth)}
+        defaultValue={FormatDate(user.dateOfBirth, locale, "local")}
         readOnly
         disabled
         className="cursor-not-allowed"

@@ -83,6 +83,9 @@ export default function UpcomingTicket({
                 {FormatDate(
                   event.eventDays.filter((day) => day.dayNumber === 1)[0]
                     .eventDate,
+                  locale,
+                  event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                    .timezone,
                 )}
               </span>
             </div>
@@ -103,12 +106,7 @@ export default function UpcomingTicket({
                   event.eventDays.filter((day) => day.dayNumber === 1)[0]
                     .timezone,
                   locale,
-                )}{" "}
-                -{" "}
-                {
-                  event.eventDays.filter((day) => day.dayNumber === 1)[0]
-                    .timezone
-                }
+                )}
               </span>
             </div>
             <div className={"flex items-center justify-between gap-4 w-full"}>

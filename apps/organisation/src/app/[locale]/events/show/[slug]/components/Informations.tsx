@@ -87,7 +87,11 @@ export default function Informations({
                         <span
                           className={"text-deep-100 font-medium leading-[20px]"}
                         >
-                          {FormatDate(eventDate.eventDate, locale)}
+                          {FormatDate(
+                            eventDate.eventDate,
+                            locale,
+                            eventDate.timezone,
+                          )}
                         </span>
                       </p>
                       <p
@@ -192,7 +196,7 @@ export default function Informations({
               >
                 {t("transactions.details.payment_date")}{" "}
                 <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {FormatDate(order.createdAt)}
+                  {FormatDate(order.createdAt, locale, date[0].timezone)}
                 </span>
               </p>
               {/* <p
