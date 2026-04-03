@@ -5,9 +5,12 @@ export type TicketType = {
   ticketTypePrice: string;
   ticketTypeQuantity: string;
 };
-
 export type EventDay = {
-  dateTime: string; // ISO string after transform
+  dayNumber: number;
+  eventDate: string; // "YYYY-MM-DD"
+  startTime: string; // "HH:MM"
+  endTime: string; // "HH:MM"
+  timezone: string;
 };
 
 export type EditInPersonFormValues = {
@@ -20,9 +23,10 @@ export type EditInPersonFormValues = {
   location: { lat: number; lng: number };
   eventImage: File;
   eventDays: EventDay[];
-  ticketTypes: TicketType[];
   activityTags: string[];
+  ticketTypes: TicketType[];
   eventCurrency: string;
+  isFree: boolean;
 };
 
 // Small helper to allow passing translation function

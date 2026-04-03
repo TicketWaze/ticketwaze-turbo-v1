@@ -35,6 +35,7 @@ import { slugify } from "@/lib/Slugify";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
+import { EventDay } from "./types";
 
 export default function EditInPersonEventForm({ event }: { event: Event }) {
   const t = useTranslations("Events.create_event");
@@ -96,18 +97,12 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       activityTags: event.activityTags,
       eventImage: undefined as unknown as File,
       eventDays: event.eventDays.map((eventDay) => {
-        const formatLocalDateTime = (date: string | Date) => {
-          const d = new Date(date);
-          const year = d.getFullYear();
-          const month = String(d.getMonth() + 1).padStart(2, "0");
-          const day = String(d.getDate()).padStart(2, "0");
-          const hours = String(d.getHours()).padStart(2, "0");
-          const minutes = String(d.getMinutes()).padStart(2, "0");
-          return `${year}-${month}-${day}T${hours}:${minutes}`;
-        };
-
         return {
-          dateTime: formatLocalDateTime(eventDay.dateTime),
+          dayNumber: eventDay.dayNumber,
+          eventDate: eventDay.eventDate.split("T")[0],
+          startTime: eventDay.startTime,
+          endTime: eventDay.endTime,
+          timezone: eventDay.timezone,
         };
       }),
       ticketTypes: event.eventTicketTypes.map((ticketType) => ({
@@ -120,8 +115,10 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
         ticketTypeQuantity: String(ticketType.ticketTypeQuantity),
       })),
       eventCurrency: event.currency,
+      isFree: event.isFree,
     },
   });
+  console.log(errors);
 
   // submission
   const processForm: SubmitHandler<TForm> = async (data) => {
@@ -138,6 +135,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
     formData.append("isRefundable", JSON.stringify(isRefundable));
+    formData.append("isFree", JSON.stringify(isFree));
     if (isFree) {
       formData.append(
         "ticketTypes",
@@ -274,20 +272,14 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
   }
 
   // eventDays + ticketClasses local state (for dynamic add/remove UI)
-  const [eventDays, setEventDays] = useState<{ dateTime: string }[]>(
+  const [eventDays, setEventDays] = useState<EventDay[]>(
     event.eventDays.map((eventDay) => {
-      const formatLocalDateTime = (date: string | Date) => {
-        const d = new Date(date);
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        const hours = String(d.getHours()).padStart(2, "0");
-        const minutes = String(d.getMinutes()).padStart(2, "0");
-        return `${year}-${month}-${day}T${hours}:${minutes}`;
-      };
-
       return {
-        dateTime: formatLocalDateTime(eventDay.dateTime),
+        dayNumber: eventDay.dayNumber,
+        eventDate: eventDay.eventDate,
+        startTime: eventDay.startTime,
+        endTime: eventDay.endTime,
+        timezone: eventDay.timezone,
       };
     }),
   );
@@ -437,8 +429,10 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
             <StepDateTime
               register={register}
               errors={errors}
-              eventDays={eventDays}
-              setEventDays={setEventDays}
+              eventDays={eventDays as EventDay[]}
+              setEventDays={
+                setEventDays as React.Dispatch<React.SetStateAction<EventDay[]>>
+              }
               setValue={setValue}
               t={(k) => t(k)}
             />

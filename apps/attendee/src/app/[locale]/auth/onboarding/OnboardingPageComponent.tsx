@@ -86,7 +86,7 @@ export default function OnboardingPageComponent() {
             className="w-full flex flex-col gap-6"
           >
             <p className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
-              {t("second.question")}
+              {t("error")}
             </p>
             <motion.div
               initial={{ opacity: 0, y: 30 }}

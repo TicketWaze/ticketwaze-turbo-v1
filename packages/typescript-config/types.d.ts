@@ -198,7 +198,10 @@ export interface EventDay {
   eventId: string;
   organisationId: string;
   dayNumber: number;
-  dateTime: string;
+  eventDate: string;
+  startTime: string;
+  endTime: string;
+  timezone: string;
   createdAt: DateTime;
   updatedAt: DateTime;
 }

@@ -703,7 +703,7 @@
       "resize": "Resize your image",
       "browse": "click to browse",
       "day": "Day",
-      "start_date": "Start date",
+      "start_date": "Date",
       "start_time": "Start time",
       "end_time": "End time",
       "add_day": "Add day",
@@ -754,9 +754,14 @@
           }
         },
         "dateAndTime": {
-          "startDate": "Start date field is required",
-          "startTime": "Date and time field is required",
-          "endTime": "End time field is required"
+          "eventDate": "Event date is required",
+          "invalidDate": "Invalid date format (YYYY-MM-DD expected)",
+          "startTime": "Start time is required",
+          "endTime": "End time is required",
+          "invalidTime": "Invalid time format (HH:mm or HH:mm:ss expected)",
+          "timezone": "Timezone is required",
+          "invalidTimezone": "Invalid timezone",
+          "endBeforeStart": "End time must be after start time"
         },
         "ticketClass": {
           "name": "Ticket class description should be at least 3 characters",

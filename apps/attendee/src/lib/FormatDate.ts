@@ -1,14 +1,22 @@
 import { DateTime } from "luxon";
 
-export default function FormatDate(entry: DateTime | string) {
-  const date =
-    entry instanceof DateTime
-      ? entry
-      : DateTime.fromISO(entry.toString(), { zone: "utc" });
+export default function formatDate(
+  entry: DateTime | string,
+  locale: string = "en",
+) {
+  const date = typeof entry === "string" ? DateTime.fromISO(entry) : entry;
 
-  return date.toLocaleString({
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const localeMap: Record<string, string> = {
+    en: "en-US",
+    fr: "fr-FR",
+  };
+
+  return date
+    .setLocale(localeMap[locale])
+    .toLocaleString({
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+    .toUpperCase();
 }

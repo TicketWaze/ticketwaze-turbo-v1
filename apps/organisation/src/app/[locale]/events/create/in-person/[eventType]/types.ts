@@ -5,11 +5,12 @@ export type TicketType = {
   ticketTypePrice: string;
   ticketTypeQuantity: string;
 };
-
 export type EventDay = {
-  dateTime: string; // ISO string after transform
-  // startTime?: string; // (kept commented since original had it)
-  // endTime: string; // ISO string after transform
+  dayNumber: number;
+  eventDate: string; // "YYYY-MM-DD"
+  startTime: string; // "HH:MM"
+  endTime: string; // "HH:MM"
+  timezone: string;
 };
 
 export type CreateInPersonFormValues = {
