@@ -33,6 +33,7 @@ import { makeCreateInPersonSchema } from "./schema";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
+import { EventDay } from "./types";
 
 export default function CreateInPersonEventForm({
   eventType,
@@ -92,7 +93,15 @@ export default function CreateInPersonEventForm({
       country: "Haiti",
       location: { lat: undefined, lng: undefined },
       eventImage: undefined as unknown as File,
-      eventDays: [{ dateTime: "" }],
+      eventDays: [
+        {
+          dayNumber: 1,
+          eventDate: "",
+          startTime: "",
+          endTime: "",
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      ],
       activityTags: [],
       ticketTypes: [
         {
@@ -247,8 +256,14 @@ export default function CreateInPersonEventForm({
   }
 
   // eventDays (for dynamic add/remove UI)
-  const [eventDays, setEventDays] = useState<{ dateTime: string }[]>([
-    { dateTime: "" },
+  const [eventDays, setEventDays] = useState<EventDay[]>([
+    {
+      dayNumber: 1,
+      eventDate: "",
+      startTime: "",
+      endTime: "",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
   ]);
 
   return (
@@ -396,8 +411,10 @@ export default function CreateInPersonEventForm({
             <StepDateTime
               register={register}
               errors={errors}
-              eventDays={eventDays}
-              setEventDays={setEventDays}
+              eventDays={eventDays as EventDay[]}
+              setEventDays={
+                setEventDays as React.Dispatch<React.SetStateAction<EventDay[]>>
+              }
               setValue={setValue}
               t={(k) => t(k)}
             />
