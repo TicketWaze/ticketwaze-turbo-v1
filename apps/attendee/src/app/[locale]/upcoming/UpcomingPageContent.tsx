@@ -88,8 +88,8 @@ export default function UpcomingPageContent({ events }: { events: any }) {
       <ul className="list pt-4">
         {filteredEvents.map((event: any) => {
           const today = DateTime.now();
-          const eventStart = event.eventDays?.[0]?.dateTime
-            ? DateTime.fromISO(event.eventDays[0].dateTime)
+          const eventStart = event.eventDays?.[0]?.eventDate
+            ? DateTime.fromISO(event.eventDays[0].eventDate)
             : null;
           const daysLeft = eventStart
             ? eventStart.diff(today, "days").days
