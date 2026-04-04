@@ -655,7 +655,7 @@
       "resize": "Redimensionnez votre image",
       "browse": "cliquez pour parcourir",
       "day": "Jour",
-      "start_date": "Date de début",
+      "start_date": "Date",
       "start_time": "Heure de début",
       "end_time": "Heure de fin",
       "add_day": "Ajouter un jour",
@@ -706,9 +706,14 @@
           }
         },
         "dateAndTime": {
-          "startDate": "Le champ date de début est requis",
-          "startTime": "Le champ date et heure est requis",
-          "endTime": "Le champ heure de fin est requis"
+          "eventDate": "La date de l’événement est requise",
+          "invalidDate": "Format de date invalide (AAAA-MM-JJ attendu)",
+          "startTime": "L’heure de début est requise",
+          "endTime": "L’heure de fin est requise",
+          "invalidTime": "Format d’heure invalide (HH:mm ou HH:mm:ss attendu)",
+          "timezone": "Le fuseau horaire est requis",
+          "invalidTimezone": "Fuseau horaire invalide",
+          "endBeforeStart": "L’heure de fin doit être postérieure à l’heure de début"
         },
         "ticketClass": {
           "name": "Le nom de la catégorie de billet doit comporter au moins 3 caractères",

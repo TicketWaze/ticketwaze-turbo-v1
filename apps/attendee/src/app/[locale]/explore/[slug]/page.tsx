@@ -28,6 +28,8 @@ import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Capitalize from "@/lib/Capitalize";
 import { extractIdFromSlug } from "@/lib/Slugify";
+import formatDate from "@/lib/FormatDate";
+import formatTime from "@/lib/formatTime";
 
 export async function generateMetadata({
   params,
@@ -129,7 +131,6 @@ export default async function EventPage({
   );
 
   const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`;
-
   return (
     <AttendeeLayout title={event.eventName}>
       <div className="flex flex-col gap-8 h-full min-h-0">
@@ -281,43 +282,72 @@ export default async function EventPage({
                     <Follow organisationId={event.organisationId} />
                   )}
                 </div>
-                {/*  date*/}
-                <div className={"flex items-center gap-[5px]"}>
-                  <div
-                    className={
-                      "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
-                    }
-                  >
-                    <Calendar2 size="20" color="#737c8a" variant="Bulk" />
-                  </div>
-                  <span
-                    className={
-                      "font-normal text-[1.4rem] leading-8 text-deep-200"
-                    }
-                  >
-                    {FormatDate(event.eventDays[0].dateTime)}
-                  </span>
-                  {/* {event.eventType !== "meet" && (
+                <ul className="flex flex-col w-full gap-6">
+                  {" "}
+                  {event.eventDays.map((eventDate) => {
+                    console.log(eventDate.timezone);
+                    return (
+                      <li key={eventDate.eventDayId}>
+                        {/*  date*/}
+                        <div className={"flex items-center gap-[5px]"}>
+                          <div
+                            className={
+                              "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                            }
+                          >
+                            <Calendar2
+                              size="20"
+                              color="#737c8a"
+                              variant="Bulk"
+                            />
+                          </div>
+                          <span
+                            className={
+                              "font-normal text-[1.4rem] leading-8 text-deep-200"
+                            }
+                          >
+                            {formatDate(
+                              eventDate.eventDate,
+                              locale,
+                              eventDate.timezone,
+                            )}
+                          </span>
+                          {/* {event.eventType !== "meet" && (
                     <AddToCalendar event={event} />
                   )} */}
-                </div>
-                {/*  time*/}
-                <div className={"flex items-center gap-[5px]"}>
-                  <div
-                    className={
-                      "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
-                    }
-                  >
-                    <Clock size="20" color="#737c8a" variant="Bulk" />
-                  </div>
-                  <span
-                    className={
-                      "font-normal text-[1.4rem] leading-8 text-deep-200"
-                    }
-                  >
-                    {`${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}`}
-                  </span>
-                </div>
+                        </div>
+                        {/*  time*/}
+                        <div className={"flex items-center gap-[5px]"}>
+                          <div
+                            className={
+                              "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                            }
+                          >
+                            <Clock size="20" color="#737c8a" variant="Bulk" />
+                          </div>
+                          <span
+                            className={
+                              "font-normal text-[1.4rem] leading-8 text-deep-200"
+                            }
+                          >
+                            {formatTime(
+                              eventDate.startTime,
+                              eventDate.timezone,
+                              locale,
+                            )}{" "}
+                            -{" "}
+                            {formatTime(
+                              eventDate.endTime,
+                              eventDate.timezone,
+                              locale,
+                            )}{" "}
+                            - {eventDate.timezone}
+                          </span>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
                 {/*  address*/}
                 {event.eventType === "meet" && (
                   <div className={"flex items-center gap-[5px] "}>
@@ -442,41 +472,69 @@ export default async function EventPage({
                   <Follow organisationId={event.organisationId} />
                 )}
               </div>
-              {/*  date*/}
-              <div className={"flex items-center gap-[5px]"}>
-                <div
-                  className={
-                    "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
-                  }
-                >
-                  <Calendar2 size="20" color="#737c8a" variant="Bulk" />
-                </div>
-                <span
-                  className={
-                    "font-normal text-[1.4rem] leading-8 text-deep-200"
-                  }
-                >
-                  {FormatDate(event.eventDays[0].dateTime)}
-                </span>
-                {/* {event.eventType !== "meet" && <AddToCalendar event={event} />} */}
-              </div>
-              {/*  time*/}
-              <div className={"flex items-center gap-[5px]"}>
-                <div
-                  className={
-                    "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
-                  }
-                >
-                  <Clock size="20" color="#737c8a" variant="Bulk" />
-                </div>
-                <span
-                  className={
-                    "font-normal text-[1.4rem] leading-8 text-deep-200"
-                  }
-                >
-                  {`${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}`}
-                </span>
-              </div>
+              <ul>
+                {event.eventDays.map((eventDate) => {
+                  return (
+                    <li
+                      key={eventDate.eventDayId}
+                      className="flex flex-col w-full gap-8"
+                    >
+                      {/*  date*/}
+                      <div className={"flex items-center gap-[5px]"}>
+                        <div
+                          className={
+                            "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                          }
+                        >
+                          <Calendar2 size="20" color="#737c8a" variant="Bulk" />
+                        </div>
+                        <span
+                          className={
+                            "font-normal text-[1.4rem] leading-8 text-deep-200"
+                          }
+                        >
+                          {formatDate(
+                            eventDate.eventDate,
+                            locale,
+                            eventDate.timezone,
+                          )}
+                        </span>
+                        {event.eventType !== "online" && (
+                          <AddToCalendar event={event} />
+                        )}
+                      </div>
+                      {/*  time*/}
+                      <div className={"flex items-center gap-[5px]"}>
+                        <div
+                          className={
+                            "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                          }
+                        >
+                          <Clock size="20" color="#737c8a" variant="Bulk" />
+                        </div>
+                        <span
+                          className={
+                            "font-normal text-[1.4rem] leading-8 text-deep-200"
+                          }
+                        >
+                          {formatTime(
+                            eventDate.startTime,
+                            eventDate.timezone,
+                            locale,
+                          )}{" "}
+                          -{" "}
+                          {formatTime(
+                            eventDate.endTime,
+                            eventDate.timezone,
+                            locale,
+                          )}{" "}
+                          - {eventDate.timezone}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
               {/*  address*/}
               {event.eventType === "meet" && (
                 <div className={"flex items-center gap-[5px] "}>

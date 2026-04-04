@@ -71,8 +71,11 @@ function UpcomingContent({ events }: { events: Event[] }) {
   const t = useTranslations("Events");
   const upcoming = events.filter((event) => {
     const today = DateTime.now();
-    const eventStart = event.eventDays?.[0]?.dateTime
-      ? DateTime.fromISO(event.eventDays[0].dateTime)
+    const eventStart = event.eventDays.filter((day) => day.dayNumber === 1)[0]
+      .eventDate
+      ? DateTime.fromISO(
+          event.eventDays.filter((day) => day.dayNumber === 1)[0].eventDate,
+        )
       : null;
     const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
     return daysLeft && daysLeft >= 0;
@@ -126,8 +129,11 @@ function HistoryContent({ events }: { events: Event[] }) {
   const t = useTranslations("Events");
   const history = events.filter((event) => {
     const today = DateTime.now();
-    const eventStart = event.eventDays?.[0]?.dateTime
-      ? DateTime.fromISO(event.eventDays[0].dateTime)
+    const eventStart = event.eventDays.filter((day) => day.dayNumber === 1)[0]
+      .eventDate
+      ? DateTime.fromISO(
+          event.eventDays.filter((day) => day.dayNumber === 1)[0].eventDate,
+        )
       : null;
     const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
     return daysLeft && daysLeft < 0;

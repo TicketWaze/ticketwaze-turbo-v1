@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";

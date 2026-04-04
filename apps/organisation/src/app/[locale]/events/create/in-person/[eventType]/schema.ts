@@ -45,23 +45,54 @@ export function makeCreateInPersonSchema(isFree: boolean, t: TranslateFn) {
             ? t("errors.basicDetails.image.required")
             : t("errors.basicDetails.image.required"),
       })
-      // .max(504800, t("errors.basicDetails.image.max"))
       .mime(["image/jpeg", "image/jpg", "image/png", "image/webp"]),
     eventDays: z.array(
-      z.object({
-        // startDate: z
-        //   .string()
-        //   .min(1, t("errors.dateAndTime.startDate"))
-        //   .transform((val) => new Date(val).toISOString()),
-        dateTime: z
-          .string()
-          .min(1, t("errors.dateAndTime.startTime"))
-          .transform((val) => new Date(val).toISOString()),
-        // endTime: z
-        //   .string()
-        //   .min(1, t("errors.dateAndTime.endTime"))
-        //   .transform((val) => new Date(val).toISOString()),
-      }),
+      z
+        .object({
+          dayNumber: z.number().int().min(1),
+
+          // Keep as plain date string — never convert to Date object
+          eventDate: z
+            .string()
+            .min(1, t("errors.dateAndTime.eventDate"))
+            .regex(/^\d{4}-\d{2}-\d{2}$/, t("errors.dateAndTime.invalidDate")),
+
+          // Keep as plain time string — never convert to Date object
+          startTime: z
+            .string()
+            .min(1, t("errors.dateAndTime.startTime"))
+            .regex(
+              /^\d{2}:\d{2}(:\d{2})?$/,
+              t("errors.dateAndTime.invalidTime"),
+            ),
+
+          endTime: z
+            .string()
+            .min(1, t("errors.dateAndTime.endTime"))
+            .regex(
+              /^\d{2}:\d{2}(:\d{2})?$/,
+              t("errors.dateAndTime.invalidTime"),
+            ),
+
+          timezone: z
+            .string()
+            .min(1, t("errors.dateAndTime.timezone"))
+            .refine(
+              (tz) => {
+                try {
+                  Intl.DateTimeFormat(undefined, { timeZone: tz });
+                  return true;
+                } catch {
+                  return false;
+                }
+              },
+              { message: t("errors.dateAndTime.invalidTimezone") },
+            ),
+        })
+        .refine((day) => day.startTime < day.endTime, {
+          message: t("errors.dateAndTime.endBeforeStart"),
+          path: ["endTime"],
+        }),
     ),
     ticketTypes: z.array(
       z.object({

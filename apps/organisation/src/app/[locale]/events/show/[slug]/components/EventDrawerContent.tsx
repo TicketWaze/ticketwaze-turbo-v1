@@ -1,24 +1,25 @@
 "use client";
 import { slugify } from "@/lib/Slugify";
-import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 import { Event } from "@ticketwaze/typescript-config";
 import {
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { Calendar2, Clock, Edit2, Location } from "iconsax-reactjs";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { LinkPrimary } from "@/components/shared/Links";
+import formatDate from "@/lib/FormatDate";
+import formatTime from "@/lib/formatTime";
 
 export default function EventDrawerContent({ event }: { event: Event }) {
   const t = useTranslations("Events.single_event");
-  const startDate = new Date(event.eventDays?.[0]?.dateTime ?? "");
+  const date = event.eventDays.filter((day) => day.dayNumber === 1);
+  const locale = useLocale();
   return (
-    <DrawerContent className={"my-6 p-[30px] rounded-[30px]  lg:w-[580px]"}>
+    <DrawerContent className={"my-6 p-6 lg:p-12 rounded-[30px]  lg:w-[580px]"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
         <DrawerTitle className={"pb-[40px]"}>
           <span
@@ -63,38 +64,59 @@ export default function EventDrawerContent({ event }: { event: Event }) {
               >
                 {t("event_details")}
               </span>
-              <div className={"flex items-center gap-[5px]"}>
-                <div
-                  className={
-                    "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
-                  }
-                >
-                  <Calendar2 size="20" color="#737c8a" variant="Bulk" />
-                </div>
-                <span
-                  className={
-                    "font-normal text-[1.4rem] leading-8 text-deep-200"
-                  }
-                >
-                  {startDate.toDateString()}
-                </span>
-              </div>
-              <div className={"flex items-center gap-[5px]"}>
-                <div
-                  className={
-                    "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
-                  }
-                >
-                  <Clock size="20" color="#737c8a" variant="Bulk" />
-                </div>
-                <span
-                  className={
-                    "font-normal text-[1.4rem] leading-8 text-deep-200"
-                  }
-                >
-                  {`${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}`}
-                </span>
-              </div>
+              {date.map((eventDate) => {
+                return (
+                  <li key={eventDate.eventDayId}>
+                    <div className={"flex items-center gap-[5px]"}>
+                      <div
+                        className={
+                          "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                        }
+                      >
+                        <Calendar2 size="20" color="#737c8a" variant="Bulk" />
+                      </div>
+                      <span
+                        className={
+                          "font-normal text-[1.4rem] leading-8 text-deep-200"
+                        }
+                      >
+                        {formatDate(
+                          eventDate.eventDate,
+                          locale,
+                          eventDate.timezone,
+                        )}
+                      </span>
+                    </div>
+                    <div className={"flex items-center gap-[5px]"}>
+                      <div
+                        className={
+                          "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                        }
+                      >
+                        <Clock size="20" color="#737c8a" variant="Bulk" />
+                      </div>
+                      <span
+                        className={
+                          "font-normal text-[1.4rem] leading-8 text-deep-200"
+                        }
+                      >
+                        {formatTime(
+                          eventDate.startTime,
+                          eventDate.timezone,
+                          locale,
+                        )}{" "}
+                        -{" "}
+                        {formatTime(
+                          eventDate.endTime,
+                          eventDate.timezone,
+                          locale,
+                        )}{" "}
+                        - {eventDate.timezone}
+                      </span>
+                    </div>
+                  </li>
+                );
+              })}
               <div className={"flex items-center gap-[5px] "}>
                 <div
                   className={
@@ -115,14 +137,14 @@ export default function EventDrawerContent({ event }: { event: Event }) {
           </div>
         </div>
       </div>
-      <DrawerFooter className="lg:flex-row">
+      <DrawerFooter className="lg:flex-row pb-0">
         <LinkPrimary
           href={`/events/show/${slugify(event.eventName, event.eventId)}/edit/${event.eventCategory}`}
           className="flex-1 gap-4"
         >
           <Edit2 variant={"Bulk"} color={"#ffffff"} size={20} /> {t("edit")}
         </LinkPrimary>
-        <DrawerClose className={" cursor-pointer w-full flex-1"}>
+        {/* <DrawerClose className={" cursor-pointer w-full flex-1"}>
           <div
             className={
               "border-primary-500 text-primary-500 bg-primary-100 px-[3rem] py-[15px] border-2  rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center "
@@ -130,7 +152,7 @@ export default function EventDrawerContent({ event }: { event: Event }) {
           >
             {t("close")}
           </div>
-        </DrawerClose>
+        </DrawerClose> */}
       </DrawerFooter>
     </DrawerContent>
   );

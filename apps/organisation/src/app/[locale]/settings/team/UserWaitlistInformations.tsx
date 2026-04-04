@@ -8,7 +8,7 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from "@/components/ui/drawer";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import RemoveInvitationDrawerContent from "./RemoveInvitationDialogContent";
 import { WaitlistMember } from "@ticketwaze/typescript-config";
 import Separator from "@/components/shared/Separator";
@@ -20,6 +20,7 @@ export default function UserWaitlistInformation({
   authorized: boolean;
 }) {
   const t = useTranslations("Settings.team");
+  const locale = useLocale();
   return (
     <DrawerContent
       className={"w-xl lg:w-208 bg-white my-6 p-12 rounded-[30px]"}
@@ -86,7 +87,7 @@ export default function UserWaitlistInformation({
             >
               {t("joined_at")}
               <span className={"text-deep-100 font-medium leading-8"}>
-                {FormatDate(member.createdAt)}
+                {FormatDate(member.createdAt, locale, "local")}
               </span>
             </span>
             <span

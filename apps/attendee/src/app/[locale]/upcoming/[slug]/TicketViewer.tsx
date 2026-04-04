@@ -8,15 +8,15 @@ import {
   DocumentDownload,
   Warning2,
 } from "iconsax-reactjs";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { QRCodeCanvas } from "qrcode.react";
 import { domToPng } from "modern-screenshot";
 import FormatDate from "@/lib/FormatDate";
-import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 import Image from "next/image";
 import Logo from "@ticketwaze/ui/assets/images/logo-simple-orange.svg";
 import { Event, Ticket } from "@ticketwaze/typescript-config";
 import Capitalize from "@/lib/Capitalize";
+import formatTime from "@/lib/formatTime";
 
 export default function TicketViewer({
   tickets,
@@ -98,6 +98,7 @@ export default function TicketViewer({
       alert("Failed to download ticket. Please try again.");
     }
   };
+  const locale = useLocale();
 
   return (
     <>
@@ -156,13 +157,33 @@ export default function TicketViewer({
               <div className={"flex items-center justify-between gap-4 w-full"}>
                 <span className="text-neutral-600">{t("date")}</span>
                 <span className="text-deep-100 font-medium">
-                  {FormatDate(event.eventDays[0].dateTime)}
+                  {FormatDate(
+                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                      .eventDate,
+                    locale,
+                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                      .timezone,
+                  )}
                 </span>
               </div>
               <div className={"flex items-center justify-between gap-4 w-full"}>
                 <span className="text-neutral-600">{t("time")}</span>
                 <span className="text-deep-100 font-medium">
-                  {`${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(event.eventDays[0]?.dateTime ?? "").minute}`}
+                  {formatTime(
+                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                      .startTime,
+                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                      .timezone,
+                    locale,
+                  )}{" "}
+                  -{" "}
+                  {formatTime(
+                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                      .endTime,
+                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                      .timezone,
+                    locale,
+                  )}
                 </span>
               </div>
               <div className={"flex items-center justify-between gap-4 w-full"}>

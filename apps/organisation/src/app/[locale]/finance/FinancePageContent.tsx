@@ -18,9 +18,8 @@ import {
 } from "@/components/ui/table";
 import { Money3, SearchNormal } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import FormatDate from "@/lib/FormatDate";
-import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 import {
   Event,
   Order,
@@ -31,6 +30,7 @@ import {
 import { ButtonAccent } from "@/components/shared/buttons";
 import InitiateWithdrawalButton from "./InitiateWithdrawalButton";
 import TruncateUrl from "@/lib/TruncateUrl";
+import formatTime from "@/lib/formatTime";
 
 interface OrganisationTicket extends Ticket {
   event: Event;
@@ -63,6 +63,7 @@ export default function FinancePageContent({
       0,
     );
   const roundTotal = Math.round(total * 100) / 100;
+  const locale = useLocale();
   return (
     <div className={"flex flex-col gap-12 overflow-y-scroll overflow-x-hidden"}>
       <div
@@ -273,7 +274,11 @@ export default function FinancePageContent({
                       "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
                     }
                   >
-                    {FormatDate(order.createdAt)}
+                    {FormatDate(
+                      order.createdAt,
+                      locale,
+                      ticket.event.eventDays[0].timezone,
+                    )}
                   </TableCell>
                 </TableRow>
               );
@@ -483,7 +488,7 @@ export default function FinancePageContent({
                       "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
                     }
                   >
-                    {FormatDate(request.createdAt)}
+                    {FormatDate(request.createdAt, locale, "local")}
                   </TableCell>
                 </TableRow>
               );
@@ -543,6 +548,7 @@ function Informations({
   order: Order;
 }) {
   const t = useTranslations("Finance");
+  const locale = useLocale();
   const checkingTime = new Date(ticket.updatedAt.toString());
   return (
     <DrawerContent className={"my-6 p-12 rounded-[30px] w-full"}>
@@ -599,7 +605,15 @@ function Informations({
               >
                 {t("transactions.details.date")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {FormatDate(ticket.event.eventDays[0]?.dateTime ?? "")}
+                  {FormatDate(
+                    ticket.event.eventDays.filter(
+                      (day) => day.dayNumber === 1,
+                    )[0].eventDate,
+                    locale,
+                    ticket.event.eventDays.filter(
+                      (day) => day.dayNumber === 1,
+                    )[0].timezone,
+                  )}
                 </span>
               </p>
               <p
@@ -609,7 +623,31 @@ function Informations({
               >
                 {t("transactions.details.time")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {`${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}`}
+                  {formatTime(
+                    ticket.event.eventDays.filter(
+                      (day) => day.dayNumber === 1,
+                    )[0].startTime,
+                    ticket.event.eventDays.filter(
+                      (day) => day.dayNumber === 1,
+                    )[0].timezone,
+                    locale,
+                  )}{" "}
+                  -{" "}
+                  {formatTime(
+                    ticket.event.eventDays.filter(
+                      (day) => day.dayNumber === 1,
+                    )[0].endTime,
+                    ticket.event.eventDays.filter(
+                      (day) => day.dayNumber === 1,
+                    )[0].timezone,
+                    locale,
+                  )}{" "}
+                  -{" "}
+                  {
+                    ticket.event.eventDays.filter(
+                      (day) => day.dayNumber === 1,
+                    )[0].timezone
+                  }
                 </span>
               </p>
               <p
@@ -674,7 +712,7 @@ function Informations({
               >
                 {t("transactions.details.payment_date")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {FormatDate(order.createdAt)}
+                  {FormatDate(order.createdAt, locale, "local")}
                 </span>
               </p>
               <p

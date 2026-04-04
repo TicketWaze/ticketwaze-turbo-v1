@@ -8,11 +8,12 @@ import {
   DrawerFooter,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React from "react";
 import Separator from "@/components/shared/Separator";
 import { ButtonAccent } from "@/components/shared/buttons";
 import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
+import formatTime from "@/lib/formatTime";
 
 export default function Informations({
   ticket,
@@ -22,7 +23,9 @@ export default function Informations({
   order: Order;
 }) {
   const t = useTranslations("Finance");
+  const locale = useLocale();
   const checkingTime = new Date(ticket.updatedAt.toString());
+  const date = ticket.event.eventDays.filter((day) => day.dayNumber === 1);
   return (
     <DrawerContent className={"my-6 p-[30px] rounded-[30px] w-full"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
@@ -71,26 +74,53 @@ export default function Informations({
                   {ticket.event.eventName}
                 </span>
               </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
-                }
-              >
-                {t("transactions.details.date")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {FormatDate(ticket.event.eventDays[0]?.dateTime ?? "")}
-                </span>
-              </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
-                }
-              >
-                {t("transactions.details.time")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {`${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").hour}:${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute < 10 ? `0${TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}` : TimesTampToDateTime(ticket.event.eventDays[0]?.dateTime ?? "").minute}`}
-                </span>
-              </p>
+              <ul className="flex flex-col gap-6 w-full">
+                {date.map((eventDate) => {
+                  return (
+                    <li key={eventDate.eventDayId}>
+                      <p
+                        className={
+                          "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                        }
+                      >
+                        {t("transactions.details.date")}{" "}
+                        <span
+                          className={"text-deep-100 font-medium leading-[20px]"}
+                        >
+                          {FormatDate(
+                            eventDate.eventDate,
+                            locale,
+                            eventDate.timezone,
+                          )}
+                        </span>
+                      </p>
+                      <p
+                        className={
+                          "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                        }
+                      >
+                        {t("transactions.details.time")}{" "}
+                        <span
+                          className={"text-deep-100 font-medium leading-[20px]"}
+                        >
+                          {formatTime(
+                            eventDate.startTime,
+                            eventDate.timezone,
+                            locale,
+                          )}{" "}
+                          -{" "}
+                          {formatTime(
+                            eventDate.endTime,
+                            eventDate.timezone,
+                            locale,
+                          )}{" "}
+                          - {eventDate.timezone}
+                        </span>
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
               <p
                 className={
                   "flex justify-between items-start text-[1.4rem] leading-[20px] text-neutral-600"
@@ -166,7 +196,7 @@ export default function Informations({
               >
                 {t("transactions.details.payment_date")}{" "}
                 <span className={"text-deep-100 font-medium leading-[20px]"}>
-                  {FormatDate(order.createdAt)}
+                  {FormatDate(order.createdAt, locale, date[0].timezone)}
                 </span>
               </p>
               {/* <p

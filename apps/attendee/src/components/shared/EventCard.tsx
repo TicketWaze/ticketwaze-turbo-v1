@@ -5,9 +5,12 @@ import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
+import formatDate from "@/lib/FormatDate";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
-  const date = new Date(event.eventDays[0].dateTime);
+  const date = event.eventDays.filter(
+    (eventDay) => eventDay.dayNumber === 1,
+  )[0];
   const slug = slugify(event.eventName, event.eventId);
   const locale = useLocale();
   const t = useTranslations("Event");
@@ -72,12 +75,7 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
             <span
               className={"font-medium text-[1rem] text-deep-100 leading-[15px]"}
             >
-              {date.toLocaleDateString(locale)}
-              {/* {date.day < 10 ? `0${date.day}` : date.day}
-              {"/"}
-              {date.month < 10 ? `0${date.month}` : date.month}
-              {"/"}
-              {date.year} */}
+              {formatDate(date.eventDate, locale, date.timezone)}
             </span>
           </div>
           {event.eventType === "meet" ? (
