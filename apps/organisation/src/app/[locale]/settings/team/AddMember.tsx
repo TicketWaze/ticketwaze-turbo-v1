@@ -59,8 +59,13 @@ export default function AddMember({ totalMembers }: { totalMembers: number }) {
   const [isLoading, setIsLoading] = useState(false);
 
   async function submitHandler(data: TAddMemberSchema) {
+    if (!session?.activeOrganisation) {
+      toast.error("Session not ready, please try again.");
+      return;
+    }
+
     if (
-      totalMembers === session?.activeOrganisation.membershipTier.teamMember
+      totalMembers === session.activeOrganisation.membershipTier?.teamMember
     ) {
       toast.info(t("teamLimit"));
       return;
