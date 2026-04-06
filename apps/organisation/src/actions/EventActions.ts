@@ -10,8 +10,8 @@ export async function CreateGoogleMeetEvent(
   organisationId: string,
   accessToken: string,
   body: FormData,
-  code: string,
   locale: string,
+  code: string | undefined,
 ) {
   try {
     const request = await fetch(

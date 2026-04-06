@@ -12,18 +12,20 @@ import {
   HeartHandshake,
   Laugh,
   Palette,
-  PartyPopper,
   Presentation,
   Rocket,
-  Trophy,
   Users,
-  Utensils,
   Wrench,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
-export default async function InPersonEventTypePage() {
+export default async function InPersonEventTypePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ code: string | undefined }>;
+}) {
   const t = await getTranslations("Events.create_event.list.inPerson");
+  const { code } = await searchParams;
   const links = [
     {
       label: t("categories.conference.title"),
@@ -38,12 +40,6 @@ export default async function InPersonEventTypePage() {
       value: t("categories.concert.value"),
     },
     {
-      label: t("categories.festival.title"),
-      href: "/festival",
-      Icon: PartyPopper,
-      value: t("categories.festival.value"),
-    },
-    {
       label: t("categories.comedy.title"),
       href: "/comedy",
       Icon: Laugh,
@@ -54,12 +50,6 @@ export default async function InPersonEventTypePage() {
       href: "/theater",
       Icon: Drama,
       value: t("categories.theater.value"),
-    },
-    {
-      label: t("categories.tournament.title"),
-      href: "/tournament",
-      Icon: Trophy,
-      value: t("categories.tournament.value"),
     },
     {
       label: t("categories.workshop.title"),
@@ -84,12 +74,6 @@ export default async function InPersonEventTypePage() {
       href: "/startup",
       Icon: Rocket,
       value: t("categories.startup.value"),
-    },
-    {
-      label: t("categories.food_festival.title"),
-      href: "/food_festival",
-      Icon: Utensils,
-      value: t("categories.food_festival.value"),
     },
     {
       label: t("categories.art.title"),
@@ -138,7 +122,12 @@ export default async function InPersonEventTypePage() {
         {links.map(({ Icon, label, href }) => {
           return (
             <li key={label} className={"cursor-pointer"}>
-              <EventTypeCardLink Icon={Icon} href={href} label={label} />
+              <EventTypeCardLink
+                code={code}
+                Icon={Icon}
+                href={href}
+                label={label}
+              />
             </li>
           );
         })}
@@ -151,14 +140,16 @@ function EventTypeCardLink({
   href,
   Icon,
   label,
+  code,
 }: {
   href: string;
   Icon: Icon;
   label: string;
+  code: string | undefined;
 }) {
   return (
     <Link
-      href={`/events/create/in-person/${href}`}
+      href={`/events/create/meet/${href}?code=${code}`}
       className={
         "py-14 px-6 rounded-[10px] bg-neutral-100 hover:bg-primary-50 flex justify-between transition-all duration-500 cursor-pointer group"
       }

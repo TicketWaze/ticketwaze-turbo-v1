@@ -888,7 +888,7 @@ export default function CheckoutFlow({
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
           <ButtonPrimary
-            disabled={isLoading || currentStep === 2}
+            disabled={isLoading || (!isFree && currentStep === 2)}
             onClick={next}
           >
             {t("footer.continue")}

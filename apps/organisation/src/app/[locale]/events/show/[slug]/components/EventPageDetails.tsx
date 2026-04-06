@@ -136,7 +136,7 @@ export default function EventPageDetails({
     <div className={"flex flex-col gap-[3rem] overflow-y-scroll"}>
       <TopBar title={event.eventName}>
         <div className="hidden lg:flex items-center gap-4">
-          {event.eventType !== "meet" && (
+          {event.eventCategory !== "meet" && (
             <CheckingDialog event={event} user={user} />
           )}
           {/* Share Event */}
@@ -244,7 +244,7 @@ export default function EventPageDetails({
               </DialogContent>
             </Dialog>
           )}
-          {event.isActive ? (
+          {event.eventCategory === "meet" ? null : event.isActive ? (
             <ButtonRed
               disabled={isLoading}
               onClick={MarkEventAsInactive}
@@ -375,7 +375,7 @@ export default function EventPageDetails({
           </ButtonPrimary>
         )}
         <div className="flex-1 w-full">
-          {!(event.eventType === "meet") ? (
+          {!(event.eventCategory === "meet") ? (
             <CheckingDialog event={event} user={user} />
           ) : (
             <div></div>

@@ -20,7 +20,7 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import {
-  UpdateInPersonEvent,
+  UpdateGoogleMeetEvent,
   ValidateBasicDetailsInPerson,
 } from "@/actions/EventActions";
 import { useSession } from "next-auth/react";
@@ -29,7 +29,7 @@ import { redirect } from "next/navigation";
 import StepBasic from "./BasicDetails";
 import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
-import { makeEditInPersonSchema } from "./schema";
+import { makeEditMeetSchema } from "./schema";
 import { Event } from "@ticketwaze/typescript-config";
 import { slugify } from "@/lib/Slugify";
 import { ButtonPrimary } from "@/components/shared/buttons";
@@ -50,7 +50,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
   );
 
   // create schema using factory (depends on isFree)
-  const FormDataSchema = makeEditInPersonSchema(isFree, (k: string) => t(k));
+  const FormDataSchema = makeEditMeetSchema(isFree, (k: string) => t(k));
   type TForm = z.infer<typeof FormDataSchema>;
 
   const steps = [
@@ -63,7 +63,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
         "state",
         "city",
         "country",
-        "location",
         "activityTags",
         "eventImage",
       ],
@@ -93,7 +92,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       state: event.state,
       city: event.city,
       country: event.country,
-      location: event.location,
       activityTags: event.activityTags,
       eventImage: undefined as unknown as File,
       eventDays: event.eventDays.map((eventDay) => {
@@ -128,7 +126,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     formData.append("state", data.state);
     formData.append("city", data.city);
     formData.append("country", data.country);
-    formData.append("location", JSON.stringify(data.location));
     formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("eventImage", data.eventImage);
     formData.append("eventDays", JSON.stringify(data.eventDays));
@@ -151,7 +148,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       formData.append("ticketTypes", JSON.stringify(data.ticketTypes));
     }
 
-    const result = await UpdateInPersonEvent(
+    const result = await UpdateGoogleMeetEvent(
       organisation?.organisationId ?? "",
       session?.user.accessToken ?? "",
       formData,
@@ -184,7 +181,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       formData.append("state", getValues("state"));
       formData.append("city", getValues("city"));
       formData.append("country", getValues("country"));
-      formData.append("location", JSON.stringify(getValues("location")));
       formData.append("eventImage", getValues("eventImage"));
       formData.append("eventType", event.eventType);
       formData.append(

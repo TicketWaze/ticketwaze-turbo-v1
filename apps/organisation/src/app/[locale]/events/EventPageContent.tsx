@@ -18,13 +18,17 @@ export default function EventPageContent({ events }: { events: Event[] }) {
         </TabsList>
         <TabsContent value="all" className="overflow-y-scroll">
           <ul className="list pt-4 overflow-y-scroll">
-            {events.map((event) => {
-              return (
+            {[...events]
+              .sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime(),
+              )
+              .map((event) => (
                 <li key={event.eventId}>
                   <EventCard event={event} />
                 </li>
-              );
-            })}
+              ))}
           </ul>
           {events.length === 0 && (
             <div
@@ -83,13 +87,18 @@ function UpcomingContent({ events }: { events: Event[] }) {
   return (
     <TabsContent value="upcoming">
       <ul className="list pt-4">
-        {upcoming.map((event) => {
-          return (
-            <li key={event.eventId}>
-              <EventCard event={event} />
-            </li>
-          );
-        })}
+        {[...upcoming]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
+          .map((event) => {
+            return (
+              <li key={event.eventId}>
+                <EventCard event={event} />
+              </li>
+            );
+          })}
       </ul>
       {upcoming.length === 0 && (
         <div
@@ -141,13 +150,18 @@ function HistoryContent({ events }: { events: Event[] }) {
   return (
     <TabsContent value="history">
       <ul className="list pt-4">
-        {history.map((event) => {
-          return (
-            <li key={event.eventId}>
-              <EventCard event={event} />
-            </li>
-          );
-        })}
+        {[...history]
+          .sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          )
+          .map((event) => {
+            return (
+              <li key={event.eventId}>
+                <EventCard event={event} />
+              </li>
+            );
+          })}
       </ul>
       {history.length === 0 && (
         <div

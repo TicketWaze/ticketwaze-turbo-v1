@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft2 } from "iconsax-reactjs";
 import {
@@ -15,12 +15,12 @@ import {
 } from "@/components/ui/dialog";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "@/lib/GetCroppedImage";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
 import {
-  UpdateInPersonEvent,
+  CreateGoogleMeetEvent,
   ValidateBasicDetailsInPerson,
 } from "@/actions/EventActions";
 import { useSession } from "next-auth/react";
@@ -29,28 +29,28 @@ import { redirect } from "next/navigation";
 import StepBasic from "./BasicDetails";
 import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
-import { makeEditInPersonSchema } from "./schema";
-import { Event } from "@ticketwaze/typescript-config";
-import { slugify } from "@/lib/Slugify";
+import { makeMeetPersonSchema } from "./schema";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
 import { EventDay } from "./types";
 
-export default function EditInPersonEventForm({ event }: { event: Event }) {
+export default function CreateMeetEventForm({
+  eventType,
+  code,
+}: {
+  eventType: string;
+  code: string | undefined;
+}) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
   const { data: session } = useSession();
   const organisation = session?.activeOrganisation;
-  const [isFree, setIsfree] = useState(
-    (event.eventTicketTypes[0]?.ticketTypePrice ?? 0) < 1,
-  );
-  const [isRefundable, setIsRefundable] = useState(
-    event.eventTicketTypes[0]?.isRefundable ?? false,
-  );
+  const [isFree, setIsfree] = useState(false);
+  const [isRefundable, setIsRefundable] = useState(false);
 
   // create schema using factory (depends on isFree)
-  const FormDataSchema = makeEditInPersonSchema(isFree, (k: string) => t(k));
+  const FormDataSchema = makeMeetPersonSchema(isFree, (k: string) => t(k));
   type TForm = z.infer<typeof FormDataSchema>;
 
   const steps = [
@@ -63,7 +63,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
         "state",
         "city",
         "country",
-        "location",
         "activityTags",
         "eventImage",
       ],
@@ -80,45 +79,48 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     register,
     handleSubmit,
     setValue,
-    getValues,
     control,
     trigger,
     formState: { errors, isSubmitting },
+    getValues,
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
     defaultValues: {
-      eventName: event.eventName,
-      eventDescription: event.eventDescription,
-      address: event.address,
-      state: event.state,
-      city: event.city,
-      country: event.country,
-      location: event.location,
-      activityTags: event.activityTags,
+      eventName: "",
+      eventDescription: "",
+      address: "",
+      state: "",
+      city: "",
+      country: "Haiti",
       eventImage: undefined as unknown as File,
-      eventDays: event.eventDays.map((eventDay) => {
-        return {
-          dayNumber: eventDay.dayNumber,
-          eventDate: eventDay.eventDate.split("T")[0],
-          startTime: eventDay.startTime,
-          endTime: eventDay.endTime,
-          timezone: eventDay.timezone,
-        };
-      }),
-      ticketTypes: event.eventTicketTypes.map((ticketType) => ({
-        ticketTypeDescription: ticketType.ticketTypeDescription,
-        ticketTypeName: ticketType.ticketTypeName,
-        ticketTypePrice:
-          event.currency === "USD"
-            ? String(ticketType.usdPrice)
-            : String(ticketType.ticketTypePrice),
-        ticketTypeQuantity: String(ticketType.ticketTypeQuantity),
-      })),
-      eventCurrency: event.currency,
-      isFree: event.isFree,
+      eventDays: [
+        {
+          dayNumber: 1,
+          eventDate: "",
+          startTime: "",
+          endTime: "",
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      ],
+      activityTags: [],
+      ticketTypes: [
+        {
+          ticketTypeName: session?.activeOrganisation.membershipTier
+            .customTicketTypes
+            ? ""
+            : t("general.name"),
+          ticketTypeDescription: session?.activeOrganisation.membershipTier
+            .customTicketTypes
+            ? ""
+            : t("general.description"),
+          ticketTypePrice: "",
+          ticketTypeQuantity: "",
+        },
+      ],
+      eventCurrency: "HTG",
+      isFree: false,
     },
   });
-
   // submission
   const processForm: SubmitHandler<TForm> = async (data) => {
     const formData = new FormData();
@@ -128,22 +130,24 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     formData.append("state", data.state);
     formData.append("city", data.city);
     formData.append("country", data.country);
-    formData.append("location", JSON.stringify(data.location));
-    formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("eventImage", data.eventImage);
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
+    formData.append("eventType", eventType);
+    formData.append("isFree", JSON.stringify(data.isFree));
+    formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("isRefundable", JSON.stringify(isRefundable));
-    formData.append("isFree", JSON.stringify(isFree));
     if (isFree) {
       formData.append(
         "ticketTypes",
         JSON.stringify([
           {
-            ticketTypeName: "general",
+            ticketTypeName: "General",
             ticketTypeDescription: t("general_default"),
             ticketTypePrice: "",
-            ticketTypeQuantity: "100",
+            ticketTypeQuantity: String(
+              session?.activeOrganisation.membershipTier.freeTickets,
+            ),
           },
         ]),
       );
@@ -151,23 +155,22 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       formData.append("ticketTypes", JSON.stringify(data.ticketTypes));
     }
 
-    const result = await UpdateInPersonEvent(
+    const result = await CreateGoogleMeetEvent(
       organisation?.organisationId ?? "",
       session?.user.accessToken ?? "",
       formData,
       locale,
-      event.eventId,
+      decodeURIComponent(code ?? ""),
     );
     if (result.status === "success") {
       toast.success("success");
-      redirect(
-        `/events/show/${slugify(result.event.eventName, result.event.eventId)}`,
-      );
+      redirect("/events");
     }
     if (result.error) toast.error(result.error);
   };
 
   type FieldName = keyof TForm;
+
   const [isLoading, setIsLoading] = useState(false);
 
   const next = async () => {
@@ -184,9 +187,8 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       formData.append("state", getValues("state"));
       formData.append("city", getValues("city"));
       formData.append("country", getValues("country"));
-      formData.append("location", JSON.stringify(getValues("location")));
       formData.append("eventImage", getValues("eventImage"));
-      formData.append("eventType", event.eventType);
+      formData.append("eventType", eventType);
       formData.append(
         "activityTags",
         JSON.stringify(getValues("activityTags")),
@@ -196,7 +198,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
         session?.user.accessToken ?? "",
         formData,
         locale,
-        "update",
+        "create",
       );
       if (result.status !== "success") {
         setIsLoading(false);
@@ -212,6 +214,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     setPreviousStep(currentStep);
     setCurrentStep((s) => s + 1);
   };
+
   const prev = () => {
     if (currentStep > 0) {
       setPreviousStep(currentStep);
@@ -220,31 +223,12 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
   };
 
   // Image handling (same as original)
-  const [imagePreview, setImagePreview] = useState<string>(event.eventImageUrl);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-  useEffect(() => {
-    const loadExistingImage = async () => {
-      if (event.eventImageUrl) {
-        try {
-          const proxiedUrl = `/api/proxy-image?url=${encodeURIComponent(event.eventImageUrl)}`;
-          const response = await fetch(proxiedUrl);
-          const blob = await response.blob();
-          const file = new File([blob], "event-image.jpg", {
-            type: blob.type || "image/jpeg",
-          });
-          setValue("eventImage", file, { shouldValidate: true });
-        } catch (error) {
-          console.error("Failed to load existing image:", error);
-        }
-      }
-    };
-
-    loadExistingImage();
-  }, [event.eventImageUrl, setValue]);
 
   const onCropComplete = useCallback(
     (_: any, croppedPixels: any) => setCroppedAreaPixels(croppedPixels),
@@ -270,25 +254,23 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
     setImagePreview(URL.createObjectURL(file));
   }
 
-  // eventDays + ticketClasses local state (for dynamic add/remove UI)
-  const [eventDays, setEventDays] = useState<EventDay[]>(
-    event.eventDays.map((eventDay) => {
-      return {
-        dayNumber: eventDay.dayNumber,
-        eventDate: eventDay.eventDate,
-        startTime: eventDay.startTime,
-        endTime: eventDay.endTime,
-        timezone: eventDay.timezone,
-      };
-    }),
-  );
+  // eventDays (for dynamic add/remove UI)
+  const [eventDays, setEventDays] = useState<EventDay[]>([
+    {
+      dayNumber: 1,
+      eventDate: "",
+      startTime: "",
+      endTime: "",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
+  ]);
 
   return (
     <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
-      <div className="absolute bottom-4 z-[9999] w-full hidden lg:block">
+      <div className="absolute bottom-4 z-9999 w-full hidden lg:block">
         <ButtonPrimary
           onClick={next}
-          className=" w-full max-w-[530px] mx-auto  "
+          className=" w-full max-w-212 mx-auto  "
           disabled={isSubmitting || isLoading}
         >
           {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
@@ -296,7 +278,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       </div>
 
       <div className="fixed lg:hidden bottom-36 w-full px-8 z-50 left-0">
-        <div className=" lg:hidden bg-white mx-auto border border-neutral-100 px-4 py-[5px] flex justify-between items-center rounded-[100px]">
+        <div className=" lg:hidden bg-white mx-auto border border-neutral-100 px-4 py-2 flex justify-between items-center rounded-[100px]">
           <div className="text-[2.2rem] text-neutral-600">
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
@@ -310,15 +292,15 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
         <BackButton text={t("back")}>
           <div className="flex justify-between">
             <div className="hidden lg:flex items-center gap-4">
-              <span className="text-primary-500 font-medium text-[1.5rem] leading-[3rem] ">
+              <span className="text-primary-500 font-medium text-[1.5rem] leading-12 ">
                 {t("basic")}
               </span>
-              <div className="w-[161px] h-[5px] rounded-[100px] bg-neutral-100" />
-              <span className="text-neutral-500 font-medium text-[1.5rem] leading-[3rem] ">
+              <div className="w-[16.1rem] h-2 rounded-[100px] bg-neutral-100" />
+              <span className="text-neutral-500 font-medium text-[1.5rem] leading-12 ">
                 {t("date_time")}
               </span>
-              <div className="w-[161px] h-[5px] rounded-[100px] bg-neutral-100" />
-              <span className="text-neutral-500 font-medium text-[1.5rem] leading-[3rem] ">
+              <div className="w-[16.1rem] h-2 rounded-[100px] bg-neutral-100" />
+              <span className="text-neutral-500 font-medium text-[1.5rem] leading-12 ">
                 {t("ticket")}
               </span>
             </div>
@@ -328,9 +310,9 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
         <div className="flex items-center justify-between">
           <button
             onClick={prev}
-            className="flex max-w-[80px] cursor-pointer items-center gap-4"
+            className="flex max-w-32 cursor-pointer items-center gap-4"
           >
-            <div className="w-[35px] h-[35px] rounded-full bg-neutral-100 flex items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center">
               <ArrowLeft2 size="20" color="#0d0d0d" variant="Bulk" />
             </div>
             <span className="text-neutral-700 font-normal text-[1.4rem] leading-8">
@@ -338,18 +320,18 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
             </span>
           </button>
           <div className="hidden lg:flex items-center gap-4">
-            <span className="text-primary-500 font-medium text-[1.5rem] leading-[3rem] ">
+            <span className="text-primary-500 font-medium text-[1.5rem] leading-12 ">
               {t("basic")}
             </span>
-            <div className="w-[161px] h-[5px] rounded-[100px] bg-primary-500" />
-            <span className="text-primary-500 font-medium text-[1.5rem] leading-[3rem] ">
+            <div className="w-[16.1rem] h-2 rounded-[100px] bg-primary-500" />
+            <span className="text-primary-500 font-medium text-[1.5rem] leading-12 ">
               {t("date_time")}
             </span>
             <div
-              className={`w-[161px] h-[5px] rounded-[100px] ${currentStep === 2 ? "bg-primary-500" : "bg-neutral-100"}`}
+              className={`w-[16.1rem] h-2 rounded-[100px] ${currentStep === 2 ? "bg-primary-500" : "bg-neutral-100"}`}
             />
             <span
-              className={`${currentStep === 2 ? "text-primary-500" : "text-neutral-500"} font-medium text-[1.5rem] leading-[3rem]`}
+              className={`${currentStep === 2 ? "text-primary-500" : "text-neutral-500"} font-medium text-[1.5rem] leading-12`}
             >
               {t("ticket")}
             </span>
@@ -370,7 +352,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
               This action cannot be undone
             </DialogDescription>
             {imageSrc && (
-              <div className="relative w-full h-[300px]">
+              <div className="relative w-full h-120">
                 <Cropper
                   image={imageSrc}
                   crop={crop}
@@ -385,7 +367,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild onClick={cropImage}>
-              <span className="bg-primary-500 px-[3rem] py-[15px] border-2 border-transparent rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer flex items-center justify-center w-full">
+              <span className="bg-primary-500 px-12 py-6 border-2 border-transparent rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center w-full">
                 {t("resize")}
               </span>
             </DialogClose>
@@ -411,9 +393,9 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
               errors={errors}
               imagePreview={imagePreview}
               handleFileChange={handleFileChange}
+              // mapContainerRef={mapContainerRef}
               setValue={setValue}
               getValues={getValues}
-              event={event}
             />
           </motion.div>
         )}
@@ -446,7 +428,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
             className="flex flex-col gap-12"
           >
             <StepTicket
-              event={event}
               register={register}
               errors={errors}
               isFree={isFree}

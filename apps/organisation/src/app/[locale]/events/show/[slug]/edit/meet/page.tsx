@@ -1,0 +1,23 @@
+import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
+import EditInPersonEventForm from "./EditMeetEventForm";
+import { Event } from "@ticketwaze/typescript-config";
+import { extractIdFromSlug } from "@/lib/Slugify";
+
+export default async function EditEvent({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const eventId = extractIdFromSlug(slug);
+  const eventRequest = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
+  );
+  const eventResponse = await eventRequest.json();
+  const event: Event = eventResponse.event;
+  return (
+    <OrganizerLayout title="Edit Event">
+      <EditInPersonEventForm event={event} />
+    </OrganizerLayout>
+  );
+}
