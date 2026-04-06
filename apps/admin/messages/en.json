@@ -140,6 +140,31 @@
           }
         }
       }
+    },
+    "Ticket": {
+      "details": {
+        "title": "Ticket Details",
+        "attendee": "Attendee Name",
+        "mail": "Email",
+        "activity": "Activity Name",
+        "date": "Date",
+        "time": "Time",
+        "location": "Location",
+        "class": "Ticket Class",
+        "price": "Price",
+        "id": "Ticket ID",
+        "total": "Total",
+        "transaction_id": "Transaction ID",
+        "payment_method": "Payment Method",
+        "payment_date": "Payment Date",
+        "transaction_status": "Transaction Status",
+        "check_status": "Checked-In Status",
+        "check_time": "Check-In Time"
+      },
+      "cta": {
+        "close": "Close",
+        "resend": "Resend ticket"
+      }
     }
   },
 

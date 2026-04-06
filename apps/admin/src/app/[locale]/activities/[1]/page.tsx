@@ -1,6 +1,14 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import BackButton from "@/components/shared/BackButton";
 import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   ButtonBlack,
   ButtonPrimary,
   ButtonRed,
@@ -15,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar2, Location, Clock } from "iconsax-reactjs";
+import Information from "./Informations";
 import Separator from "@/components/shared/Separator";
 import { useTranslations } from "next-intl";
 import Rema from "@ticketwaze/ui/assets/images/rema.png";
@@ -76,7 +85,7 @@ export default function ActivityPage() {
                 {/*  organizer*/}
                 <div className={"flex items-center justify-between w-full"}>
                   <Link href={`#`} className={"flex items-center gap-4"}>
-                    <div className="flex rounded-full w-[35px] h-[35px] bg-black justify-center items-center">
+                    <div className="flex rounded-full w-14 h-14 bg-black justify-center items-center">
                       <p className="font-medium text-white leading-12 text-[2.2rem] font-primary">
                         C
                       </p>
@@ -104,10 +113,10 @@ export default function ActivityPage() {
                 </div>
                 <div className="flex justify-between">
                   {/*  date*/}
-                  <div className={"flex items-center gap-[5px]"}>
+                  <div className={"flex items-center gap-2"}>
                     <div
                       className={
-                        "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                        "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                       }
                     >
                       <Calendar2 size="20" color="#737c8a" variant="Bulk" />
@@ -125,10 +134,10 @@ export default function ActivityPage() {
                   )} */}
                   </div>
                   {/*  time*/}
-                  <div className={"flex items-center gap-[5px]"}>
+                  <div className={"flex items-center gap-2"}>
                     <div
                       className={
-                        "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                        "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                       }
                     >
                       <Clock size="20" color="#737c8a" variant="Bulk" />
@@ -230,7 +239,7 @@ export default function ActivityPage() {
                     <span className="text-[1.6rem] text-neutral-600 leading-[22.5px] ">
                       {t("activity.resume.performance.total")}
                     </span>
-                    <span className="text-[1.6rem] text-deep-100 font-medium leading-[21px] ">
+                    <span className="text-[1.6rem] text-deep-100 font-medium leading-8 ">
                       7,789,670.90HTG
                     </span>
                   </li>
@@ -239,7 +248,7 @@ export default function ActivityPage() {
                     <span className="text-[1.6rem] text-neutral-600 leading-[22.5px] ">
                       {t("activity.resume.performance.tickets.sold")}
                     </span>
-                    <span className="text-[1.6rem] text-deep-100 font-medium leading-[21px] ">
+                    <span className="text-[1.6rem] text-deep-100 font-medium leading-8 ">
                       9224/10,000
                     </span>
                   </li>
@@ -248,7 +257,7 @@ export default function ActivityPage() {
                     <span className="text-[1.6rem] text-neutral-600 leading-[22.5px] ">
                       {t("activity.resume.performance.tickets.left")}
                     </span>
-                    <span className="text-[1.6rem] text-deep-100 font-medium leading-[21px] ">
+                    <span className="text-[1.6rem] text-deep-100 font-medium leading-8 ">
                       776/10,000
                     </span>
                   </li>
@@ -257,7 +266,7 @@ export default function ActivityPage() {
                     <span className="text-[1.6rem] text-neutral-600 leading-[22.5px] ">
                       {t("activity.resume.performance.counter")}
                     </span>
-                    <span className="text-[1.6rem] text-deep-100 font-medium leading-[21px] ">
+                    <span className="text-[1.6rem] text-deep-100 font-medium leading-8 ">
                       3 days to go
                     </span>
                   </li>
@@ -287,44 +296,39 @@ function ActivityAttendances() {
           <TableRow>
             <TableHead
               className={
-                "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("activity.resume.attendance.table.name")}
             </TableHead>
             <TableHead
               className={
-                "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("activity.resume.attendance.table.class")}
             </TableHead>
             <TableHead
               className={
-                "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("activity.resume.attendance.table.amount")}
             </TableHead>
             <TableHead
               className={
-                "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("activity.resume.attendance.table.status")}
             </TableHead>
             <TableHead
               className={
-                "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("activity.resume.attendance.table.purchase")}
             </TableHead>
-            <TableHead
-              className={
-                "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
-              }
-            ></TableHead>
           </TableRow>
         </TableHeader>
 
@@ -423,46 +427,133 @@ function ActivityAttendances() {
                 >
                   Jan 16, 2025
                 </TableCell>
+              </TableRow>
+            </DrawerTrigger>
+            <Information></Information>
+          </Drawer>
 
+          <Drawer direction="right">
+            <DrawerTrigger asChild>
+              <TableRow>
+                <TableCell
+                  className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
+                >
+                  <span className={"cursor-pointer"}>Marie Jean-Louis</span>
+                </TableCell>
+                <TableCell className="py-6">
+                  {/* {order?.status === "GENERAL" && ( */}
+                  {/* <span
+                    className={
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                    }
+                  >
+                    {t("activity.resume.attendance.tickets.general")}
+                  </span> */}
+                  {/* )} */}
+                  {/* {order?.status === "VIP" && ( */}
+                  <span
+                    className={
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#7A19C7]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                    }
+                  >
+                    {t("activity.resume.attendance.tickets.vip")}
+                  </span>
+                  {/* )} */}
+                  {/* {order?.status === "PREMIUM" && (
+                    <span
+                      className={
+                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#2E3237]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                      }
+                    >
+                      {t("activity.resume.attendance.tickets.premium")}
+                    </span>
+                  )} */}
+                </TableCell>
+                <TableCell
+                  className={
+                    "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                  }
+                >
+                  400 HTG
+                </TableCell>
+                <TableCell className="py-6">
+                  {/* {order?.status === "ONGOING" && ( */}
+                  <span
+                    className={
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                    }
+                  >
+                    {t("activity.resume.attendance.status.check-in")}
+                  </span>
+                  {/* )} */}
+                  {/* {order?.status === "PAST" && (
+                    <span
+                      className={
+                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#3F3F3F]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                      }
+                    >
+                      {t("list.filters.past")}
+                    </span>
+                  )}
+                  {order?.status === "UPCOMING" && (
+                    <span
+                      className={
+                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                      }
+                    >
+                      {t("list.filters.upcoming")}
+                    </span>
+                  )}
+                  {order?.status === "ACTIVE" && (
+                    <span
+                      className={
+                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                      }
+                    >
+                      {t("list.filters.active")}
+                    </span>
+                  )} */}
+                </TableCell>
                 <TableCell
                   className={
                     "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
                   }
                 >
-                  <div className="p-2 w-fit rounded-full bg-neutral-100">
-                    <Image src={More} alt="more" width={10} height={10} />
-                  </div>
+                  Jan 16, 2025
                 </TableCell>
               </TableRow>
             </DrawerTrigger>
-            <DrawerContent className="w-[50%]  my-8 mr-8  rounded-[15px] p-8"></DrawerContent>
+            <Information></Information>
           </Drawer>
-          <TableRow>
-            <TableCell
-              className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
-            >
-              <span className={"cursor-pointer"}>Marie Jean-Louis</span>
-            </TableCell>
-            <TableCell className="py-6">
-              {/* {order?.status === "GENERAL" && ( */}
-              {/* <span
+
+          <Drawer direction="right">
+            <DrawerTrigger asChild>
+              <TableRow>
+                <TableCell
+                  className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
+                >
+                  <span className={"cursor-pointer"}>Marie Jean-Louis</span>
+                </TableCell>
+                <TableCell className="py-6">
+                  {/* {order?.status === "GENERAL" && ( */}
+                  {/* <span
                     className={
                       "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-2 rounded-[30px] bg-[#f5f5f5]"
                     }
                   >
                     {t("activity.resume.attendance.tickets.general")}
                   </span> */}
-              {/* )} */}
-              {/* {order?.status === "VIP" && ( */}
-              <span
-                className={
-                  "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                }
-              >
-                {t("activity.resume.attendance.tickets.vip")}
-              </span>
-              {/* )} */}
-              {/* {order?.status === "PREMIUM" && (
+                  {/* )} */}
+                  {/* {order?.status === "VIP" && ( */}
+                  <span
+                    className={
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#7A19C7]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                    }
+                  >
+                    {t("activity.resume.attendance.tickets.vip")}
+                  </span>
+                  {/* )} */}
+                  {/* {order?.status === "PREMIUM" && (
                     <span
                       className={
                         "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#2E3237]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
@@ -471,25 +562,25 @@ function ActivityAttendances() {
                       {t("activity.resume.attendance.tickets.premium")}
                     </span>
                   )} */}
-            </TableCell>
-            <TableCell
-              className={
-                "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-              }
-            >
-              400 HTG
-            </TableCell>
-            <TableCell className="py-6">
-              {/* {order?.status === "ONGOING" && ( */}
-              <span
-                className={
-                  "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                }
-              >
-                {t("activity.resume.attendance.status.check-in")}
-              </span>
-              {/* )} */}
-              {/* {order?.status === "PAST" && (
+                </TableCell>
+                <TableCell
+                  className={
+                    "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                  }
+                >
+                  400 HTG
+                </TableCell>
+                <TableCell className="py-6">
+                  {/* {order?.status === "ONGOING" && ( */}
+                  <span
+                    className={
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                    }
+                  >
+                    {t("activity.resume.attendance.status.check-in")}
+                  </span>
+                  {/* )} */}
+                  {/* {order?.status === "PAST" && (
                     <span
                       className={
                         "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#3F3F3F]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
@@ -516,140 +607,38 @@ function ActivityAttendances() {
                       {t("list.filters.active")}
                     </span>
                   )} */}
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              Jan 16, 2025
-            </TableCell>
+                </TableCell>
+                <TableCell
+                  className={
+                    "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                  }
+                >
+                  Jan 16, 2025
+                </TableCell>
+              </TableRow>
+            </DrawerTrigger>
+            <Information></Information>
+          </Drawer>
 
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <div className="p-2 w-fit rounded-full bg-neutral-100">
-                <Image src={More} alt="more" width={10} height={10} />
-              </div>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
-            >
-              <span className={"cursor-pointer"}>Marie Jean-Louis</span>
-            </TableCell>
-            <TableCell className="py-6">
-              {/* {order?.status === "GENERAL" && ( */}
-              {/* <span
+          <Drawer direction="right">
+            <DrawerTrigger asChild>
+              <TableRow>
+                <TableCell
+                  className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
+                >
+                  <span className={"cursor-pointer"}>Marie Jean-Louis</span>
+                </TableCell>
+                <TableCell className="py-6">
+                  {/* {order?.status === "GENERAL" && ( */}
+                  {/* <span
                     className={
                       "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-2 rounded-[30px] bg-[#f5f5f5]"
                     }
                   >
                     {t("activity.resume.attendance.tickets.general")}
                   </span> */}
-              {/* )} */}
-              {/* {order?.status === "VIP" && ( */}
-              <span
-                className={
-                  "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                }
-              >
-                {t("activity.resume.attendance.tickets.vip")}
-              </span>
-              {/* )} */}
-              {/* {order?.status === "PREMIUM" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#2E3237]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("activity.resume.attendance.tickets.premium")}
-                    </span>
-                  )} */}
-            </TableCell>
-            <TableCell
-              className={
-                "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-              }
-            >
-              400 HTG
-            </TableCell>
-            <TableCell className="py-6">
-              {/* {order?.status === "ONGOING" && ( */}
-              <span
-                className={
-                  "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                }
-              >
-                {t("activity.resume.attendance.status.check-in")}
-              </span>
-              {/* )} */}
-              {/* {order?.status === "PAST" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#3F3F3F]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.past")}
-                    </span>
-                  )}
-                  {order?.status === "UPCOMING" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.upcoming")}
-                    </span>
-                  )}
-                  {order?.status === "ACTIVE" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.active")}
-                    </span>
-                  )} */}
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              Jan 16, 2025
-            </TableCell>
-
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <div className="p-2 w-fit rounded-full bg-neutral-100">
-                <Image src={More} alt="more" width={10} height={10} />
-              </div>
-            </TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell
-              className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
-            >
-              <span className={"cursor-pointer"}>Marie Jean-Louis</span>
-            </TableCell>
-            <TableCell className="py-6">
-              {/* {order?.status === "GENERAL" && ( */}
-              {/* <span
-                    className={
-                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                    }
-                  >
-                    {t("activity.resume.attendance.tickets.general")}
-                  </span> */}
-              {/* )} */}
-              {/* {order?.status === "VIP" && (
+                  {/* )} */}
+                  {/* {order?.status === "VIP" && (
                     <span
                       className={
                         "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
@@ -658,34 +647,34 @@ function ActivityAttendances() {
                       {t("activity.resume.attendance.tickets.vip")}
                     </span>
                   )} */}
-              {/* {order?.status === "PREMIUM" && ( */}
-              <span
-                className={
-                  "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#2E3237]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                }
-              >
-                {t("activity.resume.attendance.tickets.premium")}
-              </span>
-              {/* )} */}
-            </TableCell>
-            <TableCell
-              className={
-                "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-              }
-            >
-              400 HTG
-            </TableCell>
-            <TableCell className="py-6">
-              {/* {order?.status === "ONGOING" && ( */}
-              <span
-                className={
-                  "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                }
-              >
-                {t("activity.resume.attendance.status.check-in")}
-              </span>
-              {/* )} */}
-              {/* {order?.status === "PAST" && (
+                  {/* {order?.status === "PREMIUM" && ( */}
+                  <span
+                    className={
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#2E3237]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                    }
+                  >
+                    {t("activity.resume.attendance.tickets.premium")}
+                  </span>
+                  {/* )} */}
+                </TableCell>
+                <TableCell
+                  className={
+                    "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                  }
+                >
+                  400 HTG
+                </TableCell>
+                <TableCell className="py-6">
+                  {/* {order?.status === "ONGOING" && ( */}
+                  <span
+                    className={
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                    }
+                  >
+                    {t("activity.resume.attendance.status.check-in")}
+                  </span>
+                  {/* )} */}
+                  {/* {order?.status === "PAST" && (
                     <span
                       className={
                         "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#3F3F3F]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
@@ -712,25 +701,18 @@ function ActivityAttendances() {
                       {t("list.filters.active")}
                     </span>
                   )} */}
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              Jan 16, 2025
-            </TableCell>
-
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <div className="p-2 w-fit rounded-full bg-neutral-100">
-                <Image src={More} alt="more" width={10} height={10} />
-              </div>
-            </TableCell>
-          </TableRow>
+                </TableCell>
+                <TableCell
+                  className={
+                    "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                  }
+                >
+                  Jan 16, 2025
+                </TableCell>
+              </TableRow>
+            </DrawerTrigger>
+            <Information></Information>
+          </Drawer>
         </TableBody>
       </Table>
     </TabsContent>

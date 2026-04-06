@@ -103,51 +103,46 @@ export default function ActivitiesPageContent() {
           <TableRow>
             <TableHead
               className={
-                "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("list.table.name")}
             </TableHead>
             <TableHead
               className={
-                "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("list.table.organizer")}
             </TableHead>
             <TableHead
               className={
-                "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("list.table.start")}
             </TableHead>
             <TableHead
               className={
-                "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("list.table.sold")}
             </TableHead>
             <TableHead
               className={
-                "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("list.table.status")}
             </TableHead>
             <TableHead
               className={
-                "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("list.table.created")}
             </TableHead>
-            <TableHead
-              className={
-                "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
-              }
-            ></TableHead>
           </TableRow>
         </TableHeader>
 
@@ -257,16 +252,6 @@ export default function ActivitiesPageContent() {
             >
               Jan 16, 2025 12:21 PM
             </TableCell>
-
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <div className="p-2 w-fit rounded-full bg-neutral-100">
-                <Image src={More} alt="more" width={10} height={10} />
-              </div>
-            </TableCell>
           </TableRow>
 
           <TableRow
@@ -348,7 +333,7 @@ export default function ActivitiesPageContent() {
                   {/* {order?.status === "UPCOMING" && ( */}
                   <span
                     className={
-                      "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
                     }
                   >
                     {t("list.filters.upcoming")}
@@ -373,16 +358,6 @@ export default function ActivitiesPageContent() {
               }
             >
               Jan 16, 2025 12:21 PM
-            </TableCell>
-
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <div className="p-2 w-fit rounded-full bg-neutral-100">
-                <Image src={More} alt="more" width={10} height={10} />
-              </div>
             </TableCell>
           </TableRow>
 
@@ -456,7 +431,7 @@ export default function ActivitiesPageContent() {
                   {/* {order?.status === "PAST" && ( */}
                   <span
                     className={
-                      "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#3F3F3F]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#3F3F3F]  px-2 rounded-[30px] bg-[#f5f5f5]"
                     }
                   >
                     {t("list.filters.past")}
@@ -490,15 +465,6 @@ export default function ActivitiesPageContent() {
               }
             >
               Jan 16, 2025 12:21 PM
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <div className="p-2 w-fit rounded-full bg-neutral-100">
-                <Image src={More} alt="more" width={10} height={10} />
-              </div>
             </TableCell>
           </TableRow>
 
@@ -590,7 +556,7 @@ export default function ActivitiesPageContent() {
                   {/* {order?.status === "ACTIVE" && ( */}
                   <span
                     className={
-                      "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
                     }
                   >
                     {t("list.filters.active")}
@@ -606,16 +572,6 @@ export default function ActivitiesPageContent() {
               }
             >
               Jan 16, 2025 12:21 PM
-            </TableCell>
-
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <div className="p-2 w-fit rounded-full bg-neutral-100">
-                <Image src={More} alt="more" width={10} height={10} />
-              </div>
             </TableCell>
           </TableRow>
         </TableBody>

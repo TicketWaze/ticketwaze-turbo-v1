@@ -138,6 +138,31 @@
           }
         }
       }
+    },
+    "Ticket": {
+      "details": {
+        "title": "Détails du billet",
+        "attendee": "Nom du participant",
+        "mail": "Email",
+        "activity": "Nom de l'activité",
+        "date": "Date",
+        "time": "Heure",
+        "location": "Lieu",
+        "class": "Classe du billet",
+        "price": "Prix",
+        "id": "ID du billet",
+        "total": "Total",
+        "transaction_id": "ID de transaction",
+        "payment_method": "Méthode de paiement",
+        "payment_date": "Date de paiement",
+        "transaction_status": "Statut de la transaction",
+        "check_status": "Statut d'enregistrement",
+        "check_time": "Heure d'enregistrement"
+      },
+      "cta": {
+        "close": "Fermer",
+        "resend": "Renvoyer le billet"
+      }
     }
   },
   "attendees": {}
