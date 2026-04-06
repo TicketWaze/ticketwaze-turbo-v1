@@ -6,11 +6,11 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import InPerson from "@/assets/images/in-person.jpg";
 import GoogleMeet from "@/assets/images/meet.jpg";
-import Private from "@/assets/images/private.jpeg";
-import Reservations from "@/assets/images/reservations.jpg";
-import Transportations from "@/assets/images/transportations.jpg";
-import Tours from "@/assets/images/tours.jpg";
-import match from "@/assets/images/match.jpg";
+// import Private from "@/assets/images/private.jpeg";
+// import Reservations from "@/assets/images/reservations.jpg";
+// import Transportations from "@/assets/images/transportations.jpg";
+// import Tours from "@/assets/images/tours.jpg";
+// import match from "@/assets/images/match.jpg";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import BackButton from "@/components/shared/BackButton";
@@ -56,36 +56,36 @@ export default function EventTypeList({
       image: GoogleMeet,
       value: "meet",
     },
-    {
-      title: t("list.private.title"),
-      description: t("list.private.description"),
-      image: Private,
-      value: "private",
-    },
-    {
-      title: t("list.reservations.title"),
-      description: t("list.reservations.description"),
-      image: Reservations,
-      value: "reservations",
-    },
-    {
-      title: t("list.transportations.title"),
-      description: t("list.transportations.description"),
-      image: Transportations,
-      value: "transportations",
-    },
-    {
-      title: t("list.tours.title"),
-      description: t("list.tours.description"),
-      image: Tours,
-      value: "tours",
-    },
-    {
-      title: t("list.sports.title"),
-      description: t("list.sports.description"),
-      image: match,
-      value: "sports",
-    },
+    // {
+    //   title: t("list.private.title"),
+    //   description: t("list.private.description"),
+    //   image: Private,
+    //   value: "private",
+    // },
+    // {
+    //   title: t("list.reservations.title"),
+    //   description: t("list.reservations.description"),
+    //   image: Reservations,
+    //   value: "reservations",
+    // },
+    // {
+    //   title: t("list.transportations.title"),
+    //   description: t("list.transportations.description"),
+    //   image: Transportations,
+    //   value: "transportations",
+    // },
+    // {
+    //   title: t("list.tours.title"),
+    //   description: t("list.tours.description"),
+    //   image: Tours,
+    //   value: "tours",
+    // },
+    // {
+    //   title: t("list.sports.title"),
+    //   description: t("list.sports.description"),
+    //   image: match,
+    //   value: "sports",
+    // },
   ];
   const router = useRouter();
 
@@ -101,7 +101,7 @@ export default function EventTypeList({
         organisation.googleRefreshToken &&
         organisation.googleRefreshToken.length !== 0
       ) {
-        router.push("/events/create/online");
+        router.push("/events/create/meet");
       } else {
         const request = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/events/google/callback`,
@@ -136,13 +136,13 @@ export default function EventTypeList({
         <BackButton text={t("back")}>
           <div
             className={
-              " bg-neutral-100 rounded-[30px] flex lg:hidden items-center justify-between w-[200px] px-[1.5rem] py-4"
+              " bg-neutral-100 rounded-[30px] flex lg:hidden items-center justify-between w-[20rem] px-6 py-4"
             }
           >
             <input
               placeholder={t("category_search")}
               className={
-                "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
               }
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -152,13 +152,13 @@ export default function EventTypeList({
         <TopBar title={t("title")}>
           <div
             className={
-              "hidden bg-neutral-100 rounded-[30px] lg:flex items-center justify-between w-[243px] px-[1.5rem] py-4"
+              "hidden bg-neutral-100 rounded-[30px] lg:flex items-center justify-between w-[243px] px-6 py-4"
             }
           >
             <input
               placeholder={t("category_search")}
               className={
-                "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
               }
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -168,7 +168,7 @@ export default function EventTypeList({
       </div>
       <ul className="list overflow-y-scroll py-2 px-2">
         {filteredCategories.map((category, index) => {
-          if (category.value === "test") {
+          if (category.value === "meet") {
             return (
               <li key={index}>
                 <Dialog>
@@ -183,9 +183,9 @@ export default function EventTypeList({
                         width={255}
                         height={191}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/10" />
+                      <div className="absolute inset-0 bg-linear-to-t from-black via-black/80 to-black/10" />
                       <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
-                        <h3 className="text-[2.6rem] font-primary leading-[30px] font-bold">
+                        <h3 className="text-[2.6rem] font-primary leading-12 font-bold">
                           {category.title}
                         </h3>
                         <p className="text-[1.5rem] text-neutral-300">
@@ -198,7 +198,7 @@ export default function EventTypeList({
                     <DialogHeader>
                       <DialogTitle
                         className={
-                          "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                          "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
                         }
                       >
                         {category.title}
@@ -249,7 +249,6 @@ export default function EventTypeList({
               </li>
             );
           } else if (
-            category.value === "meet" ||
             category.value === "reservations" ||
             category.value === "transportations" ||
             category.value === "tours" ||

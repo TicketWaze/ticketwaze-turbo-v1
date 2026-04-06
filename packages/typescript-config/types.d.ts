@@ -230,8 +230,8 @@ export interface Event {
   discountCodes: DiscountCode[];
   eventPerformers: EventPerformer[];
   eventAttendees: EventAttendee[];
-  createdAt: DateTime;
-  updatedAt: DateTime;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface User {

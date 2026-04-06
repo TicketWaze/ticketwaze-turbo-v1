@@ -51,8 +51,6 @@ export default async function UpcomingEventPage({
   );
   const favoriteResponse = await favoriteRequest.json();
 
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${event.latitude},${event.longitude}`;
-
   return (
     <AttendeeLayout title="Event Page">
       <BackButton text={t("back")} />
@@ -112,27 +110,29 @@ export default async function UpcomingEventPage({
           />
           <Separator />
 
-          <div className="flex flex-col gap-8">
-            <div className="flex items-center justify-between">
-              <span
-                className={
-                  "font-semibold text-[1.6rem] leading-8 text-deep-200"
-                }
-              >
-                {t("direction")}
-              </span>
+          {event.eventCategory !== "meet" && (
+            <div className="flex flex-col gap-8">
+              <div className="flex items-center justify-between">
+                <span
+                  className={
+                    "font-semibold text-[1.6rem] leading-8 text-deep-200"
+                  }
+                >
+                  {t("direction")}
+                </span>
 
-              <Link
-                href={googleMapsUrl}
-                target="_blank"
-                className="flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
-              >
-                {t("open")}{" "}
-                <RouteSquare variant="Bulk" color="#E45B00" size={20} />
-              </Link>
+                <Link
+                  href={`https://www.google.com/maps/search/?api=1&query=${event.latitude},${event.longitude}`}
+                  target="_blank"
+                  className="flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
+                >
+                  {t("open")}{" "}
+                  <RouteSquare variant="Bulk" color="#E45B00" size={20} />
+                </Link>
+              </div>
+              <MapComponent location={event.location} />
             </div>
-            <MapComponent location={event.location} />
-          </div>
+          )}
 
           <div className="flex flex-col gap-4">
             <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">

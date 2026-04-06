@@ -3,7 +3,7 @@ export default function Loading() {
   return (
     <OrganizerLayout
       title=""
-      className="h-full w-full flex flex-col overflow-y-scroll"
+      className="h-full w-full flex flex-col overflow-hidden"
     >
       <div className="flex flex-col gap-4">
         <div className="bg-neutral-200 w-80 h-8 rounded-xl animate-pulse"></div>

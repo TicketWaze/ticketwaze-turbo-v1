@@ -74,7 +74,7 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
               {FormatDate(date.eventDate, locale, date.timezone)}
             </span>
           </div>
-          {event.eventType === "meet" ? (
+          {event.eventCategory === "meet" ? (
             <div className={"flex items-center gap-[5px]"}>
               <Google size="15" color="#2e3237" variant="Bulk" />
               <p

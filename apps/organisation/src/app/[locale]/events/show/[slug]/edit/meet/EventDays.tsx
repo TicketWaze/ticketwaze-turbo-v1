@@ -2,16 +2,16 @@
 "use client";
 import React from "react";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
-import type { EditInPersonFormValues, EventDay } from "./types";
+import type { EditMeetFormValues, EventDay } from "./types";
 import { Trash } from "iconsax-reactjs";
 import { toast } from "sonner";
 
 type Props = {
-  register: UseFormRegister<EditInPersonFormValues>;
+  register: UseFormRegister<EditMeetFormValues>;
   errors: any;
   eventDays: EventDay[];
   setEventDays: React.Dispatch<React.SetStateAction<EventDay[]>>;
-  setValue: UseFormSetValue<EditInPersonFormValues>;
+  setValue: UseFormSetValue<EditMeetFormValues>;
   t: (s: string) => string;
 };
 
@@ -148,7 +148,6 @@ export default function StepDateTime({
         <button
           type="button"
           onClick={() => toast.info(t("coming"))}
-          // onClick={addDay}
           className="cursor-pointer flex gap-4 items-center"
         >
           <span className="text-[1.5rem] leading-8 text-primary-500">
