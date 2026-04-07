@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import DiscountPageContent from "./DiscountPageContent";
 import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
+import { extractIdFromSlug } from "@/lib/Slugify";
 
 export default async function DiscountCode({
   params,
@@ -11,8 +12,9 @@ export default async function DiscountCode({
 }) {
   const t = await getTranslations("Events.single_event.discount");
   const { slug } = await params;
+  const eventId = extractIdFromSlug(slug);
   const eventRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;

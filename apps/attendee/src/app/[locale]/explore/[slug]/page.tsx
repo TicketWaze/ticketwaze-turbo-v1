@@ -93,9 +93,7 @@ export default async function EventPage({
                 <SecurityUser size="50" color="#0d0d0d" variant="Bulk" />
               </div>
             </div>
-            <div
-              className={"flex flex-col gap-[3rem] items-center text-center"}
-            >
+            <div className={"flex flex-col gap-12 items-center text-center"}>
               <p
                 className={
                   "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"

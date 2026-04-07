@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import { Event, User } from "@ticketwaze/typescript-config";
 import {
@@ -36,6 +37,26 @@ export default function CheckingDialog({
   const [scannerKey, setScannerKey] = useState(0);
   const scannerRef = useRef<Html5QrcodeScanner | null>(null);
   const isCleaningRef = useRef(false);
+  const pathname = usePathname();
+  const locale = useLocale();
+
+  async function CheckQrCode(id: string) {
+    setIsLoading(true);
+    const response = await CheckInWithQrCode(
+      event.eventId,
+      user.accessToken,
+      pathname,
+      id,
+      locale,
+    );
+    if (response.status === "success") {
+      toast.success("success");
+      setIsDialogOpen(false);
+    } else {
+      toast.error(response.error);
+    }
+    setIsLoading(false);
+  }
 
   // Cleanup scanner
   const cleanupScanner = async () => {
@@ -105,7 +126,7 @@ export default function CheckingDialog({
         setScannerKey((prev) => prev + 1);
       }
 
-      function error(err: any) {}
+      function error() {}
 
       scanner.render(success, error);
     }, 150);
@@ -115,26 +136,6 @@ export default function CheckingDialog({
       cleanupScanner();
     };
   }, [isDialogOpen, isScanning, scannerKey]);
-  const pathname = usePathname();
-  const locale = useLocale();
-
-  async function CheckQrCode(id: string) {
-    setIsLoading(true);
-    const response = await CheckInWithQrCode(
-      event.eventId,
-      user.accessToken,
-      pathname,
-      id,
-      locale,
-    );
-    if (response.status === "success") {
-      toast.success("success");
-      setIsDialogOpen(false);
-    } else {
-      toast.error(response.error);
-    }
-    setIsLoading(false);
-  }
 
   function startScanning() {
     setScannerKey((prev) => prev + 1);
@@ -150,16 +151,16 @@ export default function CheckingDialog({
     <>
       <PageLoader isLoading={isLoading} />
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger className="w-full lg:w-fit">
-          <span className="px-[15px] py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
-            <Scanner variant={"Bulk"} color={"#737C8A"} size={20} />
+        <DialogTrigger asChild className="w-full lg:w-fit">
+          <ButtonPrimary className="gap-4">
+            <Scanner variant={"Bulk"} color={"#fff"} size={20} />
             {t("check_in")}
-          </span>
+          </ButtonPrimary>
         </DialogTrigger>
         <DialogContent className={"w-[360px] lg:w-[520px] "}>
           <DialogHeader>
             <DialogTitle
-              className={`font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary ${isScanning && "hidden"}`}
+              className={`font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-12 text-black font-primary ${isScanning && "hidden"}`}
             >
               {t("check_in")}
             </DialogTitle>
