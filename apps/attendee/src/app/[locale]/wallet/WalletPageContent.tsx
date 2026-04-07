@@ -68,9 +68,7 @@ export default function WalletPageContent({
         }
       >
         <div className={"pb-[30px]"}>
-          <span
-            className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
-          >
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}>
             {t("amounts.available")}
           </span>
           <p
@@ -91,9 +89,7 @@ export default function WalletPageContent({
           </p>
         </div>
         <div className={"pb-[30px] pl-[30px]"}>
-          <span
-            className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
-          >
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}>
             {t("amounts.pending")}
           </span>
           <p
@@ -114,9 +110,7 @@ export default function WalletPageContent({
           </p>
         </div>
         <div className={"pb-[30px] lg:pl-[30px]"}>
-          <span
-            className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
-          >
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}>
             {t("ticketwazeToken")}
           </span>
           <p
@@ -136,9 +130,7 @@ export default function WalletPageContent({
         </div>
         <div className={"pb-[30px] pl-[30px] flex gap-6 items-start"}>
           <div className="">
-            <span
-              className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
-            >
+            <span className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}>
               {t("invitedUser")}
             </span>
 
@@ -221,7 +213,7 @@ export default function WalletPageContent({
                       }
                     }}
                     className={
-                      "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-[20px] bg-primary-50 cursor-pointer flex"
+                      "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-8 bg-primary-50 cursor-pointer flex"
                     }
                   >
                     <Copy size="20" color="#e45b00" variant="Bulk" />
@@ -287,7 +279,7 @@ export default function WalletPageContent({
                 placeholder={t("search")}
                 onChange={(e) => setQuery(e.target.value)}
                 className={
-                  "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
                 }
               />
               <SearchNormal size="20" color="#737c8a" variant="Bulk" />
@@ -487,7 +479,7 @@ export default function WalletPageContent({
             <Link
               href={"/finance/transactions"}
               className={
-                "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-[20px]"
+                "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-8"
               }
             >
               {t("transactions.more")}
@@ -518,7 +510,7 @@ export default function WalletPageContent({
               <input
                 placeholder={t("search")}
                 className={
-                  "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
                 }
               />
               <SearchNormal size="20" color="#737c8a" variant="Bulk" />
@@ -681,7 +673,7 @@ export default function WalletPageContent({
             <Link
               href={"/finance/transactions"}
               className={
-                "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-[20px]"
+                "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-8"
               }
             >
               {t("transactions.more")}

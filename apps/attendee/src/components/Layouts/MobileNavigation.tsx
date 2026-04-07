@@ -95,7 +95,7 @@ export default function MobileNavigation({
         <li>
           <Link
             href={"/explore"}
-            className={` group font-normal group text-[1.5rem] leading-[20px] text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isActive("/explore") && "font-semibold text-primary-500 is-active"}`}
+            className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isActive("/explore") && "font-semibold text-primary-500 is-active"}`}
           >
             <Ticket
               size="20"
@@ -111,7 +111,7 @@ export default function MobileNavigation({
               {session?.user ? (
                 <Link
                   href={path}
-                  className={` group font-normal group text-[1.5rem] leading-[20px] text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isActive(path) && "font-semibold text-primary-500 is-active"}`}
+                  className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isActive(path) && "font-semibold text-primary-500 is-active"}`}
                 >
                   <Icon
                     size="20"
@@ -124,7 +124,7 @@ export default function MobileNavigation({
                 <Dialog>
                   <DialogTrigger>
                     <div
-                      className={` group font-normal group text-[1.5rem] leading-[20px] text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isActive(path) && "font-semibold text-primary-500 is-active"}`}
+                      className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isActive(path) && "font-semibold text-primary-500 is-active"}`}
                     >
                       <Icon
                         size="20"
@@ -144,7 +144,7 @@ export default function MobileNavigation({
           <Popover>
             <PopoverTrigger>
               <div
-                className={` group font-normal group text-[1.5rem] leading-[20px] text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isMoreLinkActive(pathname) && "font-semibold text-primary-500 is-active"}`}
+                className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isMoreLinkActive(pathname) && "font-semibold text-primary-500 is-active"}`}
               >
                 <HamburgerMenu
                   size="20"
@@ -166,7 +166,7 @@ export default function MobileNavigation({
               >
                 <span
                   className={
-                    "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-[20px]"
+                    "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
                   }
                 >
                   {t("more")}

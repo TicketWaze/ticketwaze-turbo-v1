@@ -230,7 +230,8 @@ export default function TicketViewer({
         </div>
         <button
           onClick={downloadImage}
-          className="border-2 cursor-pointer border-primary-500 px-12 py-[7.5px] bg-[#FFEFE2] rounded-[100px] flex gap-4 items-center justify-center"
+          disabled={event.eventCategory === "meet"}
+          className="border-2 cursor-pointer border-primary-500 disabled:border-neutral-700 px-12 py-[7.5px] bg-[#FFEFE2] disabled:bg-neutral-200 rounded-[100px] flex gap-4 items-center justify-center disabled:cursor-not-allowed text-primary-500 disabled:text-neutral-700"
         >
           <DocumentDownload
             variant="Bulk"
@@ -238,9 +239,7 @@ export default function TicketViewer({
             color="#E45B00"
             className="hidden lg:block"
           />
-          <span className="text-[1.5rem] text-primary-500">
-            {t("download")}
-          </span>
+          <span className="text-[1.5rem] ">{t("download")}</span>
         </button>
       </div>
     </>

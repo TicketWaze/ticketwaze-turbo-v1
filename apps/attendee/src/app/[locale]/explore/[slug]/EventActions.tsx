@@ -87,7 +87,7 @@ export default function EventActions({
         {/* SHARE */}
         <Dialog>
           <DialogTrigger>
-            <span className="px-[15px] py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
+            <span className="px-[15px] py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
               <Send2 variant={"Bulk"} color={"#737C8A"} size={20} />
               <span className="hidden lg:inline">{t("share")}</span>
             </span>
@@ -146,7 +146,7 @@ export default function EventActions({
                     }
                   }}
                   className={
-                    "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-[20px] bg-primary-50 cursor-pointer flex"
+                    "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-8 bg-primary-50 cursor-pointer flex"
                   }
                 >
                   <Copy size="20" color="#e45b00" variant="Bulk" />
@@ -236,7 +236,7 @@ export default function EventActions({
           >
             <span
               className={
-                "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-[20px]"
+                "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
               }
             >
               {t("more")}
@@ -256,7 +256,7 @@ export default function EventActions({
       ) : (
         <Dialog>
           <DialogTrigger>
-            <span className="px-[3rem] py-[15px] border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 hover:border-primary-600">
+            <span className="px-[3rem] py-[15px] border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 hover:border-primary-600">
               {t("buy")}
             </span>
           </DialogTrigger>

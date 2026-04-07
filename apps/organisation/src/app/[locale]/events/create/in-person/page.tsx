@@ -27,103 +27,103 @@ export default async function InPersonEventTypePage() {
   const links = [
     {
       label: t("categories.conference.title"),
-      href: "/events/create/in-person/conference",
+      href: "/conference",
       Icon: People,
       value: t("categories.conference.value"),
     },
     {
       label: t("categories.concert.title"),
-      href: "/events/create/in-person/concert",
+      href: "/concert",
       Icon: Microphone2,
       value: t("categories.concert.value"),
     },
     {
       label: t("categories.festival.title"),
-      href: "/events/create/in-person/festival",
+      href: "/festival",
       Icon: PartyPopper,
       value: t("categories.festival.value"),
     },
     {
       label: t("categories.comedy.title"),
-      href: "/events/create/in-person/comedy",
+      href: "/comedy",
       Icon: Laugh,
       value: t("categories.comedy.value"),
     },
     {
       label: t("categories.theater.title"),
-      href: "/events/create/in-person/theater",
+      href: "/theater",
       Icon: Drama,
       value: t("categories.theater.value"),
     },
     {
       label: t("categories.tournament.title"),
-      href: "/events/create/in-person/tournament",
+      href: "/tournament",
       Icon: Trophy,
       value: t("categories.tournament.value"),
     },
     {
       label: t("categories.workshop.title"),
-      href: "/events/create/in-person/workshop",
+      href: "/workshop",
       Icon: Wrench,
       value: t("categories.workshop.value"),
     },
     {
       label: t("categories.seminar.title"),
-      href: "/events/create/in-person/seminar",
+      href: "/seminar",
       Icon: Presentation,
       value: t("categories.seminar.value"),
     },
     {
       label: t("categories.networking.title"),
-      href: "/events/create/in-person/networking",
+      href: "/networking",
       Icon: Handshake,
       value: t("categories.networking.value"),
     },
     {
       label: t("categories.startup.title"),
-      href: "/events/create/in-person/startup",
+      href: "/startup",
       Icon: Rocket,
       value: t("categories.startup.value"),
     },
     {
       label: t("categories.food_festival.title"),
-      href: "/events/create/in-person/food_festival",
+      href: "/food_festival",
       Icon: Utensils,
       value: t("categories.food_festival.value"),
     },
     {
       label: t("categories.art.title"),
-      href: "/events/create/in-person/art",
+      href: "/art",
       Icon: Palette,
       value: t("categories.art.value"),
     },
     {
       label: t("categories.cultural.title"),
-      href: "/events/create/in-person/cultural",
+      href: "/cultural",
       Icon: Globe,
       value: t("categories.cultural.value"),
     },
     {
       label: t("categories.charity.title"),
-      href: "/events/create/in-person/charity",
+      href: "/charity",
       Icon: HeartHandshake,
       value: t("categories.charity.value"),
     },
     {
       label: t("categories.fundraiser.title"),
-      href: "/events/create/in-person/fundraiser",
+      href: "/fundraiser",
       Icon: HandCoins,
       value: t("categories.fundraiser.value"),
     },
     {
       label: t("categories.meetup.title"),
-      href: "/events/create/in-person/meetup",
+      href: "/meetup",
       Icon: Users,
       value: t("categories.meetup.value"),
     },
     {
       label: t("categories.community.title"),
-      href: "/events/create/in-person/community",
+      href: "/community",
       Icon: Building2,
       value: t("categories.community.value"),
     },
@@ -158,7 +158,7 @@ function EventTypeCardLink({
 }) {
   return (
     <Link
-      href={href}
+      href={`/events/create/in-person/${href}`}
       className={
         "py-14 px-6 rounded-[10px] bg-neutral-100 hover:bg-primary-50 flex justify-between transition-all duration-500 cursor-pointer group"
       }

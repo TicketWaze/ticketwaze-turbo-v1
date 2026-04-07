@@ -118,7 +118,6 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
       isFree: event.isFree,
     },
   });
-  console.log(errors);
 
   // submission
   const processForm: SubmitHandler<TForm> = async (data) => {
@@ -386,7 +385,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
           </DialogHeader>
           <DialogFooter>
             <DialogClose asChild onClick={cropImage}>
-              <span className="bg-primary-500 px-[3rem] py-[15px] border-2 border-transparent rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer flex items-center justify-center w-full">
+              <span className="bg-primary-500 px-[3rem] py-[15px] border-2 border-transparent rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center w-full">
                 {t("resize")}
               </span>
             </DialogClose>

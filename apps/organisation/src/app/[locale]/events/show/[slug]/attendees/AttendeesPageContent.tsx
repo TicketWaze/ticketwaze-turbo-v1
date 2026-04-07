@@ -161,7 +161,7 @@ export default function AttendeesPageContent({ event }: { event: Event }) {
                       >
                         <span
                           className={
-                            "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-[20px]"
+                            "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
                           }
                         >
                           {t("more")}
@@ -172,7 +172,7 @@ export default function AttendeesPageContent({ event }: { event: Event }) {
                             onClick={() =>
                               RemoveAccess(attendee.eventAttendeeId)
                             }
-                            className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                            className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                           >
                             <span className={"text-failure"}>
                               {t("remove")}
@@ -274,7 +274,7 @@ function AttenteeDrawerContent({ event }: { event: Event }) {
           <DrawerClose className={"flex-1 cursor-pointer"}>
             <div
               className={
-                "w-full border-primary-500 text-primary-500 bg-primary-100 px-[3rem] py-[15px] border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center"
+                "w-full border-primary-500 text-primary-500 bg-primary-100 px-[3rem] py-[15px] border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
               }
             >
               {t("close")}

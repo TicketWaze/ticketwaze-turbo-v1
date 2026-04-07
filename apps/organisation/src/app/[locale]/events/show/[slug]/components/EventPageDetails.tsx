@@ -136,14 +136,14 @@ export default function EventPageDetails({
     <div className={"flex flex-col gap-[3rem] overflow-y-scroll"}>
       <TopBar title={event.eventName}>
         <div className="hidden lg:flex items-center gap-4">
-          {event.eventType !== "meet" && (
+          {event.eventCategory !== "meet" && (
             <CheckingDialog event={event} user={user} />
           )}
           {/* Share Event */}
           {daysLeft !== null && daysLeft > 0 && (
             <Dialog>
               <DialogTrigger>
-                <span className="px-[15px] py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
+                <span className="px-[15px] py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
                   <Send2 variant={"Bulk"} color={"#737C8A"} size={20} />
                   {t("share")}
                 </span>
@@ -202,7 +202,7 @@ export default function EventPageDetails({
                         }
                       }}
                       className={
-                        "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-[20px] bg-primary-50 cursor-pointer flex"
+                        "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-8 bg-primary-50 cursor-pointer flex"
                       }
                     >
                       <Copy size="20" color="#e45b00" variant="Bulk" />
@@ -244,7 +244,7 @@ export default function EventPageDetails({
               </DialogContent>
             </Dialog>
           )}
-          {event.isActive ? (
+          {event.eventCategory === "meet" ? null : event.isActive ? (
             <ButtonRed
               disabled={isLoading}
               onClick={MarkEventAsInactive}
@@ -282,9 +282,7 @@ export default function EventPageDetails({
         }
       >
         <li className={"pb-[30px]"}>
-          <span
-            className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
-          >
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}>
             {t("revenue")}
           </span>
           <p className={"font-medium text-[25px] leading-[30px] font-primary"}>
@@ -314,12 +312,10 @@ export default function EventPageDetails({
           return (
             <li
               key={t.ticketTypeName}
-              className={`${index % 2 === 0 ? "pl-[25px] " : "pl-0  pt-[20px] "} lg:pt-0 lg:pl-[25px] pb-[30px] ${index === 2 && "pt-[20px]"}`}
+              className={`${index % 2 === 0 ? "pl-[25px] " : "pl-0 pt-[20px] "} lg:pt-0 lg:pl-[25px] pb-[30px] ${index === 2 && "pt-[20px]"}`}
             >
               <span
-                className={
-                  "text-[14px] text-neutral-600 leading-[20px] pb-[5px]"
-                }
+                className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}
               >
                 {Capitalize(t.ticketTypeName)}
               </span>
@@ -339,9 +335,7 @@ export default function EventPageDetails({
         <li
           className={`${event.eventTicketTypes.length == 1 && "py-[20px] lg:pl-[25px] lg:py-0"} `}
         >
-          <span
-            className={"text-[14px] text-neutral-600 leading-[20px] pb-[5px]"}
-          >
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}>
             {t("count_down")}
           </span>
           <p className={"font-medium  text-[25px] leading-[30px] font-primary"}>
@@ -354,39 +348,41 @@ export default function EventPageDetails({
         </li>
       </ul>
 
-      <div className="flex lg:hidden items-center w-full  gap-4 justify-between">
-        {event.isActive ? (
-          <ButtonRed
-            disabled={isLoading}
-            onClick={MarkEventAsInactive}
-            className="px-[15px] py-[7.5px] flex flex-1 items-center gap-4"
-          >
-            <ScanBarcode size="20" variant="Bulk" color={"#de0028"} />
-            {isLoading ? <LoadingCircleSmall /> : t("stopChecking")}
-          </ButtonRed>
-        ) : (
-          <ButtonPrimary
-            disabled={isLoading}
-            onClick={MarkEventAsActive}
-            className="px-[15px] py-[7.5px] flex flex-1 items-center gap-4"
-          >
-            <ScanBarcode size="20" variant="Bulk" color={"#fff"} />
-            {isLoading ? <LoadingCircleSmall /> : t("startChecking")}
-          </ButtonPrimary>
-        )}
-        <div className="flex-1 w-full">
-          {!(event.eventType === "meet") ? (
-            <CheckingDialog event={event} user={user} />
+      {event.eventCategory !== "meet" && (
+        <div className="flex lg:hidden items-center w-full  gap-4 justify-between">
+          {event.isActive ? (
+            <ButtonRed
+              disabled={isLoading}
+              onClick={MarkEventAsInactive}
+              className="px-[15px] py-[7.5px] flex flex-1 items-center gap-4"
+            >
+              <ScanBarcode size="20" variant="Bulk" color={"#de0028"} />
+              {isLoading ? <LoadingCircleSmall /> : t("stopChecking")}
+            </ButtonRed>
           ) : (
-            <div></div>
+            <ButtonPrimary
+              disabled={isLoading}
+              onClick={MarkEventAsActive}
+              className="px-[15px] py-[7.5px] flex flex-1 items-center gap-4"
+            >
+              <ScanBarcode size="20" variant="Bulk" color={"#fff"} />
+              {isLoading ? <LoadingCircleSmall /> : t("startChecking")}
+            </ButtonPrimary>
           )}
+          <div className="flex-1 w-full">
+            {!(event.eventCategory === "meet") ? (
+              <CheckingDialog event={event} user={user} />
+            ) : (
+              <div></div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
       <div className="flex lg:hidden items-center w-full gap-8 justify-between">
         {daysLeft !== null && daysLeft > 0 && (
           <Dialog>
             <DialogTrigger className="w-full">
-              <span className="px-[15px] py-[7.5px] w-full border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
+              <span className="px-[15px] py-[7.5px] w-full border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
                 <Send2 variant={"Bulk"} color={"#737C8A"} size={20} />
                 {t("share")}
               </span>
@@ -445,7 +441,7 @@ export default function EventPageDetails({
                       }
                     }}
                     className={
-                      "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-[20px] bg-primary-50 cursor-pointer flex"
+                      "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-8 bg-primary-50 cursor-pointer flex"
                     }
                   >
                     <Copy size="20" color="#e45b00" variant="Bulk" />
@@ -534,7 +530,7 @@ export default function EventPageDetails({
               <input
                 placeholder={t("search")}
                 className={
-                  "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
                 }
                 onChange={(e) => setQuery(e.target.value)}
               />
@@ -723,7 +719,7 @@ export default function EventPageDetails({
                             >
                               <span
                                 className={
-                                  'font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-[20px]'
+                                  'font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8'
                                 }
                               >
                                 {t('more')}
@@ -733,7 +729,7 @@ export default function EventPageDetails({
                                   <Drawer direction={'right'}>
                                     <DrawerTrigger className={'w-full'}>
                                       <button
-                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 border-b-[1px] border-neutral-200 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 border-b-[1px] border-neutral-200 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                       >
                                         <span className={''}>{t('details')}</span>
                                         <HambergerMenu
@@ -748,7 +744,7 @@ export default function EventPageDetails({
                                 </li>
                                 <li className={''}>
                                   <button
-                                    className={`font-normal group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                    className={`font-normal group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                   >
                                     <span className={'text-primary-500'}>
                                       {single_event.mark_as_check}
@@ -997,7 +993,7 @@ export default function EventPageDetails({
                             >
                               <span
                                 className={
-                                  'font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-[20px]'
+                                  'font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8'
                                 }
                               >
                                 {t('more')}
@@ -1007,7 +1003,7 @@ export default function EventPageDetails({
                                   <Drawer direction={'right'}>
                                     <DrawerTrigger className={'w-full'}>
                                       <button
-                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 border-b-[1px] border-neutral-200 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 border-b-[1px] border-neutral-200 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                       >
                                         <span className={''}>{t('details')}</span>
                                         <HambergerMenu
@@ -1022,7 +1018,7 @@ export default function EventPageDetails({
                                 </li>
                                 <li className={''}>
                                   <button
-                                    className={`font-normal group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                    className={`font-normal group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                   >
                                     <span className={'text-primary-500'}>
                                       {single_event.mark_as_check}

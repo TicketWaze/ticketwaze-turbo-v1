@@ -295,7 +295,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                                 >
                                   <span
                                     className={
-                                      "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-[20px]"
+                                      "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
                                     }
                                   >
                                     {t("more")}
@@ -306,7 +306,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                                         onClick={() =>
                                           MarkAsInactive(discountCodeId)
                                         }
-                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                       >
                                         <span className={"text-failure"}>
                                           {t("mark_as_inactive")}
@@ -322,7 +322,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                                         onClick={() =>
                                           MarkAsActive(discountCodeId)
                                         }
-                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                       >
                                         <span className={"text-primary-500"}>
                                           {t("mark_as_active")}
@@ -550,7 +550,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                                   >
                                     <span
                                       className={
-                                        "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-[20px]"
+                                        "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
                                       }
                                     >
                                       {t("more")}
@@ -561,7 +561,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                                           onClick={() =>
                                             MarkAsInactive(discountCodeId)
                                           }
-                                          className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                          className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                         >
                                           <span className={"text-failure"}>
                                             {t("mark_as_inactive")}
@@ -577,7 +577,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                                           onClick={() =>
                                             MarkAsActive(discountCodeId)
                                           }
-                                          className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                          className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                         >
                                           <span className={"text-primary-500"}>
                                             {t("mark_as_active")}
@@ -805,7 +805,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                                   >
                                     <span
                                       className={
-                                        "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-[20px]"
+                                        "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
                                       }
                                     >
                                       {t("more")}
@@ -816,7 +816,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                                           onClick={() =>
                                             MarkAsInactive(discountCodeId)
                                           }
-                                          className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                          className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                         >
                                           <span className={"text-failure"}>
                                             {t("mark_as_inactive")}
@@ -832,7 +832,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                                           onClick={() =>
                                             MarkAsActive(discountCodeId)
                                           }
-                                          className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                          className={`font-normal cursor-pointer group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                                         >
                                           <span className={"text-primary-500"}>
                                             {t("mark_as_active")}
@@ -975,7 +975,7 @@ function DiscountDrawerContent({ event }: { event: Event }) {
           <div>
             <div
               className={
-                "bg-neutral-100 w-full rounded-[5rem] py-4 px-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 flex items-center"
+                "bg-neutral-100 w-full rounded-[5rem] py-4 px-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 flex items-center"
               }
             >
               <div className="w-full flex flex-col">
@@ -1009,13 +1009,13 @@ function DiscountDrawerContent({ event }: { event: Event }) {
                 onValueChange={(e) => setValue("type", e)}
                 defaultValue="percentage"
               >
-                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
+                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
                   <SelectValue placeholder={t("type")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
                     className={
-                      "text-[1.5rem] leading-[20px] border-b border-neutral-100 mb-3 pb-3"
+                      "text-[1.5rem] leading-8 border-b border-neutral-100 mb-3 pb-3"
                     }
                     value={"fixed"}
                   >
@@ -1023,7 +1023,7 @@ function DiscountDrawerContent({ event }: { event: Event }) {
                   </SelectItem>
                   <SelectItem
                     className={
-                      "text-[1.5rem] leading-[20px] border-b border-neutral-100 mb-3 pb-3"
+                      "text-[1.5rem] leading-8 border-b border-neutral-100 mb-3 pb-3"
                     }
                     value={"percentage"}
                   >
@@ -1033,7 +1033,7 @@ function DiscountDrawerContent({ event }: { event: Event }) {
               </Select>
               <input
                 className={
-                  "bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
+                  "bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
                 }
                 type="number"
                 {...register("value")}
@@ -1056,7 +1056,7 @@ function DiscountDrawerContent({ event }: { event: Event }) {
           <div>
             <div
               className={
-                "bg-neutral-100 w-full rounded-[5rem] py-4 px-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 flex items-center"
+                "bg-neutral-100 w-full rounded-[5rem] py-4 px-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 flex items-center"
               }
             >
               <div className="w-full">
@@ -1071,7 +1071,7 @@ function DiscountDrawerContent({ event }: { event: Event }) {
                   {...register("expiresIn")}
                 />
               </div>
-              <span className="text-[1.5rem] leading-[20px] text-neutral-600">
+              <span className="text-[1.5rem] leading-8 text-neutral-600">
                 {t("days")}
               </span>
             </div>
@@ -1091,7 +1091,7 @@ function DiscountDrawerContent({ event }: { event: Event }) {
             </Input>
             {/* <input
               className={
-                'bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500'
+                'bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500'
               }
               type="number"
               placeholder={t('quantity')}
@@ -1111,7 +1111,7 @@ function DiscountDrawerContent({ event }: { event: Event }) {
           <DrawerClose className={"flex-1 cursor-pointer"}>
             <div
               className={
-                "w-full border-primary-500 text-primary-500 bg-primary-100 px-[3rem] py-[15px] border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center"
+                "w-full border-primary-500 text-primary-500 bg-primary-100 px-[3rem] py-[15px] border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
               }
             >
               {t("close")}

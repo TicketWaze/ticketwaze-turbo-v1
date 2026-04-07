@@ -3,17 +3,16 @@ import AnalyticsPageTopbar from "./AnalyticsPageTopbar";
 import { auth } from "@/lib/auth";
 import { getLocale, getTranslations } from "next-intl/server";
 import DailyTicketSalesChart from "./DailyTicketSalesChart";
-import DoughnutChart from "./DoughnutChart";
 import BarChart from "./BarChart";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import TruncateUrl from "@/lib/TruncateUrl";
 import { redirect } from "next/navigation";
 import { Ticket } from "@ticketwaze/typescript-config";
 import { Crown, InfoCircle } from "iconsax-reactjs";
 import ProFeatureAlert from "@/components/Layouts/ProFeatureAlert";
 import { LinkPrimary } from "@/components/shared/Links";
 import Separator from "@/components/shared/Separator";
+import TicketClassesChart from "./TicketClassesChart";
 
 export default async function AnalyticsPage() {
   const session = await auth();
@@ -52,7 +51,7 @@ export default async function AnalyticsPage() {
         title={currentOrganisation?.organisationName ?? ""}
         description={t("description")}
         membershipTier={analytics.membershipTier}
-      ></AnalyticsPageTopbar>
+      />
       {/* main */}
       <div className={"flex flex-col gap-12 overflow-y-scroll lg:gap-16"}>
         <div
@@ -189,95 +188,7 @@ export default async function AnalyticsPage() {
                 "flex flex-col gap-8 w-full lg:flex-row col-span-10 lg:pt-6 lg:pb-12 lg:pl-12"
               }
             >
-              <div className={"w-full flex flex-col gap-8 lg:gap-10"}>
-                <span
-                  className={
-                    "text-[14px] font-sans justify-start text-gray-800 text-base font-medium leading-tight lg:text-[15px]"
-                  }
-                >
-                  {t("tickets.classes")}
-                </span>
-                <div
-                  className={
-                    "flex justify-between items-start lg:grid lg:grid-cols-2 gap-x-20 lg:gap-y-14"
-                  }
-                >
-                  <div className={"grid grid-cols justify-start items-start"}>
-                    <div
-                      className={"justify-start items-center gap-2 inline-flex"}
-                    >
-                      <div
-                        className={"w-6 h-6 bg-[#FFEFE2] rounded-[5px]"}
-                      ></div>
-                      <div
-                        className={
-                          "text-[#8F96A1] text-[14px] font-sans font-medium"
-                        }
-                      >
-                        General
-                      </div>
-                    </div>
-                    <div
-                      className={
-                        "justify-start font-medium text-black text-[25px] font-primary capitalize leading-none"
-                      }
-                    >
-                      {analytics.ticketsGeneral ?? 0}%
-                    </div>
-                  </div>
-
-                  <div className={"flex flex-col justify-start items-start"}>
-                    <div
-                      className={"justify-start items-center gap-2 inline-flex"}
-                    >
-                      <div
-                        className={"w-6 h-6 bg-[#FF8A9F] rounded-[5px]"}
-                      ></div>
-                      <div
-                        className={
-                          "text-[#8F96A1] text-[14px] font-sans font-medium"
-                        }
-                      >
-                        VIP
-                      </div>
-                    </div>
-                    <div
-                      className={
-                        "justify-start font-medium text-black text-[25px] font-primary capitalize leading-none"
-                      }
-                    >
-                      {analytics.ticketsVIP ?? 0}%
-                    </div>
-                  </div>
-
-                  <div className={"flex flex-col justify-start items-start"}>
-                    <div
-                      className={"justify-start items-center gap-2 inline-flex"}
-                    >
-                      <div
-                        className={"w-6 h-6 bg-[#E752AE] rounded-[5px]"}
-                      ></div>
-                      <div
-                        className={
-                          "text-[#8F96A1] text-[14px] font-sans font-medium"
-                        }
-                      >
-                        Premium VIP
-                      </div>
-                    </div>
-                    <div
-                      className={
-                        "justify-start font-medium text-black text-[25px] font-primary capitalize leading-none"
-                      }
-                    >
-                      {analytics.ticketPremiumVip ?? 0}%
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className={"h-70 justify-center items-center flex"}>
-                <DoughnutChart analytics={analytics} />
-              </div>
+              <TicketClassesChart analytics={analytics} />
             </div>
           </div>
         </div>
@@ -336,30 +247,13 @@ export default async function AnalyticsPage() {
               <div className={"w-full"}>
                 {analytics.topEvents.length > 0 ? (
                   <BarChart
-                    category1={
-                      TruncateUrl(analytics.topEvents[0].eventName ?? "", 8) ??
-                      ""
-                    }
-                    category2={
-                      analytics.topEvents.length >= 2
-                        ? (TruncateUrl(
-                            analytics.topEvents[1]?.eventName ?? "",
-                            8,
-                          ) ?? "")
-                        : ""
-                    }
-                    category3={
-                      TruncateUrl(analytics.topEvents[2]?.eventName ?? "", 8) ??
-                      ""
-                    }
-                    percent1={analytics.topEvents[0]?.percentage ?? "0%"}
-                    percent2={
-                      analytics.topEvents.length >= 2
-                        ? analytics.topEvents[1]?.percentage
-                        : "0%"
-                    }
-                    percent3={analytics.topEvents[2]?.percentage ?? "0%"}
-                  ></BarChart>
+                    category1={analytics.topEvents[0].eventName}
+                    category2={analytics.topEvents[1]?.eventName}
+                    category3={analytics.topEvents[2]?.eventName}
+                    percent1={analytics.topEvents[0]?.percentage}
+                    percent2={analytics.topEvents[1]?.percentage}
+                    percent3={analytics.topEvents[2]?.percentage}
+                  />
                 ) : (
                   <div className="flex flex-col justify-center items-center gap-4">
                     <InfoCircle size="32" color="#D5D8DC" />

@@ -4,6 +4,7 @@ import React from "react";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import type { EditInPersonFormValues, EventDay } from "./types";
 import { Trash } from "iconsax-reactjs";
+import { toast } from "sonner";
 
 type Props = {
   register: UseFormRegister<EditInPersonFormValues>;
@@ -146,7 +147,8 @@ export default function StepDateTime({
         <div />
         <button
           type="button"
-          onClick={addDay}
+          onClick={() => toast.info(t("coming"))}
+          // onClick={addDay}
           className="cursor-pointer flex gap-4 items-center"
         >
           <span className="text-[1.5rem] leading-8 text-primary-500">

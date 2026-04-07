@@ -129,8 +129,6 @@ export default async function EventPage({
   const isFollowing = organisation.followers.filter(
     (follower: any) => follower.userId === session?.user.userId,
   );
-
-  const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`;
   return (
     <AttendeeLayout title={event.eventName}>
       <div className="flex flex-col gap-8 h-full min-h-0">
@@ -312,9 +310,9 @@ export default async function EventPage({
                               eventDate.timezone,
                             )}
                           </span>
-                          {/* {event.eventType !== "meet" && (
-                    <AddToCalendar event={event} />
-                  )} */}
+                          {event.eventCategory !== "meet" && (
+                            <AddToCalendar event={event} />
+                          )}
                         </div>
                         {/*  time*/}
                         <div className={"flex items-center gap-[5px]"}>
@@ -349,7 +347,7 @@ export default async function EventPage({
                   })}
                 </ul>
                 {/*  address*/}
-                {event.eventType === "meet" && (
+                {event.eventCategory === "meet" && (
                   <div className={"flex items-center gap-[5px] "}>
                     <div
                       className={
@@ -367,7 +365,7 @@ export default async function EventPage({
                     </span>
                   </div>
                 )}
-                {event.eventType !== "meet" && (
+                {event.eventCategory !== "meet" && (
                   <div className={"flex items-center gap-[5px] "}>
                     <div
                       className={
@@ -387,7 +385,7 @@ export default async function EventPage({
                   </div>
                 )}
               </div>
-              {event.eventType !== "meet" && (
+              {event.eventCategory !== "meet" && (
                 <>
                   <Separator />
                   <div className=" flex flex-col gap-8">
@@ -401,7 +399,7 @@ export default async function EventPage({
                       </span>
 
                       <Link
-                        href={googleMapsUrl}
+                        href={`https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`}
                         target="_blank"
                         className="flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
                       >
@@ -499,7 +497,7 @@ export default async function EventPage({
                             eventDate.timezone,
                           )}
                         </span>
-                        {event.eventType !== "online" && (
+                        {event.eventCategory !== "meet" && (
                           <AddToCalendar event={event} />
                         )}
                       </div>
@@ -536,7 +534,7 @@ export default async function EventPage({
                 })}
               </ul>
               {/*  address*/}
-              {event.eventType === "meet" && (
+              {event.eventCategory === "meet" && (
                 <div className={"flex items-center gap-[5px] "}>
                   <div
                     className={
@@ -554,7 +552,7 @@ export default async function EventPage({
                   </span>
                 </div>
               )}
-              {event.eventType !== "meet" && (
+              {event.eventCategory !== "meet" && (
                 <div className={"flex items-center gap-[5px] "}>
                   <div
                     className={
@@ -574,7 +572,7 @@ export default async function EventPage({
                 </div>
               )}
             </div>
-            {event.eventType !== "meet" && (
+            {event.eventCategory !== "meet" && (
               <>
                 <Separator />
                 <div className=" flex flex-col gap-8">
@@ -588,7 +586,7 @@ export default async function EventPage({
                     </span>
 
                     <Link
-                      href={googleMapsUrl}
+                      href={`https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`}
                       target="_blank"
                       className="flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
                     >

@@ -888,7 +888,7 @@ export default function CheckoutFlow({
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
           <ButtonPrimary
-            disabled={isLoading || currentStep === 2}
+            disabled={isLoading || (!isFree && currentStep === 2)}
             onClick={next}
           >
             {t("footer.continue")}
@@ -1012,7 +1012,7 @@ function TicketSummaryCard({
                 return (
                   <span
                     key={ticket.ticketTypeId}
-                    className="text-primary-500 text-[1.4rem] leading-[20px] px-[15px] py-[5px] bg-primary-50 rounded-[20px]"
+                    className="text-primary-500 text-[1.4rem] leading-8 px-[15px] py-[5px] bg-primary-50 rounded-[20px]"
                   >
                     {ticketType
                       ? Capitalize(ticketType.ticketTypeName)

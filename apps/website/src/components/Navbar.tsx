@@ -74,7 +74,7 @@ export default function Navbar() {
         <SheetTrigger asChild className={"cursor-pointer lg:hidden"}>
           <div className={"flex items-center gap-4 cursor-pointer"}>
             <HamburgerMenu size="20" color="#737C8A" variant="Bulk" />
-            <span className={"text-[1.5rem] leading-[20px] text-neutral-700"}>
+            <span className={"text-[1.5rem] leading-8 text-neutral-700"}>
               Menu
             </span>
           </div>
@@ -103,9 +103,7 @@ export default function Navbar() {
               <SheetClose>
                 <div className={"flex items-center gap-4 cursor-pointer"}>
                   <CloseCircle size="20" color="#737C8A" variant="Bulk" />
-                  <span
-                    className={"text-[1.5rem] leading-[20px] text-neutral-700"}
-                  >
+                  <span className={"text-[1.5rem] leading-8 text-neutral-700"}>
                     {t("close")}
                   </span>
                 </div>

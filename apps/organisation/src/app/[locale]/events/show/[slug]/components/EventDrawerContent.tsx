@@ -147,7 +147,7 @@ export default function EventDrawerContent({ event }: { event: Event }) {
         {/* <DrawerClose className={" cursor-pointer w-full flex-1"}>
           <div
             className={
-              "border-primary-500 text-primary-500 bg-primary-100 px-[3rem] py-[15px] border-2  rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-[20px] cursor-pointer transition-all duration-400 flex items-center justify-center "
+              "border-primary-500 text-primary-500 bg-primary-100 px-[3rem] py-[15px] border-2  rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center "
             }
           >
             {t("close")}

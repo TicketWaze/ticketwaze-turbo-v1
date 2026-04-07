@@ -140,7 +140,7 @@ export default function MoreComponent({
           >
             <span
               className={
-                "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-[20px]"
+                "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
               }
             >
               {t("more")}
@@ -150,7 +150,7 @@ export default function MoreComponent({
                 <li>
                   <Link
                     href={`${slug}/attendees`}
-                    className={`cursor-pointer font-normal group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                    className={`cursor-pointer font-normal group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                   >
                     <span>{t("attendees.title")}</span>
                     <Profile2User size="20" variant="Bulk" color={"#2E3237"} />
@@ -161,7 +161,7 @@ export default function MoreComponent({
                 <Drawer direction={"right"}>
                   <DrawerTrigger className={"w-full"}>
                     <div
-                      className={`font-normal cursor-pointer group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                      className={`font-normal cursor-pointer group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                     >
                       <span className={""}>{t("details")}</span>
                       <HamburgerMenu
@@ -178,7 +178,7 @@ export default function MoreComponent({
                 <li>
                   <Link
                     href={`${slug}/discount-codes`}
-                    className={`cursor-pointer font-normal group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                    className={`cursor-pointer font-normal group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                   >
                     <span>{t("discount.subtitle")}</span>
                     <TicketDiscount
@@ -194,7 +194,7 @@ export default function MoreComponent({
                   <Dialog>
                     <DialogTrigger className="w-full">
                       <div
-                        className={`font-normal cursor-pointer group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                        className={`font-normal cursor-pointer group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                       >
                         <span className={""}>{t("checkers")}</span>
                         <SecurityUser
@@ -251,7 +251,7 @@ export default function MoreComponent({
                                 }
                                 getOptionValue={(option) => option.userId}
                                 className={
-                                  "bg-neutral-100 w-full rounded-[5rem] p-4 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
+                                  "bg-neutral-100 w-full rounded-[5rem] p-4 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
                                 }
                               />
                             )}
@@ -288,7 +288,7 @@ export default function MoreComponent({
                 <Dialog>
                   <DialogTrigger className="w-full">
                     <div
-                      className={`font-normal cursor-pointer group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                      className={`font-normal cursor-pointer group text-[1.5rem] border-b-[1px] border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                     >
                       <span className={"text-failure"}>{t("delete")}</span>
                       <Trash size="20" variant="Bulk" color={"#DE0028"} />
@@ -348,7 +348,7 @@ export default function MoreComponent({
 
               {/*<li className={''}>*/}
               {/*  <button*/}
-              {/*    className={`font-normal group text-[1.5rem] py-4 leading-[20px] text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}*/}
+              {/*    className={`font-normal group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}*/}
               {/*  >*/}
               {/*    <span className={''}>{single_event.export}</span>*/}
               {/*    <DocumentDownload size="20" variant="Bulk" color={'#2E3237'} />*/}

@@ -28,7 +28,7 @@ export default function SubscriptionPageContent({
           <div className={"flex items-start justify-between w-full"}>
             <span
               className={
-                " font-medium flex-1 word-wrap text-[1.5rem] leading-[20px]"
+                " font-medium flex-1 word-wrap text-[1.5rem] leading-8"
               }
             >
               {t("free.subtitle")}
@@ -60,7 +60,7 @@ export default function SubscriptionPageContent({
           <div className={"flex items-start justify-between w-full"}>
             <span
               className={
-                " font-medium flex-1 word-wrap text-[1.5rem] leading-[20px]"
+                " font-medium flex-1 word-wrap text-[1.5rem] leading-8"
               }
             >
               {t("pro.subtitle")}
@@ -91,7 +91,7 @@ export default function SubscriptionPageContent({
             <div className={"flex items-start justify-between w-full"}>
               <span
                 className={
-                  " font-medium flex-1 word-wrap text-[1.5rem] leading-[20px]"
+                  " font-medium flex-1 word-wrap text-[1.5rem] leading-8"
                 }
               >
                 {t("premium.subtitle")}
@@ -146,7 +146,7 @@ export default function SubscriptionPageContent({
             <input
               placeholder={t("search")}
               className={
-                "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
               }
             />
             <SearchNormal size="20" color="#737c8a" variant="Bulk" />
@@ -333,7 +333,7 @@ export default function SubscriptionPageContent({
                   <Link
                     href={"/finance/transactions"}
                     className={
-                      "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-[20px]"
+                      "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-8"
                     }
                   >
                     {t("transactions.more")}
