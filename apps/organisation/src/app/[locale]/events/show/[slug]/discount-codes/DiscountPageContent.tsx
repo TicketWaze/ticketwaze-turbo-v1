@@ -348,7 +348,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
             ) : (
               <div
                 className={
-                  " h-full w-full justify-center mx-auto mt-8 flex flex-col items-center gap-[3rem]"
+                  " h-full w-full justify-center mx-auto mt-8 flex flex-col items-center gap-12"
                 }
               >
                 <div
@@ -365,9 +365,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                   </div>
                 </div>
                 <div
-                  className={
-                    "flex flex-col gap-[3rem] items-center text-center"
-                  }
+                  className={"flex flex-col gap-12 items-center text-center"}
                 >
                   <p
                     className={
@@ -603,7 +601,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
             ) : (
               <div
                 className={
-                  " h-full w-full justify-center mx-auto mt-8 flex flex-col items-center gap-[3rem]"
+                  " h-full w-full justify-center mx-auto mt-8 flex flex-col items-center gap-12"
                 }
               >
                 <div
@@ -620,9 +618,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                   </div>
                 </div>
                 <div
-                  className={
-                    "flex flex-col gap-[3rem] items-center text-center"
-                  }
+                  className={"flex flex-col gap-12 items-center text-center"}
                 >
                   <p
                     className={
@@ -858,7 +854,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
             ) : (
               <div
                 className={
-                  " h-full w-full justify-center mx-auto mt-8 flex flex-col items-center gap-[3rem]"
+                  " h-full w-full justify-center mx-auto mt-8 flex flex-col items-center gap-12"
                 }
               >
                 <div
@@ -875,9 +871,7 @@ export default function DiscountPageContent({ event }: { event: Event }) {
                   </div>
                 </div>
                 <div
-                  className={
-                    "flex flex-col gap-[3rem] items-center text-center"
-                  }
+                  className={"flex flex-col gap-12 items-center text-center"}
                 >
                   <p
                     className={

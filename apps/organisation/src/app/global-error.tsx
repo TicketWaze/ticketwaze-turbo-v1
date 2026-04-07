@@ -21,7 +21,7 @@ export default function GlobalError({
             <Image src={Logo} alt="Ticketwaze" />
             <div
               className={
-                " h-full w-full justify-center mx-auto flex flex-col items-center gap-[3rem]"
+                " h-full w-full justify-center mx-auto flex flex-col items-center gap-12"
               }
             >
               <div
@@ -37,9 +37,7 @@ export default function GlobalError({
                   <Warning2 size="50" color="#0d0d0d" variant="Bulk" />
                 </div>
               </div>
-              <div
-                className={"flex flex-col gap-[3rem] items-center text-center"}
-              >
+              <div className={"flex flex-col gap-12 items-center text-center"}>
                 <p className={"text-[1.8rem] leading-[25px] text-neutral-600 "}>
                   Something went wrong while processing your request. This may
                   be due to a temporary issue, a weak internet connection, or an
