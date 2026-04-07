@@ -31,7 +31,7 @@ export default function SwitchLocale() {
         )}
         <span
           className={
-            "text-[1.4rem] leading-[20px] font-medium uppercase text-deep-100"
+            "text-[1.4rem] leading-8 font-medium uppercase text-deep-100"
           }
         >
           {locale}

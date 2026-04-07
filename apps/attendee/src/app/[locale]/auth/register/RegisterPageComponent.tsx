@@ -173,7 +173,7 @@ export default function RegisterPageComponent({
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
                 <Select onValueChange={(e) => switchLocale(e)}>
-                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leading-[20px]">
+                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full py-12 text-[1.4rem] text-neutral-700 leading-8">
                     {locale === "en" ? (
                       <>
                         <Image
@@ -339,7 +339,7 @@ export default function RegisterPageComponent({
           <Link
             href={`/auth/login`}
             className={
-              "border-2 border-primary-500 px-[2rem] lg:px-[3rem] py-6 rounded-[10rem] font-normal text-primary-500 text-[1.5rem] leading-[20px] bg-primary-100"
+              "border-2 border-primary-500 px-[2rem] lg:px-[3rem] py-6 rounded-[10rem] font-normal text-primary-500 text-[1.5rem] leading-8 bg-primary-100"
             }
           >
             {t("choice.footer.cta")}

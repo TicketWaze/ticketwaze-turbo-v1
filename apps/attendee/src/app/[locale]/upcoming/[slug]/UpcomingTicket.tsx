@@ -134,7 +134,7 @@ export default function UpcomingTicket({
         <div className={"flex flex-col gap-4 justify-center flex-wrap"}>
           <span
             className={
-              "text-primary-500 text-[1.4rem] leading-[20px] px-[15px] py-[5px] bg-primary-50 rounded-[20px]"
+              "text-primary-500 text-[1.4rem] leading-8 px-[15px] py-[5px] bg-primary-50 rounded-[20px]"
             }
           >
             {Capitalize(ticket.ticketType)}

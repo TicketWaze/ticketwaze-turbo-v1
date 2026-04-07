@@ -34,21 +34,21 @@ export default function WalletOrderDrawerContent({ order }: { order: Order }) {
             <div className={"w-full flex flex-col gap-8"}>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.transaction_id")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {order.orderName}
                 </span>
               </p>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.email")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {session?.user.email}
                 </span>
               </p>
@@ -106,21 +106,21 @@ export default function WalletOrderDrawerContent({ order }: { order: Order }) {
             <div className={"w-full flex flex-col gap-8"}>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.table.provider")}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {order.provider.toUpperCase()}
                 </span>
               </p>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.price")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {session?.user.userPreference.currency === "USD"
                     ? `${order.usdPrice} USD`
                     : `${order.amount} HTG`}
@@ -131,11 +131,11 @@ export default function WalletOrderDrawerContent({ order }: { order: Order }) {
             <div className={"w-full flex flex-col gap-8"}>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.check_status")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   <span
                     className={`py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase ${order.status === "SUCCESSFUL" ? "text-success" : "text-warning"} px-[5px] rounded-[30px] bg-[#f5f5f5]`}
                   >
@@ -145,11 +145,11 @@ export default function WalletOrderDrawerContent({ order }: { order: Order }) {
               </p>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-[20px] text-neutral-600"
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
                 {t("transactions.details.payment_date")}{" "}
-                <span className={"text-deep-100 font-medium leading-[20px]"}>
+                <span className={"text-deep-100 font-medium leading-8"}>
                   {FormatDate(order.createdAt, locale, "local")}
                 </span>
               </p>

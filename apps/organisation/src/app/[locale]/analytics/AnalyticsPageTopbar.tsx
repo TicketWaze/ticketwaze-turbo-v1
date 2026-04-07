@@ -34,22 +34,18 @@ export default function AnalyticsPageTopbar({
       >
         <div className="flex flex-col w-full">
           <div className="flex items-center justify-between w-full">
-            <h3
-              className={
-                "font-medium inline-flex items-center gap-2 font-primary text-[2.6rem] leading-12 text-black"
-              }
-            >
-              {title}
+            <h3 className="font-medium inline-flex items-center gap-2 font-primary text-[2.6rem] leading-12 text-black min-w-0">
+              <span className="truncate max-w-120 lg:max-w-200">{title}</span>
               {isVerified && <VerifierOrganisationCheckMark />}
             </h3>
             {membershipTier.membershipName === "free" && (
-              <div className=" p-[.2rem] rounded-[30px] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+              <div className="w-fit hidden lg:block p-[.2rem] rounded-[30px] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
                 <LinkPrimary
                   className="bg-transparent gap-4 py-2 items-center"
                   href="/settings/subscriptions/upgrade"
                 >
                   <Crown size="24" color="#fff" variant="Bulk" />
-                  <span className="hidden lg:inline">{t("upgrade")}</span>
+                  <span>{t("upgrade")}</span>
                 </LinkPrimary>
               </div>
             )}

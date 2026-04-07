@@ -115,7 +115,7 @@ function Sidebar({ className }: { className: string }) {
             <li>
               <Link
                 href={"/explore"}
-                className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-[20px] ${isActive("/explore") ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
+                className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive("/explore") ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
               >
                 <Ticket
                   size="20"
@@ -137,7 +137,7 @@ function Sidebar({ className }: { className: string }) {
                   {session?.user ? (
                     <Link
                       href={path}
-                      className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-[20px] ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
+                      className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
                     >
                       <Icon
                         size="20"
@@ -156,7 +156,7 @@ function Sidebar({ className }: { className: string }) {
                     <Dialog>
                       <DialogTrigger>
                         <div
-                          className={`group flex cursor-pointer items-center gap-4 py-4 relative text-[1.5rem] leading-[20px] ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
+                          className={`group flex cursor-pointer items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
                         >
                           <Icon
                             size="20"
@@ -193,7 +193,7 @@ function Sidebar({ className }: { className: string }) {
                   <li key={label}>
                     <Link
                       href={path}
-                      className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-[20px] ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
+                      className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
                     >
                       <Icon
                         size="20"

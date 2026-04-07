@@ -108,7 +108,7 @@ export default function CreateMeetEventForm({
           ticketTypeName: session?.activeOrganisation.membershipTier
             .customTicketTypes
             ? ""
-            : t("general.name"),
+            : "General",
           ticketTypeDescription: session?.activeOrganisation.membershipTier
             .customTicketTypes
             ? ""

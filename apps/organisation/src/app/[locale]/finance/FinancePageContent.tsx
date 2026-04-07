@@ -210,7 +210,7 @@ export default function FinancePageContent({
           </TableHeader>
           <TableBody>
             {orders.map((order) => {
-              const [ticket] = tickets.filter(
+              const transactionsTicket = tickets.filter(
                 (ticket) => ticket.orderId === order.orderId,
               );
               return (
@@ -224,7 +224,10 @@ export default function FinancePageContent({
                           {TruncateUrl(order.orderName, 15)}
                         </span>
                       </DrawerTrigger>
-                      <Informations ticket={ticket} order={order as Order} />
+                      <Informations
+                        tickets={transactionsTicket}
+                        order={order as Order}
+                      />
                     </Drawer>
                   </TableCell>
                   <TableCell
@@ -233,10 +236,16 @@ export default function FinancePageContent({
                     <Drawer direction={"right"}>
                       <DrawerTrigger>
                         <span className={"cursor-pointer"}>
-                          {TruncateUrl(ticket.event.eventName, 20)}
+                          {TruncateUrl(
+                            transactionsTicket[0].event.eventName,
+                            20,
+                          )}
                         </span>
                       </DrawerTrigger>
-                      <Informations ticket={ticket} order={order as Order} />
+                      <Informations
+                        tickets={transactionsTicket}
+                        order={order as Order}
+                      />
                     </Drawer>
                   </TableCell>
                   <TableCell
@@ -244,10 +253,10 @@ export default function FinancePageContent({
                       "text-[1.5rem] hidden lg:table-cell font-medium leading-8 text-neutral-900"
                     }
                   >
-                    {ticket.event.currency === "USD"
+                    {transactionsTicket[0].event.currency === "USD"
                       ? order.usdPrice
                       : order.amount}{" "}
-                    {ticket.event.currency}
+                    {transactionsTicket[0].event.currency}
                   </TableCell>
                   <TableCell className={"hidden lg:table-cell"}>
                     {order?.status === "SUCCESSFUL" && (
@@ -277,7 +286,7 @@ export default function FinancePageContent({
                     {FormatDate(
                       order.createdAt,
                       locale,
-                      ticket.event.eventDays[0].timezone,
+                      transactionsTicket[0].event.eventDays[0].timezone,
                     )}
                   </TableCell>
                 </TableRow>
@@ -541,15 +550,14 @@ export default function FinancePageContent({
 }
 
 function Informations({
-  ticket,
+  tickets,
   order,
 }: {
-  ticket: OrganisationTicket;
+  tickets: OrganisationTicket[];
   order: Order;
 }) {
   const t = useTranslations("Finance");
   const locale = useLocale();
-  const checkingTime = new Date(ticket.updatedAt.toString());
   return (
     <DrawerContent className={"my-6 p-12 rounded-[30px] w-full"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
@@ -570,32 +578,11 @@ function Informations({
                   "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("transactions.details.name")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
-                  {ticket.fullName}
-                </span>
-              </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("transactions.details.email")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
-                  {ticket.email}
-                </span>
-              </p>
-            </div>
-            <Separator />
-            <div className={"w-full flex flex-col gap-8"}>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
                 {t("transactions.details.event_name")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
-                  {ticket.event.eventName}
+                <span
+                  className={"text-deep-100 truncate font-medium leading-8"}
+                >
+                  {tickets[0].event.eventName}
                 </span>
               </p>
               <p
@@ -606,11 +593,11 @@ function Informations({
                 {t("transactions.details.date")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
                   {FormatDate(
-                    ticket.event.eventDays.filter(
+                    tickets[0].event.eventDays.filter(
                       (day) => day.dayNumber === 1,
                     )[0].eventDate,
                     locale,
-                    ticket.event.eventDays.filter(
+                    tickets[0].event.eventDays.filter(
                       (day) => day.dayNumber === 1,
                     )[0].timezone,
                   )}
@@ -622,46 +609,28 @@ function Informations({
                 }
               >
                 {t("transactions.details.time")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
+                <span
+                  className={"text-deep-100 truncate font-medium leading-8"}
+                >
                   {formatTime(
-                    ticket.event.eventDays.filter(
+                    tickets[0].event.eventDays.filter(
                       (day) => day.dayNumber === 1,
                     )[0].startTime,
-                    ticket.event.eventDays.filter(
+                    tickets[0].event.eventDays.filter(
                       (day) => day.dayNumber === 1,
                     )[0].timezone,
                     locale,
                   )}{" "}
                   -{" "}
                   {formatTime(
-                    ticket.event.eventDays.filter(
+                    tickets[0].event.eventDays.filter(
                       (day) => day.dayNumber === 1,
                     )[0].endTime,
-                    ticket.event.eventDays.filter(
+                    tickets[0].event.eventDays.filter(
                       (day) => day.dayNumber === 1,
                     )[0].timezone,
                     locale,
-                  )}{" "}
-                  -{" "}
-                  {
-                    ticket.event.eventDays.filter(
-                      (day) => day.dayNumber === 1,
-                    )[0].timezone
-                  }
-                </span>
-              </p>
-              <p
-                className={
-                  "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("transactions.details.location")}{" "}
-                <span
-                  className={
-                    "text-deep-100 font-medium leading-8 max-w-[39.9rem] text-right"
-                  }
-                >
-                  {ticket.event.address}
+                  )}
                 </span>
               </p>
             </div>
@@ -674,19 +643,21 @@ function Informations({
               >
                 {t("transactions.details.price")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {ticket.event.currency === "USD"
-                    ? ticket.ticketUsdPrice
-                    : ticket.ticketPrice}{" "}
-                  {ticket.event.currency}
+                  {tickets[0].event.currency === "USD"
+                    ? order.usdPrice
+                    : order.amount}{" "}
+                  {tickets[0].event.currency}
                 </span>
               </p>
               <p
                 className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                  "flex justify-between items-center truncate text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("transactions.table.id")}{" "}
-                <span className={"text-primary-500 font-bold leading-8"}>
+                {t("transactions.table.id")}
+                <span
+                  className={"text-primary-500 font-bold truncate leading-8"}
+                >
                   {order.orderName}
                 </span>
               </p>
@@ -736,40 +707,33 @@ function Informations({
                 </span>
               </p>
             </div>
-            {order.status !== "RETURNED" && (
-              <>
-                <Separator />
-                <div className={"w-full flex flex-col gap-8"}>
-                  <p
-                    className={
-                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                    }
+            <Separator />
+            <ul className={"w-full flex flex-col gap-8"}>
+              {tickets.map((ticket) => {
+                return (
+                  <li
+                    key={ticket.ticketId}
+                    className={"w-full flex flex-col gap-8"}
                   >
-                    {t("transactions.details.check_status")}{" "}
-                    <span className={"text-deep-100 font-medium leading-8"}>
-                      <span
-                        className={`py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase ${ticket.status === "CHECKED" ? "text-success" : "text-warning"} px-2 rounded-[30px] bg-[#f5f5f5]`}
-                      >
-                        {ticket.status}
-                      </span>
-                    </span>
-                  </p>
-                  {ticket.status === "CHECKED" && (
                     <p
                       className={
                         "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                       }
                     >
-                      {t("transactions.details.check_time")}{" "}
+                      {ticket.fullName}
                       <span className={"text-deep-100 font-medium leading-8"}>
-                        {checkingTime.toTimeString()}
+                        1X - {ticket.ticketType}{" "}
+                        <span className="text-neutral-500">|</span>{" "}
+                        {ticket.event.currency === "USD"
+                          ? ticket.ticketUsdPrice
+                          : ticket.ticketPrice}{" "}
+                        {ticket.event.currency}
                       </span>
                     </p>
-                  )}
-                  <div></div>
-                </div>
-              </>
-            )}
+                  </li>
+                );
+              })}
+            </ul>
           </div>
         </DrawerDescription>
       </div>

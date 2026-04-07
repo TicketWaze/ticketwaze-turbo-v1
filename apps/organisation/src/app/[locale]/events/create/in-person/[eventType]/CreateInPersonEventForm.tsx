@@ -108,7 +108,7 @@ export default function CreateInPersonEventForm({
           ticketTypeName: session?.activeOrganisation.membershipTier
             .customTicketTypes
             ? ""
-            : t("general.name"),
+            : "General",
           ticketTypeDescription: session?.activeOrganisation.membershipTier
             .customTicketTypes
             ? ""

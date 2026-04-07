@@ -42,7 +42,7 @@ export default function ResendButton({ email }: { email: string }) {
     <button
       disabled={isLoading}
       className={
-        "border-2 cursor-pointer border-primary-500 px-[3rem] py-6 rounded-[10rem] font-normal text-primary-500 text-[1.5rem] leading-[20px] bg-primary-100 disabled:cursor-not-allowed disabled:border-neutral-600 disabled:text-neutral-600 disabled:bg-neutral-400"
+        "border-2 cursor-pointer border-primary-500 px-[3rem] py-6 rounded-[10rem] font-normal text-primary-500 text-[1.5rem] leading-8 bg-primary-100 disabled:cursor-not-allowed disabled:border-neutral-600 disabled:text-neutral-600 disabled:bg-neutral-400"
       }
       onClick={ResendEmail}
     >

@@ -112,7 +112,7 @@ export default function BasicDetails({
           <textarea
             {...register("eventDescription")}
             className={
-              "bg-neutral-100 w-full rounded-[2rem] h-[150px] resize-none p-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
+              "bg-neutral-100 w-full rounded-[2rem] h-[150px] resize-none p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
             }
             placeholder={t("description")}
             minLength={150}
@@ -157,7 +157,7 @@ export default function BasicDetails({
                 onValueChange={field.onChange}
                 defaultValue={availableCountries[0]}
               >
-                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
+                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
                   <SelectValue placeholder={t("country")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -198,7 +198,7 @@ export default function BasicDetails({
                   }}
                   defaultValue={"sud"}
                 >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
+                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
                     <SelectValue placeholder={t("state")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -233,7 +233,7 @@ export default function BasicDetails({
                   value={field.value}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
+                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
                     <SelectValue placeholder={t("city")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -276,7 +276,7 @@ export default function BasicDetails({
         </div>
         <div className="w-full">
           <div
-            className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-[20px] text-[1.5rem] leading-[20px] text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
+            className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-[20px] text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
             onClick={() => inputRef.current?.focus()}
           >
             {tags.map((tag) => (

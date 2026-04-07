@@ -52,9 +52,7 @@ function Pricing() {
               className={"bg-white rounded-[20px] p-8 flex flex-col gap-[50px]"}
             >
               <span
-                className={
-                  "text-black font-medium text-[1.5rem] leading-[20px]"
-                }
+                className={"text-black font-medium text-[1.5rem] leading-8"}
               >
                 {t("free.subtitle")}
               </span>
@@ -120,7 +118,7 @@ function Pricing() {
               <div className={"flex items-start justify-between w-full"}>
                 <span
                   className={
-                    " font-medium flex-1 word-wrap text-[1.5rem] leading-[20px]"
+                    " font-medium flex-1 word-wrap text-[1.5rem] leading-8"
                   }
                 >
                   {t("pro.subtitle")}
@@ -204,9 +202,7 @@ function Pricing() {
                 }
               >
                 <span
-                  className={
-                    "text-black font-medium text-[1.5rem] leading-[20px]"
-                  }
+                  className={"text-black font-medium text-[1.5rem] leading-8"}
                 >
                   {t("premium.subtitle")}
                 </span>

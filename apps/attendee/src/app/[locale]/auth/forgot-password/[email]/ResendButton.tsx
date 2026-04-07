@@ -55,7 +55,7 @@ export default function ResendButton({ email }: { email: string }) {
         onClick={ResendEmail}
         disabled={isLoading}
         className={
-          "border-2 border-primary-500 px-[3rem] py-6 rounded-[10rem] font-normal text-primary-500 text-[1.5rem] leading-[20px] bg-primary-100 cursor-pointer"
+          "border-2 border-primary-500 px-[3rem] py-6 rounded-[10rem] font-normal text-primary-500 text-[1.5rem] leading-8 bg-primary-100 cursor-pointer"
         }
       >
         {isLoading ? <LoadingCircleSmall /> : t("footer.cta")}

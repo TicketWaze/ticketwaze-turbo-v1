@@ -6,7 +6,6 @@ import DailyTicketSalesChart from "./DailyTicketSalesChart";
 import BarChart from "./BarChart";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import TruncateUrl from "@/lib/TruncateUrl";
 import { redirect } from "next/navigation";
 import { Ticket } from "@ticketwaze/typescript-config";
 import { Crown, InfoCircle } from "iconsax-reactjs";
@@ -52,7 +51,7 @@ export default async function AnalyticsPage() {
         title={currentOrganisation?.organisationName ?? ""}
         description={t("description")}
         membershipTier={analytics.membershipTier}
-      ></AnalyticsPageTopbar>
+      />
       {/* main */}
       <div className={"flex flex-col gap-12 overflow-y-scroll lg:gap-16"}>
         <div
@@ -248,30 +247,13 @@ export default async function AnalyticsPage() {
               <div className={"w-full"}>
                 {analytics.topEvents.length > 0 ? (
                   <BarChart
-                    category1={
-                      TruncateUrl(analytics.topEvents[0].eventName ?? "", 8) ??
-                      ""
-                    }
-                    category2={
-                      analytics.topEvents.length >= 2
-                        ? (TruncateUrl(
-                            analytics.topEvents[1]?.eventName ?? "",
-                            8,
-                          ) ?? "")
-                        : ""
-                    }
-                    category3={
-                      TruncateUrl(analytics.topEvents[2]?.eventName ?? "", 8) ??
-                      ""
-                    }
-                    percent1={analytics.topEvents[0]?.percentage ?? "0%"}
-                    percent2={
-                      analytics.topEvents.length >= 2
-                        ? analytics.topEvents[1]?.percentage
-                        : "0%"
-                    }
-                    percent3={analytics.topEvents[2]?.percentage ?? "0%"}
-                  ></BarChart>
+                    category1={analytics.topEvents[0].eventName}
+                    category2={analytics.topEvents[1]?.eventName}
+                    category3={analytics.topEvents[2]?.eventName}
+                    percent1={analytics.topEvents[0]?.percentage}
+                    percent2={analytics.topEvents[1]?.percentage}
+                    percent3={analytics.topEvents[2]?.percentage}
+                  />
                 ) : (
                   <div className="flex flex-col justify-center items-center gap-4">
                     <InfoCircle size="32" color="#D5D8DC" />
