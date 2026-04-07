@@ -6,82 +6,51 @@ function BarChart({
   percent2,
   percent3,
 }: {
-  category1: string;
-  category2: string;
-  category3: string;
-  percent1: string;
-  percent2: string;
-  percent3: string;
+  category1?: string;
+  category2?: string;
+  category3?: string;
+  percent1?: string;
+  percent2?: string;
+  percent3?: string;
 }) {
+  const rows = [
+    { category: category1, percent: percent1 },
+    { category: category2, percent: percent2 },
+    { category: category3, percent: percent3 },
+  ].filter(
+    ({ category, percent }) => category !== undefined && percent !== undefined,
+  );
+
   return (
-    <table className={"w-full"}>
-      <tbody className={""}>
-        <tr className={""}>
-          <td className={"w-28"}>
-            <div className="text-[14px] font-sans text-black-100">
-              {category1}
-            </div>
-          </td>
-          <td className={"w-full px-8"}>
-            <div className="w-full h-2 bg-gray-300 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-amber-500 rounded-full"
-                style={{ width: percent1 }}
-              ></div>
-            </div>
-          </td>
-          <td
-            className={
-              "text-right text-nowrap text-[14px] font-sans text-black-100 min-w-28"
-            }
-          >
-            {percent1}
-          </td>
-        </tr>
-        <tr className={""}>
-          <td className={"min-w-28"}>
-            <div className="text-[14px] font-sans text-black-100 py-[.8rem]">
-              {category2}
-            </div>
-          </td>
-          <td className={"w-full px-[1.6rem]"}>
-            <div className="w-full h-2 bg-gray-300 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-amber-500 rounded-full"
-                style={{ width: percent2 }}
-              ></div>
-            </div>
-          </td>
-          <td
-            className={
-              "text-[14px] text-nowrap font-sans text-right text-black-100 w-28"
-            }
-          >
-            {percent2}
-          </td>
-        </tr>
-        <tr className={""}>
-          <td className={""}>
-            <div className="text-[14px] font-sans text-black-100 py-[.8rem]">
-              {category3}
-            </div>
-          </td>
-          <td className={"w-full px-[1.6rem]"}>
-            <div className="w-full h-2 bg-gray-300 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-amber-500 rounded-full"
-                style={{ width: percent3 }}
-              ></div>
-            </div>
-          </td>
-          <td
-            className={
-              "text-[14px] text-nowrap font-sans text-right text-black-100"
-            }
-          >
-            {percent3}
-          </td>
-        </tr>
+    <table className="w-full border-separate border-spacing-y-3">
+      <tbody>
+        {rows.map(({ category, percent }, i) => {
+          const numericValue = parseFloat(percent!);
+          const validWidth = isNaN(numericValue) ? "0%" : `${numericValue}%`;
+
+          return (
+            <tr key={i}>
+              <td className="w-24 pr-4 max-w-48">
+                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap truncate block">
+                  {category}
+                </span>
+              </td>
+              <td className="w-full px-4">
+                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                    style={{ width: validWidth }}
+                  />
+                </div>
+              </td>
+              <td className="w-16 pl-4 text-right">
+                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap">
+                  {isNaN(numericValue) ? "0%" : percent}
+                </span>
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );

@@ -1012,7 +1012,7 @@ function TicketSummaryCard({
                 return (
                   <span
                     key={ticket.ticketTypeId}
-                    className="text-primary-500 text-[1.4rem] leading-[20px] px-[15px] py-[5px] bg-primary-50 rounded-[20px]"
+                    className="text-primary-500 text-[1.4rem] leading-8 px-[15px] py-[5px] bg-primary-50 rounded-[20px]"
                   >
                     {ticketType
                       ? Capitalize(ticketType.ticketTypeName)

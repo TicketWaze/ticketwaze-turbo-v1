@@ -40,7 +40,7 @@ export default async function HistoryPage() {
                 <input
                   placeholder={t("search")}
                   className={
-                    "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                    "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
                   }
                   autoFocus
                   onChange={(e) => setQuery(e.target.value)}
@@ -63,7 +63,7 @@ export default async function HistoryPage() {
               <input
                 placeholder={t("search")}
                 className={
-                  "text-black font-normal text-[1.4rem] leading-[20px] w-full outline-none"
+                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
                 }
                 onChange={(e) => setQuery(e.target.value)}
               />

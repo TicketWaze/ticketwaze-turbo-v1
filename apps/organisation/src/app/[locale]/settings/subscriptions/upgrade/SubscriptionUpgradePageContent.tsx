@@ -38,7 +38,7 @@ export default function SubscriptionUpgradePageContent({
               <div className={"flex items-start justify-between w-full"}>
                 <span
                   className={
-                    " font-medium flex-1 word-wrap text-[1.5rem] leading-[20px]"
+                    " font-medium flex-1 word-wrap text-[1.5rem] leading-8"
                   }
                 >
                   {t("pro.subtitle")}
@@ -131,7 +131,7 @@ export default function SubscriptionUpgradePageContent({
                 <div className={"flex items-start justify-between w-full"}>
                   <span
                     className={
-                      " font-medium flex-1 word-wrap text-[1.5rem] leading-[20px]"
+                      " font-medium flex-1 word-wrap text-[1.5rem] leading-8"
                     }
                   >
                     {t("premium.subtitle")}

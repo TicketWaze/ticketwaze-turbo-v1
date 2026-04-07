@@ -42,7 +42,24 @@ export default function TicketClassesChart({
   analytics,
 }: DoughnutChartProps) {
   const t = useTranslations("Analytics");
-  const tickets = analytics.ticketTypePercentages ?? [];
+  const raw = analytics.ticketTypePercentages ?? [];
+
+  // Merge duplicate ticket types by summing their percentages
+  const tickets = Object.values(
+    raw.reduce<Record<string, TicketType>>((acc, ticket) => {
+      const key = ticket.name.toLowerCase();
+      if (acc[key]) {
+        acc[key] = {
+          ...acc[key],
+          percentage: acc[key].percentage + ticket.percentage,
+        };
+      } else {
+        acc[key] = { name: ticket.name, percentage: ticket.percentage };
+      }
+      return acc;
+    }, {}),
+  );
+
   const isEmpty = tickets.length === 0;
 
   const defaultData: ChartData<"doughnut"> = {
@@ -87,7 +104,7 @@ export default function TicketClassesChart({
         <div className="flex justify-between items-start lg:grid lg:grid-cols-2 gap-x-20 lg:gap-y-14">
           {tickets.map((type, index) => (
             <div
-              key={index}
+              key={type.name}
               className="grid grid-cols justify-start items-start"
             >
               <div className="justify-start items-center gap-2 inline-flex">

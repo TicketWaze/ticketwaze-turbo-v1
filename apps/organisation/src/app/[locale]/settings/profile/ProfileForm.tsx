@@ -130,7 +130,7 @@ export default function ProfileForm({ authorized }: { authorized: boolean }) {
       {/* <div>
             <input
               className={
-                'bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500'
+                'bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500'
               }
               type="text"
               value={data?.website ?? ''}
@@ -143,7 +143,7 @@ export default function ProfileForm({ authorized }: { authorized: boolean }) {
       {/* <div>
             <div
               className={
-                'bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-[20px] placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 flex items-center'
+                'bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 flex items-center'
               }
             >
               <div className={'flex gap-4 items-center'}>
