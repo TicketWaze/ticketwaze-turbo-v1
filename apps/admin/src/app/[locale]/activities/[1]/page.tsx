@@ -30,7 +30,6 @@ import Rema from "@ticketwaze/ui/assets/images/rema.png";
 import Image from "next/image";
 import More from "@ticketwaze/ui/assets/icons/more-circle.svg";
 import Link from "next/link";
-import Filter from "../filter";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 
 export default function ActivityPage() {
@@ -287,8 +286,64 @@ function ActivityAttendances() {
     <TabsContent value="attendance" className="flex flex-col gap-8">
       <div className="flex justify-end">
         <div className="flex gap-4">
-          <Filter filter={t("activity.resume.attendance.filters.status")} />
-          <Filter filter={t("activity.resume.attendance.filters.period")} />
+          <Select
+            defaultValue= "all"
+          >
+            <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
+              <SelectValue placeholder="" />
+            </SelectTrigger>
+            <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
+              <SelectGroup>
+                <SelectItem
+                  className={"text-[1.4rem] text-deep-100"}
+                  value= "all"
+                >
+                  {t("activity.resume.attendance.filters.status")}
+                </SelectItem>
+                <SelectItem
+                  className={"text-[1.4rem] text-deep-100"}
+                  value= "Checked-In"
+                >
+                  Checked-In
+                </SelectItem>
+                <SelectItem
+                  className={"text-[1.4rem] text-deep-100"}
+                  value= "pending"
+                >
+                  Pending
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <Select
+            defaultValue= "all_period"
+          >
+            <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
+              <SelectValue placeholder="" />
+            </SelectTrigger>
+            <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
+              <SelectGroup>
+                <SelectItem
+                  className={"text-[1.4rem] text-deep-100"}
+                  value= "all_period"
+                >
+                  {t("activity.resume.attendance.filters.period")}
+                </SelectItem>
+                <SelectItem
+                  className={"text-[1.4rem] text-deep-100"}
+                  value= "last_week"
+                >
+                  Last week
+                </SelectItem>
+                <SelectItem
+                  className={"text-[1.4rem] text-deep-100"}
+                  value= "last_month"
+                >
+                  Last month
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <Table>
