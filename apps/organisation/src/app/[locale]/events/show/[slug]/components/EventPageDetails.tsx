@@ -1,14 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import TruncateUrl from "@/lib/TruncateUrl";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   Table,
   TableBody,
@@ -18,20 +8,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Copy,
-  Money3,
-  ScanBarcode,
-  SearchNormal,
-  Send2,
-} from "iconsax-reactjs";
+import { Money3, SearchNormal } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
-import { toast } from "sonner";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import { DateTime } from "luxon";
 import FormatDate from "@/lib/FormatDate";
-import { slugify } from "@/lib/Slugify";
 import {
   Event,
   EventPerformer,
@@ -43,38 +25,23 @@ import MoreComponent from "./MoreComponent";
 import CheckingDialog from "./CheckingDialog";
 import Informations from "./Informations";
 import EventArtist from "./EventArtist";
-import Whatsapp from "@/assets/icons/whatsApp.svg";
-import Instagram from "@/assets/icons/instagram.svg";
-import Twitter from "@/assets/icons/twitter.svg";
-import Tiktok from "@/assets/icons/tiktok.svg";
-import Linkedin from "@/assets/icons/linkedIn.svg";
-import Image from "next/image";
-import { Link, usePathname } from "@/i18n/navigation";
-import { MarkAsActive, MarkAsInactive } from "@/actions/EventActions";
 import TopBar from "@/components/shared/TopBar";
-import { ButtonPrimary, ButtonRed } from "@/components/shared/buttons";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import Capitalize from "@/lib/Capitalize";
+import ShareEvent from "./ShareEvent";
 
 export default function EventPageDetails({
   event,
   tickets,
-  slug,
-  organisationCheckers,
-  user,
-  eventCheckers,
   orders,
-  authorized,
+  slug,
+  user,
   eventPerformers,
 }: {
   event: Event;
   tickets: OrganisationTicket[];
   orders: Order[];
   slug: string;
-  organisationCheckers: any;
   user: User;
-  eventCheckers: any;
-  authorized: boolean;
   eventPerformers: EventPerformer[];
 }) {
   const t = useTranslations("Events.single_event");
@@ -95,183 +62,23 @@ export default function EventPageDetails({
   const roundedDays = Math.ceil(daysLeft && daysLeft > 0 ? daysLeft : 0);
 
   const [query, setQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const pathname = usePathname();
   const filteredtickets = tickets.filter((ticket) => {
     const search = query.toLowerCase();
     return ticket.ticketName.toLowerCase().includes(search);
   });
-  const eventLink =
-    event.eventType === "private"
-      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${slugify(event.eventName, event.eventId)}`
-      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`;
-
-  async function MarkEventAsActive() {
-    setIsLoading(true);
-    const result = await MarkAsActive(
-      event.eventId,
-      user.accessToken,
-      pathname,
-      locale,
-    );
-    if (result.status !== "success") {
-      toast.error(result.error);
-    }
-    setIsLoading(false);
-  }
-  async function MarkEventAsInactive() {
-    setIsLoading(true);
-    const result = await MarkAsInactive(
-      event.eventId,
-      user.accessToken,
-      pathname,
-      locale,
-    );
-    if (result.status !== "success") {
-      toast.error(result.error);
-    }
-    setIsLoading(false);
-  }
   return (
-    <div className={"flex flex-col gap-[3rem] overflow-y-scroll"}>
+    <div className={"flex flex-col gap-12 overflow-y-scroll"}>
       <TopBar title={event.eventName}>
         <div className="hidden lg:flex items-center gap-4">
+          {daysLeft !== null && daysLeft > 0 && <ShareEvent event={event} />}
           {event.eventCategory !== "meet" && (
             <CheckingDialog event={event} user={user} />
           )}
-          {/* Share Event */}
-          {daysLeft !== null && daysLeft > 0 && (
-            <Dialog>
-              <DialogTrigger>
-                <span className="px-[15px] py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
-                  <Send2 variant={"Bulk"} color={"#737C8A"} size={20} />
-                  {t("share")}
-                </span>
-              </DialogTrigger>
-              <DialogContent className={"w-[360px] lg:w-[520px] "}>
-                <DialogHeader>
-                  <DialogTitle
-                    className={
-                      "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
-                    }
-                  >
-                    {t("share")}
-                  </DialogTitle>
-                  <DialogDescription className={"sr-only"}>
-                    <span>Share event</span>
-                  </DialogDescription>
-                </DialogHeader>
-                <div
-                  className={
-                    "flex flex-col w-auto justify-center items-center gap-[30px]"
-                  }
-                >
-                  <p
-                    className={
-                      "font-sans text-[1.8rem] leading-[25px] text-[#cdcdcd] text-center w-[320px] lg:w-full"
-                    }
-                  >
-                    {t("share_text")}
-                  </p>
-                  <div
-                    className={
-                      "border w-auto border-neutral-100 rounded-[100px] p-4 flex  items-center gap-4"
-                    }
-                  >
-                    <span
-                      className={
-                        "lg:hidden text-neutral-700 text-[1.8rem] max-w-[335px]"
-                      }
-                    >
-                      {TruncateUrl(eventLink, 22)}
-                    </span>
-                    <span
-                      className={
-                        "hidden lg:block text-neutral-700 text-[1.8rem] max-w-[335px]"
-                      }
-                    >
-                      {TruncateUrl(eventLink)}
-                    </span>
-                    <button
-                      onClick={async () => {
-                        try {
-                          await navigator.clipboard.writeText(eventLink);
-                          toast.success("Url copied to clipboard");
-                        } catch (e) {
-                          toast.error("Failed to copy url");
-                        }
-                      }}
-                      className={
-                        "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-8 bg-primary-50 cursor-pointer flex"
-                      }
-                    >
-                      <Copy size="20" color="#e45b00" variant="Bulk" />
-                      Copy
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-12">
-                    <Link
-                      href={`https://wa.me/?text=${encodeURIComponent(`*Check this out — it’s worth your time!* \nSomething exciting is happening and I wanted you to be part of it.\nTap the link to explore - Reserve your spot now! \n${eventLink}`)}`}
-                      target="_blank"
-                      className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full"
-                    >
-                      <Image src={Whatsapp} alt="whatsapp Icon" />
-                    </Link>
-                    {/* <div className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full">
-                      <Image src={Instagram} alt="instagram Icon" />
-                    </div> */}
-                    <Link
-                      href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                        `Check this out — it’s worth your time! 🚀\nSomething exciting is happening and I wanted you to be part of it.\nReserve your spot now: ${eventLink}`,
-                      )}`}
-                      target="_blank"
-                      className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full"
-                    >
-                      <Image src={Twitter} alt="Twitter Icon" />
-                    </Link>
-                    {/* <div className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full">
-                      <Image src={Tiktok} alt="tiktok Icon" />
-                    </div> */}
-                    <Link
-                      href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(eventLink)}`}
-                      target="_blank"
-                      className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full"
-                    >
-                      <Image src={Linkedin} alt="LinkedIn Icon" />
-                    </Link>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-          )}
-          {event.eventCategory === "meet" ? null : event.isActive ? (
-            <ButtonRed
-              disabled={isLoading}
-              onClick={MarkEventAsInactive}
-              className="px-[15px] py-[7.5px] flex items-center gap-4"
-            >
-              <ScanBarcode size="20" variant="Bulk" color={"#de0028"} />
-              {isLoading ? <LoadingCircleSmall /> : t("stopChecking")}
-            </ButtonRed>
-          ) : (
-            <ButtonPrimary
-              disabled={isLoading}
-              onClick={MarkEventAsActive}
-              className="px-[15px] py-[7.5px] flex items-center gap-4"
-            >
-              <ScanBarcode size="20" variant="Bulk" color={"#fff"} />
-              {isLoading ? <LoadingCircleSmall /> : t("startChecking")}
-            </ButtonPrimary>
-          )}
           <MoreComponent
-            authorized={authorized}
             daysLeft={daysLeft}
             event={event}
-            eventCheckers={eventCheckers}
             isFree={isFree}
-            organisationCheckers={organisationCheckers}
             slug={slug}
-            user={user}
           />
         </div>
       </TopBar>
@@ -281,11 +88,11 @@ export default function EventPageDetails({
           "grid grid-cols-2 lg:grid-cols-4 divide-x divide-y divide-neutral-100 border-neutral-100 border-b"
         }
       >
-        <li className={"pb-[30px]"}>
-          <span className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}>
+        <li className={"pb-12"}>
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
             {t("revenue")}
           </span>
-          <p className={"font-medium text-[25px] leading-[30px] font-primary"}>
+          <p className={"font-medium text-[25px] leading-12 font-primary"}>
             {tickets.reduce(
               (acc, curr) =>
                 acc +
@@ -312,7 +119,7 @@ export default function EventPageDetails({
           return (
             <li
               key={t.ticketTypeName}
-              className={`${index % 2 === 0 ? "pl-[25px] " : "pl-0 pt-[20px] "} lg:pt-0 lg:pl-[25px] pb-[30px] ${index === 2 && "pt-[20px]"}`}
+              className={`${index % 2 === 0 ? "pl-[25px] " : "pl-0 pt-[20px] "} lg:pt-0 lg:pl-10 pb-[30px] ${index === 2 && "pt-[20px]"}`}
             >
               <span
                 className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}
@@ -347,153 +154,20 @@ export default function EventPageDetails({
           </p>
         </li>
       </ul>
-
-      {event.eventCategory !== "meet" && (
-        <div className="flex lg:hidden items-center w-full  gap-4 justify-between">
-          {event.isActive ? (
-            <ButtonRed
-              disabled={isLoading}
-              onClick={MarkEventAsInactive}
-              className="px-[15px] py-[7.5px] flex flex-1 items-center gap-4"
-            >
-              <ScanBarcode size="20" variant="Bulk" color={"#de0028"} />
-              {isLoading ? <LoadingCircleSmall /> : t("stopChecking")}
-            </ButtonRed>
-          ) : (
-            <ButtonPrimary
-              disabled={isLoading}
-              onClick={MarkEventAsActive}
-              className="px-[15px] py-[7.5px] flex flex-1 items-center gap-4"
-            >
-              <ScanBarcode size="20" variant="Bulk" color={"#fff"} />
-              {isLoading ? <LoadingCircleSmall /> : t("startChecking")}
-            </ButtonPrimary>
-          )}
-          <div className="flex-1 w-full">
-            {!(event.eventCategory === "meet") ? (
-              <CheckingDialog event={event} user={user} />
-            ) : (
-              <div></div>
-            )}
-          </div>
-        </div>
-      )}
       <div className="flex lg:hidden items-center w-full gap-8 justify-between">
-        {daysLeft !== null && daysLeft > 0 && (
-          <Dialog>
-            <DialogTrigger className="w-full">
-              <span className="px-[15px] py-[7.5px] w-full border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
-                <Send2 variant={"Bulk"} color={"#737C8A"} size={20} />
-                {t("share")}
-              </span>
-            </DialogTrigger>
-            <DialogContent className={"w-[360px] lg:w-[520px] "}>
-              <DialogHeader>
-                <DialogTitle
-                  className={
-                    "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
-                  }
-                >
-                  {t("share")}
-                </DialogTitle>
-                <DialogDescription className={"sr-only"}>
-                  <span>Share event</span>
-                </DialogDescription>
-              </DialogHeader>
-              <div
-                className={
-                  "flex flex-col w-auto justify-center items-center gap-[30px]"
-                }
-              >
-                <p
-                  className={
-                    "font-sans text-[1.8rem] leading-[25px] text-[#cdcdcd] text-center w-[320px] lg:w-full"
-                  }
-                >
-                  {t("share_text")}
-                </p>
-                <div
-                  className={
-                    "border w-auto border-neutral-100 rounded-[100px] p-4 flex  items-center gap-4"
-                  }
-                >
-                  <span
-                    className={
-                      "lg:hidden text-neutral-700 text-[1.8rem] max-w-[335px]"
-                    }
-                  >
-                    {TruncateUrl(eventLink, 22)}
-                  </span>
-                  <span
-                    className={
-                      "hidden lg:block text-neutral-700 text-[1.8rem] max-w-[335px]"
-                    }
-                  >
-                    {TruncateUrl(eventLink)}
-                  </span>
-                  <button
-                    onClick={async () => {
-                      try {
-                        await navigator.clipboard.writeText(eventLink);
-                        toast.success("Url copied to clipboard");
-                      } catch (e) {
-                        toast.error("Failed to copy url");
-                      }
-                    }}
-                    className={
-                      "border-2 border-primary-500 px-[15px] py-[7px] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-8 bg-primary-50 cursor-pointer flex"
-                    }
-                  >
-                    <Copy size="20" color="#e45b00" variant="Bulk" />
-                    Copy
-                  </button>
-                </div>
-                <div className="flex items-center gap-12">
-                  <Link
-                    href={`https://wa.me/?text=${encodeURIComponent(`*Check this out — it’s worth your time!* \nSomething exciting is happening and I wanted you to be part of it.\nTap the link to explore - Reserve your spot now! \n${eventLink}`)}`}
-                    target="_blank"
-                    className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full"
-                  >
-                    <Image src={Whatsapp} alt="whatsapp Icon" />
-                  </Link>
-                  {/* <div className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full">
-                      <Image src={Instagram} alt="instagram Icon" />
-                    </div> */}
-                  <Link
-                    href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                      `Check this out — it’s worth your time! 🚀\nSomething exciting is happening and I wanted you to be part of it.\nReserve your spot now: ${eventLink}`,
-                    )}`}
-                    target="_blank"
-                    className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full"
-                  >
-                    <Image src={Twitter} alt="Twitter Icon" />
-                  </Link>
-                  {/* <div className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full">
-                      <Image src={Tiktok} alt="tiktok Icon" />
-                    </div> */}
-                  <Link
-                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(eventLink)}`}
-                    target="_blank"
-                    className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full"
-                  >
-                    <Image src={Linkedin} alt="LinkedIn Icon" />
-                  </Link>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        )}
+        {daysLeft !== null && daysLeft > 0 && <ShareEvent event={event} />}
         <MoreComponent
-          authorized={authorized}
           daysLeft={daysLeft}
           event={event}
-          eventCheckers={eventCheckers}
           isFree={isFree}
-          organisationCheckers={organisationCheckers}
           slug={slug}
-          user={user}
         />
       </div>
+      {event.eventCategory !== "meet" && (
+        <div className="flex lg:hidden items-center w-full  gap-4 justify-between">
+          <CheckingDialog event={event} user={user} />
+        </div>
+      )}
       <EventArtist
         event={event}
         user={user}
@@ -781,9 +455,7 @@ export default function EventPageDetails({
                   <Money3 size="50" color="#0d0d0d" variant="Bulk" />
                 </div>
               </div>
-              <div
-                className={"flex flex-col gap-[3rem] items-center text-center"}
-              >
+              <div className={"flex flex-col gap-12 items-center text-center"}>
                 <p
                   className={
                     "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
