@@ -6,14 +6,12 @@ import {
   DrawerFooter,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import Separator from "@/components/shared/Separator";
 import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
 
-
 export default function TicketDetails({}) {
   const t = useTranslations("Activities");
-  const locale = useLocale();
   return (
     <DrawerContent className={"my-8 p-12 rounded-[30px] w-full"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
@@ -70,9 +68,7 @@ export default function TicketDetails({}) {
                     }
                   >
                     {t("Ticket.details.date")}{" "}
-                    <span
-                      className={"text-deep-100 font-medium leading-8"}
-                    >
+                    <span className={"text-deep-100 font-medium leading-8"}>
                       13 August 2027
                     </span>
                   </p>
@@ -82,9 +78,7 @@ export default function TicketDetails({}) {
                     }
                   >
                     {t("Ticket.details.time")}{" "}
-                    <span
-                      className={"text-deep-100 font-medium leading-8"}
-                    >
+                    <span className={"text-deep-100 font-medium leading-8"}>
                       11:00 AM - 13:00 PM{" "}
                     </span>
                   </p>
@@ -113,7 +107,11 @@ export default function TicketDetails({}) {
                 }
               >
                 {t("Ticket.details.class")}{" "}
-                <span className={"text-deep-100 flex items-center gap-4 font-medium leading-6 "}>
+                <span
+                  className={
+                    "text-deep-100 flex items-center gap-4 font-medium leading-6 "
+                  }
+                >
                   1X
                   <span
                     className={`py-[0.3rem] px-2 bg-neutral-200 text-[#EF1870] font-bold rounded-[30px] text-[11px]`}
@@ -212,16 +210,16 @@ export default function TicketDetails({}) {
                   </span>
                 </span>
               </p>
-                <p
-                  className={
-                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                  }
-                >
-                  {t("Ticket.details.check_time")}{" "}
-                  <span className={"text-deep-100 font-medium leading-8"}>
-                    12 May 2026, 12:00 AM
-                  </span>
-                </p>
+              <p
+                className={
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
+                {t("Ticket.details.check_time")}{" "}
+                <span className={"text-deep-100 font-medium leading-8"}>
+                  12 May 2026, 12:00 AM
+                </span>
+              </p>
               <div></div>
             </div>
           </div>

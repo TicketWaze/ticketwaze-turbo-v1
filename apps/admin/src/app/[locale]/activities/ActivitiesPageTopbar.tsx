@@ -1,18 +1,19 @@
 import { cn } from "@/lib/utils";
-import React from "react";
-import ArrowDown from "@ticketwaze/ui/assets/icons/arrow-down.svg";
-import Image from "next/image";
-import Filter from "./filter";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/components/ui/select";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from "@/components/ui/select";
 
 export default function ActivitiesPageTopbar({
-  children,
   title,
   filter,
   className,
 }: {
   className?: string;
-  children?: React.ReactNode;
   title: string;
   filter: string;
 }) {
@@ -31,9 +32,7 @@ export default function ActivitiesPageTopbar({
           >
             {title}
           </h3>
-          <Select
-            defaultValue= "this_month"
-          >
+          <Select defaultValue="this_month">
             <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
               <SelectValue placeholder="" />
             </SelectTrigger>
@@ -41,19 +40,19 @@ export default function ActivitiesPageTopbar({
               <SelectGroup>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value= "this_month"
+                  value="this_month"
                 >
                   {filter}
                 </SelectItem>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value= "last_month"
+                  value="last_month"
                 >
                   Last month
                 </SelectItem>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value= "last_months"
+                  value="last_months"
                 >
                   Last 6 months
                 </SelectItem>
@@ -61,9 +60,6 @@ export default function ActivitiesPageTopbar({
             </SelectContent>
           </Select>
         </div>
-        {/* <div className={"flex items-center"}>
-          <div>{children}</div>
-        </div> */}
       </div>
     </div>
   );
