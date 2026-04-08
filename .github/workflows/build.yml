@@ -29,3 +29,15 @@ jobs:
 
       - name: Build project
         run: yarn build
+        env:
+          TURBO_TELEMETRY_DISABLED: 1
+          NEXT_TELEMETRY_DISABLED: 1
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          NEXT_PUBLIC_WEBSITE_URL: ${{ secrets.NEXT_PUBLIC_WEBSITE_URL }}
+          NEXT_PUBLIC_ATTENDEE_URL: ${{ secrets.NEXT_PUBLIC_ATTENDEE_URL }}
+          NEXT_PUBLIC_ORGANISATION_URL: ${{ secrets.NEXT_PUBLIC_ORGANISATION_URL }}
+          NEXT_PUBLIC_ADMIN_URL: ${{ secrets.NEXT_PUBLIC_ADMIN_URL }}
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_GOOGLE_MAP_API_KEY: ${{ secrets.NEXT_PUBLIC_GOOGLE_MAP_API_KEY }}
+          NEXT_PUBLIC_JWT_SECRET: ${{ secrets.NEXT_PUBLIC_JWT_SECRET }}
+          NEXT_PUBLIC_CLOUDFRONT_HOSTNAME: ${{ secrets.NEXT_PUBLIC_CLOUDFRONT_HOSTNAME }}
