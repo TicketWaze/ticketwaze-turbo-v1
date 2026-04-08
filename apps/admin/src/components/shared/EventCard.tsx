@@ -3,12 +3,15 @@ import { Link } from "@/i18n/navigation";
 import { Calendar2, Google, Location } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
-import Slugify from "@/lib/Slugify";
+import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
+import formatDate from "@/lib/FormatDate";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
-  const date = new Date(event.eventDays[0].dateTime);
-  const slug = Slugify(event.eventName);
+  const date = event.eventDays.filter(
+    (eventDay) => eventDay.dayNumber === 1,
+  )[0];
+  const slug = slugify(event.eventName, event.eventId);
   const locale = useLocale();
   const t = useTranslations("Event");
   const price =
@@ -43,18 +46,25 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
           "px-4 flex flex-1 lg:flex-auto flex-col gap-[1.5rem] lg:gap-4"
         }
       >
-        <ul className="flex gap-2 text-primary-500 font-medium">
+        <ul className="hidden lg:flex gap-2 text-primary-500 font-medium">
           {event.activityTags.map((tag, key) => {
             return <li key={key}>#{tag}</li>;
           })}
         </ul>
-        <h1
-          className={
-            "font-bold font-primary text-[1.2rem] text-deep-100 leading-[17px]"
-          }
-        >
-          {event.eventName}
-        </h1>
+        <div className="flex flex-col w-full gap-1">
+          <h1
+            className={
+              "font-bold font-primary text-[1.2rem] text-deep-100 leading-[17px]"
+            }
+          >
+            {event.eventName}
+          </h1>
+          <ul className="flex gap-2 lg:hidden text-primary-500 font-medium">
+            {event.activityTags.slice(0, 2).map((tag, key) => {
+              return <li key={key}>#{tag}</li>;
+            })}
+          </ul>
+        </div>
         <div
           className={
             "flex flex-col lg:flex-row gap-[1.5rem]  lg:items-center justify-between"
@@ -65,15 +75,10 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
             <span
               className={"font-medium text-[1rem] text-deep-100 leading-[15px]"}
             >
-              {date.toLocaleDateString(locale)}
-              {/* {date.day < 10 ? `0${date.day}` : date.day}
-              {"/"}
-              {date.month < 10 ? `0${date.month}` : date.month}
-              {"/"}
-              {date.year} */}
+              {formatDate(date.eventDate, locale, date.timezone)}
             </span>
           </div>
-          {event.eventType === "meet" ? (
+          {event.eventCategory === "meet" ? (
             <div className={"flex items-center gap-[5px]"}>
               <Google size="15" color="#2e3237" variant="Bulk" />
               <p
