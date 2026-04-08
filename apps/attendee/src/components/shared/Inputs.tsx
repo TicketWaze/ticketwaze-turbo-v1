@@ -52,7 +52,7 @@ export function PasswordInput({
     minLength: password.length >= 8,
     hasCapital: /[A-Z]/.test(password),
     hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
-    hasNumber:/[0-9]/.test(password),
+    hasNumber: /[0-9]/.test(password),
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

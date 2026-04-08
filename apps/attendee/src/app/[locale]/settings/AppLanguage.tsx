@@ -33,7 +33,7 @@ export default function AppLanguage({
     if (response.status !== "success") {
       toast.error(response.message);
     } else {
-      window.location.href = `${process.env.NEXT_PUBLIC_APP_URL}/${appLanguage}${pathname}`;
+      window.location.href = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${appLanguage}${pathname}`;
     }
     setIsLoading(false);
   }

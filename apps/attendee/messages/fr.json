@@ -342,6 +342,53 @@
         "text": "Vous n'avez pas reçu d'e-mail ?",
         "cta": "Renvoyer"
       }
+    },
+    "forgot": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Veuillez entrer les informations de votre compte pour continuer",
+      "back": "Retour",
+      "errors": {
+        "email": "Entrez une adresse e-mail valide"
+      },
+      "placeholders": {
+        "email": "Adresse e-mail"
+      },
+      "cta": "Réinitialiser"
+    },
+    "email_sent": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Un e-mail de réinitialisation du mot de passe a été envoyé à",
+      "footer": {
+        "text": "Vous n’avez pas reçu d’e-mail ?",
+        "cta": "Renvoyer"
+      }
+    },
+    "new_password": {
+      "title": "Créer un mot de passe",
+      "description": "Choisissez un nouveau mot de passe pour votre compte",
+      "placeholders": {
+        "password": "Mot de passe",
+        "confirm": "Confirmer le mot de passe"
+      },
+      "errors": {
+        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
+        "password_match": "Les mots de passe ne correspondent pas",
+        "sameError": "Le nouveau mot de passe ne peut pas être identique à l’actuel",
+        "characters": "Au moins 8 caractères",
+        "capital": "Au moins une lettre majuscule",
+        "special": "Au moins un caractère spécial",
+        "number": "Au moins un chiffre",
+        "firstname_length": "Le prénom doit contenir au moins 2 caractères",
+        "lastname_length": "Le nom de famille doit contenir au moins 2 caractères",
+        "firstname_validation": "Le prénom ne doit contenir que des lettres, espaces ou traits d'union",
+        "lastname_validation": "Le nom de famille ne doit contenir que des lettres, espaces ou traits d'union",
+        "email": "Le champ e-mail ne peut pas être vide"
+      },
+      "cta": "Créer"
+    },
+    "footer": {
+      "text": "Vous n’avez pas reçu d’e-mail ?",
+      "cta": "Renvoyer"
     }
   },
   "Layout": {
@@ -678,6 +725,7 @@
   },
   "Settings": {
     "title": "Paramètres",
+    "forgot": "Mot de passe oublié",
     "password": {
       "title": "Changer le mot de passe",
       "cta": "Changer le mot de passe",
@@ -695,7 +743,8 @@
       "characters": "Au moins 8 caractères",
       "capital": "Au moins une lettre majuscule",
       "special": "Au moins un caractère spécial",
-      "number": "Au moins un chiffre"
+      "number": "Au moins un chiffre",
+      "sameError": "Le nouveau mot de passe ne peut pas être identique à l’actuel"
     },
     "placeholders": {
       "password": "Mot de passe actuel",
