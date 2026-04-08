@@ -2,11 +2,11 @@
 import { ButtonPrimary } from "@/components/shared/buttons";
 import { PasswordInput } from "@/components/shared/Inputs";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { Link } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Warning2 } from "iconsax-reactjs";
 import { signOut, useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
-import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -17,7 +17,6 @@ export default function ChangePassword() {
   const changePasswordSchema = z
     .object({
       currentPassword: z.string().min(1, t("password.errors.blank")),
-      // password: z.string().min(8, t("password.errors.password")),
       password: z
         .string()
         .min(8, { message: t("password.errors.password") })
@@ -42,6 +41,9 @@ export default function ChangePassword() {
   });
   const locale = useLocale();
   async function submitHandler(data: TChangePasswordSchema) {
+    if (data.currentPassword === data.password) {
+      toast.error(t("errors.sameError"));
+    }
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/users/me/change-password`,
       {
@@ -50,7 +52,7 @@ export default function ChangePassword() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session?.user.accessToken}`,
           "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_APP_URL!,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
         },
         body: JSON.stringify(data),
       },
@@ -60,8 +62,10 @@ export default function ChangePassword() {
       toast.success("Password Updated");
       signOut({
         redirect: true,
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/login`,
+        redirectTo: `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/auth/login`,
       });
+    } else if (response.status === "same") {
+      toast.error(t("errors.sameError"));
     } else {
       toast.error(response.message);
     }
@@ -71,7 +75,7 @@ export default function ChangePassword() {
       onSubmit={handleSubmit(submitHandler)}
       className="flex flex-col gap-12"
     >
-      <span className="font-medium text-[1.8rem] leading-[25px] text-deep-100">
+      <span className="font-medium text-[1.8rem] leading-10 text-deep-100">
         {t("password.title")}
       </span>
       <div className="flex flex-col gap-8">
@@ -95,6 +99,15 @@ export default function ChangePassword() {
         >
           {t("placeholders.confirm")}
         </PasswordInput>
+        <div className="flex items-center justify-between">
+          <span></span>
+          <Link
+            className="text-[1.5rem] leading-8 text-primary-500"
+            href={"/auth/forgot-password"}
+          >
+            {t("forgot")}
+          </Link>
+        </div>
         <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
           <Warning2 size="24" color="#737C8A" variant="Bulk" />
           <div>

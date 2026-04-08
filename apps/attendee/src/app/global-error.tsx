@@ -50,7 +50,7 @@ export default function GlobalError({
             </div>
             <div className="w-full flex flex-col lg:flex-row items-center gap-6">
               <ButtonPrimary
-                onClick={() => router.replace("/auth/login")}
+                onClick={() => router.push("/auth/login")}
                 className="flex-1 w-full flex items-center gap-4"
               >
                 <Logout size="24" color="#fff" variant="Bulk" />

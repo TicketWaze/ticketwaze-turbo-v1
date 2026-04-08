@@ -83,7 +83,7 @@ export default async function UpcomingEventPage({
             </div>
           </div>
           <Link
-            href={`/organizers/${organisation.organisationId}`}
+            href={`/organisations/${organisation.organisationId}`}
             className="border-2 py-[7.5px] px-6 lg:px-12 rounded-[100px] border-black font-semibold text-[1.5rem] "
           >
             {t("viewProfile")}

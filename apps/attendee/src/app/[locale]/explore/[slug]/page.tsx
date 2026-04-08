@@ -181,7 +181,7 @@ export default async function EventPage({
                 </ul>
               </>
             )}
-            <Separator />
+            {/* <Separator />
             <div>
               <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
                 {t("contact")}
@@ -198,7 +198,7 @@ export default async function EventPage({
                   {organisation.organisationEmail}
                 </span>
               </div>
-              {/* <div className={"flex items-center gap-4"}>
+              <div className={"flex items-center gap-4"}>
                 <Call size="20" color="#737c8a" variant="Bulk" />
                 <span
                   className={
@@ -207,7 +207,7 @@ export default async function EventPage({
                 >
                   {organisation.organisationPhoneNumber}
                 </span>
-              </div> */}
+              </div>
               {organisation.organisationWebsite && (
                 <div className={"flex items-center gap-4"}>
                   <Global size="20" color="#737c8a" variant="Bulk" />
@@ -220,7 +220,7 @@ export default async function EventPage({
                   </span>
                 </div>
               )}
-            </div>
+            </div> */}
 
             <div className="lg:hidden flex flex-col gap-8">
               <div className={"flex flex-col gap-8"}>

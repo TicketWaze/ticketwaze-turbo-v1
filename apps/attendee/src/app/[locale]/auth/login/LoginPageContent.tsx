@@ -50,7 +50,7 @@ export default function LoginPageContent({
       email: data.email,
       password: data.password,
       redirect: false,
-      callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
+      callbackUrl: process.env.NEXT_PUBLIC_ATTENDEE_URL,
     });
     if (result?.error) {
       toast.error("Login failed");
@@ -73,7 +73,7 @@ export default function LoginPageContent({
   //   setIsloading(true);
   //   await signIn("google", {
   //     redirect: true,
-  //     callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
+  //     callbackUrl: process.env.NEXT_PUBLIC_ATTENDEE_URL,
   //   });
   //   setIsloading(false);
   // }

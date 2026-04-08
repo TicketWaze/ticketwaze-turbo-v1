@@ -112,7 +112,7 @@ export default function CompleteRegistrationForm({
           headers: {
             "Content-Type": "application/json",
             "Accept-Language": locale,
-            Origin: process.env.NEXT_PUBLIC_APP_URL!,
+            Origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
           },
           body: JSON.stringify({ ...data, referralCode }),
         },
@@ -123,7 +123,7 @@ export default function CompleteRegistrationForm({
           email: email,
           password: password,
           redirect: false,
-          callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
+          callbackUrl: process.env.NEXT_PUBLIC_ATTENDEE_URL,
         });
         if (result?.error) {
           toast.error("Login failed");
@@ -141,7 +141,7 @@ export default function CompleteRegistrationForm({
           headers: {
             "Content-Type": "application/json",
             "Accept-Language": locale,
-            Origin: process.env.NEXT_PUBLIC_APP_URL ?? "",
+            Origin: process.env.NEXT_PUBLIC_ATTENDEE_URL ?? "",
           },
           body: JSON.stringify(data),
         },
@@ -152,7 +152,7 @@ export default function CompleteRegistrationForm({
           email: email,
           password: password,
           redirect: false,
-          callbackUrl: process.env.NEXT_PUBLIC_APP_URL,
+          callbackUrl: process.env.NEXT_PUBLIC_ATTENDEE_URL,
         });
         if (result?.error) {
           toast.error("Login failed");

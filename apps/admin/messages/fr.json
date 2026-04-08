@@ -49,5 +49,121 @@
       "view": "Voir"
     }
   },
+  "Activities": {
+    "title": "Aperçu des activités",
+    "total": "Total des activités",
+    "active": "Activités actives",
+    "suspended": "Activités suspendues",
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "list": {
+        "status": "Tous les statuts",
+        "period": "Toute la période"
+      }
+    },
+    "list": {
+      "title": "Liste des activités",
+      "table": {
+        "name": "Nom de l'activité",
+        "organizer": "Organisateur",
+        "start": "Date de début",
+        "sold": "Billets vendus",
+        "status": "Statut",
+        "created": "Créé le"
+      },
+      "filters": {
+        "past": "Passées",
+        "ongoing": "En cours",
+        "upcoming": "À venir",
+        "active": "Actives"
+      },
+      "no activities": "Une fois que les organisateurs publient des activités, ils apparaîtront ici pour révision et suivi."
+    },
+    "activity": {
+      "back": "Retour",
+      "name": "Cap-Haïtien Jazz Festival",
+      "button": {
+        "suspend": "Suspendre le compte",
+        "edit": "Modifier le profil"
+      },
+      "about": {
+        "title": "À propos de l'activité",
+        "description": "Rejoignez-nous pour une soirée inoubliable au Festival de Jazz de Cap-Haïtien, où les rythmes envoûtants du jazz prennent vie dans l'une des villes les plus riches culturellement d'Haïti. Le festival de cette année mettra en vedette des artistes de jazz de renommée internationale et des talents locaux, mêlant le jazz traditionnel à une vibrante touche caribéenne."
+      },
+      "details": {
+        "title": "Plus de détails",
+        "organiser": {
+          "name": "Cap-Haïtien Music Alliance",
+          "followers": "823 abonnés"
+        },
+        "button": {
+          "view": "Voir le profil"
+        },
+        "date": "11 août 2024",
+        "hour": "11h00 AM - 17h00 PM",
+        "address": "Centre Culturel de Cap-Haïtien, Rue 20 Avenue, Cap-Haïtien, Haïti"
+      },
+      "resume": {
+        "performance": {
+          "title": "Performance de l'activité",
+          "total": "Revenu total",
+          "tickets": {
+            "sold": "Billets vendus",
+            "left": "Billets restants"
+          },
+          "counter": "Compte à rebours"
+        },
+        "attendance": {
+          "title": "Présence",
+          "table": {
+            "name": "Nom de l'acheteur",
+            "class": "Classe du billet",
+            "amount": "Montant payé",
+            "status": "Statut",
+            "purchase": "Date d'achat"
+          },
+          "filters": {
+            "status": "Tous les statuts",
+            "period": "Toute la période"
+          },
+          "tickets": {
+            "general": "Général",
+            "vip": "Vip",
+            "premium": "Premium Vip"
+          },
+          "status": {
+            "check-in": "Enregistré"
+          }
+        }
+      }
+    },
+    "Ticket": {
+      "details": {
+        "title": "Détails du billet",
+        "attendee": "Nom du participant",
+        "mail": "Email",
+        "activity": "Nom de l'activité",
+        "date": "Date",
+        "time": "Heure",
+        "location": "Lieu",
+        "class": "Classe du billet",
+        "price": "Prix",
+        "id": "ID du billet",
+        "total": "Total",
+        "transaction_id": "ID de transaction",
+        "payment_method": "Méthode de paiement",
+        "payment_date": "Date de paiement",
+        "transaction_status": "Statut de la transaction",
+        "check_status": "Statut d'enregistrement",
+        "check_time": "Heure d'enregistrement"
+      },
+      "cta": {
+        "close": "Fermer",
+        "resend": "Renvoyer le billet"
+      }
+    }
+  },
   "attendees": {}
 }

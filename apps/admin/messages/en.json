@@ -50,5 +50,123 @@
       "view": "View"
     }
   },
+  
+  "Activities": {
+    "title": "Activities Overview",
+    "total": "Total Activities",
+    "active": "Active Activities",
+    "suspended": "Suspended Activities",
+    "filters": {
+      "period": {
+        "actual": "This month"
+      },
+      "list": {
+        "status": "All status",
+        "period": "All time"
+      }
+    },
+    "list": {
+      "title": "Activities list",
+      "table": {
+        "name": "Activity name",
+        "organizer": "Organizer",
+        "start": "Start date",
+        "sold": "Tickets sold",
+        "status": "Status",
+        "created": "Created on"
+      },
+      "filters": {
+        "past": "Past",
+        "ongoing": "Ongoing",
+        "upcoming": "Upcoming",
+        "active": "Active"
+      },
+      "no activities": "Once activities are published by organizers, they will appear here for review and tracking."
+    },
+    "activity": {
+      "back": "Back",
+      "name": "Cap-Haïtien Jazz Festival",
+      "button": {
+        "suspend": "Suspend account",
+        "edit": "Edit profile"
+      },
+      "about": {
+        "title": "About activity",
+        "description": "Join us for an unforgettable evening at the Cap-Haïtien Jazz Festival, where the soulful rhythms of jazz come alive in one of Haiti’s most culturally rich cities. This year’s festival will feature internationally renowned jazz artists and local talents, blending traditional jazz with a vibrant Caribbean flair."
+      },
+      "details": {
+        "title": "More details",
+        "organiser": {
+          "name": "Cap-Haïtien Music Alliance",
+          "followers": "823 followers"
+        }, 
+        "button":{
+          "view": "View profile"
+        },
+        "date": "11 August 2024",
+        "hour": "11:00 AM - 17:00 PM",
+        "address": "Cap-Haïtien Cultural Center, Rue 20 Avenue, Cap-Haïtien, Haiti"
+      },
+      "resume": {
+        "performance": {
+          "title": "Activity performance",
+          "total": "Total revenue",
+          "tickets": {
+            "sold": "Tickets sold",
+            "left": "Tickets left"
+          },
+          "counter": "Activity count down"
+        },
+        "attendance": {
+          "title": "Attendance",
+          "table": {
+            "name": "Buyer name",
+            "class": "Ticket class",
+            "amount": "Amount paid",
+            "status": "Ckeck-in status",
+            "purchase": "Purchase date"
+          },
+          "filters": {
+            "status": "All status",
+            "period": "All time"
+          },
+          "tickets": {
+            "general": "General",
+            "vip": "Vip",
+            "premium" : "Premium Vip"
+          },
+          "status": {
+            "check-in": "Check-in"
+          }
+        }
+      }
+    },
+    "Ticket": {
+      "details": {
+        "title": "Ticket Details",
+        "attendee": "Attendee Name",
+        "mail": "Email",
+        "activity": "Activity Name",
+        "date": "Date",
+        "time": "Time",
+        "location": "Location",
+        "class": "Ticket Class",
+        "price": "Price",
+        "id": "Ticket ID",
+        "total": "Total",
+        "transaction_id": "Transaction ID",
+        "payment_method": "Payment Method",
+        "payment_date": "Payment Date",
+        "transaction_status": "Transaction Status",
+        "check_status": "Checked-In Status",
+        "check_time": "Check-In Time"
+      },
+      "cta": {
+        "close": "Close",
+        "resend": "Resend ticket"
+      }
+    }
+  },
+
   "attendees": {}
 }

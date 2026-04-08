@@ -81,8 +81,8 @@ export default async function OrganizerProfile({
               {organisation.organisationDescription}
             </p>
           </div>
-          <Separator />
-          <div>
+          {/* <Separator /> */}
+          {/* <div>
             <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
               {t("profile.contact")}
             </span>
@@ -120,8 +120,10 @@ export default async function OrganizerProfile({
                 </span>
               </div>
             )}
+          </div> */}
+          <div className="lg:hidden">
+            <Separator />
           </div>
-          <Separator />
           <div className="lg:hidden flex flex-col gap-8">
             <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
               {t("profile.upcoming")}

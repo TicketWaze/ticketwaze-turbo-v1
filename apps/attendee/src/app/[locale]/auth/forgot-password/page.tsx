@@ -34,7 +34,7 @@ export default function ForgotPasswordPage() {
         headers: {
           "Content-Type": "application/json",
           "Accept-Language": locale,
-          Origin: process.env.NEXT_PUBLIC_APP_URL ?? "",
+          Origin: process.env.NEXT_PUBLIC_ATTENDEE_URL ?? "",
         },
         body: JSON.stringify(data),
       },

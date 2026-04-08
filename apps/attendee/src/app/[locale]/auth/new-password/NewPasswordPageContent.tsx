@@ -42,7 +42,7 @@ export default function NewPasswordPageContent() {
         headers: {
           "Content-Type": "application/json",
           "Accept-Language": locale,
-          Origin: process.env.NEXT_PUBLIC_APP_URL ?? "",
+          Origin: process.env.NEXT_PUBLIC_ATTENDEE_URL ?? "",
           Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify(data),
@@ -51,8 +51,10 @@ export default function NewPasswordPageContent() {
     const response = await request.json();
     if (response.status === "success") {
       router.push("/auth/login");
+    } else if (response.status === "same") {
+      toast.error(t("errors.sameError"));
     } else {
-      toast.error(response.message);
+      toast.error(response.errors[0].message);
     }
   }
 
@@ -89,6 +91,8 @@ export default function NewPasswordPageContent() {
             >
               <PasswordInput
                 error={errors.password?.message}
+                validate={true}
+                t={t}
                 {...register("password")}
               >
                 {t("placeholders.password")}

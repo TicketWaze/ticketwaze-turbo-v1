@@ -335,7 +335,17 @@
       },
       "errors": {
         "password_length": "Password should be at least 8 Characters",
-        "password_match": "Password doesn't match"
+        "password_match": "Password doesn't match",
+        "sameError": "New password cannot be the same as the current password",
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number",
+        "firstname_length": "First name must be at least 2 characters",
+        "lastname_length": "Last name must be at least 2 characters",
+        "firstname_validation": "First name must contain only letters, spaces, or hyphens",
+        "lastname_validation": "Last name must contain only letters, spaces, or hyphens",
+        "email": "Email field cannot be blank"
       },
       "cta": "Create"
     },
@@ -677,6 +687,7 @@
   },
   "Settings": {
     "title": "Settings",
+    "forgot": "Forgot password",
     "password": {
       "title": "Change Password",
       "cta": "Change Password",
@@ -694,7 +705,8 @@
       "characters": "At least 8 characters",
       "capital": "At least one capital letter",
       "special": "At least one special character",
-      "number": "At least one number"
+      "number": "At least one number",
+      "sameError": "New password cannot be the same as the current password"
     },
     "placeholders": {
       "password": "Current Password",

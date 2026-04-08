@@ -48,7 +48,7 @@ export default function ChangePassword() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session?.user.accessToken}`,
           "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_APP_URL!,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
         },
         body: JSON.stringify(data),
       },
@@ -58,7 +58,7 @@ export default function ChangePassword() {
       toast.success("Password Updated");
       signOut({
         redirect: true,
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/login`,
+        redirectTo: `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/auth/login`,
       });
     } else {
       toast.error(response.message);
