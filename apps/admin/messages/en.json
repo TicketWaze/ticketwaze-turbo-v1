@@ -23,6 +23,37 @@
       "footer": {
         "cta": "Back"
       }
+    },
+    "join": {
+      "title": "Join TicketWaze",
+      "description": {
+        "hello": "Hello",
+        "main": ", Fill in your profile details to unlock your workspace experience."
+      },
+      "placeholders": {
+        "password": "Choose Password",
+        "confirm": "Confirm Password"
+      },
+      "errors": {
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number",
+        "password_length": "Password must be at least 8 characters long",
+        "password_match": "Passwords don't match"
+      },
+      "cta": {
+        "submit": "Join"
+      },
+      "footer": {
+        "text": "Already own an account?",
+        "cta": "Sign in"
+      },
+      "accepted": {
+        "title": "Invitation Accepted!",
+        "text": "Your account is now set up. Get started!",
+        "signing": "Signing you in..."
+      }
     }
   },
 
