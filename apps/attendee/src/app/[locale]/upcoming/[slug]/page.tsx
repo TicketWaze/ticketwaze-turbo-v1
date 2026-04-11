@@ -189,7 +189,10 @@ export default async function UpcomingEventPage({
                 <ReturnFreeTicketView ticket={tickets[0]} />
               )}
               {tickets[0].isRefundable && !event.isFree && (
-                <ReturnPaidTicketView tickets={tickets} />
+                <ReturnPaidTicketView
+                  tickets={tickets}
+                  eventDays={event.eventDays}
+                />
               )}
             </div>
 
@@ -217,7 +220,10 @@ export default async function UpcomingEventPage({
               <ReturnFreeTicketView ticket={tickets[0]} />
             )}
             {tickets[0].isRefundable && !event.isFree && (
-              <ReturnPaidTicketView tickets={tickets} />
+              <ReturnPaidTicketView
+                tickets={tickets}
+                eventDays={event.eventDays}
+              />
             )}
             <div></div>
             <div></div>

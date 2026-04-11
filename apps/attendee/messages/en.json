@@ -555,7 +555,8 @@
     "selectAll": "Select All",
     "continue": "Proceed",
     "starts_in": "Start in",
-    "join": "Join"
+    "join": "Join",
+    "return_deadline_error": "Tickets cannot be returned within 7 days of the event."
   },
   "Checkout": {
     "back": "Back",
