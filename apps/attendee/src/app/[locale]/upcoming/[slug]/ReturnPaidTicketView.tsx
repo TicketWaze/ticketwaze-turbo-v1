@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { useLocale, useTranslations } from "next-intl";
 import { Warning2, TickCircle } from "iconsax-reactjs";
-import { Ticket } from "@ticketwaze/typescript-config";
+import { EventDay, Ticket } from "@ticketwaze/typescript-config";
 import { ReturnPaidTicketAction } from "@/actions/eventActions";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -21,8 +21,10 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 export default function ReturnPaidTicketView({
   tickets,
+  eventDays,
 }: {
   tickets: Ticket[];
+  eventDays: EventDay[];
 }) {
   const t = useTranslations("Event");
   const { data: session } = useSession();
@@ -57,6 +59,31 @@ export default function ReturnPaidTicketView({
 
   function handleContinue() {
     if (selectedIds.size === 0) return;
+
+    const now = new Date();
+
+    const earliestStart = eventDays
+      .map((day) => {
+        const dateStr = (
+          typeof day.eventDate === "string"
+            ? day.eventDate
+            : new Date(day.eventDate).toISOString()
+        ).split("T")[0];
+        return new Date(`${dateStr}T${day.startTime}`);
+      })
+      .sort((a, b) => a.getTime() - b.getTime())
+      .at(0);
+
+    if (!earliestStart) return;
+
+    const daysUntilEvent =
+      (earliestStart.getTime() - now.getTime()) / (1_000 * 60 * 60 * 24);
+
+    if (daysUntilEvent <= 7) {
+      toast.error(t("return_deadline_error"));
+      return;
+    }
+
     setStep("confirm");
   }
 

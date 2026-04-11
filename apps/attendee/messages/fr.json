@@ -593,7 +593,8 @@
     "selectAll": "Tout selectionner",
     "continue": "Poursuivre",
     "starts_in": "Commence dans",
-    "join": "Rejoindre"
+    "join": "Rejoindre",
+    "return_deadline_error": "Les billets ne peuvent pas être retournés dans les 7 jours précédant l’événement."
   },
   "Checkout": {
     "back": "Retour",
