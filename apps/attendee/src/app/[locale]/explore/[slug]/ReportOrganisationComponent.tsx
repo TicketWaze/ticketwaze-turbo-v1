@@ -264,7 +264,7 @@ export default function ReportOrganisationComponent({
               </span>
             </div>
           </DialogTrigger>
-          <NoAuthDialog />
+          <NoAuthDialog callbackUrl={pathname} />
         </Dialog>
       )}
     </>

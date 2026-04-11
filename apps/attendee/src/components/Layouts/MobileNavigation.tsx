@@ -134,7 +134,7 @@ export default function MobileNavigation({
                       <span className={""}>{label}</span>
                     </div>
                   </DialogTrigger>
-                  <NoAuthDialog />
+                  <NoAuthDialog callbackUrl={path} />
                 </Dialog>
               )}
             </li>

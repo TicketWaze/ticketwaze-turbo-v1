@@ -220,7 +220,7 @@ export default function EventActions({
                 />
               </span>
             </DialogTrigger>
-            <NoAuthDialog />
+            <NoAuthDialog callbackUrl={pathname} />
           </Dialog>
         )}
         <Popover>
@@ -260,7 +260,9 @@ export default function EventActions({
               {t("buy")}
             </span>
           </DialogTrigger>
-          <NoAuthDialog />
+          <NoAuthDialog
+            callbackUrl={`/explore/${slugify(event.eventName, event.eventId)}/checkout`}
+          />
         </Dialog>
       )}
     </div>

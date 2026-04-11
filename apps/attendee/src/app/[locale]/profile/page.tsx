@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import ProfilePageContent from "./ProfilePageContent";
 import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
-import { User, UserPreference } from "@ticketwaze/typescript-config";
+import { UserPreference } from "@ticketwaze/typescript-config";
 
 export default async function ProfilePage() {
   const t = await getTranslations("Profile");
@@ -25,7 +25,6 @@ export default async function ProfilePage() {
   return (
     <AttendeeLayout title={t("title")}>
       <ProfilePageContent
-        user={response.user as User}
         analytics={response.userAnalytic}
         accessToken={session?.user.accessToken as string}
         userPreferences={userPreferences}

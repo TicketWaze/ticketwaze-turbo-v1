@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 "use client";
 import { ArrowRight2, Warning2 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
@@ -273,7 +274,7 @@ export default function ReportEventComponent({ event }: { event: Event }) {
               </span>
             </div>
           </DialogTrigger>
-          <NoAuthDialog />
+          <NoAuthDialog callbackUrl={pathname} />
         </Dialog>
       )}
     </>

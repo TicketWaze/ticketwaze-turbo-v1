@@ -39,7 +39,7 @@ export default function Follow({ organisationId }: { organisationId: string }) {
           <DialogTrigger asChild>
             <ButtonBlack>{t("follow")}</ButtonBlack>
           </DialogTrigger>
-          <NoAuthDialog />
+          <NoAuthDialog callbackUrl={pathname} />
         </Dialog>
       )}
     </>

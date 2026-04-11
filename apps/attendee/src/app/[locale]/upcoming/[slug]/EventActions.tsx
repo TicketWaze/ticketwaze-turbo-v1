@@ -8,11 +8,11 @@ import { slugify } from "@/lib/Slugify";
 import TruncateUrl from "@/lib/TruncateUrl";
 import { Copy, Heart, MoreCircle, Send2 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ReportEventComponent from "../../explore/[slug]/ReportEventComponent";
 import ReportOrganisationComponent from "../../explore/[slug]/ReportOrganisationComponent";
-import { Event, User } from "@ticketwaze/typescript-config";
+import { Event, EventDay, User } from "@ticketwaze/typescript-config";
 import PageLoader from "@/components/PageLoader";
 import {
   Dialog,
@@ -27,6 +27,59 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import AddToCalendar from "../../explore/[slug]/AddToCalendar";
+import { LinkPrimary } from "@/components/shared/Links";
+
+function useCountdownToNextDay(eventDays: EventDay[]): string | null {
+  const [countdown, setCountdown] = useState<string | null>(null);
+
+  useEffect(() => {
+    function compute() {
+      const now = new Date();
+
+      const upcoming = eventDays
+        .map((day) => {
+          const dateStr =
+            typeof day.eventDate === "string"
+              ? day.eventDate.split("T")[0]
+              : new Date(day.eventDate).toISOString().split("T")[0];
+          return new Date(`${dateStr}T${day.startTime}`);
+        })
+        .filter((start) => start > now)
+        .sort((a, b) => a.getTime() - b.getTime());
+
+      if (upcoming.length === 0) {
+        setCountdown(null);
+        return;
+      }
+
+      const diff = upcoming[0].getTime() - now.getTime();
+      const totalHours = Math.floor(diff / 3_600_000);
+      const m = Math.floor((diff % 3_600_000) / 60_000);
+      const s = Math.floor((diff % 60_000) / 1_000);
+
+      if (totalHours >= 24) {
+        const d = Math.floor(totalHours / 24);
+        const h = totalHours % 24;
+        setCountdown(
+          `${d}d ${String(h).padStart(2, "0")}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`,
+        );
+      } else if (totalHours > 0) {
+        setCountdown(
+          `${totalHours}h ${String(m).padStart(2, "0")}m ${String(s).padStart(2, "0")}s`,
+        );
+      } else {
+        setCountdown(`${m}m ${String(s).padStart(2, "0")}s`);
+      }
+    }
+
+    compute();
+    const interval = setInterval(compute, 1_000);
+    return () => clearInterval(interval);
+  }, [eventDays]);
+
+  return countdown;
+}
 
 export default function EventActions({
   event,
@@ -70,6 +123,35 @@ export default function EventActions({
 
     setIsLoading(false);
   }
+  function useIsEventLive(eventDays: EventDay[]): boolean {
+    const [isLive, setIsLive] = useState(false);
+
+    useEffect(() => {
+      function check() {
+        const now = new Date();
+        const live = eventDays.some((day) => {
+          const dateStr =
+            typeof day.eventDate === "string"
+              ? day.eventDate.split("T")[0]
+              : new Date(day.eventDate).toISOString().split("T")[0];
+
+          const start = new Date(`${dateStr}T${day.startTime}`);
+          const end = new Date(`${dateStr}T${day.endTime}`);
+
+          return now >= start && now <= end;
+        });
+        setIsLive(live);
+      }
+
+      check();
+      const interval = setInterval(check, 10_000); // re-check every 10s
+      return () => clearInterval(interval);
+    }, [eventDays]);
+
+    return isLive;
+  }
+  const isLive = useIsEventLive(event.eventDays);
+  const countdown = useCountdownToNextDay(event.eventDays);
   return (
     <div className="flex items-center justify-between">
       <PageLoader isLoading={isLoading} />
@@ -201,16 +283,29 @@ export default function EventActions({
             </span>
 
             <ReportEventComponent event={event} />
-            <div className="h-[1px] bg-neutral-200 w-full"></div>
+            <div className="h-px bg-neutral-200 w-full"></div>
             <ReportOrganisationComponent event={event} />
           </PopoverContent>
         </Popover>
+        {event.eventCategory !== "meet" && <AddToCalendar event={event} />}
       </div>
-      {/* {isFree ? null : (
-        <LinkPrimary href={`/explore/${Slugify(event.eventName)}/checkout`}>
-          {t("buy_more")}
+
+      <div className="flex flex-col items-end gap-1">
+        <LinkPrimary
+          target="_blank"
+          rel="noopener noreferrer"
+          href={isLive ? event.googleMeetLink : "#"}
+          aria-disabled={!isLive}
+          onClick={(e) => {
+            if (!isLive) e.preventDefault();
+          }}
+          className={
+            !isLive ? "opacity-50 pointer-events-none cursor-not-allowed" : ""
+          }
+        >
+          {!isLive ? countdown : "test"}
         </LinkPrimary>
-      )} */}
+      </div>
     </div>
   );
 }

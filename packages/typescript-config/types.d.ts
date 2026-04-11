@@ -227,6 +227,8 @@ export interface Event {
   eventDays: EventDay[];
   eventTicketTypes: EventTicketType[];
   eventTagId: string;
+  googleMeetLink: string;
+  googleCalendarEventId: string;
   discountCodes: DiscountCode[];
   eventPerformers: EventPerformer[];
   eventAttendees: EventAttendee[];
