@@ -125,7 +125,7 @@ export default function ExplorePageContent({
                     <Heart size={20} color="#737C8A" variant="Bulk" />
                   </div>
                 </DialogTrigger>
-                <NoAuthDialog />
+                <NoAuthDialog callbackUrl="/explore/liked" />
               </Dialog>
             )}
             {/* Wallet */}

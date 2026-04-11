@@ -22,14 +22,14 @@ import AppLanguage from "./AppLanguage";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import SendIcon from "./send-sqaure-2.svg";
+import { useSession } from "next-auth/react";
+import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 export default function ProfilePageContent({
-  user,
   analytics,
   accessToken,
   userPreferences,
 }: {
-  user: User;
   analytics: UserAnalytic;
   accessToken: string;
   userPreferences: UserPreference;
@@ -41,39 +41,46 @@ export default function ProfilePageContent({
     lastName: z.string().min(2, { error: t("errors.lastname_length") }),
   });
   type TEditProfileSchema = z.infer<typeof EditProfileSchema>;
-
+  const { data: session, update } = useSession();
+  const user = session?.user as User;
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<TEditProfileSchema>({
     resolver: zodResolver(EditProfileSchema),
     values: {
-      firstName: user.firstName,
-      lastName: user.lastName,
+      firstName: session?.user.firstName ?? "",
+      lastName: session?.user.lastName ?? "",
     },
   });
   const locale = useLocale();
   async function submitHandler(data: TEditProfileSchema) {
-    const results = await UpdateUserProfile(accessToken, data, locale);
+    const results = await UpdateUserProfile(
+      session?.user.accessToken ?? "",
+      data,
+      locale,
+    );
     if (results.status !== "success") {
       toast.error(results.error);
+      return;
     }
+    update({
+      user: { firstName: data.firstName, lastName: data.lastName },
+    });
   }
   return (
     <>
       <PageLoader isLoading={isSubmitting} />
-      <TopBar title={t("title")}>
-        <ButtonPrimary form="edit-profile">{t("save")}</ButtonPrimary>
-      </TopBar>
+      <TopBar title={t("title")} />
       <div
         className={
-          "flex flex-col gap-[40px] w-full lg:w-[530px] mx-auto overflow-y-scroll overflow-x-hidden h-full"
+          "flex flex-col gap-16 w-full lg:w-212 mx-auto overflow-y-scroll overflow-x-hidden h-full"
         }
       >
         <ProfileImage user={user} accessToken={accessToken} />
         <div className="flex flex-col gap-8">
-          <span className="font-medium text-[1.8rem] mb-4 leading-[25px] text-deep-100">
+          <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
             {t("personal")}
           </span>
           <form
@@ -102,7 +109,7 @@ export default function ProfilePageContent({
             <Input defaultValue={user.email} disabled readOnly>
               {t("placeholders.email")}
             </Input>
-            <div className="flex flex-col lg:flex-row items-center gap-8 w-full">
+            {/* <div className="flex flex-col lg:flex-row items-center gap-8 w-full">
               <Input
                 defaultValue={user.state}
                 disabled
@@ -119,23 +126,26 @@ export default function ProfilePageContent({
               >
                 {t("placeholders.city")}
               </Input>
-            </div>
-            <Input defaultValue={user.country} disabled readOnly>
+            </div> */}
+            {/* <Input defaultValue={user.country} disabled readOnly>
               {t("placeholders.country")}
-            </Input>
-            <Input
+            </Input> */}
+            {/* <Input
               defaultValue={FormatDate(user.dateOfBirth, locale, "local")}
               disabled
               readOnly
             >
               {t("placeholders.dob")}
-            </Input>
+            </Input> */}
+            <ButtonPrimary type="submit" disabled={isSubmitting || !isDirty}>
+              {isSubmitting ? <LoadingCircleSmall /> : t("save")}
+            </ButtonPrimary>
           </form>
         </div>
         <ChangePassword />
         <AppLanguage userPreferences={userPreferences} />
         <div className="flex flex-col gap-8">
-          <span className="font-medium text-[1.8rem] mb-4 leading-[25px] text-deep-100">
+          <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
             {t("event.title")}
           </span>
           <div className="flex items-center justify-between">
@@ -166,7 +176,7 @@ export default function ProfilePageContent({
           </div>
         </div>
         <div className="flex flex-col gap-6">
-          <span className="font-medium text-[1.8rem] mb-4 leading-[25px] text-deep-100">
+          <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
             {t("others.title")}
           </span>
           <Link
@@ -190,7 +200,7 @@ export default function ProfilePageContent({
           </Link>
         </div>
         <div className="flex flex-col gap-10">
-          <span className="font-medium text-[1.8rem] mb-4 leading-[25px] text-deep-100">
+          <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
             {t("account.title")}
           </span>
           <div className="flex items-center justify-between">

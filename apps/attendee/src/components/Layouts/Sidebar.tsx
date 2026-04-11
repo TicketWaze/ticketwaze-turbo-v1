@@ -172,7 +172,7 @@ function Sidebar({ className }: { className: string }) {
                           ></div>
                         </div>
                       </DialogTrigger>
-                      <NoAuthDialog />
+                      <NoAuthDialog callbackUrl={path} />
                     </Dialog>
                   )}
                 </li>

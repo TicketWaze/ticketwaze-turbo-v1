@@ -109,12 +109,14 @@ export default function UpcomingTicket({
                 )}
               </span>
             </div>
-            <div className={"flex items-center justify-between gap-4 w-full"}>
-              <span className="text-neutral-600">{t("location")}</span>
-              <span className="text-deep-100 font-medium text-right">
-                {event.address}
-              </span>
-            </div>
+            {event.eventCategory !== "meet" && (
+              <div className={"flex items-center justify-between gap-4 w-full"}>
+                <span className="text-neutral-600">{t("location")}</span>
+                <span className="text-deep-100 font-medium text-right">
+                  {event.address}
+                </span>
+              </div>
+            )}
           </div>
         </div>
         <span className="text-warning flex gap-4 items-center">

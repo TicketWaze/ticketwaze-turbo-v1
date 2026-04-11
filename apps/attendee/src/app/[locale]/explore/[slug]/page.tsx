@@ -279,9 +279,7 @@ export default async function EventPage({
                   )}
                 </div>
                 <ul className="flex flex-col w-full gap-6">
-                  {" "}
                   {event.eventDays.map((eventDate) => {
-                    console.log(eventDate.timezone);
                     return (
                       <li key={eventDate.eventDayId}>
                         {/*  date*/}

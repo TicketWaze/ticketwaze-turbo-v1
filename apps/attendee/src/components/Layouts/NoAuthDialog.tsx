@@ -1,5 +1,5 @@
 "use client";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
@@ -21,7 +21,7 @@ import {
 } from "../ui/dialog";
 import { useState } from "react";
 
-export default function NoAuthDialog() {
+export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
   const t = useTranslations("Auth.login");
   const LoginSchema = z.object({
     email: z.email(t("errors.email")),
@@ -43,7 +43,6 @@ export default function NoAuthDialog() {
   });
   const [isLoading, setIsloading] = useState(false);
   const { update } = useSession();
-  const pathname = usePathname();
   const router = useRouter();
   async function submitHandler(data: TLoginSchema) {
     setIsloading(true);
@@ -60,7 +59,7 @@ export default function NoAuthDialog() {
       if (!data?.user.userPreference) {
         router.push("/auth/onboarding");
       } else {
-        router.push(`/${pathname}`, {
+        router.push(`${callbackUrl}`, {
           locale: data?.user.userPreference.appLanguage,
         });
       }
