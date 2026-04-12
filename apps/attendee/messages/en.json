@@ -336,7 +336,7 @@
       "errors": {
         "password_length": "Password should be at least 8 Characters",
         "password_match": "Password doesn't match",
-        "sameError": "New password cannot be the same as the current password",
+        "sameError": "You used this password in the past, You can’t reuse past passwords.",
         "characters": "At least 8 characters",
         "capital": "At least one capital letter",
         "special": "At least one special character",
@@ -503,6 +503,8 @@
     "back": "Back",
     "notInvited": "Access Restricted: This is a private activity visible only to invited participants.",
     "share": "Share activity",
+    "shareApp": "Share Ticketwaze",
+    "shareAppText": "Invite friends, colleagues, or your community to join the Ticketwaze experience with ease. Every share carries the same premium look and feel, ensuring recipients feel welcomed and motivated to join.",
     "share_text": "Spread the word and invite your friends! Share this activity on social media or via direct message.",
     "copy": "Copy",
     "buy": "Buy ticket",
@@ -745,6 +747,7 @@
     "noFollowed": "You’re not following any organisations yet. Discover and follow organisations to stay updated on their latest activities.",
     "profile": {
       "upcoming": "Upcoming activities",
+      "past": "Past activities",
       "noUpcoming": "No upcoming activity",
       "rating": "rating",
       "followers": "followers",

@@ -24,6 +24,7 @@ import Image from "next/image";
 import SendIcon from "./send-sqaure-2.svg";
 import { useSession } from "next-auth/react";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import ShareApp from "@/components/shared/ShareApp";
 
 export default function ProfilePageContent({
   analytics,
@@ -72,7 +73,9 @@ export default function ProfilePageContent({
   return (
     <>
       <PageLoader isLoading={isSubmitting} />
-      <TopBar title={t("title")} />
+      <TopBar title={t("title")}>
+        <ShareApp />
+      </TopBar>
       <div
         className={
           "flex flex-col gap-16 w-full lg:w-212 mx-auto overflow-y-scroll overflow-x-hidden h-full"

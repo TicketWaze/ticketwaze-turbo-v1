@@ -1,5 +1,5 @@
 "use client";
-import { Money3, SearchNormal, Gift, Copy } from "iconsax-reactjs";
+import { Money3, SearchNormal, Gift, Copy, ArrowRight2 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -12,7 +12,7 @@ import Image from "next/image";
 import Whatsapp from "@/assets/icons/whatsApp.svg";
 import Twitter from "@/assets/icons/twitter.svg";
 import Linkedin from "@/assets/icons/linkedIn.svg";
-import { Order, UserWallet } from "@ticketwaze/typescript-config";
+import { UserOrdersRequest, UserWallet } from "@ticketwaze/typescript-config";
 import {
   Dialog,
   DialogContent,
@@ -32,20 +32,16 @@ import {
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 
 export default function WalletPageContent({
-  orders,
+  ordersRequest,
   wallet,
 }: {
-  orders: Order[];
+  ordersRequest: UserOrdersRequest;
   wallet: UserWallet;
 }) {
   const t = useTranslations("Wallet");
   const locale = useLocale();
   const { data: session } = useSession();
-  const [query, setQuery] = useState("");
-  const filteredOrders = orders.filter((order) => {
-    const search = query.toLowerCase();
-    return order.orderName.toLowerCase().includes(search);
-  });
+  const orders = ordersRequest.data;
   const referralLink = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/auth/register?referral=${session?.user.referralCode}`;
   return (
     <div className="flex flex-col gap-10 overflow-hidden">
@@ -140,13 +136,13 @@ export default function WalletPageContent({
               }
             >
               {wallet.userInvited}{" "}
-              <span
+              {/* <span
                 className={
                   "font-normal text-[1.6rem] lg:text-[20px] text-neutral-500"
                 }
               >
                 {t("user")}
-              </span>
+              </span> */}
             </p>
           </div>
 
@@ -270,20 +266,6 @@ export default function WalletPageContent({
             >
               {t("transactions.title")}
             </span>
-            <div
-              className={
-                "bg-neutral-100 rounded-[30px] flex items-center gap-2 w-full lg:w-auto lg:min-w-[243px] px-[1.5rem] py-4"
-              }
-            >
-              <input
-                placeholder={t("search")}
-                onChange={(e) => setQuery(e.target.value)}
-                className={
-                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
-                }
-              />
-              <SearchNormal size="20" color="#737c8a" variant="Bulk" />
-            </div>
           </div>
           <Table>
             <TableHeader>
@@ -333,7 +315,7 @@ export default function WalletPageContent({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredOrders.map((order) => {
+              {orders.map((order) => {
                 return (
                   <TableRow key={order.orderId}>
                     <TableCell
@@ -472,10 +454,10 @@ export default function WalletPageContent({
               </div>
             </div>
           )}
-          {/* {tickets.length > 0 && (
+          {/* {orders.length > 6 && ( */}
           <div className={"w-full flex justify-end"}>
             <Link
-              href={"/finance/transactions"}
+              href={"/wallet/transactions"}
               className={
                 "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-8"
               }
@@ -484,7 +466,7 @@ export default function WalletPageContent({
               <ArrowRight2 size="20" color="#E45B00" variant="Bulk" />
             </Link>
           </div>
-        )} */}
+          {/* )} */}
           <div></div>
         </div>
         <div className={"flex flex-col gap-8"}>
