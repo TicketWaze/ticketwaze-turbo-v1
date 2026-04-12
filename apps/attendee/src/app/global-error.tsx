@@ -50,15 +50,15 @@ export default function GlobalError({
             </div>
             <div className="w-full flex flex-col lg:flex-row items-center gap-6">
               <ButtonPrimary
-                onClick={() => router.push("/auth/login")}
+                onClick={() => (window.location.href = "/")}
                 className="flex-1 w-full flex items-center gap-4"
               >
                 <Logout size="24" color="#fff" variant="Bulk" />
-                Logout
+                Refresh
               </ButtonPrimary>
               <ButtonBlack
                 onClick={() =>
-                  router.push(`${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`)
+                  (window.location.href = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`)
                 }
                 className="flex-1 w-full flex items-center gap-4"
               >
