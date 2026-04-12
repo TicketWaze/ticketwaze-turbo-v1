@@ -88,7 +88,7 @@ function ProfileImage({
   return (
     <div
       className={
-        "p-12 bg-primary-500 rounded-[30px] flex items-center gap-[25px]"
+        "p-12 bg-primary-500 rounded-[30px] flex flex-col lg:flex-row items-center gap-10"
       }
     >
       <Dialog>
@@ -105,7 +105,7 @@ function ProfileImage({
               account and remove your data from our servers.
             </DialogDescription>
             {imageSrc && (
-              <div className="relative w-full h-[300px]">
+              <div className="relative w-full h-120">
                 <Cropper
                   image={imageSrc}
                   crop={crop}
@@ -137,7 +137,7 @@ function ProfileImage({
       {user.profileImageUrl ? (
         <div
           className={
-            "w-[80px] h-[80px] lg:w-[160px] lg:h-[160px] border-2 border-primary-600 overflow-hidden rounded-[25px] lg:rounded-[50px]"
+            "w-64 h-64 border-2 border-primary-600 overflow-hidden rounded-[25px] lg:rounded-[50px]"
           }
         >
           <Image
@@ -159,10 +159,10 @@ function ProfileImage({
           </div>
         </>
       )}
-      <div className={"flex flex-1 flex-col gap-[20px] lg:gap-[28px]"}>
+      <div className={"flex flex-1 flex-col gap-8 lg:gap-[2.8rem]"}>
         <span
           className={
-            "font-primary font-medium lg:font-bold text-[2.6rem] lg:text-[4.5rem] leading-[30px] lg:leading-[50px] text-white"
+            "font-primary font-medium lg:font-bold text-[2.6rem] lg:text-[4.5rem] leading-12 lg:leading-20 text-white"
           }
         >
           {user.firstName} {user.lastName}
@@ -170,7 +170,7 @@ function ProfileImage({
         <form
           encType={"multipart/form-data"}
           className={
-            "px-[15px] lg:px-12 py-4 relative rounded-[100px] flex items-center justify-center gap-[5px] bg-black"
+            "px-6 lg:px-12 py-4 relative rounded-[100px] flex items-center justify-center gap-2 bg-black"
           }
         >
           {isUploading ? (

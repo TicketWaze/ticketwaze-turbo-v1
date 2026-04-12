@@ -3,7 +3,7 @@ import { redirect } from "@/i18n/navigation";
 import { auth } from "@/lib/auth";
 import { getLocale } from "next-intl/server";
 import WalletPageContent from "./WalletPageContent";
-import { Order, UserWallet } from "@ticketwaze/typescript-config";
+import { UserOrdersRequest, UserWallet } from "@ticketwaze/typescript-config";
 
 export default async function Wallet() {
   const session = await auth();
@@ -12,7 +12,7 @@ export default async function Wallet() {
     redirect({ href: "/auth/login", locale });
   }
   const OrderRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/users/me/orders`,
+    `${process.env.NEXT_PUBLIC_API_URL}/users/me/orders?limit=6`,
     {
       method: "GET",
       headers: {
@@ -22,7 +22,7 @@ export default async function Wallet() {
     },
   );
   const orderResponse = await OrderRequest.json();
-  const orders: Order[] = orderResponse.orders;
+  const orders: UserOrdersRequest = orderResponse.orders;
 
   const walletRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/users/me/wallet`,
@@ -39,7 +39,7 @@ export default async function Wallet() {
 
   return (
     <AttendeeLayout title="Explore">
-      <WalletPageContent orders={orders} wallet={wallet} />
+      <WalletPageContent ordersRequest={orders} wallet={wallet} />
     </AttendeeLayout>
   );
 }

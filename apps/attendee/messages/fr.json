@@ -373,7 +373,7 @@
       "errors": {
         "password_length": "Le mot de passe doit contenir au moins 8 caractères",
         "password_match": "Les mots de passe ne correspondent pas",
-        "sameError": "Le nouveau mot de passe ne peut pas être identique à l’actuel",
+        "sameError": "Vous avez déjà utilisé ce mot de passe. Vous ne pouvez pas réutiliser d'anciens mots de passe.",
         "characters": "Au moins 8 caractères",
         "capital": "Au moins une lettre majuscule",
         "special": "Au moins un caractère spécial",
@@ -541,6 +541,8 @@
     "back": "Retour",
     "notInvited": "Accès restreint : il s'agit d'une activité privée visible uniquement par les participants invités.",
     "share": "Partager",
+    "shareApp": "Partager Ticketwaze",
+    "shareAppText": "Invitez vos amis, collègues ou votre communauté à rejoindre l’expérience Ticketwaze en toute simplicité. Chaque partage conserve la même allure premium, afin que vos invités se sentent accueillis et motivés à participer.",
     "share_text": "Faites passer le mot et invitez vos amis ! Partagez cette activité sur les réseaux sociaux ou par message direct.",
     "copy": "Copier",
     "buy": "Acheter",
@@ -783,6 +785,7 @@
     "noFollowed": "Vous ne suivez encore aucune organisation. Explorez et suivez des organisations pour rester informé de leurs activités. ",
     "profile": {
       "upcoming": "Activités à venir",
+      "past": "Activités passées",
       "noUpcoming": "Aucune activité à venir",
       "rating": "note",
       "followers": "abonnés",
