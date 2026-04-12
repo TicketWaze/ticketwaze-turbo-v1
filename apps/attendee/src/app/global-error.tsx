@@ -3,7 +3,6 @@ import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-orange.svg";
 import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
 import { I24Support, Logout, Warning2 } from "iconsax-reactjs";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export default function GlobalError({
   error,
@@ -11,9 +10,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const router = useRouter();
   return (
-    // global-error must include html and body tags
     <html>
       <body className="w-full h-dvh overflow-hidden flex flex-col items-center justify-center bg-neutral-200 p-8">
         <div className="bg-white rounded-[3rem] h-full w-full flex flex-col items-center justify-center">
