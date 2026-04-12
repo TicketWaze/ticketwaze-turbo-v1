@@ -28,6 +28,18 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t("title"),
     description: t("description"),
+    openGraph: {
+      title: t("title"),
+      description: t("description"),
+      images: [
+        {
+          url: "/opengraph-image.png",
+          width: 1200,
+          height: 630,
+          alt: t("title"),
+        },
+      ],
+    },
   };
 }
 
@@ -48,7 +60,7 @@ export default async function RootLayout({
   return (
     <html lang={locale}>
       <body
-        className={`${bricolageGrotesque.variable} ${dmMono.variable} ${dmSans.className} bg-neutral-100 px-4 lg:px-[2.5rem] p-[2.5rem] flex flex-col gap-[2.5rem] font-sans`}
+        className={`${bricolageGrotesque.variable} ${dmMono.variable} ${dmSans.className} bg-neutral-100 px-4 lg:px-10 p-10 flex flex-col gap-10 font-sans`}
       >
         <NextIntlClientProvider>
           <Toaster richColors position="top-right" />
