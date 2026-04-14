@@ -3,7 +3,6 @@ import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-orange.svg";
 import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
 import { I24Support, Logout, Warning2 } from "iconsax-reactjs";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export default function GlobalError({
   error,
@@ -11,9 +10,7 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const router = useRouter();
   return (
-    // global-error must include html and body tags
     <html>
       <body className="w-full h-dvh overflow-hidden flex flex-col items-center justify-center bg-neutral-200 p-8">
         <div className="bg-white rounded-[3rem] h-full w-full flex flex-col items-center justify-center">
@@ -50,15 +47,15 @@ export default function GlobalError({
             </div>
             <div className="w-full flex flex-col lg:flex-row items-center gap-6">
               <ButtonPrimary
-                onClick={() => router.push("/auth/login")}
+                onClick={() => (window.location.href = "/")}
                 className="flex-1 w-full flex items-center gap-4"
               >
                 <Logout size="24" color="#fff" variant="Bulk" />
-                Logout
+                Refresh
               </ButtonPrimary>
               <ButtonBlack
                 onClick={() =>
-                  router.push(`${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`)
+                  (window.location.href = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`)
                 }
                 className="flex-1 w-full flex items-center gap-4"
               >
