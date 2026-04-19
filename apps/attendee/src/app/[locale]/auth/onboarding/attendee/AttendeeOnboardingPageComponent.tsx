@@ -5,7 +5,7 @@ import { ButtonPrimary, ButtonSecondary } from "@/components/shared/buttons";
 import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Separator from "@/components/shared/Separator";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -381,7 +381,27 @@ export default function AttendeeOnboardingPageComponent() {
               transition={{ duration: 0.5, delay: 0.4 }}
               className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
             >
-              {t("last.3")}
+              {t("last.3.1")}{" "}
+              <Link
+                className="text-primary-500"
+                href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/legals`}
+              >
+                {t("last.3.2")}
+              </Link>
+              {t("last.3.3")}
+              <Link
+                className="text-primary-500"
+                href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`}
+              >
+                {t("last.3.4")}
+              </Link>
+              {t("last.3.5")}
+              <Link
+                className="text-primary-500"
+                href={"mailto:support@ticketwaze.com"}
+              >
+                {t("last.3.6")}
+              </Link>
             </motion.p>
           </motion.div>
         )}

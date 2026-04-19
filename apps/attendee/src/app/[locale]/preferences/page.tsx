@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
 import UserPreferences from "./UserPreferences";
 import { UserPreference } from "@ticketwaze/typescript-config";
+import AppLanguage from "./AppLanguage";
 
 export default async function PreferencesPage() {
   const t = await getTranslations("Preferences");
@@ -34,9 +35,10 @@ export default async function PreferencesPage() {
       <SimpleTopbar title={t("title")} />
       <div
         className={
-          "flex flex-col gap-[40px] w-full lg:w-[530px] mx-auto overflow-y-scroll overflow-x-hidden h-full"
+          "flex flex-col gap-16 w-full lg:w-212 mx-auto overflow-y-scroll overflow-x-hidden h-full"
         }
       >
+        <AppLanguage userPreferences={userPreferences} />
         <UserPreferences userPreferences={userPreferences} />
         <EmailNotifications userPreferences={userPreferences} />
         <div></div>
