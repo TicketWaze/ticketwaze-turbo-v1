@@ -1,6 +1,8 @@
+import HistoryCard from "@/components/HistoryCard";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/lib/auth";
+import Rema from "@ticketwaze/ui/assets/images/rema.png";
 import { Clock } from "iconsax-reactjs";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -11,19 +13,21 @@ export default async function HistoryPage() {
     redirect({ href: "/auth/login", locale });
   }
   const t = await getTranslations("History");
+  const history = true;
+
   return (
     <AttendeeLayout title="HistoryPage" className="overflow-x-hidden">
       <>
         <header className="w-full flex items-center justify-between">
           {/* {!mobileSearch && ( */}
-          <div className="flex flex-col gap-[5px]">
+          <div className="flex flex-col gap-2">
             {session?.user && (
               <span className="text-[1.6rem] leading-8 text-neutral-600">
                 {t("subtitle")}{" "}
                 <span className="text-deep-100">{session?.user.firstName}</span>
               </span>
             )}
-            <span className="font-primary font-medium text-[1.8rem] lg:text-[2.6rem] leading-[2.5rem] lg:leading-12 text-black">
+            <span className="font-primary font-medium text-[1.8rem] lg:text-[2.6rem] leading-10 lg:leading-12 text-black">
               {t("title")}
             </span>
           </div>
@@ -81,75 +85,57 @@ export default async function HistoryPage() {
             )}
           </div> */}
         </header>
-        {/* <ul className="list pt-4">
-          {filteredEvents.map((event: any) => {
-            const today = DateTime.now();
-            const eventStart = event.eventDays?.[0]?.startDate
-              ? DateTime.fromISO(event.eventDays[0].startDate)
-              : null;
-            const daysLeft = eventStart
-              ? eventStart.diff(today, "days").days
-              : null;
-            const roundedDays = Math.ceil(
-              daysLeft && daysLeft > 0 ? daysLeft : 0
-            );
-            const date = new Date(event.eventDays[0]?.startDate ?? "");
-            const slug = Slugify(event.eventName);
-            return (
-              <li key={event.eventId}>
-                <UpcomingCard
-                  href={`upcoming/${slug}`}
-                  image={event.eventImageUrl}
-                  name={event.eventName}
-                  day={roundedDays}
-                  tickets={event.tickets.length}
-                />
-              </li>
-            );
-          })}
-        </ul> */}
-        {/* {filteredEvents.length === 0 && (
-          <div className="flex flex-col h-full justify-center items-center gap-[30px]">
-            <div className="h-[120px] w-[120px] bg-neutral-100 rounded-full flex items-center justify-center">
-              <div className="w-[90px] h-[90px] bg-neutral-200 flex items-center justify-center rounded-full">
-                <Star size="50" color="#0D0D0D" variant="Bulk" />
-              </div>
-            </div>
-            <span className="font-primary text-[1.8rem] text-center leading-8 text-neutral-600">
-              {t("noResult")} <span className="text-deep-100">{query}</span>
-            </span>
-          </div>
-        )} */}
-        {/* {events.length === 0 && ( */}
-        <div
-          className={
-            "w-[330px] lg:w-[460px] mx-auto flex flex-col h-full justify-center items-center gap-[5rem]"
-          }
-        >
+
+        {/* main */}
+        {history ? (
+          <ul className="list pt-4 w-full overflow-y-auto lg:-mx-4 px-4 pb-8 flex flex-col gap-4">
+            {Array.from({ length: 5 }).map((_, index) => {
+              const randomStars = Math.floor(Math.random() * 5) + 1;
+
+              return (
+                <li key={index}>
+                  <HistoryCard
+                    href={`history/${index + 1}`}
+                    image={Rema}
+                    name={t("activity.card.name")}
+                    day={1}
+                    stared={randomStars}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          // no history
           <div
             className={
-              "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+              "w-132 lg:w-184 mx-auto flex flex-col h-full justify-center items-center gap-20"
             }
           >
             <div
               className={
-                "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
               }
             >
-              <Clock size="50" color="#0d0d0d" variant="Bulk" />
+              <div
+                className={
+                  "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
+                }
+              >
+                <Clock size="50" color="#0d0d0d" variant="Bulk" />
+              </div>
+            </div>
+            <div className={"flex flex-col gap-12 items-center text-center"}>
+              <p
+                className={
+                  "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
+                }
+              >
+                {t("description")}
+              </p>
             </div>
           </div>
-          <div className={"flex flex-col gap-12 items-center text-center"}>
-            <p
-              className={
-                "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
-              }
-            >
-              {t("description")}
-            </p>
-          </div>
-        </div>
-        {/* )} */}
+        )}
       </>
     </AttendeeLayout>
   );
