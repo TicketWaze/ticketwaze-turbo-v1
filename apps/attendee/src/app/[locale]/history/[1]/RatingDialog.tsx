@@ -6,6 +6,7 @@ import {
   DialogContent,
   DialogTitle,
   DialogDescription,
+  DialogHeader,
 } from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -20,7 +21,7 @@ export default function RatingDialog({
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0); // Stoke hover a pou yon ti stil
   const [isLoading, setIsLoading] = useState(false);
- 
+
   const handleRatingSubmit = async () => {
     if (rating === 0) return;
     setIsLoading(true);
@@ -37,7 +38,9 @@ export default function RatingDialog({
   };
   return (
     <DialogContent className="[&>button]:mr-6 [&>button]:mt-3">
-      <DialogTitle>{t("title")}</DialogTitle>
+      <DialogHeader>
+        <DialogTitle>{t("title")}</DialogTitle>
+      </DialogHeader>
       <div className="h-[0.1rem] w-full bg-neutral-200 -mt-4 mb-2"></div>
       <DialogDescription className="text-neutral-400 leading-10 text-center text-[1.8rem]">
         {t("text")}
@@ -72,7 +75,11 @@ export default function RatingDialog({
           onClick={handleRatingSubmit}
           className="w-full"
         >
-          {isLoading ? <LoadingCircleSmall /> : t("submit") + (" ") + "(" + (rating) + "/5" + ")" }
+          {isLoading ? (
+            <LoadingCircleSmall />
+          ) : (
+            `${t("submit")} (${rating}/5)`
+          )}
         </ButtonPrimary>
       </div>
     </DialogContent>

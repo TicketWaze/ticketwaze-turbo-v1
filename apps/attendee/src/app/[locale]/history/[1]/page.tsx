@@ -133,11 +133,14 @@ export default function HistoryEventPage() {
 
   // pour le modal
   const [showSuccess, setShowSuccess] = React.useState(false);
-  let feedback = false;
+  const [feedback, setFeedback] = useState("");
+  const [comment, setComment] = useState("");
+  // let feedback = false;
 
   const onSubmit = async (e: React.FormEvent) => {
-    feedback = true;
+    // feedback = true;
     e.preventDefault();
+    setFeedback(comment);
     // logique d'envoi API.....
     setShowSuccess(true);
   };
@@ -168,7 +171,9 @@ export default function HistoryEventPage() {
 
             <div className={"flex flex-col"}>
               <span
-                className={"font-normal text-[1.4rem] lg:text-[1.6rem] leading-8 text-deep-200"}
+                className={
+                  "font-normal text-[1.4rem] lg:text-[1.6rem] leading-8 text-deep-200"
+                }
               >
                 {organisationName}
               </span>
@@ -216,8 +221,8 @@ export default function HistoryEventPage() {
             </div>
             <div className="flex gap-4 items-center">
               {rating === 0 && (
-                <Dialog>
-                  <DialogTrigger>
+                <Dialog open={showRating} onOpenChange={setShowRating}>
+                  <DialogTrigger asChild>
                     <ButtonBlack
                       onClick={() => setShowRating(true)}
                       className="py-3 leading-normal -tracking-[0.75px] text-[1.5rem] font-semibold"
@@ -237,20 +242,16 @@ export default function HistoryEventPage() {
           {/* feedback sent */}
           {feedback ? (
             <>
-              <Separator />
               <div className="flex flex-col gap-4">
+                <Separator />
                 <span className="text-deep-100 text-[1.6rem] font-semibold leading-9">
                   Your feedback
                 </span>
-                <p className="neutral-700 text-[1.5rem] leading-12">
-                  A truly unforgettable experience! The Cap-Haïtien Jazz
-                  Festival brought together incredible talent and vibrant energy
-                  that kept everyone on their feet. The venue was stunning, and
-                  the event was well-organized, with smooth ticketing and clear
-                  directions. Loved the VIP lounge, which gave us a chance to
-                  meet some of the artists. Can't wait for next year's lineup
+                <p className="text-neutral-700 text-[1.5rem] leading-12">
+                  {feedback}
                 </p>
               </div>
+              <div></div>
             </>
           ) : (
             <>
@@ -273,7 +274,12 @@ export default function HistoryEventPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                   >
-                    <TextArea>{t("feedback.textArea.placeholder")}</TextArea>
+                    <TextArea
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                    >
+                      {t("feedback.textArea.placeholder")}
+                    </TextArea>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -306,24 +312,25 @@ export default function HistoryEventPage() {
                       disabled={isLoading}
                       className="w-full lg:hidden"
                     >
-                      {isLoading ? <LoadingCircleSmall /> : t("feedback.textArea.submit")}
+                      {isLoading ? (
+                        <LoadingCircleSmall />
+                      ) : (
+                        t("feedback.textArea.submit")
+                      )}
                     </ButtonPrimary>
                   </motion.div>
                 </div>
               </form>
-
-              <FeedbackSuccessDialog
-                isOpen={showSuccess}
-                onOpenChange={setShowSuccess}
-              />
             </>
           )}
-
+          <FeedbackSuccessDialog
+            isOpen={showSuccess}
+            onOpenChange={setShowSuccess}
+          />
           {/* Tickets on mobile */}
           <div className="lg:hidden flex flex-col gap-4 pb-4">
             <TicketViewer tickets={mockTickets} event={mockEvent} />
           </div>
-         
         </div>
 
         {/* Tickets on desktop (second column) */}
