@@ -99,7 +99,7 @@ export default async function HistoryPage() {
                     image={Rema}
                     name={t("activity.card.name")}
                     day={1}
-                    stared={randomStars}
+                    rated={randomStars}
                   />
                 </li>
               );

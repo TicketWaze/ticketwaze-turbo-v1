@@ -531,9 +531,43 @@
   },
   "History": {
     "title": "Historique des activités",
-    "search": "Rechercher une activité",
     "subtitle": "Bon retour ",
-    "description": "Vous n’avez encore participé à aucun activité. Une fois que vous aurez assisté à une activité, il apparaîtra ici pour que vous puissiez revivre vos expériences passées."
+    "search": "Rechercher une activité",
+    "description": "Vous n'avez encore participé à aucune activité. Une fois que vous rejoignez une activité, elle apparaîtra ici pour retrouver vos expériences passées.",
+    "activity": {
+      "card": {
+        "name": "Festival de Jazz de Cap-Haïtien",
+        "count": {
+          "day": "jour",
+          "days": "jours",
+          "ago": "il y a"
+        }
+      },
+      "back": "Retour",
+      "viewProfile": "Voir le profil",
+      "rate": "Évaluer l'activité",
+      "rating": {
+        "title": "Évaluer l'activité",
+        "text": "Appuyez sur les étoiles pour évaluer votre expérience !",
+        "submit": "Soumettre"
+      },
+      "feedback": {
+        "title": "Votre avis",
+        "textArea": {
+          "title": "Écrire un avis",
+          "submit": "Envoyer l'avis",
+          "placeholder": "Message"
+        },
+        "success": {
+          "title": "Avis envoyé avec succès",
+          "text": "Merci ! Votre avis a été transmis à l'organisateur avec succès.",
+          "cta": {
+            "close": "Fermer",
+            "view": "Voir"
+          }
+        }
+      }
+    }
   },
   "Event": {
     "from": "À partir de",

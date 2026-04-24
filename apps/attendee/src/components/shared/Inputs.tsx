@@ -31,7 +31,7 @@ export function TextArea({
         )}
       />
       <label 
-        className="absolute left-8 top-8 text-[1.5rem] text-neutral-600 transition-all duration-200 ease-in-out peer-placeholder-shown:top-8 peer-placeholder-shown:text-gray-400 peer-focus:top-3 peer-focus:text-[1.2rem] peer-focus:text-neutral-600 cursor-text pointer-events-none"
+        className="peer-[:not(:placeholder-shown)]:top-3 peer-[:not(:placeholder-shown)]:text-[1.2rem] absolute left-8 top-8 text-[1.5rem] text-neutral-600 transition-all duration-200 ease-in-out peer-placeholder-shown:top-8 peer-placeholder-shown:text-gray-400 peer-focus:top-3 peer-focus:text-[1.2rem] peer-focus:text-neutral-600 cursor-text pointer-events-none"
       >
         {children}
       </label>

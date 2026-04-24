@@ -508,14 +508,28 @@
       "back": "Back",
       "viewProfile": "View profile",
       "rate": "Rate activity",
-      "textArea": {
-        "title": "Write feedback",
-        "cta":{
-          "submit": "Send feedback"
+      "rating": {
+        "title": "Rate activity",
+        "text": "Tap the stars to rate your experience!",
+        "submit": "Submit"
+      },
+      "feedback":{
+        "title": "Your feedback",
+        "textArea": {
+          "title": "Write feedback",
+          "submit": "Send feedback",
+          "placeholder":"Message"
         },
-        "placeholder":"Message"
+        "success":{
+          "title": "Feedback sent successfully",
+          "text": "Thanks! Your feedback has been shared with the organizer successfully.",
+          "cta":{
+            "close": "Close",
+            "view": "View"
+          }
+        }
       }
-     
+
     }
   },
   "Event": {

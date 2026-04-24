@@ -111,7 +111,7 @@ export default function TicketViewer({
         >
           <div
             className={
-              "w-full h-auto relative  bg-neutral-100 p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center "
+              "w-full h-auto relative  bg-neutral-100 p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center"
             }
           >
             <Image
@@ -224,23 +224,9 @@ export default function TicketViewer({
         <div className="cursor-pointer px-12 py-[7.5px] bg-neutral-300  rounded-[100px] flex gap-4 items-center justify-center disabled:cursor-not-allowed text-deep-100 ">
           <TicketExpired size="20" variant="Bulk"/>
           <span className="text-[1.5rem] ">
-            {/* {t("download")} */}
-            Ticket not used
+            {t("not_used")}
           </span>
         </div>
-        {/* <button
-          onClick={downloadImage}
-          disabled={event.eventCategory === "meet"}
-          className="border-2 cursor-pointer border-primary-500 disabled:border-neutral-700 px-12 py-[7.5px] bg-[#FFEFE2] disabled:bg-neutral-200 rounded-[100px] flex gap-4 items-center justify-center disabled:cursor-not-allowed text-primary-500 disabled:text-neutral-700"
-        >
-          <DocumentDownload
-            variant="Bulk"
-            size={20}
-            color="#E45B00"
-            className="hidden lg:block"
-          />
-          <span className="text-[1.5rem] ">{t("download")}</span>
-        </button> */}
       </div>
     </>
   );

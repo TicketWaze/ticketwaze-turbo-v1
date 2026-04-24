@@ -265,7 +265,7 @@ export default function HistoryEventPage() {
                     transition={{ duration: 0.5, delay: 0.3 }}
                     className="font-medium text-[1.6rem] leading-[22.5px] text-[#2E3237]"
                   >
-                    {t("textArea.title")}
+                    {t("feedback.textArea.title")}
                   </motion.h3>
 
                   <motion.div
@@ -273,7 +273,7 @@ export default function HistoryEventPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                   >
-                    <TextArea>{t("textArea.placeholder")}</TextArea>
+                    <TextArea>{t("feedback.textArea.placeholder")}</TextArea>
                   </motion.div>
                   <motion.div
                     initial={{ opacity: 0, y: 30 }}
@@ -289,7 +289,7 @@ export default function HistoryEventPage() {
                       {isLoading ? (
                         <LoadingCircleSmall />
                       ) : (
-                        t("textArea.cta.submit")
+                        t("feedback.textArea.submit")
                       )}
                     </ButtonPrimary>
                   </motion.div>
@@ -306,7 +306,7 @@ export default function HistoryEventPage() {
                       disabled={isLoading}
                       className="w-full lg:hidden"
                     >
-                      {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
+                      {isLoading ? <LoadingCircleSmall /> : t("feedback.textArea.submit")}
                     </ButtonPrimary>
                   </motion.div>
                 </div>

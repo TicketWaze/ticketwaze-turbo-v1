@@ -23,7 +23,7 @@ export default function HTicket({
       <Image src={ticketBG} alt={"ticket bg"} className="h-full w-full" />
       <div
         className={
-          "absolute top-0 w-full px-4 left-[50%] -translate-x-[50%] flex flex-col items-center gap-8"
+          "px-16 absolute top-0 w-full lg:px-4 left-[50%] -translate-x-[50%] flex flex-col items-center gap-8"
         }
       >
         <span
@@ -35,7 +35,7 @@ export default function HTicket({
         </span>
         <div
           className={
-            "w-full h-100 lg:h-[29.6rem] relative  bg-neutral-100 p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center "
+            "w-full h-110 lg:h-136 relative rounded-[5px]  bg-neutral-100 p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center "
           }
         >
           <Image
@@ -110,11 +110,6 @@ export default function HTicket({
             )}
           </div>
         </div>
-        <span className="text-warning flex gap-4 items-center">
-          <Warning2 size="16" color="#ea961c" variant="TwoTone" />
-          {t("ticketWarning1")}{" "}
-          {!event.eventTicketTypes[0].isRefundable && t("ticketWarning2")}
-        </span>
         {/* Your ticket is unique and linked to your personal access. Please do not
         share it with others, as it may compromise your entry or benefits. Keep
         it safe and secure. */}
