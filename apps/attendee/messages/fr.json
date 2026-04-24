@@ -234,7 +234,14 @@
       "last": {
         "1": "Merci d’avoir complété la configuration. Vos centres d’intérêt et préférences seront utilisés pour personnaliser les recommandations d’activités, afficher des annonces pertinentes et améliorer votre expérience globale sur Ticketwaze. Vous pouvez consulter ou modifier vos préférences à tout moment depuis vos paramètres de compte.",
         "2": "Veuillez noter : Ticketwaze ne partage pas vos données personnelles ni votre profil d’intérêts avec des tiers sans votre consentement explicite. Toute communication provenant des organisations sera soumise à vos préférences de notification, que vous pouvez ajuster à tout moment.",
-        "3": "En continuant, vous reconnaissez avoir lu et accepté nos Conditions d’utilisation et notre Politique de confidentialité. Pour toute question ou préoccupation, veuillez contacter notre équipe d’assistance via le Centre d’aide ou par email à support@ticketwaze.com."
+        "3": {
+          "1": "En continuant, vous reconnaissez avoir lu et accepté nos Conditions d’utilisation et nos ",
+          "2": "Conditions d'utilisation et politique de confidentialité",
+          "3": ". Pour toute question ou préoccupation, veuillez contacter notre équipe d’assistance via le ",
+          "4": "Centre d’aide ",
+          "5": "ou par email à ",
+          "6": "support@ticketwaze.com"
+        }
       },
       "invitedIntro": {
         "1": "Avant de pouvoir accéder au tableau de bord de l’organisation et commencer à collaborer, vous devez configurer votre compte individuel Ticketwaze.",
@@ -699,6 +706,11 @@
     "setProfile": "Modifier l'image",
     "resize": "Redimensionner l'image",
     "personal": "Informations personnelles",
+    "invitedUser": "Utilisateur invité",
+    "user": "utilisateur(s)",
+    "referralTitle": "Invitez des amis",
+    "referralDescription": "Faisons grandir notre communauté ensemble. Aidez vos amis à découvrir des billets et des expériences exceptionnels, et gagnez 50 jetons Ticketwaze pour chaque recommandation réussie !",
+    "copy": "Copier",
     "placeholders": {
       "firstname": "Prénom",
       "lastname": "Nom de famille",

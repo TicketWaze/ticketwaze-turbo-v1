@@ -234,7 +234,14 @@
       "last": {
         "1": "Thank you for completing the setup. Your interests and preferences will be used to personalize activities recommendations, show relevant listings, and improve your overall experience on Ticketwaze. You can review or update your preferences at any time from your account settings.",
         "2": "Please note: Ticketwaze does not share your personal data or interest profile with third parties without your explicit consent. Any communication from organisations will be subject to your notification preferences, which you can adjust at any time.",
-        "3": "By proceeding, you acknowledge that you have read and agree to our Terms of Use and Privacy Policy. If you have any questions or concerns, please reach out to our support team via the Help Center or email us at support@ticketwaze.com."
+        "3": {
+          "1": "By proceeding, you acknowledge that you have read and agree to our ",
+          "2": "Terms of Use and Privacy Policy",
+          "3": ". If you have any questions or concerns, please reach out to our support team via the ",
+          "4": "Help Center ",
+          "5": "or email us at ",
+          "6": "support@ticketwaze.com"
+        }
       },
       "invitedIntro": {
         "1": "Before you can access the organisation dashboard and begin collaborating, you'll need to set up your individual Ticketwaze account.",
@@ -471,7 +478,7 @@
       }
     },
     "withdrawal": {
-      "title": "Withdrawal history",
+      "title": "Withdrawal History",
       "description": "Your withdrawal history will show up here once you've made a withdrawal request.",
       "table": {
         "id": "Withdrawal ID",
@@ -662,6 +669,11 @@
     "setProfile": "Set profile image",
     "resize": "Resize Image",
     "personal": "Personal Information",
+    "invitedUser": "Invited User",
+    "user": "user(s)",
+    "referralTitle": "Invite Friends",
+    "referralDescription": "Grow Our Community Together Help your friends discover amazing tickets and experiences, and earn 50 Ticketwaze tokens for each successful referral!",
+    "copy": "Copy",
     "placeholders": {
       "firstname": "Firstname",
       "lastname": "Lastname",

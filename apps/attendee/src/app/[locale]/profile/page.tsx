@@ -3,7 +3,6 @@ import { getLocale, getTranslations } from "next-intl/server";
 import ProfilePageContent from "./ProfilePageContent";
 import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
-import { UserPreference } from "@ticketwaze/typescript-config";
 
 export default async function ProfilePage() {
   const t = await getTranslations("Profile");
@@ -16,18 +15,16 @@ export default async function ProfilePage() {
     },
   });
   const response = await request.json();
-  const userPreferences: UserPreference = response.userPreferences;
   const locale = await getLocale();
   if (!session) {
     redirect({ href: "/auth/login", locale });
   }
-
   return (
     <AttendeeLayout title={t("title")}>
       <ProfilePageContent
         analytics={response.userAnalytic}
+        user={response.user}
         accessToken={session?.user.accessToken as string}
-        userPreferences={userPreferences}
       />
     </AttendeeLayout>
   );
