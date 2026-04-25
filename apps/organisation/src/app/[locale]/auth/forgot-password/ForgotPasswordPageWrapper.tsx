@@ -11,7 +11,11 @@ import { toast } from "sonner";
 import * as z from "zod";
 import { motion } from "motion/react";
 
-export default function ForgotPasswordPageWrapper() {
+export default function ForgotPasswordPageWrapper({
+  email,
+}: {
+  email: string | undefined;
+}) {
   const t = useTranslations("Auth.forgot");
   const ForgotPasswordSchema = z.object({
     email: z.string().min(1, { error: t("errors.email") }),
@@ -25,6 +29,7 @@ export default function ForgotPasswordPageWrapper() {
     formState: { isSubmitting, errors },
   } = useForm<TForgotPasswordSchema>({
     resolver: zodResolver(ForgotPasswordSchema),
+    defaultValues: { email: email ?? "" },
   });
   async function submitHandler(data: TForgotPasswordSchema) {
     const request = await fetch(

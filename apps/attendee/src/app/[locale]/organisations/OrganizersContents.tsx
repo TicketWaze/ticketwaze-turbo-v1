@@ -2,16 +2,22 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import OrganizerCard from "./OrganizerCard";
-import {
-  Building,
-  CloseCircle,
-  Money3,
-  SearchNormal,
-  Ticket,
-} from "iconsax-reactjs";
+import { Add, Building, CloseCircle, SearchNormal } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { Organisation } from "@ticketwaze/typescript-config";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ButtonPrimary } from "@/components/shared/buttons";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { LinkPrimary } from "@/components/shared/Links";
+import { Link } from "@/i18n/navigation";
 
 export default function OrganizersContents({
   organisations,
@@ -99,6 +105,130 @@ export default function OrganizersContents({
               <SearchNormal size="20" color="#737c8a" variant="Bulk" />
             </button>
           )}
+          {session?.user.organisations &&
+          session?.user.organisations?.length > 0 ? (
+            <Link
+              className="lg:hidden absolute bottom-43 right-10 w-[60px] h-[60px] bg-primary-500 rounded-full flex items-center justify-center"
+              href="/events/create"
+            >
+              {/* {t("create")} */}
+              <Building size="32" variant="Bulk" color="#ffffff" />
+            </Link>
+          ) : (
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="lg:hidden absolute bottom-43 right-10 w-[60px] h-[60px] bg-primary-500 rounded-full flex items-center justify-center">
+                  <Add size="32" color="#ffffff" />
+                </button>
+              </DialogTrigger>
+              <DialogContent className={"w-[360px] lg:w-[520px] "}>
+                <DialogHeader>
+                  <DialogTitle
+                    className={
+                      "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                    }
+                  >
+                    {t("create")}
+                  </DialogTitle>
+                  <DialogDescription className={"sr-only"}>
+                    <span>Add artist</span>
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-8 flex flex-col gap-8 items-center">
+                  <div
+                    className={
+                      "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+                    }
+                  >
+                    <div
+                      className={
+                        "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+                      }
+                    >
+                      <Building size="30" color="#0d0d0d" variant="Bulk" />
+                    </div>
+                  </div>
+                  <p
+                    className={`font-sans text-[1.6rem] leading-10 text-deep-100 text-center w-[320px] lg:w-full`}
+                  >
+                    {t("createDescription")}
+                  </p>
+                </div>
+                <DialogFooter>
+                  <LinkPrimary
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/login`}
+                    className="w-full"
+                  >
+                    {t("proceed")}
+                  </LinkPrimary>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
+
+          {session?.user.organisations &&
+          session?.user.organisations?.length > 0 ? (
+            <LinkPrimary
+              href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/login`}
+              className="hidden lg:flex"
+            >
+              {t("dashboard")}
+            </LinkPrimary>
+          ) : (
+            <Dialog>
+              <DialogTrigger asChild>
+                <ButtonPrimary className="hidden lg:flex">
+                  {t("create")}
+                </ButtonPrimary>
+              </DialogTrigger>
+              <DialogContent className={"w-[360px] lg:w-[520px] "}>
+                <DialogHeader>
+                  <DialogTitle
+                    className={
+                      "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                    }
+                  >
+                    {t("create")}
+                  </DialogTitle>
+                  <DialogDescription className={"sr-only"}>
+                    <span>Add artist</span>
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-8 flex flex-col gap-8 items-center">
+                  <div
+                    className={
+                      "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+                    }
+                  >
+                    <div
+                      className={
+                        "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+                      }
+                    >
+                      <Building size="30" color="#0d0d0d" variant="Bulk" />
+                    </div>
+                  </div>
+                  <p
+                    className={`font-sans text-[1.6rem] leading-10 text-deep-100 text-center w-[320px] lg:w-full`}
+                  >
+                    {t("createDescription")}
+                  </p>
+                </div>
+                <DialogFooter>
+                  <LinkPrimary
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/login`}
+                    className="w-full"
+                  >
+                    {t("proceed")}
+                  </LinkPrimary>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </header>
       <Tabs defaultValue="all" className="w-full h-full min-h-0">
@@ -134,13 +264,13 @@ export default function OrganizersContents({
             <div className="flex flex-col items-center gap-[30px]">
               <div className="h-[120px] w-[120px] bg-neutral-100 rounded-full flex items-center justify-center">
                 <div className="w-[90px] h-[90px] bg-neutral-200 flex items-center justify-center rounded-full">
-                  <Ticket size="50" color="#0D0D0D" variant="Bulk" />
+                  <Building size="50" color="#0D0D0D" variant="Bulk" />
                 </div>
               </div>
-              <span className="font-primary text-[1.8rem] leading-8 text-neutral-600">
+              <p className="font-primary text-[1.8rem] leading-8 text-neutral-600 text-center max-w-70 wrap-break-word">
                 {t("profile.noResult")}{" "}
                 <span className="text-deep-100">{query}</span>
-              </span>
+              </p>
             </div>
           )}
         </TabsContent>
@@ -169,13 +299,13 @@ export default function OrganizersContents({
                 <div className="flex flex-col items-center gap-[30px]">
                   <div className="h-[120px] w-[120px] bg-neutral-100 rounded-full flex items-center justify-center">
                     <div className="w-[90px] h-[90px] bg-neutral-200 flex items-center justify-center rounded-full">
-                      <Ticket size="50" color="#0D0D0D" variant="Bulk" />
+                      <Building size="50" color="#0D0D0D" variant="Bulk" />
                     </div>
                   </div>
-                  <span className="font-primary text-[1.8rem] leading-8 text-neutral-600">
+                  <p className="font-primary text-[1.8rem] leading-8 text-neutral-600 text-center max-w-70 wrap-break-word">
                     {t("profile.noResult")}{" "}
                     <span className="text-deep-100">{query}</span>
-                  </span>
+                  </p>
                 </div>
               )}
             </>

@@ -45,7 +45,7 @@ export default function StepTicket({
     control,
     name: "ticketTypes",
   });
-  const [currency, setCurrency] = useState("HTG");
+  const [currency, setCurrency] = useState(event.currency);
   const [wordCounts, setWordCounts] = useState<number[]>(fields.map(() => 0));
   const { data: session } = useSession();
   function addClass() {

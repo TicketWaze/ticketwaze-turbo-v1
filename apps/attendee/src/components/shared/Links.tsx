@@ -7,10 +7,16 @@ type LinkProps = React.ComponentProps<"a"> & {
   className?: string;
 };
 
-export function LinkPrimary({ href, children, className }: LinkProps) {
+export function LinkPrimary({
+  href,
+  children,
+  className,
+  ...props
+}: LinkProps) {
   return (
     <Link
       href={href}
+      {...props}
       className={cn(
         "px-12 py-[1.2rem] bg-primary-500 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer hover:border-primary-600  transition-all duration-400 flex items-center justify-center",
         className,
