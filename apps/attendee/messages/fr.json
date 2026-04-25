@@ -652,8 +652,8 @@
     "summary": {
       "title": "Récapitulatif",
       "subtotal": "Sous-total",
-      "service_fee": "Frais de service",
-      "platform_fee": "Frais de plateforme",
+      "service_fee": "PSP",
+      "platform_fee": "Frais de service",
       "no_platform_fee": "Inclus",
       "total": "Total",
       "via": "Méthode de paiement",

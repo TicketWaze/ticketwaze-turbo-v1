@@ -7,6 +7,7 @@ import { Event, EventTicketType } from "@ticketwaze/typescript-config";
 import moncash from "../moncash.svg";
 import Capitalize from "@/lib/Capitalize";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "../checkout.types";
+import { getServiceFeeRate } from "../checkoutUtils";
 
 interface Props {
   delta: number;
@@ -50,6 +51,8 @@ export default function SummaryStep({
 }: Props) {
   const t = useTranslations("Checkout");
   const { subtotal, serviceFee, platformFee, total } = feeBreakdown;
+  const serviceFeeRate = getServiceFeeRate(paymentType);
+  const serviceFeeLabel = `${(serviceFeeRate * 100).toFixed(1).replace(".0", "")}%`;
 
   const paymentLabel =
     paymentType === "wallet"
@@ -139,7 +142,8 @@ export default function SummaryStep({
             </div>
             <div className="flex items-center justify-between text-[1.4rem]">
               <span className="text-neutral-500">
-                {t("summary.service_fee")} (2.5%)
+                {t("summary.service_fee")} ({serviceFeeLabel}) -{" "}
+                {Capitalize(paymentType)}
               </span>
               <span className="text-deep-100 font-medium">
                 {serviceFee.toFixed(2)} {event.currency}
