@@ -26,15 +26,7 @@ export default function TicketSummaryCard({
   feeBreakdown,
   paymentType,
 }: Props) {
-  const t = useTranslations("Checkout");
-  const platformFeePerTicket = getPlatformFeePerTicket(
-    event.currency,
-    paymentType,
-  );
-  const platformFeeLabel =
-    platformFeePerTicket > 0
-      ? `2.5% + ${platformFeePerTicket.toFixed(2)} ${event.currency}`
-      : "2.5%";
+  // const t = useTranslations("Checkout");
 
   return (
     <div className="lg:flex items-center justify-center h-full hidden ">
