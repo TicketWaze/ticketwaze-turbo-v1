@@ -649,10 +649,23 @@
         "number": "Numéro de carte"
       }
     },
+    "summary": {
+      "title": "Récapitulatif",
+      "subtotal": "Sous-total",
+      "service_fee": "Frais de service",
+      "platform_fee": "Frais de plateforme",
+      "no_platform_fee": "Inclus",
+      "total": "Total",
+      "via": "Méthode de paiement",
+      "confirm": "Confirmer & Payer",
+      "confirm_free": "Obtenir les billets",
+      "secured": "Sécurisé par TicketWaze"
+    },
     "footer": {
       "ticket": "Billet",
       "recipient": "Destinataire",
       "payment": "Paiement",
+      "summary": "Résumé",
       "continue": "Continuer"
     }
   },
@@ -786,6 +799,10 @@
     "subtitle": "Bon retour ",
     "back": "Retour",
     "search": "Rechercher des organisations",
+    "create": "Créer une organisation",
+    "createDescription": "Vous allez être redirigé vers l’espace organisation afin de créer une nouvelle organisation. Vous serez invité à vous reconnecter avec votre compte Ticketwaze pour des raisons de sécurité. Si vous ne souhaitez pas continuer, fermez simplement cette fenêtre.",
+    "proceed": "Continuer",
+    "dashboard": "Votre espace",
     "filters": {
       "all": "Tous",
       "popular": "Populaires",

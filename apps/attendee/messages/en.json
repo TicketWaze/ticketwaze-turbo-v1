@@ -611,10 +611,23 @@
         "number": "Card number"
       }
     },
+    "summary": {
+      "title": "Order Summary",
+      "subtotal": "Subtotal",
+      "service_fee": "Service fee",
+      "platform_fee": "Platform fee",
+      "no_platform_fee": "Included",
+      "total": "Total",
+      "via": "Payment method",
+      "confirm": "Confirm & Pay",
+      "confirm_free": "Get Tickets",
+      "secured": "Secured by TicketWaze"
+    },
     "footer": {
       "ticket": "Ticket",
       "recipient": "Recipient",
       "payment": "Payment",
+      "summary": "Summary",
       "continue": "Continue"
     }
   },
@@ -748,6 +761,10 @@
     "subtitle": "Welcome Back ",
     "back": "Back",
     "search": "Search for organisations",
+    "create": "Create Organisation",
+    "createDescription": "You’re about to be redirected to the organisation dashboard to create a new organisation. You will be asked to log in again with your Ticketwaze account for security purposes. If you don’t want to continue, simply close this modal.",
+    "proceed": "Proceed",
+    "dashboard": "Your space",
     "filters": {
       "all": "All",
       "popular": "Popular",

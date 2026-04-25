@@ -1,12 +1,14 @@
 "use client";
+import PageLoader from "@/components/PageLoader";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import { PasswordInput } from "@/components/shared/Inputs";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Warning2 } from "iconsax-reactjs";
 import { signOut, useSession } from "next-auth/react";
 import { useTranslations, useLocale } from "next-intl";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -15,6 +17,8 @@ export default function ChangePasswordForm() {
   const t = useTranslations("Settings.security");
   const locale = useLocale();
   const { data: session } = useSession();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const changePasswordSchema = z
     .object({
@@ -66,11 +70,23 @@ export default function ChangePasswordForm() {
       toast.error("Something went wrong : " + errorMessage);
     }
   }
+  async function forgotPasswordHandler() {
+    setIsLoading(true);
+
+    await signOut({
+      redirect: false,
+    });
+
+    router.push(
+      `/auth/forgot-password?email=${encodeURIComponent(session?.user.email ?? "")}`,
+    );
+  }
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
       className={"flex flex-col gap-8"}
     >
+      <PageLoader isLoading={isLoading} />
       <span
         className={"pb-4 font-medium text-[1.8rem] leading-10 text-deep-100"}
       >
@@ -103,14 +119,16 @@ export default function ChangePasswordForm() {
       </PasswordInput>
 
       <div className={"w-full flex justify-end"}>
-        <Link
-          href={`/auth/forgot-password`}
+        <button
+          type="button"
+          onClick={forgotPasswordHandler}
+          // href={`/auth/forgot-password`}
           className={
-            "font-normal text-[1.5rem] leading-8 text-right text-primary-500 hover:text-primary-300 transition-all duration-300"
+            "font-normal cursor-pointer text-[1.5rem] leading-8 text-right text-primary-500 hover:text-primary-300 transition-all duration-300"
           }
         >
           {t("reset")}
-        </Link>
+        </button>
       </div>
       <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
         <Warning2 size="24" color="#737C8A" variant="Bulk" />

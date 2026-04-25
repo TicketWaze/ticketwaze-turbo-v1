@@ -75,7 +75,15 @@
           "1": "Thank you for completing the setup. Your organisation profile will be configured based on your selected services, team structure, and preferences. You can now begin creating activities, managing bookings, and inviting team members to collaborate.",
           "2": "Important: We will now redirect you to the organisation dashboard. For security purposes, you will be required to log in again using your freshly created Ticketwaze account credentials before accessing your dashboard.",
           "3": "Please note: Ticketwaze does not share your organisation's data or sales information with third parties without your explicit consent. Payouts will be processed according to your need, subject to verification and applicable processing timelines. You can review or update your organisation settings, and team roles at any time from your dashboard.",
-          "4": "By proceeding, you confirm that you have read and agree to our Terms of Use, Seller Agreement, and Privacy Policy. These documents outline your responsibilities as an organiser, including refund policies, payout terms, and platform fees. If you have any questions or concerns, please reach out to our seller support team via the Help Center or email us at organisations@ticketwaze.com."
+          "5": "By proceeding, you confirm that you have read and agree to our Terms of Use, Seller Agreement, and Privacy Policy. These documents outline your responsibilities as an organiser, including refund policies, payout terms, and platform fees. If you have any questions or concerns, please reach out to our seller support team via the Help Center or email us at organisations@ticketwaze.com.",
+          "4": {
+            "1": "By proceeding, you acknowledge that you have read and agree to our ",
+            "2": "Terms of Use and Privacy Policy",
+            "3": ". If you have any questions or concerns, please reach out to our support team via the ",
+            "4": "Help Center ",
+            "5": "or email us at ",
+            "6": "support@ticketwaze.com"
+          }
         }
       }
     },
@@ -915,7 +923,7 @@
       "title": "Security",
       "back": "Back",
       "subtitle": "Change Password",
-      "reset": "Reset password",
+      "reset": "Forgot password ?",
       "placeholders": {
         "password": "Current Password",
         "new": "New Password",

@@ -26,8 +26,8 @@ export default async function EventPage() {
   );
   const events = await request.json();
   const authorized = await organisationPolicy.viewEvent(
-    session?.user.userId!,
-    session?.activeOrganisation.organisationId!,
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
   );
   return (
     <OrganizerLayout title={t("title")}>

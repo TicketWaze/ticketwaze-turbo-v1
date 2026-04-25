@@ -5,7 +5,7 @@ import { UserPreference } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import AppLanguage from "./AppLanguage";
-import { Link } from "@/i18n/navigation";
+import { Link, redirect } from "@/i18n/navigation";
 import ChangePasswordForm from "./ChangePasswordForm";
 import Toggle2Factor from "./Toggle2Factor";
 
@@ -13,6 +13,9 @@ export default async function AccountPage() {
   const t = await getTranslations("Settings.account");
   const locale = await getLocale();
   const session = await auth();
+  if (!session) {
+    redirect({ href: "/auth/login", locale });
+  }
   const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
     method: "GET",
     headers: {
