@@ -54,6 +54,49 @@
         "text": "Your account is now set up. Get started!",
         "signing": "Signing you in..."
       }
+    },
+    "reset": {
+      "title": "Reset Password",
+      "description": "Please enter you account details to continue",
+      "placeholders":{
+        "email": "Organization Email Address"
+      },
+      "cta": {
+        "submit": "Reset"
+      },
+      "back": "Back"
+    }, 
+    "email_sent": {
+      "title": "Reset Password",
+      "description": "A password reset mail has been sent to the email address you provided",
+      "footer": {
+        "text": "Didn't get a mail?",
+        "cta": "Resend"
+      }
+    },
+    "new_password": {
+      "title": "Create Password",
+      "description": "Choose a new password for your account",
+      "placeholders": {
+        "password": "Password",
+        "confirm": "Confirm password"
+      },
+      "errors": {
+        "password_length": "Password should be at least 8 Characters",
+        "password_match": "Password doesn't match",
+        "sameError": "You used this password in the past, You can’t reuse past passwords.",
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number",
+        "email": "Email field cannot be blank"
+      },
+      "cta": "Create"
+    },
+    "password_created": {
+      "title": "Password Created",
+      "text": "You’ve successfully created a new password We’re now signing you in.",
+      "signing": "Signing you in..."
     }
   },
 
