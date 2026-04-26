@@ -4,7 +4,6 @@ import PageLoader from "@/components/PageLoader";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import { UserPreference } from "@ticketwaze/typescript-config";
 import { useSession } from "next-auth/react";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useLocale, useTranslations } from "use-intl";
 import { toast } from "sonner";
@@ -23,7 +22,6 @@ export default function UserInterest({
   const locale = useLocale();
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  const pathname = usePathname();
   const [data, setData] = useState<OnboardingData>({
     interests: userPreferences.interests,
   });
