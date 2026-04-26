@@ -38,9 +38,7 @@ export default function EmailNotifications({
       session?.user.accessToken ?? "",
       {
         ...body,
-        currency: userPreferences.currency,
-        // notifications: userPreferences.notifications,
-        appLanguage: locale,
+        ...userPreferences,
       },
       locale,
     );
@@ -53,18 +51,18 @@ export default function EmailNotifications({
     <>
       <PageLoader isLoading={isLoading} />
       <form onChange={updatePreferences} className="flex flex-col gap-6">
-        <span className="font-medium text-[1.8rem] mb-4 leading-[25px] text-deep-100">
+        <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
           {t("email.title")}
         </span>
         <div className={"flex items-center justify-between"}>
           <p
             className={
-              "text-[1.6rem] leading-[22px] text-deep-100 max-w-[200px] lg:max-w-[380px]"
+              "text-[1.6rem] leading-[2.2rem] text-deep-100 max-w-[20rem] lg:max-w-152"
             }
           >
             {t("email.upcoming")}
           </p>
-          <label className="relative inline-block h-[30px] w-[50px] cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-primary-500">
+          <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
             <input
               className="peer sr-only"
               id="upcomingEvents"

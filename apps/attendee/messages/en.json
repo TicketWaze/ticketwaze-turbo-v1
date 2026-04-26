@@ -748,6 +748,24 @@
       "currency": "Preferred Currency",
       "notifications": "Preferred notification provider",
       "none": "None"
+    },
+    "interests": {
+      "title": "Activity preferences",
+      "second": {
+        "question": "What are you interested in?",
+        "musics": "Musics",
+        "theater": "Theater",
+        "arts": "Arts",
+        "sports": "Sports",
+        "business": "Business",
+        "networking": "Networking",
+        "online": "Online",
+        "rentals": "Rentals",
+        "transport": "Transport",
+        "booking": "Booking"
+      },
+      "update": "Update interests",
+      "error": "Choose at leat one interest"
     }
   },
   "Settings": {
