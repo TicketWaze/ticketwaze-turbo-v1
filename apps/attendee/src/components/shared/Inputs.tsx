@@ -3,6 +3,47 @@ import { cn } from "@/lib/utils";
 import { Eye, EyeSlash, Verify } from "iconsax-reactjs";
 import React, { useState } from "react";
 
+interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  children: React.ReactNode;
+  error?: string;
+  className?: string;
+  isLoading?: boolean;
+  disabled?: boolean;
+}
+
+export function TextArea({
+  children,
+  disabled,
+  isLoading,
+  className,
+  error,
+  ...props
+}: TextAreaProps) {
+  return (
+    <div className={cn("relative group", className)}>
+      <textarea
+        {...props}
+        placeholder=" "
+        disabled={isLoading ?? disabled ?? false}
+        className={cn(
+          "peer transition-all duration-300 delay-200 bg-neutral-100 w-full rounded-[10px] p-8 pt-10 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 disabled:text-neutral-700 disabled:border-none disabled:cursor-not-allowed min-h-[26.6rem] resize-none",
+          isLoading && "animate-pulse"
+        )}
+      />
+      <label 
+        className="peer-[:not(:placeholder-shown)]:top-3 peer-[:not(:placeholder-shown)]:text-[1.2rem] absolute left-8 top-8 text-[1.5rem] text-neutral-600 transition-all duration-200 ease-in-out peer-placeholder-shown:top-8 peer-placeholder-shown:text-gray-400 peer-focus:top-3 peer-focus:text-[1.2rem] peer-focus:text-neutral-600 cursor-text pointer-events-none"
+      >
+        {children}
+      </label>
+      {error && (
+        <span className="text-[1.2rem] px-8 py-2 text-failure block">
+          {error}
+        </span>
+      )}
+    </div>
+  );
+}
+
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   children: React.ReactNode;
   error?: string;
