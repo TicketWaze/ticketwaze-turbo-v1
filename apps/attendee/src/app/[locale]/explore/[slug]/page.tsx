@@ -5,16 +5,12 @@ import EventActions from "./EventActions";
 import { getLocale, getTranslations } from "next-intl/server";
 import {
   Calendar2,
-  Call,
   Clock,
-  Global,
   Google,
   Location,
   RouteSquare,
   SecurityUser,
-  Sms,
 } from "iconsax-reactjs";
-import FormatDate from "@/lib/FormatDate";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import Follow from "./Follow";
 import { auth } from "@/lib/auth";
@@ -22,7 +18,6 @@ import Unfollow from "./Unfollow";
 import Map from "./MapComponent";
 import { Link, redirect } from "@/i18n/navigation";
 import AddToCalendar from "./AddToCalendar";
-import TimesTampToDateTime from "@/lib/TimesTampToDateTime";
 import { Metadata } from "next";
 import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";

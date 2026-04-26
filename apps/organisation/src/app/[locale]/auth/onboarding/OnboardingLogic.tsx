@@ -179,8 +179,8 @@ export default function OnboardingLogic({ response }: { response: any }) {
         </div>
       )}
       {createOrganisation && (
-        <div className="flex flex-col items-center justify-between h-full pb-12">
-          <div className=" flex flex-col  gap-15 pt-16 w-full">
+        <div className="flex flex-col items-center justify-between h-full pb-12 ">
+          <div className=" flex flex-col justify-between h-full  gap-15 pt-16 w-full">
             <div className="flex flex-col gap-8 items-center">
               <motion.h3
                 initial={{ opacity: 0, y: 30 }}
@@ -208,22 +208,24 @@ export default function OnboardingLogic({ response }: { response: any }) {
               >
                 {t("alert")}
               </motion.p>
-              <motion.p
+              {/* <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
               >
                 {t("alert2")}
-              </motion.p>
-              <motion.p
+              </motion.p> */}
+              {/* <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.4 }}
                 className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
               >
                 {t("alert3")}
-              </motion.p>
+              </motion.p> */}
+            </div>
+            <div className="flex flex-col gap-8">
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
