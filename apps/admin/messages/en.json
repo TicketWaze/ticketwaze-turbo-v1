@@ -58,6 +58,9 @@
     "reset": {
       "title": "Reset Password",
       "description": "Please enter you account details to continue",
+      "errors": {
+        "email": "Enter a valid email address"
+      },
       "placeholders":{
         "email": "Organization Email Address"
       },

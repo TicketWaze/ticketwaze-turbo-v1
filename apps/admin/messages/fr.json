@@ -58,6 +58,9 @@
     "reset": {
       "title": "Réinitialiser le mot de passe",
       "description": "Veuillez entrer les détails de votre compte pour continuer",
+      "errors": {
+        "email": "Entrez une adresse e-mail valide"
+      },
       "placeholders": {
         "email": "Adresse e-mail de l'organisation"
       },

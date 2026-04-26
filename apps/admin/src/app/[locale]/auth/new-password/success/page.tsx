@@ -3,9 +3,18 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Success from "@ticketwaze/ui/assets/images/accepted.png";
 import { motion } from "framer-motion";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function AcceptedPage() {
+export default function SuccessPage() {
   const t = useTranslations("Auth.password_created");
+  const router = useRouter();
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      router.push(`/auth/login`);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [router]);
   return (
     <div className="flex flex-col justify-center gap-16 h-full pb-4 overflow-y-auto">
       <div className="w-full flex items-center justify-center">

@@ -35,27 +35,28 @@ export default function NewPasswordPageContent() {
   const locale = useLocale();
   const router = useRouter();
   async function submitHandler(data: TNewPasswordSchema) {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/auth/new-password`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept-Language": locale,
-          Origin: process.env.NEXT_PUBLIC_ATTENDEE_URL ?? "",
-          Authorization: `Bearer ${accessToken}`,
-        },
-        body: JSON.stringify(data),
-      },
-    );
-    const response = await request.json();
-    if (response.status === "success") {
-      router.push("/auth/login");
-    } else if (response.status === "same") {
-      toast.error(t("errors.sameError"));
-    } else {
-      toast.error(response.errors[0].message);
-    }
+    // const request = await fetch(
+    //   `${process.env.NEXT_PUBLIC_API_URL}/auth/new-password`,
+    //   {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //       "Accept-Language": locale,
+    //       Origin: process.env.NEXT_PUBLIC_ATTENDEE_URL ?? "",
+    //       Authorization: `Bearer ${accessToken}`,
+    //     },
+    //     body: JSON.stringify(data),
+    //   },
+    // );
+    // const response = await request.json();
+    // if (response.status === "success") {
+    //   router.push("/auth/login");
+    // } else if (response.status === "same") {
+    //   toast.error(t("errors.sameError"));
+    // } else {
+    //   toast.error(response.errors[0].message);
+    // }
+    router.push("/auth/new-password/success");
   }
 
   return (
