@@ -751,6 +751,24 @@
       "currency": "Devise préférée",
       "notifications": "Fournisseur de notifications préféré",
       "none": "Aucun"
+    },
+    "interests": {
+      "title": "Préférences d'activité",
+      "second": {
+        "question": "Quels sont vos centres d’intérêt ?",
+        "musics": "Musique",
+        "theater": "Théâtre",
+        "arts": "Arts",
+        "sports": "Sports",
+        "business": "Affaires",
+        "networking": "Réseautage",
+        "online": "En ligne",
+        "rentals": "Locations",
+        "transport": "Transport",
+        "booking": "Réservation"
+      },
+      "update": "Mettre à jour",
+      "error": "Choisissez au moins un centre d'intérêt"
     }
   },
   "Settings": {

@@ -38,9 +38,7 @@ export default function EmailNotifications({
       session?.user.accessToken ?? "",
       {
         ...body,
-        currency: userPreferences.currency,
-        // notifications: userPreferences.notifications,
-        appLanguage: locale,
+        ...userPreferences,
       },
       locale,
     );
