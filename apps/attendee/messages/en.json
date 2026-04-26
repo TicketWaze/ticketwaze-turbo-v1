@@ -502,7 +502,42 @@
     "title": "Activities history",
     "subtitle": "Welcome Back ",
     "search": "Search for activity",
-    "description": "You haven’t attended any activities yet. Once you join an activity, it will appear here for you to revisit your past experiences."
+    "description": "You haven’t attended any activities yet. Once you join an activity, it will appear here for you to revisit your past experiences.",
+    "activity":{
+      "card": {
+        "name": "Cap-Haïtien Jazz Festival",
+        "count": {
+          "day": "day",
+          "days": "days",
+          "ago": "ago"
+        }
+      },
+      "back": "Back",
+      "viewProfile": "View profile",
+      "rate": "Rate activity",
+      "rating": {
+        "title": "Rate activity",
+        "text": "Tap the stars to rate your experience!",
+        "submit": "Submit"
+      },
+      "feedback":{
+        "title": "Your feedback",
+        "textArea": {
+          "title": "Write feedback",
+          "submit": "Send feedback",
+          "placeholder":"Message"
+        },
+        "success":{
+          "title": "Feedback sent successfully",
+          "text": "Thanks! Your feedback has been shared with the organizer successfully.",
+          "cta":{
+            "close": "Close",
+            "view": "View"
+          }
+        }
+      }
+
+    }
   },
   "Event": {
     "from": "From",
