@@ -1,0 +1,14 @@
+{
+  "Metadata": {
+    "title": "TicketWaze - Secure Payment",
+    "description": "Secure payment processing for TicketWaze events."
+  },
+  "Payment": {
+    "title": "Complete your payment",
+    "subtitle": "You are about to pay for your tickets.",
+    "success": "Payment successful!",
+    "failed": "Payment failed. Please try again.",
+    "cancelled": "Payment was cancelled.",
+    "cta": "Pay now"
+  }
+}

@@ -538,9 +538,43 @@
   },
   "History": {
     "title": "Historique des activités",
-    "search": "Rechercher une activité",
     "subtitle": "Bon retour ",
-    "description": "Vous n’avez encore participé à aucun activité. Une fois que vous aurez assisté à une activité, il apparaîtra ici pour que vous puissiez revivre vos expériences passées."
+    "search": "Rechercher une activité",
+    "description": "Vous n'avez encore participé à aucune activité. Une fois que vous rejoignez une activité, elle apparaîtra ici pour retrouver vos expériences passées.",
+    "activity": {
+      "card": {
+        "name": "Festival de Jazz de Cap-Haïtien",
+        "count": {
+          "day": "jour",
+          "days": "jours",
+          "ago": "il y a"
+        }
+      },
+      "back": "Retour",
+      "viewProfile": "Voir le profil",
+      "rate": "Évaluer l'activité",
+      "rating": {
+        "title": "Évaluer l'activité",
+        "text": "Appuyez sur les étoiles pour évaluer votre expérience !",
+        "submit": "Soumettre"
+      },
+      "feedback": {
+        "title": "Votre avis",
+        "textArea": {
+          "title": "Écrire un avis",
+          "submit": "Envoyer l'avis",
+          "placeholder": "Message"
+        },
+        "success": {
+          "title": "Avis envoyé avec succès",
+          "text": "Merci ! Votre avis a été transmis à l'organisateur avec succès.",
+          "cta": {
+            "close": "Fermer",
+            "view": "Voir"
+          }
+        }
+      }
+    }
   },
   "Event": {
     "from": "À partir de",
@@ -649,10 +683,23 @@
         "number": "Numéro de carte"
       }
     },
+    "summary": {
+      "title": "Récapitulatif",
+      "subtotal": "Sous-total",
+      "service_fee": "PSP",
+      "platform_fee": "Frais de service",
+      "no_platform_fee": "Inclus",
+      "total": "Total",
+      "via": "Méthode de paiement",
+      "confirm": "Confirmer & Payer",
+      "confirm_free": "Obtenir les billets",
+      "secured": "Sécurisé par TicketWaze"
+    },
     "footer": {
       "ticket": "Billet",
       "recipient": "Destinataire",
       "payment": "Paiement",
+      "summary": "Résumé",
       "continue": "Continuer"
     }
   },
@@ -786,6 +833,10 @@
     "subtitle": "Bon retour ",
     "back": "Retour",
     "search": "Rechercher des organisations",
+    "create": "Créer une organisation",
+    "createDescription": "Vous allez être redirigé vers l’espace organisation afin de créer une nouvelle organisation. Vous serez invité à vous reconnecter avec votre compte Ticketwaze pour des raisons de sécurité. Si vous ne souhaitez pas continuer, fermez simplement cette fenêtre.",
+    "proceed": "Continuer",
+    "dashboard": "Votre espace",
     "filters": {
       "all": "Tous",
       "popular": "Populaires",

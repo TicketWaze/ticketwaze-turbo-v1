@@ -702,7 +702,7 @@ function Informations({
                   >
                     {order.status === "SUCCESSFUL" && t("filters.successful")}
                     {order.status === "RETURNED" && t("filters.returned")}
-                    {order.status === "PENDING" && t("filters.pendig")}
+                    {order.status === "PENDING" && t("filters.pending")}
                   </span>
                 </span>
               </p>
