@@ -17,8 +17,15 @@ export default function NewPasswordPageContent() {
   const accessToken = searchParams.get("accessToken");
   const NewPasswordSchema = z
     .object({
-      password: z.string().min(8, t("errors.password_length")),
-      password_confirmation: z.string().min(8, t("errors.password_length")),
+      password: z
+        .string()
+        .min(8, t("errors.password_length"))
+        .refine((password) => /[A-Z]/.test(password))
+        .refine((password) =>
+          /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+        )
+        .refine((password) => /[0-9]/.test(password)),
+      password_confirmation: z.string(),
     })
     .refine((data) => data.password === data.password_confirmation, {
       message: t("errors.password_match"),
