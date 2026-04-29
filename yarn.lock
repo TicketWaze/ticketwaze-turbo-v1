@@ -1312,10 +1312,22 @@
   dependencies:
     prop-types "^15.7.2"
 
+"@stripe/react-stripe-js@^6.2.0":
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/@stripe/react-stripe-js/-/react-stripe-js-6.2.0.tgz#54765ffed9433e99e4e680f8efb4bbe7d7471d26"
+  integrity sha512-GSCErjljZEQv9LaxP30xGOwstcMyyUzb5JyihXwvjOU95yrfhbiPG4K2KkwxYxn+WY0/AyHsRhPPoGRw7urBzg==
+  dependencies:
+    prop-types "^15.7.2"
+
 "@stripe/stripe-js@^9.0.0":
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-9.0.0.tgz#10d9a22e437fe7704e015909ece43acb6abb1fc0"
   integrity sha512-UtUK7LFglQSNVIOwcRBaxfzq4wkfU8CT2f2uQVEeu65jTP6wicxFshYdYCke9Tfd0PCxhOe/b8rwJjr5EiDCfQ==
+
+"@stripe/stripe-js@^9.3.1":
+  version "9.3.1"
+  resolved "https://registry.yarnpkg.com/@stripe/stripe-js/-/stripe-js-9.3.1.tgz#2c71b9d62f2a74cd661f46e691a55a13340d5136"
+  integrity sha512-oWpAEENuVg8aw4W2OUAM9WxRDtIV2YTLr2nr6qHT+D8tHPW7bya61ufinPpUespyRNUVXqesnHo+jQdUNsGywA==
 
 "@swc/core-darwin-arm64@1.15.8":
   version "1.15.8"

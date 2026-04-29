@@ -304,7 +304,11 @@ export interface OrganisationSubscription {
   membershipTier: string;
   amountPaid: number;
   usdAmountPaid: number;
-  status: string;
+  status: "ACTIVE" | "CANCELED" | "EXPIRED";
+  billingCycle: "monthly" | "yearly";
+  isTrial: boolean;
+  cancelAtPeriodEnd: boolean;
+  trialEndsAt: DateTime | null;
   endsAt: DateTime;
   paymentMethod: string;
   stripeSubscriptionId: string | null;

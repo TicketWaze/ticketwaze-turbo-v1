@@ -16,7 +16,7 @@ import formatTime from "@/lib/formatTime";
 
 export default function EventDrawerContent({ event }: { event: Event }) {
   const t = useTranslations("Events.single_event");
-  const date = event.eventDays.filter((day) => day.dayNumber === 1);
+  const date = event.eventDays;
   const locale = useLocale();
   return (
     <DrawerContent className={"my-6 p-6 lg:p-12 rounded-[30px]  lg:w-[580px]"}>
@@ -64,59 +64,61 @@ export default function EventDrawerContent({ event }: { event: Event }) {
               >
                 {t("event_details")}
               </span>
-              {date.map((eventDate) => {
-                return (
-                  <li key={eventDate.eventDayId}>
-                    <div className={"flex items-center gap-[5px]"}>
-                      <div
-                        className={
-                          "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
-                        }
-                      >
-                        <Calendar2 size="20" color="#737c8a" variant="Bulk" />
+              {date
+                .sort((a, b) => a.dayNumber - b.dayNumber)
+                .map((eventDate) => {
+                  return (
+                    <li key={eventDate.eventDayId}>
+                      <div className={"flex items-center gap-[5px]"}>
+                        <div
+                          className={
+                            "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                          }
+                        >
+                          <Calendar2 size="20" color="#737c8a" variant="Bulk" />
+                        </div>
+                        <span
+                          className={
+                            "font-normal text-[1.4rem] leading-8 text-deep-200"
+                          }
+                        >
+                          {formatDate(
+                            eventDate.eventDate,
+                            locale,
+                            eventDate.timezone,
+                          )}
+                        </span>
                       </div>
-                      <span
-                        className={
-                          "font-normal text-[1.4rem] leading-8 text-deep-200"
-                        }
-                      >
-                        {formatDate(
-                          eventDate.eventDate,
-                          locale,
-                          eventDate.timezone,
-                        )}
-                      </span>
-                    </div>
-                    <div className={"flex items-center gap-[5px]"}>
-                      <div
-                        className={
-                          "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
-                        }
-                      >
-                        <Clock size="20" color="#737c8a" variant="Bulk" />
+                      <div className={"flex items-center gap-[5px]"}>
+                        <div
+                          className={
+                            "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                          }
+                        >
+                          <Clock size="20" color="#737c8a" variant="Bulk" />
+                        </div>
+                        <span
+                          className={
+                            "font-normal text-[1.4rem] leading-8 text-deep-200"
+                          }
+                        >
+                          {formatTime(
+                            eventDate.startTime,
+                            eventDate.timezone,
+                            locale,
+                          )}{" "}
+                          -{" "}
+                          {formatTime(
+                            eventDate.endTime,
+                            eventDate.timezone,
+                            locale,
+                          )}{" "}
+                          - {eventDate.timezone}
+                        </span>
                       </div>
-                      <span
-                        className={
-                          "font-normal text-[1.4rem] leading-8 text-deep-200"
-                        }
-                      >
-                        {formatTime(
-                          eventDate.startTime,
-                          eventDate.timezone,
-                          locale,
-                        )}{" "}
-                        -{" "}
-                        {formatTime(
-                          eventDate.endTime,
-                          eventDate.timezone,
-                          locale,
-                        )}{" "}
-                        - {eventDate.timezone}
-                      </span>
-                    </div>
-                  </li>
-                );
-              })}
+                    </li>
+                  );
+                })}
               <div className={"flex items-center gap-[5px] "}>
                 <div
                   className={
