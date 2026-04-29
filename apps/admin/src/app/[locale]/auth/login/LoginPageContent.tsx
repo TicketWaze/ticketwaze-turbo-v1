@@ -122,7 +122,7 @@ export default function LoginPageContent() {
               <span></span>
               <Link
                 className="text-[1.5rem] leading-8 text-primary-500"
-                href={"/auth/forgot-password"}
+                href={"/auth/reset"}
               >
                 {t("reset")}
               </Link>

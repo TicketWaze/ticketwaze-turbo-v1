@@ -28,9 +28,8 @@ import Separator from "@/components/shared/Separator";
 import { useTranslations } from "next-intl";
 import Rema from "@ticketwaze/ui/assets/images/rema.png";
 import Image from "next/image";
-import More from "@ticketwaze/ui/assets/icons/more-circle.svg";
 import Link from "next/link";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 
 export default function ActivityPage() {
   const t = useTranslations("Activities");

@@ -17,6 +17,7 @@ import FormatDate from "@/lib/FormatDate";
 import {
   Event,
   EventPerformer,
+  MembershipTier,
   Order,
   OrganisationTicket,
   User,
@@ -36,6 +37,7 @@ export default function EventPageDetails({
   slug,
   user,
   eventPerformers,
+  membershipTier,
 }: {
   event: Event;
   tickets: OrganisationTicket[];
@@ -43,6 +45,7 @@ export default function EventPageDetails({
   slug: string;
   user: User;
   eventPerformers: EventPerformer[];
+  membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.single_event");
   const locale = useLocale();
@@ -79,6 +82,7 @@ export default function EventPageDetails({
             event={event}
             isFree={isFree}
             slug={slug}
+            membershipTier={membershipTier}
           />
         </div>
       </TopBar>
@@ -161,6 +165,7 @@ export default function EventPageDetails({
           event={event}
           isFree={isFree}
           slug={slug}
+          membershipTier={membershipTier}
         />
       </div>
       {event.eventCategory !== "meet" && (
@@ -707,6 +712,41 @@ export default function EventPageDetails({
                     );
                   })}
               </Table>
+              {filteredtickets.filter(
+                (ticket) => ticket.ticketType === ticketClass.ticketTypeName,
+              ).length === 0 && (
+                <div
+                  className={
+                    "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center mt-8 gap-[5rem]"
+                  }
+                >
+                  <div
+                    className={
+                      "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                    }
+                  >
+                    <div
+                      className={
+                        "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                      }
+                    >
+                      <Money3 size="50" color="#0d0d0d" variant="Bulk" />
+                    </div>
+                  </div>
+                  <div
+                    className={"flex flex-col gap-12 items-center text-center"}
+                  >
+                    <p
+                      className={
+                        "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                      }
+                    >
+                      {t("table.description")}
+                    </p>
+                    <div></div>
+                  </div>
+                </div>
+              )}
             </TabsContent>
           );
         })}

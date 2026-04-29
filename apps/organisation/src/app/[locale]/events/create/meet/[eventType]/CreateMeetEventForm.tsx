@@ -34,13 +34,16 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
 import { EventDay } from "./types";
+import { MembershipTier } from "@ticketwaze/typescript-config";
 
 export default function CreateMeetEventForm({
   eventType,
   code,
+  membershipTier,
 }: {
   eventType: string;
   code: string | undefined;
+  membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
@@ -105,12 +108,8 @@ export default function CreateMeetEventForm({
       activityTags: [],
       ticketTypes: [
         {
-          ticketTypeName: session?.activeOrganisation.membershipTier
-            .customTicketTypes
-            ? ""
-            : "General",
-          ticketTypeDescription: session?.activeOrganisation.membershipTier
-            .customTicketTypes
+          ticketTypeName: membershipTier.customTicketTypes ? "" : "General",
+          ticketTypeDescription: membershipTier.customTicketTypes
             ? ""
             : t("general.description"),
           ticketTypePrice: "",
@@ -145,9 +144,7 @@ export default function CreateMeetEventForm({
             ticketTypeName: "General",
             ticketTypeDescription: t("general_default"),
             ticketTypePrice: "",
-            ticketTypeQuantity: String(
-              session?.activeOrganisation.membershipTier.freeTickets,
-            ),
+            ticketTypeQuantity: String(membershipTier.freeTickets),
           },
         ]),
       );
@@ -416,6 +413,7 @@ export default function CreateMeetEventForm({
               }
               setValue={setValue}
               t={(k) => t(k)}
+              membershipTier={membershipTier}
             />
           </motion.div>
         )}
@@ -437,6 +435,7 @@ export default function CreateMeetEventForm({
               setValue={setValue}
               t={(k) => t(k)}
               control={control}
+              membershipTier={membershipTier}
             />
           </motion.div>
         )}

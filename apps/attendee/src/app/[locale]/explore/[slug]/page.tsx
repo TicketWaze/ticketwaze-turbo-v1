@@ -461,12 +461,12 @@ export default async function EventPage({
                   <Follow organisationId={event.organisationId} />
                 )}
               </div>
-              <ul>
+              <ul className="flex flex-col gap-8">
                 {event.eventDays.map((eventDate) => {
                   return (
                     <li
                       key={eventDate.eventDayId}
-                      className="flex flex-col w-full gap-8"
+                      className="flex flex-col w-full gap-2"
                     >
                       {/*  date*/}
                       <div className={"flex items-center gap-[5px]"}>

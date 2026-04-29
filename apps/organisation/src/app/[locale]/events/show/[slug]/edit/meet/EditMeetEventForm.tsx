@@ -30,14 +30,20 @@ import StepBasic from "./BasicDetails";
 import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
 import { makeEditMeetSchema } from "./schema";
-import { Event } from "@ticketwaze/typescript-config";
+import { Event, MembershipTier } from "@ticketwaze/typescript-config";
 import { slugify } from "@/lib/Slugify";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
 import { EventDay } from "./types";
 
-export default function EditInPersonEventForm({ event }: { event: Event }) {
+export default function EditInPersonEventForm({
+  event,
+  membershipTier,
+}: {
+  event: Event;
+  membershipTier: MembershipTier;
+}) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
   const { data: session } = useSession();
@@ -430,6 +436,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
               }
               setValue={setValue}
               t={(k) => t(k)}
+              membershipTier={membershipTier}
             />
           </motion.div>
         )}
@@ -452,6 +459,7 @@ export default function EditInPersonEventForm({ event }: { event: Event }) {
               setValue={setValue}
               t={(k) => t(k)}
               control={control}
+              membershipTier={membershipTier}
             />
           </motion.div>
         )}

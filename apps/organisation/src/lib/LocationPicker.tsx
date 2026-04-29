@@ -49,14 +49,19 @@ function MapLayer({
   }, [value, map]);
 
   // Handle external pan requests
-  if (map && panTarget && panTarget !== prevPanTarget.current) {
+  useEffect(() => {
+    if (!map || !panTarget) return;
+    if (panTarget === prevPanTarget.current) return;
+
     prevPanTarget.current = panTarget;
+
     map.panTo(panTarget);
     map.setZoom(20);
     setMarkerPos(panTarget);
+
     onLocationSelect?.(panTarget);
     onPanDone();
-  }
+  }, [map, panTarget, onLocationSelect, onPanDone]);
 
   const handleMapClick = useCallback(
     (e: MapMouseEvent) => {
@@ -176,12 +181,17 @@ export default function LocationPicker({
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!}>
       <div className="tw-picker">
         {!mapVisible ? (
-          <button className="tw-button font-primary font-medium text-[2.2rem] transition-all duration-500 leading-12 text-neutral-900" onClick={handleOpen}>
+          <button
+            className="tw-button font-primary font-medium text-[2.2rem] transition-all duration-500 leading-12 text-neutral-900"
+            onClick={handleOpen}
+          >
             <LocationAdd size="24" variant="Bulk" />
             {internalValue ? t("location_update") : t("location_pick")}
           </button>
         ) : locating ? (
-          <div className="flex items-center justify-center p-6"><LoadingCircleSmall/></div>
+          <div className="flex items-center justify-center p-6">
+            <LoadingCircleSmall />
+          </div>
         ) : (
           <div className="tw-map-wrap h-[300px]">
             <MapLayer
