@@ -26,7 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Event } from "@ticketwaze/typescript-config";
+import { Event, MembershipTier } from "@ticketwaze/typescript-config";
 import { DeleteEvent } from "@/actions/EventActions";
 import { toast } from "sonner";
 import PageLoader from "@/components/PageLoader";
@@ -39,11 +39,13 @@ export default function MoreComponent({
   daysLeft,
   isFree,
   slug,
+  membershipTier,
 }: {
   event: Event;
   daysLeft: number | null;
   isFree: boolean;
   slug: string;
+  membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.single_event");
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -125,8 +127,7 @@ export default function MoreComponent({
                   <EventDrawerContent event={event} />
                 </Drawer>
               </li>
-              {session?.activeOrganisation.membershipTier.membershipName !==
-                "free" &&
+              {membershipTier.membershipName !== "free" &&
                 daysLeft !== null &&
                 daysLeft > 0 &&
                 !isFree && (

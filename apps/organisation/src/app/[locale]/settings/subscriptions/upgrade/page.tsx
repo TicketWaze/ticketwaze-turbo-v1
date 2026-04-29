@@ -19,26 +19,42 @@ export default async function SubscriptionUpgradePage() {
   if (!authorized) {
     return <UnauthorizedView />;
   }
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/subscriptions`,
-    {
+
+  const [subRequest, tiersRequest] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/subscriptions`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.accessToken}`,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          "Accept-Language": locale,
+        },
+      },
+    ),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/memberships`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.user.accessToken}`,
-        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
         "Accept-Language": locale,
       },
-    },
-  );
-  const response = await request.json();
-  const membershipTier: MembershipTier = response.membershipTier;
+    }),
+  ]);
+
+  const subResponse = await subRequest.json();
+  const tiersResponse = await tiersRequest.json();
+  const membershipTier: MembershipTier = subResponse.membershipTier;
+  const membershipTiers: MembershipTier[] = tiersResponse.memberships ?? [];
+
   return (
     <OrganizerLayout title="" className="">
       <BackButton text={t("back")} />
-      <TopBar title={t("upgrade")} />
-      <SubscriptionUpgradePageContent membershipTier={membershipTier} />
-      <div></div>
+      {/* <TopBar title={t("upgrade")} /> */}
+      <SubscriptionUpgradePageContent
+        membershipTier={membershipTier}
+        membershipTiers={membershipTiers}
+      />
     </OrganizerLayout>
   );
 }

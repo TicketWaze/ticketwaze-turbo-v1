@@ -34,11 +34,14 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
 import { EventDay } from "./types";
+import { MembershipTier } from "@ticketwaze/typescript-config";
 
 export default function CreateInPersonEventForm({
   eventType,
+  membershipTier,
 }: {
   eventType: string;
+  membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
@@ -73,7 +76,6 @@ export default function CreateInPersonEventForm({
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
   const delta = currentStep - previousStep;
-
   const {
     register,
     handleSubmit,
@@ -105,12 +107,8 @@ export default function CreateInPersonEventForm({
       activityTags: [],
       ticketTypes: [
         {
-          ticketTypeName: session?.activeOrganisation.membershipTier
-            .customTicketTypes
-            ? ""
-            : "General",
-          ticketTypeDescription: session?.activeOrganisation.membershipTier
-            .customTicketTypes
+          ticketTypeName: membershipTier.customTicketTypes ? "" : "General",
+          ticketTypeDescription: membershipTier.customTicketTypes
             ? ""
             : t("general.description"),
           ticketTypePrice: "",
@@ -146,9 +144,7 @@ export default function CreateInPersonEventForm({
             ticketTypeName: "General",
             ticketTypeDescription: t("general_default"),
             ticketTypePrice: "",
-            ticketTypeQuantity: String(
-              session?.activeOrganisation.membershipTier.freeTickets,
-            ),
+            ticketTypeQuantity: String(membershipTier.freeTickets),
           },
         ]),
       );
@@ -417,6 +413,7 @@ export default function CreateInPersonEventForm({
               }
               setValue={setValue}
               t={(k) => t(k)}
+              membershipTier={membershipTier}
             />
           </motion.div>
         )}
@@ -438,6 +435,7 @@ export default function CreateInPersonEventForm({
               setValue={setValue}
               t={(k) => t(k)}
               control={control}
+              membershipTier={membershipTier}
             />
           </motion.div>
         )}

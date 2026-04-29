@@ -33,15 +33,16 @@ export default function HeroSection() {
 
   const items = [
     {
-      id: 1,
-      Icon: calendarEdit,
-      title: t("slider.1"),
-    },
-    {
       id: 2,
       Icon: ticket,
       title: t("slider.2"),
     },
+    {
+      id: 1,
+      Icon: calendarEdit,
+      title: t("slider.1"),
+    },
+
     {
       id: 3,
       Icon: headphones,
@@ -213,7 +214,8 @@ export default function HeroSection() {
                   className="shrink-0 w-full flex flex-col items-center gap-[2.5rem]"
                 >
                   <Image src={Icon} alt={title} />
-                  <div className="bg-white/70 rounded-[50px] uppercase text-primary-500 font-semibold text-[1.8rem] leading-[25px] p-4 font-sans">
+
+                  <div className="bg-white/70 rounded-[50px] uppercase text-primary-500 font-semibold text-[1.8rem] p-4 font-sans text-center flex items-center justify-center w-full max-w-[260px] min-h-[80px] leading-tight">
                     {title}
                   </div>
                 </div>

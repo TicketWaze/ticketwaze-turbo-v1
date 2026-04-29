@@ -43,7 +43,7 @@ export default async function SubscriptionPage() {
   return (
     <OrganizerLayout title="">
       <BackButton text={t("back")} />
-      <TopBar title={t("title")}>
+      {/* <TopBar title={t("title")}>
         <div className="flex-1 hidden lg:block p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
           <LinkPrimary
             className="bg-transparent gap-4 items-center"
@@ -53,7 +53,7 @@ export default async function SubscriptionPage() {
             {t("upgrade")}
           </LinkPrimary>
         </div>
-      </TopBar>
+      </TopBar> */}
       <SubscriptionPageContent
         organisationSubscriptions={organisationSubscriptions}
         membershipTier={membershipTier}

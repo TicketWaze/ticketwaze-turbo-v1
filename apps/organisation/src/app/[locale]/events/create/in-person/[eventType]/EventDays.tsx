@@ -4,6 +4,8 @@ import React from "react";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import type { CreateInPersonFormValues, EventDay } from "./types";
 import { Trash } from "iconsax-reactjs";
+import { toast } from "sonner";
+import { MembershipTier } from "@ticketwaze/typescript-config";
 
 type Props = {
   register: UseFormRegister<CreateInPersonFormValues>;
@@ -12,6 +14,7 @@ type Props = {
   setEventDays: React.Dispatch<React.SetStateAction<EventDay[]>>;
   setValue: UseFormSetValue<CreateInPersonFormValues>;
   t: (s: string) => string;
+  membershipTier: MembershipTier;
 };
 
 export default function StepDateTime({
@@ -21,18 +24,24 @@ export default function StepDateTime({
   setEventDays,
   setValue,
   t,
+  membershipTier,
 }: Props) {
   const addDay = () => {
-    const newDay: EventDay = {
-      dayNumber: eventDays.length + 1,
-      eventDate: "",
-      startTime: "",
-      endTime: "",
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    };
-    const updated = [...eventDays, newDay];
-    setValue("eventDays", updated, { shouldValidate: false });
-    setEventDays(updated);
+    if (membershipTier.membershipName === "free") {
+      toast.info(t("pro"));
+      return;
+    } else {
+      const newDay: EventDay = {
+        dayNumber: eventDays.length + 1,
+        eventDate: "",
+        startTime: "",
+        endTime: "",
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      };
+      const updated = [...eventDays, newDay];
+      setValue("eventDays", updated, { shouldValidate: false });
+      setEventDays(updated);
+    }
   };
 
   const removeDay = (index: number) => {
@@ -148,6 +157,9 @@ export default function StepDateTime({
           </span>
         </button>
       </div>
+      <div></div>
+      <div></div>
+      <div></div>
     </div>
   );
 }

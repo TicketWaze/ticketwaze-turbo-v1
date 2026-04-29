@@ -7,6 +7,7 @@ import {
   ChartData,
   ChartOptions,
 } from "chart.js";
+import { InfoCircle } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import { Doughnut } from "react-chartjs-2";
 
@@ -94,43 +95,61 @@ export default function TicketClassesChart({
   };
 
   return (
-    <div className="flex flex-col gap-8 lg:flex-row w-full">
-      {/* Legend */}
-      <div className="w-full flex flex-col gap-8 lg:gap-10">
-        <span className="text-[14px] font-sans justify-start text-gray-800 text-base font-medium leading-tight lg:text-[15px]">
-          {t("tickets.classes")}
-        </span>
-
-        <div className="flex justify-between items-start lg:grid lg:grid-cols-2 gap-x-20 lg:gap-y-14">
-          {tickets.map((type, index) => (
-            <div
-              key={type.name}
-              className="grid grid-cols justify-start items-start"
-            >
-              <div className="justify-start items-center gap-2 inline-flex">
-                <div
-                  className="w-6 h-6 rounded-[5px]"
-                  style={{ backgroundColor: getColor(type.name, index) }}
-                />
-                <div className="text-[#8F96A1] text-[14px] font-sans font-medium capitalize">
-                  {type.name}
-                </div>
-              </div>
-              <div className="justify-start font-medium text-black text-[25px] font-primary capitalize leading-none">
-                {type.percentage}%
-              </div>
+    <>
+      {tickets.length === 0 ? (
+        <div className="flex flex-col gap-8 lg:flex-row w-full">
+          {/* Legend */}
+          <div className="w-full flex flex-col gap-12 lg:gap-10">
+            <span className="text-[14px] font-sans justify-start text-gray-800 text-base font-medium leading-tight lg:text-[15px]">
+              {t("tickets.classes")}
+            </span>
+            <div className="flex flex-col justify-center h-full items-center gap-4">
+              <InfoCircle size="32" color="#D5D8DC" />
+              <span className="font-primary text-[1.2rem] text-neutral-500">
+                {t("noActivity")}
+              </span>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col gap-8 lg:flex-row w-full">
+          {/* Legend */}
+          <div className="w-full flex flex-col gap-8 lg:gap-10">
+            <span className="text-[14px] font-sans justify-start text-gray-800 text-base font-medium leading-tight lg:text-[15px]">
+              {t("tickets.classes")}
+            </span>
+            <div className="flex justify-between items-start lg:grid lg:grid-cols-2 gap-x-20 lg:gap-y-14">
+              {tickets.map((type, index) => (
+                <div
+                  key={type.name}
+                  className="grid grid-cols justify-start items-start"
+                >
+                  <div className="justify-start items-center gap-2 inline-flex">
+                    <div
+                      className="w-6 h-6 rounded-[5px]"
+                      style={{ backgroundColor: getColor(type.name, index) }}
+                    />
+                    <div className="text-[#8F96A1] text-[14px] font-sans font-medium capitalize">
+                      {type.name}
+                    </div>
+                  </div>
+                  <div className="justify-start font-medium text-black text-[25px] font-primary capitalize leading-none">
+                    {type.percentage}%
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
 
-      {/* Chart */}
-      <div className="h-70 justify-center items-center flex">
-        <Doughnut
-          data={isEmpty ? emptyData : defaultData}
-          options={options || defaultOptions}
-        />
-      </div>
-    </div>
+          {/* Chart */}
+          <div className="h-70 justify-center items-center flex">
+            <Doughnut
+              data={isEmpty ? emptyData : defaultData}
+              options={options || defaultOptions}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }

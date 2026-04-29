@@ -12,8 +12,8 @@ import type { CreateInPersonFormValues } from "./types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import { Input } from "@/components/shared/Inputs";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { MembershipTier } from "@ticketwaze/typescript-config";
 
 type Props = {
   register: UseFormRegister<CreateInPersonFormValues>;
@@ -25,6 +25,7 @@ type Props = {
   setIsRefundable: React.Dispatch<React.SetStateAction<boolean>>;
   t: (s: string) => string;
   control: Control<CreateInPersonFormValues>;
+  membershipTier: MembershipTier;
 };
 
 export default function StepTicket({
@@ -37,6 +38,7 @@ export default function StepTicket({
   t,
   setValue,
   control,
+  membershipTier,
 }: Props) {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -44,9 +46,9 @@ export default function StepTicket({
   });
   const [currency, setCurrency] = useState("HTG");
   const [wordCounts, setWordCounts] = useState<number[]>(fields.map(() => 0));
-  const { data: session } = useSession();
+
   function addClass() {
-    if (session?.activeOrganisation.membershipTier.membershipName === "free") {
+    if (membershipTier.membershipName === "free") {
       toast.info(t("pro"));
       return;
     } else {
@@ -95,10 +97,7 @@ export default function StepTicket({
                         ticketTypeName: "General",
                         ticketTypeDescription: t("general_default"),
                         ticketTypePrice: "",
-                        ticketTypeQuantity: String(
-                          session?.activeOrganisation.membershipTier
-                            .freeTickets,
-                        ),
+                        ticketTypeQuantity: String(membershipTier.freeTickets),
                       },
                     ]);
                   }
@@ -179,7 +178,7 @@ export default function StepTicket({
             <Input defaultValue={"Free"} disabled readOnly>
               {t("price")}
             </Input>
-            <Input defaultValue="100" readOnly disabled>
+            <Input defaultValue={membershipTier.freeTickets} readOnly disabled>
               {t("quantity")}
             </Input>
           </div>
@@ -214,9 +213,7 @@ export default function StepTicket({
               <Input
                 {...register(`ticketTypes.${index}.ticketTypeName` as const)}
                 error={errors?.ticketTypes?.[index]?.ticketTypeName?.message}
-                disabled={
-                  !session?.activeOrganisation.membershipTier.customTicketTypes
-                }
+                disabled={!membershipTier.customTicketTypes}
               >
                 {t("class_name")}
               </Input>
@@ -237,10 +234,7 @@ export default function StepTicket({
                       return next;
                     })
                   }
-                  disabled={
-                    !session?.activeOrganisation.membershipTier
-                      .customTicketTypes
-                  }
+                  disabled={!membershipTier.customTicketTypes}
                 />
                 <div className="flex items-center justify-between">
                   <span className="text-[1.2rem] px-8 py-2 text-failure">
