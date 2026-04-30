@@ -26,7 +26,6 @@ export default function ActivitiesPageContent() {
         title={t("title")}
         filter={t("filters.period.actual")}
       />
-      ;
       <div
         className={
           "grid grid-cols-2 lg:grid-cols-4 divide-x divide-neutral-100 border-neutral-100 border-b"

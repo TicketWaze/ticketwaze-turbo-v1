@@ -196,5 +196,70 @@
       }
     }
   },
+  
+ "Payouts": {
+    "title": "Virements",
+    "total": "Total des virements",
+    "pending": "Demandes de virement en attente",
+    "total_paid": "Total des organisateurs payés",
+
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "status": "Tous les statuts"
+    },
+    "payout_request": {
+      "title": "Demande de virement",
+      "table": {
+        "withdrawal_id": "ID de retrait",
+        "bank_name": "Nom de la banque",
+        "account_number": "Numéro de compte",
+        "amount": "Montant",
+        "request_status": {
+          "title": "Statut de la demande",
+          "approved": "Approuvé",
+          "pending": "En attente"
+        }
+      }
+    },
+    "payout_history": {
+      "title": "Historique des virements",
+      "table": {
+        "withdrawal_id": "ID de retrait",
+        "bank_name": "Nom de la banque",
+        "account_number": "Numéro de compte",
+        "amount": "Montant",
+        "transaction_status": {
+          "title": "Statut de la transaction",
+          "succesful": "Réussi"
+        }
+      }
+    },
+    "view_all": "Voir tout",
+    "request_details": {
+      "title": "Détails de la demande",
+      "amount": "Montant",
+      "request_date": "Date de la demande",
+      "requested_by": "Demandé par",
+      "request_status": "Statut de la demande",
+      "bank_name": "Nom de la banque",
+      "account": "Numéro de compte",
+      "processed_date": "Date de traitement",
+      "close": "Fermer",
+      "approve": "Approuver le virement"
+    },
+    "withdrawal_details": {
+      "title": "Détails du retrait",
+      "amount": "Montant",
+      "request_date": "Date de la demande",
+      "requested_by": "Demandé par",
+      "transaction_status": "Statut de la transaction",
+      "bank_name": "Nom de la banque",
+      "account": "Numéro de compte",
+      "processed_date": "Date de traitement",
+      "close": "Fermer"
+    }
+  },
   "attendees": {}
 }
