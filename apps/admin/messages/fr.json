@@ -267,7 +267,8 @@
           "approved": "Approuvé",
           "pending": "En attente"
         }
-      }
+      },
+     "no_request": "Vous verrez ici les nouvelles demandes de virement des organisateurs lorsqu'ils souhaitent retirer leurs gains."
     },
     "payout_history": {
       "title": "Historique des virements",
@@ -280,7 +281,8 @@
           "title": "Statut de la transaction",
           "succesful": "Réussi"
         }
-      }
+      },
+      "no_history": "Une fois les virements traités, un enregistrement apparaîtra ici pour le suivi et les rapports."
     },
     "view_all": "Voir tout",
     "request_details": {

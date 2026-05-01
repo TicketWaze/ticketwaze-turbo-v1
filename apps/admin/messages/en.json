@@ -269,8 +269,8 @@
           "approved": "Approved",
           "pending": "Pending"
         }
-      }
-
+      },
+      "no_request": "You'll see new payout requests from organizers here when they request to withdraw their earnings."
     },
     "payout_history": {
       "title": "Payout history",
@@ -283,7 +283,8 @@
           "title": "Transaction Status",
           "succesful": "Succesful"
         }
-      }
+      },
+      "no_history": "Once payouts are processed, a record will appear here for tracking and reporting."
     },
     "view_all": "View all",
     "request_details": {

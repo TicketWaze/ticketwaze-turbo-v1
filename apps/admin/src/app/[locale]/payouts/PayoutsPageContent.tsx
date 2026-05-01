@@ -30,6 +30,8 @@ import WithdrawalDetails from "./WithdrawalDetails";
 export default function PayoutsPageContent() {
   const t = useTranslations("Payouts");
   const router = useRouter();
+  const request = false;
+  const history = false;
   return (
     <AdminLayout>
       <PayoutsPageTopbar
@@ -164,205 +166,73 @@ export default function PayoutsPageContent() {
                 </TableHead>
               </TableRow>
             </TableHeader>
-            {/* <div className="flex flex-col w-full gap-12 items-center ">
-              <div></div>
-              <div className="flex items-center rounded-full bg-neutral-700 p-8 w-fit justify-center">
-                <Image
-                  src={MoneySend}
-                  alt="no payout requests"
-                  width={50}
-                  height={50}
-                />
-              </div>
-            </div> */}
-            <TableBody>
-              <Drawer direction="right">
-                <DrawerTrigger asChild>
-                  <TableRow className="cursor-pointer">
-                    <TableCell
-                      className={
-                        "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                      }
-                    >
-                      <Drawer direction={"right"}>
-                        <DrawerTrigger>
-                          <span className={"cursor-pointer"}>TXN23456789</span>
-                        </DrawerTrigger>
-                      </Drawer>
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                      }
-                    >
-                      <Drawer direction={"right"}>
-                        <DrawerTrigger>
-                          <span className={"cursor-pointer"}>Sogebank</span>
-                        </DrawerTrigger>
-                      </Drawer>
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                      }
-                    >
-                      0123456789
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                      }
-                    >
-                      <Drawer direction={"right"}>
-                        <DrawerTrigger>
-                          <span className={"cursor-pointer py-6"}>
-                            {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                            3500 HTG
-                          </span>
-                        </DrawerTrigger>
-                      </Drawer>
-                    </TableCell>
-                    <TableCell className="py-6">
-                      <Drawer direction={"right"}>
-                        <DrawerTrigger>
-                          {/* {order?.status === "APPROVED" && ( */}
-                          <span
-                            className={
-                              "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                            }
-                          >
-                            {t("payout_request.table.request_status.approved")}
-                          </span>
-                          {/* )} */}
-                          {/* 
-                      {order?.status === "Pending" && (
-                        <span
-                          className={
-                            "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          {t("list.filters.upcoming")}
-                        </span>
-                      )}
-                    */}
-                        </DrawerTrigger>
-                      </Drawer>
-                    </TableCell>
-                  </TableRow>
-                </DrawerTrigger>
-                <RequestDetails></RequestDetails>
-              </Drawer>
-              <Drawer direction="right">
-                <DrawerTrigger asChild>
-                  <TableRow className="cursor-pointer">
-                    <TableCell
-                      className={
-                        "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                      }
-                    >
-                      <span className={"cursor-pointer"}>TXN23456789</span>
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                      }
-                    >
-                      <span className={"cursor-pointer"}>Sogebank</span>
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                      }
-                    >
-                      0123456789
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                      }
-                    >
-                      <span className={"cursor-pointer py-6"}>
-                        {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                        3500 HTG
-                      </span>
-                    </TableCell>
-                    <TableCell className="py-6">
-                      {/* {order?.status === "APPROVED" && ( */}
-                      <span
+            {request ? (
+              <TableBody>
+                <Drawer direction="right">
+                  <DrawerTrigger asChild>
+                    <TableRow className="cursor-pointer">
+                      <TableCell
                         className={
-                          "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
                         }
                       >
-                        {t("payout_request.table.request_status.approved")}
-                      </span>
-                      {/* )} */}
-                      {/* 
-                      {order?.status === "Pending" && (
-                        <span
-                          className={
-                            "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          {t("list.filters.upcoming")}
-                        </span>
-                      )}
-                    */}
-                    </TableCell>
-                  </TableRow>
-                </DrawerTrigger>
-                <RequestDetails></RequestDetails>
-              </Drawer>
-              <Drawer direction="right">
-                <DrawerTrigger asChild>
-                  <TableRow className="cursor-pointer">
-                    <TableCell
-                      className={
-                        "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                      }
-                    >
-                      <span className={"cursor-pointer"}>TXN23456789</span>
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                      }
-                    >
-                      <span className={"cursor-pointer"}>Sogebank</span>
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                      }
-                    >
-                      0123456789
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                      }
-                    >
-                      <span className={"cursor-pointer py-6"}>
-                        {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                        3500 HTG
-                      </span>
-                    </TableCell>
-                    <TableCell className="py-6">
-                      {/* {order?.status === "APPROVED" && ( */}
-                      <span
+                        <Drawer direction={"right"}>
+                          <DrawerTrigger>
+                            <span className={"cursor-pointer"}>
+                              TXN23456789
+                            </span>
+                          </DrawerTrigger>
+                        </Drawer>
+                      </TableCell>
+                      <TableCell
                         className={
-                          "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                          "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
                         }
                       >
-                        {t("payout_request.table.request_status.approved")}
-                      </span>
-                      {/* )} */}
-                      {/* 
+                        <Drawer direction={"right"}>
+                          <DrawerTrigger>
+                            <span className={"cursor-pointer"}>Sogebank</span>
+                          </DrawerTrigger>
+                        </Drawer>
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                        }
+                      >
+                        0123456789
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                        }
+                      >
+                        <Drawer direction={"right"}>
+                          <DrawerTrigger>
+                            <span className={"cursor-pointer py-6"}>
+                              {/* {session?.user.userPreference.currency === "USD"
+                      ? `${order.usdPrice} USD`
+                      : `${order.amount} HTG`} */}
+                              3500 HTG
+                            </span>
+                          </DrawerTrigger>
+                        </Drawer>
+                      </TableCell>
+                      <TableCell className="py-6">
+                        <Drawer direction={"right"}>
+                          <DrawerTrigger>
+                            {/* {order?.status === "APPROVED" && ( */}
+                            <span
+                              className={
+                                "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                              }
+                            >
+                              {t(
+                                "payout_request.table.request_status.approved",
+                              )}
+                            </span>
+                            {/* )} */}
+                            {/* 
                       {order?.status === "Pending" && (
                         <span
                           className={
@@ -373,49 +243,175 @@ export default function PayoutsPageContent() {
                         </span>
                       )}
                     */}
-                    </TableCell>
-                  </TableRow>
-                </DrawerTrigger>
-                <RequestDetails></RequestDetails>
-              </Drawer>
-              <Drawer direction="right">
-                <DrawerTrigger asChild>
-                  <TableRow className="cursor-pointer">
-                    <TableCell
-                      className={
-                        "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                      }
-                    >
-                      <span className={"cursor-pointer"}>TXN23456789</span>
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                      }
-                    >
-                      <span className={"cursor-pointer"}>Sogebank</span>
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                      }
-                    >
-                      0123456789
-                    </TableCell>
-                    <TableCell
-                      className={
-                        "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                      }
-                    >
-                      <span className={"cursor-pointer py-6"}>
-                        {/* {session?.user.userPreference.currency === "USD"
+                          </DrawerTrigger>
+                        </Drawer>
+                      </TableCell>
+                    </TableRow>
+                  </DrawerTrigger>
+                  <RequestDetails></RequestDetails>
+                </Drawer>
+                <Drawer direction="right">
+                  <DrawerTrigger asChild>
+                    <TableRow className="cursor-pointer">
+                      <TableCell
+                        className={
+                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
+                        }
+                      >
+                        <span className={"cursor-pointer"}>TXN23456789</span>
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
+                        }
+                      >
+                        <span className={"cursor-pointer"}>Sogebank</span>
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                        }
+                      >
+                        0123456789
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                        }
+                      >
+                        <span className={"cursor-pointer py-6"}>
+                          {/* {session?.user.userPreference.currency === "USD"
                       ? `${order.usdPrice} USD`
                       : `${order.amount} HTG`} */}
-                        3500 HTG
-                      </span>
-                    </TableCell>
-                    <TableCell className="py-6">
-                      {/* {order?.status === "APPROVED" && ( 
+                          3500 HTG
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-6">
+                        {/* {order?.status === "APPROVED" && ( */}
+                        <span
+                          className={
+                            "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                          }
+                        >
+                          {t("payout_request.table.request_status.approved")}
+                        </span>
+                        {/* )} */}
+                        {/* 
+                      {order?.status === "Pending" && (
+                        <span
+                          className={
+                            "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                          }
+                        >
+                          {t("list.filters.upcoming")}
+                        </span>
+                      )}
+                    */}
+                      </TableCell>
+                    </TableRow>
+                  </DrawerTrigger>
+                  <RequestDetails></RequestDetails>
+                </Drawer>
+                <Drawer direction="right">
+                  <DrawerTrigger asChild>
+                    <TableRow className="cursor-pointer">
+                      <TableCell
+                        className={
+                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
+                        }
+                      >
+                        <span className={"cursor-pointer"}>TXN23456789</span>
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
+                        }
+                      >
+                        <span className={"cursor-pointer"}>Sogebank</span>
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                        }
+                      >
+                        0123456789
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                        }
+                      >
+                        <span className={"cursor-pointer py-6"}>
+                          {/* {session?.user.userPreference.currency === "USD"
+                      ? `${order.usdPrice} USD`
+                      : `${order.amount} HTG`} */}
+                          3500 HTG
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-6">
+                        {/* {order?.status === "APPROVED" && ( */}
+                        <span
+                          className={
+                            "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                          }
+                        >
+                          {t("payout_request.table.request_status.approved")}
+                        </span>
+                        {/* )} */}
+                        {/* 
+                      {order?.status === "Pending" && (
+                        <span
+                          className={
+                            "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                          }
+                        >
+                          {t("list.filters.upcoming")}
+                        </span>
+                      )}
+                    */}
+                      </TableCell>
+                    </TableRow>
+                  </DrawerTrigger>
+                  <RequestDetails></RequestDetails>
+                </Drawer>
+                <Drawer direction="right">
+                  <DrawerTrigger asChild>
+                    <TableRow className="cursor-pointer">
+                      <TableCell
+                        className={
+                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
+                        }
+                      >
+                        <span className={"cursor-pointer"}>TXN23456789</span>
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
+                        }
+                      >
+                        <span className={"cursor-pointer"}>Sogebank</span>
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                        }
+                      >
+                        0123456789
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                        }
+                      >
+                        <span className={"cursor-pointer py-6"}>
+                          {/* {session?.user.userPreference.currency === "USD"
+                      ? `${order.usdPrice} USD`
+                      : `${order.amount} HTG`} */}
+                          3500 HTG
+                        </span>
+                      </TableCell>
+                      <TableCell className="py-6">
+                        {/* {order?.status === "APPROVED" && ( 
                         <span
                           className={
                             "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
@@ -424,22 +420,40 @@ export default function PayoutsPageContent() {
                           {t("payout_request.table.request_status.approved")}
                         </span>
                          )}                   */}
-                      {/* {order?.status === "Pending" && ( */}
-                      <span
-                        className={
-                          "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                        }
-                      >
-                        {t("payout_request.table.request_status.pending")}
-                      </span>
-                      {/* )} */}
-                    </TableCell>
-                  </TableRow>
-                </DrawerTrigger>
-                <RequestDetails></RequestDetails>
-              </Drawer>
-            </TableBody>
+                        {/* {order?.status === "Pending" && ( */}
+                        <span
+                          className={
+                            "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                          }
+                        >
+                          {t("payout_request.table.request_status.pending")}
+                        </span>
+                        {/* )} */}
+                      </TableCell>
+                    </TableRow>
+                  </DrawerTrigger>
+                  <RequestDetails></RequestDetails>
+                </Drawer>
+              </TableBody>
+            ) : null}
           </Table>
+          {!request && (
+            <div className="flex flex-col w-fit  gap-12 items-center mt-8 self-center">
+              <div className="rounded-full bg-neutral-100 p-6 w-fit">
+                <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
+                  <Image
+                    src={MoneySend}
+                    alt="no payout requests"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+              </div>
+              <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+                {t("payout_request.no_request")}
+              </p>
+            </div>
+          )}
           <div className="w-full flex">
             <span className="flex w-full  gap-8 text-primary-500 text-[1.5rem] leading-8 items-center justify-end">
               {t("view_all")}
@@ -452,7 +466,7 @@ export default function PayoutsPageContent() {
             </span>
           </div>
         </div>
-        <div className="h-full flex flex-col gap-8">
+        <div className="flex flex-col gap-8">
           <div className="flex justify-between">
             <h4 className="font-medium inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
               {t("payout_history.title")}
@@ -530,71 +544,72 @@ export default function PayoutsPageContent() {
               </TableRow>
             </TableHeader>
 
-            <TableBody>
-              {Array.from({ length: 4 }).map((_, index) => (
-                <Drawer key={index} direction="right">
-                  <DrawerTrigger asChild>
-                    <TableRow className="cursor-pointer">
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                        }
-                      >
-                        <Drawer direction={"right"}>
-                          <DrawerTrigger>
-                            <span className={"cursor-pointer"}>
-                              TXN23456789
-                            </span>
-                          </DrawerTrigger>
-                        </Drawer>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                        }
-                      >
-                        <Drawer direction={"right"}>
-                          <DrawerTrigger>
-                            <span className={"cursor-pointer"}>Sogebank</span>
-                          </DrawerTrigger>
-                        </Drawer>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                        }
-                      >
-                        0123456789
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                        }
-                      >
-                        <Drawer direction={"right"}>
-                          <DrawerTrigger>
-                            <span className={"cursor-pointer py-6"}>
-                              {/* {session?.user.userPreference.currency === "USD"
-                        ? `${order.usdPrice} USD`
-                        : `${order.amount} HTG`} */}
-                              3500 HTG
-                            </span>
-                          </DrawerTrigger>
-                        </Drawer>
-                      </TableCell>
-                      <TableCell className="py-6">
-                        {/* {order?.status === "SUCCESFUL" && ( */}
-                        <span
+            {history ? (
+              <TableBody>
+                {Array.from({ length: 4 }).map((_, index) => (
+                  <Drawer key={index} direction="right">
+                    <DrawerTrigger asChild>
+                      <TableRow className="cursor-pointer">
+                        <TableCell
                           className={
-                            "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                            "text-[1.5rem] py-6 leading-8 text-neutral-900"
                           }
                         >
-                          {t(
-                            "payout_history.table.transaction_status.succesful",
-                          )}
-                        </span>
-                        {/* )} */}
-                        {/* 
+                          <Drawer direction={"right"}>
+                            <DrawerTrigger>
+                              <span className={"cursor-pointer"}>
+                                TXN23456789
+                              </span>
+                            </DrawerTrigger>
+                          </Drawer>
+                        </TableCell>
+                        <TableCell
+                          className={
+                            "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
+                          }
+                        >
+                          <Drawer direction={"right"}>
+                            <DrawerTrigger>
+                              <span className={"cursor-pointer"}>Sogebank</span>
+                            </DrawerTrigger>
+                          </Drawer>
+                        </TableCell>
+                        <TableCell
+                          className={
+                            "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                          }
+                        >
+                          0123456789
+                        </TableCell>
+                        <TableCell
+                          className={
+                            "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                          }
+                        >
+                          <Drawer direction={"right"}>
+                            <DrawerTrigger>
+                              <span className={"cursor-pointer py-6"}>
+                                {/* {session?.user.userPreference.currency === "USD"
+                        ? `${order.usdPrice} USD`
+                        : `${order.amount} HTG`} */}
+                                3500 HTG
+                              </span>
+                            </DrawerTrigger>
+                          </Drawer>
+                        </TableCell>
+                        <TableCell className="py-6">
+                          {/* {order?.status === "SUCCESFUL" && ( */}
+                          <span
+                            className={
+                              "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                            }
+                          >
+                            {t(
+                              "payout_history.table.transaction_status.succesful",
+                            )}
+                          </span>
+                          {/* )} */}
+                          {/* 
                         {order?.status === "Pending" && (
                           <span
                             className={
@@ -605,14 +620,32 @@ export default function PayoutsPageContent() {
                           </span>
                         )}
                       */}
-                      </TableCell>
-                    </TableRow>
-                  </DrawerTrigger>
-                  <WithdrawalDetails></WithdrawalDetails>
-                </Drawer>
-              ))}
-            </TableBody>
+                        </TableCell>
+                      </TableRow>
+                    </DrawerTrigger>
+                    <WithdrawalDetails></WithdrawalDetails>
+                  </Drawer>
+                ))}
+              </TableBody>
+            ) : null}
           </Table>
+          {!history && (
+            <div className="flex flex-col w-fit  gap-12 items-center mt-8 self-center">
+              <div className="rounded-full bg-neutral-100 p-6 w-fit">
+                <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
+                  <Image
+                    src={MoneySend}
+                    alt="no payout history"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+              </div>
+              <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+                {t("payout_history.no_history")}
+              </p>
+            </div>
+          )}
           <div className="w-full flex">
             <span className="flex w-full  gap-8 text-primary-500 text-[1.5rem] leading-8 items-center justify-end">
               {t("view_all")}
