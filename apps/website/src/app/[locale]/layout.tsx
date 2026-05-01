@@ -23,12 +23,59 @@ const dmSans = DM_Sans({
   weight: ["300", "400", "500"],
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations("Metadata");
+const siteUrl = "https://ticketwaze.com";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  const localePath = locale === "fr" ? "" : `/${locale}`;
+
   return {
-    title: t("title"),
+    metadataBase: new URL(siteUrl),
+    title: {
+      template: "%s | TicketWaze",
+      default: "TicketWaze | Every Ticket, Every Activity, One Platform",
+    },
     description: t("description"),
+    keywords: [
+      "TicketWaze",
+      "buy tickets online",
+      "sell tickets online",
+      "event tickets",
+      "activity tickets",
+      "ticket platform",
+      "event management",
+      "ticket sales",
+      "online event ticketing",
+      "ticket management",
+      "MonCash tickets",
+      "billetterie en ligne",
+    ],
+    applicationName: "TicketWaze",
+    authors: [{ name: "TicketWaze", url: siteUrl }],
+    creator: "TicketWaze",
+    publisher: "TicketWaze",
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+        "max-video-preview": -1,
+      },
+    },
     openGraph: {
+      type: "website",
+      locale: locale === "fr" ? "fr_FR" : "en_US",
+      alternateLocale: locale === "fr" ? "en_US" : "fr_FR",
+      url: `${siteUrl}${localePath}`,
+      siteName: "TicketWaze",
       title: t("title"),
       description: t("description"),
       images: [
@@ -36,10 +83,27 @@ export async function generateMetadata(): Promise<Metadata> {
           url: "/opengraph-image.png",
           width: 1200,
           height: 630,
-          alt: t("title"),
+          alt: "TicketWaze – Every Ticket, Every Activity, One Platform",
         },
       ],
     },
+    twitter: {
+      card: "summary_large_image",
+      site: "@ticketwaze",
+      creator: "@ticketwaze",
+      title: t("title"),
+      description: t("description"),
+      images: ["/opengraph-image.png"],
+    },
+    alternates: {
+      canonical: `${siteUrl}${localePath}`,
+      languages: {
+        en: `${siteUrl}/en`,
+        fr: siteUrl,
+        "x-default": siteUrl,
+      },
+    },
+    category: "technology",
   };
 }
 

@@ -8,9 +8,13 @@ import { Event } from "@ticketwaze/typescript-config";
 import formatDate from "@/lib/FormatDate";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
-  const date = event.eventDays.filter(
-    (eventDay) => eventDay.dayNumber === 1,
-  )[0];
+  const now = new Date();
+  const sortedDays = [...event.eventDays].sort(
+    (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime()
+  );
+  const date =
+    sortedDays.find((eventDay) => new Date(eventDay.eventDate) >= now) ??
+    sortedDays[sortedDays.length - 1];
   const slug = slugify(event.eventName, event.eventId);
   const locale = useLocale();
   const t = useTranslations("Event");
