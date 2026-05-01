@@ -1,7 +1,31 @@
 {
   "Metadata": {
-    "title": "Every ticket, Every activity, One platform",
-    "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform."
+    "title": "TicketWaze | Every Ticket, Every Activity, One Platform",
+    "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+    "about": {
+      "title": "About Us",
+      "description": "Learn how TicketWaze is reimagining ticketing and access — bringing payments, tickets, and management into one simple, secure platform."
+    },
+    "attendee": {
+      "title": "Buy Tickets Your Way",
+      "description": "From concerts to classes, buy tickets securely and manage everything in one place with TicketWaze. Pay by card or MonCash."
+    },
+    "business": {
+      "title": "Sell Tickets Online for Your Business",
+      "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance — all in one platform."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "description": "Get in touch with the TicketWaze support team for help, partnerships, media inquiries, or general questions."
+    },
+    "legals": {
+      "title": "Terms of Use & Privacy Policy",
+      "description": "Read TicketWaze's Terms of Use and Privacy Policy governing your use of the platform."
+    },
+    "waitlist": {
+      "title": "Join the Waitlist",
+      "description": "Be among the first to experience TicketWaze. Join the waitlist and get early access to the platform."
+    }
   },
   "HomePage": {
     "navbar": {

@@ -6,7 +6,8 @@
       "Bash(xargs grep *)",
       "Bash(npx tsc *)",
       "Bash(node *)",
-      "Bash(yarn add *)"
+      "Bash(yarn add *)",
+      "Bash(node_modules/.bin/tsc --noEmit)"
     ]
   }
 }

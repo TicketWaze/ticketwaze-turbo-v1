@@ -1,7 +1,31 @@
 {
   "Metadata": {
-    "title": "Chaque billet, chaque activité, une seule plateforme",
-    "description": "Achetez, vendez et gérez vos billets pour activités et expériences, en ligne ou en personne, sur une plateforme sécurisée et unique."
+    "title": "TicketWaze | Chaque billet, chaque activité, une seule plateforme",
+    "description": "Achetez, vendez et gérez vos billets pour activités et expériences, en ligne ou en personne, sur une plateforme sécurisée et unique.",
+    "about": {
+      "title": "À propos",
+      "description": "Découvrez comment TicketWaze réinvente la billetterie et l'accès, en réunissant paiements, billets et gestion sur une plateforme simple et sécurisée."
+    },
+    "attendee": {
+      "title": "Achetez vos billets à votre façon",
+      "description": "Concerts, cours, voyages ou ateliers : achetez vos billets en toute sécurité et gérez tout depuis un seul espace avec TicketWaze."
+    },
+    "business": {
+      "title": "Vendez vos billets en ligne",
+      "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances sur TicketWaze."
+    },
+    "contact": {
+      "title": "Nous contacter",
+      "description": "Contactez l'équipe TicketWaze pour obtenir de l'aide, des partenariats, des demandes médias ou des questions générales."
+    },
+    "legals": {
+      "title": "Mentions légales et Politique de confidentialité",
+      "description": "Consultez les Conditions d'utilisation et la Politique de confidentialité de TicketWaze régissant l'utilisation de la plateforme."
+    },
+    "waitlist": {
+      "title": "Rejoindre la liste d'attente",
+      "description": "Faites partie des premiers à découvrir TicketWaze. Rejoignez la liste d'attente et obtenez un accès anticipé à la plateforme."
+    }
   },
   "HomePage": {
     "navbar": {
