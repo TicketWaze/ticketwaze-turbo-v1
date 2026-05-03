@@ -32,17 +32,17 @@ export default function InitiateWithdrawalButton({
         <DialogTrigger asChild>
           <ButtonPrimary className="w-full">{t("withdraw_btn")}</ButtonPrimary>
         </DialogTrigger>
-        <DialogContent className={"w-[360px] lg:w-[520px] "}>
+        <DialogContent className={"w-[360px] lg:w-[520px]"}>
           <DialogHeader>
             <DialogTitle
               className={
-                "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                "font-medium border-b border-neutral-100 pb-[2rem] text-[2.6rem] leading-[30px] text-black font-primary"
               }
             >
               {t("withdraw_btn")}
             </DialogTitle>
             <DialogDescription className={"sr-only"}>
-              <span>Add artist</span>
+              <span>Withdrawal PIN required</span>
             </DialogDescription>
           </DialogHeader>
           <div className="py-8 flex flex-col gap-8 items-center">
@@ -60,7 +60,9 @@ export default function InitiateWithdrawalButton({
               </div>
             </div>
             <p
-              className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
+              className={
+                "font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full"
+              }
             >
               {t("noPinWarning")}
             </p>
@@ -82,71 +84,11 @@ export default function InitiateWithdrawalButton({
         </DialogContent>
       </Dialog>
     );
-  } else if (
-    !organisation.bankAccountName ||
-    !organisation.bankAccountNumber ||
-    !organisation.bankName
-  ) {
-    return (
-      <Dialog>
-        <DialogTrigger asChild>
-          <ButtonPrimary className="w-full">{t("withdraw_btn")}</ButtonPrimary>
-        </DialogTrigger>
-        <DialogContent className={"w-[360px] lg:w-[520px] "}>
-          <DialogHeader>
-            <DialogTitle
-              className={
-                "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
-              }
-            >
-              {t("withdraw_btn")}
-            </DialogTitle>
-            <DialogDescription className={"sr-only"}>
-              <span>Add artist</span>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="py-8 flex flex-col gap-8 items-center">
-            <div
-              className={
-                "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
-              }
-            >
-              <div
-                className={
-                  "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
-                }
-              >
-                <InfoCircle size="30" color="#0d0d0d" variant="Bulk" />
-              </div>
-            </div>
-            <p
-              className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
-            >
-              {t("noBankingInfo")}
-            </p>
-          </div>
-          <DialogFooter>
-            <ButtonPrimary
-              onClick={() => {
-                setIsLoading(true);
-                router.push(
-                  `/settings/payment?redirectTo=/finance&redirectAction=withdrawal&action=banking`,
-                );
-              }}
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? <LoadingCircleSmall /> : t("proceed")}
-            </ButtonPrimary>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  } else {
-    return (
-      <LinkPrimary className="w-full" href={"/finance/initiate-withdrawal"}>
-        {t("withdraw_btn")}
-      </LinkPrimary>
-    );
   }
+
+  return (
+    <LinkPrimary className="w-full" href={"/finance/initiate-withdrawal"}>
+      {t("withdraw_btn")}
+    </LinkPrimary>
+  );
 }

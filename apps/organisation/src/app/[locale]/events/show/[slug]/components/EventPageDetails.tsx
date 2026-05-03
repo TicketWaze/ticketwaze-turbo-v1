@@ -173,11 +173,13 @@ export default function EventPageDetails({
           <CheckingDialog event={event} user={user} />
         </div>
       )}
-      <EventArtist
-        event={event}
-        user={user}
-        eventPerformers={eventPerformers}
-      />
+      {daysLeft !== null && daysLeft > 0 && (
+        <EventArtist
+          event={event}
+          user={user}
+          eventPerformers={eventPerformers}
+        />
+      )}
 
       {/* ticket tabs details */}
       <Tabs defaultValue="all" className="w-full h-full ">

@@ -86,9 +86,7 @@ export async function UpdateOrganisationProfileImage(
 
 export async function UpdateOrganisationPaymentInformation(
   organisationId: string,
-  bankName: string,
-  bankAccountName: string,
-  bankAccountNumber: string,
+  payload: unknown,
   accessToken: string,
   locale: string,
 ) {
@@ -103,11 +101,7 @@ export async function UpdateOrganisationPaymentInformation(
           "Accept-Language": locale,
           origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
         },
-        body: JSON.stringify({
-          bankName,
-          bankAccountName,
-          bankAccountNumber,
-        }),
+        body: JSON.stringify(payload),
       },
     );
     const response = await request.json();

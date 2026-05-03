@@ -145,67 +145,69 @@ export default function MoreComponent({
                     </Link>
                   </li>
                 )}
-              <li>
-                <Dialog>
-                  <DialogTrigger className="w-full">
-                    <div
-                      className={`font-normal cursor-pointer group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                    >
-                      <span className={"text-failure"}>{t("delete")}</span>
-                      <Trash size="20" variant="Bulk" color={"#DE0028"} />
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className={"w-xl lg:w-208 "}>
-                    <DialogHeader>
-                      <DialogTitle
-                        className={
-                          "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
-                        }
+              {daysLeft !== null && daysLeft > 0 && (
+                <li>
+                  <Dialog>
+                    <DialogTrigger className="w-full">
+                      <div
+                        className={`font-normal cursor-pointer group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
                       >
-                        {t("delete")}
-                      </DialogTitle>
-                      <DialogDescription className={"sr-only"}>
-                        <span>Share event</span>
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div
-                      className={
-                        "flex flex-col w-auto justify-center items-center gap-12"
-                      }
-                    >
-                      <p
-                        className={
-                          "font-sans text-[1.8rem] leading-10 text-[#cdcdcd] text-center w-[320px] lg:w-full"
-                        }
-                      >
-                        {t("deleteWarning")}
-                      </p>
-                      <div className="w-full">
-                        <Input
-                          autoFocus={false}
-                          onChange={(e) => setEventName(e.target.value)}
-                          value={eventName}
-                        >
-                          {t("type")}
-                        </Input>
+                        <span className={"text-failure"}>{t("delete")}</span>
+                        <Trash size="20" variant="Bulk" color={"#DE0028"} />
                       </div>
-                    </div>
-                    <DialogFooter>
-                      <ButtonRed
-                        onClick={deleteEvent}
-                        disabled={isLoading || eventName !== event.eventName}
-                        className="w-full"
+                    </DialogTrigger>
+                    <DialogContent className={"w-xl lg:w-208 "}>
+                      <DialogHeader>
+                        <DialogTitle
+                          className={
+                            "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
+                          }
+                        >
+                          {t("delete")}
+                        </DialogTitle>
+                        <DialogDescription className={"sr-only"}>
+                          <span>Share event</span>
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div
+                        className={
+                          "flex flex-col w-auto justify-center items-center gap-12"
+                        }
                       >
-                        {isLoading ? <LoadingCircleSmall /> : t("delete")}
-                      </ButtonRed>
-                      <DialogClose
-                        ref={closeRef}
-                        className="sr-only"
-                      ></DialogClose>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </li>
+                        <p
+                          className={
+                            "font-sans text-[1.8rem] leading-10 text-[#cdcdcd] text-center w-[320px] lg:w-full"
+                          }
+                        >
+                          {t("deleteWarning")}
+                        </p>
+                        <div className="w-full">
+                          <Input
+                            autoFocus={false}
+                            onChange={(e) => setEventName(e.target.value)}
+                            value={eventName}
+                          >
+                            {t("type")}
+                          </Input>
+                        </div>
+                      </div>
+                      <DialogFooter>
+                        <ButtonRed
+                          onClick={deleteEvent}
+                          disabled={isLoading || eventName !== event.eventName}
+                          className="w-full"
+                        >
+                          {isLoading ? <LoadingCircleSmall /> : t("delete")}
+                        </ButtonRed>
+                        <DialogClose
+                          ref={closeRef}
+                          className="sr-only"
+                        ></DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </li>
+              )}
             </div>
           </ul>
         </PopoverContent>
