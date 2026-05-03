@@ -245,5 +245,72 @@
     }
   },
 
+  "Payouts": {
+    "title": "Payouts",
+    "total": "Total Payouts",
+    "pending": "Pending Payout Requests",
+    "total_paid": "Total Organizers Paid",
+
+    "filters": {
+      "period": {
+        "actual": "This month"
+      },
+      "status": "All status"
+    },
+    "payout_request": {
+      "title": "Payout request",
+      "table": {
+        "withdrawal_id": "Withdrawal ID",
+        "bank_name": "Bank Name",
+        "account_number": "Account number",
+        "amount": "Amount",
+        "request_status": {
+          "title": "Request Status",
+          "approved": "Approved",
+          "pending": "Pending"
+        }
+      },
+      "no_request": "You'll see new payout requests from organizers here when they request to withdraw their earnings."
+    },
+    "payout_history": {
+      "title": "Payout history",
+       "table": {
+        "withdrawal_id": "Withdrawal ID",
+        "bank_name": "Bank Name",
+        "account_number": "Account number",
+        "amount": "Amount",
+        "transaction_status": {
+          "title": "Transaction Status",
+          "succesful": "Succesful"
+        }
+      },
+      "no_history": "Once payouts are processed, a record will appear here for tracking and reporting."
+    },
+    "view_all": "View all",
+    "request_details": {
+      "title": "Request Details",
+      "amount": "Amount",
+      "request_date": "Request Date",
+      "requested_by": "Requested By",
+      "request_status": "Request Status",
+      "bank_name": "Bank Name",
+      "account": "Account Number",
+      "processed_date": "Processed Date",
+      "close": "Close",
+      "approve": "Approve payout"
+    },
+    "withdrawal_details": {
+      "title": "Withdrawal Details",
+      "amount": "Amount",
+      "request_date": "Request Date",
+      "requested_by": "Requested By",
+      "transaction_status": "Transaction Status",
+      "bank_name": "Bank Name",
+      "account": "Account Number",
+      "processed_date": "Processed Date",
+      "close": "Close"
+    }
+  },
+
   "attendees": {}
 }
