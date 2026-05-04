@@ -1,6 +1,6 @@
 {
   "Auth": {
-     "layout":{
+    "layout": {
       "badge": "Administrator"
     },
     "login": {
@@ -12,7 +12,15 @@
       },
       "errors": {
         "email": "Enter a valid email",
-        "password": "Password must be at least 8 characters"
+        "password": "Password must be at least 8 characters",
+        "loginFailed": "Login failed. Please try again."
+      },
+      "otp": {
+        "title": "Verify Identity",
+        "description": "Enter the 6-digit code sent to your email",
+        "cta": "Verify",
+        "back": "Back to login",
+        "error": "Invalid verification code"
       },
       "reset": "Reset password",
       "cta": {
@@ -61,14 +69,14 @@
       "errors": {
         "email": "Enter a valid email address"
       },
-      "placeholders":{
+      "placeholders": {
         "email": "Organization Email Address"
       },
       "cta": {
         "submit": "Reset"
       },
       "back": "Back"
-    }, 
+    },
     "email_sent": {
       "title": "Reset Password",
       "description": "A password reset mail has been sent to the email address you provided",
@@ -113,6 +121,7 @@
         "analytics": "Analytics",
         "attendees": "Attendees",
         "organisations": "Organisations",
+        "admins": "Administrators",
         "title2": "Operations",
         "activities": "Activities",
         "tickets": "Tickets",
@@ -127,7 +136,7 @@
       "view": "View"
     }
   },
-  
+
   "Activities": {
     "title": "Activities Overview",
     "total": "Total Activities",
@@ -176,8 +185,8 @@
         "organiser": {
           "name": "Cap-Haïtien Music Alliance",
           "followers": "823 followers"
-        }, 
-        "button":{
+        },
+        "button": {
           "view": "View profile"
         },
         "date": "11 August 2024",
@@ -210,7 +219,7 @@
           "tickets": {
             "general": "General",
             "vip": "Vip",
-            "premium" : "Premium Vip"
+            "premium": "Premium Vip"
           },
           "status": {
             "check-in": "Check-in"
@@ -274,7 +283,7 @@
     },
     "payout_history": {
       "title": "Payout history",
-       "table": {
+      "table": {
         "withdrawal_id": "Withdrawal ID",
         "bank_name": "Bank Name",
         "account_number": "Account number",

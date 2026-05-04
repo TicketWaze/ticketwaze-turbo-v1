@@ -9,7 +9,8 @@
       "Bash(yarn add *)",
       "Bash(node_modules/.bin/tsc --noEmit)",
       "Bash(pnpm --filter organisation exec tsc --noEmit)",
-      "Bash(yarn workspace *)"
+      "Bash(yarn workspace *)",
+      "Bash(python -c \"import json; data=json.load\\(open\\('apps/admin/messages/en.json'\\)\\); print\\(json.dumps\\(data.get\\('Auth', {}\\), indent=2\\)\\)\")"
     ]
   }
 }

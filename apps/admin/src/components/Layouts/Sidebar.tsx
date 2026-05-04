@@ -8,6 +8,7 @@ import {
   Logout,
   Money,
   MoneyRecive,
+  SecurityUser,
   Ticket,
   UserSquare,
 } from "iconsax-reactjs";
@@ -33,6 +34,11 @@ function Sidebar({ className }: { className: string }) {
       label: t("links.organisations"),
       path: `/organisations`,
       Icon: Building,
+    },
+    {
+      label: t("links.admins"),
+      path: `/admins`,
+      Icon: SecurityUser,
     },
   ];
   const operationsLinks = [
@@ -170,7 +176,7 @@ function Sidebar({ className }: { className: string }) {
               onClick={() =>
                 signOut({
                   redirect: true,
-                  redirectTo: process.env.NEXT_PUBLIC_ATTENDEE_URL,
+                  redirectTo: `${process.env.NEXT_PUBLIC_ADMIN_URL}/auth/login`,
                 })
               }
               className="flex items-center gap-4 py-2 mt-6"

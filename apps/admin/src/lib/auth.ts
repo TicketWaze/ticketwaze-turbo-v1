@@ -2,14 +2,20 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
+function nextMidnightUnix(): number {
+  const midnight = new Date();
+  midnight.setHours(24, 0, 0, 0);
+  return Math.floor(midnight.getTime() / 1000);
+}
+
 const nextAuthResult = NextAuth({
   session: {
     strategy: "jwt",
-    maxAge: 2 * 60 * 60, // 2 hours
+    maxAge: 24 * 60 * 60,
   },
 
   jwt: {
-    maxAge: 2 * 60 * 60,
+    maxAge: 24 * 60 * 60,
   },
 
   providers: [
@@ -25,17 +31,17 @@ const nextAuthResult = NextAuth({
     Credentials({
       credentials: {
         email: {},
-        password: {},
+        otp: {},
       },
       authorize: async (credentials) => {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/verify-otp`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               email: credentials.email,
-              password: credentials.password,
+              otp: credentials.otp,
             }),
           },
         );
@@ -43,12 +49,9 @@ const nextAuthResult = NextAuth({
         const data = await response.json();
 
         if (data.status !== "success") {
-          throw new Error(data.message || "Invalid credentials");
+          throw new Error(data.message || "Invalid verification code");
         }
 
-        /**
-         * Return user to JWT callback
-         */
         return data.user;
       },
     }),
@@ -105,9 +108,9 @@ const nextAuthResult = NextAuth({
      * JWT CALLBACK
      */
     async jwt({ token, user, trigger, session }) {
-      // First login (credentials or google)
+      // First login (credentials or google) — expire at tonight's midnight
       if (user) {
-        return { ...token, ...user };
+        return { ...token, ...user, exp: nextMidnightUnix() };
       }
 
       // Manual update() call

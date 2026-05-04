@@ -1,6 +1,6 @@
 {
-   "Auth": {
-     "layout":{
+  "Auth": {
+    "layout": {
       "badge": "Administrator"
     },
     "login": {
@@ -12,7 +12,15 @@
       },
       "errors": {
         "email": "Saisissez un e-mail valide",
-        "password": "Le mot de passe doit contenir au moins 8 caractères"
+        "password": "Le mot de passe doit contenir au moins 8 caractères",
+        "loginFailed": "Échec de la connexion. Veuillez réessayer."
+      },
+      "otp": {
+        "title": "Vérifier l'identité",
+        "description": "Saisissez le code à 6 chiffres envoyé à votre adresse e-mail",
+        "cta": "Vérifier",
+        "back": "Retour à la connexion",
+        "error": "Code de vérification invalide"
       },
       "reset": "Réinitialiser le mot de passe",
       "cta": {
@@ -112,6 +120,7 @@
         "analytics": "Analyses",
         "attendees": "Participants",
         "organisations": "Organisations",
+        "admins": "Administrateurs",
         "title2": "Opérations",
         "activities": "Activités",
         "tickets": "Billets",
@@ -242,8 +251,8 @@
       }
     }
   },
-  
- "Payouts": {
+
+  "Payouts": {
     "title": "Virements",
     "total": "Total des virements",
     "pending": "Demandes de virement en attente",
@@ -268,7 +277,7 @@
           "pending": "En attente"
         }
       },
-     "no_request": "Vous verrez ici les nouvelles demandes de virement des organisateurs lorsqu'ils souhaitent retirer leurs gains."
+      "no_request": "Vous verrez ici les nouvelles demandes de virement des organisateurs lorsqu'ils souhaitent retirer leurs gains."
     },
     "payout_history": {
       "title": "Historique des virements",
