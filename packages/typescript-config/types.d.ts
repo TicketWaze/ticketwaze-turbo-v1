@@ -263,6 +263,7 @@ export interface User {
   organisations: Organisation[];
   userPreference: UserPreference;
   isOnboarded: boolean;
+  role: number;
 }
 
 export interface Currency {

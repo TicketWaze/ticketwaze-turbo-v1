@@ -137,6 +137,42 @@
     }
   },
 
+  "Admins": {
+    "title": "Administrators",
+    "back": "Back",
+    "search": "Search for member",
+    "add": "Add member",
+    "active": "Active",
+    "invited": "Invited",
+    "you": "You",
+    "more": "More",
+    "teamLimit": "Upgrade your membership to add more team members.",
+    "edit": "Edit",
+    "remove": "Remove",
+    "remove_member": "Remove",
+    "noSelfDelete": "You cannot remove yourself from your organisation. If you don't want to be part of this organisation, transfert the ownership or delete the organisation.",
+    "noSelfChange": "You have to transfert the ownership of the organisation before changing your role. If you don't want to be part of this organisation, transfert the ownership or delete the organisation.",
+    "remove_invitation": "Remove invitation",
+    "confirm_text": "Are you sure you want to remove this member? They will lose all access to this organization.",
+    "confirm": "Yes, remove",
+    "joined_at": "Joined At",
+    "added_by": "Added By",
+    "last_login": "Last Login",
+    "transfer": "Transfer ownership",
+    "confirm_transfert": "Transferring ownership will give new owner full control of this organisation on Ticketwaze. You will lose administrative access and cannot undo this action.",
+    "confirm2": "Yes, transfer",
+    "table": {
+      "name": "Full Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status"
+    },
+    "errors": {
+      "name": "Name cannot be blank",
+      "email": "Enter a valid email address"
+    }
+  },
+
   "Activities": {
     "title": "Activities Overview",
     "total": "Total Activities",
