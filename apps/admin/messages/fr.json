@@ -196,5 +196,54 @@
       }
     }
   },
+
+  "Payments": {
+    "title": "Paiements",
+    "total_revenue": "Revenu total",
+    "total_transactions": "Total des transactions",
+    "fees": "Frais de plateforme gagnés",
+
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "status": "Tous les statuts"
+    },
+
+    "transactions": {
+      "title": "Transactions",
+      "table": {
+        "transaction_id": "ID de transaction",
+        "activity_name": "Nom de l'activité",
+        "ticket_class": "Classe de billet",
+        "amount_paid": "Montant payé",
+        "transaction_status": {
+          "title": "Statut de la transaction",
+          "succesful": "Réussi"
+        }
+      },
+      "no_history": "Une fois que vous commencez à recevoir des paiements, vous les verrez tous ici."
+    },
+    "transaction_details": {
+      "title": "Détails de la transaction",
+      "attendee": "Nom du participant",
+      "email": "Email",
+      "activity": "Nom de l'activité",
+      "date": "Date",
+      "time": "Heure",
+      "location": "Lieu",
+      "class": "Classe de billet",
+      "price": "Prix",
+      "ticket_id": "ID du billet",
+      "total": "Total",
+      "transaction_id": "ID de transaction",
+      "payment_method": "Méthode de paiement",
+      "payment_date": "Date de paiement",
+      "transaction_status": "Statut de la transaction",
+      "check_status": "Statut d'enregistrement",
+      "check_time": "Heure d'enregistrement",
+      "close": "Fermer"
+    }
+  },
   "attendees": {}
 }
