@@ -65,9 +65,7 @@ export default function PaymentInformationsForm({
   async function submitHandler(data: TPaymentDetailsSchema) {
     const result = await UpdateOrganisationPaymentInformation(
       organisation?.organisationId ?? "",
-      data.bankName,
-      data.bankAccountName,
-      data.bankAccountNumber,
+      { bankName: data.bankName, bankAccountName: data.bankAccountName, bankAccountNumber: data.bankAccountNumber },
       session?.user.accessToken ?? "",
       locale,
     );

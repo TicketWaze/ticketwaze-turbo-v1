@@ -10,9 +10,9 @@ export default function EventPageContent({ events }: { events: Event[] }) {
   const t = useTranslations("Events");
   return (
     <div className="min-h-[75vh]">
-      <Tabs defaultValue="all" className="w-full h-full">
+      <Tabs defaultValue="upcoming" className="w-full h-full">
         <TabsList className={"w-full lg:w-fit mx-auto lg:mx-0"}>
-          <TabsTrigger value="all">All</TabsTrigger>
+          {/* <TabsTrigger value="all">All</TabsTrigger> */}
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>

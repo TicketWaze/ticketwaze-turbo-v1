@@ -13,11 +13,17 @@ import Image from "next/image";
 import { LinkPrimary } from "@/components/shared/Links";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
+import { DateTime } from "luxon";
 
 export default function EventDrawerContent({ event }: { event: Event }) {
   const t = useTranslations("Events.single_event");
   const date = event.eventDays;
   const locale = useLocale();
+  const today = DateTime.now();
+  const eventStart = event.eventDays?.[0]?.eventDate
+    ? DateTime.fromISO(event.eventDays[0].eventDate)
+    : null;
+  const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
   return (
     <DrawerContent className={"my-6 p-6 lg:p-12 rounded-[30px]  lg:w-[580px]"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
@@ -140,21 +146,14 @@ export default function EventDrawerContent({ event }: { event: Event }) {
         </div>
       </div>
       <DrawerFooter className="lg:flex-row pb-0">
-        <LinkPrimary
-          href={`/events/show/${slugify(event.eventName, event.eventId)}/edit/${event.eventCategory}`}
-          className="flex-1 gap-4"
-        >
-          <Edit2 variant={"Bulk"} color={"#ffffff"} size={20} /> {t("edit")}
-        </LinkPrimary>
-        {/* <DrawerClose className={" cursor-pointer w-full flex-1"}>
-          <div
-            className={
-              "border-primary-500 text-primary-500 bg-primary-100 px-[3rem] py-[15px] border-2  rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center "
-            }
+        {daysLeft !== null && daysLeft > 0 && (
+          <LinkPrimary
+            href={`/events/show/${slugify(event.eventName, event.eventId)}/edit/${event.eventCategory}`}
+            className="flex-1 gap-4"
           >
-            {t("close")}
-          </div>
-        </DrawerClose> */}
+            <Edit2 variant={"Bulk"} color={"#ffffff"} size={20} /> {t("edit")}
+          </LinkPrimary>
+        )}
       </DrawerFooter>
     </DrawerContent>
   );

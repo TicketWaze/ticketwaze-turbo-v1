@@ -1,6 +1,6 @@
 {
   "Auth": {
-     "layout":{
+    "layout": {
       "badge": "Administrator"
     },
     "login": {
@@ -12,7 +12,15 @@
       },
       "errors": {
         "email": "Enter a valid email",
-        "password": "Password must be at least 8 characters"
+        "password": "Password must be at least 8 characters",
+        "loginFailed": "Login failed. Please try again."
+      },
+      "otp": {
+        "title": "Verify Identity",
+        "description": "Enter the 6-digit code sent to your email",
+        "cta": "Verify",
+        "back": "Back to login",
+        "error": "Invalid verification code"
       },
       "reset": "Reset password",
       "cta": {
@@ -54,6 +62,53 @@
         "text": "Your account is now set up. Get started!",
         "signing": "Signing you in..."
       }
+    },
+    "reset": {
+      "title": "Reset Password",
+      "description": "Please enter you account details to continue",
+      "errors": {
+        "email": "Enter a valid email address",
+        "notFound" : "No account found with this email address"
+      },
+      "placeholders": {
+        "email": "Organization Email Address"
+      },
+      "cta": {
+        "submit": "Reset"
+      },
+      "back": "Back"
+    },
+    "email_sent": {
+      "title": "Reset Password",
+      "description": "A password reset mail has been sent to the email address you provided",
+      "footer": {
+        "text": "Didn't get a mail?",
+        "cta": "Resend"
+      }
+    },
+    "new_password": {
+      "title": "Create Password",
+      "description": "Choose a new password for your account",
+      "placeholders": {
+        "password": "Password",
+        "confirm": "Confirm password"
+      },
+      "errors": {
+        "password_length": "Password should be at least 8 Characters",
+        "password_match": "Password doesn't match",
+        "sameError": "You used this password in the past, You can’t reuse past passwords.",
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number",
+        "email": "Email field cannot be blank"
+      },
+      "cta": "Create"
+    },
+    "password_created": {
+      "title": "Password Created",
+      "text": "You’ve successfully created a new password We’re now signing you in.",
+      "signing": "Signing you in..."
     }
   },
 
@@ -67,6 +122,7 @@
         "analytics": "Analytics",
         "attendees": "Attendees",
         "organisations": "Organisations",
+        "admins": "Administrators",
         "title2": "Operations",
         "activities": "Activities",
         "tickets": "Tickets",
@@ -81,7 +137,43 @@
       "view": "View"
     }
   },
-  
+
+  "Admins": {
+    "title": "Administrators",
+    "back": "Back",
+    "search": "Search for administrator",
+    "add": "Add administrator",
+    "active": "Active",
+    "invited": "Invited",
+    "you": "You",
+    "more": "More",
+    "teamLimit": "Upgrade your membership to add more team members.",
+    "edit": "Edit",
+    "remove": "Remove",
+    "remove_member": "Remove",
+    "noSelfDelete": "You cannot remove yourself from your organisation. If you don't want to be part of this organisation, transfert the ownership or delete the organisation.",
+    "noSelfChange": "You have to transfert the ownership of the organisation before changing your role. If you don't want to be part of this organisation, transfert the ownership or delete the organisation.",
+    "remove_invitation": "Remove invitation",
+    "confirm_text": "Are you sure you want to remove this member? They will lose all access to this organization.",
+    "confirm": "Yes, remove",
+    "joined_at": "Joined At",
+    "added_by": "Added By",
+    "last_login": "Last Login",
+    "transfer": "Transfer ownership",
+    "confirm_transfert": "Transferring ownership will give new owner full control of this organisation on Ticketwaze. You will lose administrative access and cannot undo this action.",
+    "confirm2": "Yes, transfer",
+    "table": {
+      "name": "Full Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status"
+    },
+    "errors": {
+      "name": "Name cannot be blank",
+      "email": "Enter a valid email address"
+    }
+  },
+
   "Activities": {
     "title": "Activities Overview",
     "total": "Total Activities",
@@ -130,8 +222,8 @@
         "organiser": {
           "name": "Cap-Haïtien Music Alliance",
           "followers": "823 followers"
-        }, 
-        "button":{
+        },
+        "button": {
           "view": "View profile"
         },
         "date": "11 August 2024",
@@ -164,7 +256,7 @@
           "tickets": {
             "general": "General",
             "vip": "Vip",
-            "premium" : "Premium Vip"
+            "premium": "Premium Vip"
           },
           "status": {
             "check-in": "Check-in"

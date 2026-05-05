@@ -435,16 +435,12 @@ export default function FinancePageContent({
                     </Drawer>
                   </TableCell>
                   <TableCell
-                    className={"text-[1.5rem] leading-8 text-neutral-900"}
+                    className={"text-[1.5rem] leading-8 text-neutral-900 py-6"}
                   >
                     <Drawer direction={"right"}>
                       <DrawerTrigger>
                         <span className={"cursor-pointer"}>
-                          {request.accountType === "bank" &&
-                            TruncateUrl(
-                              currentOrganisation?.bankName ?? "",
-                              14,
-                            )}
+                          {TruncateUrl(request.bankName ?? "", 14)}
                         </span>
                       </DrawerTrigger>
                       {/* <Informations ticket={ticket} order={order as Order} /> */}
@@ -453,14 +449,9 @@ export default function FinancePageContent({
                   <TableCell
                     className={"text-[1.5rem] leading-8 text-neutral-900"}
                   >
-                    {request.accountType === "bank" && (
-                      <span className={"cursor-pointer"}>
-                        {TruncateUrl(
-                          currentOrganisation?.bankAccountNumber ?? "",
-                          14,
-                        )}
-                      </span>
-                    )}
+                    <span className={"cursor-pointer"}>
+                      {TruncateUrl(request.accountNumber ?? "", 14)}
+                    </span>
                   </TableCell>
                   <TableCell
                     className={

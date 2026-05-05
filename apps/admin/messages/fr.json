@@ -1,6 +1,6 @@
 {
-   "Auth": {
-     "layout":{
+  "Auth": {
+    "layout": {
       "badge": "Administrator"
     },
     "login": {
@@ -12,7 +12,15 @@
       },
       "errors": {
         "email": "Saisissez un e-mail valide",
-        "password": "Le mot de passe doit contenir au moins 8 caractères"
+        "password": "Le mot de passe doit contenir au moins 8 caractères",
+        "loginFailed": "Échec de la connexion. Veuillez réessayer."
+      },
+      "otp": {
+        "title": "Vérifier l'identité",
+        "description": "Saisissez le code à 6 chiffres envoyé à votre adresse e-mail",
+        "cta": "Vérifier",
+        "back": "Retour à la connexion",
+        "error": "Code de vérification invalide"
       },
       "reset": "Réinitialiser le mot de passe",
       "cta": {
@@ -54,6 +62,53 @@
         "text": "Votre compte est prêt. Commencez maintenant !",
         "signing": "Connexion en cours..."
       }
+    },
+    "reset": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Veuillez entrer les détails de votre compte pour continuer",
+      "errors": {
+        "email": "Entrez une adresse e-mail valide",
+        "notFound" : "Aucun compte trouvé avec cette adresse e-mail"
+      },
+      "placeholders": {
+        "email": "Adresse e-mail de l'organisation"
+      },
+      "cta": {
+        "submit": "Réinitialiser"
+      },
+      "back": "Retour"
+    },
+    "email_sent": {
+      "title": "Réinitialiser le mot de passe",
+      "description": "Un e-mail de réinitialisation du mot de passe a été envoyé à",
+      "footer": {
+        "text": "Vous n’avez pas reçu d’e-mail ?",
+        "cta": "Renvoyer"
+      }
+    },
+    "new_password": {
+      "title": "Créer un mot de passe",
+      "description": "Choisissez un nouveau mot de passe pour votre compte",
+      "placeholders": {
+        "password": "Mot de passe",
+        "confirm": "Confirmer le mot de passe"
+      },
+      "errors": {
+        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
+        "password_match": "Les mots de passe ne correspondent pas",
+        "sameError": "Vous avez déjà utilisé ce mot de passe. Vous ne pouvez pas réutiliser d'anciens mots de passe.",
+        "characters": "Au moins 8 caractères",
+        "capital": "Au moins une lettre majuscule",
+        "special": "Au moins un caractère spécial",
+        "number": "Au moins un chiffre",
+        "email": "Le champ e-mail ne peut pas être vide"
+      },
+      "cta": "Créer"
+    },
+    "password_created": {
+      "title": "Mot de passe créé",
+      "text": "Vous avez créé un nouveau mot de passe avec succès. Nous procédons à votre connexion.",
+      "signing": "Connexion en cours..."
     }
   },
   "Layout": {
@@ -66,6 +121,7 @@
         "analytics": "Analyses",
         "attendees": "Participants",
         "organisations": "Organisations",
+        "admins": "Administrateurs",
         "title2": "Opérations",
         "activities": "Activités",
         "tickets": "Billets",

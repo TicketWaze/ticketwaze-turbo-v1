@@ -16,9 +16,16 @@ export default function NewPasswordPageContent() {
   const searchParams = useSearchParams();
   const accessToken = searchParams.get("accessToken");
   const NewPasswordSchema = z
-    .object({
-      password: z.string().min(8, t("errors.password_length")),
-      password_confirmation: z.string().min(8, t("errors.password_length")),
+   .object({
+      password: z
+        .string()
+        .min(8, t("errors.password_length"))
+        .refine((password) => /[A-Z]/.test(password))
+        .refine((password) =>
+          /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+        )
+        .refine((password) => /[0-9]/.test(password)),
+      password_confirmation: z.string(),
     })
     .refine((data) => data.password === data.password_confirmation, {
       message: t("errors.password_match"),
@@ -63,14 +70,14 @@ export default function NewPasswordPageContent() {
       onSubmit={handleSubmit(submitHandler)}
       className="flex flex-col items-center h-full pb-4"
     >
-      <div className="flex-1 flex lg:justify-center flex-col w-full pt-[4.5rem]">
+      <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
         <div className="flex flex-col gap-16 items-center">
           <div className="flex flex-col gap-8 items-center">
             <motion.h3
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="font-medium font-primary text-[3.2rem] leading-[3.5rem] text-black"
+              className="font-medium font-primary text-[3.2rem] leading-14 text-black"
             >
               {t("title")}
             </motion.h3>
@@ -78,7 +85,7 @@ export default function NewPasswordPageContent() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="text-[1.8rem] text-center leading-[2.5rem] text-neutral-700"
+              className="text-[1.8rem] text-center leading-10 text-neutral-700"
             >
               {t("description")}
             </motion.p>
@@ -153,7 +160,7 @@ export default function NewPasswordPageContent() {
         >
           <p
             className={
-              "text-[2.2rem] font-normal leading-[3rem] text-center text-neutral-700"
+              "text-[2.2rem] font-normal leading-12 text-center text-neutral-700"
             }
           >
             <span className={"text-primary-500"}>2</span>/2

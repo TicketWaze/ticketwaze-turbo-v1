@@ -137,7 +137,9 @@ export interface Organisation {
   usdPendingBalance: number;
   usdAvailableBalance: number;
   withdrawalPin: string | null;
+  moncashAccountName: string | null;
   moncashNumber: string | null;
+  natcashAccountName: string | null;
   natcashNumber: string | null;
   isVerified: boolean;
   isPublished: boolean;
@@ -261,6 +263,7 @@ export interface User {
   organisations: Organisation[];
   userPreference: UserPreference;
   isOnboarded: boolean;
+  role: number;
 }
 
 export interface Currency {
@@ -290,6 +293,10 @@ export interface WithdrawalRequest {
   withdrawalRequestId: string;
   organisationId: string;
   accountType: string;
+  bankName: string;
+  currency: string;
+  accountName: string;
+  accountNumber: string;
   amount: number;
   usdAmount: number;
   status: "PENDING" | "SUCCESSFUL" | "FAILED";
