@@ -13,7 +13,7 @@ import {
   UserSquare,
 } from "iconsax-reactjs";
 import { Link } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 import { signOut } from "next-auth/react";
 import { useAuthInterceptor } from "@/hooks/useAuthInterceptor";
@@ -22,6 +22,7 @@ import { cn } from "@/lib/utils";
 function Sidebar({ className }: { className: string }) {
   const t = useTranslations("Layout.sidebar");
   const pathname = usePathname();
+  const locale = useLocale()
   useAuthInterceptor();
 
   const userLinks = [
@@ -176,7 +177,7 @@ function Sidebar({ className }: { className: string }) {
               onClick={() =>
                 signOut({
                   redirect: true,
-                  redirectTo: `${process.env.NEXT_PUBLIC_ADMIN_URL}/auth/login`,
+                  redirectTo: `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/auth/login`,
                 })
               }
               className="flex items-center gap-4 py-2 mt-6"

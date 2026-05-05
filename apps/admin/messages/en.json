@@ -67,7 +67,8 @@
       "title": "Reset Password",
       "description": "Please enter you account details to continue",
       "errors": {
-        "email": "Enter a valid email address"
+        "email": "Enter a valid email address",
+        "notFound" : "No account found with this email address"
       },
       "placeholders": {
         "email": "Organization Email Address"
@@ -140,8 +141,8 @@
   "Admins": {
     "title": "Administrators",
     "back": "Back",
-    "search": "Search for member",
-    "add": "Add member",
+    "search": "Search for administrator",
+    "add": "Add administrator",
     "active": "Active",
     "invited": "Invited",
     "you": "You",

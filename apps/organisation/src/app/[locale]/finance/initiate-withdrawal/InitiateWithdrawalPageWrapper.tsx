@@ -177,10 +177,9 @@ export default function InitiateWithdrawalPageWrapper({
   const { data: session } = useSession();
   const router = useRouter();
 
-  // Detect if the saved profile data belongs to MonCash (stored with bankName = "MonCash")
-  const hasSavedMoncash = organisation.bankName === "MonCash";
+  // Detect if the saved profile data belongs to MonCash (stored with moncashAccountName)
+  const hasSavedMoncash = !!organisation.moncashAccountName;
   const hasSavedBank =
-    !hasSavedMoncash &&
     !!(
       organisation.bankName &&
       organisation.bankAccountName &&
@@ -196,25 +195,18 @@ export default function InitiateWithdrawalPageWrapper({
   const [amount, setAmount] = useState("");
 
   // Bank state
-  const [bankName, setBankName] = useState(
-    hasSavedBank ? (organisation.bankName ?? "") : "",
+  const [bankName, setBankName] = useState(organisation.bankName ?? ""
   );
-  const [bankAccountName, setBankAccountName] = useState(
-    hasSavedBank ? (organisation.bankAccountName ?? "") : "",
+  const [bankAccountName, setBankAccountName] = useState(organisation.bankAccountName ?? ""
   );
-  const [bankAccountNumber, setBankAccountNumber] = useState(
-    hasSavedBank ? (organisation.bankAccountNumber ?? "") : "",
+  const [bankAccountNumber, setBankAccountNumber] = useState(organisation.bankAccountNumber ?? ""
   );
   const [saveBankInfo, setSaveBankInfo] = useState(hasSavedBank);
 
   // Moncash state
-  const [moncashAccountName, setMoncashAccountName] = useState(
-    hasSavedMoncash ? (organisation.bankAccountName ?? "") : "",
+  const [moncashAccountName, setMoncashAccountName] = useState(organisation.moncashAccountName ?? ""
   );
-  const [moncashNumber, setMoncashNumber] = useState(
-    hasSavedMoncash
-      ? (organisation.bankAccountNumber ?? "")
-      : (organisation.moncashNumber ?? ""),
+  const [moncashNumber, setMoncashNumber] = useState(organisation.moncashNumber ?? ""
   );
   const [saveMoncashInfo, setSaveMoncashInfo] = useState(
     hasSavedMoncash || !!organisation.moncashNumber,

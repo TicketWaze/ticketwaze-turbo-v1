@@ -1,9 +1,10 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import { auth } from "@/lib/auth";
-import MemberList from "./components/MemberList";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import { getTranslations } from "next-intl/server";
+import AdminList from "./components/AdminList";
+import AddAdmin from "./components/AddAdmin";
 
 export default async function AdminsPage() {
   const session = await auth();
@@ -19,16 +20,15 @@ export default async function AdminsPage() {
     },
   );
   const response = await request.json();
-  console.log(response);
   return (
     <AdminLayout>
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
         <TopBar title={t("title")}>
-          {/* {authorized && <AddMember totalMembers={totalMembers} />} */}
+          {session?.user.role === 5 && <AddAdmin />}
         </TopBar>
       </div>
-      <MemberList users={response.users} />
+      <AdminList users={response.users} />
     </AdminLayout>
   );
 }

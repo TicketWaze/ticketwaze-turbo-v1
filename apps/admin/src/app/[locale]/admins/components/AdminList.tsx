@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import { User } from "@ticketwaze/typescript-config";
 
-export default function MemberList({ users }: { users: User[] }) {
+export default function AdminList({ users }: { users: User[] }) {
   const t = useTranslations("Admins");
   const { data: session } = useSession();
   return (

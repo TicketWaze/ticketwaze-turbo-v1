@@ -1,22 +1,12 @@
 "use client";
-import React, { useEffect } from "react";
 import mail from "./mail-big.svg";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import ResendButton from "./ResendButton";
-import { useRouter } from "next/navigation";
+import maskEmail from "@/lib/maskEmail";
 
 export default function PageContent({ email }: { email: string }) {
   const t = useTranslations("Auth.email_sent");
-  const router = useRouter();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.push(`/auth/new-password?email=${email}`);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, [router, email]);
   return (
     <div
       className={
@@ -43,11 +33,11 @@ export default function PageContent({ email }: { email: string }) {
             "font-normal max-w-212 text-[1.8rem] leading-10 text-center text-neutral-700"
           }
         >
-          {t("description")}
-          {/* <span className="font-semibold">{decodeURIComponent(email)}</span> */}
+          {t("description")} {" "}
+          <span className="font-semibold">{maskEmail(decodeURIComponent(email))}</span>
         </motion.p>
       </div>
-      <ResendButton email={decodeURIComponent(email)} />
+      {/* <ResendButton email={decodeURIComponent(email)} /> */}
     </div>
   );
 }

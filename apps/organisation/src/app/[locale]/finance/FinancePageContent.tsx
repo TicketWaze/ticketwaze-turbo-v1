@@ -435,7 +435,7 @@ export default function FinancePageContent({
                     </Drawer>
                   </TableCell>
                   <TableCell
-                    className={"text-[1.5rem] leading-8 text-neutral-900"}
+                    className={"text-[1.5rem] leading-8 text-neutral-900 py-6"}
                   >
                     <Drawer direction={"right"}>
                       <DrawerTrigger>
