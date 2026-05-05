@@ -24,7 +24,8 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import {
   BankWithdrawalRequest,
-  UpdateOrganisationPaymentInformation,
+  UpdateOrganisationBankPaymentInformation,
+  UpdateOrganisationMoncashPaymentInformation,
 } from "@/actions/organisationActions";
 import PageLoader from "@/components/PageLoader";
 import { useRouter } from "@/i18n/navigation";
@@ -179,12 +180,11 @@ export default function InitiateWithdrawalPageWrapper({
 
   // Detect if the saved profile data belongs to MonCash (stored with moncashAccountName)
   const hasSavedMoncash = !!organisation.moncashAccountName;
-  const hasSavedBank =
-    !!(
-      organisation.bankName &&
-      organisation.bankAccountName &&
-      organisation.bankAccountNumber
-    );
+  const hasSavedBank = !!(
+    organisation.bankName &&
+    organisation.bankAccountName &&
+    organisation.bankAccountNumber
+  );
 
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
@@ -195,18 +195,21 @@ export default function InitiateWithdrawalPageWrapper({
   const [amount, setAmount] = useState("");
 
   // Bank state
-  const [bankName, setBankName] = useState(organisation.bankName ?? ""
+  const [bankName, setBankName] = useState(organisation.bankName ?? "");
+  const [bankAccountName, setBankAccountName] = useState(
+    organisation.bankAccountName ?? "",
   );
-  const [bankAccountName, setBankAccountName] = useState(organisation.bankAccountName ?? ""
-  );
-  const [bankAccountNumber, setBankAccountNumber] = useState(organisation.bankAccountNumber ?? ""
+  const [bankAccountNumber, setBankAccountNumber] = useState(
+    organisation.bankAccountNumber ?? "",
   );
   const [saveBankInfo, setSaveBankInfo] = useState(hasSavedBank);
 
   // Moncash state
-  const [moncashAccountName, setMoncashAccountName] = useState(organisation.moncashAccountName ?? ""
+  const [moncashAccountName, setMoncashAccountName] = useState(
+    organisation.moncashAccountName ?? "",
   );
-  const [moncashNumber, setMoncashNumber] = useState(organisation.moncashNumber ?? ""
+  const [moncashNumber, setMoncashNumber] = useState(
+    organisation.moncashNumber ?? "",
   );
   const [saveMoncashInfo, setSaveMoncashInfo] = useState(
     hasSavedMoncash || !!organisation.moncashNumber,
@@ -285,7 +288,7 @@ export default function InitiateWithdrawalPageWrapper({
 
       // Optionally persist account details to profile
       if (accountType === "bank" && saveBankInfo) {
-        await UpdateOrganisationPaymentInformation(
+        await UpdateOrganisationBankPaymentInformation(
           organisation.organisationId,
           { bankName, bankAccountName, bankAccountNumber },
           session?.user.accessToken ?? "",
@@ -293,12 +296,11 @@ export default function InitiateWithdrawalPageWrapper({
         );
       }
       if (accountType === "moncash" && saveMoncashInfo) {
-        await UpdateOrganisationPaymentInformation(
+        await UpdateOrganisationMoncashPaymentInformation(
           organisation.organisationId,
           {
-            bankName: "Moncash",
-            bankAccountName: moncashAccountName,
-            bankAccountNumber: moncashNumber,
+            moncashAccountName: moncashAccountName,
+            moncashNumber: moncashNumber,
           },
           session?.user.accessToken ?? "",
           locale,
@@ -393,6 +395,10 @@ export default function InitiateWithdrawalPageWrapper({
         }
         if (!moncashNumber.trim()) {
           toast.error(t("errors.moncash_number"));
+          return;
+        }
+        if (!/^\d{8}$/.test(moncashNumber.trim())) {
+          toast.error(t("errors.moncash_number_invalid"));
           return;
         }
       }
@@ -843,13 +849,24 @@ export default function InitiateWithdrawalPageWrapper({
                       >
                         {t("moncash_account_name")}
                       </Input>
-                      <Input
-                        value={moncashNumber}
-                        onChange={(e) => setMoncashNumber(e.target.value)}
-                        type="tel"
-                      >
-                        {t("moncash_number")}
-                      </Input>
+                      <div className="flex flex-col gap-2">
+                        <Input
+                          value={moncashNumber}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, "").slice(0, 8);
+                            setMoncashNumber(val);
+                          }}
+                          type="tel"
+                          inputMode="numeric"
+                          maxLength={8}
+                        >
+                          {t("moncash_number")}
+                        </Input>
+                        <p className="flex items-center gap-[6px] text-[1.2rem] leading-5 text-neutral-400 px-1">
+                          <InfoCircle size="14" color="#9ca3af" />
+                          {t("moncash_number_hint")}
+                        </p>
+                      </div>
                     </div>
                     <motion.button
                       whileTap={{ scale: 0.985 }}

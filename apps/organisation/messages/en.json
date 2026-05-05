@@ -366,6 +366,7 @@
     "moncash_details_hint": "Enter the MonCash phone number to receive your funds",
     "moncash_account_name": "Account Holder Name",
     "moncash_number": "MonCash phone number",
+    "moncash_number_hint": "Must be exactly 8 digits (e.g. 47123456)",
     "saveMoncashInfo": "Remember my MonCash number",
     "saveMoncashInfo_hint": "Keep this number saved for your next withdrawal",
     "amount": "Withdrawal Amount",
@@ -391,7 +392,8 @@
       "bank_account_name": "Account holder name is required",
       "bank_account_number": "Account number is required",
       "moncash_account_name": "Account holder name is required",
-      "moncash_number": "MonCash phone number is required"
+      "moncash_number": "MonCash phone number is required",
+      "moncash_number_invalid": "MonCash number must be exactly 8 digits"
     },
     "withdrawSuccess": "Your withdrawal request has been successfully submitted and is now being processed.",
     "breakdown": "Breakdown",
@@ -454,12 +456,14 @@
     "withdrawal": {
       "title": "Withdrawal history",
       "description": "Your withdrawal history will show up here once you've made a withdrawal request.",
+      "more": "View all",
       "table": {
         "id": "Withdrawal ID",
         "name": "Bank Name",
+        "accountName": "Account Name",
         "account": "Account Number",
         "amount": "Amount",
-        "status": "Transaction Status",
+        "status": "Status",
         "date": "Date"
       }
     }

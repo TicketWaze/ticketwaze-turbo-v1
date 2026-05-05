@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
-import AdminLayout from "@/components/Layouts/AdminLayout";
+
 import PayoutsPageTopbar from "./PayoutsPageTopbar";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import MoneySend from "@ticketwaze/ui/assets/icons/money-send.svg";
 import ArrowUp from "@ticketwaze/ui/assets/icons/arrow-up.svg";
 import ArrowRight from "@ticketwaze/ui/assets/icons/arrow-right.svg";
@@ -22,18 +23,44 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import RequestDetails from "./RequestDetails";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import WithdrawalDetails from "./WithdrawalDetails";
+import { OrganisationWithdrawalRequest } from "@ticketwaze/typescript-config";
+import { useEffect, useState } from "react";
+import PageLoader from "@/components/PageLoader";
+import { Link } from "@/i18n/navigation";
+import formatDate from "@/lib/FormatDate";
 
-export default function PayoutsPageContent() {
+export default function PayoutsPageContent({
+  requests,
+  status,
+}: {
+  requests: OrganisationWithdrawalRequest;
+  status: string;
+}) {
   const t = useTranslations("Payouts");
+  const locale = useLocale();
   const router = useRouter();
-  const request = false;
   const history = false;
+  const payoutRequests = requests.data;
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [status]);
+
+  function goToPayoutPage(id: string) {
+    setIsLoading(true);
+    router.push(`/payouts/${id}`);
+  }
+  function handleStatusChange(value: string) {
+    setIsLoading(true);
+    router.push(`/payouts?status=${value}`);
+  }
   return (
-    <AdminLayout>
+    <>
+      <PageLoader isLoading={isLoading} />
       <PayoutsPageTopbar
         title={t("title")}
         filter={t("filters.period.actual")}
@@ -72,7 +99,7 @@ export default function PayoutsPageContent() {
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            0
+            {payoutRequests.length}
           </p>
         </div>
         <div className={"pl-0 lg:pl-10"}>
@@ -95,7 +122,7 @@ export default function PayoutsPageContent() {
               {t("payout_request.title")}
             </h4>
             <div className="flex gap-4">
-              <Select defaultValue="all">
+              <Select value={status} onValueChange={handleStatusChange}>
                 <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
                   <SelectValue placeholder="" />
                 </SelectTrigger>
@@ -103,22 +130,22 @@ export default function PayoutsPageContent() {
                   <SelectGroup>
                     <SelectItem
                       className={"text-[1.4rem] text-deep-100"}
-                      value="all"
+                      value="PENDING"
                     >
-                      {t("filters.status")}
+                      {t("payout_request.table.request_status.pending")}
                     </SelectItem>
                     <SelectItem
                       className={"text-[1.4rem] text-deep-100"}
-                      value="Checked-In"
+                      value="FAILED"
                     >
-                      Checked-In
+                      {t("payout_request.table.request_status.failed")}
                     </SelectItem>
-                    <SelectItem
+                    {/* <SelectItem
                       className={"text-[1.4rem] text-deep-100"}
-                      value="pending"
+                      value="SUCCESSFUL"
                     >
-                      Pending
-                    </SelectItem>
+                      {t("payout_request.table.request_status.approved")}
+                    </SelectItem> */}
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -164,130 +191,63 @@ export default function PayoutsPageContent() {
                 >
                   {t("payout_request.table.request_status.title")}
                 </TableHead>
+                <TableHead
+                  className={
+                    "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  {t("payout_request.table.date")}
+                </TableHead>
               </TableRow>
             </TableHeader>
-            {request ? (
-              <TableBody>
-                <Drawer direction="right">
-                  <DrawerTrigger asChild>
-                    <TableRow className="cursor-pointer">
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                        }
-                      >
-                        <Drawer direction={"right"}>
-                          <DrawerTrigger>
-                            <span className={"cursor-pointer"}>
-                              TXN23456789
-                            </span>
-                          </DrawerTrigger>
-                        </Drawer>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                        }
-                      >
-                        <Drawer direction={"right"}>
-                          <DrawerTrigger>
-                            <span className={"cursor-pointer"}>Sogebank</span>
-                          </DrawerTrigger>
-                        </Drawer>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                        }
-                      >
-                        0123456789
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                        }
-                      >
-                        <Drawer direction={"right"}>
-                          <DrawerTrigger>
-                            <span className={"cursor-pointer py-6"}>
-                              {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                              3500 HTG
-                            </span>
-                          </DrawerTrigger>
-                        </Drawer>
-                      </TableCell>
-                      <TableCell className="py-6">
-                        <Drawer direction={"right"}>
-                          <DrawerTrigger>
-                            {/* {order?.status === "APPROVED" && ( */}
-                            <span
-                              className={
-                                "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                              }
-                            >
-                              {t(
-                                "payout_request.table.request_status.approved",
-                              )}
-                            </span>
-                            {/* )} */}
-                            {/* 
-                      {order?.status === "Pending" && (
-                        <span
-                          className={
-                            "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          {t("list.filters.upcoming")}
-                        </span>
-                      )}
-                    */}
-                          </DrawerTrigger>
-                        </Drawer>
-                      </TableCell>
-                    </TableRow>
-                  </DrawerTrigger>
-                  <RequestDetails></RequestDetails>
-                </Drawer>
-                <Drawer direction="right">
-                  <DrawerTrigger asChild>
-                    <TableRow className="cursor-pointer">
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                        }
-                      >
-                        <span className={"cursor-pointer"}>TXN23456789</span>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                        }
-                      >
-                        <span className={"cursor-pointer"}>Sogebank</span>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                        }
-                      >
-                        0123456789
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                        }
-                      >
-                        <span className={"cursor-pointer py-6"}>
-                          {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                          3500 HTG
-                        </span>
-                      </TableCell>
-                      <TableCell className="py-6">
-                        {/* {order?.status === "APPROVED" && ( */}
+
+            <TableBody>
+              {payoutRequests.slice(0, 5).map((request) => {
+                return (
+                  <TableRow
+                    key={request.withdrawalRequestId}
+                    onClick={() => goToPayoutPage(request.withdrawalRequestId)}
+                    className="cursor-pointer"
+                  >
+                    <TableCell
+                      className={
+                        "text-[1.5rem] py-6 leading-8 text-neutral-900"
+                      }
+                    >
+                      <span className={"cursor-pointer"}>
+                        {request.organisation.organisationName}
+                      </span>
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
+                      }
+                    >
+                      <span className={"cursor-pointer"}>
+                        {request.bankName}
+                      </span>
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                      }
+                    >
+                      {request.accountNumber}
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                      }
+                    >
+                      <span className={"cursor-pointer py-6"}>
+                        {request.organisation.currency === "HTG"
+                          ? request.amount
+                          : request.usdAmount}{" "}
+                        {request.organisation.currency}
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-6">
+                      {request.status === "SUCCESSFUL" && (
                         <span
                           className={
                             "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
@@ -295,149 +255,31 @@ export default function PayoutsPageContent() {
                         >
                           {t("payout_request.table.request_status.approved")}
                         </span>
-                        {/* )} */}
-                        {/* 
-                      {order?.status === "Pending" && (
+                      )}
+
+                      {request.status === "PENDING" && (
                         <span
                           className={
                             "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          {t("list.filters.upcoming")}
-                        </span>
-                      )}
-                    */}
-                      </TableCell>
-                    </TableRow>
-                  </DrawerTrigger>
-                  <RequestDetails></RequestDetails>
-                </Drawer>
-                <Drawer direction="right">
-                  <DrawerTrigger asChild>
-                    <TableRow className="cursor-pointer">
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                        }
-                      >
-                        <span className={"cursor-pointer"}>TXN23456789</span>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                        }
-                      >
-                        <span className={"cursor-pointer"}>Sogebank</span>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                        }
-                      >
-                        0123456789
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                        }
-                      >
-                        <span className={"cursor-pointer py-6"}>
-                          {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                          3500 HTG
-                        </span>
-                      </TableCell>
-                      <TableCell className="py-6">
-                        {/* {order?.status === "APPROVED" && ( */}
-                        <span
-                          className={
-                            "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          {t("payout_request.table.request_status.approved")}
-                        </span>
-                        {/* )} */}
-                        {/* 
-                      {order?.status === "Pending" && (
-                        <span
-                          className={
-                            "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          {t("list.filters.upcoming")}
-                        </span>
-                      )}
-                    */}
-                      </TableCell>
-                    </TableRow>
-                  </DrawerTrigger>
-                  <RequestDetails></RequestDetails>
-                </Drawer>
-                <Drawer direction="right">
-                  <DrawerTrigger asChild>
-                    <TableRow className="cursor-pointer">
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                        }
-                      >
-                        <span className={"cursor-pointer"}>TXN23456789</span>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                        }
-                      >
-                        <span className={"cursor-pointer"}>Sogebank</span>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                        }
-                      >
-                        0123456789
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                        }
-                      >
-                        <span className={"cursor-pointer py-6"}>
-                          {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                          3500 HTG
-                        </span>
-                      </TableCell>
-                      <TableCell className="py-6">
-                        {/* {order?.status === "APPROVED" && ( 
-                        <span
-                          className={
-                            "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          {t("payout_request.table.request_status.approved")}
-                        </span>
-                         )}                   */}
-                        {/* {order?.status === "Pending" && ( */}
-                        <span
-                          className={
-                            "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
                           }
                         >
                           {t("payout_request.table.request_status.pending")}
                         </span>
-                        {/* )} */}
-                      </TableCell>
-                    </TableRow>
-                  </DrawerTrigger>
-                  <RequestDetails></RequestDetails>
-                </Drawer>
-              </TableBody>
-            ) : null}
+                      )}
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                      }
+                    >
+                      {formatDate(request.createdAt, locale, "local")}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
           </Table>
-          {!request && (
+          {payoutRequests.length === 0 && (
             <div className="flex flex-col w-fit  gap-12 items-center mt-8 self-center">
               <div className="rounded-full bg-neutral-100 p-6 w-fit">
                 <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
@@ -454,17 +296,23 @@ export default function PayoutsPageContent() {
               </p>
             </div>
           )}
-          <div className="w-full flex">
-            <span className="flex w-full  gap-8 text-primary-500 text-[1.5rem] leading-8 items-center justify-end">
-              {t("view_all")}
-              <Image
-                src={ArrowRight}
-                alt="arrow right"
-                width={20}
-                height={20}
-              />
-            </span>
-          </div>
+          {payoutRequests.length > 5 && (
+            <div className="w-full flex justify-between ">
+              <div></div>
+              <Link
+                href={"/payouts/requests"}
+                className="flex gap-8 text-primary-500 text-[1.5rem] leading-8 items-center justify-end"
+              >
+                {t("view_all")}
+                <Image
+                  src={ArrowRight}
+                  alt="arrow right"
+                  width={20}
+                  height={20}
+                />
+              </Link>
+            </div>
+          )}
         </div>
         <div className="flex flex-col gap-8">
           <div className="flex justify-between">
@@ -660,6 +508,6 @@ export default function PayoutsPageContent() {
         </div>
       </div>
       <div></div>
-    </AdminLayout>
+    </>
   );
 }

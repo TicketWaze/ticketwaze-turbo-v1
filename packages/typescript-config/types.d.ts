@@ -302,6 +302,7 @@ export interface WithdrawalRequest {
   status: "PENDING" | "SUCCESSFUL" | "FAILED";
   createdAt: DateTime;
   updatedAt: DateTime;
+  organisation: Organisation;
 }
 
 export interface OrganisationSubscription {
@@ -359,4 +360,18 @@ export interface UserOrdersRequest {
     previousPageUrl: string | null;
   };
   data: Order[];
+}
+export interface OrganisationWithdrawalRequest {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string | null;
+    lastPageUrl: string | null;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: WithdrawalRequest[];
 }

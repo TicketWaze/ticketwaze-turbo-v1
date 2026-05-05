@@ -1,18 +1,18 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
-import PayoutsPageContent from "./PayoutsPageContent";
+import RequestPageWrapper from "./RequestPageWrapper";
 import { auth } from "@/lib/auth";
 import { OrganisationWithdrawalRequest } from "@ticketwaze/typescript-config";
 
-export default async function PayoutsPage({
+export default async function PayoutRequestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; page: string | undefined }>;
 }) {
   const session = await auth();
-  const { status } = await searchParams;
+  const { status, page } = await searchParams;
   const activeStatus = status ?? "PENDING";
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/admin/payouts/request?status=${activeStatus}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/payouts/request?status=${activeStatus}&page=${page}&limit=10`,
     {
       method: "GET",
       cache: "no-store",
@@ -39,7 +39,7 @@ export default async function PayoutsPage({
   };
   return (
     <AdminLayout>
-      <PayoutsPageContent requests={requests} status={activeStatus} />
+      <RequestPageWrapper requests={requests} status={activeStatus} />
     </AdminLayout>
   );
 }

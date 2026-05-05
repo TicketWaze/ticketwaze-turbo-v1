@@ -68,7 +68,7 @@
       "description": "Please enter you account details to continue",
       "errors": {
         "email": "Enter a valid email address",
-        "notFound" : "No account found with this email address"
+        "notFound": "No account found with this email address"
       },
       "placeholders": {
         "email": "Organization Email Address"
@@ -304,16 +304,18 @@
       "status": "All status"
     },
     "payout_request": {
-      "title": "Payout request",
+      "title": "Payout requests",
       "table": {
         "withdrawal_id": "Withdrawal ID",
         "bank_name": "Bank Name",
         "account_number": "Account number",
         "amount": "Amount",
+        "date": "Date",
         "request_status": {
           "title": "Request Status",
           "approved": "Approved",
-          "pending": "Pending"
+          "pending": "Pending",
+          "failed": "Failed"
         }
       },
       "no_request": "You'll see new payout requests from organizers here when they request to withdraw their earnings."
