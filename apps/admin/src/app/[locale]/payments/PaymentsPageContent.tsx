@@ -17,18 +17,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useTranslations } from "next-intl";
-import PayoutsPageTopbar from "../payouts/PayoutsPageTopbar";
+
 import TransactionDetails from "./TransactionDetails";
 import Money from "@ticketwaze/ui/assets/icons/moneys.svg";
 import ArrowUp from "@ticketwaze/ui/assets/icons/arrow-up.svg";
 import Image from "next/image";
+import PaymentsPageTopbar from "./PaymentsPageTopbar";
 
 export default function PaymentsPageContent() {
   const t = useTranslations("Payments");
   const history = false;
   return (
     <AdminLayout>
-      <PayoutsPageTopbar
+      <PaymentsPageTopbar
         title={t("title")}
         filter={t("filters.period.actual")}
       />
