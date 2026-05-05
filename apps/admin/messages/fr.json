@@ -252,6 +252,107 @@
       }
     }
   },
+  "Admins":{
+    "title": "Équipe",
+      "back": "Retour",
+      "search": "Rechercher un membre",
+      "add": "Ajouter un Administrateur",
+      "active": "Actif",
+      "invited": "Invité",
+      "you": "Vous",
+      "more": "Plus",
+      "teamLimit": "Mettez à niveau votre abonnement pour ajouter plus de membres.",
+      "edit": "Modifier",
+      "remove": "Supprimer",
+      "remove_member": "Supprimer",
+      "noSelfDelete": "Vous ne pouvez pas vous retirer de votre organisation. Si vous ne souhaitez plus en faire partie, transférez la propriété ou supprimez l'organisation.",
+      "noSelfChange": "Vous devez transférer la propriété de l’organisation avant de modifier votre rôle. Si vous ne souhaitez plus faire partie de cette organisation, transférez la propriété ou supprimez l’organisation.",
+      "remove_invitation": "Supprimer l'invitation",
+      "confirm_text": "Êtes-vous sûr de vouloir supprimer ce membre ? Il perdra tout accès à cette organisation.",
+      "confirm": "Oui, supprimer",
+      "joined_at": "Rejoint le",
+      "added_by": "Ajouté par",
+      "last_login": "Dernière connexion",
+      "transfer": "Transférer la propriété",
+      "confirm_transfert": "Le transfert de propriété donnera au nouveau propriétaire le contrôle total de cette organisation sur Ticketwaze. Vous perdrez l’accès administratif et cette action est irréversible.",
+      "confirm2": "Oui, transférer",
+      "table": {
+        "name": "Nom complet",
+        "email": "E-mail",
+        "role": "Rôle",
+        "status": "Statut"
+      },
+      "errors": {
+        "name": "Le nom ne peut pas être vide",
+        "email": "Saisissez une adresse e-mail valide"
+      }
+  },
+  "Payouts": {
+    "title": "Virements",
+    "total": "Total des virements",
+    "pending": "Demandes de virement en attente",
+    "total_paid": "Total des organisateurs payés",
+
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "status": "Tous les statuts"
+    },
+    "payout_request": {
+      "title": "Demande de virement",
+      "table": {
+        "withdrawal_id": "ID de retrait",
+        "bank_name": "Nom de la banque",
+        "account_number": "Numéro de compte",
+        "amount": "Montant",
+        "request_status": {
+          "title": "Statut de la demande",
+          "approved": "Approuvé",
+          "pending": "En attente"
+        }
+      },
+      "no_request": "Vous verrez ici les nouvelles demandes de virement des organisateurs lorsqu'ils souhaitent retirer leurs gains."
+    },
+    "payout_history": {
+      "title": "Historique des virements",
+      "table": {
+        "withdrawal_id": "ID de retrait",
+        "bank_name": "Nom de la banque",
+        "account_number": "Numéro de compte",
+        "amount": "Montant",
+        "transaction_status": {
+          "title": "Statut de la transaction",
+          "succesful": "Réussi"
+        }
+      },
+      "no_history": "Une fois les virements traités, un enregistrement apparaîtra ici pour le suivi et les rapports."
+    },
+    "view_all": "Voir tout",
+    "request_details": {
+      "title": "Détails de la demande",
+      "amount": "Montant",
+      "request_date": "Date de la demande",
+      "requested_by": "Demandé par",
+      "request_status": "Statut de la demande",
+      "bank_name": "Nom de la banque",
+      "account": "Numéro de compte",
+      "processed_date": "Date de traitement",
+      "close": "Fermer",
+      "approve": "Approuver le virement"
+    },
+    "withdrawal_details": {
+      "title": "Détails du retrait",
+      "amount": "Montant",
+      "request_date": "Date de la demande",
+      "requested_by": "Demandé par",
+      "transaction_status": "Statut de la transaction",
+      "bank_name": "Nom de la banque",
+      "account": "Numéro de compte",
+      "processed_date": "Date de traitement",
+      "close": "Fermer"
+    }
+  },
 
   "Payments": {
     "title": "Paiements",
