@@ -358,5 +358,54 @@
     }
   },
 
+   "Payments": {
+    "title": "Payments",
+    "total_revenue": "Total Revenue",
+    "total_transactions": "Total Transactions",
+    "fees": "Platform Fees Earned",
+
+    "filters": {
+      "period": {
+        "actual": "This month"
+      },
+      "status": "All status"
+    },
+
+    "transactions": {
+      "title": "Transactions",
+      "table": {
+        "transaction_id": "Transaction id",
+        "activity_name": "Activity Name",
+        "ticket_class": "Ticket class",
+        "amount_paid": "Amount paid",
+        "transaction_status": {
+          "title": "Transaction Status",
+          "succesful": "Succesful"
+        }
+      },
+      "no_history": "Once you start receiving payments, you’ll see them all here."
+    },
+    "transaction_details": {
+      "title": "Transaction Details",
+      "attendee": "Attendee Name",
+      "email": "Email",
+      "activity":"Activity Name",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "class": "Ticket Class",
+      "price": "Price",
+      "ticket_id": "Ticket ID",
+      "total": "Total",
+      "transaction_id": "Transaction ID",
+      "payment_method": "Payment Method",
+      "payment_date": "Payment Date",
+      "transaction_status": "Transaction Status",
+      "check_status": "Checked-In Status",
+      "check_time": "Check-In Time",
+      "close": "Close"
+    }
+  },
+
   "attendees": {}
 }

@@ -1,5 +1,7 @@
-import AdminLayout from "@/components/Layouts/AdminLayout";
+import PaymentsPageContent from "./PaymentsPageContent";
 
-export default function PaymentPage() {
-  return <AdminLayout>PaymentPage</AdminLayout>;
+export default function PaymentsPage(){
+  return(
+    <PaymentsPageContent/>
+  );
 }
