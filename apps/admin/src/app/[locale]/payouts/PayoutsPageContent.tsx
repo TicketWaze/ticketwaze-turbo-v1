@@ -260,7 +260,7 @@ export default function PayoutsPageContent({
                       {request.status === "PENDING" && (
                         <span
                           className={
-                            "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                            "py-[.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
                           }
                         >
                           {t("payout_request.table.request_status.pending")}

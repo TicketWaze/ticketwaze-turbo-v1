@@ -22,8 +22,6 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import MoneySend from "@ticketwaze/ui/assets/icons/money-send.svg";
-import ArrowUp from "@ticketwaze/ui/assets/icons/arrow-up.svg";
-import ArrowRight from "@ticketwaze/ui/assets/icons/arrow-right.svg";
 import { Link, useRouter } from "@/i18n/navigation";
 import PageLoader from "@/components/PageLoader";
 import formatDate from "@/lib/FormatDate";
