@@ -1,7 +1,7 @@
 "use client";
 import {
   DeleteBankingInformations,
-  UpdateOrganisationPaymentInformation,
+  UpdateOrganisationBankPaymentInformation,
 } from "@/actions/organisationActions";
 import PageLoader from "@/components/PageLoader";
 import { ButtonPrimary, ButtonRed } from "@/components/shared/buttons";
@@ -63,7 +63,7 @@ export default function PaymentInformationsForm({
   });
 
   async function submitHandler(data: TPaymentDetailsSchema) {
-    const result = await UpdateOrganisationPaymentInformation(
+    const result = await UpdateOrganisationBankPaymentInformation(
       organisation?.organisationId ?? "",
       { bankName: data.bankName, bankAccountName: data.bankAccountName, bankAccountNumber: data.bankAccountNumber },
       session?.user.accessToken ?? "",
