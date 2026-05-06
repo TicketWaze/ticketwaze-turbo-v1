@@ -7,7 +7,7 @@ import { Event } from "@ticketwaze/typescript-config";
 import EventCard from "@/components/shared/EventCard";
 
 export default function EventPageContent({ events }: { events: Event[] }) {
-  const t = useTranslations("Events");
+  // const t = useTranslations("Events");
   return (
     <div className="min-h-[75vh]">
       <Tabs defaultValue="upcoming" className="w-full h-full">
@@ -16,7 +16,7 @@ export default function EventPageContent({ events }: { events: Event[] }) {
           <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
           <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
-        <TabsContent value="all" className="overflow-y-scroll">
+        {/* <TabsContent value="all" className="overflow-y-scroll">
           <ul className="list pt-4 overflow-y-scroll">
             {[...events]
               .sort(
@@ -60,7 +60,7 @@ export default function EventPageContent({ events }: { events: Event[] }) {
               </div>
             </div>
           )}
-        </TabsContent>
+        </TabsContent> */}
 
         <UpcomingContent events={events} />
         <HistoryContent events={events} />

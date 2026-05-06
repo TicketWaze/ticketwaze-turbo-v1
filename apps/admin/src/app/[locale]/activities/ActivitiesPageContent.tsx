@@ -1,6 +1,6 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
-import AdminLayout from "@/components/Layouts/AdminLayout";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import ActivitiesPageTopbar from "./ActivitiesPageTopbar";
 import { useRouter } from "next/navigation";
 import {
@@ -12,16 +12,43 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Drawer,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup, SelectItem } from "@/components/ui/select";
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from "@/components/ui/select";
+import { AdminEventsRequest } from "@ticketwaze/typescript-config";
+import formatDate from "@/lib/FormatDate";
+import formatTime from "@/lib/formatTime";
+import { useEffect, useState } from "react";
+import PageLoader from "@/components/PageLoader";
+import Image from "next/image";
+import MoneySend from "@ticketwaze/ui/assets/icons/money-send.svg";
 
-export default function ActivitiesPageContent() {
+export default function ActivitiesPageContent({
+  events,
+  status,
+}: {
+  events: AdminEventsRequest;
+  status: string;
+}) {
   const t = useTranslations("Activities");
+  const locale = useLocale();
   const router = useRouter();
+  const data = events.data;
+  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    setIsLoading(false);
+  }, [status]);
+  function handleStatusChange(value: string) {
+    setIsLoading(true);
+    router.push(`/activities?status=${value}`);
+  }
   return (
-    <AdminLayout>
+    <>
+      <PageLoader isLoading={isLoading} />
       <ActivitiesPageTopbar
         title={t("title")}
         filter={t("filters.period.actual")}
@@ -40,7 +67,7 @@ export default function ActivitiesPageContent() {
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            0
+            {data.length}
           </p>
         </div>
         <div className={"pl-10"}>
@@ -52,7 +79,7 @@ export default function ActivitiesPageContent() {
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            0
+            {data.filter((event) => event.adminStatus === "approved").length}
           </p>
         </div>
         <div className={"pl-0 lg:pl-10"}>
@@ -64,7 +91,7 @@ export default function ActivitiesPageContent() {
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            0
+            {data.filter((event) => event.adminStatus === "rejected").length}
           </p>
         </div>
 
@@ -87,37 +114,42 @@ export default function ActivitiesPageContent() {
         </h4>
         <div className="flex gap-4">
           <Select
-            defaultValue= "all"
+            defaultValue="review"
+            onValueChange={(e) => handleStatusChange(e)}
           >
             <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
               <SelectValue placeholder="" />
             </SelectTrigger>
             <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
               <SelectGroup>
-                <SelectItem
+                {/* <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value= "all"
+                  value="all"
                 >
                   {t("filters.list.status")}
+                </SelectItem> */}
+                <SelectItem
+                  className={"text-[1.4rem] text-deep-100"}
+                  value="review"
+                >
+                  In Review
                 </SelectItem>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value= "Checked-In"
+                  value="approved"
                 >
-                  Checked-In
+                  Approved
                 </SelectItem>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value= "pending"
+                  value="rejected"
                 >
-                  Pending
+                  Rejected
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select
-            defaultValue= "all_period"
-          >
+          <Select defaultValue="all_period">
             <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
               <SelectValue placeholder="" />
             </SelectTrigger>
@@ -125,19 +157,19 @@ export default function ActivitiesPageContent() {
               <SelectGroup>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value= "all_period"
+                  value="all_period"
                 >
                   {t("filters.list.period")}
                 </SelectItem>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value= "last_week"
+                  value="last_week"
                 >
                   Last week
                 </SelectItem>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value= "last_month"
+                  value="last_month"
                 >
                   Last month
                 </SelectItem>
@@ -195,435 +227,111 @@ export default function ActivitiesPageContent() {
         </TableHeader>
 
         <TableBody>
-          <TableRow
-            className="cursor-pointer"
-            onClick={() => router.push(`/activities/1`)}
-          >
-            <TableCell
-              className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
+          {data.map((event) => {
+            return (
+              <TableRow
+                key={event.eventId}
+                className="cursor-pointer"
+                onClick={() => router.push(`/activities/${event.eventId}`)}
+              >
+                <TableCell
+                  className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
+                >
+                  <span className={"cursor-pointer truncate"}>
+                    {event.eventName}
+                  </span>
+                </TableCell>
+                <TableCell
+                  className={
+                    "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
+                  }
+                >
                   <span className={"cursor-pointer"}>
-                    {/* {TruncateUrl(order.orderName, 12)} */}
-                    All night long
+                    {event.organisation.organisationName}
                   </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer"}>
-                    {/* {order.provider.toUpperCase()} */}
-                    Global Events Hub
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-              }
-            >
-              {/* {order.tickets.length} */}
-              Jan 16, 2025 12:21 PM
-            </TableCell>
-            <TableCell
-              className={"text-[1.5rem] font-medium leading-8 text-neutral-900"}
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer py-6"}>
-                    {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                    3500
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell className="py-6">
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  {/* {order?.status === "ONGOING" && ( */}
-                  <span
-                    className={
-                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                    }
-                  >
-                    {t("list.filters.ongoing")}
-                  </span>
-                  {/* )} */}
-                  {/* {order?.status === "PAST" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#3F3F3F]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.past")}
-                    </span>
+                </TableCell>
+                <TableCell
+                  className={
+                    "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                  }
+                >
+                  {formatDate(
+                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                      .eventDate,
+                    locale,
+                    "local",
+                  )}{" "}
+                  -{" "}
+                  {formatTime(
+                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                      .startTime,
+                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
+                      .timezone,
+                    locale,
                   )}
-                  {order?.status === "UPCOMING" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.upcoming")}
-                    </span>
-                  )}
-                  {order?.status === "ACTIVE" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.active")}
-                    </span>
-                  )} */}
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              Jan 16, 2025 12:21 PM
-            </TableCell>
-          </TableRow>
-
-          <TableRow
-            className="cursor-pointer"
-            onClick={() => router.push(`/activities/1`)}
-          >
-            <TableCell
-              className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer"}>
-                    {/* {TruncateUrl(order.orderName, 12)} */}
-                    All night long
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer"}>
-                    {/* {order.provider.toUpperCase()} */}
-                    Global Events Hub
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-              }
-            >
-              {/* {order.tickets.length} */}
-              Jan 16, 2025 12:21 PM
-            </TableCell>
-            <TableCell
-              className={"text-[1.5rem] font-medium leading-8 text-neutral-900"}
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
+                </TableCell>
+                <TableCell
+                  className={
+                    "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                  }
+                >
                   <span className={"cursor-pointer py-6"}>
-                    {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                    3500
+                    {event.tickets.length}
                   </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell className="py-6">
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  {/* {order?.status === "ONGOING" && ( */}
-                  {/* <span
-                    className={
-                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                    }
-                  >
-                    {t("list.filters.ongoing")}
-                  </span> */}
-                  {/* )} */}
-                  {/* {order?.status === "PAST" && (
+                </TableCell>
+                <TableCell className="py-6">
+                  {event.adminStatus === "approved" && (
                     <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#3F3F3F]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.past")}
-                    </span>
-                  )} */}
-                  {/* {order?.status === "UPCOMING" && ( */}
-                  <span
-                    className={
-                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                    }
-                  >
-                    {t("list.filters.upcoming")}
-                  </span>
-                  {/* )} */}
-                  {/* {order?.status === "ACTIVE" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.active")}
-                    </span>
-                  )} */}
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              Jan 16, 2025 12:21 PM
-            </TableCell>
-          </TableRow>
-
-          <TableRow
-            className="cursor-pointer"
-            onClick={() => router.push(`/activities/1`)}
-          >
-            <TableCell
-              className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer"}>
-                    {/* {TruncateUrl(order.orderName, 12)} */}
-                    All night long
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer"}>
-                    {/* {order.provider.toUpperCase()} */}
-                    Global Events Hub
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-              }
-            >
-              {/* {order.tickets.length} */}
-              Jan 16, 2025 12:21 PM
-            </TableCell>
-            <TableCell
-              className={"text-[1.5rem] font-medium leading-8 text-neutral-900"}
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer py-6"}>
-                    {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                    3500
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell className="py-6">
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  {/* {order?.status === "ONGOING" && ( */}
-                  {/* <span
-                    className={
-                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                    }
-                  >
-                    {t("list.filters.ongoing")}
-                  </span> */}
-                  {/* )} */}
-                  {/* {order?.status === "PAST" && ( */}
-                  <span
-                    className={
-                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#3F3F3F]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                    }
-                  >
-                    {t("list.filters.past")}
-                  </span>
-                  {/* )} */}
-                  {/* {order?.status === "UPCOMING" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.upcoming")}
-                    </span>
-                  )}
-                  {order?.status === "ACTIVE" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.active")}
-                    </span>
-                  )} */}
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              Jan 16, 2025 12:21 PM
-            </TableCell>
-          </TableRow>
-
-          <TableRow
-            className="cursor-pointer"
-            onClick={() => router.push(`/activities/1`)}
-          >
-            <TableCell
-              className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer"}>
-                    {/* {TruncateUrl(order.orderName, 12)} */}
-                    All night long
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer"}>
-                    {/* {order.provider.toUpperCase()} */}
-                    Global Events Hub
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-              }
-            >
-              {/* {order.tickets.length} */}
-              Jan 16, 2025 12:21 PM
-            </TableCell>
-            <TableCell
-              className={"text-[1.5rem] font-medium leading-8 text-neutral-900"}
-            >
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  <span className={"cursor-pointer py-6"}>
-                    {/* {session?.user.userPreference.currency === "USD"
-                      ? `${order.usdPrice} USD`
-                      : `${order.amount} HTG`} */}
-                    3500
-                  </span>
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell className="py-6">
-              <Drawer direction={"right"}>
-                <DrawerTrigger>
-                  {/* {order?.status === "ONGOING" && ( */}
-                  {/* <span
                       className={
                         "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
                       }
                     >
-                      {t("list.filters.ongoing")}
-                    </span> */}
-                  {/* )} */}
-                  {/* {order?.status === "PAST" && (
-                    <span
-                      className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#3F3F3F]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                      }
-                    >
-                      {t("list.filters.past")}
+                      approved
                     </span>
                   )}
-                  {order?.status === "UPCOMING" && (
+                  {event.adminStatus === "review" && (
                     <span
                       className={
-                        "py-[3px] cursor-pointer text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                        "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-warning  px-2 rounded-[30px] bg-[#f5f5f5]"
                       }
                     >
-                      {t("list.filters.upcoming")}
+                      review
                     </span>
-                  )} */}
-                  {/* {order?.status === "ACTIVE" && ( */}
-                  <span
-                    className={
-                      "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                    }
-                  >
-                    {t("list.filters.active")}
-                  </span>
-                  {/* )} */}
-                </DrawerTrigger>
-                {/* <WalletOrderDrawerContent order={order} /> */}
-              </Drawer>
-            </TableCell>
-            <TableCell
-              className={
-                "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-              }
-            >
-              Jan 16, 2025 12:21 PM
-            </TableCell>
-          </TableRow>
+                  )}
+                  {event.adminStatus === "rejected" && (
+                    <span
+                      className={
+                        "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-failure  px-2 rounded-[30px] bg-[#f5f5f5]"
+                      }
+                    >
+                      rejected
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell
+                  className={
+                    "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                  }
+                >
+                  {formatDate(event.createdAt, locale, "local")}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
-    </AdminLayout>
+      {data.length === 0 && (
+        <div className="flex flex-col w-fit  gap-12 items-center mt-8 self-center">
+          <div className="rounded-full bg-neutral-100 p-6 w-fit">
+            <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
+              <Image src={MoneySend} alt="No Events" width={50} height={50} />
+            </div>
+          </div>
+          <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+            {t("list.noActivities")}
+          </p>
+        </div>
+      )}
+    </>
   );
 }
