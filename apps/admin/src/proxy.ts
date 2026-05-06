@@ -16,8 +16,15 @@ export default auth((req) => {
     ? pathnameLocale
     : routing.defaultLocale;
 
-  // Then check authentication - req.auth is available in the Auth.js callback
-  if (!req.auth && !req.nextUrl.pathname.startsWith(`/${locale}/auth/`)) {
+  // Check our custom expiry field. NextAuth v5 overwrites the reserved `exp`
+  // JWT claim with iat+maxAge, so we store midnight expiry in `accessTokenExpires`
+  // which NextAuth leaves untouched. Redirect 60s early to avoid the race
+  // condition where the request passes middleware right before midnight.
+  const now = Math.floor(Date.now() / 1000);
+  const tokenExp = req.auth?.user?.accessTokenExpires;
+  const isExpired = tokenExp !== undefined && tokenExp - 60 < now;
+
+  if ((!req.auth || isExpired) && !req.nextUrl.pathname.startsWith(`/${locale}/auth/`)) {
     const newUrl = new URL(`/${locale}/auth/login`, req.nextUrl.origin);
     return Response.redirect(newUrl);
   }

@@ -295,11 +295,72 @@
     "back"  : "Back",
     "cancel" : "Mark as Failed",
     "paid" : "Mark as Paid",
-    "activity" :{
-      "title" : "Activity performances"
+    "activity": {
+      "title": "Activity performances",
+      "empty": "No activities found for this organisation.",
+      "table": {
+        "event": "Event",
+        "date": "Date",
+        "location": "Location",
+        "sold": "Sold",
+        "scanned": "Scanned"
+      }
     },
-    "stats" : {
-      "title" : "Organisation stats"
+    "stats": {
+      "title": "Organisation stats",
+      "sections": {
+        "profile": "Profile",
+        "status": "Status & Activity",
+        "financials": "Financials",
+        "banking": "Banking",
+        "mobileMoney": "Mobile Money",
+        "social": "Social Links",
+        "membership": "Membership"
+      },
+      "fields": {
+        "name": "Organisation Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "website": "Website",
+        "location": "Location",
+        "currency": "Currency",
+        "description": "Description",
+        "verified": "Verified",
+        "published": "Published",
+        "totalEvents": "Total Events",
+        "totalFollowers": "Followers",
+        "memberSince": "Member Since",
+        "availableBalance": "Available Balance (HTG)",
+        "pendingBalance": "Pending Balance (HTG)",
+        "availableBalanceUsd": "Available Balance (USD)",
+        "pendingBalanceUsd": "Pending Balance (USD)",
+        "bankName": "Bank Name",
+        "accountName": "Account Name",
+        "accountNumber": "Account Number",
+        "moncashName": "MonCash Account Name",
+        "moncashNumber": "MonCash Number",
+        "natcashName": "NatCash Account Name",
+        "natcashNumber": "NatCash Number",
+        "plan": "Plan",
+        "planPrice": "Plan Price",
+        "planDescription": "Plan Description",
+        "teamMembers": "Team Members",
+        "freeTickets": "Free Tickets",
+        "emailSupport": "Email Support",
+        "customTickets": "Custom Ticket Types",
+        "discountCodes": "Discount Codes",
+        "prioritySupport": "Priority Support",
+        "aiFeatures": "AI Features",
+        "earlyAccess": "Early Access",
+        "verifiedBadge": "Verified Badge",
+        "customBranding": "Custom Branding",
+        "apiAccess": "API Access",
+        "accountManager": "Account Manager"
+      },
+      "subscription": {
+        "free": "Free Plan",
+        "trial": "Trial"
+      }
     },
     "title": "Payouts",
     "total": "Total Payouts",
@@ -344,9 +405,30 @@
       "no_history": "Once payouts are processed, a record will appear here for tracking and reporting."
     },
     "view_all": "View all",
+    "dialogs": {
+      "cancel": "Cancel",
+      "paid": {
+        "title": "Mark as Paid",
+        "description": "You are about to confirm that this payout has been successfully processed and sent to the organizer.",
+        "irreversible": "This action is irreversible. Once confirmed, it cannot be undone. Please verify before proceeding.",
+        "confirm": "Yes, mark as paid"
+      },
+      "failed": {
+        "title": "Mark as Failed",
+        "description": "You are about to mark this payout request as failed. A reason is required.",
+        "reason_label": "Reason for failure",
+        "reason_placeholder": "Describe why this payout failed...",
+        "irreversible": "This action is irreversible. Once marked as failed, it cannot be undone.",
+        "confirm": "Yes, mark as failed"
+      }
+    },
     "request_details": {
       "title": "Request Details",
+      "account_type": "Account Type",
+      "account_name": "Account Name",
+      "currency": "Currency",
       "amount": "Amount",
+      "usd_amount": "Amount (USD)",
       "request_date": "Request Date",
       "requested_by": "Requested By",
       "request_status": "Request Status",

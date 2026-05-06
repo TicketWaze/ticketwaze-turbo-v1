@@ -266,6 +266,15 @@ export default function PayoutsPageContent({
                           {t("payout_request.table.request_status.pending")}
                         </span>
                       )}
+                      {request.status === "FAILED" && (
+                        <span
+                          className={
+                            "py-[.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-failure  px-2 rounded-[30px] bg-failure/20"
+                          }
+                        >
+                          {t("payout_request.table.request_status.failed")}
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell
                       className={

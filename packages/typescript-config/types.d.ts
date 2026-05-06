@@ -300,6 +300,7 @@ export interface WithdrawalRequest {
   amount: number;
   usdAmount: number;
   status: "PENDING" | "SUCCESSFUL" | "FAILED";
+  reason: string | null;
   createdAt: DateTime;
   updatedAt: DateTime;
   organisation: Organisation;

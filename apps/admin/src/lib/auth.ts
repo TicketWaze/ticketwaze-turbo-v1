@@ -108,9 +108,10 @@ const nextAuthResult = NextAuth({
      * JWT CALLBACK
      */
     async jwt({ token, user, trigger, session }) {
-      // First login (credentials or google) — expire at tonight's midnight
+      // First login (credentials or google) — store midnight expiry in a custom
+      // field; NextAuth v5 overwrites the reserved `exp` claim with iat+maxAge.
       if (user) {
-        return { ...token, ...user, exp: nextMidnightUnix() };
+        return { ...token, ...user, accessTokenExpires: nextMidnightUnix() };
       }
 
       // Manual update() call

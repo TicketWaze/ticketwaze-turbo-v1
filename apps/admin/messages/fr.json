@@ -288,6 +288,76 @@
     }
   },
   "Payouts": {
+    "back": "Retour",
+    "cancel": "Marquer comme échoué",
+    "paid": "Marquer comme payé",
+    "activity": {
+      "title": "Performances des activités",
+      "empty": "Aucune activité trouvée pour cette organisation.",
+      "table": {
+        "event": "Événement",
+        "date": "Date",
+        "location": "Lieu",
+        "sold": "Vendus",
+        "scanned": "Scannés"
+      }
+    },
+    "stats": {
+      "title": "Statistiques de l'organisation",
+      "sections": {
+        "profile": "Profil",
+        "status": "Statut & Activité",
+        "financials": "Finances",
+        "banking": "Banque",
+        "mobileMoney": "Mobile Money",
+        "social": "Réseaux sociaux",
+        "membership": "Abonnement"
+      },
+      "fields": {
+        "name": "Nom de l'organisation",
+        "email": "Email",
+        "phone": "Téléphone",
+        "website": "Site web",
+        "location": "Localisation",
+        "currency": "Devise",
+        "description": "Description",
+        "verified": "Vérifié",
+        "published": "Publié",
+        "totalEvents": "Total événements",
+        "totalFollowers": "Abonnés",
+        "memberSince": "Membre depuis",
+        "availableBalance": "Solde disponible (HTG)",
+        "pendingBalance": "Solde en attente (HTG)",
+        "availableBalanceUsd": "Solde disponible (USD)",
+        "pendingBalanceUsd": "Solde en attente (USD)",
+        "bankName": "Nom de la banque",
+        "accountName": "Nom du compte",
+        "accountNumber": "Numéro de compte",
+        "moncashName": "Nom du compte MonCash",
+        "moncashNumber": "Numéro MonCash",
+        "natcashName": "Nom du compte NatCash",
+        "natcashNumber": "Numéro NatCash",
+        "plan": "Forfait",
+        "planPrice": "Prix du forfait",
+        "planDescription": "Description du forfait",
+        "teamMembers": "Membres de l'équipe",
+        "freeTickets": "Billets gratuits",
+        "emailSupport": "Support par email",
+        "customTickets": "Types de billets personnalisés",
+        "discountCodes": "Codes de réduction",
+        "prioritySupport": "Support prioritaire",
+        "aiFeatures": "Fonctionnalités IA",
+        "earlyAccess": "Accès anticipé",
+        "verifiedBadge": "Badge vérifié",
+        "customBranding": "Image de marque",
+        "apiAccess": "Accès API",
+        "accountManager": "Gestionnaire de compte"
+      },
+      "subscription": {
+        "free": "Forfait gratuit",
+        "trial": "Essai"
+      }
+    },
     "title": "Virements",
     "total": "Total des virements",
     "pending": "Demandes de virement en attente",
@@ -330,9 +400,30 @@
       "no_history": "Une fois les virements traités, un enregistrement apparaîtra ici pour le suivi et les rapports."
     },
     "view_all": "Voir tout",
+    "dialogs": {
+      "cancel": "Annuler",
+      "paid": {
+        "title": "Marquer comme payé",
+        "description": "Vous êtes sur le point de confirmer que ce virement a été traité et envoyé à l'organisateur.",
+        "irreversible": "Cette action est irréversible. Une fois confirmée, elle ne peut pas être annulée. Veuillez vérifier avant de continuer.",
+        "confirm": "Oui, marquer comme payé"
+      },
+      "failed": {
+        "title": "Marquer comme échoué",
+        "description": "Vous êtes sur le point de marquer cette demande de virement comme échouée. Une raison est requise.",
+        "reason_label": "Raison de l'échec",
+        "reason_placeholder": "Décrivez pourquoi ce virement a échoué...",
+        "irreversible": "Cette action est irréversible. Une fois marquée comme échouée, elle ne peut pas être annulée.",
+        "confirm": "Oui, marquer comme échoué"
+      }
+    },
     "request_details": {
       "title": "Détails de la demande",
+      "account_type": "Type de compte",
+      "account_name": "Nom du compte",
+      "currency": "Devise",
       "amount": "Montant",
+      "usd_amount": "Montant (USD)",
       "request_date": "Date de la demande",
       "requested_by": "Demandé par",
       "request_status": "Statut de la demande",
