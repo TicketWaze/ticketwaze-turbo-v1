@@ -84,7 +84,7 @@ export async function UpdateOrganisationProfileImage(
   }
 }
 
-export async function UpdateOrganisationPaymentInformation(
+export async function UpdateOrganisationBankPaymentInformation(
   organisationId: string,
   payload: unknown,
   accessToken: string,
@@ -92,7 +92,44 @@ export async function UpdateOrganisationPaymentInformation(
 ) {
   try {
     const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/payment-informations`,
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/payment-informations/bank`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify(payload),
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/settings/payment");
+      return {
+        status: "success",
+      };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+export async function UpdateOrganisationMoncashPaymentInformation(
+  organisationId: string,
+  payload: unknown,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/payment-informations/moncash`,
       {
         method: "PATCH",
         headers: {

@@ -1,6 +1,6 @@
 {
   "Auth": {
-     "layout":{
+    "layout": {
       "badge": "Administrator"
     },
     "login": {
@@ -12,7 +12,15 @@
       },
       "errors": {
         "email": "Enter a valid email",
-        "password": "Password must be at least 8 characters"
+        "password": "Password must be at least 8 characters",
+        "loginFailed": "Login failed. Please try again."
+      },
+      "otp": {
+        "title": "Verify Identity",
+        "description": "Enter the 6-digit code sent to your email",
+        "cta": "Verify",
+        "back": "Back to login",
+        "error": "Invalid verification code"
       },
       "reset": "Reset password",
       "cta": {
@@ -59,16 +67,17 @@
       "title": "Reset Password",
       "description": "Please enter you account details to continue",
       "errors": {
-        "email": "Enter a valid email address"
+        "email": "Enter a valid email address",
+        "notFound": "No account found with this email address"
       },
-      "placeholders":{
+      "placeholders": {
         "email": "Organization Email Address"
       },
       "cta": {
         "submit": "Reset"
       },
       "back": "Back"
-    }, 
+    },
     "email_sent": {
       "title": "Reset Password",
       "description": "A password reset mail has been sent to the email address you provided",
@@ -113,6 +122,7 @@
         "analytics": "Analytics",
         "attendees": "Attendees",
         "organisations": "Organisations",
+        "admins": "Administrators",
         "title2": "Operations",
         "activities": "Activities",
         "tickets": "Tickets",
@@ -127,7 +137,43 @@
       "view": "View"
     }
   },
-  
+
+  "Admins": {
+    "title": "Administrators",
+    "back": "Back",
+    "search": "Search for administrator",
+    "add": "Add administrator",
+    "active": "Active",
+    "invited": "Invited",
+    "you": "You",
+    "more": "More",
+    "teamLimit": "Upgrade your membership to add more team members.",
+    "edit": "Edit",
+    "remove": "Remove",
+    "remove_member": "Remove",
+    "noSelfDelete": "You cannot remove yourself from your organisation. If you don't want to be part of this organisation, transfert the ownership or delete the organisation.",
+    "noSelfChange": "You have to transfert the ownership of the organisation before changing your role. If you don't want to be part of this organisation, transfert the ownership or delete the organisation.",
+    "remove_invitation": "Remove invitation",
+    "confirm_text": "Are you sure you want to remove this member? They will lose all access to this organization.",
+    "confirm": "Yes, remove",
+    "joined_at": "Joined At",
+    "added_by": "Added By",
+    "last_login": "Last Login",
+    "transfer": "Transfer ownership",
+    "confirm_transfert": "Transferring ownership will give new owner full control of this organisation on Ticketwaze. You will lose administrative access and cannot undo this action.",
+    "confirm2": "Yes, transfer",
+    "table": {
+      "name": "Full Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status"
+    },
+    "errors": {
+      "name": "Name cannot be blank",
+      "email": "Enter a valid email address"
+    }
+  },
+
   "Activities": {
     "title": "Activities Overview",
     "total": "Total Activities",
@@ -176,8 +222,8 @@
         "organiser": {
           "name": "Cap-Haïtien Music Alliance",
           "followers": "823 followers"
-        }, 
-        "button":{
+        },
+        "button": {
           "view": "View profile"
         },
         "date": "11 August 2024",
@@ -210,7 +256,7 @@
           "tickets": {
             "general": "General",
             "vip": "Vip",
-            "premium" : "Premium Vip"
+            "premium": "Premium Vip"
           },
           "status": {
             "check-in": "Check-in"
@@ -246,6 +292,76 @@
   },
 
   "Payouts": {
+    "back"  : "Back",
+    "cancel" : "Mark as Failed",
+    "paid" : "Mark as Paid",
+    "activity": {
+      "title": "Activity performances",
+      "empty": "No activities found for this organisation.",
+      "table": {
+        "event": "Event",
+        "date": "Date",
+        "location": "Location",
+        "sold": "Sold",
+        "scanned": "Scanned"
+      }
+    },
+    "stats": {
+      "title": "Organisation stats",
+      "sections": {
+        "profile": "Profile",
+        "status": "Status & Activity",
+        "financials": "Financials",
+        "banking": "Banking",
+        "mobileMoney": "Mobile Money",
+        "social": "Social Links",
+        "membership": "Membership"
+      },
+      "fields": {
+        "name": "Organisation Name",
+        "email": "Email",
+        "phone": "Phone Number",
+        "website": "Website",
+        "location": "Location",
+        "currency": "Currency",
+        "description": "Description",
+        "verified": "Verified",
+        "published": "Published",
+        "totalEvents": "Total Events",
+        "totalFollowers": "Followers",
+        "memberSince": "Member Since",
+        "availableBalance": "Available Balance (HTG)",
+        "pendingBalance": "Pending Balance (HTG)",
+        "availableBalanceUsd": "Available Balance (USD)",
+        "pendingBalanceUsd": "Pending Balance (USD)",
+        "bankName": "Bank Name",
+        "accountName": "Account Name",
+        "accountNumber": "Account Number",
+        "moncashName": "MonCash Account Name",
+        "moncashNumber": "MonCash Number",
+        "natcashName": "NatCash Account Name",
+        "natcashNumber": "NatCash Number",
+        "plan": "Plan",
+        "planPrice": "Plan Price",
+        "planDescription": "Plan Description",
+        "teamMembers": "Team Members",
+        "freeTickets": "Free Tickets",
+        "emailSupport": "Email Support",
+        "customTickets": "Custom Ticket Types",
+        "discountCodes": "Discount Codes",
+        "prioritySupport": "Priority Support",
+        "aiFeatures": "AI Features",
+        "earlyAccess": "Early Access",
+        "verifiedBadge": "Verified Badge",
+        "customBranding": "Custom Branding",
+        "apiAccess": "API Access",
+        "accountManager": "Account Manager"
+      },
+      "subscription": {
+        "free": "Free Plan",
+        "trial": "Trial"
+      }
+    },
     "title": "Payouts",
     "total": "Total Payouts",
     "pending": "Pending Payout Requests",
@@ -258,23 +374,25 @@
       "status": "All status"
     },
     "payout_request": {
-      "title": "Payout request",
+      "title": "Payout requests",
       "table": {
         "withdrawal_id": "Withdrawal ID",
         "bank_name": "Bank Name",
         "account_number": "Account number",
         "amount": "Amount",
+        "date": "Date",
         "request_status": {
           "title": "Request Status",
           "approved": "Approved",
-          "pending": "Pending"
+          "pending": "Pending",
+          "failed": "Failed"
         }
       },
       "no_request": "You'll see new payout requests from organizers here when they request to withdraw their earnings."
     },
     "payout_history": {
       "title": "Payout history",
-       "table": {
+      "table": {
         "withdrawal_id": "Withdrawal ID",
         "bank_name": "Bank Name",
         "account_number": "Account number",
@@ -287,9 +405,30 @@
       "no_history": "Once payouts are processed, a record will appear here for tracking and reporting."
     },
     "view_all": "View all",
+    "dialogs": {
+      "cancel": "Cancel",
+      "paid": {
+        "title": "Mark as Paid",
+        "description": "You are about to confirm that this payout has been successfully processed and sent to the organizer.",
+        "irreversible": "This action is irreversible. Once confirmed, it cannot be undone. Please verify before proceeding.",
+        "confirm": "Yes, mark as paid"
+      },
+      "failed": {
+        "title": "Mark as Failed",
+        "description": "You are about to mark this payout request as failed. A reason is required.",
+        "reason_label": "Reason for failure",
+        "reason_placeholder": "Describe why this payout failed...",
+        "irreversible": "This action is irreversible. Once marked as failed, it cannot be undone.",
+        "confirm": "Yes, mark as failed"
+      }
+    },
     "request_details": {
       "title": "Request Details",
+      "account_type": "Account Type",
+      "account_name": "Account Name",
+      "currency": "Currency",
       "amount": "Amount",
+      "usd_amount": "Amount (USD)",
       "request_date": "Request Date",
       "requested_by": "Requested By",
       "request_status": "Request Status",
@@ -308,6 +447,55 @@
       "bank_name": "Bank Name",
       "account": "Account Number",
       "processed_date": "Processed Date",
+      "close": "Close"
+    }
+  },
+
+   "Payments": {
+    "title": "Payments",
+    "total_revenue": "Total Revenue",
+    "total_transactions": "Total Transactions",
+    "fees": "Platform Fees Earned",
+
+    "filters": {
+      "period": {
+        "actual": "This month"
+      },
+      "status": "All status"
+    },
+
+    "transactions": {
+      "title": "Transactions",
+      "table": {
+        "transaction_id": "Transaction id",
+        "activity_name": "Activity Name",
+        "ticket_class": "Ticket class",
+        "amount_paid": "Amount paid",
+        "transaction_status": {
+          "title": "Transaction Status",
+          "succesful": "Succesful"
+        }
+      },
+      "no_history": "Once you start receiving payments, you’ll see them all here."
+    },
+    "transaction_details": {
+      "title": "Transaction Details",
+      "attendee": "Attendee Name",
+      "email": "Email",
+      "activity":"Activity Name",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "class": "Ticket Class",
+      "price": "Price",
+      "ticket_id": "Ticket ID",
+      "total": "Total",
+      "transaction_id": "Transaction ID",
+      "payment_method": "Payment Method",
+      "payment_date": "Payment Date",
+      "transaction_status": "Transaction Status",
+      "check_status": "Checked-In Status",
+      "check_time": "Check-In Time",
       "close": "Close"
     }
   },

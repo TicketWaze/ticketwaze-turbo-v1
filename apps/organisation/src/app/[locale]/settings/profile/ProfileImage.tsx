@@ -97,7 +97,9 @@ function ProfileImage({ authorized }: { authorized: boolean }) {
 
   return (
     <div
-      className={"p-12 bg-primary-500 rounded-[30px] flex items-center gap-10"}
+      className={
+        "p-12 bg-primary-500 rounded-[30px] flex flex-col lg:flex-row items-center justify-center gap-10"
+      }
     >
       <Dialog>
         <DialogTrigger className="sr-only">
@@ -164,15 +166,15 @@ function ProfileImage({ authorized }: { authorized: boolean }) {
             <UserCirlceAdd size={120} color={"#E45B00"} variant={"Bulk"} />
           </div>
           <div className={"p-4 lg:hidden rounded-[15px] bg-primary-50"}>
-            <UserCirlceAdd size={35} color={"#E45B00"} variant={"Bulk"} />
+            <UserCirlceAdd size={50} color={"#E45B00"} variant={"Bulk"} />
           </div>
         </>
       )}
-      <div className={"flex flex-1 flex-col gap-8] lg:gap-[2.8rem]"}>
+      <div className={"flex flex-1 flex-col gap-8 lg:gap-[2.8rem]"}>
         {organisation?.organisationName ? (
           <span
             className={
-              "font-primary font-medium lg:font-bold text-[2.6rem] lg:text-[4.5rem] leading-12 lg:leading-20 text-white"
+              "font-primary font-medium text-center lg:font-bold text-[2.6rem] lg:text-[4.5rem] leading-12 lg:leading-20 text-white"
             }
           >
             {organisation?.organisationName}
@@ -184,7 +186,7 @@ function ProfileImage({ authorized }: { authorized: boolean }) {
           <form
             encType={"multipart/form-data"}
             className={
-              "px-6 lg:px-12 py-4 relative rounded-[100px] flex items-center justify-center gap-2 bg-black"
+              "px-6 lg:px-12 py-6 relative rounded-[100px] flex items-center justify-center gap-2 bg-black"
             }
           >
             {isUploading ? (

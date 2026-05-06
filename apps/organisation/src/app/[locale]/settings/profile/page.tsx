@@ -36,11 +36,7 @@ export default async function ProfilePage() {
     <OrganizerLayout title={t("title")}>
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
-        <TopBar title={t("title")}>
-          {authorized && (
-            <ButtonPrimary form="profile-form">{t("save")}</ButtonPrimary>
-          )}
-        </TopBar>
+        <TopBar title={t("title")} />
       </div>
       <div
         className={

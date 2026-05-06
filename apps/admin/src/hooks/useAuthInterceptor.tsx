@@ -11,18 +11,22 @@ export function useAuthInterceptor() {
     window.fetch = async (...args) => {
       const response = await originalFetch(...args);
 
-      // Check for 401
       if (response.status === 401) {
-        // Clone response before consuming it
-        const clonedResponse = response.clone();
+        // Skip NextAuth's own API routes to avoid sign-out loops
+        const url =
+          typeof args[0] === "string"
+            ? args[0]
+            : args[0] instanceof Request
+              ? args[0].url
+              : "";
+        if (url.includes("/api/auth/")) return response;
 
-        // Sign out and redirect
         await signOut({
           redirect: true,
-          redirectTo: `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/login`,
+          redirectTo: `${process.env.NEXT_PUBLIC_ADMIN_URL}/auth/login`,
         });
 
-        return clonedResponse;
+        return response.clone();
       }
 
       return response;

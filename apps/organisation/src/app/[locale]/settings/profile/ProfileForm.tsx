@@ -1,6 +1,7 @@
 "use client";
 import { UpdateOrganisationProfile } from "@/actions/organisationActions";
 import PageLoader from "@/components/PageLoader";
+import { ButtonPrimary } from "@/components/shared/buttons";
 import { Input } from "@/components/shared/Inputs";
 import Capitalize from "@/lib/Capitalize";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +32,7 @@ export default function ProfileForm({ authorized }: { authorized: boolean }) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<TUpdateProfileSchema>({
     resolver: zodResolver(UpdateProfileSchema),
     values: {
@@ -164,6 +165,11 @@ export default function ProfileForm({ authorized }: { authorized: boolean }) {
             {errors.website && <InputError message={errors.website} />}
           </div> */}
       <div></div>
+      {authorized && (
+        <ButtonPrimary disabled={isSubmitting || !isDirty} type="submit">
+          {t("save")}
+        </ButtonPrimary>
+      )}
     </form>
   );
 }

@@ -365,6 +365,7 @@
     "moncash_details_hint": "Saisissez le numéro MonCash pour recevoir vos fonds",
     "moncash_account_name": "Nom du titulaire du compte",
     "moncash_number": "Numéro de téléphone MonCash",
+    "moncash_number_hint": "Doit comporter exactement 8 chiffres (ex. 47123456)",
     "saveMoncashInfo": "Mémoriser mon numéro MonCash",
     "saveMoncashInfo_hint": "Conserver ce numéro pour votre prochain retrait",
     "amount": "Montant du retrait",
@@ -390,7 +391,8 @@
       "bank_account_name": "Le nom du titulaire du compte est requis",
       "bank_account_number": "Le numéro de compte est requis",
       "moncash_account_name": "Le nom du titulaire du compte est requis",
-      "moncash_number": "Le numéro de téléphone MonCash est requis"
+      "moncash_number": "Le numéro de téléphone MonCash est requis",
+      "moncash_number_invalid": "Le numéro MonCash doit comporter exactement 8 chiffres"
     },
     "withdrawSuccess": "Votre demande de retrait a été soumise avec succès et est en cours de traitement.",
     "breakdown": "Répartition",
@@ -453,12 +455,14 @@
     "withdrawal": {
       "title": "Historique des retraits",
       "description": "Votre historique de retraits apparaîtra ici une fois que vous aurez fait une demande de retrait.",
+      "more": "Voir tout",
       "table": {
         "id": "ID de retrait",
         "name": "Nom de la banque",
+        "accountName": "Nom du compte",
         "account": "Numéro de compte",
         "amount": "Montant",
-        "status": "Statut de la transaction",
+        "status": "Statut",
         "date": "Date"
       }
     }

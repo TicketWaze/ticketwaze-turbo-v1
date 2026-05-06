@@ -82,22 +82,22 @@ export default function TransactionsPageContent({
         <Table id="transactions-table">
           <TableHeader>
             <TableRow>
-              <TableHead className="font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("transactions.table.id")}
               </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("transactions.table.provider")}
               </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("transactions.table.class")}
               </TableHead>
-              <TableHead className="font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("transactions.table.amount")}
               </TableHead>
-              <TableHead className="font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("transactions.table.status")}
               </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("transactions.table.date")}
               </TableHead>
             </TableRow>

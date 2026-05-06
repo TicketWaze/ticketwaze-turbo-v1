@@ -263,6 +263,7 @@ export interface User {
   organisations: Organisation[];
   userPreference: UserPreference;
   isOnboarded: boolean;
+  role: number;
 }
 
 export interface Currency {
@@ -299,8 +300,10 @@ export interface WithdrawalRequest {
   amount: number;
   usdAmount: number;
   status: "PENDING" | "SUCCESSFUL" | "FAILED";
+  reason: string | null;
   createdAt: DateTime;
   updatedAt: DateTime;
+  organisation: Organisation;
 }
 
 export interface OrganisationSubscription {
@@ -358,4 +361,18 @@ export interface UserOrdersRequest {
     previousPageUrl: string | null;
   };
   data: Order[];
+}
+export interface OrganisationWithdrawalRequest {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string | null;
+    lastPageUrl: string | null;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: WithdrawalRequest[];
 }

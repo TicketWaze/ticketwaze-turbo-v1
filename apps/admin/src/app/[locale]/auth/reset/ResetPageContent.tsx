@@ -1,14 +1,11 @@
 "use client";
 import { useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
 import { motion } from "framer-motion";
-import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -20,10 +17,6 @@ export default function ResetPageContent() {
     email: z.string().min(1, { error: t("errors.email") }),
   });
   type TResetSchema = z.infer<typeof ResetSchema>;
-  const searchParams = useSearchParams();
-  const error = searchParams.get("error");
-  const errorMessage = error ? decodeURIComponent(error) : null;
-  if (errorMessage) toast.error("AccesDenied"); //en fr file toast error
 
   const {
     register,
@@ -32,13 +25,28 @@ export default function ResetPageContent() {
   } = useForm<TResetSchema>({
     resolver: zodResolver(ResetSchema),
   });
-  const [isLoading, setIsloading] = useState(false);
   const router = useRouter();
   const locale = useLocale();
 
   async function submitHandler(data: TResetSchema) {
-    toast.success("success");
-    window.location.href = `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/auth/reset/[email]`;
+   const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          Origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify(data),
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      router.push(`/auth/reset/${encodeURIComponent(data.email)}`);
+    } else {
+      toast.error(t("errors.notFound"));
+    }
   }
   return (
     <form
@@ -89,10 +97,10 @@ export default function ResetPageContent() {
           >
             <ButtonPrimary
               type="submit"
-              disabled={isLoading}
+              disabled={isSubmitting}
               className="w-full"
             >
-              {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
+              {isSubmitting ? <LoadingCircleSmall /> : t("cta.submit")}
             </ButtonPrimary>
           </motion.div>
         </div>
@@ -105,10 +113,10 @@ export default function ResetPageContent() {
         >
           <ButtonPrimary
             type="submit"
-            disabled={isLoading}
+            disabled={isSubmitting}
             className="w-full lg:hidden"
           >
-            {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
+            {isSubmitting ? <LoadingCircleSmall /> : t("cta.submit")}
           </ButtonPrimary>
         </motion.div>
         <motion.div

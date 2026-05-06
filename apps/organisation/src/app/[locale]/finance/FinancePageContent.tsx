@@ -16,7 +16,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Money3, SearchNormal } from "iconsax-reactjs";
+import { ArrowRight2, Money3, SearchNormal } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import FormatDate from "@/lib/FormatDate";
@@ -31,6 +31,8 @@ import { ButtonAccent } from "@/components/shared/buttons";
 import InitiateWithdrawalButton from "./InitiateWithdrawalButton";
 import TruncateUrl from "@/lib/TruncateUrl";
 import formatTime from "@/lib/formatTime";
+import { Link } from "@/i18n/navigation";
+import WithdrawalInformations from "./components/WithdrawalInformations";
 
 interface OrganisationTicket extends Ticket {
   event: Event;
@@ -353,21 +355,6 @@ export default function FinancePageContent({
           >
             {t("withdrawal.title")}
           </span>
-          {/* <div className={"flex items-center gap-4"}>
-            <div
-              className={
-                "bg-neutral-100 rounded-[30px] flex items-center gap-2 w-full lg:w-auto lg:min-w-[243px] px-[1.5rem] py-4"
-              }
-            >
-              <input
-                placeholder={t("search")}
-                className={
-                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
-                }
-              />
-              <SearchNormal size="20" color="#737c8a" variant="Bulk" />
-            </div>
-          </div> */}
         </div>
         <Table>
           <TableHeader>
@@ -417,7 +404,7 @@ export default function FinancePageContent({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {transactions.withdrawalRequests.map((request) => {
+            {transactions.withdrawalRequests.slice(0, 5).map((request) => {
               return (
                 <TableRow key={request.withdrawalRequestId}>
                   <TableCell
@@ -431,7 +418,19 @@ export default function FinancePageContent({
                           {TruncateUrl(request.withdrawalRequestId, 14)}
                         </span>
                       </DrawerTrigger>
-                      {/* <Informations ticket={ticket} order={order as Order} /> */}
+                      <WithdrawalInformations request={request} />
+                    </Drawer>
+                  </TableCell>
+                  <TableCell
+                    className={"text-[1.5rem] leading-8 text-neutral-900 py-6"}
+                  >
+                    <Drawer direction={"right"}>
+                      <DrawerTrigger>
+                        <span className={"cursor-pointer"}>
+                          {TruncateUrl(request.bankName ?? "", 14)}
+                        </span>
+                      </DrawerTrigger>
+                      <WithdrawalInformations request={request} />
                     </Drawer>
                   </TableCell>
                   <TableCell
@@ -440,55 +439,69 @@ export default function FinancePageContent({
                     <Drawer direction={"right"}>
                       <DrawerTrigger>
                         <span className={"cursor-pointer"}>
-                          {TruncateUrl(request.bankName ?? "", 14)}
+                          {TruncateUrl(request.accountNumber ?? "", 14)}
                         </span>
                       </DrawerTrigger>
-                      {/* <Informations ticket={ticket} order={order as Order} /> */}
+                      <WithdrawalInformations request={request} />
                     </Drawer>
-                  </TableCell>
-                  <TableCell
-                    className={"text-[1.5rem] leading-8 text-neutral-900"}
-                  >
-                    <span className={"cursor-pointer"}>
-                      {TruncateUrl(request.accountNumber ?? "", 14)}
-                    </span>
                   </TableCell>
                   <TableCell
                     className={
                       "text-[1.5rem] hidden lg:table-cell font-medium leading-8 text-neutral-900"
                     }
                   >
-                    {currentOrganisation?.currency === "USD"
-                      ? request.usdAmount
-                      : request.amount}{" "}
-                    {currentOrganisation?.currency}
+                    <Drawer direction={"right"}>
+                      <DrawerTrigger>
+                        <span className={"cursor-pointer"}>
+                          {currentOrganisation?.currency === "USD"
+                            ? request.usdAmount
+                            : request.amount}{" "}
+                          {currentOrganisation?.currency}
+                        </span>
+                      </DrawerTrigger>
+                      <WithdrawalInformations request={request} />
+                    </Drawer>
                   </TableCell>
                   <TableCell>
-                    {request.status.toUpperCase() === "SUCCESSFUL" && (
-                      <span
-                        className={
-                          "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-4 rounded-[30px] bg-[#349C2E]/20"
-                        }
-                      >
-                        {t("filters.successful")}
-                      </span>
-                    )}
-                    {request.status.toUpperCase() === "PENDING" && (
-                      <span
-                        className={
-                          "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-4 rounded-[30px] bg-[#EA961C]/20"
-                        }
-                      >
-                        {t("filters.pending")}
-                      </span>
-                    )}
+                    <Drawer direction={"right"}>
+                      <DrawerTrigger>
+                        <span className={"cursor-pointer"}>
+                          {request.status.toUpperCase() === "SUCCESSFUL" && (
+                            <span
+                              className={
+                                "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-4 rounded-[30px] bg-[#349C2E]/20"
+                              }
+                            >
+                              {t("filters.successful")}
+                            </span>
+                          )}
+                          {request.status.toUpperCase() === "PENDING" && (
+                            <span
+                              className={
+                                "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-4 rounded-[30px] bg-[#EA961C]/20"
+                              }
+                            >
+                              {t("filters.pending")}
+                            </span>
+                          )}
+                        </span>
+                      </DrawerTrigger>
+                      <WithdrawalInformations request={request} />
+                    </Drawer>
                   </TableCell>
                   <TableCell
                     className={
                       "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
                     }
                   >
-                    {FormatDate(request.createdAt, locale, "local")}
+                    <Drawer direction={"right"}>
+                      <DrawerTrigger>
+                        <span className={"cursor-pointer"}>
+                          {FormatDate(request.createdAt, locale, "local")}
+                        </span>
+                      </DrawerTrigger>
+                      <WithdrawalInformations request={request} />
+                    </Drawer>
                   </TableCell>
                 </TableRow>
               );
@@ -525,15 +538,17 @@ export default function FinancePageContent({
             </div>
           </div>
         )}
-        {/*<Link*/}
-        {/*  href={'#'}*/}
-        {/*  className={*/}
-        {/*    'text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-8'*/}
-        {/*  }*/}
-        {/*>*/}
-        {/*  {finance.transactions.more}*/}
-        {/*  <ArrowRight2 size="20" color="#E45B00" variant="Bulk" />*/}
-        {/*</Link>*/}
+        {transactions.withdrawalRequests.length > 5 && (
+          <Link
+            href={"/finance/withdrawal"}
+            className={
+              "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-8"
+            }
+          >
+            {t("withdrawal.more")}
+            <ArrowRight2 size="20" color="#E45B00" variant="Bulk" />
+          </Link>
+        )}
         <div></div>
       </div>
     </div>

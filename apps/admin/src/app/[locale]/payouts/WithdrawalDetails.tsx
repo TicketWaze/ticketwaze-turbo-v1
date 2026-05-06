@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/drawer";
 import { useTranslations } from "next-intl";
 import Separator from "@/components/shared/Separator";
-import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
+import { ButtonAccent } from "@/components/shared/buttons";
 
 export default function WithdrawalDetails({}) {
   const t = useTranslations("Payouts.withdrawal_details");
