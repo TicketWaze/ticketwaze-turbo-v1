@@ -2,7 +2,7 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import Image from "next/image";
-import Ticket from "@ticketWaze/ui/assets/icons/ticket-2.svg"
+import Ticket from "@ticketwaze/ui/assets/icons/ticket-2.svg"
 import {
   Select,
   SelectTrigger,
