@@ -403,5 +403,54 @@
       "close": "Fermer"
     }
   },
+
+ "Tickets": {
+    "title": "Aperçu des billets",
+    "total_sold": "Total des billets vendus",
+    "total_created": "Total des billets créés",
+    "checked-in": "Billets enregistrés",
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "status": "Tous les statuts",
+      "time": "Toute la période",
+      "ticket_class": "Tous les classes"
+    },
+    "tickets_list": {
+      "title": "Liste des billets",
+      "table": {
+        "transaction_id": "ID du billet",
+        "attendee": "Participant",
+        "activity_name": "Nom de l'activité",
+        "ticket_class": "Classe de billet",
+        "check-in": "Statut d'enregistrement",
+        "purchase": "Date d'achat"
+      },
+      "no_history": "Vous verrez ici tous les billets des participants une fois que les événements commenceront à être vendus."
+    },
+    "ticket_details": {
+      "title": "Détails du billet",
+      "attendee": "Nom du participant",
+      "email": "Email",
+      "activity": "Nom de l'activité",
+      "date": "Date",
+      "time": "Heure",
+      "location": "Lieu",
+      "class": "Classe de billet",
+      "price": "Prix",
+      "ticket_id": "ID du billet",
+      "total": "Total",
+      "transaction_id": "ID de transaction",
+      "payment_method": "Méthode de paiement",
+      "payment_date": "Date de paiement",
+      "transaction_status": "Statut de la transaction",
+      "check_status": "Statut d'enregistrement",
+      "check_time": "Heure d'enregistrement",
+      "close": "Fermer",
+      "resend": "Renvoyer le billet"
+    }
+  },
+
   "attendees": {}
 }

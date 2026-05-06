@@ -1,5 +1,5 @@
-import AdminLayout from "@/components/Layouts/AdminLayout";
+import TicketPageContent from "./TicketPageContent";
 
 export default function TicketPage() {
-  return <AdminLayout>TicketPage</AdminLayout>;
+  return <TicketPageContent/>;
 }
