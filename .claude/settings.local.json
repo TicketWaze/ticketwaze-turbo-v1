@@ -10,7 +10,9 @@
       "Bash(node_modules/.bin/tsc --noEmit)",
       "Bash(pnpm --filter organisation exec tsc --noEmit)",
       "Bash(yarn workspace *)",
-      "Bash(python -c \"import json; data=json.load\\(open\\('apps/admin/messages/en.json'\\)\\); print\\(json.dumps\\(data.get\\('Auth', {}\\), indent=2\\)\\)\")"
+      "Bash(python -c \"import json; data=json.load\\(open\\('apps/admin/messages/en.json'\\)\\); print\\(json.dumps\\(data.get\\('Auth', {}\\), indent=2\\)\\)\")",
+      "Bash(Get-ChildItem -Recurse -Name)",
+      "Bash(Select-Object -First 100)"
     ]
   }
 }

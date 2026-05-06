@@ -292,6 +292,15 @@
   },
 
   "Payouts": {
+    "back"  : "Back",
+    "cancel" : "Mark as Failed",
+    "paid" : "Mark as Paid",
+    "activity" :{
+      "title" : "Activity performances"
+    },
+    "stats" : {
+      "title" : "Organisation stats"
+    },
     "title": "Payouts",
     "total": "Total Payouts",
     "pending": "Pending Payout Requests",

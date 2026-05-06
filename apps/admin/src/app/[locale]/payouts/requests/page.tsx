@@ -12,7 +12,7 @@ export default async function PayoutRequestsPage({
   const { status, page } = await searchParams;
   const activeStatus = status ?? "PENDING";
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/admin/payouts/request?status=${activeStatus}&page=${page}&limit=10`,
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/payouts/requests?status=${activeStatus}&page=${page}&limit=10`,
     {
       method: "GET",
       cache: "no-store",
