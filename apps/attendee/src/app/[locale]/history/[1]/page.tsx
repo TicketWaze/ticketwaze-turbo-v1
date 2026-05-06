@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 // import { auth } from "@/lib/auth";
@@ -69,7 +70,7 @@ export default function HistoryEventPage() {
     },
   ];
 
-  const mockEvent: Event = {
+  const mockEvent: any = {
     eventId: "EVT-001",
     organisationId: "ORG-001",
     eventName: "Afrobeats Summer Tour",
