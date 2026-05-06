@@ -500,5 +500,53 @@
     }
   },
 
+  "Tickets": {
+    "title": "Tickets Overview",
+    "total_sold": "Total Tickets Sold",
+    "total_created": "Total Created Tickets",
+    "checked-in": "Checked-In Tickets",
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "status": "All status",
+      "time": "All time",
+      "ticket_class": "All classes"
+    },
+    "tickets_list": {
+      "title": "Tickets list",
+      "table": {
+        "transaction_id": "Ticket id",
+        "attendee": "Attendee",
+        "activity_name": "Activity name",
+        "ticket_class": "Ticket class",
+        "check-in": "Check-in status",
+        "purchase": "Date Purchased"
+      },
+      "no_history": "You’ll see all attendee ticket records here once events begin selling."
+    },
+    "ticket_details": {
+      "title": "Ticket Details",
+      "attendee": "Attendee Name",
+      "email": "Email",
+      "activity":"Activity Name",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "class": "Ticket Class",
+      "price": "Price",
+      "ticket_id": "Ticket ID",
+      "total": "Total",
+      "transaction_id": "Transaction ID",
+      "payment_method": "Payment Method",
+      "payment_date": "Payment Date",
+      "transaction_status": "Transaction Status",
+      "check_status": "Checked-In Status",
+      "check_time": "Check-In Time",
+      "close": "Close",
+      "resend": "Resend ticket"
+    }
+  },
+
   "attendees": {}
 }
