@@ -73,10 +73,13 @@ export default function EventPageDetails({
     <div className={"flex flex-col gap-12 overflow-y-scroll"}>
       <TopBar title={event.eventName}>
         <div className="hidden lg:flex items-center gap-4">
-          {daysLeft !== null && daysLeft > 0 && <ShareEvent event={event} />}
-          {event.eventCategory !== "meet" && (
-            <CheckingDialog event={event} user={user} />
-          )}
+          {daysLeft !== null &&
+            daysLeft > 0 &&
+            event.adminStatus === "approved" && <ShareEvent event={event} />}
+          {event.adminStatus === "approved" &&
+            event.eventCategory !== "meet" && (
+              <CheckingDialog event={event} user={user} />
+            )}
           <MoreComponent
             daysLeft={daysLeft}
             event={event}
@@ -159,7 +162,13 @@ export default function EventPageDetails({
         </li>
       </ul>
       <div className="flex lg:hidden items-center w-full gap-8 justify-between">
-        {daysLeft !== null && daysLeft > 0 && <ShareEvent event={event} />}
+        {daysLeft !== null &&
+        daysLeft > 0 &&
+        event.adminStatus === "approved" ? (
+          <ShareEvent event={event} />
+        ) : (
+          <div></div>
+        )}
         <MoreComponent
           daysLeft={daysLeft}
           event={event}
@@ -168,7 +177,7 @@ export default function EventPageDetails({
           membershipTier={membershipTier}
         />
       </div>
-      {event.eventCategory !== "meet" && (
+      {event.eventCategory !== "meet" && event.adminStatus === "approved" && (
         <div className="flex lg:hidden items-center w-full  gap-4 justify-between">
           <CheckingDialog event={event} user={user} />
         </div>

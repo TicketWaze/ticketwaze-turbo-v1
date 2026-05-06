@@ -166,7 +166,7 @@
         "upcoming": "À venir",
         "active": "Actives"
       },
-      "no activities": "Une fois que les organisateurs publient des activités, ils apparaîtront ici pour révision et suivi."
+      "noActivities": "Une fois que les organisateurs publient des activités, ils apparaîtront ici pour révision et suivi."
     },
     "activity": {
       "back": "Retour",
@@ -495,7 +495,7 @@
     }
   },
 
- "Tickets": {
+  "Tickets": {
     "title": "Aperçu des billets",
     "total_sold": "Total des billets vendus",
     "total_created": "Total des billets créés",

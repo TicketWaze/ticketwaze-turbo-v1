@@ -234,6 +234,8 @@ export interface Event {
   discountCodes: DiscountCode[];
   eventPerformers: EventPerformer[];
   eventAttendees: EventAttendee[];
+  tickets: Ticket[];
+  organisation: Organisation;
   createdAt: string;
   updatedAt: string;
 }
@@ -375,4 +377,19 @@ export interface OrganisationWithdrawalRequest {
     previousPageUrl: string | null;
   };
   data: WithdrawalRequest[];
+}
+
+export interface AdminEventsRequest {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string | null;
+    lastPageUrl: string | null;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: Event[];
 }

@@ -204,7 +204,7 @@
         "upcoming": "Upcoming",
         "active": "Active"
       },
-      "no activities": "Once activities are published by organizers, they will appear here for review and tracking."
+      "noActivities": "Once activities are published by organizers, they will appear here for review and tracking."
     },
     "activity": {
       "back": "Back",
@@ -292,9 +292,9 @@
   },
 
   "Payouts": {
-    "back"  : "Back",
-    "cancel" : "Mark as Failed",
-    "paid" : "Mark as Paid",
+    "back": "Back",
+    "cancel": "Mark as Failed",
+    "paid": "Mark as Paid",
     "activity": {
       "title": "Activity performances",
       "empty": "No activities found for this organisation.",
@@ -451,7 +451,7 @@
     }
   },
 
-   "Payments": {
+  "Payments": {
     "title": "Payments",
     "total_revenue": "Total Revenue",
     "total_transactions": "Total Transactions",
@@ -482,7 +482,7 @@
       "title": "Transaction Details",
       "attendee": "Attendee Name",
       "email": "Email",
-      "activity":"Activity Name",
+      "activity": "Activity Name",
       "date": "Date",
       "time": "Time",
       "location": "Location",
@@ -529,7 +529,7 @@
       "title": "Ticket Details",
       "attendee": "Attendee Name",
       "email": "Email",
-      "activity":"Activity Name",
+      "activity": "Activity Name",
       "date": "Date",
       "time": "Time",
       "location": "Location",
