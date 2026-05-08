@@ -114,7 +114,7 @@ export default function ActivitiesPageContent({
         </h4>
         <div className="flex gap-4">
           <Select
-            defaultValue="review"
+            defaultValue="requested"
             onValueChange={(e) => handleStatusChange(e)}
           >
             <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
@@ -122,12 +122,12 @@ export default function ActivitiesPageContent({
             </SelectTrigger>
             <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
               <SelectGroup>
-                {/* <SelectItem
+                <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value="all"
+                  value="requested"
                 >
-                  {t("filters.list.status")}
-                </SelectItem> */}
+                  Requested
+                </SelectItem>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
                   value="review"
@@ -280,6 +280,15 @@ export default function ActivitiesPageContent({
                   </span>
                 </TableCell>
                 <TableCell className="py-6">
+                  {event.adminStatus === "requested" && (
+                    <span
+                      className={
+                        "py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-black  px-2 rounded-[30px] bg-[#f5f5f5]"
+                      }
+                    >
+                      requested
+                    </span>
+                  )}
                   {event.adminStatus === "approved" && (
                     <span
                       className={

@@ -5,7 +5,7 @@ import { ButtonPrimary, ButtonSecondary } from "@/components/shared/buttons";
 import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Separator from "@/components/shared/Separator";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -152,6 +152,7 @@ export default function OnboardingOrganisationPageComponent() {
         toast.info("You already own an organisation");
       }
       const response = await request.json();
+      console.log(request);
       if (response.status === "success") {
         router.push(`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/login`);
       } else {
@@ -172,7 +173,7 @@ export default function OnboardingOrganisationPageComponent() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="w-full flex flex-col items-center justify-between gap-12 py-12">
+    <div className="w-full flex flex-col items-center h-full  justify-between gap-12 py-12">
       <div className="flex flex-col gap-4 w-full">
         <motion.h3
           initial={{ opacity: 0, y: 30 }}
@@ -370,21 +371,41 @@ export default function OnboardingOrganisationPageComponent() {
             >
               {t("last.2")}
             </motion.p>
-            <motion.p
+            {/* <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
             >
               {t("last.3")}
-            </motion.p>
+            </motion.p> */}
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
               className="font-primary text-center font-medium text-[1.5rem] leading-10 text-deep-100"
             >
-              {t("last.4")}
+              {t("last.4.1")}{" "}
+              <Link
+                className="text-primary-500"
+                href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/legals`}
+              >
+                {t("last.4.2")}
+              </Link>
+              {t("last.4.3")}
+              <Link
+                className="text-primary-500"
+                href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`}
+              >
+                {t("last.4.4")}
+              </Link>
+              {t("last.4.5")}
+              <Link
+                className="text-primary-500"
+                href={"mailto:support@ticketwaze.com"}
+              >
+                {t("last.4.6")}
+              </Link>
             </motion.p>
           </motion.div>
         )}

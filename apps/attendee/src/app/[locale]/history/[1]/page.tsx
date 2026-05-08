@@ -33,7 +33,7 @@ export default function HistoryEventPage() {
   const isLoading = false;
   const organisationId = 1;
 
-  const mockTickets: Ticket[] = [
+  const mockTickets: any[] = [
     {
       ticketId: "TKT-2026-XYZ001",
       ticketName: "VIP PASS - FRONT ROW",
