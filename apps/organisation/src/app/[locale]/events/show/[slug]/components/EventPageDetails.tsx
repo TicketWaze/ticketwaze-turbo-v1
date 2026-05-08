@@ -197,7 +197,7 @@ export default function EventPageDetails({
           className={"flex flex-col lg:flex-row gap-6 w-full justify-between"}
         >
           <TabsList
-            className={`w-full order-2 lg:order-1  lg:max-w-[318px] lg:w-auto mx-auto lg:mx-0 ${sortedTicketClasses.length === 1 && "hidden"}`}
+            className={`w-full order-2 lg:order-1  lg:max-w-[31.8rem] lg:w-auto mx-auto lg:mx-0 ${sortedTicketClasses.length === 1 && "hidden"}`}
           >
             <TabsTrigger value="all">All</TabsTrigger>
             {sortedTicketClasses.length > 1 &&
@@ -215,7 +215,7 @@ export default function EventPageDetails({
           {tickets.length > 0 && (
             <div
               className={
-                "bg-neutral-100 order-1 lg:order-2 w-full rounded-[30px] flex items-center justify-between lg:w-[243px] px-[1.5rem] py-4"
+                "bg-neutral-100 order-1 lg:order-2 w-full rounded-[30px] flex items-center justify-between lg:w-[24.3rem] px-6 py-4"
               }
             >
               <input
@@ -235,42 +235,42 @@ export default function EventPageDetails({
               <TableRow>
                 <TableHead
                   className={
-                    "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                    "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                   }
                 >
                   {t("table.id")}
                 </TableHead>
                 <TableHead
                   className={
-                    "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                    "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                   }
                 >
                   {t("table.name")}
                 </TableHead>
                 <TableHead
                   className={
-                    "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                   }
                 >
                   {t("table.ticket_class")}
                 </TableHead>
                 <TableHead
                   className={
-                    "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                   }
                 >
                   {t("table.amount")}
                 </TableHead>
                 <TableHead
                   className={
-                    "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                   }
                 >
                   {t("table.check")}
                 </TableHead>
                 <TableHead
                   className={
-                    "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                   }
                 >
                   {t("table.date_purchased")}
@@ -321,7 +321,7 @@ export default function EventPageDetails({
                       {ticket.ticketType === "general" && (
                         <span
                           className={
-                            "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                            "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
                           }
                         >
                           general
@@ -330,7 +330,7 @@ export default function EventPageDetails({
                       {ticket.ticketType === "vip" && (
                         <span
                           className={
-                            "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                            "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
                           }
                         >
                           vip
@@ -339,7 +339,7 @@ export default function EventPageDetails({
                       {ticket.ticketType === "vvip" && (
                         <span
                           className={
-                            "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-deep-100  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                            "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-deep-100  px-[5px] rounded-[30px] bg-[#f5f5f5]"
                           }
                         >
                           Premium vip
@@ -360,7 +360,7 @@ export default function EventPageDetails({
                       {ticket.status === "CHECKED" && (
                         <span
                           className={
-                            "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                            "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
                           }
                         >
                           {t("filters.checked")}
@@ -369,7 +369,7 @@ export default function EventPageDetails({
                       {ticket.status === "PENDING" && (
                         <span
                           className={
-                            "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                            "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
                           }
                         >
                           {t("filters.pending")}
@@ -456,7 +456,7 @@ export default function EventPageDetails({
           {tickets.length === 0 && (
             <div
               className={
-                "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center mt-8 gap-[5rem]"
+                "w-132 lg:w-184 mx-auto flex flex-col items-center mt-8 gap-20"
               }
             >
               <div
@@ -497,49 +497,49 @@ export default function EventPageDetails({
                   <TableRow>
                     <TableHead
                       className={
-                        "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                        "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                       }
                     >
                       {t("table.id")}
                     </TableHead>
                     <TableHead
                       className={
-                        "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                        "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                       }
                     >
                       {t("table.name")}
                     </TableHead>
                     <TableHead
                       className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                       }
                     >
                       {t("table.ticket_class")}
                     </TableHead>
                     <TableHead
                       className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                       }
                     >
                       {t("table.amount")}
                     </TableHead>
                     <TableHead
                       className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                       }
                     >
                       {t("table.check")}
                     </TableHead>
                     <TableHead
                       className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                       }
                     >
                       {t("table.date_purchased")}
                     </TableHead>
                     {/* <TableHead
                       className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] w-[40px] leading-[15px] text-deep-100 uppercase"
+                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 w-[40px] leading-6 text-deep-100 uppercase"
                       }
                     >
                       {single_event.table.date_purchased}

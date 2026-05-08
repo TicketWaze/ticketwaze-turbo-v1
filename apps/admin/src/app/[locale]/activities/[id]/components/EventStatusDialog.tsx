@@ -130,7 +130,7 @@ export function EventStatusDialog({ event }: { event: Event }) {
                 <label
                   key={status}
                   htmlFor={status}
-                  className={`flex items-center gap-5 p-5 rounded-[1.5rem] border-2 cursor-pointer transition-colors ${
+                  className={`flex items-center gap-5 p-5 rounded-3xl border-2 cursor-pointer transition-colors ${
                     isSelected
                       ? "border-current"
                       : "border-neutral-200 hover:border-neutral-300"
