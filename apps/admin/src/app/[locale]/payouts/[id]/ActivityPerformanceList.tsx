@@ -67,7 +67,9 @@ export default function ActivityPerformanceList({
             (sum, tt) => sum + tt.ticketTypeQuantity,
             0,
           );
-          const scannedTickets = event.eventAttendees.length;
+          const scannedTickets = event.tickets.filter(
+            (ticket) => ticket.status === "CHECKED",
+          ).length;
 
           return (
             <TableRow key={event.eventId}>
