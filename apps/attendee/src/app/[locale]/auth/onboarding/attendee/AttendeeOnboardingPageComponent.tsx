@@ -174,7 +174,7 @@ export default function AttendeeOnboardingPageComponent() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="w-full flex flex-col items-center justify-between gap-12 py-12">
+    <div className="w-full flex flex-col items-center h-full justify-between gap-12 py-12">
       <div className="flex flex-col gap-4">
         {/* Title */}
         <motion.h3
@@ -427,7 +427,7 @@ export default function AttendeeOnboardingPageComponent() {
           <ButtonPrimary
             onClick={handleFinish}
             disabled={isSubmitting}
-            className="w-full order-1 lg:order-2"
+            className="w-full order-1 lg:order-2 mb-4"
           >
             {isSubmitting ? <LoadingCircleSmall /> : t("finish")}
           </ButtonPrimary>

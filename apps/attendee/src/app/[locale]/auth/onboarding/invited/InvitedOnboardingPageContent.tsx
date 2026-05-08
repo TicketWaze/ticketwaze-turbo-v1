@@ -174,7 +174,7 @@ export default function InvitedOnboardingPageContent() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="w-full flex flex-col items-center justify-between gap-12 py-12">
+    <div className="w-full flex flex-col items-center justify-between h-full gap-12 py-12">
       <div className="flex flex-col gap-4">
         {/* Title */}
         <motion.h3

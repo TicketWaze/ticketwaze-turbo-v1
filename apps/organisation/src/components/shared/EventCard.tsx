@@ -33,6 +33,14 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
           height={191}
           width={255}
         />
+        {event.adminStatus === "requested" && (
+          <div
+            key={event.eventType}
+            className="bg-neutral-900 block absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit"
+          >
+            {event.adminStatus.toUpperCase()}
+          </div>
+        )}
         {event.adminStatus === "review" && (
           <div
             key={event.eventType}

@@ -15,15 +15,24 @@ export default async function Page({
   const eventId = extractIdFromSlug(slug);
   const t = await getTranslations("Events.single_event");
   const locale = await getLocale();
+  const session = await auth();
   const eventRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/events/${eventId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.user.accessToken}`,
+        "Accept-Language": locale,
+        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+      },
+    },
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
-  const tickets = eventResponse.tickets;
-  const orders = eventResponse.orders;
+  const tickets = event.tickets;
+  const orders = event.orders;
   const eventPerformers: EventPerformer[] = event.eventPerformers;
-  const session = await auth();
 
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,

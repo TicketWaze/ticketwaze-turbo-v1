@@ -309,7 +309,14 @@
           "1": "Merci d’avoir complété la configuration. Le profil de votre organisation sera configuré selon vos services, la structure de votre équipe et vos préférences. Vous pouvez désormais créer des activités, gérer des réservations et inviter des membres à collaborer.",
           "2": "Important : Nous allons maintenant vous rediriger vers le tableau de bord de l’organisation. Pour des raisons de sécurité, vous devrez vous reconnecter avec vos identifiants fraîchement créés avant d’accéder à votre tableau de bord.",
           "3": "Veuillez noter : Ticketwaze ne partage pas les données ni les informations de vente de votre organisation avec des tiers sans votre consentement explicite. Les paiements seront traités selon vos besoins, sous réserve de vérification et des délais de traitement applicables. Vous pouvez consulter ou mettre à jour les paramètres de votre organisation et les rôles de votre équipe à tout moment depuis votre tableau de bord.",
-          "4": "En continuant, vous confirmez avoir lu et accepté nos Conditions d’utilisation, notre Contrat vendeur et notre Politique de confidentialité. Ces documents définissent vos responsabilités en tant qu’organisateur, y compris les politiques de remboursement, les modalités de paiement et les frais de plateforme. Pour toute question ou préoccupation, veuillez contacter notre équipe d’assistance aux vendeurs via le Centre d’aide ou par email à organisations@ticketwaze.com."
+          "4": {
+            "1": "En continuant, vous reconnaissez avoir lu et accepté nos Conditions d’utilisation et nos ",
+            "2": "Conditions d'utilisation et politique de confidentialité",
+            "3": ". Pour toute question ou préoccupation, veuillez contacter notre équipe d’assistance via le ",
+            "4": "Centre d’aide ",
+            "5": "ou par email à ",
+            "6": "support@ticketwaze.com"
+          }
         }
       },
       "forgot": {

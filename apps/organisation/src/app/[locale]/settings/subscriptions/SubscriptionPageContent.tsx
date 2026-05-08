@@ -123,7 +123,7 @@ export default function SubscriptionPageContent({
       {/* ── SUBSCRIPTION STATUS CARD ── */}
       {activeSub ? (
         <div
-          className={`rounded-[24px] overflow-x-hidden mb-12 ${isPremium ? "p-[2px] bg-gradient-to-br from-primary-500 via-[#E752AE] to-[#DD068B]" : ""}`}
+          className={`rounded-[2.4rem] overflow-x-hidden mb-12 ${isPremium ? "p-[.2rem] bg-linear-to-br from-primary-500 via-[#E752AE] to-[#DD068B]" : ""}`}
         >
           <div
             className={`rounded-[${isPremium ? "22px" : "24px"}] overflow-hidden ${isPremium ? "" : "border border-neutral-200"}`}
@@ -132,7 +132,7 @@ export default function SubscriptionPageContent({
             <div
               className={`px-8 pt-8 pb-6 flex items-start justify-between gap-4 ${
                 isPremium
-                  ? "bg-gradient-to-br from-primary-500 via-[#E752AE] to-[#DD068B]"
+                  ? "bg-linear-to-br from-primary-500 via-[#E752AE] to-[#DD068B]"
                   : "bg-primary-900"
               }`}
             >
@@ -142,7 +142,7 @@ export default function SubscriptionPageContent({
                 </div>
                 <div>
                   <div className="flex items-center gap-3">
-                    <h2 className="text-white font-primary font-medium text-[2.4rem] leading-[1] capitalize">
+                    <h2 className="text-white font-primary font-medium text-[2.4rem] leading-none capitalize">
                       {activeSub.membershipTier}
                     </h2>
                     {isTrial && (
@@ -204,7 +204,7 @@ export default function SubscriptionPageContent({
                       isExpiringSoon
                         ? "bg-failure"
                         : isPremium
-                          ? "bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]"
+                          ? "bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]"
                           : "bg-primary-900"
                     }`}
                     style={{ width: `${progress}%` }}
@@ -267,9 +267,9 @@ export default function SubscriptionPageContent({
                           {t("cancel_sub")}
                         </button>
                       </DialogTrigger>
-                      <DialogContent className="w-[360px] lg:w-[480px]">
+                      <DialogContent className="w-xl lg:w-3xl">
                         <DialogHeader>
-                          <DialogTitle className="font-medium border-b border-neutral-100 pb-[2rem] text-[2.2rem] leading-[30px] text-black font-primary">
+                          <DialogTitle className="font-medium border-b border-neutral-100 pb-8 text-[2.2rem] leading-12 text-black font-primary">
                             {t("cancel_title")}
                           </DialogTitle>
                           <DialogDescription className="sr-only">
@@ -309,7 +309,7 @@ export default function SubscriptionPageContent({
         </div>
       ) : (
         /* Free plan — no active subscription */
-        <div className="rounded-[24px] bg-neutral-100 mb-12 p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="rounded-[2.4rem] bg-neutral-100 mb-12 p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-neutral-200 flex items-center justify-center shrink-0">
               <Crown size="22" color="#737c8a" variant="Bulk" />
@@ -323,7 +323,7 @@ export default function SubscriptionPageContent({
               </p>
             </div>
           </div>
-          <div className="p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 w-full lg:w-auto via-[#E752AE] to-[#DD068B] shrink-0">
+          <div className="p-[.2rem] rounded-[30px] bg-linear-to-r from-primary-500 w-full lg:w-auto via-[#E752AE] to-[#DD068B] shrink-0">
             <LinkPrimary
               className="bg-transparent gap-4 items-center whitespace-nowrap"
               href="/settings/subscriptions/upgrade"
@@ -337,25 +337,25 @@ export default function SubscriptionPageContent({
 
       {/* ── SUBSCRIPTION HISTORY ── */}
       <div className="flex flex-col gap-8">
-        <span className="font-primary font-medium text-[18px] leading-[25px] text-black">
+        <span className="font-primary font-medium text-[18px] leading-10 text-black">
           {t("history")}
         </span>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("table.id")}
               </TableHead>
-              <TableHead className="font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("table.tier")}
               </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("table.amount")}
               </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("table.status")}
               </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase">
+              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                 {t("table.date")}
               </TableHead>
             </TableRow>
@@ -363,13 +363,13 @@ export default function SubscriptionPageContent({
         </Table>
 
         {true && (
-          <div className="w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]">
-            <div className="w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100">
-              <div className="w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200">
+          <div className="w-132 lg:w-184 mx-auto flex flex-col items-center gap-20">
+            <div className="w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100">
+              <div className="w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200">
                 <Money3 size="50" color="#0d0d0d" variant="Bulk" />
               </div>
             </div>
-            <p className="text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px] text-center">
+            <p className="text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem] text-center">
               {t("description")}
             </p>
           </div>

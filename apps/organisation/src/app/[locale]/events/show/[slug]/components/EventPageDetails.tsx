@@ -20,6 +20,7 @@ import {
   MembershipTier,
   Order,
   OrganisationTicket,
+  Ticket,
   User,
 } from "@ticketwaze/typescript-config";
 import MoreComponent from "./MoreComponent";
@@ -40,7 +41,7 @@ export default function EventPageDetails({
   membershipTier,
 }: {
   event: Event;
-  tickets: OrganisationTicket[];
+  tickets: Ticket[];
   orders: Order[];
   slug: string;
   user: User;
@@ -58,9 +59,9 @@ export default function EventPageDetails({
   });
 
   const today = DateTime.now();
-  const eventStart = event.eventDays?.[0]?.eventDate
-    ? DateTime.fromISO(event.eventDays[0].eventDate)
-    : null;
+  const eventStart = DateTime.fromISO(
+    event.eventDays.filter((event) => event.dayNumber === 1)[0].eventDate,
+  );
   const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
   const roundedDays = Math.ceil(daysLeft && daysLeft > 0 ? daysLeft : 0);
 

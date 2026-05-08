@@ -10,7 +10,7 @@ export default async function ActivitiesPage({
 }) {
   const session = await auth();
   const { status, page } = await searchParams;
-  const activeStatus = status ?? "review";
+  const activeStatus = status ?? "requested";
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/admin/events?status=${activeStatus}&page=${page}&limit=10`,
     {

@@ -99,6 +99,7 @@ export interface Ticket {
   organisationId: string;
   isRefundable: boolean;
   status: "PENDING" | "CHECKED" | "RETURNED";
+  event: Event;
   createdAt: DateTime;
   updatedAt: DateTime;
 }
@@ -221,7 +222,7 @@ export interface Event {
   eventImageUrl: string;
   eventType: string;
   eventCategory: string;
-  adminStatus: "review" | "approved" | "rejected";
+  adminStatus: "review" | "approved" | "rejected" | "requested";
   isActive: boolean;
   isFree: boolean;
   currency: string;
@@ -235,6 +236,7 @@ export interface Event {
   eventPerformers: EventPerformer[];
   eventAttendees: EventAttendee[];
   tickets: Ticket[];
+  orders: Order[];
   organisation: Organisation;
   createdAt: string;
   updatedAt: string;

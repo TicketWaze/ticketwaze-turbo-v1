@@ -16,7 +16,16 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\admin\" -Recurse -File)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(powershell -Command \"Get-Content 'C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\admin\\\\messages\\\\en.json' | ConvertFrom-Json | ConvertTo-Json -Depth 3\")",
-      "Bash(powershell *)"
+      "Bash(powershell *)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\admin\\\\src\\\\app\")",
+      "Bash(findstr activities *)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\admin\")",
+      "Bash(findstr messages *)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\admin\\\\src\\\\app\\\\[locale]\")",
+      "Bash(findstr /v \"node_modules\")",
+      "Bash(findstr \".tsx\\\\|.ts\")",
+      "Bash(findstr -v \".d.ts\")",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }
