@@ -25,6 +25,7 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 
 import {
   AttendeeFormData,
+  GuestInfo,
   PaymentType,
   SelectedTicket,
   TicketFormData,
@@ -47,12 +48,13 @@ export default function CheckoutFlow({
 }: {
   event: Event;
   ticketTypes: EventTicketType[];
-  user: User;
+  user?: User;
 }) {
   const t = useTranslations("Checkout");
   const locale = useLocale();
   const router = useRouter();
   const isFree = event.isFree;
+  const isGuest = !user;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [previousStep, setPreviousStep] = useState(0);
@@ -62,6 +64,11 @@ export default function CheckoutFlow({
     null,
   );
   const [stripeDialogOpen, setStripeDialogOpen] = useState(false);
+  const [guestInfo, setGuestInfo] = useState<GuestInfo>({
+    firstName: "",
+    lastName: "",
+    email: "",
+  });
 
   const { control, register, watch, setValue, getValues } = useForm<{
     tickets: TicketFormData[];
@@ -86,10 +93,10 @@ export default function CheckoutFlow({
         {
           ticketTypeId: ticketTypes[0].eventTicketTypeId,
           name:
-            event.eventType === "meet"
+            event.eventType === "meet" && user
               ? `${user.firstName} ${user.lastName}`
               : "",
-          email: event.eventType === "meet" ? user.email : "",
+          email: event.eventType === "meet" && user ? user.email : "",
           isForSomeoneElse: false,
         },
       ]);
@@ -175,7 +182,7 @@ export default function CheckoutFlow({
       (a: AttendeeFormData) => !a.isForSomeoneElse || (a.name && a.email),
     );
     const result = await FreeEventTicket(
-      user.accessToken,
+      user!.accessToken,
       event.eventId,
       validAttendees,
       locale,
@@ -188,9 +195,40 @@ export default function CheckoutFlow({
     setIsLoading(false);
   }
 
+  function buildGuestTickets(attendees: AttendeeFormData[]) {
+    return attendees.map((a) => ({
+      ticketTypeId: a.ticketTypeId,
+      name: a.isForSomeoneElse && a.name
+        ? a.name
+        : `${guestInfo.firstName} ${guestInfo.lastName}`,
+      email: a.isForSomeoneElse && a.email ? a.email : guestInfo.email,
+    }));
+  }
+
   async function MoncashPayment() {
     setIsLoading(true);
     const values = getValues();
+
+    if (isGuest) {
+      const tickets = buildGuestTickets(values.attendees);
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/guest/events/${event.eventId}/payments/moncash`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ guest: guestInfo, tickets }),
+        },
+      );
+      const response = await request.json();
+      if (response.status === "success") {
+        router.push(response.paymentURL);
+      } else {
+        toast.error(response.message);
+      }
+      setIsLoading(false);
+      return;
+    }
+
     const validAttendees = values.attendees.filter(
       (a: AttendeeFormData) => !a.isForSomeoneElse || (a.name && a.email),
     );
@@ -199,7 +237,7 @@ export default function CheckoutFlow({
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${user.accessToken}`,
+          Authorization: `Bearer ${user!.accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(validAttendees),
@@ -217,6 +255,28 @@ export default function CheckoutFlow({
   async function StripePayment() {
     setIsLoading(true);
     const values = getValues();
+
+    if (isGuest) {
+      const tickets = buildGuestTickets(values.attendees);
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/guest/events/${event.eventId}/payments/stripe`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ guest: guestInfo, tickets }),
+        },
+      );
+      const response = await request.json();
+      if (response.status === "success") {
+        setStripeClientSecret(response.clientSecret);
+        setStripeDialogOpen(true);
+      } else {
+        toast.error(response.message);
+      }
+      setIsLoading(false);
+      return;
+    }
+
     const validAttendees = values.attendees.filter(
       (a: AttendeeFormData) => !a.isForSomeoneElse || (a.name && a.email),
     );
@@ -225,7 +285,7 @@ export default function CheckoutFlow({
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${user.accessToken}`,
+          Authorization: `Bearer ${user!.accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(validAttendees),
@@ -252,7 +312,7 @@ export default function CheckoutFlow({
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${user.accessToken}`,
+          Authorization: `Bearer ${user!.accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(validAttendees),
@@ -289,11 +349,38 @@ export default function CheckoutFlow({
         toast.error(t("ticket.error"));
         return;
       }
+      if (isGuest && (isFree || event.eventType === "meet")) {
+        router.push(`/auth/login`);
+        return;
+      }
       goToStep(isFree || event.eventType === "meet" ? 3 : 1);
       return;
     }
 
     if (currentStep === 1) {
+      if (isGuest) {
+        if (!guestInfo.firstName.trim() || !guestInfo.lastName.trim() || !guestInfo.email.trim()) {
+          toast.error(t("recipient.guest_info_required"));
+          return;
+        }
+        setIsLoading(true);
+        const checkRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/guest/check-email`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: guestInfo.email }),
+          },
+        );
+        const checkData = await checkRes.json();
+        setIsLoading(false);
+        if (checkData.hasAccount) {
+          toast.error(t("recipient.account_exists"));
+          router.push(`/auth/login`);
+          return;
+        }
+      }
+
       const attendees = values.attendees as AttendeeFormData[];
       const hasValidAttendees = attendees.every((a) => {
         if (a.isForSomeoneElse) return a.name?.trim() && a.email?.trim();
@@ -408,6 +495,9 @@ export default function CheckoutFlow({
               ticketTypes={ticketTypes}
               event={event}
               isFree={isFree}
+              isGuest={isGuest}
+              guestInfo={guestInfo}
+              onGuestInfoChange={setGuestInfo}
               selectedWithIndex={selectedWithIndex}
               feeBreakdown={feeBreakdown}
               paymentType={paymentType}
@@ -420,6 +510,7 @@ export default function CheckoutFlow({
             <PaymentStep
               delta={delta}
               isFree={isFree}
+              isGuest={isGuest}
               paymentType={paymentType}
               onSelectPayment={setPaymentType}
               selectedWithIndex={selectedWithIndex}

@@ -51,13 +51,9 @@ export default function EventPageDetails({
   const t = useTranslations("Events.single_event");
   const locale = useLocale();
   const isFree = event.eventTicketTypes[0]?.ticketTypePrice == 0;
-  const desiredOrder = ["general", "vip", "vvip"];
   const sortedTicketClasses = [...event.eventTicketTypes].sort((a, b) => {
-    const aIndex = desiredOrder.indexOf(a.ticketTypeName.trim());
-    const bIndex = desiredOrder.indexOf(b.ticketTypeName.trim());
-    return aIndex - bIndex;
-  });
-
+  return a.ticketTypeName.localeCompare(b.ticketTypeName);
+});
   const today = DateTime.now();
   const eventStart = DateTime.fromISO(
     event.eventDays.filter((event) => event.dayNumber === 1)[0].eventDate,
@@ -302,7 +298,7 @@ export default function EventPageDetails({
                             {ticket.ticketName}
                           </span>
                         </DrawerTrigger>
-                        <Informations ticket={ticket} order={order as Order} />
+                        <Informations event={event} ticket={ticket} order={order as Order} />
                       </Drawer>
                     </TableCell>
                     <TableCell
@@ -313,38 +309,18 @@ export default function EventPageDetails({
                           <span className={"cursor-pointer"}>
                             {ticket.fullName}
                           </span>
-                        </DrawerTrigger>
-                        <Informations ticket={ticket} order={order as Order} />
+                              </DrawerTrigger>
+                        <Informations event={event} ticket={ticket} order={order as Order} />
                       </Drawer>
                     </TableCell>
                     <TableCell className={"hidden lg:table-cell"}>
-                      {ticket.ticketType === "general" && (
-                        <span
+                      <span
                           className={
                             "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
                           }
                         >
-                          general
+                          {ticket.ticketType}
                         </span>
-                      )}
-                      {ticket.ticketType === "vip" && (
-                        <span
-                          className={
-                            "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          vip
-                        </span>
-                      )}
-                      {ticket.ticketType === "vvip" && (
-                        <span
-                          className={
-                            "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-deep-100  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          Premium vip
-                        </span>
-                      )}
                     </TableCell>
                     <TableCell
                       className={
@@ -384,7 +360,7 @@ export default function EventPageDetails({
                       {FormatDate(
                         ticket.createdAt,
                         locale,
-                        ticket.event.eventDays[0].timezone,
+                        event.eventDays[0].timezone,
                       )}
                     </TableCell>
                     {/* <TableCell className={'text-[1.5rem] leading-8 text-neutral-900'}>
@@ -569,6 +545,7 @@ export default function EventPageDetails({
                               </span>
                             </DrawerTrigger>
                             <Informations
+                              event={event}
                               ticket={ticket}
                               order={order as Order}
                             />
@@ -583,7 +560,7 @@ export default function EventPageDetails({
                                 {ticket.fullName}
                               </span>
                             </DrawerTrigger>
-                            <Informations
+                            <Informations event={event}
                               ticket={ticket}
                               order={order as Order}
                             />
@@ -656,7 +633,7 @@ export default function EventPageDetails({
                           {FormatDate(
                             ticket.createdAt,
                             locale,
-                            ticket.event.eventDays[0].timezone,
+                            event.eventDays[0].timezone,
                           )}
                         </TableCell>
                         {/* <TableCell className={'text-[1.5rem] leading-8 text-neutral-900'}>

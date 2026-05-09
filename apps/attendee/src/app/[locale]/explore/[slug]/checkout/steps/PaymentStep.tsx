@@ -17,6 +17,7 @@ import TicketSummaryCard from "../TicketSummaryCard";
 interface Props {
   delta: number;
   isFree: boolean;
+  isGuest: boolean;
   paymentType: PaymentType;
   onSelectPayment: (type: PaymentType) => void;
   selectedWithIndex: SelectedTicket[];
@@ -28,6 +29,7 @@ interface Props {
 export default function PaymentStep({
   delta,
   isFree,
+  isGuest,
   paymentType,
   onSelectPayment,
   selectedWithIndex,
@@ -59,18 +61,20 @@ export default function PaymentStep({
           </div>
         ) : (
           <>
-            <button
-              className={optionClass("wallet")}
-              onClick={() => onSelectPayment("wallet")}
-            >
-              <div className="flex items-center gap-4">
-                <MoneyRecive size="20" color="#0d0d0d" variant="Bulk" />
-                <span className="font-semibold text-[1.6rem] leading-[22px] text-deep-100">
-                  {t("payment.wallet")}
-                </span>
-              </div>
-              <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
-            </button>
+            {!isGuest && (
+              <button
+                className={optionClass("wallet")}
+                onClick={() => onSelectPayment("wallet")}
+              >
+                <div className="flex items-center gap-4">
+                  <MoneyRecive size="20" color="#0d0d0d" variant="Bulk" />
+                  <span className="font-semibold text-[1.6rem] leading-[22px] text-deep-100">
+                    {t("payment.wallet")}
+                  </span>
+                </div>
+                <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+              </button>
+            )}
 
             <button
               className={optionClass("moncash")}

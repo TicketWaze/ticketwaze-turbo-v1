@@ -606,7 +606,16 @@
     "continue": "Proceed",
     "starts_in": "Start in",
     "join": "Join",
-    "return_deadline_error": "Tickets cannot be returned within 7 days of the event."
+    "return_deadline_error": "Tickets cannot be returned within 7 days of the event.",
+    "buyDialog": {
+      "title": "How would you like to continue?",
+      "description": "Sign in for the best experience, or check out as a guest.",
+      "login": "Log in",
+      "login_description": "Access your tickets, wallet, and personalized recommendations.",
+      "guest": "Continue as guest",
+      "guest_description": "Quick checkout without creating an account.",
+      "back": "Back"
+    }
   },
   "Checkout": {
     "back": "Back",
@@ -634,7 +643,13 @@
       "error": "Please fill in attendee information for all tickets marked for someone else",
       "warning": "Please double-check the information before submitting. If these details are incorrect, the person may not be able to access their ticket.",
       "email": "Email Address",
-      "name": "Full Name"
+      "name": "Full Name",
+      "your_info": "Your Information",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "guest_info_required": "Please fill in your first name, last name, and email to continue",
+      "account_exists": "An account with this email already exists. Please log in to continue.",
+      "guest_ticket_note": "This ticket will be issued using your information above."
     },
     "payment": {
       "title": "Payment",
@@ -670,6 +685,15 @@
       "payment": "Payment",
       "summary": "Summary",
       "continue": "Continue"
+    },
+    "guestSuccess": {
+      "title": "Booking Confirmed!",
+      "subtitle": "Your purchase was successful.",
+      "event_label": "Event",
+      "email_note": "Your tickets have been sent to your email address. Please check your inbox.",
+      "create_account": "Create an account",
+      "view_event": "Want to revisit the event?",
+      "view_event_cta": "View event"
     }
   },
   "Liked": {

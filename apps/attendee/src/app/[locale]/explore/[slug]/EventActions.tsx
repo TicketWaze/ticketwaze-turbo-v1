@@ -4,6 +4,7 @@ import {
   RemoveEventToFavorite,
 } from "@/actions/eventActions";
 import NoAuthDialog from "@/components/Layouts/NoAuthDialog";
+import BuyTicketAuthDialog from "./BuyTicketAuthDialog";
 import { usePathname } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
 import { Heart, MoreCircle } from "iconsax-reactjs";
@@ -142,8 +143,8 @@ export default function EventActions({
               {t("buy")}
             </span>
           </DialogTrigger>
-          <NoAuthDialog
-            callbackUrl={`/explore/${slugify(event.eventName, event.eventId)}/checkout`}
+          <BuyTicketAuthDialog
+            checkoutUrl={`/explore/${slugify(event.eventName, event.eventId)}/checkout`}
           />
         </Dialog>
       )}

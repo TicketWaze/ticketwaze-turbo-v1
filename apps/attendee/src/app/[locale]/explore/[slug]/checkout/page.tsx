@@ -1,8 +1,6 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { auth } from "@/lib/auth";
-import { getLocale } from "next-intl/server";
 import CheckoutFlow from "./CheckoutFlow";
-import { redirect } from "@/i18n/navigation";
 import { Event, EventTicketType, User } from "@ticketwaze/typescript-config";
 import { extractIdFromSlug } from "@/lib/Slugify";
 
@@ -20,17 +18,12 @@ export default async function CheckoutPage({
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
   const ticketTypes: EventTicketType[] = eventResponse.ticketTypes;
-  const locale = await getLocale();
-  if (!session) {
-    redirect({ href: "/auth/login", locale });
-  }
-
   return (
     <AttendeeLayout title="Buy Tickets">
       <CheckoutFlow
         event={event}
         ticketTypes={ticketTypes}
-        user={session?.user as User}
+        user={session?.user as User | undefined}
       />
     </AttendeeLayout>
   );

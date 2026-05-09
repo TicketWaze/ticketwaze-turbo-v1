@@ -25,7 +25,9 @@
       "Bash(findstr /v \"node_modules\")",
       "Bash(findstr \".tsx\\\\|.ts\")",
       "Bash(findstr -v \".d.ts\")",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Windows\\\\Documents\\\\Ticketwaze\\\\ticketwaze-turbo-v1\" -Directory)",
+      "Bash(Select-Object Name)"
     ]
   }
 }

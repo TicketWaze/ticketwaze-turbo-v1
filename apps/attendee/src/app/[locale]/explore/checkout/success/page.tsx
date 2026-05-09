@@ -14,7 +14,7 @@ export default async function SuccessMoncash({
     <AttendeeLayout className="items-center justify-center" title="">
       <RedirectContent
         transactionId={transactionId as string}
-        user={session?.user as User}
+        user={session?.user as User | undefined}
       />
       {/* <div className='flex flex-col gap-16 items-center max-w-[530px]'>
         <Image src={Success} alt='success icon' width={150} height={150} />

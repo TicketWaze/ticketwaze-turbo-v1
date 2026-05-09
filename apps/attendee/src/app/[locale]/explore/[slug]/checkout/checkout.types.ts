@@ -1,5 +1,11 @@
 export type PaymentType = "" | "moncash" | "card" | "wallet";
 
+export interface GuestInfo {
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 export interface AttendeeFormData {
   ticketTypeId: string;
   name: string;
