@@ -38,7 +38,7 @@ export default async function EventPage() {
               {t("create")}
             </LinkPrimary>
             <Link
-              className="lg:hidden absolute bottom-43 right-10 w-[60px] h-[60px] bg-primary-500 rounded-full flex items-center justify-center"
+              className="lg:hidden absolute bottom-43 right-10 w-24 h-24 bg-primary-500 rounded-full flex items-center justify-center"
               href="/events/create"
             >
               {/* {t("create")} */}

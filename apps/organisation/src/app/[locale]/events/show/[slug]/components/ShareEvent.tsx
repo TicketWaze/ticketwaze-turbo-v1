@@ -15,18 +15,34 @@ import { Event } from "@ticketwaze/typescript-config";
 import { Copy, Send2 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
+import { useRef } from "react";
 import { toast } from "sonner";
 import Whatsapp from "@/assets/icons/whatsApp.svg";
 import Twitter from "@/assets/icons/twitter.svg";
 import Linkedin from "@/assets/icons/linkedIn.svg";
+import { QRCodeCanvas } from "qrcode.react";
+import { QrCode } from "lucide-react";
+import EventPosterGenerator from "./EventPosterGenerator";
 
 export default function ShareEvent({ event }: { event: Event }) {
   const t = useTranslations("Events.single_event");
   const locale = useLocale();
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const eventLink =
     event.eventType === "private"
       ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${slugify(event.eventName, event.eventId)}`
       : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`;
+
+  function handleDownloadQR() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const url = canvas.toDataURL("image/png");
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${slugify(event.eventName, event.eventId)}-qrcode.png`;
+    a.click();
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -92,7 +108,29 @@ export default function ShareEvent({ event }: { event: Event }) {
               Copy
             </button>
           </div>
+          <div className="hidden">
+            <QRCodeCanvas
+              ref={canvasRef}
+              value={eventLink}
+              size={400}
+              level="H"
+              imageSettings={{
+                src: "/logo-simple-orange.svg",
+                height: 80,
+                width: 80,
+                excavate: true,
+              }}
+            />
+          </div>
           <div className="flex items-center gap-12">
+            <button
+              onClick={handleDownloadQR}
+              className="flex items-center justify-center w-18 h-18 bg-neutral-100 rounded-full cursor-pointer"
+              title="Download QR Code"
+            >
+              <QrCode size={20} color="#737c8a" />
+            </button>
+            <EventPosterGenerator event={event} />
             <Link
               href={`https://wa.me/?text=${encodeURIComponent(`*Check this out — it’s worth your time!* \nSomething exciting is happening and I wanted you to be part of it.\nTap the link to explore - Reserve your spot now! \n${eventLink}`)}`}
               target="_blank"

@@ -1,6 +1,10 @@
 "use client";
 import FormatDate from "@/lib/FormatDate";
-import { Event, Order, OrganisationTicket } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  Order,
+  OrganisationTicket,
+} from "@ticketwaze/typescript-config";
 import {
   DrawerClose,
   DrawerContent,
@@ -15,11 +19,11 @@ import formatTime from "@/lib/formatTime";
 export default function Informations({
   ticket,
   order,
-  event
+  event,
 }: {
   ticket: OrganisationTicket;
   order: Order;
-  event : Event
+  event: Event;
 }) {
   const t = useTranslations("Finance");
   const locale = useLocale();
