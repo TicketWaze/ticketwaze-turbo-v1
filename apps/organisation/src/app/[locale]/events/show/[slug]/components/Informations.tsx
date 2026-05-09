@@ -1,6 +1,10 @@
 "use client";
 import FormatDate from "@/lib/FormatDate";
-import { Order, OrganisationTicket } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  Order,
+  OrganisationTicket,
+} from "@ticketwaze/typescript-config";
 import {
   DrawerClose,
   DrawerContent,
@@ -15,14 +19,16 @@ import formatTime from "@/lib/formatTime";
 export default function Informations({
   ticket,
   order,
+  event,
 }: {
   ticket: OrganisationTicket;
   order: Order;
+  event: Event;
 }) {
   const t = useTranslations("Finance");
   const locale = useLocale();
   const checkingTime = new Date(ticket.updatedAt.toString());
-  const date = ticket.event.eventDays.filter((day) => day.dayNumber === 1);
+  const date = event.eventDays.filter((day) => day.dayNumber === 1);
   return (
     <DrawerContent className={"my-6 p-12 rounded-[30px] w-full"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>

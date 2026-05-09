@@ -11,33 +11,32 @@ export default function RedirectContent({
   user,
 }: {
   transactionId: string;
-  user: User;
+  user?: User;
 }) {
   const router = useRouter();
 
   useEffect(function () {
+    const headers: HeadersInit = { "Content-Type": "application/json" };
+    if (user?.accessToken) {
+      headers["Authorization"] = `Bearer ${user.accessToken}`;
+    }
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/payments/moncash/success/${transactionId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${user.accessToken}`,
-        },
-      },
+      { method: "GET", headers },
     )
       .then((res) => res.json())
       .then((res) => {
+        const eventSlug = slugify(res.event.eventName, res.event.eventId);
         if (res.status === "success") {
           toast.success("Success");
           router.push(
-            `/upcoming/${slugify(res.event.eventName, res.event.eventId)}`,
+            user
+              ? `/upcoming/${eventSlug}`
+              : `/explore/checkout/guest-success?slug=${eventSlug}`,
           );
         } else {
           toast.error("Failed to retrieve payment");
-          router.push(
-            `/explore/${slugify(res.event.eventName, res.event.eventId)}`,
-          );
+          router.push(`/explore/${eventSlug}`);
         }
       });
   }, []);

@@ -39,9 +39,11 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
       ? "Google Meet"
       : `${event.address}, ${event.city}, ${event.state}, ${event.country}`;
 
-  const totalRevenue = event.orders
-    .filter((o) => o.status === "SUCCESSFUL")
-    .reduce((sum, o) => sum + o.amount, 0);
+  const totalRevenue = event.currency === "HTG" ? event.tickets
+    .filter((o) => o.status !== "RETURNED")
+    .reduce((sum, o) => sum + o.ticketPrice, 0) : event.tickets
+    .filter((o) => o.status !== "RETURNED")
+    .reduce((sum, o) => sum + o.ticketUsdPrice, 0);
 
   const totalSold = event.eventTicketTypes.reduce(
     (sum, t) => sum + t.ticketTypeQuantitySold,

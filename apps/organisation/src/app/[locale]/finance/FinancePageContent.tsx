@@ -212,9 +212,6 @@ export default function FinancePageContent({
           </TableHeader>
           <TableBody>
             {orders.map((order) => {
-              const transactionsTicket = tickets.filter(
-                (ticket) => ticket.orderId === order.orderId,
-              );
               return (
                 <TableRow key={order.orderId}>
                   <TableCell
@@ -227,7 +224,7 @@ export default function FinancePageContent({
                         </span>
                       </DrawerTrigger>
                       <Informations
-                        tickets={transactionsTicket}
+                        tickets={order.tickets}
                         order={order as Order}
                       />
                     </Drawer>
@@ -238,14 +235,11 @@ export default function FinancePageContent({
                     <Drawer direction={"right"}>
                       <DrawerTrigger>
                         <span className={"cursor-pointer"}>
-                          {TruncateUrl(
-                            transactionsTicket[0].event.eventName,
-                            20,
-                          )}
+                          {TruncateUrl(order.tickets[0].event.eventName, 20)}
                         </span>
                       </DrawerTrigger>
                       <Informations
-                        tickets={transactionsTicket}
+                        tickets={order.tickets}
                         order={order as Order}
                       />
                     </Drawer>
@@ -255,10 +249,10 @@ export default function FinancePageContent({
                       "text-[1.5rem] hidden lg:table-cell font-medium leading-8 text-neutral-900"
                     }
                   >
-                    {transactionsTicket[0].event.currency === "USD"
+                    {order.tickets[0].event.currency === "USD"
                       ? order.usdPrice
                       : order.amount}{" "}
-                    {transactionsTicket[0].event.currency}
+                    {order.tickets[0].event.currency}
                   </TableCell>
                   <TableCell className={"hidden lg:table-cell"}>
                     {order?.status === "SUCCESSFUL" && (
@@ -288,7 +282,7 @@ export default function FinancePageContent({
                     {FormatDate(
                       order.createdAt,
                       locale,
-                      transactionsTicket[0].event.eventDays[0].timezone,
+                      order.tickets[0].event.eventDays[0].timezone,
                     )}
                   </TableCell>
                 </TableRow>

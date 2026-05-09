@@ -90,9 +90,9 @@ function UpcomingContent({ events }: { events: Event[] }) {
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           )
-          .map((event) => {
+          .map((event, i) => {
             return (
-              <li key={event.eventId}>
+              <li key={`${event.eventId}-${i}`}>
                 <EventCard event={event} />
               </li>
             );
@@ -153,9 +153,9 @@ function HistoryContent({ events }: { events: Event[] }) {
             (a, b) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
           )
-          .map((event) => {
+          .map((event, i) => {
             return (
-              <li key={event.eventId}>
+              <li key={`${event.eventId}-${i}`}>
                 <EventCard event={event} />
               </li>
             );
