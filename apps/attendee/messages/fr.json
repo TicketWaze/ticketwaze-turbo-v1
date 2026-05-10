@@ -687,7 +687,8 @@
       "last_name": "Nom de famille",
       "guest_info_required": "Veuillez renseigner votre prénom, nom de famille et adresse e-mail pour continuer",
       "account_exists": "Un compte avec cet e-mail existe déjà. Veuillez vous connecter pour continuer.",
-      "guest_ticket_note": "Ce billet sera émis avec vos informations ci-dessus."
+      "guest_ticket_note": "Ce billet sera émis avec vos informations ci-dessus.",
+      "email_info": "Veuillez entrer vos informations correctes. Vos billets seront envoyés à l'adresse e-mail que vous fournissez — si l'adresse est incorrecte, vous ne recevrez pas vos billets."
     },
     "payment": {
       "title": "Paiement",
@@ -728,7 +729,7 @@
       "title": "Réservation confirmée !",
       "subtitle": "Votre achat a été effectué avec succès.",
       "event_label": "Événement",
-      "email_note": "Vos billets ont été envoyés à votre adresse e-mail. Veuillez vérifier votre boîte de réception.",
+      "email_note": "Vos billets ont été envoyés à votre adresse e-mail. Si vous ne les voyez pas dans votre boîte de réception, veuillez vérifier votre dossier spam ou courrier indésirable.",
       "create_account": "Créer un compte",
       "view_event": "Vous souhaitez revoir l'événement ?",
       "view_event_cta": "Voir l'événement"

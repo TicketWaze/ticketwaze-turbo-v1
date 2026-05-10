@@ -148,21 +148,16 @@ export default function Informations({
               <p className="flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600">
                 {t("Ticket.details.price")}
                 <span className="text-deep-100 font-medium leading-8">
-                  {ticket.ticketPrice.toLocaleString()} {event.currency}
+                  {event.currency === "HTG"
+                    ? ticket.ticketPrice.toLocaleString()
+                    : ticket.ticketUsdPrice.toLocaleString()}{" "}
+                  {event.currency}
                 </span>
               </p>
               <p className="flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600">
                 {t("Ticket.details.id")}
                 <span className="text-deep-100 font-medium leading-8">
                   #{ticket.ticketId}
-                </span>
-              </p>
-              <p className="flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600">
-                {t("Ticket.details.total")}
-                <span className="text-deep-100 font-medium leading-8">
-                  {order
-                    ? `${order.amount.toLocaleString()} ${event.currency}`
-                    : "-"}
                 </span>
               </p>
             </div>
