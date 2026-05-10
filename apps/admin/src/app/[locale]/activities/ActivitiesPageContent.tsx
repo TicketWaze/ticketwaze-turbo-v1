@@ -19,7 +19,7 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
-import { AdminEventsRequest } from "@ticketwaze/typescript-config";
+import { AdminEventsRequest, Event } from "@ticketwaze/typescript-config";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 import { useEffect, useState } from "react";
@@ -30,9 +30,11 @@ import MoneySend from "@ticketwaze/ui/assets/icons/money-send.svg";
 export default function ActivitiesPageContent({
   events,
   status,
+  allEvents,
 }: {
   events: AdminEventsRequest;
   status: string;
+  allEvents: Event[];
 }) {
   const t = useTranslations("Activities");
   const locale = useLocale();
@@ -67,7 +69,7 @@ export default function ActivitiesPageContent({
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            {data.length}
+            {allEvents.length}
           </p>
         </div>
         <div className={"pl-10"}>
@@ -79,7 +81,10 @@ export default function ActivitiesPageContent({
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            {data.filter((event) => event.adminStatus === "approved").length}
+            {
+              allEvents.filter((event) => event.adminStatus === "approved")
+                .length
+            }
           </p>
         </div>
         <div className={"pl-0 lg:pl-10"}>
@@ -91,7 +96,10 @@ export default function ActivitiesPageContent({
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            {data.filter((event) => event.adminStatus === "rejected").length}
+            {
+              allEvents.filter((event) => event.adminStatus === "rejected")
+                .length
+            }
           </p>
         </div>
 

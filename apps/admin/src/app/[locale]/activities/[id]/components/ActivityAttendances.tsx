@@ -180,7 +180,10 @@ export function ActivityAttendances({ event }: { event: Event }) {
                       </span>
                     </TableCell>
                     <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900">
-                      {event.currency === 'HTG' ? ticket.ticketPrice.toLocaleString() : ticket.ticketUsdPrice.toLocaleString()} {event.currency}
+                      {event.currency === "HTG"
+                        ? ticket.ticketPrice.toLocaleString()
+                        : ticket.ticketUsdPrice.toLocaleString()}{" "}
+                      {event.currency}
                     </TableCell>
                     <TableCell className="py-6">
                       <span

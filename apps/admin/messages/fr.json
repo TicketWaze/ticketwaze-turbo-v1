@@ -498,7 +498,7 @@
   "Tickets": {
     "title": "Aperçu des billets",
     "total_sold": "Total des billets vendus",
-    "total_created": "Total des billets créés",
+    "total_created": "Total des billets remis",
     "checked-in": "Billets enregistrés",
     "filters": {
       "period": {

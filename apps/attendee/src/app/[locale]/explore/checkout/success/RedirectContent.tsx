@@ -28,10 +28,12 @@ export default function RedirectContent({
       .then((res) => {
         const eventSlug = slugify(res.event.eventName, res.event.eventId);
         if (res.status === "success") {
-          toast.success("Success");
+          toast.success(
+            "Your tickets have been sent to your email. If you don't see them, check your spam folder.",
+          );
           router.push(
             user
-              ? `/upcoming/${eventSlug}`
+              ? `/upcoming/${eventSlug}?from=checkout`
               : `/explore/checkout/guest-success?slug=${eventSlug}`,
           );
         } else {

@@ -17,10 +17,14 @@ import ReturnPaidTicketView from "./ReturnPaidTicketView";
 
 export default async function UpcomingEventPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ from?: string }>;
 }) {
   const { slug } = await params;
+  const { from } = await searchParams;
+  const isFromCheckout = from === "checkout";
   const eventId = extractIdFromSlug(slug);
   const t = await getTranslations("Event");
   const session = await auth();
@@ -54,6 +58,14 @@ export default async function UpcomingEventPage({
   return (
     <AttendeeLayout title="Event Page">
       <BackButton text={t("back")} />
+      {isFromCheckout && (
+        <div className="flex items-start gap-3 bg-green-50 border border-green-200 rounded-[12px] p-[15px] mb-2">
+          <Sms size="20" color="#15803d" variant="Bulk" className="shrink-0 mt-[2px]" />
+          <p className="text-[1.4rem] leading-7 text-green-800">
+            Your tickets have been sent to your email address. If you don&apos;t see them in your inbox, please check your spam or junk folder.
+          </p>
+        </div>
+      )}
       <div className="grid grid-cols-1 lg:grid-cols-[29fr_23fr] w-full ">
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
           {event.eventName}

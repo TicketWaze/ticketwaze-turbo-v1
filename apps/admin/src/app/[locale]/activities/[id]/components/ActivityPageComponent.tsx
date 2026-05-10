@@ -39,11 +39,14 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
       ? "Google Meet"
       : `${event.address}, ${event.city}, ${event.state}, ${event.country}`;
 
-  const totalRevenue = event.currency === "HTG" ? event.tickets
-    .filter((o) => o.status !== "RETURNED")
-    .reduce((sum, o) => sum + o.ticketPrice, 0) : event.tickets
-    .filter((o) => o.status !== "RETURNED")
-    .reduce((sum, o) => sum + o.ticketUsdPrice, 0);
+  const totalRevenue =
+    event.currency === "HTG"
+      ? event.tickets
+          .filter((o) => o.status !== "RETURNED")
+          .reduce((sum, o) => sum + o.ticketPrice, 0)
+      : event.tickets
+          .filter((o) => o.status !== "RETURNED")
+          .reduce((sum, o) => sum + o.ticketUsdPrice, 0);
 
   const totalSold = event.eventTicketTypes.reduce(
     (sum, t) => sum + t.ticketTypeQuantitySold,
@@ -163,8 +166,8 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
           <div></div>
         </div>
 
-        <div className="min-h-[75vh]">
-          <Tabs defaultValue="performance" className="w-full h-full">
+        <div className="overflow-y-auto min-h-0 max-h-[calc(100vh-200px)]">
+          <Tabs defaultValue="performance" className="w-full">
             <TabsList className="w-full lg:w-fit mx-auto lg:mx-0 mb-8">
               <TabsTrigger value="performance">
                 {t("activity.resume.performance.title")}

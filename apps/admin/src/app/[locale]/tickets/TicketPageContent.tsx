@@ -1,8 +1,7 @@
 "use client";
-import AdminLayout from "@/components/Layouts/AdminLayout";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import Image from "next/image";
-import Ticket from "@ticketwaze/ui/assets/icons/ticket-2.svg"
+import TicketImage from "@ticketwaze/ui/assets/icons/ticket-2.svg";
 import {
   Select,
   SelectTrigger,
@@ -22,12 +21,17 @@ import {
 import { useTranslations } from "next-intl";
 import TicketsPageTopbar from "./TicketsPageTopbar";
 import TicketDetails from "./TicketDetails";
+import { Ticket } from "@ticketwaze/typescript-config";
 
-export default function TicketPageContent() {
+export default function TicketPageContent({
+  allTickets,
+}: {
+  allTickets: Ticket[];
+}) {
   const t = useTranslations("Tickets");
   const history = true;
   return (
-    <AdminLayout>
+    <>
       <TicketsPageTopbar
         title={t("title")}
         filter={t("filters.period.actual")}
@@ -46,7 +50,7 @@ export default function TicketPageContent() {
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            0
+            {allTickets.length}
           </p>
         </div>
         <div className={"pl-10"}>
@@ -58,7 +62,7 @@ export default function TicketPageContent() {
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            0
+            {allTickets.filter((ticket) => ticket.status === "RETURNED").length}
           </p>
         </div>
         <div className={"pl-0 lg:pl-10"}>
@@ -70,7 +74,7 @@ export default function TicketPageContent() {
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            0
+            {allTickets.filter((ticket) => ticket.status === "CHECKED").length}
           </p>
         </div>
       </div>
@@ -280,7 +284,7 @@ export default function TicketPageContent() {
           <div className="rounded-full bg-neutral-100 p-6 w-fit">
             <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
               <Image
-                src={Ticket}
+                src={TicketImage}
                 alt="no ticket history"
                 width={50}
                 height={50}
@@ -292,6 +296,6 @@ export default function TicketPageContent() {
           </p>
         </div>
       )}
-    </AdminLayout>
+    </>
   );
 }
