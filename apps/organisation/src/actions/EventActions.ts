@@ -653,7 +653,7 @@ export async function CheckInWithTicketID(
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/ticket-id/${ticketID}`,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
@@ -665,16 +665,20 @@ export async function CheckInWithTicketID(
     const response = await request.json();
 
     if (response.status === "success") {
-      // revalidatePath(pathname)
-      return {
-        status: "success",
-      };
+      revalidatePath(pathname);
+      return { status: "success" as const, ticket: response.ticket };
+    } else if (response.status === "already_checked") {
+      return { status: "already_checked" as const, ticket: response.ticket };
     } else {
-      throw new Error(response.message);
+      return {
+        status: "failed" as const,
+        message: response.message ?? "An unknown error occurred",
+      };
     }
   } catch (error: any) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      status: "failed" as const,
+      message: error?.message ?? "An unknown error occurred",
     };
   }
 }
@@ -690,7 +694,7 @@ export async function CheckInWithQrCode(
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/checking/event/${eventId}/qr/${ticketID}`,
       {
-        method: "GET",
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,
@@ -703,15 +707,19 @@ export async function CheckInWithQrCode(
 
     if (response.status === "success") {
       revalidatePath(pathname);
-      return {
-        status: "success",
-      };
+      return { status: "success" as const, ticket: response.ticket };
+    } else if (response.status === "already_checked") {
+      return { status: "already_checked" as const, ticket: response.ticket };
     } else {
-      throw new Error(response.message);
+      return {
+        status: "failed" as const,
+        message: response.message ?? "An unknown error occurred",
+      };
     }
   } catch (error: any) {
     return {
-      error: error?.message ?? "An unknown error occurred",
+      status: "failed" as const,
+      message: error?.message ?? "An unknown error occurred",
     };
   }
 }
