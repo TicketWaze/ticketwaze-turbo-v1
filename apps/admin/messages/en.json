@@ -547,6 +547,54 @@
       "resend": "Resend ticket"
     }
   },
-
+  "Organisations": {
+    "title": "Organizers Oververview",
+    "total": "Total Organizers",
+    "active": "Active Organizers",
+    "new": "New Organizers",
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "status": "All status",
+      "time": "All time"
+    },
+    "organisations_list": {
+      "title": "Organizers list",
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "status": "Status",
+        "activity_count": "Activity Count",
+        "revenue": "Revenue",
+        "joined": "Date Joined"
+      },
+      "no_history": "Once attendees start signing up, buying tickets and joining events, they’ll appear here."
+    },
+    "profile": {
+      "title": "User Profile",
+      "back":"Back",
+      "button": {
+        "suspend":"Suspend account",
+        "edit":"Edit profile"
+      },
+      "profile": "Organization Profile",
+      "information": "Organizer Information",
+      "summary": {
+        "title": "Activity Summary",
+        "created": "Activity Created",
+        "cancelled": "Cancelled Activity",
+        "joined_on":"Joined On"
+      },
+      "finance": {
+        "title": "Finance",
+        "total_ticket_sold": "Total tickets sold",
+        "total_revenue": "Total revenue",
+        "total_profit": "Total profit",
+        "balance": "Balance"
+      }
+    }
+  },
+  
   "attendees": {}
 }
