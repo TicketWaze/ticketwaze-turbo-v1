@@ -38,7 +38,11 @@ export default async function ActivitiesPage({
   };
   return (
     <AdminLayout>
-      <ActivitiesPageContent events={events} status={activeStatus} />
+      <ActivitiesPageContent
+        events={events}
+        allEvents={response.allEvents}
+        status={activeStatus}
+      />
     </AdminLayout>
   );
 }

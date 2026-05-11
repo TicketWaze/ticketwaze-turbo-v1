@@ -19,7 +19,6 @@ import {
   EventPerformer,
   MembershipTier,
   Order,
-  OrganisationTicket,
   Ticket,
   User,
 } from "@ticketwaze/typescript-config";
@@ -52,14 +51,19 @@ export default function EventPageDetails({
   const locale = useLocale();
   const isFree = event.eventTicketTypes[0]?.ticketTypePrice == 0;
   const sortedTicketClasses = [...event.eventTicketTypes].sort((a, b) => {
-  return a.ticketTypeName.localeCompare(b.ticketTypeName);
-});
+    return a.ticketTypeName.localeCompare(b.ticketTypeName);
+  });
   const today = DateTime.now();
-  const eventStart = DateTime.fromISO(
-    event.eventDays.filter((event) => event.dayNumber === 1)[0].eventDate,
-  );
-  const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
+  const firstDay = event.eventDays.find((d) => d.dayNumber === 1)!;
+  const firstDate = DateTime.fromISO(firstDay.eventDate, { zone: "utc" })
+    .setZone(firstDay.timezone, { keepLocalTime: true })
+    .toISODate();
+  const eventStart = DateTime.fromISO(`${firstDate}T${firstDay.startTime}`, {
+    zone: firstDay.timezone,
+  });
+  const daysLeft = eventStart.isValid ? eventStart.diff(today, "days").days : null;
   const roundedDays = Math.ceil(daysLeft && daysLeft > 0 ? daysLeft : 0);
+  const isUpcoming = eventStart.isValid && today < eventStart;
 
   const [query, setQuery] = useState("");
   const filteredtickets = tickets.filter((ticket) => {
@@ -70,8 +74,7 @@ export default function EventPageDetails({
     <div className={"flex flex-col gap-12 overflow-y-scroll"}>
       <TopBar title={event.eventName}>
         <div className="hidden lg:flex items-center gap-4">
-          {daysLeft !== null &&
-            daysLeft > 0 &&
+          {isUpcoming &&
             event.adminStatus === "approved" && <ShareEvent event={event} />}
           {event.adminStatus === "approved" &&
             event.eventCategory !== "meet" && (
@@ -159,9 +162,7 @@ export default function EventPageDetails({
         </li>
       </ul>
       <div className="flex lg:hidden items-center w-full gap-8 justify-between">
-        {daysLeft !== null &&
-        daysLeft > 0 &&
-        event.adminStatus === "approved" ? (
+        {isUpcoming && event.adminStatus === "approved" ? (
           <ShareEvent event={event} />
         ) : (
           <div></div>
@@ -179,7 +180,7 @@ export default function EventPageDetails({
           <CheckingDialog event={event} user={user} />
         </div>
       )}
-      {daysLeft !== null && daysLeft > 0 && (
+      {isUpcoming && (
         <EventArtist
           event={event}
           user={user}
@@ -298,7 +299,11 @@ export default function EventPageDetails({
                             {ticket.ticketName}
                           </span>
                         </DrawerTrigger>
-                        <Informations event={event} ticket={ticket} order={order as Order} />
+                        <Informations
+                          event={event}
+                          ticket={ticket}
+                          order={order as Order}
+                        />
                       </Drawer>
                     </TableCell>
                     <TableCell
@@ -309,18 +314,22 @@ export default function EventPageDetails({
                           <span className={"cursor-pointer"}>
                             {ticket.fullName}
                           </span>
-                              </DrawerTrigger>
-                        <Informations event={event} ticket={ticket} order={order as Order} />
+                        </DrawerTrigger>
+                        <Informations
+                          event={event}
+                          ticket={ticket}
+                          order={order as Order}
+                        />
                       </Drawer>
                     </TableCell>
                     <TableCell className={"hidden lg:table-cell"}>
                       <span
-                          className={
-                            "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          {ticket.ticketType}
-                        </span>
+                        className={
+                          "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                        }
+                      >
+                        {ticket.ticketType}
+                      </span>
                     </TableCell>
                     <TableCell
                       className={
@@ -560,7 +569,8 @@ export default function EventPageDetails({
                                 {ticket.fullName}
                               </span>
                             </DrawerTrigger>
-                            <Informations event={event}
+                            <Informations
+                              event={event}
                               ticket={ticket}
                               order={order as Order}
                             />

@@ -503,7 +503,7 @@
   "Tickets": {
     "title": "Tickets Overview",
     "total_sold": "Total Tickets Sold",
-    "total_created": "Total Created Tickets",
+    "total_created": "Total Refunded Tickets",
     "checked-in": "Checked-In Tickets",
     "filters": {
       "period": {

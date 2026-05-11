@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Warning2 } from "iconsax-reactjs";
+import { Sms, Warning2 } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import { Event, EventTicketType } from "@ticketwaze/typescript-config";
 import Capitalize from "@/lib/Capitalize";
@@ -55,6 +55,12 @@ export default function RecipientStep({
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0"
     >
+      <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-[12px] p-[15px]">
+        <Sms size="20" color="#1d4ed8" variant="Bulk" className="shrink-0 mt-[2px]" />
+        <p className="text-[1.35rem] leading-7 text-blue-800">
+          {t("recipient.email_info")}
+        </p>
+      </div>
       {isGuest && (
         <div className="border border-neutral-100 rounded-[15px] flex flex-col gap-[1.5rem] p-[15px]">
           <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">

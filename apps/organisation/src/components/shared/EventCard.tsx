@@ -34,41 +34,26 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
           width={255}
         />
         {event.adminStatus === "requested" && (
-          <div
-            key={event.eventType}
-            className="bg-neutral-900 block absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit"
-          >
+          <div className="bg-neutral-900 block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
             {event.adminStatus.toUpperCase()}
           </div>
         )}
         {event.adminStatus === "review" && (
-          <div
-            key={event.eventType}
-            className="bg-warning block absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit"
-          >
+          <div className="bg-warning block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
             {event.adminStatus.toUpperCase()}
           </div>
         )}
         {event.adminStatus === "approved" && (
-          <div
-            key={event.eventType}
-            className="bg-success block absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit"
-          >
+          <div className="bg-success block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
             {event.adminStatus.toUpperCase()}
           </div>
         )}
         {event.adminStatus === "rejected" && (
-          <div
-            key={event.eventType}
-            className="bg-failure block absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit"
-          >
+          <div className="bg-failure block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
             {event.adminStatus.toUpperCase()}
           </div>
         )}
-        <div
-          key={event.eventType}
-          className="bg-primary-50 block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-primary-500 font-primary font-bold leading-6 w-fit"
-        >
+        <div className="bg-primary-50 block absolute bottom-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-primary-500 font-primary font-bold leading-6 w-fit">
           {event.eventType.toUpperCase()}
         </div>
       </div>
