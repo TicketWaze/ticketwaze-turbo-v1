@@ -1,5 +1,7 @@
-import AdminLayout from "@/components/Layouts/AdminLayout";
+import OrganisationsPageContent from "./OrganisationsPageContent";
 
 export default function OrganisationsPage() {
-  return <AdminLayout>OrganisationsPage</AdminLayout>;
+  return <OrganisationsPageContent/>;
 }
+
+ 
