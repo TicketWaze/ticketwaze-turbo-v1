@@ -381,6 +381,21 @@ export interface OrganisationWithdrawalRequest {
   data: WithdrawalRequest[];
 }
 
+export interface OrganisationOrders {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string | null;
+    lastPageUrl: string | null;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: Order[];
+}
+
 export interface AdminEventsRequest {
   meta: {
     total: number;

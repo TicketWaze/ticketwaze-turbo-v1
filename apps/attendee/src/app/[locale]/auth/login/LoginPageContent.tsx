@@ -9,12 +9,12 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
 import { motion } from "framer-motion";
-// import Google from "@/assets/icons/google.svg";
 import { useSearchParams } from "next/navigation";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { LinkAccent } from "@/components/shared/Links";
+import GoogleSignInButton from "@/components/shared/GoogleSignInButton";
 
 export default function LoginPageContent({
   email,
@@ -30,6 +30,7 @@ export default function LoginPageContent({
   const error = searchParams.get("error");
   const errorMessage = error ? decodeURIComponent(error) : null;
   if (errorMessage) toast.error("AccessDenied");
+  const referralCode = searchParams.get("referral") ?? undefined;
 
   type TLoginSchema = z.infer<typeof LoginSchema>;
 
@@ -69,14 +70,6 @@ export default function LoginPageContent({
     }
     setIsloading(false);
   }
-  // async function googleLogin() {
-  //   setIsloading(true);
-  //   await signIn("google", {
-  //     redirect: true,
-  //     callbackUrl: process.env.NEXT_PUBLIC_ATTENDEE_URL,
-  //   });
-  //   setIsloading(false);
-  // }
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
@@ -158,24 +151,10 @@ export default function LoginPageContent({
             >
               {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
             </ButtonPrimary>
-            {/* <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
+            <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
               {t("cta.or")}
             </span>
-            <ButtonBlack
-              type="button"
-              onClick={googleLogin}
-              disabled={isLoading}
-              className="flex items-center justify-center gap-4 mb-10"
-            >
-              {isLoading ? (
-                <LoadingCircleSmall />
-              ) : (
-                <>
-                  <Image src={Google} alt="google login" />
-                  {t("cta.google")}
-                </>
-              )}
-            </ButtonBlack> */}
+            <GoogleSignInButton referralCode={referralCode} />
           </motion.div>
         </div>
       </div>
@@ -194,36 +173,22 @@ export default function LoginPageContent({
             {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
           </ButtonPrimary>
         </motion.div>
-        {/* <motion.span
+        <motion.span
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.85 }}
           className="text-neutral-700 lg:hidden text-center text-[1.8rem] leading-8"
         >
           {t("cta.or")}
-        </motion.span> */}
-        {/* <motion.div
+        </motion.span>
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.9 }}
           className="lg:hidden"
         >
-          <ButtonBlack
-            type="button"
-            onClick={googleLogin}
-            disabled={isLoading}
-            className="flex items-center w-full justify-center gap-4"
-          >
-            {isLoading ? (
-              <LoadingCircleSmall />
-            ) : (
-              <>
-                <Image src={Google} alt="google login" />
-                {t("cta.google")}
-              </>
-            )}
-          </ButtonBlack>
-        </motion.div> */}
+          <GoogleSignInButton referralCode={referralCode} />
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}

@@ -59,7 +59,10 @@ export default function TicketClassesChart({
       }
       return acc;
     }, {}),
-  );
+  ).map((t) => ({
+    ...t,
+    percentage: Math.round(t.percentage * 100) / 100,
+  }));
 
   const isEmpty = tickets.length === 0;
 
@@ -134,7 +137,9 @@ export default function TicketClassesChart({
                     </div>
                   </div>
                   <div className="justify-start font-medium text-black text-[25px] font-primary capitalize leading-none">
-                    {type.percentage}%
+                    {Number.isInteger(type.percentage)
+                      ? type.percentage
+                      : type.percentage.toFixed(2)}%
                   </div>
                 </div>
               ))}

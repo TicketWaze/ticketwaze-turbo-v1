@@ -35,7 +35,7 @@ export default function AddMember({ totalMembers }: { totalMembers: number }) {
   const AddMemberSchema = z.object({
     fullName: z.string().min(1, t("errors.name")),
     email: z.string().email(t("errors.email")),
-    role: z.string().min(1).max(1),
+    role: z.string().min(1).max(4),
   });
   type TAddMemberSchema = z.infer<typeof AddMemberSchema>;
 
@@ -47,7 +47,7 @@ export default function AddMember({ totalMembers }: { totalMembers: number }) {
   } = useForm<TAddMemberSchema>({
     resolver: zodResolver(AddMemberSchema),
     values: {
-      role: "1",
+      role: "",
       fullName: "",
       email: "",
     },
@@ -133,7 +133,7 @@ export default function AddMember({ totalMembers }: { totalMembers: number }) {
                 name="role"
                 control={control}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} defaultValue="1">
+                  <Select onValueChange={field.onChange}>
                     <SelectTrigger className="bg-neutral-100 w-full rounded-[3rem] p-10 border-none text-[1.4rem] text-neutral-700 leading-8">
                       <SelectValue placeholder={t("table.role")} />
                     </SelectTrigger>

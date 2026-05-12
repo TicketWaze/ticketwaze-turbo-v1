@@ -7,6 +7,9 @@ export async function UpdateOrganisationProfile(
   organisationDescription: string,
   accessToken: string,
   locale: string,
+  organisationWebsite?: string,
+  instagram?: string,
+  twitter?: string,
 ) {
   try {
     const request = await fetch(
@@ -22,6 +25,9 @@ export async function UpdateOrganisationProfile(
         body: JSON.stringify({
           organisationName,
           organisationDescription,
+          organisationWebsite,
+          instagram,
+          twitter,
         }),
       },
     );

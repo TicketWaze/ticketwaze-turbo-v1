@@ -19,8 +19,35 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import GoogleSignInButton from "@/components/shared/GoogleSignInButton";
 
 type View = "choice" | "login";
+
+function TermsNote() {
+  const t = useTranslations("Auth.register.terms");
+  return (
+    <p className="text-[1.3rem] leading-6 text-neutral-500 text-center">
+      {t("before")}
+      <a
+        href="https://ticketwaze.com/legals"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary-500 hover:underline"
+      >
+        {t("terms")}
+      </a>
+      {t("and")}
+      <a
+        href="https://ticketwaze.com/legals"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary-500 hover:underline"
+      >
+        {t("privacy")}
+      </a>
+    </p>
+  );
+}
 
 export default function BuyTicketAuthDialog({
   checkoutUrl,
@@ -142,6 +169,14 @@ export default function BuyTicketAuthDialog({
               </button>
             </div>
 
+            <div className="flex flex-col gap-4">
+              <span className="text-neutral-700 text-center text-[1.6rem] leading-8">
+                {tAuth("cta.or")}
+              </span>
+              <GoogleSignInButton callbackUrl={checkoutUrl} />
+              <TermsNote />
+            </div>
+
             <div className="border border-neutral-100 w-full p-4 pl-6 flex items-center justify-between gap-4 rounded-[100px]">
               <span className="text-[1.6rem] leading-8 text-neutral-700">
                 {tAuth("footer.text")}
@@ -239,11 +274,16 @@ export default function BuyTicketAuthDialog({
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.35, delay: 0.35 }}
-                    className="w-full"
+                    className="w-full flex flex-col gap-6"
                   >
                     <ButtonPrimary type="submit" disabled={isLoading} className="w-full">
                       {isLoading ? <LoadingCircleSmall /> : tAuth("cta.submit")}
                     </ButtonPrimary>
+                    <span className="text-neutral-700 text-center text-[1.6rem] leading-8">
+                      {tAuth("cta.or")}
+                    </span>
+                    <GoogleSignInButton callbackUrl={checkoutUrl} />
+                    <TermsNote />
                   </motion.div>
                 </div>
               </div>

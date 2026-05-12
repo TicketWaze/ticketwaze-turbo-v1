@@ -85,7 +85,14 @@
       },
       "cta": {
         "submit": "Créer un compte",
+        "or": "Ou",
         "google": "Continuer avec Google"
+      },
+      "terms": {
+        "before": "En continuant, vous acceptez nos ",
+        "terms": "Conditions d'utilisation",
+        "and": " et notre ",
+        "privacy": "Politique de confidentialité"
       },
       "footer": "Retour"
     },
@@ -886,7 +893,7 @@
     "create": "Créer une organisation",
     "createDescription": "Vous allez être redirigé vers l’espace organisation afin de créer une nouvelle organisation. Vous serez invité à vous reconnecter avec votre compte Ticketwaze pour des raisons de sécurité. Si vous ne souhaitez pas continuer, fermez simplement cette fenêtre.",
     "proceed": "Continuer",
-    "dashboard": "Votre espace",
+    "dashboard": "Mon espace",
     "filters": {
       "all": "Tous",
       "popular": "Populaires",

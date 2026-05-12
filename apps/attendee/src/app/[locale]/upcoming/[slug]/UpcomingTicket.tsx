@@ -28,14 +28,14 @@ export default function UpcomingTicket({
       >
         <span
           className={
-            "font-primary font-medium pt-4 text-[2.2rem] leading-[30px] text-black"
+            "font-primary font-medium pt-4 text-[2.2rem] leading-12 text-black"
           }
         >
           {t("ticket")}
         </span>
         <div
           className={
-            "w-full h-[250px] lg:h-[296px] relative  bg-neutral-100 p-[15px] pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center "
+            "w-full h-[250px] lg:h-[296px] relative  bg-neutral-100 p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center "
           }
         >
           <Image
@@ -45,9 +45,7 @@ export default function UpcomingTicket({
           />
 
           <div
-            className={
-              "flex items-center justify-between pt-[15px] gap-4 w-full"
-            }
+            className={"flex items-center justify-between pt-6 gap-4 w-full"}
           >
             <span className="text-neutral-600">
               1x {Capitalize(ticket.ticketType)}
@@ -59,7 +57,7 @@ export default function UpcomingTicket({
             )}
           </div>
           <div className="flex flex-col gap-4 w-full">
-            <div className="h-[2px] w-full rounded-[10px] bg-neutral-200"></div>
+            <div className="h-[.2rem] w-full rounded-[10px] bg-neutral-200"></div>
             <div className={"flex items-center justify-between gap-4 w-full"}>
               <span className="text-neutral-600">{t("ticketId")}</span>
               <span className="text-primary-500 font-medium">
@@ -72,11 +70,7 @@ export default function UpcomingTicket({
                 {ticket.fullName}
               </span>
             </div>
-            <div className={"flex items-center justify-between gap-4 w-full"}>
-              <span className="text-neutral-600">{t("email")}</span>
-              <span className="text-deep-100 font-medium">{ticket.email}</span>
-            </div>
-            <div className="h-[2px] w-full rounded-[10px] bg-neutral-200"></div>
+            <div className="h-[.2rem] w-full rounded-[10px] bg-neutral-200"></div>
             <div className={"flex items-center justify-between gap-4 w-full"}>
               <span className="text-neutral-600">{t("date")}</span>
               <span className="text-deep-100 font-medium">

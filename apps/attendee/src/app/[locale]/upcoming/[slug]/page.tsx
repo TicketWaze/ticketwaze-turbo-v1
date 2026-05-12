@@ -14,6 +14,7 @@ import Separator from "@/components/shared/Separator";
 import ReturnFreeTicketView from "./ReturnFreeTicketView";
 import { extractIdFromSlug } from "@/lib/Slugify";
 import ReturnPaidTicketView from "./ReturnPaidTicketView";
+import CheckoutEmailAlert from "./CheckoutEmailAlert";
 
 export default async function UpcomingEventPage({
   params,
@@ -58,14 +59,7 @@ export default async function UpcomingEventPage({
   return (
     <AttendeeLayout title="Event Page">
       <BackButton text={t("back")} />
-      {isFromCheckout && (
-        <div className="flex items-start gap-3 bg-green-50 border border-green-200 rounded-[12px] p-[15px] mb-2">
-          <Sms size="20" color="#15803d" variant="Bulk" className="shrink-0 mt-[2px]" />
-          <p className="text-[1.4rem] leading-7 text-green-800">
-            Your tickets have been sent to your email address. If you don&apos;t see them in your inbox, please check your spam or junk folder.
-          </p>
-        </div>
-      )}
+      {isFromCheckout && <CheckoutEmailAlert />}
       <div className="grid grid-cols-1 lg:grid-cols-[29fr_23fr] w-full ">
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
           {event.eventName}
@@ -187,7 +181,7 @@ export default async function UpcomingEventPage({
             <div></div>
             <div></div>
             <div className=" flex-col w-full gap-3 hidden lg:flex">
-              {tickets[0].isRefundable && event.isFree && (
+              {tickets[0]?.isRefundable && event.isFree && (
                 <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
                   <Warning2 size="24" color="#737C8A" variant="Bulk" />
                   <div>
@@ -197,10 +191,10 @@ export default async function UpcomingEventPage({
                   </div>
                 </div>
               )}
-              {tickets[0].isRefundable && event.isFree && (
+              {tickets[0]?.isRefundable && event.isFree && (
                 <ReturnFreeTicketView ticket={tickets[0]} />
               )}
-              {tickets[0].isRefundable && !event.isFree && (
+              {tickets[0]?.isRefundable && !event.isFree && (
                 <ReturnPaidTicketView
                   tickets={tickets}
                   eventDays={event.eventDays}
@@ -218,7 +212,7 @@ export default async function UpcomingEventPage({
             <TicketViewer tickets={tickets} event={event} />
           </div>
           <div className="flex lg:hidden flex-col w-full gap-3 ">
-            {tickets[0].isRefundable && event.isFree && (
+            {tickets[0]?.isRefundable && event.isFree && (
               <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
                 <Warning2 size="24" color="#737C8A" variant="Bulk" />
                 <div>
@@ -228,10 +222,10 @@ export default async function UpcomingEventPage({
                 </div>
               </div>
             )}
-            {tickets[0].isRefundable && event.isFree && (
+            {tickets[0]?.isRefundable && event.isFree && (
               <ReturnFreeTicketView ticket={tickets[0]} />
             )}
-            {tickets[0].isRefundable && !event.isFree && (
+            {tickets[0]?.isRefundable && !event.isFree && (
               <ReturnPaidTicketView
                 tickets={tickets}
                 eventDays={event.eventDays}
