@@ -5,17 +5,33 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 import { Input } from "@/components/shared/Inputs";
 import Capitalize from "@/lib/Capitalize";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
 import { toast } from "sonner";
 import * as z from "zod";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { InfoCircle } from "iconsax-reactjs";
 
-export default function ProfileForm({ authorized }: { authorized: boolean }) {
+export default function ProfileForm({
+  authorized,
+  organisation,
+  membershipTier,
+}: {
+  authorized: boolean;
+  organisation: Organisation;
+  membershipTier: MembershipTier;
+}) {
   const t = useTranslations("Settings.profile");
   const { data: session, update } = useSession();
-  const organisation = session?.activeOrganisation;
   const locale = useLocale();
+
   const UpdateProfileSchema = z.object({
     organisationName: z
       .string()
@@ -25,37 +41,48 @@ export default function ProfileForm({ authorized }: { authorized: boolean }) {
       .string()
       .min(150, t("errors.description.min"))
       .max(350, t("errors.description.max")),
+    organisationWebsite: z.string().optional(),
+    instagram: z.string().optional(),
+    twitter: z.string().optional(),
   });
 
   type TUpdateProfileSchema = z.infer<typeof UpdateProfileSchema>;
 
+  const [saved, setSaved] = useState(false);
+
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<TUpdateProfileSchema>({
     resolver: zodResolver(UpdateProfileSchema),
-    values: {
-      organisationName: organisation?.organisationName ?? "",
-      organisationDescription: organisation?.organisationDescription ?? "",
-    },
     defaultValues: {
-      organisationName: organisation?.organisationName ?? "",
-      organisationDescription: organisation?.organisationDescription ?? "",
+      organisationName: organisation.organisationName ?? "",
+      organisationDescription: organisation.organisationDescription ?? "",
+      organisationWebsite: organisation.organisationWebsite ?? "",
+      instagram: (organisation.socialLinks?.instagram as string) ?? "",
+      twitter: (organisation.socialLinks?.twitter as string) ?? "",
     },
   });
+
   async function submitHandler(data: TUpdateProfileSchema) {
     const result = await UpdateOrganisationProfile(
-      organisation?.organisationId ?? "",
+      organisation.organisationId,
       data.organisationName,
       data.organisationDescription,
       session?.user.accessToken ?? "",
       locale,
+      data.organisationWebsite,
+      data.instagram ?? "",
+      data.twitter ?? "",
     );
     if (result?.error) {
       toast.error(result.error);
     } else {
       toast.success(Capitalize(result.status ?? ""));
+      reset(data);
+      setSaved(true);
       if (result.organisation) {
         await update({
           ...session,
@@ -66,6 +93,7 @@ export default function ProfileForm({ authorized }: { authorized: boolean }) {
       }
     }
   }
+
   return (
     <form
       onSubmit={handleSubmit(submitHandler)}
@@ -93,7 +121,7 @@ export default function ProfileForm({ authorized }: { authorized: boolean }) {
         <textarea
           {...register("organisationDescription")}
           disabled={isSubmitting || !authorized}
-          className={`bg-neutral-100 w-full rounded-[2rem] resize-none h-60 p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 {isLoading ? 'animate-pulse' : null}`}
+          className={`bg-neutral-100 w-full rounded-4xl resize-none h-60 p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 {isLoading ? 'animate-pulse' : null}`}
           minLength={150}
           maxLength={350}
         />
@@ -104,17 +132,16 @@ export default function ProfileForm({ authorized }: { authorized: boolean }) {
       <Input
         disabled={true}
         readOnly
-        defaultValue={Capitalize(organisation?.country ?? "")}
+        defaultValue={Capitalize(organisation.country ?? "")}
       >
         {t("placeholders.country")}
       </Input>
-
       <div className={"flex gap-6"}>
         <Input
           className="flex-1"
           disabled={true}
           readOnly
-          defaultValue={organisation?.state}
+          defaultValue={organisation.state}
         >
           {t("placeholders.state")}
         </Input>
@@ -122,51 +149,78 @@ export default function ProfileForm({ authorized }: { authorized: boolean }) {
           className="flex-1"
           disabled={true}
           readOnly
-          defaultValue={organisation?.city}
+          defaultValue={organisation.city}
         >
           {t("placeholders.city")}
         </Input>
       </div>
-      {/* <Input className='flex-1' disabled={true} readOnly defaultValue={organisation?.city}>{t('placeholders.city')}</Input> */}
-      {/* <div>
-            <input
-              className={
-                'bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500'
-              }
-              type="text"
-              value={data?.website ?? ''}
-              onChange={(e) => setData('website', e.target.value)}
-              placeholder={profile.website}
-              disabled={!formEnabled}
-            />
-            {errors.website && <InputError message={errors.website} />}
-          </div> */}
-      {/* <div>
-            <div
-              className={
-                'bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 flex items-center'
-              }
+
+      {/* Website */}
+      <Input
+        {...register("organisationWebsite")}
+        type="url"
+        error={errors.organisationWebsite?.message}
+        isLoading={isSubmitting}
+        disabled={!authorized}
+        placeholder="https://yourwebsite.com"
+      >
+        {t("placeholders.website")}
+      </Input>
+
+      {/* Social links */}
+      <div className="flex items-center gap-3">
+        <span className={"font-medium text-[1.6rem] leading-10 text-deep-100"}>
+          {t("placeholders.social_links")}
+        </span>
+        {membershipTier.membershipName !== "premium" && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="cursor-pointer flex items-center">
+                <InfoCircle size="18" color="#E45B00" variant="Bulk" />
+              </span>
+            </TooltipTrigger>
+            <TooltipContent
+              side="right"
+              className="max-w-[220px] text-[1.2rem] leading-6"
             >
-              <div className={'flex gap-4 items-center'}>
-                <Instagram size="20" color="#737C8A" variant="Bulk" />
-                <span className={`${!formEnabled && 'text-neutral-600'}`}>
-                  https://instagram.com/
-                </span>
-              </div>
-              <input
-                type="text"
-                placeholder={'jane-doe'}
-                disabled={!formEnabled}
-                value={data.instagramUrl}
-                onChange={(e) => setData('instagramUrl', e.target.value)}
-                className={'outline-none disabled:text-neutral-600 disabled:cursor-not-allowed'}
-              />
-            </div>
-            {errors.website && <InputError message={errors.website} />}
-          </div> */}
+              {t("placeholders.social_links_premium")}
+            </TooltipContent>
+          </Tooltip>
+        )}
+      </div>
+
+      <div className="flex items-center bg-neutral-100 rounded-[100px] overflow-hidden border border-transparent focus-within:border-primary-500">
+        <span className="pl-8 pr-3 text-[1.5rem] text-neutral-500 whitespace-nowrap select-none">
+          instagram.com/
+        </span>
+        <input
+          {...register("instagram")}
+          type="text"
+          disabled={!authorized || isSubmitting}
+          placeholder={t("placeholders.instagram")}
+          className="flex-1 bg-transparent py-6 pr-8 text-[1.5rem] leading-8 text-deep-200 outline-none disabled:text-neutral-600 disabled:cursor-not-allowed"
+        />
+      </div>
+
+      <div className="flex items-center bg-neutral-100 rounded-[100px] overflow-hidden border border-transparent focus-within:border-primary-500">
+        <span className="pl-8 pr-3 text-[1.5rem] text-neutral-500 whitespace-nowrap select-none">
+          x.com/
+        </span>
+        <input
+          {...register("twitter")}
+          type="text"
+          disabled={!authorized || isSubmitting}
+          placeholder={t("placeholders.twitter")}
+          className="flex-1 bg-transparent py-6 pr-8 text-[1.5rem] leading-8 text-deep-200 outline-none disabled:text-neutral-600 disabled:cursor-not-allowed"
+        />
+      </div>
+
       <div></div>
       {authorized && (
-        <ButtonPrimary disabled={isSubmitting || !isDirty} type="submit">
+        <ButtonPrimary
+          disabled={isSubmitting || (!isDirty && !saved)}
+          type="submit"
+        >
           {t("save")}
         </ButtonPrimary>
       )}

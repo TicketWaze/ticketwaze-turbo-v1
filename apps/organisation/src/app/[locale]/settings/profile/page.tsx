@@ -4,10 +4,9 @@ import ProfileImage from "./ProfileImage";
 import ProfileForm from "./ProfileForm";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
-import { ButtonPrimary } from "@/components/shared/buttons";
 import CurrencyPreference from "./CurrencyPreference";
 import { auth } from "@/lib/auth";
-import { Organisation } from "@ticketwaze/typescript-config";
+import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
 
 export default async function ProfilePage() {
@@ -32,6 +31,7 @@ export default async function ProfilePage() {
   );
   const response = await request.json();
   const organisation: Organisation = response.organisation;
+  const membershipTier: MembershipTier = response.membershipTier;
   return (
     <OrganizerLayout title={t("title")}>
       <div className="flex flex-col gap-8">
@@ -44,7 +44,11 @@ export default async function ProfilePage() {
         }
       >
         <ProfileImage authorized={authorized} />
-        <ProfileForm authorized={authorized} />
+        <ProfileForm
+          authorized={authorized}
+          organisation={organisation}
+          membershipTier={membershipTier}
+        />
         <CurrencyPreference
           organisation={organisation}
           authorized={authorized}

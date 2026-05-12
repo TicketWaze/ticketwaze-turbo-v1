@@ -117,33 +117,35 @@ export default function TicketSelectionStep({
                 <span className="text-[1.5rem] text-neutral-900">
                   {t("ticket.quantity")}
                 </span>
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    disabled={
-                      isFree || event.eventType === "meet" || quantity === 0
-                    }
-                    className="w-[35px] h-[35px] disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
-                    onClick={() => decrement(index)}
-                  >
-                    <MinusCirlce size="20" color="#FFFFFF" variant="Bulk" />
-                  </button>
-                  <span className="text-[1.5rem] leading-12 text-neutral-900">
-                    {quantity}
+                {isFree ? (
+                  <span className="text-[1.5rem] leading-12 text-neutral-900 font-medium">
+                    1
                   </span>
-                  <button
-                    type="button"
-                    disabled={
-                      isFree ||
-                      event.eventType === "meet" ||
-                      quantity === ticketLeft
-                    }
-                    className="w-[35px] h-[35px] disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
-                    onClick={() => increment(index, ticketLeft)}
-                  >
-                    <AddCircle size="20" color="#FFFFFF" variant="Bulk" />
-                  </button>
-                </div>
+                ) : (
+                  <div className="flex items-center gap-4">
+                    <button
+                      type="button"
+                      disabled={event.eventType === "meet" || quantity === 0}
+                      className="w-[35px] h-[35px] disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
+                      onClick={() => decrement(index)}
+                    >
+                      <MinusCirlce size="20" color="#FFFFFF" variant="Bulk" />
+                    </button>
+                    <span className="text-[1.5rem] leading-12 text-neutral-900">
+                      {quantity}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={
+                        event.eventType === "meet" || quantity === ticketLeft
+                      }
+                      className="w-[35px] h-[35px] disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
+                      onClick={() => increment(index, ticketLeft)}
+                    >
+                      <AddCircle size="20" color="#FFFFFF" variant="Bulk" />
+                    </button>
+                  </div>
+                )}
               </div>
             </li>
           );

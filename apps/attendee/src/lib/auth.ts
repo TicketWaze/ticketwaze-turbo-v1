@@ -26,8 +26,35 @@ const nextAuthResult = NextAuth({
       credentials: {
         email: {},
         password: {},
+        googleIdToken: {},
+        referralCode: {},
       },
       authorize: async (credentials) => {
+        if (credentials.googleIdToken) {
+          const body: Record<string, string> = {
+            idToken: credentials.googleIdToken as string,
+          };
+          if (credentials.referralCode) {
+            body.referralCode = credentials.referralCode as string;
+          }
+          const response = await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(body),
+            },
+          );
+          const data = await response.json();
+          if (data.status !== "success") {
+            if (response.status === 401) {
+              throw new Error("Google sign-in failed, please try again");
+            }
+            throw new Error(data.message || "Google sign-in failed");
+          }
+          return { ...data.user, id: data.user.userId };
+        }
+
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
           {
@@ -46,9 +73,6 @@ const nextAuthResult = NextAuth({
           throw new Error(data.message || "Invalid credentials");
         }
 
-        /**
-         * Return user to JWT callback
-         */
         return data.user;
       },
     }),
@@ -72,9 +96,7 @@ const nextAuthResult = NextAuth({
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                email: user.email,
-                name: user.name,
-                avatar: user.image,
+                idToken: account.id_token,
               }),
             },
           );

@@ -147,12 +147,6 @@ export default function TicketViewer({
                   {tickets[currentIndex].fullName}
                 </span>
               </div>
-              <div className={"flex items-center justify-between gap-4 w-full"}>
-                <span className="text-neutral-600">{t("email")}</span>
-                <span className="text-deep-100 font-medium">
-                  {tickets[currentIndex].email}
-                </span>
-              </div>
               <div className="h-[2px] w-full rounded-[10px] bg-neutral-200"></div>
               <div className={"flex items-center justify-between gap-4 w-full"}>
                 <span className="text-neutral-600">{t("date")}</span>
@@ -207,6 +201,12 @@ export default function TicketViewer({
             value={tickets[currentIndex].ticketId}
             size={300}
             level="H"
+            imageSettings={{
+              src: "/logo-simple-orange.svg",
+              height: 52,
+              width: 52,
+              excavate: true,
+            }}
           />
         </div>
       </div>

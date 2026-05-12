@@ -426,7 +426,7 @@
         "name": "Nom de l'activité",
         "class": "Classe de billet",
         "amount": "Montant payé",
-        "status": "Statut de la transaction",
+        "status": "Statut",
         "date": "Date d'achat"
       },
       "more": "Voir tout",
@@ -729,6 +729,11 @@
       "general_default": "Profitez d’un accès complet sans aucun coût ! Rejoignez-nous pour une expérience inoubliable. Réservez votre place dès aujourd’hui !",
       "meet_default": "Participez à notre session Meet avec un accès complet ! Connectez-vous et profitez de partout. Réservez votre place dès aujourd’hui !",
       "draft": "Enregistrer comme brouillon",
+      "no_changes": "Aucune modification n'a été effectuée.",
+      "edit_warning_title": "Enregistrer les modifications ?",
+      "edit_warning_body": "En modifiant cette activité, elle sera soumise à une nouvelle révision. Elle ne sera pas visible sur l'application tant que la révision n'aura pas été approuvée.",
+      "edit_warning_confirm": "Oui, enregistrer",
+      "edit_warning_cancel": "Retour",
       "optional": "optionnel",
       "pro": "Il s'agit d'une fonctionnalité Pro+",
       "freeTip": "Lorsque vous définissez une activité comme gratuite, le système l’indiquera automatiquement comme remboursable. Cela garantit une cohérence pour toutes les activités gratuits et évite les ajustements manuels.",
@@ -856,7 +861,11 @@
         "country": "Pays",
         "city": "Ville",
         "state": "État/Région",
-        "website": "Site web de l'organisation"
+        "website": "Site web de l'organisation",
+        "instagram": "Identifiant Instagram",
+        "twitter": "Identifiant X (Twitter)",
+        "social_links": "Réseaux sociaux",
+        "social_links_premium": "Les liens sociaux ne sont affichés sur votre profil public qu'avec un abonnement Premium."
       },
       "errors": {
         "name": {

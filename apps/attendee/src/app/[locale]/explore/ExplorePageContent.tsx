@@ -19,6 +19,7 @@ import {
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function ExplorePageContent({
   events,
@@ -38,7 +39,12 @@ export default function ExplorePageContent({
   const [mobileSearch, setMobileSearch] = useState(false);
   return (
     <>
-      <header className="w-full flex items-center justify-between ">
+      <motion.header
+        className="w-full flex items-center justify-between"
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
         {!mobileSearch && (
           <div className="flex flex-col gap-[5px]">
             {session?.user && (
@@ -155,39 +161,48 @@ export default function ExplorePageContent({
             )} */}
           </div>
         </div>
-      </header>
+      </motion.header>
       {events.length > 0 ? (
         <>
           <ul className="list pt-4 overflow-y-scroll">
-            {filteredEvents.map((event) => {
-              return (
-                <li key={event.eventId}>
-                  <EventCard
-                    event={event}
-                    //  href={`/explore/${slug}`}
-                  />
-                </li>
-              );
-            })}
+            {filteredEvents.map((event, index) => (
+              <motion.li
+                key={event.eventId}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut", delay: Math.min(index * 0.06, 0.3) }}
+              >
+                <EventCard event={event} />
+              </motion.li>
+            ))}
           </ul>
-          {filteredEvents.length === 0 && (
-            <div className="flex flex-col h-full justify-center items-center gap-[30px]">
-              <div className="h-[120px] w-[120px] bg-neutral-100 rounded-full flex items-center justify-center">
-                <div className="w-[90px] h-[90px] bg-neutral-200 flex items-center justify-center rounded-full">
-                  <Ticket size="50" color="#0D0D0D" variant="Bulk" />
+          <AnimatePresence>
+            {filteredEvents.length === 0 && (
+              <motion.div
+                className="flex flex-col h-full justify-center items-center gap-[30px]"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="h-[120px] w-[120px] bg-neutral-100 rounded-full flex items-center justify-center">
+                  <div className="w-[90px] h-[90px] bg-neutral-200 flex items-center justify-center rounded-full">
+                    <Ticket size="50" color="#0D0D0D" variant="Bulk" />
+                  </div>
                 </div>
-              </div>
-              <span className="font-primary text-[1.8rem] text-center leading-8 text-neutral-600">
-                {t("noResult")} <span className="text-deep-100">{query}</span>
-              </span>
-            </div>
-          )}
+                <span className="font-primary text-[1.8rem] text-center leading-8 text-neutral-600">
+                  {t("noResult")} <span className="text-deep-100">{query}</span>
+                </span>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </>
       ) : (
-        <div
-          className={
-            "w-[330px] lg:w-[460px] mx-auto h-full justify-center flex flex-col items-center gap-[5rem]"
-          }
+        <motion.div
+          className="w-[330px] lg:w-[460px] mx-auto h-full justify-center flex flex-col items-center gap-[5rem]"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <div
             className={
@@ -211,7 +226,7 @@ export default function ExplorePageContent({
               {t("noEvent")}
             </p>
           </div>
-        </div>
+        </motion.div>
       )}
     </>
   );

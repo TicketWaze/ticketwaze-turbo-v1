@@ -3,6 +3,7 @@ import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-white.svg";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import ticket from "@ticketwaze/ui/assets/images/ticket-auth-bg.svg";
+import { Link } from "@/i18n/navigation";
 
 export default async function Layout({
   children,
@@ -13,17 +14,19 @@ export default async function Layout({
   return (
     <section className="lg:p-8 lg:bg-primary-500 h-dvh overflow-hidden grid lg:grid-cols-2 gap-8">
       <div className="pt-12 pl-12 hidden lg:flex flex-col overflow-y-scroll no-scrollbar bg">
-        <Image
-          src={Logo}
-          alt="Ticket Waze Logo"
-          width={140}
-          height={40}
-          className="mb-[50px]"
-        />
-        <h1 className="mb-8 font-primary font-bold text-[4.5rem] leading-[6.2rem] text-white max-w-[600px]">
+        <Link href={"/explore"}>
+          <Image
+            src={Logo}
+            alt="Ticket Waze Logo"
+            width={140}
+            height={40}
+            className="mb-20"
+          />
+        </Link>
+        <h1 className="mb-8 font-primary font-bold text-[4.5rem] leading-[6.2rem] text-white max-w-240">
           {t("title")}
         </h1>
-        <p className="mb-14 text-[1.8rem] leading-[2.5rem] text-neutral-200 max-w-[422px]">
+        <p className="mb-14 text-[1.8rem] leading-10 text-neutral-200 max-w-[42.2rem]">
           {t("description")}
         </p>
         <Image src={ticket} alt="Ticket auth" className=" self-center" />

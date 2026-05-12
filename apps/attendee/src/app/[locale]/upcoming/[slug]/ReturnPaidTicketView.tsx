@@ -15,6 +15,7 @@ import { Warning2, TickCircle } from "iconsax-reactjs";
 import { EventDay, Ticket } from "@ticketwaze/typescript-config";
 import { ReturnPaidTicketAction } from "@/actions/eventActions";
 import { useSession } from "next-auth/react";
+import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { useRef, useState } from "react";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -29,6 +30,7 @@ export default function ReturnPaidTicketView({
   const t = useTranslations("Event");
   const { data: session } = useSession();
   const locale = useLocale();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [step, setStep] = useState<"select" | "confirm">("select");
@@ -109,6 +111,12 @@ export default function ReturnPaidTicketView({
     );
     if (result.status === "success") {
       toast.success(result.status);
+      if (selectedIds.size === tickets.length) {
+        router.push("/upcoming");
+      } else {
+        closeRef.current?.click();
+        router.refresh();
+      }
     } else {
       toast.error(result.message);
     }

@@ -427,7 +427,7 @@
         "name": "Activity Name",
         "class": "Ticket Class",
         "amount": "Amount paid",
-        "status": "Transaction Status",
+        "status": "Status",
         "date": "Date Purchased"
       },
       "more": "View all",
@@ -778,6 +778,11 @@
       "general_default": "Enjoy full access without any cost! Join us for an unforgettable experience. Secure your spot today!",
       "meet_default": "Join our Meet session with full access! Connect, and enjoy anywhere. Reserve your place today!",
       "draft": "Save as draft",
+      "no_changes": "No changes were made.",
+      "edit_warning_title": "Save changes?",
+      "edit_warning_body": "By editing this activity, it will be sent for review again. It will not be listed on the app until the review is approved.",
+      "edit_warning_confirm": "Yes, save changes",
+      "edit_warning_cancel": "Go back",
       "optional": "optional",
       "pro": "This is Pro+ feature",
       "freeTip": "When you set an activity as Free, the system will automatically mark it as Refundable. This ensures consistency across all free activities and avoids manual adjustments.",
@@ -909,7 +914,11 @@
         "country": "Country",
         "city": "City",
         "state": "State/Region",
-        "website": "Organisation website"
+        "website": "Organisation website",
+        "instagram": "Instagram handle",
+        "twitter": "X (Twitter) handle",
+        "social_links": "Social Links",
+        "social_links_premium": "Social links are only displayed on your public profile with a Premium membership."
       },
       "errors": {
         "name": {

@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { useState } from "react";
+import GoogleSignInButton from "../shared/GoogleSignInButton";
 
 export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
   const t = useTranslations("Auth.login");
@@ -68,7 +69,11 @@ export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
     setIsloading(false);
   }
   return (
-    <DialogContent className={"w-xl lg:w-208 max-h-[90vh] overflow-y-scroll "}>
+    <DialogContent
+      className={
+        "w-[96vw] lg:w-208 max-h-[90vh] overflow-x-hidden overflow-y-auto"
+      }
+    >
       <DialogHeader>
         <DialogTitle
           className={
@@ -162,59 +167,14 @@ export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
               >
                 {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
               </ButtonPrimary>
-              {/* <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
-              {t("cta.or")}
-            </span>
-            <ButtonBlack
-              type="button"
-              onClick={googleLogin}
-              disabled={isLoading}
-              className="flex items-center justify-center gap-4 mb-10"
-            >
-              {isLoading ? (
-                <LoadingCircleSmall />
-              ) : (
-                <>
-                  <Image src={Google} alt="google login" />
-                  {t("cta.google")}
-                </>
-              )}
-            </ButtonBlack> */}
+              <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
+                {t("cta.or")}
+              </span>
+              <GoogleSignInButton />
             </motion.div>
           </div>
         </div>
         <div className="flex flex-col gap-6 w-full">
-          {/* <motion.span
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.85 }}
-          className="text-neutral-700 lg:hidden text-center text-[1.8rem] leading-8"
-        >
-          {t("cta.or")}
-        </motion.span> */}
-          {/* <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.9 }}
-          className="lg:hidden"
-        >
-          <ButtonBlack
-            type="button"
-            onClick={googleLogin}
-            disabled={isLoading}
-            className="flex items-center w-full justify-center gap-4"
-          >
-            {isLoading ? (
-              <LoadingCircleSmall />
-            ) : (
-              <>
-                <Image src={Google} alt="google login" />
-                {t("cta.google")}
-              </>
-            )}
-          </ButtonBlack>
-        </motion.div> */}
-
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

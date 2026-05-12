@@ -89,7 +89,7 @@ export default function EditInPersonEventForm({
     getValues,
     control,
     trigger,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
     defaultValues: {
@@ -175,11 +175,24 @@ export default function EditInPersonEventForm({
 
   type FieldName = keyof TForm;
   const [isLoading, setIsLoading] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const next = async () => {
     const fields = steps[currentStep]?.fields;
     const output = await trigger(fields as FieldName[], { shouldFocus: true });
     if (!output) return;
+    if (currentStep === steps.length - 1) {
+      const hasChanges =
+        isDirty ||
+        isFree !== event.isFree ||
+        isRefundable !== (event.eventTicketTypes[0]?.isRefundable ?? false);
+      if (!hasChanges) {
+        toast.info(t("no_changes"));
+        return;
+      }
+      setShowConfirm(true);
+      return;
+    }
     if (currentStep === 0) {
       // validate basic details
       setIsLoading(true);
@@ -211,10 +224,6 @@ export default function EditInPersonEventForm({
       }
       setIsLoading(false);
     }
-    if (currentStep === steps.length - 1) {
-      await handleSubmit(processForm)();
-      return;
-    }
     setPreviousStep(currentStep);
     setCurrentStep((s) => s + 1);
   };
@@ -242,7 +251,7 @@ export default function EditInPersonEventForm({
           const file = new File([blob], "event-image.jpg", {
             type: blob.type || "image/jpeg",
           });
-          setValue("eventImage", file, { shouldValidate: true });
+          setValue("eventImage", file, { shouldValidate: true, shouldDirty: false });
         } catch (error) {
           console.error("Failed to load existing image:", error);
         }
@@ -393,6 +402,32 @@ export default function EditInPersonEventForm({
             <DialogClose asChild onClick={cropImage}>
               <span className="bg-primary-500 px-[3rem] py-[15px] border-2 border-transparent rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center w-full">
                 {t("resize")}
+              </span>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("edit_warning_title")}</DialogTitle>
+            <DialogDescription className="text-[1.5rem]">
+              {t("edit_warning_body")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-4 pt-2">
+            <DialogClose asChild>
+              <span className="flex-1 px-[3rem] py-[15px] border border-neutral-200 rounded-[100px] text-neutral-600 font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center">
+                {t("edit_warning_cancel")}
+              </span>
+            </DialogClose>
+            <DialogClose asChild>
+              <span
+                onClick={() => handleSubmit(processForm)()}
+                className="flex-1 bg-primary-500 px-[3rem] py-[15px] rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center"
+              >
+                {t("edit_warning_confirm")}
               </span>
             </DialogClose>
           </DialogFooter>

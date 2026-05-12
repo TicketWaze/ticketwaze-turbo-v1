@@ -1,13 +1,14 @@
-import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import TopBar from "@/components/shared/TopBar";
 import { auth } from "@/lib/auth";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
-import { OrganisationWithdrawalRequest } from "@ticketwaze/typescript-config";
+import { OrganisationOrders } from "@ticketwaze/typescript-config";
 import { getLocale, getTranslations } from "next-intl/server";
-import WithdrawalRequestPageContent from "./WithdrawalRequestPageContent";
+import OrganisationPageWrapper from "./OrganisationPageWrapper";
+import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
+import TopBar from "@/components/shared/TopBar";
+import BackButton from "@/components/shared/BackButton";
 
-export default async function WithdrawalPage({
+export default async function OrganisationTransactions({
   searchParams,
 }: {
   searchParams: Promise<{ page: string | undefined }>;
@@ -24,7 +25,7 @@ export default async function WithdrawalPage({
   }
   const { page } = await searchParams;
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/withdrawal?limit=15&page=${page ?? 1}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/orders?limit=15&page=${page ?? 1}`,
     {
       method: "GET",
       headers: {
@@ -36,12 +37,11 @@ export default async function WithdrawalPage({
     },
   );
   const response = await request.json();
-  const withdrawalRequest: OrganisationWithdrawalRequest =
-    response.withdrawalRequest;
+  const organisationOrders: OrganisationOrders = await response.orders;
   return (
     <OrganizerLayout title="">
-      <TopBar title={t("withdrawal.title")} />
-      <WithdrawalRequestPageContent withdrawalRequest={withdrawalRequest} />
+      <BackButton text={t("back")} />
+      <OrganisationPageWrapper organisationOrders={organisationOrders} />
     </OrganizerLayout>
   );
 }

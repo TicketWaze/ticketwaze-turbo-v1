@@ -12,13 +12,22 @@ export default async function EditEvent({
 }) {
   const { slug } = await params;
   const eventId = extractIdFromSlug(slug);
+  const session = await auth();
+  const locale = await getLocale();
   const eventRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/events/${eventId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.user.accessToken}`,
+        "Accept-Language": locale,
+        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+      },
+    },
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
-  const session = await auth();
-  const locale = await getLocale();
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,
     {

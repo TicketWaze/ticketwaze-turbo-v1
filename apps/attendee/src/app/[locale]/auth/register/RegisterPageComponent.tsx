@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
-import { Link, usePathname, useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Select,
@@ -20,6 +20,7 @@ import { motion } from "framer-motion";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
+import GoogleSignInButton from "@/components/shared/GoogleSignInButton";
 
 export default function RegisterPageComponent({
   referralCode,
@@ -31,31 +32,34 @@ export default function RegisterPageComponent({
   const [isInvited, setIsInvited] = useState(false);
   const [invitedBy, setInvitedBy] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(false);
-  useEffect(function () {
-    if (referralCode && referralCode !== "") {
-      setIsLoading(true);
-      fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/referral/${referralCode}`,
-        {
-          method: "GET",
-          cache: "no-store",
-          headers: {
-            "Content-Type": "application/json",
+  useEffect(
+    function () {
+      if (referralCode && referralCode !== "") {
+        setIsLoading(true);
+        fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/referral/${referralCode}`,
+          {
+            method: "GET",
+            cache: "no-store",
+            headers: {
+              "Content-Type": "application/json",
+            },
           },
-        },
-      )
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status === "success") {
-            setIsInvited(true);
-            setInvitedBy(data.fullName);
-          } else {
-            toast.error("Invalid referral code");
-          }
-        })
-        .finally(() => setIsLoading(false));
-    }
-  }, []);
+        )
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              setIsInvited(true);
+              setInvitedBy(data.fullName);
+            } else {
+              toast.error("Invalid referral code");
+            }
+          })
+          .finally(() => setIsLoading(false));
+      }
+    },
+    [referralCode],
+  );
   const t = useTranslations("Auth.register");
   const RegisterSchema = z
     .object({
@@ -86,7 +90,6 @@ export default function RegisterPageComponent({
     defaultValues: { email },
   });
   const router = useRouter();
-  const pathname = usePathname();
   const locale = useLocale();
 
   async function submitHandler(data: TRegisterSchema) {
@@ -134,7 +137,7 @@ export default function RegisterPageComponent({
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
-                  className="font-medium font-primary text-[3.2rem] leading-[3.5rem] text-black"
+                  className="font-medium font-primary text-[3.2rem] leading-14 text-black"
                 >
                   {t("organizer")}
                 </motion.h3>
@@ -142,7 +145,7 @@ export default function RegisterPageComponent({
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className="text-[1.8rem] text-center leading-[2.5rem] text-neutral-700"
+                  className="text-[1.8rem] text-center leading-10 text-neutral-700"
                 >
                   {t("description")}
                 </motion.p>
@@ -159,7 +162,7 @@ export default function RegisterPageComponent({
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.45 }}
-                  className="text-success text-[1.5rem] text-center leading-[2.5rem]"
+                  className="text-success text-[1.5rem] text-center leading-10"
                 >
                   <span className="font-semibold">{invitedBy}</span>
                   {t("referral")}
@@ -235,7 +238,7 @@ export default function RegisterPageComponent({
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.6 }}
-                className={"flex gap-[1.5rem]"}
+                className={"flex gap-6"}
               >
                 <Input
                   {...register("firstName")}
@@ -292,7 +295,7 @@ export default function RegisterPageComponent({
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 1 }}
-              className="w-full hidden lg:block"
+              className="w-full hidden lg:flex flex-col gap-8"
             >
               <ButtonPrimary
                 disabled={isSubmitting}
@@ -303,6 +306,30 @@ export default function RegisterPageComponent({
               >
                 {isSubmitting ? <LoadingCircleSmall /> : t("cta.submit")}
               </ButtonPrimary>
+              <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
+                {t("cta.or")}
+              </span>
+              <GoogleSignInButton referralCode={referralCode} />
+              <p className="text-[1.3rem] leading-6 text-neutral-500 text-center">
+                {t("terms.before")}
+                <a
+                  href="https://ticketwaze.com/legals"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-500 hover:underline"
+                >
+                  {t("terms.terms")}
+                </a>
+                {t("terms.and")}
+                <a
+                  href="https://ticketwaze.com/legals"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary-500 hover:underline"
+                >
+                  {t("terms.privacy")}
+                </a>
+              </p>
             </motion.div>
           </div>
         </div>
@@ -321,6 +348,47 @@ export default function RegisterPageComponent({
             {isSubmitting ? <LoadingCircleSmall /> : t("cta.submit")}
           </ButtonPrimary>
         </motion.div>
+        <motion.span
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 1.05 }}
+          className="text-neutral-700 lg:hidden text-center text-[1.8rem] leading-8"
+        >
+          {t("cta.or")}
+        </motion.span>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 1.1 }}
+          className="lg:hidden"
+        >
+          <GoogleSignInButton referralCode={referralCode} />
+        </motion.div>
+        <motion.p
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 1.15 }}
+          className="lg:hidden text-[1.3rem] leading-6 text-neutral-500 text-center"
+        >
+          {t("terms.before")}
+          <a
+            href="https://ticketwaze.com/legals"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary-500 hover:underline"
+          >
+            {t("terms.terms")}
+          </a>
+          {t("terms.and")}
+          <a
+            href="https://ticketwaze.com/legals"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary-500 hover:underline"
+          >
+            {t("terms.privacy")}
+          </a>
+        </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -331,7 +399,7 @@ export default function RegisterPageComponent({
         >
           <span
             className={
-              "font-normal text-[1.8rem] leading-[25px] text-center text-neutral-700"
+              "font-normal text-[1.8rem] leading-10 text-center text-neutral-700"
             }
           >
             {t("choice.footer.text")}
@@ -339,7 +407,7 @@ export default function RegisterPageComponent({
           <Link
             href={`/auth/login`}
             className={
-              "border-2 border-primary-500 px-[2rem] lg:px-[3rem] py-6 rounded-[10rem] font-normal text-primary-500 text-[1.5rem] leading-8 bg-primary-100"
+              "border-2 border-primary-500 px-8 lg:px-12 py-6 rounded-[10rem] font-normal text-primary-500 text-[1.5rem] leading-8 bg-primary-100"
             }
           >
             {t("choice.footer.cta")}

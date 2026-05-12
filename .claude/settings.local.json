@@ -29,7 +29,8 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Windows\\\\Documents\\\\Ticketwaze\\\\ticketwaze-turbo-v1\" -Directory)",
       "Bash(Select-Object Name)",
       "Bash(Get-ChildItem -Recurse \"C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\organisation\\\\src\\\\app\\\\[locale]\\\\events\\\\show\\\\[slug]\" -ErrorAction SilentlyContinue)",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\attendee\\\\src\\\\app\\\\[locale]\\\\explore\" -Recurse)"
     ]
   }
 }

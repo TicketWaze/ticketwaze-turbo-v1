@@ -11,7 +11,7 @@ import {
 import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 import { DateTime } from "luxon";
-import { Download, ImagePlay, RefreshCw } from "lucide-react";
+import { Download, ImagePlay, Share2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import QRCode from "qrcode";
 import { useRef, useState } from "react";
@@ -452,59 +452,59 @@ async function paintPayments(ctx: CanvasRenderingContext2D) {
 }
 
 // 9. FOOTER ── brand lockup on dark base
-async function paintFooter(ctx: CanvasRenderingContext2D) {
-  // separator
-  ctx.strokeStyle = C.border;
-  ctx.lineWidth = 1;
-  ctx.setLineDash([]);
-  ctx.beginPath();
-  ctx.moveTo(0, Y.footerLine);
-  ctx.lineTo(W, Y.footerLine);
-  ctx.stroke();
+// async function paintFooter(ctx: CanvasRenderingContext2D) {
+//   // separator
+//   ctx.strokeStyle = C.border;
+//   ctx.lineWidth = 1;
+//   ctx.setLineDash([]);
+//   ctx.beginPath();
+//   ctx.moveTo(0, Y.footerLine);
+//   ctx.lineTo(W, Y.footerLine);
+//   ctx.stroke();
 
-  // background gradient
-  const fg = ctx.createLinearGradient(0, Y.footerLine, 0, H);
-  fg.addColorStop(0, "#111111");
-  fg.addColorStop(1, "#080808");
-  ctx.fillStyle = fg;
-  ctx.fillRect(0, Y.footerLine, W, H - Y.footerLine);
+//   // background gradient
+//   const fg = ctx.createLinearGradient(0, Y.footerLine, 0, H);
+//   fg.addColorStop(0, "#111111");
+//   fg.addColorStop(1, "#080808");
+//   ctx.fillStyle = fg;
+//   ctx.fillRect(0, Y.footerLine, W, H - Y.footerLine);
 
-  const cy = Y.footerLine + (H - Y.footerLine) / 2;
+//   const cy = Y.footerLine + (H - Y.footerLine) / 2;
 
-  // Icon mark — small orange circle + "T"
-  const ir = 18,
-    ix = W / 2 - 172;
-  ctx.fillStyle = C.orange;
-  ctx.beginPath();
-  ctx.arc(ix, cy, ir, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = C.white;
-  ctx.font = font("bold", 17);
-  ctx.textAlign = "center";
-  ctx.textBaseline = "middle";
-  ctx.fillText("T", ix, cy);
+//   // Icon mark — small orange circle + "T"
+//   const ir = 18,
+//     ix = W / 2 - 172;
+//   ctx.fillStyle = C.orange;
+//   ctx.beginPath();
+//   ctx.arc(ix, cy, ir, 0, Math.PI * 2);
+//   ctx.fill();
+//   ctx.fillStyle = C.white;
+//   ctx.font = font("bold", 17);
+//   ctx.textAlign = "center";
+//   ctx.textBaseline = "middle";
+//   ctx.fillText("T", ix, cy);
 
-  // "Powered by TicketWaze"
-  ctx.textAlign = "left";
-  ctx.fillStyle = C.muted;
-  ctx.font = font("400", 24);
-  ctx.fillText("Powered by", ix + ir + 14, cy);
-  ctx.fillStyle = C.orange;
-  ctx.font = font("700", 24);
-  const pwText = ctx.measureText("Powered by ").width;
-  ctx.fillText("TicketWaze", ix + ir + 14 + pwText, cy);
+//   // "Powered by TicketWaze"
+//   ctx.textAlign = "left";
+//   ctx.fillStyle = C.muted;
+//   ctx.font = font("400", 24);
+//   ctx.fillText("Powered by", ix + ir + 14, cy);
+//   ctx.fillStyle = C.orange;
+//   ctx.font = font("700", 24);
+//   const pwText = ctx.measureText("Powered by ").width;
+//   ctx.fillText("TicketWaze", ix + ir + 14 + pwText, cy);
 
-  // dot separator
-  ctx.fillStyle = C.dim;
-  ctx.beginPath();
-  ctx.arc(ix + ir + 14 + pwText + 140, cy, 3, 0, Math.PI * 2);
-  ctx.fill();
+//   // dot separator
+//   ctx.fillStyle = C.dim;
+//   ctx.beginPath();
+//   ctx.arc(ix + ir + 14 + pwText + 140, cy, 3, 0, Math.PI * 2);
+//   ctx.fill();
 
-  // URL
-  ctx.fillStyle = C.dim;
-  ctx.font = font("400", 22);
-  ctx.fillText("ticketwaze.com", ix + ir + 14 + pwText + 152, cy);
-}
+//   // URL
+//   ctx.fillStyle = C.dim;
+//   ctx.font = font("400", 22);
+//   ctx.fillText("ticketwaze.com", ix + ir + 14 + pwText + 152, cy);
+// }
 
 // ─── Orchestrator ─────────────────────────────────────────────────────────────
 
@@ -588,6 +588,36 @@ export default function EventPosterGenerator({ event }: { event: Event }) {
     a.click();
   }
 
+  async function share() {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const blob = await new Promise<Blob | null>((res) =>
+      canvas.toBlob(res, "image/png"),
+    );
+    if (!blob) return;
+    const file = new File(
+      [blob],
+      `${slugify(event.eventName, event.eventId)}-poster.png`,
+      {
+        type: "image/png",
+      },
+    );
+    const shareData: ShareData = {
+      title: event.eventName,
+      text: `${event.eventName}\n${eventLink}`,
+      files: [file],
+    };
+    if (navigator.canShare?.(shareData)) {
+      await navigator.share(shareData);
+    } else {
+      // fallback: share without file (url + text only)
+      await navigator.share({
+        title: event.eventName,
+        text: `${event.eventName}\n${eventLink}`,
+      });
+    }
+  }
+
   function reset() {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -612,7 +642,7 @@ export default function EventPosterGenerator({ event }: { event: Event }) {
         </button>
       </DialogTrigger>
 
-      <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[95vw] max-w-200 max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="font-medium text-[2.2rem] leading-12 text-black font-primary border-b border-neutral-100 pb-8">
             Instagram Poster
@@ -675,13 +705,13 @@ export default function EventPosterGenerator({ event }: { event: Event }) {
 
             {phase === "done" && (
               <>
-                <button
+                {/* <button
                   onClick={reset}
                   className="flex items-center gap-4 px-10 py-5 rounded-[100px] border border-neutral-200 text-[1.5rem] font-medium text-neutral-600 cursor-pointer hover:border-neutral-300 transition-colors"
                 >
                   <RefreshCw size={16} />
                   Regenerate
-                </button>
+                </button> */}
                 <button
                   onClick={download}
                   className="flex items-center gap-4 px-12 py-5 rounded-[100px] bg-primary-500 text-white text-[1.5rem] font-medium cursor-pointer hover:bg-primary-500/90 transition-colors"
@@ -689,6 +719,15 @@ export default function EventPosterGenerator({ event }: { event: Event }) {
                   <Download size={18} />
                   Download PNG
                 </button>
+                {"share" in navigator && (
+                  <button
+                    onClick={share}
+                    className="flex items-center gap-4 px-10 py-5 rounded-[100px] border border-neutral-200 text-[1.5rem] font-medium text-neutral-600 cursor-pointer hover:border-neutral-300 transition-colors"
+                  >
+                    <Share2 size={16} />
+                    Share
+                  </button>
+                )}
               </>
             )}
           </div>

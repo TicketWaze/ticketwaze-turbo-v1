@@ -25,6 +25,7 @@ import Capitalize from "@/lib/Capitalize";
 import { extractIdFromSlug } from "@/lib/Slugify";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
+import AnimatedEventPage from "./AnimatedEventPage";
 
 export async function generateMetadata({
   params,
@@ -65,7 +66,7 @@ export default async function EventPage({
   if (event.eventType === "private") {
     return (
       <AttendeeLayout title={event.eventName}>
-        <div className="flex flex-col gap-8 h-full min-h-0">
+        <AnimatedEventPage>
           <BackButton text={t("back")} />
           <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
             {event.eventName}
@@ -98,7 +99,7 @@ export default async function EventPage({
               </p>
             </div>
           </div>
-        </div>
+        </AnimatedEventPage>
       </AttendeeLayout>
     );
   }
@@ -124,7 +125,7 @@ export default async function EventPage({
   );
   return (
     <AttendeeLayout title={event.eventName}>
-      <div className="flex flex-col gap-8 h-full min-h-0">
+      <AnimatedEventPage>
         <BackButton text={t("back")} />
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
           {event.eventName}
@@ -592,7 +593,7 @@ export default async function EventPage({
             )}
           </div>
         </main>
-      </div>
+      </AnimatedEventPage>
     </AttendeeLayout>
   );
 }

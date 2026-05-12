@@ -54,16 +54,6 @@ export default function Informations({
                   {ticket.fullName}
                 </span>
               </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("transactions.details.email")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
-                  {ticket.email}
-                </span>
-              </p>
             </div>
             <Separator />
             <div className={"w-full flex flex-col gap-8"}>
