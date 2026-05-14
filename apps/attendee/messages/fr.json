@@ -94,7 +94,20 @@
         "and": " et notre ",
         "privacy": "Politique de confidentialité"
       },
-      "footer": "Retour"
+      "footer": "Retour",
+      "otp": {
+        "title": "Vérifiez vos emails",
+        "description": "Nous avons envoyé un code à 6 chiffres à",
+        "submit": "Vérifier",
+        "resend": "Renvoyer le code",
+        "resending": "Envoi en cours...",
+        "wrong": "Mauvais email ?",
+        "errors": {
+          "invalid": "Code incorrect. Veuillez réessayer.",
+          "expired": "Ce code a expiré. Demandez-en un nouveau ci-dessous.",
+          "notFound": "Aucun code trouvé. Demandez-en un nouveau ci-dessous."
+        }
+      }
     },
     "verify": {
       "title": "Vérifier le compte",
@@ -182,11 +195,11 @@
         "title": "Découverte",
         "description": "Je suis ici pour explorer des activités, acheter des billets, accéder à des recommandations personnalisées et profiter d’un parcours d’achat simplifié.",
         "errors": {
-          "interests": "Veuillez sélectionner au moins un centre d’intérêt.",
-          "groupSize": "Veuillez indiquer comment vous participez habituellement aux activités.",
-          "travel": "Veuillez sélectionner votre préférence de voyage.",
-          "currency": "Veuillez sélectionner votre devise préférée.",
-          "referral": "Veuillez nous indiquer comment vous avez entendu parler de nous."
+          "country": "Veuillez entrer votre pays.",
+          "city": "Veuillez entrer votre ville.",
+          "categories": "Veuillez sélectionner entre 3 et 5 catégories.",
+          "intent": "Veuillez nous indiquer ce qui vous amène ici.",
+          "currency": "Veuillez sélectionner votre devise préférée."
         }
       },
       "organisation": {
@@ -203,7 +216,17 @@
         "3": "Cette configuration ne devrait pas prendre plus de deux minutes. Vous pourrez toujours ajuster ces préférences ultérieurement depuis vos paramètres de compte."
       },
       "second": {
-        "question": "Quels sont vos centres d’intérêt ?",
+        "question": "Où êtes-vous situé(e) ?",
+        "country": "Pays",
+        "countryPlaceholder": "ex. France",
+        "city": "Ville",
+        "cityPlaceholder": "ex. Paris",
+        "state": "État / Province",
+        "statePlaceholder": "ex. Île-de-France"
+      },
+      "fourth": {
+        "question": "Choisissez 3 à 5 catégories que vous aimez",
+        "hint": "sélectionné(es)",
         "musics": "Musique",
         "theater": "Théâtre",
         "arts": "Arts",
@@ -215,28 +238,24 @@
         "transport": "Transport",
         "booking": "Réservation"
       },
-      "third": {
-        "question": "Comment réservez-vous habituellement vos billets ?",
-        "solo": "J’aime réserver des billets pour vivre mes propres expériences.",
-        "small": "J’achète généralement 2 à 4 billets.",
-        "group": "J’achète pour de grands groupes ou des sorties d’entreprise."
-      },
-      "fourth": {
-        "question": "Souhaitez-vous découvrir des activités locales ou prévoyez-vous de voyager ?",
-        "local": "Montrez-moi les activités près de ma ville actuelle.",
-        "travel": "Je recherche des expériences dans des destinations spécifiques.",
-        "everything": "Montrez-moi tout !"
-      },
       "fifth": {
+        "question": "Qu’est-ce qui vous amène sur TicketWaze ?",
+        "discover": "Découvrir des événements et expériences",
+        "buy": "Acheter des billets pour quelque chose de précis",
+        "resell": "Revendre des billets dont je n’ai plus besoin",
+        "group": "Organiser des sorties en groupe"
+      },
+      "sixth": {
         "question": "Quelle est votre devise préférée ?",
         "usd": "USD - Dollar américain",
         "htg": "HTG - Gourde haïtienne"
       },
-      "sixth": {
-        "question": "Comment avez-vous entendu parler de nous ?",
-        "media": "Réseaux sociaux",
-        "friend": "Ami/Collègue",
-        "advertisement": "Publicité"
+      "loading": {
+        "1": "Un instant...",
+        "2": "Configuration en cours...",
+        "3": "Préparation de votre compte...",
+        "4": "Personnalisation de votre expérience...",
+        "5": "Presque terminé..."
       },
       "last": {
         "1": "Merci d’avoir complété la configuration. Vos centres d’intérêt et préférences seront utilisés pour personnaliser les recommandations d’activités, afficher des annonces pertinentes et améliorer votre expérience globale sur Ticketwaze. Vous pouvez consulter ou modifier vos préférences à tout moment depuis vos paramètres de compte.",

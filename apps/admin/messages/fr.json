@@ -542,6 +542,53 @@
       "resend": "Renvoyer le billet"
     }
   },
-
+"Organisations": {
+    "title": "Aperçu des organisateurs",
+    "total": "Total des organisateurs",
+    "active": "Organisateurs actifs",
+    "new": "Nouveaux organisateurs",
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "status": "Tous les statuts",
+      "time": "Toute la période"
+    },
+    "organisations_list": {
+      "title": "Liste des organisateurs",
+      "table": {
+        "name": "Nom",
+        "email": "Email",
+        "status": "Statut",
+        "activity_count": "Nombre d'activités",
+        "revenue": "Revenu",
+        "joined": "Date d'inscription"
+      },
+      "no_history": "Une fois que les participants commencent à s'inscrire, acheter des billets et rejoindre des événements, ils apparaîtront ici."
+    },
+    "profile": {
+      "title": "Profil utilisateur",
+      "back":"Retour",
+      "button": {
+        "suspend": "Suspendre le compte",
+        "edit": "Modifier le profil"
+      },
+      "profile": "Profil de l'organisation",
+      "information": "Informations de l'organisateur",
+      "summary": {
+        "title": "Résumé des activités",
+        "created": "Activités créées",
+        "cancelled": "Activités annulées",
+        "joined_on": "Inscrit le"
+      },
+      "finance": {
+        "title": "Finances",
+        "total_ticket_sold": "Total des billets vendus",
+        "total_revenue": "Revenu total",
+        "total_profit": "Bénéfice total",
+        "balance": "Solde"
+      }
+    }
+  },
   "attendees": {}
 }

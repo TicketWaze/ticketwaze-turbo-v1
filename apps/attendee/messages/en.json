@@ -94,7 +94,20 @@
         "and": " and ",
         "privacy": "Privacy Policy"
       },
-      "footer": "Back"
+      "footer": "Back",
+      "otp": {
+        "title": "Check your inbox",
+        "description": "We sent a 6-digit code to",
+        "submit": "Verify",
+        "resend": "Resend code",
+        "resending": "Sending...",
+        "wrong": "Wrong email?",
+        "errors": {
+          "invalid": "Incorrect code. Please try again.",
+          "expired": "This code has expired. Request a new one below.",
+          "notFound": "No code found. Request a new one below."
+        }
+      }
     },
     "verify": {
       "title": "Verify Account",
@@ -182,11 +195,11 @@
         "title": "Discovering",
         "description": "I'm here to browse activities, purchase tickets, access to personalized recommendations and a streamlined checkout experience.",
         "errors": {
-          "interests": "Please select at least one interest.",
-          "groupSize": "Please select how you usually attend activities.",
-          "travel": "Please select your travel preference.",
-          "currency": "Please select your preferred currency.",
-          "referral": "Please let us know how you heard about us."
+          "country": "Please enter your country.",
+          "city": "Please enter your city.",
+          "categories": "Please select between 3 and 5 categories.",
+          "intent": "Please tell us what brings you here.",
+          "currency": "Please select your preferred currency."
         }
       },
       "organisation": {
@@ -203,8 +216,18 @@
         "3": "This setup should take no more than two minutes. You can always adjust these preferences later from your account settings."
       },
       "second": {
-        "question": "What are you interested in?",
-        "musics": "Musics",
+        "question": "Where are you located?",
+        "country": "Country",
+        "countryPlaceholder": "e.g. United States",
+        "city": "City",
+        "cityPlaceholder": "e.g. New York",
+        "state": "State / Province",
+        "statePlaceholder": "e.g. New York"
+      },
+      "fourth": {
+        "question": "Pick 3–5 categories you love",
+        "hint": "selected",
+        "musics": "Music",
         "theater": "Theater",
         "arts": "Arts",
         "sports": "Sports",
@@ -215,28 +238,24 @@
         "transport": "Transport",
         "booking": "Booking"
       },
-      "third": {
-        "question": "How do you usually book tickets?",
-        "solo": "I enjoy booking tickets for my own experiences.",
-        "small": "I usually buy 2–4 tickets.",
-        "group": "I buy for large groups or corporate outings."
-      },
-      "fourth": {
-        "question": "Do you want to discover local activities or are you planning to travel?",
-        "local": "Show me activities near my current city.",
-        "travel": "I am looking for experiences in specific destinations.",
-        "everything": "Show me everything!"
-      },
       "fifth": {
+        "question": "What brings you to TicketWaze?",
+        "discover": "Discover events & experiences",
+        "buy": "Buy tickets for something specific",
+        "resell": "Resell tickets I can't use",
+        "group": "Plan outings for a group"
+      },
+      "sixth": {
         "question": "What is your preferred currency?",
         "usd": "USD - United States Dollar",
         "htg": "HTG - Haitian Gourde"
       },
-      "sixth": {
-        "question": "How did you hear about us?",
-        "media": "Social Media",
-        "friend": "Friend/Colleague",
-        "advertisement": "Advertisement"
+      "loading": {
+        "1": "Just a moment...",
+        "2": "Setting things up...",
+        "3": "Getting your account ready...",
+        "4": "Personalizing your experience...",
+        "5": "Almost there..."
       },
       "last": {
         "1": "Thank you for completing the setup. Your interests and preferences will be used to personalize activities recommendations, show relevant listings, and improve your overall experience on Ticketwaze. You can review or update your preferences at any time from your account settings.",

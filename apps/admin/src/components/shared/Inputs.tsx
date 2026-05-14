@@ -3,6 +3,40 @@ import { cn } from "@/lib/utils";
 import { Eye, EyeSlash, Verify } from "iconsax-reactjs";
 import React, { useState } from "react";
 
+interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  children: React.ReactNode;
+  error?: string;
+  className?: string;
+  textareaClassName?: string;
+  isLoading?: boolean;
+  disabled?: boolean;
+}
+
+export function TextArea({
+  children,
+  disabled,
+  isLoading,
+  className,
+  textareaClassName,
+  error,
+  ...props
+}: TextAreaProps) {
+  return (
+    <div className={cn("relative group", className)}>
+      <textarea
+        {...props}
+        placeholder=" "
+        disabled={isLoading ?? disabled ?? false}
+        className={cn(
+          "peer transition-all duration-300 delay-200 bg-neutral-100 w-full rounded-[10px] p-8 pt-10 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 disabled:text-neutral-700 disabled:border-none disabled:cursor-not-allowed min-h-60 resize-none",
+          isLoading && "animate-pulse",
+          textareaClassName,
+        )}
+      />
+    </div>
+  );
+}
+
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   children: React.ReactNode;
   error?: string;
@@ -52,7 +86,7 @@ export function PasswordInput({
     minLength: password.length >= 8,
     hasCapital: /[A-Z]/.test(password),
     hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
-    hasNumber:/[0-9]/.test(password),
+    hasNumber: /[0-9]/.test(password),
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

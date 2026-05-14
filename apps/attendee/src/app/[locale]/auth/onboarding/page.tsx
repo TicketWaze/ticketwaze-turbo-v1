@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
-import OnboardingPageComponent from "./OnboardingPageComponent";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
+import AttendeeOnboardingPageComponent from "./AttendeeOnboardingPageComponent";
 
 export default async function Onboarding() {
   const session = await auth();
@@ -9,5 +9,5 @@ export default async function Onboarding() {
   if (!session) {
     redirect({ href: "/auth/login", locale });
   }
-  return <OnboardingPageComponent />;
+  return <AttendeeOnboardingPageComponent />;
 }
