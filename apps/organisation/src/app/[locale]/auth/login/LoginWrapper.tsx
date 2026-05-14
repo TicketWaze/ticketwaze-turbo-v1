@@ -1,9 +1,9 @@
 "use client";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import { LinkAccent } from "@/components/shared/Links";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -12,6 +12,7 @@ import { z } from "zod/v4";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { motion } from "motion/react";
+import GoogleSignInButton from "@/components/shared/GoogleSignInButton";
 
 export default function LoginWrapper() {
   const t = useTranslations("Auth.login");
@@ -28,7 +29,7 @@ export default function LoginWrapper() {
     resolver: zodResolver(LoginSchema),
   });
   const [isLoading, setIsloading] = useState(false);
-  const router = useRouter();
+  const { update } = useSession();
   const locale = useLocale();
   async function submitHandler(data: TLoginSchema) {
     setIsloading(true);
@@ -41,7 +42,9 @@ export default function LoginWrapper() {
     if (result?.error) {
       toast.error(t("errors.wrong"));
     } else {
-      router.push("/auth/onboarding");
+      const data = await update();
+      const locale = data?.user.userPreference.appLanguage;
+      window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`;
     }
     setIsloading(false);
   }
@@ -112,11 +115,36 @@ export default function LoginWrapper() {
               </Link>
             </motion.div>
           </div>
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.65 }}
+            className=" text-[1.3rem] leading-6 text-neutral-500 text-center"
+          >
+            {t("terms.before")}
+            <a
+              href="https://ticketwaze.com/legals"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-500 hover:underline"
+            >
+              {t("terms.terms")}
+            </a>
+            {t("terms.and")}
+            <a
+              href="https://ticketwaze.com/legals"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-500 hover:underline"
+            >
+              {t("terms.privacy")}
+            </a>
+          </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.7 }}
-            className="w-full hidden lg:block"
+            className="w-full hidden lg:flex flex-col gap-6"
           >
             <ButtonPrimary
               type="submit"
@@ -125,22 +153,29 @@ export default function LoginWrapper() {
             >
               {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
             </ButtonPrimary>
+            <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
+              {t("cta.or")}
+            </span>
+            <GoogleSignInButton />
           </motion.div>
         </div>
       </div>
+
       <div className="flex flex-col gap-6 w-full">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.8 }}
+          className="flex flex-col gap-6 lg:hidden"
         >
-          <ButtonPrimary
-            type="submit"
-            disabled={isLoading}
-            className="w-full lg:hidden"
-          >
+          <ButtonPrimary type="submit" disabled={isLoading} className="w-full">
             {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
           </ButtonPrimary>
+          <span className="text-neutral-700 text-center text-[1.8rem] leading-8">
+            {t("cta.or")}
+          </span>
+          <GoogleSignInButton />
+          <div></div>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 30 }}

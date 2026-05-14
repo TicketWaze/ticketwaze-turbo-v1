@@ -15,9 +15,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
+        googleIdToken: {},
       },
       authorize: async (credentials) => {
         try {
+          if (credentials.googleIdToken) {
+            const response = await fetch(
+              `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  idToken: credentials.googleIdToken,
+                }),
+              },
+            );
+            const data = await response.json();
+            if (data.status !== "success") return null;
+            return { ...data.user, id: data.user.userId };
+          }
+
           const response = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
             {

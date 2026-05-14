@@ -205,6 +205,12 @@
     "login": {
       "title": "Se connecter à votre organisation",
       "description": "Veuillez saisir les détails de votre compte pour continuer",
+      "terms": {
+        "before": "En continuant, vous acceptez nos ",
+        "terms": "Conditions d'utilisation",
+        "and": " et notre ",
+        "privacy": "Politique de confidentialité"
+      },
       "placeholders": {
         "email": "Adresse e-mail",
         "password": "Mot de passe"
@@ -217,6 +223,7 @@
       "forgot": "Mot de passe oublié",
       "cta": {
         "submit": "Se connecter",
+        "or": "Ou",
         "google": "Continuer avec Google"
       },
       "footer": {
@@ -914,6 +921,7 @@
         "role": "Rôle",
         "status": "Statut"
       },
+      "requiresAccount": "La personne que vous invitez doit déjà posséder un compte TicketWaze. Assurez-vous qu'elle s'est inscrite sur ticketwaze.com avant d'envoyer cette invitation.",
       "errors": {
         "name": "Le nom ne peut pas être vide",
         "email": "Saisissez une adresse e-mail valide"

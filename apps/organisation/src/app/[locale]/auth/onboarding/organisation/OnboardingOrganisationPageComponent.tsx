@@ -354,6 +354,8 @@ export default function OnboardingOrganisationPageComponent() {
             >
               {t("last.4.1")}{" "}
               <Link
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-primary-500"
                 href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/legals`}
               >
@@ -361,6 +363,8 @@ export default function OnboardingOrganisationPageComponent() {
               </Link>
               {t("last.4.3")}
               <Link
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-primary-500"
                 href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`}
               >
