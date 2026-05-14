@@ -206,6 +206,12 @@
     "login": {
       "title": "Sign in your organisation",
       "description": "Please enter you account details to continue",
+      "terms": {
+        "before": "By proceeding, you agree to our ",
+        "terms": "Terms of Use",
+        "and": " and ",
+        "privacy": "Privacy Policy"
+      },
       "placeholders": {
         "email": "Email Address",
         "password": "Password"
@@ -218,6 +224,7 @@
       "forgot": "Forgot password",
       "cta": {
         "submit": "Sign in",
+        "or": "Or",
         "google": "Continue with Google"
       },
       "footer": {
@@ -967,6 +974,7 @@
         "role": "Role",
         "status": "Status"
       },
+      "requiresAccount": "The person you're inviting must already have a TicketWaze account. Make sure they sign up at ticketwaze.com before sending this invitation.",
       "errors": {
         "name": "Name cannot be blank",
         "email": "Enter a valid email address"

@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
 import { motion } from "framer-motion";
-// import Google from "@/assets/icons/google.svg";
 import { useSearchParams } from "next/navigation";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
@@ -153,6 +152,31 @@ export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
                 </Link>
               </motion.div>
             </div>
+            <motion.p
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.75 }}
+              className=" text-[1.3rem] leading-6 text-neutral-500 text-center"
+            >
+              {t("terms.before")}
+              <a
+                href="https://ticketwaze.com/legals"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-500 hover:underline"
+              >
+                {t("terms.terms")}
+              </a>
+              {t("terms.and")}
+              <a
+                href="https://ticketwaze.com/legals"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary-500 hover:underline"
+              >
+                {t("terms.privacy")}
+              </a>
+            </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}

@@ -20,6 +20,12 @@
     "login": {
       "title": "Sign In",
       "description": "Please enter you account details to continue",
+      "terms": {
+        "before": "By proceeding, you agree to our ",
+        "terms": "Terms of Use",
+        "and": " and ",
+        "privacy": "Privacy Policy"
+      },
       "placeholders": {
         "email": "Email Address",
         "password": "Password"

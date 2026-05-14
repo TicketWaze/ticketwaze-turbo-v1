@@ -8,6 +8,12 @@
       "title": "Bienvenue sur TicketWaze",
       "description": "Choisissez une option pour continuer et configurer votre compte.",
       "cta": "Continuer",
+      "terms": {
+        "before": "En continuant, vous acceptez nos ",
+        "terms": "Conditions d'utilisation",
+        "and": " et notre ",
+        "privacy": "Politique de confidentialité"
+      },
       "attendee": {
         "title": "Participant",
         "description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d’activités."
