@@ -31,21 +31,27 @@ export default function GoogleSignInButton() {
         redirect: false,
       });
       if (result?.error) {
-        toast.error("Google sign-in failed, please try again");
+        toast.error(
+          "You need a TicketWaze account to sign in here. Please create an account first.",
+        );
         return;
       }
       const data = await update();
       const locale = data?.user.userPreference.appLanguage;
       window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`;
     } catch {
-      toast.error("Google sign-in failed, please try again");
+      toast.error(
+        "You need a TicketWaze account to sign in here. Please create an account first.",
+      );
     } finally {
       setIsLoading(false);
     }
   }
 
   function handleError() {
-    toast.error("Google sign-in failed, please try again");
+    toast.error(
+      "You need a TicketWaze account to sign in here. Please create an account first.",
+    );
   }
 
   if (isLoading) {
