@@ -42,7 +42,9 @@ const nextAuthResult = NextAuth({
           const data = await response.json();
           if (data.status !== "success") {
             if (response.status === 401) {
-              throw new Error("Google sign-in failed, please try again");
+              throw new Error(
+                data.message || "Google sign-in failed, please try again",
+              );
             }
             throw new Error(data.message || "Google sign-in failed");
           }
