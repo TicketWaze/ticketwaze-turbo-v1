@@ -39,7 +39,7 @@ export default function OnboardingLogic({ response }: { response: any }) {
                 membershipTier: response.membershipTier,
               },
             });
-            window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/analytics`;
+            window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/analytics`;
           } catch {
             toast.error("Failed to load organisation");
           }
@@ -68,10 +68,14 @@ export default function OnboardingLogic({ response }: { response: any }) {
       );
       const res = await req.json();
       if (res.status === "success") {
-        await update({
+        const updated = await update({
           activeOrganisation: organisation,
         });
-        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/analytics`;
+        if (!updated?.activeOrganisation?.organisationId) {
+          toast.error("Failed to load organisation");
+          return;
+        }
+        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/analytics`;
       }
     } catch (error) {
       toast.error(`Failed to Join Organisation : ${(error as Error).message}`);

@@ -18,6 +18,9 @@ export default async function AnalyticsPage() {
   const session = await auth();
   const currentOrganisation = session?.activeOrganisation;
   const currentOrganisationId = session?.activeOrganisation?.organisationId;
+  if (!session?.user) {
+    redirect(`/auth/login`);
+  }
   if (!session?.activeOrganisation?.organisationId) {
     redirect(`/auth/logout`);
   }
