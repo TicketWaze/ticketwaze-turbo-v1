@@ -60,7 +60,7 @@ export default function UserPreferences({
     setIsLoading(false);
   }
   return (
-    <div>
+    <>
       <PageLoader isLoading={isLoading} />
       <form className="flex flex-col gap-[4rem]">
         <div className="flex flex-col gap-6">
@@ -72,7 +72,7 @@ export default function UserPreferences({
             onValueChange={(e) => updateCurrency(e)}
             className="flex flex-col gap-6 w-full justify-between lg:justify-around"
           >
-            <div className="flex items-center justify-between gap-3 ">
+            <div className="flex items-center justify-between gap-3">
               <span
                 className={
                   "text-[1.6rem] leading-[22px] text-deep-100 max-w-[280px] lg:max-w-[380px]"
@@ -91,9 +91,7 @@ export default function UserPreferences({
               >
                 Dollard US
               </span>
-              <RadioGroupItem
-                value={"USD"}
-              />
+              <RadioGroupItem value={"USD"} />
             </div>
           </RadioGroup>
         </div>
@@ -130,6 +128,6 @@ export default function UserPreferences({
           </RadioGroup>
         </div> */}
       </form>
-    </div>
+    </>
   );
 }
