@@ -76,7 +76,6 @@ function Sidebar({ className }: { className: string }) {
       .finally(() => setIsLoading(false));
   }, [
     session?.user.accessToken,
-    session?.activeOrganisation,
     organisation?.organisationId,
     locale,
   ]);
