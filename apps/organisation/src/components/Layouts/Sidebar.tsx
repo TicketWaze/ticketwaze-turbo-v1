@@ -50,7 +50,10 @@ function Sidebar({ className }: { className: string }) {
   const [isLoading, setIsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
-    if (!session?.user?.accessToken) return;
+    if (!session?.user?.accessToken) {
+      setIsLoading(false);
+      return;
+    }
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     fetch(
@@ -67,8 +70,8 @@ function Sidebar({ className }: { className: string }) {
     )
       .then((res) => res.json())
       .then((res) => {
-        setAllOrganisations(res.organisations);
-        setMembershipTier(res.membershipTier);
+        setAllOrganisations(res.organisations ?? []);
+        setMembershipTier(res.membershipTier ?? null);
       })
       .finally(() => setIsLoading(false));
   }, [
@@ -208,7 +211,7 @@ function Sidebar({ className }: { className: string }) {
                       <RadioGroup
                         className="flex flex-col gap-8"
                         defaultValue={
-                          session?.activeOrganisation.organisationId
+                          session?.activeOrganisation?.organisationId
                         }
                       >
                         {allOrganisations.map((organisation) => {
@@ -229,7 +232,7 @@ function Sidebar({ className }: { className: string }) {
                                 ) : (
                                   <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-120 font-primary">
                                     {organisation?.organisationName
-                                      .slice()[0]
+                                      ?.slice()[0]
                                       ?.toUpperCase()}
                                   </span>
                                 )}
@@ -308,7 +311,7 @@ function Sidebar({ className }: { className: string }) {
                     />
                   ) : (
                     <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
-                      {organisation?.organisationName.slice()[0]?.toUpperCase()}
+                      {organisation?.organisationName?.slice()[0]?.toUpperCase()}
                     </span>
                   )}
 
@@ -345,7 +348,7 @@ function Sidebar({ className }: { className: string }) {
                   />
                 ) : (
                   <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
-                    {organisation?.organisationName.slice()[0]?.toUpperCase()}
+                    {organisation?.organisationName?.slice()[0]?.toUpperCase()}
                   </span>
                 )}
 
