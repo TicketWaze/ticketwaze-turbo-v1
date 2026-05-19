@@ -47,7 +47,7 @@ function Sidebar({ className }: { className: string }) {
   const [selectedOrganisation, setSelectedOrganisation] =
     useState<Organisation>();
   const locale = useLocale();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     if (!session?.user?.accessToken) return;
@@ -265,7 +265,7 @@ function Sidebar({ className }: { className: string }) {
                   </Dialog>
                 </li>
               )}
-          {hasOrganisation.length === 0 && (
+          {!isLoading && hasOrganisation.length === 0 && (
             <CreateOrganisationDialog
               setSelectedOrganisation={setSelectedOrganisation}
             />

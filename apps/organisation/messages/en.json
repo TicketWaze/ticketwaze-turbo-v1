@@ -222,6 +222,13 @@
         "wrong": "Email address or password is incorrect"
       },
       "forgot": "Forgot password",
+      "method": {
+        "google": "Continue with Google",
+        "google_desc": "Sign in using your Google account",
+        "credentials": "Continue with email",
+        "credentials_desc": "Sign in with your email and password",
+        "back": "Back"
+      },
       "cta": {
         "submit": "Sign in",
         "or": "Or",
@@ -350,6 +357,45 @@
         "rated": "Arevage Rating",
         "reviews": "Total Reviews"
       }
+    },
+    "kpi": {
+      "title": "Key Metrics",
+      "orders": "Total Orders",
+      "avgOrderValue": "Avg. Order Value",
+      "totalEvents": "Total Events",
+      "pastEvents": "Past Events"
+    },
+    "engagement": {
+      "title": "Engagement",
+      "views": "Event Views",
+      "shares": "Social Shares",
+      "conversion": "Conversion Rate",
+      "checkIn": "Check-In Rate",
+      "refund": "Refund Rate"
+    },
+    "chart": {
+      "revenue": "Revenue",
+      "tickets": "Tickets",
+      "monthly": "Monthly Trends"
+    },
+    "audience": {
+      "title": "Audience Insights",
+      "gender": "Gender Distribution",
+      "guestVsRegistered": "Guest vs Registered",
+      "guest": "Guest",
+      "registered": "Registered",
+      "paymentProviders": "Payment Providers"
+    },
+    "topEvents": {
+      "title": "Top Events",
+      "byTickets": "By Tickets",
+      "byRevenue": "By Revenue",
+      "byViews": "By Views"
+    },
+    "reviews": {
+      "title": "Reviews",
+      "average": "Average Rating",
+      "total": "Total Reviews"
     }
   },
   "Finance": {

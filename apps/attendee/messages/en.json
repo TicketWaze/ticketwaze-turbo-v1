@@ -35,6 +35,13 @@
         "password": "Password must be at least 8 characters"
       },
       "forgot": "Forgot password",
+      "method": {
+        "google": "Continue with Google",
+        "google_desc": "Sign in using your Google account",
+        "credentials": "Continue with email",
+        "credentials_desc": "Sign in with your email and password",
+        "back": "Back"
+      },
       "cta": {
         "submit": "Sign in",
         "or": "Or",
@@ -50,6 +57,13 @@
       "organizer": "Create an Account",
       "description": "Please complete the form below to continue.",
       "referral": " thought you might like it here.",
+      "method": {
+        "google": "Continue with Google",
+        "google_desc": "Sign up using your Google account",
+        "credentials": "Continue with email",
+        "credentials_desc": "Sign up with your email and password",
+        "back": "Back"
+      },
       "choice": {
         "title": "Create Account",
         "description": "Choose an option to continue and set up your account.",
