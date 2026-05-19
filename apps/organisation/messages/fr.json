@@ -221,6 +221,13 @@
         "wrong": "Adresse email ou mot de passe incorrect"
       },
       "forgot": "Mot de passe oublié",
+      "method": {
+        "google": "Continuer avec Google",
+        "google_desc": "Connectez-vous avec votre compte Google",
+        "credentials": "Continuer avec l'e-mail",
+        "credentials_desc": "Connectez-vous avec votre e-mail et mot de passe",
+        "back": "Retour"
+      },
       "cta": {
         "submit": "Se connecter",
         "or": "Ou",
@@ -349,6 +356,45 @@
         "rated": "Note moyenne",
         "reviews": "Total des avis"
       }
+    },
+    "kpi": {
+      "title": "Indicateurs clés",
+      "orders": "Total des commandes",
+      "avgOrderValue": "Val. moy. de commande",
+      "totalEvents": "Total des activités",
+      "pastEvents": "Activités passées"
+    },
+    "engagement": {
+      "title": "Engagement",
+      "views": "Vues des activités",
+      "shares": "Partages sociaux",
+      "conversion": "Taux de conversion",
+      "checkIn": "Taux de check-in",
+      "refund": "Taux de remboursement"
+    },
+    "chart": {
+      "revenue": "Revenus",
+      "tickets": "Billets",
+      "monthly": "Tendances mensuelles"
+    },
+    "audience": {
+      "title": "Insights audience",
+      "gender": "Répartition par genre",
+      "guestVsRegistered": "Invité vs Inscrit",
+      "guest": "Invité",
+      "registered": "Inscrit",
+      "paymentProviders": "Fournisseurs de paiement"
+    },
+    "topEvents": {
+      "title": "Meilleures activités",
+      "byTickets": "Par billets",
+      "byRevenue": "Par revenus",
+      "byViews": "Par vues"
+    },
+    "reviews": {
+      "title": "Avis",
+      "average": "Note moyenne",
+      "total": "Total des avis"
     }
   },
   "Finance": {

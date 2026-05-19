@@ -35,6 +35,13 @@
         "password": "Le mot de passe doit contenir au moins 8 caractères"
       },
       "forgot": "Mot de passe oublié",
+      "method": {
+        "google": "Continuer avec Google",
+        "google_desc": "Connectez-vous avec votre compte Google",
+        "credentials": "Continuer avec l'e-mail",
+        "credentials_desc": "Connectez-vous avec votre e-mail et mot de passe",
+        "back": "Retour"
+      },
       "cta": {
         "submit": "Se connecter",
         "or": "Ou",
@@ -50,6 +57,13 @@
       "organizer": "Créer un compte",
       "description": "Veuillez compléter le formulaire ci-dessous pour continuer.",
       "referral": " a pensée que vous aimeriez être ici.",
+      "method": {
+        "google": "Continuer avec Google",
+        "google_desc": "Inscrivez-vous avec votre compte Google",
+        "credentials": "Continuer avec l'e-mail",
+        "credentials_desc": "Inscrivez-vous avec votre e-mail et mot de passe",
+        "back": "Retour"
+      },
       "choice": {
         "title": "Créer un compte",
         "description": "Choisissez une option pour continuer et configurer votre compte.",
