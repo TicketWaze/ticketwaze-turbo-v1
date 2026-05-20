@@ -1,30 +1,30 @@
 {
   "Metadata": {
-    "title": "TicketWaze | Chaque billet, chaque activité, une seule plateforme",
+    "title": "Ticketwaze | Chaque billet, chaque activité, une seule plateforme",
     "description": "Achetez, vendez et gérez vos billets pour activités et expériences, en ligne ou en personne, sur une plateforme sécurisée et unique.",
     "about": {
       "title": "À propos",
-      "description": "Découvrez comment TicketWaze réinvente la billetterie et l'accès, en réunissant paiements, billets et gestion sur une plateforme simple et sécurisée."
+      "description": "Découvrez comment Ticketwaze réinvente la billetterie et l'accès, en réunissant paiements, billets et gestion sur une plateforme simple et sécurisée."
     },
     "attendee": {
       "title": "Achetez vos billets à votre façon",
-      "description": "Concerts, cours, voyages ou ateliers : achetez vos billets en toute sécurité et gérez tout depuis un seul espace avec TicketWaze."
+      "description": "Concerts, cours, voyages ou ateliers : achetez vos billets en toute sécurité et gérez tout depuis un seul espace avec Ticketwaze."
     },
     "business": {
       "title": "Vendez vos billets en ligne",
-      "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances sur TicketWaze."
+      "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances sur Ticketwaze."
     },
     "contact": {
       "title": "Nous contacter",
-      "description": "Contactez l'équipe TicketWaze pour obtenir de l'aide, des partenariats, des demandes médias ou des questions générales."
+      "description": "Contactez l'équipe Ticketwaze pour obtenir de l'aide, des partenariats, des demandes médias ou des questions générales."
     },
     "legals": {
       "title": "Mentions légales et Politique de confidentialité",
-      "description": "Consultez les Conditions d'utilisation et la Politique de confidentialité de TicketWaze régissant l'utilisation de la plateforme."
+      "description": "Consultez les Conditions d'utilisation et la Politique de confidentialité de Ticketwaze régissant l'utilisation de la plateforme."
     },
     "waitlist": {
       "title": "Rejoindre la liste d'attente",
-      "description": "Faites partie des premiers à découvrir TicketWaze. Rejoignez la liste d'attente et obtenez un accès anticipé à la plateforme."
+      "description": "Faites partie des premiers à découvrir Ticketwaze. Rejoignez la liste d'attente et obtenez un accès anticipé à la plateforme."
     }
   },
   "HomePage": {
@@ -113,16 +113,16 @@
     "faq": {
       "title-1": "Questions",
       "title-2": "fréquentes",
-      "question-1": "TicketWaze est-il gratuit ?",
+      "question-1": "Ticketwaze est-il gratuit ?",
       "answer-1": "La création d’un compte et la navigation dans les activités sont gratuites. Les prix des billets et éventuels frais sont affichés clairement avant le paiement.",
       "question-2": "Ai-je besoin d’un compte pour acheter des billets ?",
-      "answer-2": "Oui. Un compte TicketWaze est nécessaire pour acheter, gérer et valider vos billets en toute sécurité.",
+      "answer-2": "Oui. Un compte Ticketwaze est nécessaire pour acheter, gérer et valider vos billets en toute sécurité.",
       "question-3": "Puis-je acheter plusieurs billets en une seule fois ?",
       "answer-3": "Oui, vous pouvez acheter plusieurs billets dans une même commande, selon les limites fixées par l’organisateur.",
       "question-4": "Puis-je obtenir un remboursement ?",
       "answer-4": "Les remboursements dépendent de la politique de l’organisateur. Vérifiez les conditions de l’activité avant l’achat.",
       "question-5": "Mes informations de paiement sont-elles sécurisées ?",
-      "answer-5": "Oui. TicketWaze utilise un traitement de paiement sécurisé et ne conserve pas vos données sensibles."
+      "answer-5": "Oui. Ticketwaze utilise un traitement de paiement sécurisé et ne conserve pas vos données sensibles."
     },
     "footer": {
       "title-1": "Ne manquez rien de ce qui arrive",
@@ -309,7 +309,7 @@
   "AboutPage": {
     "hero": {
       "title": "Réinventer la billetterie et l’accès",
-      "description": "TicketWaze a été créé pour éliminer les frictions inutiles dans l’achat et la vente d’accès, qu’il s’agisse d’expériences personnelles ou de solutions professionnelles, en réunissant paiements, billets et gestion sur une plateforme simple et fiable.",
+      "description": "Ticketwaze a été créé pour éliminer les frictions inutiles dans l’achat et la vente d’accès, qu’il s’agisse d’expériences personnelles ou de solutions professionnelles, en réunissant paiements, billets et gestion sur une plateforme simple et fiable.",
       "simple": "Simple",
       "global": "Prêt pour le monde",
       "accessible": "Accessible",
@@ -345,12 +345,12 @@
     "testimonials": {
       "title": "Plébiscité par particuliers et entreprises",
       "first": {
-        "description": "Acheter des billets sur TicketWaze est un jeu d’enfant. Je paie rapidement, j’enregistre mes billets et je peux même les partager avec mes amis sans stress.",
+        "description": "Acheter des billets sur Ticketwaze est un jeu d’enfant. Je paie rapidement, j’enregistre mes billets et je peux même les partager avec mes amis sans stress.",
         "name": "Mike Jane",
         "role": "Utilisateur particulier"
       },
       "second": {
-        "description": "TicketWaze nous a permis de passer des réservations manuelles à un système structuré. Paiements, accès et reporting sont réunis en un seul endroit.",
+        "description": "Ticketwaze nous a permis de passer des réservations manuelles à un système structuré. Paiements, accès et reporting sont réunis en un seul endroit.",
         "name": "Billy Jean",
         "role": "Entreprise"
       },
@@ -421,62 +421,62 @@
     "terms": {
       "terms": {
         "title": "Conditions d’utilisation",
-        "description": "Ces Conditions d’utilisation (« Conditions ») régissent votre accès et votre utilisation du site web, des applications et des services associés de TicketWaze (collectivement, le « Service »). TicketWaze (« nous », « notre ») fournit une plateforme en ligne permettant aux utilisateurs de découvrir des activités, d’acheter des billets, et aux organisateurs de créer, gérer et vendre des billets. En accédant ou en utilisant le Service, vous acceptez d’être lié par ces Conditions. Si vous n’êtes pas d’accord, vous ne devez pas utiliser le Service.",
+        "description": "Ces Conditions d’utilisation (« Conditions ») régissent votre accès et votre utilisation du site web, des applications et des services associés de Ticketwaze (collectivement, le « Service »). Ticketwaze (« nous », « notre ») fournit une plateforme en ligne permettant aux utilisateurs de découvrir des activités, d’acheter des billets, et aux organisateurs de créer, gérer et vendre des billets. En accédant ou en utilisant le Service, vous acceptez d’être lié par ces Conditions. Si vous n’êtes pas d’accord, vous ne devez pas utiliser le Service.",
         "1": {
           "title": "Éligibilité et création de compte",
-          "description": "Vous devez avoir au moins 16 ans pour utiliser TicketWaze. En créant un compte, vous garantissez que les informations fournies sont exactes, complètes et à jour, et que vous avez la capacité légale de conclure ces Conditions. Vous êtes responsable de la confidentialité de vos identifiants et de toutes les activités effectuées via votre compte. TicketWaze n’est pas responsable des pertes ou dommages résultant d’un accès non autorisé."
+          "description": "Vous devez avoir au moins 16 ans pour utiliser Ticketwaze. En créant un compte, vous garantissez que les informations fournies sont exactes, complètes et à jour, et que vous avez la capacité légale de conclure ces Conditions. Vous êtes responsable de la confidentialité de vos identifiants et de toutes les activités effectuées via votre compte. Ticketwaze n’est pas responsable des pertes ou dommages résultant d’un accès non autorisé."
         },
         "2": {
           "title": "Utilisation du Service",
-          "description": "TicketWaze vous accorde un droit limité, non exclusif, non transférable et révocable d’accéder et d’utiliser le Service uniquement à des fins légales et conformément aux présentes Conditions. Vous acceptez de ne pas détourner le Service, d’interférer avec son fonctionnement, de tenter un accès non autorisé, d’utiliser des systèmes automatisés sans autorisation, ni de vous engager dans toute activité contraire aux lois ou portant atteinte aux droits d’autrui."
+          "description": "Ticketwaze vous accorde un droit limité, non exclusif, non transférable et révocable d’accéder et d’utiliser le Service uniquement à des fins légales et conformément aux présentes Conditions. Vous acceptez de ne pas détourner le Service, d’interférer avec son fonctionnement, de tenter un accès non autorisé, d’utiliser des systèmes automatisés sans autorisation, ni de vous engager dans toute activité contraire aux lois ou portant atteinte aux droits d’autrui."
         },
         "3": {
           "title": "Billets et achats",
-          "description": "Lorsque vous achetez un billet via TicketWaze, vous concluez une transaction directement avec l’organisateur de l’activité, et non avec TicketWaze. TicketWaze agit uniquement comme plateforme et intermédiaire pour la distribution des billets et le traitement des paiements. Les détails, tarifs, politiques de remboursement et conditions d’accès sont définis par l’organisateur. Vous êtes responsable de vérifier les informations avant l’achat. Toutes les ventes sont définitives sauf indication contraire de l’organisateur ou obligation légale. TicketWaze ne garantit pas la tenue des activités et n’est pas responsable des annulations, reports, changements de lieu ou actions des organisateurs."
+          "description": "Lorsque vous achetez un billet via Ticketwaze, vous concluez une transaction directement avec l’organisateur de l’activité, et non avec Ticketwaze. Ticketwaze agit uniquement comme plateforme et intermédiaire pour la distribution des billets et le traitement des paiements. Les détails, tarifs, politiques de remboursement et conditions d’accès sont définis par l’organisateur. Vous êtes responsable de vérifier les informations avant l’achat. Toutes les ventes sont définitives sauf indication contraire de l’organisateur ou obligation légale. Ticketwaze ne garantit pas la tenue des activités et n’est pas responsable des annulations, reports, changements de lieu ou actions des organisateurs."
         },
         "4": {
           "title": "Organisateurs d’activités",
-          "description": "Si vous utilisez TicketWaze en tant qu’organisateur, vous êtes seul responsable de l’exactitude de vos annonces, de la légalité de vos activités, du respect des lois applicables et de l’exécution de vos obligations envers les participants. Vous acceptez de respecter les conditions des billets, les prix, les politiques de remboursement et les descriptions publiées. TicketWaze peut facturer des frais de service ou des commissions, communiqués avant publication ou paiement. TicketWaze se réserve le droit de retenir des paiements en cas de fraude suspectée, de violation des présentes Conditions, de rétrofacturations ou d’exigences légales."
+          "description": "Si vous utilisez Ticketwaze en tant qu’organisateur, vous êtes seul responsable de l’exactitude de vos annonces, de la légalité de vos activités, du respect des lois applicables et de l’exécution de vos obligations envers les participants. Vous acceptez de respecter les conditions des billets, les prix, les politiques de remboursement et les descriptions publiées. Ticketwaze peut facturer des frais de service ou des commissions, communiqués avant publication ou paiement. Ticketwaze se réserve le droit de retenir des paiements en cas de fraude suspectée, de violation des présentes Conditions, de rétrofacturations ou d’exigences légales."
         },
         "5": {
           "title": "Paiements et frais",
-          "description": "Les paiements sur TicketWaze sont traités par des prestataires tiers. TicketWaze ne conserve pas les informations complètes des cartes de paiement. Vous acceptez de respecter les conditions du prestataire concerné. TicketWaze n’est pas responsable des erreurs, retards ou défaillances causés par ces services tiers. Les frais de service facturés par TicketWaze ne sont pas remboursables sauf obligation légale. Les prix, frais et taxes peuvent varier selon l’activité et la localisation."
+          "description": "Les paiements sur Ticketwaze sont traités par des prestataires tiers. Ticketwaze ne conserve pas les informations complètes des cartes de paiement. Vous acceptez de respecter les conditions du prestataire concerné. Ticketwaze n’est pas responsable des erreurs, retards ou défaillances causés par ces services tiers. Les frais de service facturés par Ticketwaze ne sont pas remboursables sauf obligation légale. Les prix, frais et taxes peuvent varier selon l’activité et la localisation."
         },
         "6": {
           "title": "Propriété intellectuelle",
-          "description": "Tous les contenus et éléments disponibles sur TicketWaze, y compris logos, designs, textes, graphiques, logiciels et marques, appartiennent à TicketWaze ou sont sous licence et protégés par les lois sur la propriété intellectuelle. Vous ne pouvez copier, modifier, distribuer, vendre ou exploiter une partie du Service sans autorisation écrite préalable. En soumettant du contenu (descriptions, images, etc.), vous accordez à TicketWaze une licence non exclusive, mondiale et gratuite pour l’utiliser, l’afficher, le reproduire et le distribuer afin d’exploiter et promouvoir le Service."
+          "description": "Tous les contenus et éléments disponibles sur Ticketwaze, y compris logos, designs, textes, graphiques, logiciels et marques, appartiennent à Ticketwaze ou sont sous licence et protégés par les lois sur la propriété intellectuelle. Vous ne pouvez copier, modifier, distribuer, vendre ou exploiter une partie du Service sans autorisation écrite préalable. En soumettant du contenu (descriptions, images, etc.), vous accordez à Ticketwaze une licence non exclusive, mondiale et gratuite pour l’utiliser, l’afficher, le reproduire et le distribuer afin d’exploiter et promouvoir le Service."
         },
         "7": {
           "title": "Conduites interdites",
-          "description": "Vous acceptez de ne pas utiliser TicketWaze à des fins illégales, frauduleuses, trompeuses ou nuisibles. Cela inclut la création de fausses activités, la vente de billets invalides, l’abus de rétrofacturation, la transmission de code malveillant, le harcèlement d’autres utilisateurs ou la violation des lois applicables. TicketWaze se réserve le droit d’enquêter et de prendre les mesures nécessaires, y compris la suspension ou la résiliation de comptes, sans préavis."
+          "description": "Vous acceptez de ne pas utiliser Ticketwaze à des fins illégales, frauduleuses, trompeuses ou nuisibles. Cela inclut la création de fausses activités, la vente de billets invalides, l’abus de rétrofacturation, la transmission de code malveillant, le harcèlement d’autres utilisateurs ou la violation des lois applicables. Ticketwaze se réserve le droit d’enquêter et de prendre les mesures nécessaires, y compris la suspension ou la résiliation de comptes, sans préavis."
         },
         "8": {
           "title": "Suspension et résiliation",
-          "description": "TicketWaze peut suspendre ou résilier votre accès au Service à tout moment, avec ou sans préavis, si nous estimons que vous avez violé ces Conditions, commis une fraude ou représenté un risque pour la plateforme ou ses utilisateurs. Vous pouvez arrêter d’utiliser le Service à tout moment en fermant votre compte. Certaines dispositions survivent à la résiliation, notamment les droits de propriété intellectuelle, les exclusions de garantie et les limitations de responsabilité."
+          "description": "Ticketwaze peut suspendre ou résilier votre accès au Service à tout moment, avec ou sans préavis, si nous estimons que vous avez violé ces Conditions, commis une fraude ou représenté un risque pour la plateforme ou ses utilisateurs. Vous pouvez arrêter d’utiliser le Service à tout moment en fermant votre compte. Certaines dispositions survivent à la résiliation, notamment les droits de propriété intellectuelle, les exclusions de garantie et les limitations de responsabilité."
         },
         "9": {
           "title": "Exclusion de garanties",
-          "description": "Le Service est fourni « tel quel » et « selon disponibilité ». TicketWaze ne donne aucune garantie, expresse ou implicite, concernant la disponibilité, la fiabilité, l’exactitude ou l’adéquation du Service. Nous ne garantissons pas que le Service sera ininterrompu, exempt d’erreurs ou sécurisé."
+          "description": "Le Service est fourni « tel quel » et « selon disponibilité ». Ticketwaze ne donne aucune garantie, expresse ou implicite, concernant la disponibilité, la fiabilité, l’exactitude ou l’adéquation du Service. Nous ne garantissons pas que le Service sera ininterrompu, exempt d’erreurs ou sécurisé."
         },
         "10": {
           "title": "Limitation de responsabilité",
-          "description": "Dans la limite permise par la loi, TicketWaze ne pourra être tenu responsable de dommages indirects, accessoires, consécutifs, spéciaux ou punitifs, y compris perte de bénéfices, de données ou de réputation, liés à l’utilisation ou à l’impossibilité d’utiliser le Service. TicketWaze n’est pas responsable des litiges entre participants et organisateurs, des annulations d’activités ou des actions de tiers."
+          "description": "Dans la limite permise par la loi, Ticketwaze ne pourra être tenu responsable de dommages indirects, accessoires, consécutifs, spéciaux ou punitifs, y compris perte de bénéfices, de données ou de réputation, liés à l’utilisation ou à l’impossibilité d’utiliser le Service. Ticketwaze n’est pas responsable des litiges entre participants et organisateurs, des annulations d’activités ou des actions de tiers."
         },
         "11": {
           "title": "Indemnisation",
-          "description": "Vous acceptez d’indemniser et de dégager de toute responsabilité TicketWaze, ses affiliés, dirigeants, employés et partenaires contre toute réclamation, dommage, perte, responsabilité ou dépense résultant de votre utilisation du Service, de votre violation des présentes Conditions ou des droits d’un tiers."
+          "description": "Vous acceptez d’indemniser et de dégager de toute responsabilité Ticketwaze, ses affiliés, dirigeants, employés et partenaires contre toute réclamation, dommage, perte, responsabilité ou dépense résultant de votre utilisation du Service, de votre violation des présentes Conditions ou des droits d’un tiers."
         },
         "12": {
           "title": "Services et liens tiers",
-          "description": "Le Service peut inclure des liens vers des sites ou services tiers. TicketWaze ne contrôle pas et n’est pas responsable du contenu, des politiques ou des pratiques de ces tiers. L’utilisation de ces services se fait à vos propres risques."
+          "description": "Le Service peut inclure des liens vers des sites ou services tiers. Ticketwaze ne contrôle pas et n’est pas responsable du contenu, des politiques ou des pratiques de ces tiers. L’utilisation de ces services se fait à vos propres risques."
         },
         "13": {
           "title": "Droit applicable",
-          "description": "Ces Conditions sont régies et interprétées conformément aux lois de la juridiction où TicketWaze est légalement enregistré, sans égard aux principes de conflit de lois."
+          "description": "Ces Conditions sont régies et interprétées conformément aux lois de la juridiction où Ticketwaze est légalement enregistré, sans égard aux principes de conflit de lois."
         },
         "14": {
           "title": "Modifications des Conditions",
-          "description": "TicketWaze peut mettre à jour ces Conditions de temps à autre. Les Conditions mises à jour seront publiées sur cette page avec une date révisée. Votre utilisation continue du Service après l’entrée en vigueur des modifications constitue votre acceptation. Dernière mise à jour : 01 janvier 2026."
+          "description": "Ticketwaze peut mettre à jour ces Conditions de temps à autre. Les Conditions mises à jour seront publiées sur cette page avec une date révisée. Votre utilisation continue du Service après l’entrée en vigueur des modifications constitue votre acceptation. Dernière mise à jour : 01 janvier 2026."
         },
         "15": {
           "title": "Informations de contact",
@@ -485,18 +485,18 @@
       },
       "privacy": {
         "title": "Politique de confidentialité",
-        "description": "TicketWaze (« TicketWaze », « nous », « notre ») accorde une grande importance à votre confidentialité et s’engage à protéger vos données personnelles. Cette Politique de confidentialité explique comment nous collectons, utilisons, stockons et partageons vos informations lorsque vous accédez ou utilisez notre site web, nos applications et nos services (collectivement, le « Service »). En utilisant TicketWaze, vous acceptez les pratiques décrites dans cette Politique.",
+        "description": "Ticketwaze (« Ticketwaze », « nous », « notre ») accorde une grande importance à votre confidentialité et s’engage à protéger vos données personnelles. Cette Politique de confidentialité explique comment nous collectons, utilisons, stockons et partageons vos informations lorsque vous accédez ou utilisez notre site web, nos applications et nos services (collectivement, le « Service »). En utilisant Ticketwaze, vous acceptez les pratiques décrites dans cette Politique.",
         "1": {
           "title": "Informations que nous collectons",
-          "description": "Lorsque vous utilisez TicketWaze, nous pouvons recueillir des informations personnelles que vous fournissez volontairement, telles que votre nom, adresse e-mail, numéro de téléphone, coordonnées de facturation, ainsi que toute donnée transmise lors de la création d’un compte, de l’achat de billets, de l’organisation d’activités ou du contact avec notre support. Si vous êtes organisateur, nous pouvons également collecter des informations relatives à votre organisation, vos activités et vos détails de paiement. En plus des données fournies directement, nous collectons automatiquement certaines informations techniques et d’usage, comme votre adresse IP, type d’appareil, navigateur, système d’exploitation, pages visitées et interactions avec la plateforme. Ces données nous aident à comprendre l’utilisation du Service et à améliorer ses performances et sa sécurité. Nous pouvons aussi recueillir des informations de localisation approximative à partir de votre adresse IP afin d’afficher des activités pertinentes et d’améliorer l’expérience utilisateur. Les données de localisation précises ne sont collectées que si vous donnez explicitement votre accord."
+          "description": "Lorsque vous utilisez Ticketwaze, nous pouvons recueillir des informations personnelles que vous fournissez volontairement, telles que votre nom, adresse e-mail, numéro de téléphone, coordonnées de facturation, ainsi que toute donnée transmise lors de la création d’un compte, de l’achat de billets, de l’organisation d’activités ou du contact avec notre support. Si vous êtes organisateur, nous pouvons également collecter des informations relatives à votre organisation, vos activités et vos détails de paiement. En plus des données fournies directement, nous collectons automatiquement certaines informations techniques et d’usage, comme votre adresse IP, type d’appareil, navigateur, système d’exploitation, pages visitées et interactions avec la plateforme. Ces données nous aident à comprendre l’utilisation du Service et à améliorer ses performances et sa sécurité. Nous pouvons aussi recueillir des informations de localisation approximative à partir de votre adresse IP afin d’afficher des activités pertinentes et d’améliorer l’expérience utilisateur. Les données de localisation précises ne sont collectées que si vous donnez explicitement votre accord."
         },
         "2": {
           "title": "Comment nous utilisons vos informations",
-          "description": "TicketWaze utilise vos données personnelles pour exploiter et améliorer le Service, créer et gérer des comptes utilisateurs, traiter les achats de billets et paiements, faciliter les paiements aux organisateurs, communiquer des mises à jour importantes, répondre aux demandes de support, personnaliser le contenu et détecter ou prévenir les activités frauduleuses ou non autorisées. Nous pouvons également utiliser vos informations pour des analyses et des rapports internes afin d’améliorer la plateforme et ses fonctionnalités. Lorsque la loi le permet, nous pouvons vous envoyer des communications marketing ou promotionnelles liées à TicketWaze. Vous pouvez vous désinscrire de ces communications à tout moment."
+          "description": "Ticketwaze utilise vos données personnelles pour exploiter et améliorer le Service, créer et gérer des comptes utilisateurs, traiter les achats de billets et paiements, faciliter les paiements aux organisateurs, communiquer des mises à jour importantes, répondre aux demandes de support, personnaliser le contenu et détecter ou prévenir les activités frauduleuses ou non autorisées. Nous pouvons également utiliser vos informations pour des analyses et des rapports internes afin d’améliorer la plateforme et ses fonctionnalités. Lorsque la loi le permet, nous pouvons vous envoyer des communications marketing ou promotionnelles liées à Ticketwaze. Vous pouvez vous désinscrire de ces communications à tout moment."
         },
         "3": {
           "title": "Partage et divulgation",
-          "description": "Nous pouvons partager vos informations avec des prestataires tiers de confiance qui nous aident à exploiter le Service, tels que les processeurs de paiement, hébergeurs, services d’analyse et outils de support client. Ces prestataires sont uniquement autorisés à utiliser vos données dans le cadre des services qu’ils fournissent pour nous. Nous pouvons divulguer des informations personnelles si la loi, une réglementation ou une procédure légale l’exige. Nous pouvons également partager des données pour protéger les droits, la sécurité et les biens de TicketWaze, de nos utilisateurs, des organisateurs ou du public, notamment à des fins de prévention de fraude et de sécurité. En cas de transaction commerciale (fusion, acquisition ou cession d’actifs), les informations des utilisateurs peuvent être transférées, sous réserve des protections de confidentialité applicables."
+          "description": "Nous pouvons partager vos informations avec des prestataires tiers de confiance qui nous aident à exploiter le Service, tels que les processeurs de paiement, hébergeurs, services d’analyse et outils de support client. Ces prestataires sont uniquement autorisés à utiliser vos données dans le cadre des services qu’ils fournissent pour nous. Nous pouvons divulguer des informations personnelles si la loi, une réglementation ou une procédure légale l’exige. Nous pouvons également partager des données pour protéger les droits, la sécurité et les biens de Ticketwaze, de nos utilisateurs, des organisateurs ou du public, notamment à des fins de prévention de fraude et de sécurité. En cas de transaction commerciale (fusion, acquisition ou cession d’actifs), les informations des utilisateurs peuvent être transférées, sous réserve des protections de confidentialité applicables."
         },
         "4": {
           "title": "Sécurité des données",
@@ -504,11 +504,11 @@
         },
         "5": {
           "title": "Vos droits et choix",
-          "description": "Selon votre localisation, vous pouvez disposer de droits concernant vos données personnelles, notamment le droit d’accéder, de corriger ou de supprimer vos informations. Vous pouvez également avoir le droit de vous opposer à certaines activités de traitement ou de demander la portabilité de vos données. Les demandes peuvent être adressées à TicketWaze via les informations de contact ci-dessous. Nous pourrons être amenés à vérifier votre identité avant de répondre. Pour exercer vos droits, contactez :"
+          "description": "Selon votre localisation, vous pouvez disposer de droits concernant vos données personnelles, notamment le droit d’accéder, de corriger ou de supprimer vos informations. Vous pouvez également avoir le droit de vous opposer à certaines activités de traitement ou de demander la portabilité de vos données. Les demandes peuvent être adressées à Ticketwaze via les informations de contact ci-dessous. Nous pourrons être amenés à vérifier votre identité avant de répondre. Pour exercer vos droits, contactez :"
         },
         "6": {
           "title": "Cookies et suivi",
-          "description": "TicketWaze utilise des cookies et technologies similaires pour assurer le bon fonctionnement de la plateforme, mémoriser vos préférences, analyser le trafic et améliorer l’expérience globale. Vous pouvez contrôler ou désactiver les cookies via les paramètres de votre navigateur, mais cela peut limiter certaines fonctionnalités du Service. L’accès est réservé uniquement au personnel autorisé."
+          "description": "Ticketwaze utilise des cookies et technologies similaires pour assurer le bon fonctionnement de la plateforme, mémoriser vos préférences, analyser le trafic et améliorer l’expérience globale. Vous pouvez contrôler ou désactiver les cookies via les paramètres de votre navigateur, mais cela peut limiter certaines fonctionnalités du Service. L’accès est réservé uniquement au personnel autorisé."
         },
         "7": {
           "title": "Conservation des données",
@@ -516,11 +516,11 @@
         },
         "8": {
           "title": "Services tiers",
-          "description": "Le Service peut contenir des liens vers des sites ou services tiers qui ne sont pas exploités par TicketWaze. Nous ne sommes pas responsables des pratiques de confidentialité ou du contenu de ces tiers et vous encourageons à consulter leurs politiques de confidentialité séparément."
+          "description": "Le Service peut contenir des liens vers des sites ou services tiers qui ne sont pas exploités par Ticketwaze. Nous ne sommes pas responsables des pratiques de confidentialité ou du contenu de ces tiers et vous encourageons à consulter leurs politiques de confidentialité séparément."
         },
         "9": {
           "title": "Confidentialité des enfants",
-          "description": "TicketWaze n’est pas destiné aux personnes de moins de 16 ans. Nous ne collectons pas sciemment d’informations personnelles auprès d’enfants. Si nous découvrons que des données personnelles d’un enfant ont été collectées, nous prendrons des mesures pour les supprimer rapidement."
+          "description": "Ticketwaze n’est pas destiné aux personnes de moins de 16 ans. Nous ne collectons pas sciemment d’informations personnelles auprès d’enfants. Si nous découvrons que des données personnelles d’un enfant ont été collectées, nous prendrons des mesures pour les supprimer rapidement."
         },
         "10": {
           "title": "Transferts internationaux de données",
@@ -528,7 +528,7 @@
         },
         "11": {
           "title": "Mises à jour de la politique",
-          "description": "TicketWaze peut mettre à jour cette Politique de confidentialité de temps à autre. Toute modification sera publiée sur cette page avec une date révisée. L’utilisation continue du Service après l’entrée en vigueur des modifications constitue votre acceptation de la politique révisée. Dernière mise à jour : 01 janvier 2026."
+          "description": "Ticketwaze peut mettre à jour cette Politique de confidentialité de temps à autre. Toute modification sera publiée sur cette page avec une date révisée. L’utilisation continue du Service après l’entrée en vigueur des modifications constitue votre acceptation de la politique révisée. Dernière mise à jour : 01 janvier 2026."
         },
         "12": {
           "title": "Nous contacter",

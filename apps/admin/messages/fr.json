@@ -33,7 +33,7 @@
       }
     },
     "join": {
-      "title": "Rejoindre TicketWaze",
+      "title": "Rejoindre Ticketwaze",
       "description": {
         "hello": "Bonjour",
         "main": ", complétez votre profil pour accéder à votre espace de travail."
@@ -542,7 +542,7 @@
       "resend": "Renvoyer le billet"
     }
   },
-"Organisations": {
+  "Organisations": {
     "title": "Aperçu des organisateurs",
     "total": "Total des organisateurs",
     "active": "Organisateurs actifs",
@@ -568,7 +568,7 @@
     },
     "profile": {
       "title": "Profil utilisateur",
-      "back":"Retour",
+      "back": "Retour",
       "button": {
         "suspend": "Suspendre le compte",
         "edit": "Modifier le profil"

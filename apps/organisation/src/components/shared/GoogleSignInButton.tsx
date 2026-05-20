@@ -32,7 +32,7 @@ export default function GoogleSignInButton() {
       });
       if (result?.error) {
         toast.error(
-          "You need a TicketWaze account to sign in here. Please create an account first.",
+          "You need a Ticketwaze account to sign in here. Please create an account first.",
         );
         return;
       }
@@ -41,7 +41,7 @@ export default function GoogleSignInButton() {
       window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`;
     } catch {
       toast.error(
-        "You need a TicketWaze account to sign in here. Please create an account first.",
+        "You need a Ticketwaze account to sign in here. Please create an account first.",
       );
     } finally {
       setIsLoading(false);
@@ -50,7 +50,7 @@ export default function GoogleSignInButton() {
 
   function handleError() {
     toast.error(
-      "You need a TicketWaze account to sign in here. Please create an account first.",
+      "You need a Ticketwaze account to sign in here. Please create an account first.",
     );
   }
 

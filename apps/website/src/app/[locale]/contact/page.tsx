@@ -19,12 +19,12 @@ export async function generateMetadata({
     title: t("contact.title"),
     description: t("contact.description"),
     openGraph: {
-      title: `${t("contact.title")} | TicketWaze`,
+      title: `${t("contact.title")} | Ticketwaze`,
       description: t("contact.description"),
       url: `${siteUrl}${localePath}/contact`,
     },
     twitter: {
-      title: `${t("contact.title")} | TicketWaze`,
+      title: `${t("contact.title")} | Ticketwaze`,
       description: t("contact.description"),
     },
     alternates: {
@@ -44,9 +44,9 @@ export default function ContactPage() {
     "@type": "ContactPage",
     "@id": `${siteUrl}/contact#webpage`,
     url: `${siteUrl}/contact`,
-    name: "Contact TicketWaze",
+    name: "Contact Ticketwaze",
     description:
-      "Get in touch with the TicketWaze support team for help, partnerships, media inquiries, or general questions.",
+      "Get in touch with the Ticketwaze support team for help, partnerships, media inquiries, or general questions.",
     isPartOf: { "@id": `${siteUrl}/#website` },
   };
 

@@ -5,7 +5,7 @@
       "description": "Concerts, cours, voyages ou ateliers : achetez vos billets en toute sécurité et gérez tout depuis un seul espace."
     },
     "choice": {
-      "title": "Bienvenue sur TicketWaze",
+      "title": "Bienvenue sur Ticketwaze",
       "description": "Choisissez une option pour continuer et configurer votre compte.",
       "cta": "Continuer",
       "terms": {
@@ -201,7 +201,7 @@
       "cta": "Terminer"
     },
     "onboarding": {
-      "title": "Bienvenue sur TicketWaze",
+      "title": "Bienvenue sur Ticketwaze",
       "description": "Idéal pour une plateforme destinée aux utilisateurs professionnels et entreprises",
       "setup": "Configurons votre expérience Ticketwaze",
       "previous": "Précédent",
@@ -259,7 +259,7 @@
         "booking": "Réservation"
       },
       "fifth": {
-        "question": "Qu’est-ce qui vous amène sur TicketWaze ?",
+        "question": "Qu’est-ce qui vous amène sur Ticketwaze ?",
         "discover": "Découvrir des événements et expériences",
         "buy": "Acheter des billets pour quelque chose de précis",
         "resell": "Revendre des billets dont je n’ai plus besoin",
@@ -307,7 +307,7 @@
           "team": "Veuillez indiquer la taille de votre équipe.",
           "referral": "Veuillez nous indiquer comment vous avez entendu parler de nous."
         },
-        "title": "Bienvenue sur TicketWaze",
+        "title": "Bienvenue sur Ticketwaze",
         "description": "Idéal pour une plateforme destinée aux utilisateurs professionnels et entreprises",
         "setup": "Configurons votre espace Ticketwaze",
         "previous": "Précédent",
@@ -762,7 +762,7 @@
       "via": "Méthode de paiement",
       "confirm": "Confirmer & Payer",
       "confirm_free": "Obtenir les billets",
-      "secured": "Sécurisé par TicketWaze"
+      "secured": "Sécurisé par Ticketwaze"
     },
     "footer": {
       "ticket": "Billet",

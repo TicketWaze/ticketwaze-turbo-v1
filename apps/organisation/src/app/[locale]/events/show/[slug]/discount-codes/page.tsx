@@ -1,20 +1,39 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import DiscountPageContent from "./DiscountPageContent";
 import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import { extractIdFromSlug } from "@/lib/Slugify";
+import { organisationPolicy } from "@/lib/role/organisationPolicy";
+import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import { auth } from "@/lib/auth";
 
 export default async function DiscountCode({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  const session = await auth();
+  const locale = await getLocale();
+  const authorized = await organisationPolicy.viewDiscounts(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
+  if (!authorized) return <UnauthorizedView />;
   const t = await getTranslations("Events.single_event.discount");
   const { slug } = await params;
   const eventId = extractIdFromSlug(slug);
   const eventRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/events/${eventId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.user.accessToken}`,
+        "Accept-Language": locale,
+        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+      },
+    },
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;

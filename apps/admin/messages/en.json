@@ -33,7 +33,7 @@
       }
     },
     "join": {
-      "title": "Join TicketWaze",
+      "title": "Join Ticketwaze",
       "description": {
         "hello": "Hello",
         "main": ", Fill in your profile details to unlock your workspace experience."
@@ -573,10 +573,10 @@
     },
     "profile": {
       "title": "User Profile",
-      "back":"Back",
+      "back": "Back",
       "button": {
-        "suspend":"Suspend account",
-        "edit":"Edit profile"
+        "suspend": "Suspend account",
+        "edit": "Edit profile"
       },
       "profile": "Organization Profile",
       "information": "Organizer Information",
@@ -584,7 +584,7 @@
         "title": "Activity Summary",
         "created": "Activity Created",
         "cancelled": "Cancelled Activity",
-        "joined_on":"Joined On"
+        "joined_on": "Joined On"
       },
       "finance": {
         "title": "Finance",
@@ -595,6 +595,6 @@
       }
     }
   },
-  
+
   "attendees": {}
 }

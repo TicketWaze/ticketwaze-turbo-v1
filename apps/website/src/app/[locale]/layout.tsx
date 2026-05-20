@@ -37,12 +37,12 @@ export async function generateMetadata({
   return {
     metadataBase: new URL(siteUrl),
     title: {
-      template: "%s | TicketWaze",
-      default: "TicketWaze | Every Ticket, Every Activity, One Platform",
+      template: "%s | Ticketwaze",
+      default: "Ticketwaze | Every Ticket, Every Activity, One Platform",
     },
     description: t("description"),
     keywords: [
-      "TicketWaze",
+      "Ticketwaze",
       "buy tickets online",
       "sell tickets online",
       "event tickets",
@@ -55,10 +55,10 @@ export async function generateMetadata({
       "MonCash tickets",
       "billetterie en ligne",
     ],
-    applicationName: "TicketWaze",
-    authors: [{ name: "TicketWaze", url: siteUrl }],
-    creator: "TicketWaze",
-    publisher: "TicketWaze",
+    applicationName: "Ticketwaze",
+    authors: [{ name: "Ticketwaze", url: siteUrl }],
+    creator: "Ticketwaze",
+    publisher: "Ticketwaze",
     robots: {
       index: true,
       follow: true,
@@ -75,7 +75,7 @@ export async function generateMetadata({
       locale: locale === "fr" ? "fr_FR" : "en_US",
       alternateLocale: locale === "fr" ? "en_US" : "fr_FR",
       url: `${siteUrl}${localePath}`,
-      siteName: "TicketWaze",
+      siteName: "Ticketwaze",
       title: t("title"),
       description: t("description"),
       images: [
@@ -83,7 +83,7 @@ export async function generateMetadata({
           url: "/opengraph-image.png",
           width: 1200,
           height: 630,
-          alt: "TicketWaze – Every Ticket, Every Activity, One Platform",
+          alt: "Ticketwaze – Every Ticket, Every Activity, One Platform",
         },
       ],
     },

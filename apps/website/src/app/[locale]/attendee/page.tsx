@@ -21,12 +21,12 @@ export async function generateMetadata({
     title: t("attendee.title"),
     description: t("attendee.description"),
     openGraph: {
-      title: `${t("attendee.title")} | TicketWaze`,
+      title: `${t("attendee.title")} | Ticketwaze`,
       description: t("attendee.description"),
       url: `${siteUrl}${localePath}/attendee`,
     },
     twitter: {
-      title: `${t("attendee.title")} | TicketWaze`,
+      title: `${t("attendee.title")} | Ticketwaze`,
       description: t("attendee.description"),
     },
     alternates: {

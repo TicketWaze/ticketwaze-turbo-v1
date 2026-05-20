@@ -56,7 +56,7 @@ export default async function Home({
         "@type": "WebSite",
         "@id": `${siteUrl}/#website`,
         url: siteUrl,
-        name: "TicketWaze",
+        name: "Ticketwaze",
         description:
           "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
         inLanguage: ["en", "fr"],
@@ -64,7 +64,7 @@ export default async function Home({
       {
         "@type": "Organization",
         "@id": `${siteUrl}/#organization`,
-        name: "TicketWaze",
+        name: "Ticketwaze",
         url: siteUrl,
         logo: {
           "@type": "ImageObject",
@@ -84,7 +84,7 @@ export default async function Home({
       {
         "@type": "WebApplication",
         "@id": `${siteUrl}/#webapp`,
-        name: "TicketWaze",
+        name: "Ticketwaze",
         url: siteUrl,
         applicationCategory: "BusinessApplication",
         operatingSystem: "Web",

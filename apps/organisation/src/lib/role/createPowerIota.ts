@@ -1,9 +1,9 @@
 export default function createPowerIota() {
-  let value = BigInt(1);
+  let value = 1n;
 
-  return (): number => {
-    const result = Number(value);
-    value = value << BigInt(1); // Shift left to generate the next power of 2
+  return (): bigint => {
+    const result = value;
+    value <<= 1n;
     return result;
   };
 }

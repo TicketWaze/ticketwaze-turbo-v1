@@ -5,7 +5,7 @@
       "description": "Your time, your passion and  your adventures made more accessible than ever. Connects to activities you care about, with a seamless experience from start to finish."
     },
     "choice": {
-      "title": "Welcome to TicketWaze",
+      "title": "Welcome to Ticketwaze",
       "description": "Choose an option to continue and set up your account.",
       "cta": "Continue",
       "attendee": {
@@ -201,7 +201,7 @@
       "cta": "Complete"
     },
     "onboarding": {
-      "title": "Welcome to TicketWaze",
+      "title": "Welcome to Ticketwaze",
       "description": "Best for a platform that handles business and enterprise users",
       "setup": "Let's set up your Ticketwaze experience",
       "previous": "Previous",
@@ -259,7 +259,7 @@
         "booking": "Booking"
       },
       "fifth": {
-        "question": "What brings you to TicketWaze?",
+        "question": "What brings you to Ticketwaze?",
         "discover": "Discover events & experiences",
         "buy": "Buy tickets for something specific",
         "resell": "Resell tickets I can't use",
@@ -307,7 +307,7 @@
           "team": "Please select your team size.",
           "referral": "Please let us know how you heard about us."
         },
-        "title": "Welcome to TicketWaze",
+        "title": "Welcome to Ticketwaze",
         "description": "Best for a platform that handles business and enterprise users",
         "setup": "Let's set up your Ticketwaze workspace",
         "previous": "Previous",
@@ -724,7 +724,7 @@
       "via": "Payment method",
       "confirm": "Confirm & Pay",
       "confirm_free": "Get Tickets",
-      "secured": "Secured by TicketWaze"
+      "secured": "Secured by Ticketwaze"
     },
     "footer": {
       "ticket": "Ticket",

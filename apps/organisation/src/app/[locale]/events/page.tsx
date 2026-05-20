@@ -7,11 +7,17 @@ import TopBar from "@/components/shared/TopBar";
 import { LinkPrimary } from "@/components/shared/Links";
 import { Add } from "iconsax-reactjs";
 import { Link } from "@/i18n/navigation";
+import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 
 export default async function EventPage() {
   const t = await getTranslations("Events");
   const locale = await getLocale();
   const session = await auth();
+  const authorized = await organisationPolicy.viewEvents(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
+  if (!authorized) return <UnauthorizedView />;
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/events`,
     {
@@ -25,10 +31,6 @@ export default async function EventPage() {
     },
   );
   const events = await request.json();
-  const authorized = await organisationPolicy.viewEvent(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
   return (
     <OrganizerLayout title={t("title")}>
       <TopBar title={t("title")}>

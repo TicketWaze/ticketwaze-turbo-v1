@@ -1,65 +1,185 @@
 import createPowerIota from "./createPowerIota";
 
 export const Role = {
-  CheckIn: 1,
-  EventManager: 2,
-  Finance: 3,
-  Staff: 4,
-  Admin: 5,
+  Staff: 1,
+  FinanceManager: 2,
+  EventManager: 3,
+  Admin: 4,
+  Owner: 5,
 } as const;
 
 export type TRole = (typeof Role)[keyof typeof Role];
 
 const iota = createPowerIota();
 
-export const UserActions = {
-  "event:create": iota(),
-  "event:view": iota(),
-  "event:delete": iota(),
-  "event:update": iota(),
-  "event:check-in": iota(),
-
-  "finance:update": iota(),
-  "finance:view": iota(),
-
-  "team:manage": iota(),
-
-  "settings:update": iota(),
-  "analytics:view": iota(),
-  "organisation:update": iota(),
-  "organisation:delete": iota(),
+export const Permission = {
+  "organisation.view": iota(),
+  "organisation.manage": iota(),
+  "organisation.delete": iota(),
+  "organisation.transfer_ownership": iota(),
+  "billing.view": iota(),
+  "billing.manage": iota(),
+  "subscription.manage": iota(),
+  "staff.view": iota(),
+  "staff.manage": iota(),
+  "roles.manage": iota(),
+  "events.view": iota(),
+  "events.create": iota(),
+  "events.edit": iota(),
+  "events.delete": iota(),
+  "events.publish": iota(),
+  "event_days.manage": iota(),
+  "sessions.manage": iota(),
+  "tickets.view": iota(),
+  "tickets.manage": iota(),
+  "tickets.refund": iota(),
+  "tickets.cancel": iota(),
+  "tickets.resend": iota(),
+  "attendees.view": iota(),
+  "attendees.export": iota(),
+  "finance.view": iota(),
+  "finance.export": iota(),
+  "finance.payouts.view": iota(),
+  "reports.view": iota(),
+  "reports.export": iota(),
+  "memberships.manage": iota(),
+  "reservations.manage": iota(),
+  "checkin.perform": iota(),
+  "scanner.use": iota(),
+  "integrations.manage": iota(),
+  "api_keys.manage": iota(),
+  "webhooks.manage": iota(),
+  "settings.manage": iota(),
+  "branding.manage": iota(),
+  "discounts.view": iota(),
+  "discounts.manage": iota(),
 } as const;
 
-export type UserAction = (typeof UserActions)[keyof typeof UserActions];
+export type TPermission = (typeof Permission)[keyof typeof Permission];
 
-const CheckInPermission =
-  UserActions["event:check-in"] | UserActions["event:view"];
+// Backward-compatible alias used by permission.ts
+export const UserActions = Permission;
+export type UserAction = TPermission;
 
-const EventManagerPermission =
-  CheckInPermission |
-  UserActions["event:create"] |
-  UserActions["event:update"] |
-  UserActions["event:delete"];
-
-const FinancePermission =
-  UserActions["finance:update"] | UserActions["finance:view"];
+const P = Permission;
 
 const StaffPermission =
-  UserActions["analytics:view"] | UserActions["finance:view"];
+  P["events.view"] |
+  P["tickets.view"] |
+  P["attendees.view"] |
+  P["checkin.perform"] |
+  P["scanner.use"];
+
+const FinanceManagerPermission =
+  P["billing.view"] |
+  P["finance.view"] |
+  P["finance.export"] |
+  P["finance.payouts.view"] |
+  P["reports.view"] |
+  P["reports.export"] |
+  P["tickets.view"] |
+  P["tickets.refund"] |
+  P["tickets.cancel"] |
+  P["attendees.view"] |
+  P["discounts.view"] |
+  P["discounts.manage"];
+
+const EventManagerPermission =
+  P["staff.view"] |
+  P["events.view"] |
+  P["events.create"] |
+  P["events.edit"] |
+  P["events.publish"] |
+  P["event_days.manage"] |
+  P["sessions.manage"] |
+  P["tickets.view"] |
+  P["tickets.manage"] |
+  P["attendees.view"] |
+  P["attendees.export"] |
+  P["reports.view"] |
+  P["reservations.manage"] |
+  P["checkin.perform"] |
+  P["scanner.use"];
 
 const AdminPermission =
-  CheckInPermission |
-  EventManagerPermission |
-  FinancePermission |
-  StaffPermission |
-  UserActions["organisation:delete"] |
-  UserActions["team:manage"] |
-  UserActions["organisation:update"];
+  P["organisation.view"] |
+  P["staff.view"] |
+  P["staff.manage"] |
+  P["roles.manage"] |
+  P["events.view"] |
+  P["events.create"] |
+  P["events.edit"] |
+  P["events.delete"] |
+  P["events.publish"] |
+  P["event_days.manage"] |
+  P["sessions.manage"] |
+  P["tickets.view"] |
+  P["tickets.manage"] |
+  P["tickets.refund"] |
+  P["tickets.cancel"] |
+  P["tickets.resend"] |
+  P["attendees.view"] |
+  P["attendees.export"] |
+  P["finance.view"] |
+  P["finance.export"] |
+  P["reports.view"] |
+  P["reports.export"] |
+  P["memberships.manage"] |
+  P["reservations.manage"] |
+  P["checkin.perform"] |
+  P["scanner.use"] |
+  P["integrations.manage"] |
+  P["settings.manage"] |
+  P["branding.manage"] |
+  P["discounts.view"] |
+  P["discounts.manage"];
 
-export const OrganisationPermissions: Record<TRole, number> = {
+const OwnerPermission =
+  P["organisation.view"] |
+  P["organisation.manage"] |
+  P["organisation.delete"] |
+  P["organisation.transfer_ownership"] |
+  P["billing.view"] |
+  P["billing.manage"] |
+  P["subscription.manage"] |
+  P["staff.view"] |
+  P["staff.manage"] |
+  P["roles.manage"] |
+  P["events.view"] |
+  P["events.create"] |
+  P["events.edit"] |
+  P["events.delete"] |
+  P["events.publish"] |
+  P["event_days.manage"] |
+  P["sessions.manage"] |
+  P["tickets.view"] |
+  P["tickets.manage"] |
+  P["tickets.refund"] |
+  P["tickets.cancel"] |
+  P["tickets.resend"] |
+  P["attendees.view"] |
+  P["attendees.export"] |
+  P["finance.view"] |
+  P["finance.export"] |
+  P["finance.payouts.view"] |
+  P["reports.view"] |
+  P["reports.export"] |
+  P["memberships.manage"] |
+  P["reservations.manage"] |
+  P["checkin.perform"] |
+  P["scanner.use"] |
+  P["integrations.manage"] |
+  P["api_keys.manage"] |
+  P["webhooks.manage"] |
+  P["settings.manage"] |
+  P["branding.manage"] |
+  P["discounts.view"] |
+  P["discounts.manage"];
+
+export const OrganisationPermissions: Record<TRole, bigint> = {
+  [Role.Owner]: OwnerPermission,
   [Role.Admin]: AdminPermission,
-  [Role.Staff]: StaffPermission,
-  [Role.Finance]: FinancePermission,
   [Role.EventManager]: EventManagerPermission,
-  [Role.CheckIn]: CheckInPermission,
+  [Role.FinanceManager]: FinanceManagerPermission,
+  [Role.Staff]: StaffPermission,
 };

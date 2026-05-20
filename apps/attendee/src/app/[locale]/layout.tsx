@@ -27,7 +27,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_ATTENDEE_URL ?? ""),
-  title: "TicketWaze - Discover Events, Connect with Culture.",
+  title: "Ticketwaze - Discover Events, Connect with Culture.",
   description:
     "Easily explore, share, and enjoy the best events your country has to offer. Join us today and start your journey!",
   // "Empowering events across your country and reaching beyond borders to connect people, ideas, and experiences.",
