@@ -94,7 +94,7 @@ export default function Navbar() {
                   width={140}
                   height={40}
                   src={Logo}
-                  alt={"Logo of TicketWaze"}
+                  alt={"Logo of Ticketwaze"}
                   className={"w-[140px] h-[40px]"}
                   priority
                   loading={"eager"}

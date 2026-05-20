@@ -10,12 +10,12 @@
     },
     "onboarding": {
       "title": "Vos invitations",
-      "description": "Retrouvez ici toutes vos invitations à rejoindre des organisations sur TicketWaze — choisissez celles que vous souhaitez accepter ou refuser en toute simplicité.",
+      "description": "Retrouvez ici toutes vos invitations à rejoindre des organisations sur Ticketwaze — choisissez celles que vous souhaitez accepter ou refuser en toute simplicité.",
       "join": "Rejoindre",
       "title2": "Préparez-vous à vendre des billets",
       "description2": "Créez des activités, gérez vos participants et suivez vos ventes — tout commence ici",
       "alert": "Nous avons remarqué que vous ne faites actuellement partie d’aucune organisation. En continuant, vous acceptez de créer une nouvelle organisation à votre nom, où vous serez désigné comme administrateur. Cela vous permettra de commencer à vendre des billets, gérer des activités et collaborer avec votre équipe.",
-      "alert2": "Avant de pouvoir accéder au tableau de bord de votre organisation, vous devez effectuer une configuration rapide pour paramétrer votre compte TicketWaze individuel. Quelques questions vous seront posées afin de personnaliser votre expérience et définir les préférences de votre organisation.",
+      "alert2": "Avant de pouvoir accéder au tableau de bord de votre organisation, vous devez effectuer une configuration rapide pour paramétrer votre compte Ticketwaze individuel. Quelques questions vous seront posées afin de personnaliser votre expérience et définir les préférences de votre organisation.",
       "alert3": "En poursuivant, vous reconnaissez avoir lu et accepté nos Conditions d’utilisation, notre Contrat de vendeur et notre Politique de confidentialité. Ces documents précisent vos responsabilités en tant qu’organisation, notamment les politiques de remboursement, les modalités de paiement et les frais de plateforme.",
       "action": "Commencer",
       "back": "Annuler",
@@ -27,14 +27,14 @@
           "team": "Veuillez indiquer la taille de votre équipe.",
           "referral": "Veuillez nous dire comment vous nous avez connus."
         },
-        "title": "Bienvenue sur TicketWaze",
+        "title": "Bienvenue sur Ticketwaze",
         "description": "Idéal pour une plateforme destinée aux entreprises et aux utilisateurs professionnels",
-        "setup": "Configurons votre espace de travail TicketWaze",
+        "setup": "Configurons votre espace de travail Ticketwaze",
         "previous": "Précédent",
         "next": "Suivant",
         "submit": "Valider",
         "started": "Commençons",
-        "finish": "Explorer TicketWaze",
+        "finish": "Explorer Ticketwaze",
         "error": "Veuillez sélectionner une option",
         "onboarded": "Utilisateur déjà enregistré",
         "first": {
@@ -73,8 +73,8 @@
         },
         "last": {
           "1": "Merci d’avoir terminé la configuration. Le profil de votre organisation sera paramétré en fonction des services choisis, de la structure de votre équipe et de vos préférences. Vous pouvez désormais commencer à créer des activités, gérer des réservations et inviter des membres de votre équipe à collaborer.",
-          "2": "Important : nous allons maintenant vous rediriger vers le tableau de bord de l’organisation. Pour des raisons de sécurité, vous devrez vous reconnecter avec vos identifiants TicketWaze fraîchement créés avant d’accéder à votre tableau de bord.",
-          "3": "Veuillez noter : TicketWaze ne partage pas les données ou informations de vente de votre organisation avec des tiers sans votre consentement explicite. Les paiements seront traités selon vos besoins, sous réserve de vérification et des délais de traitement applicables. Vous pouvez consulter ou modifier les paramètres de votre organisation et les rôles de votre équipe à tout moment depuis votre tableau de bord.",
+          "2": "Important : nous allons maintenant vous rediriger vers le tableau de bord de l’organisation. Pour des raisons de sécurité, vous devrez vous reconnecter avec vos identifiants Ticketwaze fraîchement créés avant d’accéder à votre tableau de bord.",
+          "3": "Veuillez noter : Ticketwaze ne partage pas les données ou informations de vente de votre organisation avec des tiers sans votre consentement explicite. Les paiements seront traités selon vos besoins, sous réserve de vérification et des délais de traitement applicables. Vous pouvez consulter ou modifier les paramètres de votre organisation et les rôles de votre équipe à tout moment depuis votre tableau de bord.",
           "4": {
             "1": "En continuant, vous reconnaissez avoir lu et accepté nos Conditions d’utilisation et nos ",
             "2": "Conditions d'utilisation et politique de confidentialité",
@@ -967,7 +967,7 @@
         "role": "Rôle",
         "status": "Statut"
       },
-      "requiresAccount": "La personne que vous invitez doit déjà posséder un compte TicketWaze. Assurez-vous qu'elle s'est inscrite sur ticketwaze.com avant d'envoyer cette invitation.",
+      "requiresAccount": "La personne que vous invitez doit déjà posséder un compte Ticketwaze.",
       "errors": {
         "name": "Le nom ne peut pas être vide",
         "email": "Saisissez une adresse e-mail valide"

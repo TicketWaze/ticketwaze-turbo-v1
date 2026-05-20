@@ -27,9 +27,9 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_ADMIN_URL ?? ""),
-  title: "TicketWaze Admin Dashboard | Manage Events & Tickets",
+  title: "Ticketwaze Admin Dashboard | Manage Events & Tickets",
   description:
-    "Secure admin portal for managing TicketWaze activities, tickets, and platform operations.",
+    "Secure admin portal for managing Ticketwaze activities, tickets, and platform operations.",
 };
 export const viewport: Viewport = {
   width: "device-width",

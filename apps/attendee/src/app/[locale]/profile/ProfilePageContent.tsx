@@ -151,7 +151,7 @@ export default function ProfilePageContent({
               </div>
               <div className="flex w-full justify-center items-center gap-12">
                 <Link
-                  href={`https://wa.me/?text=${encodeURIComponent(`*Check this out — it’s worth your time!* \n\nI've been using TicketWaze for tickets to concerts, shows, sports and more. Join me with my referral code and let's experience great moments together!\nTap the link to explore - Reserve your spot now! \n\n${referralLink}`)}`}
+                  href={`https://wa.me/?text=${encodeURIComponent(`*Check this out — it’s worth your time!* \n\nI've been using Ticketwaze for tickets to concerts, shows, sports and more. Join me with my referral code and let's experience great moments together!\nTap the link to explore - Reserve your spot now! \n\n${referralLink}`)}`}
                   target="_blank"
                   className="flex items-center justify-center w-18 h-18 bg-neutral-100 rounded-full"
                 >
@@ -162,7 +162,7 @@ export default function ProfilePageContent({
                     </div> */}
                 <Link
                   href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                    `Check this out — it’s worth your time! 🚀\nI've been using TicketWaze for tickets to concerts, shows, sports and more. Join me with my referral code and let's experience great moments together!\nReserve your spot now: ${referralLink}`,
+                    `Check this out — it’s worth your time! 🚀\nI've been using Ticketwaze for tickets to concerts, shows, sports and more. Join me with my referral code and let's experience great moments together!\nReserve your spot now: ${referralLink}`,
                   )}`}
                   target="_blank"
                   className="flex items-center justify-center w-18 h-18 bg-neutral-100 rounded-full"

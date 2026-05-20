@@ -139,7 +139,7 @@ function drawWrapped(
 
 // ─── Section painters ─────────────────────────────────────────────────────────
 
-// 1. HEADER ── branded top bar with the wide TicketWaze logo
+// 1. HEADER ── branded top bar with the wide Ticketwaze logo
 async function paintHeader(ctx: CanvasRenderingContext2D) {
   // background
   ctx.fillStyle = C.header;
@@ -153,7 +153,7 @@ async function paintHeader(ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = sep;
   ctx.fillRect(0, Y.headerH - 1, W, 1);
 
-  // wide TicketWaze logo (SVG — all paths render fine in canvas)
+  // wide Ticketwaze logo (SVG — all paths render fine in canvas)
   const logoW = 320,
     logoH = 60;
   const lx = (W - logoW) / 2;
@@ -170,7 +170,7 @@ async function paintHeader(ctx: CanvasRenderingContext2D) {
     ctx.font = font("bold", 32);
     ctx.textAlign = "left";
     ctx.textBaseline = "middle";
-    ctx.fillText("TicketWaze", lx + logoH + 12, Y.headerH / 2);
+    ctx.fillText("Ticketwaze", lx + logoH + 12, Y.headerH / 2);
   }
 
   // "ticketwaze.com" — right side
@@ -377,7 +377,7 @@ async function paintDetailAndQR(
     /* skip */
   }
 
-  // TicketWaze logo centred on QR
+  // Ticketwaze logo centred on QR
   const lx = QR_X + QR_BOX / 2;
   const ly = QR_Y + QR_PAD + QR_SIZE / 2;
   const lr = 34;
@@ -484,7 +484,7 @@ async function paintPayments(ctx: CanvasRenderingContext2D) {
 //   ctx.textBaseline = "middle";
 //   ctx.fillText("T", ix, cy);
 
-//   // "Powered by TicketWaze"
+//   // "Powered by Ticketwaze"
 //   ctx.textAlign = "left";
 //   ctx.fillStyle = C.muted;
 //   ctx.font = font("400", 24);
@@ -492,7 +492,7 @@ async function paintPayments(ctx: CanvasRenderingContext2D) {
 //   ctx.fillStyle = C.orange;
 //   ctx.font = font("700", 24);
 //   const pwText = ctx.measureText("Powered by ").width;
-//   ctx.fillText("TicketWaze", ix + ir + 14 + pwText, cy);
+//   ctx.fillText("Ticketwaze", ix + ir + 14 + pwText, cy);
 
 //   // dot separator
 //   ctx.fillStyle = C.dim;

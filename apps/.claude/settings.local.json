@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Read(//c/Users/ezena/Documents/TicketWaze/ticketwaze-turbo-v1/**)",
+      "Read(//c/Users/ezena/Documents/Ticketwaze/ticketwaze-turbo-v1/**)",
       "Bash(mkdir -p payment/src/app/\\\\[locale\\\\]/api)",
       "Bash(mkdir -p payment/src/i18n)",
       "Bash(mkdir -p payment/src/components)",

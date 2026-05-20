@@ -84,12 +84,7 @@ export default function ProfileForm({
       reset(data);
       setSaved(true);
       if (result.organisation) {
-        await update({
-          ...session,
-          activeOrganisation: {
-            ...result.organisation,
-          },
-        });
+        await update({ activeOrganisation: result.organisation });
       }
     }
   }
@@ -181,7 +176,7 @@ export default function ProfileForm({
             </TooltipTrigger>
             <TooltipContent
               side="right"
-              className="max-w-[220px] text-[1.2rem] leading-6"
+              className="max-w-88 text-[1.2rem] leading-6"
             >
               {t("placeholders.social_links_premium")}
             </TooltipContent>

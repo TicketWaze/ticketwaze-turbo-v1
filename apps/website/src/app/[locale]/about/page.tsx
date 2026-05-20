@@ -21,12 +21,12 @@ export async function generateMetadata({
     title: t("about.title"),
     description: t("about.description"),
     openGraph: {
-      title: `${t("about.title")} | TicketWaze`,
+      title: `${t("about.title")} | Ticketwaze`,
       description: t("about.description"),
       url: `${siteUrl}${localePath}/about`,
     },
     twitter: {
-      title: `${t("about.title")} | TicketWaze`,
+      title: `${t("about.title")} | Ticketwaze`,
       description: t("about.description"),
     },
     alternates: {
@@ -46,9 +46,9 @@ export default function AboutPage() {
     "@type": "AboutPage",
     "@id": `${siteUrl}/about#webpage`,
     url: `${siteUrl}/about`,
-    name: "About TicketWaze",
+    name: "About Ticketwaze",
     description:
-      "TicketWaze was created to remove unnecessary friction from how access is bought and sold — bringing payments, tickets, and management into one simple, reliable platform.",
+      "Ticketwaze was created to remove unnecessary friction from how access is bought and sold — bringing payments, tickets, and management into one simple, reliable platform.",
     isPartOf: { "@id": `${siteUrl}/#website` },
     about: { "@id": `${siteUrl}/#organization` },
   };

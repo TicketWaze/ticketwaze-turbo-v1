@@ -10,13 +10,21 @@ import {
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
+import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 
 export default async function Page() {
   const t = await getTranslations("Settings.team");
   const locale = await getLocale();
   const session = await auth();
   const organisationId = session?.activeOrganisation.organisationId;
-  const authorized = await organisationPolicy.manageTeam(
+  const authorized = await organisationPolicy.viewStaff(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
+  if (!authorized) {
+    return <UnauthorizedView />;
+  }
+  const manage = await organisationPolicy.manageStaff(
     session?.user.userId ?? "",
     session?.activeOrganisation.organisationId ?? "",
   );
@@ -41,13 +49,13 @@ export default async function Page() {
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
         <TopBar title={t("title")}>
-          {authorized && <AddMember totalMembers={totalMembers} />}
+          {manage && <AddMember totalMembers={totalMembers} />}
         </TopBar>
       </div>
       <MemberList
         members={members}
         waitlistMembers={waitlistMembers}
-        authorized={authorized}
+        authorized={manage}
       />
     </OrganizerLayout>
   );

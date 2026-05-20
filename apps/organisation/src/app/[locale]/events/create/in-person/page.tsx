@@ -1,7 +1,10 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
+import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import { Link } from "@/i18n/navigation";
+import { auth } from "@/lib/auth";
+import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { ArrowRight2, Icon, Microphone2, People } from "iconsax-reactjs";
 import {
   Building2,
@@ -23,6 +26,12 @@ import {
 import { getTranslations } from "next-intl/server";
 
 export default async function InPersonEventTypePage() {
+  const session = await auth();
+  const authorized = await organisationPolicy.createEvent(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
+  if (!authorized) return <UnauthorizedView />;
   const t = await getTranslations("Events.create_event.list.inPerson");
   const links = [
     {

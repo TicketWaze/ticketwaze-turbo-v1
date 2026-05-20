@@ -1,21 +1,34 @@
-import { OrganisationPermissions, TRole, UserAction } from "./organisationRole";
+import {
+  OrganisationPermissions,
+  TPermission,
+  TRole,
+  Role,
+} from "./organisationRole";
 
-export function can(role: TRole, action: UserAction): boolean {
-  return (OrganisationPermissions[role] & action) === action;
+export function can(role: TRole, permission: TPermission): boolean {
+  const mask = OrganisationPermissions[role];
+  if (mask === undefined) return false;
+  return (mask & permission) === permission;
 }
 
 export async function getUserRole(
   userId: string,
   organisationId: string,
-): Promise<TRole> {
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/role/${userId}`,
-  );
-  const membership = await request.json();
+): Promise<TRole | null> {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/role/${userId}`,
+    );
+    const membership = await request.json();
 
-  if (membership.status === "failed") {
-    throw new Error("User is not a member of this organisation");
+    if (membership.status === "failed") return null;
+
+    const validRoles = Object.values(Role) as number[];
+    const raw = Number(membership.role);
+    if (!validRoles.includes(raw)) return null;
+
+    return raw as TRole;
+  } catch {
+    return null;
   }
-
-  return membership.role as TRole;
 }

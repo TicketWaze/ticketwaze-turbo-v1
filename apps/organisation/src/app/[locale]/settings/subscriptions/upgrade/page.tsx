@@ -12,7 +12,7 @@ export default async function SubscriptionUpgradePage() {
   const t = await getTranslations("Settings.subscriptions");
   const locale = await getLocale();
   const session = await auth();
-  const authorized = await organisationPolicy.viewFinance(
+  const authorized = await organisationPolicy.manageMemberships(
     session?.user.userId ?? "",
     session?.activeOrganisation.organisationId ?? "",
   );

@@ -16,7 +16,7 @@ function AttendeeLayout({
   return (
     <>
       <Head>
-        <title>{title} - TicketWaze</title>
+        <title>{title} - Ticketwaze</title>
       </Head>
       <div
         className={

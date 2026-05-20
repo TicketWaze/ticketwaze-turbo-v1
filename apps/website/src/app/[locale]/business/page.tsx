@@ -21,12 +21,12 @@ export async function generateMetadata({
     title: t("business.title"),
     description: t("business.description"),
     openGraph: {
-      title: `${t("business.title")} | TicketWaze`,
+      title: `${t("business.title")} | Ticketwaze`,
       description: t("business.description"),
       url: `${siteUrl}${localePath}/business`,
     },
     twitter: {
-      title: `${t("business.title")} | TicketWaze`,
+      title: `${t("business.title")} | Ticketwaze`,
       description: t("business.description"),
     },
     alternates: {
@@ -44,7 +44,7 @@ export default function BusinessPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "TicketWaze for Business",
+    name: "Ticketwaze for Business",
     applicationCategory: "BusinessApplication",
     url: `${siteUrl}/business`,
     offers: [
@@ -53,21 +53,24 @@ export default function BusinessPage() {
         name: "Free",
         price: "0",
         priceCurrency: "USD",
-        description: "Basic analytics, up to 3 team members, up to 100 free tickets",
+        description:
+          "Basic analytics, up to 3 team members, up to 100 free tickets",
       },
       {
         "@type": "Offer",
         name: "Pro",
         price: "9.99",
         priceCurrency: "USD",
-        description: "Advanced analytics, up to 7 team members, up to 300 free tickets",
+        description:
+          "Advanced analytics, up to 7 team members, up to 300 free tickets",
       },
       {
         "@type": "Offer",
         name: "Premium",
         price: "19.99",
         priceCurrency: "USD",
-        description: "AI-powered analytics, up to 15 team members, unlimited free tickets",
+        description:
+          "AI-powered analytics, up to 15 team members, unlimited free tickets",
       },
     ],
   };

@@ -10,7 +10,7 @@
     },
     "onboarding": {
       "title": "Your Invitations",
-      "description": "Here you can find all your invitations to join organizations on TicketWaze — choose which ones you’d like to accept or decline with ease.",
+      "description": "Here you can find all your invitations to join organizations on Ticketwaze — choose which ones you’d like to accept or decline with ease.",
       "join": "Join",
       "title2": "Get ready to sell tickets",
       "description2": "Create activities, manage attendees, and track sales — everything starts here",
@@ -27,7 +27,7 @@
           "team": "Please select your team size.",
           "referral": "Please let us know how you heard about us."
         },
-        "title": "Welcome to TicketWaze",
+        "title": "Welcome to Ticketwaze",
         "description": "Best for a platform that handles business and enterprise users",
         "setup": "Let's set up your Ticketwaze workspace",
         "previous": "Previous",
@@ -1020,7 +1020,7 @@
         "role": "Role",
         "status": "Status"
       },
-      "requiresAccount": "The person you're inviting must already have a TicketWaze account. Make sure they sign up at ticketwaze.com before sending this invitation.",
+      "requiresAccount": "The person you're inviting must already have a Ticketwaze account.",
       "errors": {
         "name": "Name cannot be blank",
         "email": "Enter a valid email address"

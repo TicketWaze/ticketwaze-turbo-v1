@@ -25,8 +25,8 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_PAYMENT_URL ?? ""),
-  title: "TicketWaze - Secure Payment",
-  description: "Secure payment processing for TicketWaze events.",
+  title: "Ticketwaze - Secure Payment",
+  description: "Secure payment processing for Ticketwaze events.",
 };
 
 export const viewport: Viewport = {

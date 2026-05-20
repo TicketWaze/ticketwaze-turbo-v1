@@ -2,9 +2,9 @@ import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import AnalyticsPageTopbar from "./AnalyticsPageTopbar";
 import { auth } from "@/lib/auth";
 import { getLocale, getTranslations } from "next-intl/server";
+import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import DailyTicketSalesChart from "./DailyTicketSalesChart";
 import BarChart from "./BarChart";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { redirect } from "next/navigation";
 import { Crown, InfoCircle } from "iconsax-reactjs";
@@ -26,13 +26,13 @@ export default async function AnalyticsPage() {
   if (!session?.activeOrganisation?.organisationId) {
     redirect(`/auth/logout`);
   }
-  const authorized = await organisationPolicy.viewAnalytics(
-    session?.user.userId ?? "",
-    currentOrganisationId!,
+
+  const authorized = await organisationPolicy.viewReports(
+    session.user.userId ?? "",
+    currentOrganisationId ?? "",
   );
-  if (!authorized) {
-    return <UnauthorizedView />;
-  }
+  if (!authorized) return <UnauthorizedView />;
+
   const t = await getTranslations("Analytics");
   const locale = await getLocale();
   const request = await fetch(
@@ -47,6 +47,9 @@ export default async function AnalyticsPage() {
       },
     },
   );
+  // if (request.status === 403) {
+  //   return <UnauthorizedView />;
+  // }
   const analytics = await request.json();
 
   /* ── Derived data for new sections ── */
@@ -263,9 +266,7 @@ export default async function AnalyticsPage() {
                 >
                   {t("tickets.daily")}
                 </span>
-                <DailyTicketSalesChart
-                  ticketsByDay={analytics.ticketsByDay}
-                />
+                <DailyTicketSalesChart ticketsByDay={analytics.ticketsByDay} />
               </div>
             </div>
             <div

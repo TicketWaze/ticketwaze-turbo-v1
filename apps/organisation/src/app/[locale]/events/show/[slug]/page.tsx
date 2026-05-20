@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import { Event, EventPerformer, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import { extractIdFromSlug } from "@/lib/Slugify";
+import { organisationPolicy } from "@/lib/role/organisationPolicy";
+import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 
 export default async function Page({
   params,
@@ -16,6 +18,11 @@ export default async function Page({
   const t = await getTranslations("Events.single_event");
   const locale = await getLocale();
   const session = await auth();
+  const authorized = await organisationPolicy.viewEvents(
+    session?.user.userId ?? "",
+    session?.activeOrganisation.organisationId ?? "",
+  );
+  if (!authorized) return <UnauthorizedView />;
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/events/${eventId}`,
     {

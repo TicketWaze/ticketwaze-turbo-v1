@@ -5,7 +5,6 @@ import { OrganisationOrders } from "@ticketwaze/typescript-config";
 import { getLocale, getTranslations } from "next-intl/server";
 import OrganisationPageWrapper from "./OrganisationPageWrapper";
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import TopBar from "@/components/shared/TopBar";
 import BackButton from "@/components/shared/BackButton";
 
 export default async function OrganisationTransactions({
