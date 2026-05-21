@@ -8,7 +8,7 @@ import { Link } from "@/i18n/navigation";
 import MapComponent from "./MapComponent";
 import { Global, RouteSquare, Sms, Warning2 } from "iconsax-reactjs";
 import TicketViewer from "./TicketViewer";
-import { Ticket, User } from "@ticketwaze/typescript-config";
+import { Event, Ticket, User } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
 import ReturnFreeTicketView from "./ReturnFreeTicketView";
@@ -40,7 +40,7 @@ export default async function UpcomingEventPage({
     },
   );
   const eventResponse = await eventRequest.json();
-  const event = eventResponse.event;
+  const event: Event = eventResponse.event;
   const organisation = event.organisation;
   const tickets: Ticket[] = event.tickets;
 
@@ -128,7 +128,7 @@ export default async function UpcomingEventPage({
                 </span>
 
                 <Link
-                  href={`https://www.google.com/maps/search/?api=1&query=${event.latitude},${event.longitude}`}
+                  href={`https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`}
                   target="_blank"
                   className="flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
                 >
@@ -181,7 +181,7 @@ export default async function UpcomingEventPage({
             <div></div>
             <div></div>
             <div className=" flex-col w-full gap-3 hidden lg:flex">
-              {tickets[0]?.isRefundable && event.isFree && (
+              {event.eventTicketTypes[0].isRefundable && event.isFree && (
                 <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
                   <Warning2 size="24" color="#737C8A" variant="Bulk" />
                   <div>
@@ -191,10 +191,10 @@ export default async function UpcomingEventPage({
                   </div>
                 </div>
               )}
-              {tickets[0]?.isRefundable && event.isFree && (
+              {event.eventTicketTypes[0].isRefundable && event.isFree && (
                 <ReturnFreeTicketView ticket={tickets[0]} />
               )}
-              {tickets[0]?.isRefundable && !event.isFree && (
+              {event.eventTicketTypes[0].isRefundable && !event.isFree && (
                 <ReturnPaidTicketView
                   tickets={tickets}
                   eventDays={event.eventDays}
@@ -212,7 +212,7 @@ export default async function UpcomingEventPage({
             <TicketViewer tickets={tickets} event={event} />
           </div>
           <div className="flex lg:hidden flex-col w-full gap-3 ">
-            {tickets[0]?.isRefundable && event.isFree && (
+            {event.eventTicketTypes[0].isRefundable && event.isFree && (
               <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
                 <Warning2 size="24" color="#737C8A" variant="Bulk" />
                 <div>
@@ -222,10 +222,10 @@ export default async function UpcomingEventPage({
                 </div>
               </div>
             )}
-            {tickets[0]?.isRefundable && event.isFree && (
+            {event.eventTicketTypes[0].isRefundable && event.isFree && (
               <ReturnFreeTicketView ticket={tickets[0]} />
             )}
-            {tickets[0]?.isRefundable && !event.isFree && (
+            {event.eventTicketTypes[0].isRefundable && !event.isFree && (
               <ReturnPaidTicketView
                 tickets={tickets}
                 eventDays={event.eventDays}
