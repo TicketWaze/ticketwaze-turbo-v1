@@ -717,10 +717,10 @@
     "summary": {
       "title": "Order Summary",
       "subtotal": "Subtotal",
-      "service_fee": "PSP",
-      "platform_fee": "Service fee",
-      "no_platform_fee": "Included",
+      "transaction_fee": "Transaction fee",
+      "platform_fee": "Platform fee",
       "total": "Total",
+      "tca": "+ taxes may apply (TCA)",
       "via": "Payment method",
       "confirm": "Confirm & Pay",
       "confirm_free": "Get Tickets",

@@ -7,7 +7,7 @@ import { Event, EventTicketType } from "@ticketwaze/typescript-config";
 import moncash from "../moncash.svg";
 import Capitalize from "@/lib/Capitalize";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "../checkout.types";
-import { getServiceFeeRate } from "../checkoutUtils";
+import { TRANSACTION_FEE_RATE } from "../checkoutUtils";
 
 interface Props {
   delta: number;
@@ -51,8 +51,7 @@ export default function SummaryStep({
 }: Props) {
   const t = useTranslations("Checkout");
   const { subtotal, serviceFee, platformFee, total } = feeBreakdown;
-  const serviceFeeRate = getServiceFeeRate(paymentType);
-  const serviceFeeLabel = `${(serviceFeeRate * 100).toFixed(1).replace(".0", "")}%`;
+  const transactionFeeLabel = `${(TRANSACTION_FEE_RATE * 100).toFixed(0)}%`;
 
   const paymentLabel =
     paymentType === "wallet"
@@ -142,33 +141,20 @@ export default function SummaryStep({
             </div>
             <div className="flex items-center justify-between text-[1.4rem]">
               <span className="text-neutral-500">
-                {t("summary.service_fee")} ({serviceFeeLabel}) -{" "}
-                {Capitalize(paymentType)}
+                {t("summary.transaction_fee")} ({transactionFeeLabel})
               </span>
               <span className="text-deep-100 font-medium">
                 {serviceFee.toFixed(2)} {event.currency}
               </span>
             </div>
-            {platformFee > 0 && (
-              <div className="flex items-center justify-between text-[1.4rem]">
-                <span className="text-neutral-500">
-                  {t("summary.platform_fee")}
-                </span>
-                <span className="text-deep-100 font-medium">
-                  {platformFee.toFixed(2)} {event.currency}
-                </span>
-              </div>
-            )}
-            {platformFee === 0 && (
-              <div className="flex items-center justify-between text-[1.4rem]">
-                <span className="text-neutral-500">
-                  {t("summary.platform_fee")}
-                </span>
-                <span className="text-primary-500 font-medium text-[1.3rem]">
-                  {t("summary.no_platform_fee")}
-                </span>
-              </div>
-            )}
+            <div className="flex items-center justify-between text-[1.4rem]">
+              <span className="text-neutral-500">
+                {t("summary.platform_fee")}
+              </span>
+              <span className="text-deep-100 font-medium">
+                {platformFee.toFixed(2)} {event.currency}
+              </span>
+            </div>
           </div>
         )}
 
@@ -182,9 +168,14 @@ export default function SummaryStep({
               {t("free")}
             </span>
           ) : (
-            <span className="font-primary font-bold text-[3rem] leading-none text-primary-500">
-              {total.toFixed(2)} {event.currency}
-            </span>
+            <div className="flex flex-col items-end gap-[0.2rem]">
+              <span className="font-primary font-bold text-[3rem] leading-none text-primary-500">
+                {total.toFixed(2)} {event.currency}
+              </span>
+              <span className="text-[1.1rem] text-neutral-400 font-normal">
+                {t("summary.tca")}
+              </span>
+            </div>
           )}
         </div>
 

@@ -37,7 +37,8 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\ezena\\\\Documents\\\\Ticketwaze\\\\ticketwaze-turbo-v1\\\\apps\\\\attendee\\\\src\\\\app\\\\[locale]\\\\auth\" -Recurse)",
       "Bash(Select-Object FullName, PSIsContainer)",
       "Bash(Format-Table -AutoSize)",
-      "Bash(git log *)"
+      "Bash(git log *)",
+      "Bash(Get-ChildItem *)"
     ]
   }
 }

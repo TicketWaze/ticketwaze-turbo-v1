@@ -270,6 +270,20 @@ export interface User {
   role: number;
 }
 
+export interface Admin {
+  adminId: string;
+  email: string;
+  password: string | null;
+  role: number;
+  isVerified: boolean;
+  emailVerified: boolean;
+  verificationToken: string | null;
+  tokenExpiresAt: DateTime | null;
+  resendCount: number;
+  lastResendAt: DateTime | null;
+  createdAt: DateTime;
+}
+
 export interface Currency {
   currencyId: string;
   currencyName: string;

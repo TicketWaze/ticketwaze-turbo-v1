@@ -828,6 +828,8 @@
           "name": "Le nom de la catégorie de billet doit comporter au moins 3 caractères",
           "description": "La description de la catégorie de billet doit comporter au moins 20 caractères",
           "price": "Le prix ne peut pas être vide",
+          "priceMinHTG": "Le prix doit être d'au moins 250 HTG",
+          "priceMinUSD": "Le prix doit être d'au moins 5 USD",
           "quantity": {
             "empty": "La quantité ne peut pas être vide",
             "decimal": "La quantité ne peut pas contenir de décimales ni de zéro final"

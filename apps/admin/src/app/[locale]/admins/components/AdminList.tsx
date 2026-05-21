@@ -11,9 +11,9 @@ import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import { User } from "@ticketwaze/typescript-config";
+import { Admin } from "@ticketwaze/typescript-config";
 
-export default function AdminList({ users }: { users: User[] }) {
+export default function AdminList({ admins }: { admins: Admin[] }) {
   const t = useTranslations("Admins");
   const { data: session } = useSession();
   return (
@@ -21,13 +21,6 @@ export default function AdminList({ users }: { users: User[] }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead
-              className={
-                "font-bold text-[1.1rem] w-92 pb-6 leading-6 text-deep-100 uppercase"
-              }
-            >
-              {t("table.name")}
-            </TableHead>
             <TableHead
               className={
                 "font-bold hidden lg:table-cell text-[1.1rem] w-md pb-6 leading-6 text-deep-100 uppercase"
@@ -59,16 +52,18 @@ export default function AdminList({ users }: { users: User[] }) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users.map((member) => (
-            <TableRow key={member.userId}>
+          {admins.map((admin) => (
+            <TableRow key={admin.adminId}>
               <TableCell
-                className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
+                className={
+                  "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                }
               >
                 <Drawer direction={"right"}>
                   <DrawerTrigger>
-                    <span className={"cursor-pointer flex items-center gap-4"}>
-                      {member.firstName} {member.lastName}
-                      {session?.user.userId === member.userId && (
+                    <span className={"cursor-pointer"}>
+                      {admin.email}{" "}
+                      {session?.user.adminId === admin.adminId && (
                         <span
                           className={
                             "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-primary-500  px-2 rounded-[30px] bg-[#f5f5f5]"
@@ -84,22 +79,10 @@ export default function AdminList({ users }: { users: User[] }) {
               </TableCell>
               <TableCell
                 className={
-                  "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-                }
-              >
-                <Drawer direction={"right"}>
-                  <DrawerTrigger>
-                    <span className={"cursor-pointer"}>{member.email}</span>
-                  </DrawerTrigger>
-                  {/* <UserInformation member={member} authorized={authorized} /> */}
-                </Drawer>
-              </TableCell>
-              <TableCell
-                className={
                   "text-[1.5rem]  font-medium leading-8 text-neutral-900"
                 }
               >
-                {member.role}
+                {admin.role}
               </TableCell>
               <TableCell className={"hidden lg:table-cell"}>
                 <span

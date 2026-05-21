@@ -877,6 +877,8 @@
           "name": "Ticket class description should be at least 3 characters",
           "description": "Ticket class description should be at least 20 characters",
           "price": "Price cannot be empty",
+          "priceMinHTG": "Price must be at least 250 HTG",
+          "priceMinUSD": "Price must be at least $5 USD",
           "general": {
             "name": "General",
             "description": "Live a unique and memorable experience with your Ticketwaze ticket!"

@@ -6,7 +6,6 @@ import { Event, EventTicketType } from "@ticketwaze/typescript-config";
 import Capitalize from "@/lib/Capitalize";
 import ticketBG from "./ticket-bg.svg";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "./checkout.types";
-import { getPlatformFeePerTicket } from "./checkoutUtils";
 import Logo from "./Logo.svg";
 
 interface Props {

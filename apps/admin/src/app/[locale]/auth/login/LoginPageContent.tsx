@@ -1,9 +1,9 @@
 "use client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn, useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { signIn } from "next-auth/react";
+import { useLocale, useTranslations } from "next-intl";
+import { useRef, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
@@ -12,6 +12,7 @@ import { useSearchParams } from "next/navigation";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { LinkAccent } from "@/components/shared/Links";
 
 type Step = "credentials" | "otp";
 
@@ -21,16 +22,26 @@ const stepVariants = {
   exit: { opacity: 0, x: -40, transition: { duration: 0.25 } },
 };
 
+function formatTime(seconds: number) {
+  const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+  const s = (seconds % 60).toString().padStart(2, "0");
+  return `${m}:${s}`;
+}
+
 export default function LoginPageContent() {
   const t = useTranslations("Auth.login");
+  const locale = useLocale();
   const [step, setStep] = useState<Step>("credentials");
   const [pendingEmail, setPendingEmail] = useState("");
+  const [pendingPassword, setPendingPassword] = useState("");
   const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
+  const [secondsLeft, setSecondsLeft] = useState(600);
+  const [isResending, setIsResending] = useState(false);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
 
   const LoginSchema = z.object({
     email: z.email(t("errors.email")),
-    password: z.string(),
+    password: z.string().min(1, t("errors.password")),
   });
 
   const searchParams = useSearchParams();
@@ -49,8 +60,22 @@ export default function LoginPageContent() {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const { update } = useSession();
-  const router = useRouter();
+
+  // OTP countdown — reset whenever we enter the otp step
+  useEffect(() => {
+    if (step !== "otp") return;
+    setSecondsLeft(600);
+    const timer = setInterval(() => {
+      setSecondsLeft((s) => {
+        if (s <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [step]);
 
   async function submitCredentials(data: TLoginSchema) {
     setIsLoading(true);
@@ -68,6 +93,7 @@ export default function LoginPageContent() {
         toast.error(json.message || t("errors.loginFailed"));
       } else {
         setPendingEmail(data.email);
+        setPendingPassword(data.password);
         setStep("otp");
       }
     } catch {
@@ -90,11 +116,26 @@ export default function LoginPageContent() {
       setOtpValues(["", "", "", "", "", ""]);
       otpRefs.current[0]?.focus();
     } else {
-      const sessionData = await update();
-      const locale = sessionData?.user.userPreference.appLanguage;
       window.location.href = `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/analytics`;
     }
     setIsLoading(false);
+  }
+
+  async function resendOtp() {
+    setIsResending(true);
+    try {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/admin/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: pendingEmail, password: pendingPassword }),
+      });
+      setSecondsLeft(600);
+      setOtpValues(["", "", "", "", "", ""]);
+      toast.success(t("otp.resent"));
+    } catch {
+      toast.error(t("errors.loginFailed"));
+    }
+    setIsResending(false);
   }
 
   function handleOtpChange(index: number, value: string) {
@@ -238,25 +279,42 @@ export default function LoginPageContent() {
                   {t("otp.description")}
                 </p>
               </div>
-              <div
-                className="flex gap-3 justify-center"
-                onPaste={handleOtpPaste}
-              >
-                {otpValues.map((val, i) => (
-                  <input
-                    key={i}
-                    ref={(el) => {
-                      otpRefs.current[i] = el;
-                    }}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={val}
-                    onChange={(e) => handleOtpChange(i, e.target.value)}
-                    onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                    className="w-[5.2rem] h-[5.6rem] text-center text-[2rem] font-semibold bg-neutral-100 rounded-2xl border border-transparent focus:border-primary-500 outline-none transition-all duration-200 text-deep-200"
-                  />
-                ))}
+              <div className="flex flex-col items-center gap-4 w-full">
+                <div
+                  className="flex gap-3 justify-center"
+                  onPaste={handleOtpPaste}
+                >
+                  {otpValues.map((val, i) => (
+                    <input
+                      key={i}
+                      ref={(el) => {
+                        otpRefs.current[i] = el;
+                      }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      value={val}
+                      onChange={(e) => handleOtpChange(i, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
+                      className="w-[5.2rem] h-[5.6rem] text-center text-[2rem] font-semibold bg-neutral-100 rounded-2xl border border-transparent focus:border-primary-500 outline-none transition-all duration-200 text-deep-200"
+                    />
+                  ))}
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-[1.4rem] text-neutral-600">
+                    {t("otp.expiry")} {formatTime(secondsLeft)}
+                  </span>
+                  {secondsLeft === 0 && (
+                    <button
+                      type="button"
+                      disabled={isResending}
+                      onClick={resendOtp}
+                      className="text-[1.4rem] text-primary-500 hover:underline disabled:opacity-50"
+                    >
+                      {isResending ? <LoadingCircleSmall /> : t("otp.resend")}
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="w-full hidden lg:flex flex-col gap-4">
                 <ButtonPrimary
@@ -284,34 +342,45 @@ export default function LoginPageContent() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.8 }}
-        className="lg:hidden w-full"
+        className="flex flex-col gap-4 w-full"
       >
-        {step === "credentials" ? (
-          <ButtonPrimary
-            form="login-form"
-            type="submit"
-            disabled={isLoading}
-            className="w-full"
-          >
-            {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
-          </ButtonPrimary>
-        ) : (
-          <div className="flex flex-col gap-4">
+        <div className="lg:hidden w-full">
+          {step === "credentials" ? (
             <ButtonPrimary
-              type="button"
-              disabled={isLoading || otpValues.join("").length < 6}
-              onClick={submitOtp}
+              form="login-form"
+              type="submit"
+              disabled={isLoading}
               className="w-full"
             >
-              {isLoading ? <LoadingCircleSmall /> : t("otp.cta")}
+              {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
             </ButtonPrimary>
-            <button
-              type="button"
-              onClick={goBack}
-              className="text-[1.5rem] text-neutral-500 hover:text-primary-500 transition-colors text-center"
-            >
-              {t("otp.back")}
-            </button>
+          ) : (
+            <div className="flex flex-col gap-4">
+              <ButtonPrimary
+                type="button"
+                disabled={isLoading || otpValues.join("").length < 6}
+                onClick={submitOtp}
+                className="w-full"
+              >
+                {isLoading ? <LoadingCircleSmall /> : t("otp.cta")}
+              </ButtonPrimary>
+              <button
+                type="button"
+                onClick={goBack}
+                className="text-[1.5rem] text-neutral-500 hover:text-primary-500 transition-colors text-center"
+              >
+                {t("otp.back")}
+              </button>
+            </div>
+          )}
+        </div>
+
+        {step === "credentials" && (
+          <div className="border border-neutral-100 w-full p-4 pl-6 flex items-center justify-between gap-4 lg:gap-[1.8rem] rounded-[100px]">
+            <span className="text-[1.8rem] leading-10 text-neutral-700">
+              {t("register.text")}
+            </span>
+            <LinkAccent href="/auth/register">{t("register.cta")}</LinkAccent>
           </div>
         )}
       </motion.div>
