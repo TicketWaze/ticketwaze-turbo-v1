@@ -20,9 +20,17 @@
         "description": "Enter the 6-digit code sent to your email",
         "cta": "Verify",
         "back": "Back to login",
-        "error": "Invalid verification code"
+        "error": "Invalid verification code",
+        "resend": "Resend Code",
+        "resendIn": "Resend in",
+        "resent": "A new code has been sent",
+        "expiry": "Code expires in"
       },
       "reset": "Reset password",
+      "register": {
+        "text": "Don't have an account?",
+        "cta": "Register"
+      },
       "cta": {
         "submit": "Sign in",
         "or": "Or",
@@ -30,6 +38,52 @@
       },
       "footer": {
         "cta": "Back"
+      }
+    },
+    "register": {
+      "errors": {
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number",
+        "password_length": "Password must be at least 8 characters",
+        "password_match": "Passwords don't match",
+        "failed": "Something went wrong. Please try again."
+      },
+      "email": {
+        "title": "Create Account",
+        "description": "Enter your @ticketwaze.com email to get started",
+        "placeholder": "Admin Email Address",
+        "cta": "Send Code",
+        "errors": {
+          "email": "Enter a valid email",
+          "domain": "Email must end with @ticketwaze.com",
+          "alreadyRegistered": "This email is already registered"
+        }
+      },
+      "otp": {
+        "title": "Check Your Email",
+        "description": "Enter the 6-digit code sent to",
+        "expiry": "Code expires in",
+        "resend": "Resend Code",
+        "resent": "A new code has been sent",
+        "cta": "Continue",
+        "back": "Back",
+        "error": "Invalid or expired code"
+      },
+      "password": {
+        "title": "Set Your Password",
+        "description": "Create a strong password to secure your account",
+        "placeholders": {
+          "password": "Choose Password",
+          "confirm": "Confirm Password"
+        },
+        "cta": "Create Account",
+        "success": "Account created! You can now sign in."
+      },
+      "footer": {
+        "text": "Already have an account?",
+        "cta": "Sign in"
       }
     },
     "join": {
@@ -77,6 +131,51 @@
         "submit": "Reset"
       },
       "back": "Back"
+    },
+    "forgot": {
+      "errors": {
+        "email": "Enter a valid email address",
+        "failed": "Something went wrong. Please try again.",
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number",
+        "password_length": "Password must be at least 8 characters",
+        "password_match": "Passwords don't match",
+        "same": "New password must differ from your current one",
+        "token_expired": "Your reset session expired. Please start over."
+      },
+      "email": {
+        "title": "Forgot Password",
+        "description": "Enter your admin email and we'll send you a reset code",
+        "placeholder": "Admin Email Address",
+        "cta": "Send Code",
+        "sent": "If that email is registered, a code has been sent"
+      },
+      "otp": {
+        "title": "Check Your Email",
+        "description": "Enter the 6-digit code sent to",
+        "expiry": "Code expires in",
+        "resend": "Resend Code",
+        "resent": "A new code has been sent",
+        "cta": "Verify",
+        "back": "Back",
+        "error": "Invalid or expired code"
+      },
+      "password": {
+        "title": "Create New Password",
+        "description": "Choose a strong password to secure your account",
+        "placeholders": {
+          "password": "New Password",
+          "confirm": "Confirm Password"
+        },
+        "cta": "Reset Password",
+        "success": "Password reset successfully. You can now sign in."
+      },
+      "footer": {
+        "text": "Remember your password?",
+        "cta": "Sign in"
+      }
     },
     "email_sent": {
       "title": "Reset Password",

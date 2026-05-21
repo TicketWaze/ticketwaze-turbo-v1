@@ -114,5 +114,25 @@ export function makeCreateInPersonSchema(isFree: boolean, t: TranslateFn) {
     ),
     eventCurrency: z.string(),
     isFree: z.boolean(),
+  }).superRefine((data, ctx) => {
+    if (data.isFree) return;
+    const isHTG = data.eventCurrency === "HTG";
+    const isUSD = data.eventCurrency === "USD";
+    data.ticketTypes.forEach((ticket, index) => {
+      const price = parseFloat(ticket.ticketTypePrice);
+      if (isHTG && (!isNaN(price) && price < 250)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("errors.ticketClass.priceMinHTG"),
+          path: ["ticketTypes", index, "ticketTypePrice"],
+        });
+      } else if (isUSD && (!isNaN(price) && price < 5)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("errors.ticketClass.priceMinUSD"),
+          path: ["ticketTypes", index, "ticketTypePrice"],
+        });
+      }
+    });
   });
 }

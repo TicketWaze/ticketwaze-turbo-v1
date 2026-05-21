@@ -1,13 +1,16 @@
-import { User } from "@ticketwaze/typescript-config";
 import NextAuth from "next-auth";
+
+export interface AdminUser {
+  accessToken: string;
+  adminId: string;
+  email: string;
+  role: number;
+  id: string;
+  accessTokenExpires?: number;
+}
 
 declare module "next-auth" {
   interface Session {
-    user: User & { accessTokenExpires?: number };
-  }
-
-  interface JWT {
-    user: User;
-    accessTokenExpires?: number;
+    user: AdminUser;
   }
 }

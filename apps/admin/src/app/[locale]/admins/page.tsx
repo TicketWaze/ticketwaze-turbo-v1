@@ -5,7 +5,6 @@ import TopBar from "@/components/shared/TopBar";
 import { getTranslations } from "next-intl/server";
 import AdminList from "./components/AdminList";
 import AddAdmin from "./components/AddAdmin";
-import { redirect } from "@/i18n/navigation";
 
 export default async function AdminsPage() {
   const session = await auth();
@@ -21,10 +20,6 @@ export default async function AdminsPage() {
     },
   );
 
-  // if (request.status === 401) {
-  //   redirect("/auth/login");
-  // }
-
   const response = await request.json();
   return (
     <AdminLayout>
@@ -34,7 +29,7 @@ export default async function AdminsPage() {
           {session?.user.role === 5 && <AddAdmin />}
         </TopBar>
       </div>
-      <AdminList users={response.users} />
+      <AdminList admins={response.admins} />
     </AdminLayout>
   );
 }

@@ -52,7 +52,7 @@ const nextAuthResult = NextAuth({
           throw new Error(data.message || "Invalid verification code");
         }
 
-        return data.user;
+        return { ...data.admin, id: data.admin.adminId };
       },
     }),
   ],

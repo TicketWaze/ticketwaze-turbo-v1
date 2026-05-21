@@ -20,9 +20,17 @@
         "description": "Saisissez le code à 6 chiffres envoyé à votre adresse e-mail",
         "cta": "Vérifier",
         "back": "Retour à la connexion",
-        "error": "Code de vérification invalide"
+        "error": "Code de vérification invalide",
+        "resend": "Renvoyer le code",
+        "resendIn": "Renvoyer dans",
+        "resent": "Un nouveau code a été envoyé",
+        "expiry": "Le code expire dans"
       },
       "reset": "Réinitialiser le mot de passe",
+      "register": {
+        "text": "Pas encore de compte ?",
+        "cta": "S'inscrire"
+      },
       "cta": {
         "submit": "Se connecter",
         "or": "Ou",
@@ -30,6 +38,52 @@
       },
       "footer": {
         "cta": "Retour"
+      }
+    },
+    "register": {
+      "errors": {
+        "characters": "Au moins 8 caractères",
+        "capital": "Au moins une lettre majuscule",
+        "special": "Au moins un caractère spécial",
+        "number": "Au moins un chiffre",
+        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
+        "password_match": "Les mots de passe ne correspondent pas",
+        "failed": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "email": {
+        "title": "Créer un compte",
+        "description": "Entrez votre adresse @ticketwaze.com pour commencer",
+        "placeholder": "Adresse e-mail administrateur",
+        "cta": "Envoyer le code",
+        "errors": {
+          "email": "Saisissez un e-mail valide",
+          "domain": "L'e-mail doit se terminer par @ticketwaze.com",
+          "alreadyRegistered": "Cette adresse e-mail est déjà enregistrée"
+        }
+      },
+      "otp": {
+        "title": "Vérifiez votre e-mail",
+        "description": "Entrez le code à 6 chiffres envoyé à",
+        "expiry": "Le code expire dans",
+        "resend": "Renvoyer le code",
+        "resent": "Un nouveau code a été envoyé",
+        "cta": "Continuer",
+        "back": "Retour",
+        "error": "Code invalide ou expiré"
+      },
+      "password": {
+        "title": "Définir votre mot de passe",
+        "description": "Créez un mot de passe fort pour sécuriser votre compte",
+        "placeholders": {
+          "password": "Choisir un mot de passe",
+          "confirm": "Confirmer le mot de passe"
+        },
+        "cta": "Créer le compte",
+        "success": "Compte créé ! Vous pouvez maintenant vous connecter."
+      },
+      "footer": {
+        "text": "Vous avez déjà un compte ?",
+        "cta": "Se connecter"
       }
     },
     "join": {
@@ -77,6 +131,51 @@
         "submit": "Réinitialiser"
       },
       "back": "Retour"
+    },
+    "forgot": {
+      "errors": {
+        "email": "Entrez une adresse e-mail valide",
+        "failed": "Une erreur s'est produite. Veuillez réessayer.",
+        "characters": "Au moins 8 caractères",
+        "capital": "Au moins une lettre majuscule",
+        "special": "Au moins un caractère spécial",
+        "number": "Au moins un chiffre",
+        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
+        "password_match": "Les mots de passe ne correspondent pas",
+        "same": "Le nouveau mot de passe doit être différent de l'actuel",
+        "token_expired": "Votre session de réinitialisation a expiré. Veuillez recommencer."
+      },
+      "email": {
+        "title": "Mot de passe oublié",
+        "description": "Entrez votre adresse e-mail administrateur et nous vous enverrons un code de réinitialisation",
+        "placeholder": "Adresse e-mail administrateur",
+        "cta": "Envoyer le code",
+        "sent": "Si cet e-mail est enregistré, un code a été envoyé"
+      },
+      "otp": {
+        "title": "Vérifiez votre e-mail",
+        "description": "Entrez le code à 6 chiffres envoyé à",
+        "expiry": "Le code expire dans",
+        "resend": "Renvoyer le code",
+        "resent": "Un nouveau code a été envoyé",
+        "cta": "Vérifier",
+        "back": "Retour",
+        "error": "Code invalide ou expiré"
+      },
+      "password": {
+        "title": "Créer un nouveau mot de passe",
+        "description": "Choisissez un mot de passe fort pour sécuriser votre compte",
+        "placeholders": {
+          "password": "Nouveau mot de passe",
+          "confirm": "Confirmer le mot de passe"
+        },
+        "cta": "Réinitialiser le mot de passe",
+        "success": "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter."
+      },
+      "footer": {
+        "text": "Vous vous souvenez de votre mot de passe ?",
+        "cta": "Se connecter"
+      }
     },
     "email_sent": {
       "title": "Réinitialiser le mot de passe",

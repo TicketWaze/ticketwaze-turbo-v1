@@ -25,27 +25,31 @@ function formatTime(seconds: number) {
   return `${m}:${s}`;
 }
 
-export default function ResetPageContent() {
-  const t = useTranslations("Auth.forgot");
+export default function RegisterPageContent() {
+  const t = useTranslations("Auth.register");
   const locale = useLocale();
 
   const [step, setStep] = useState<Step>("email");
   const [pendingEmail, setPendingEmail] = useState("");
-  const [resetToken, setResetToken] = useState("");
   const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
   const [otpError, setOtpError] = useState("");
-  const [samePasswordError, setSamePasswordError] = useState("");
   const [secondsLeft, setSecondsLeft] = useState(600);
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
 
+  // Email step schema — domain validated before sending to API
   const EmailSchema = z.object({
-    email: z.email(t("errors.email")),
+    email: z
+      .email(t("email.errors.email"))
+      .refine((v) => v.endsWith("@ticketwaze.com"), {
+        message: t("email.errors.domain"),
+      }),
   });
   type TEmail = z.infer<typeof EmailSchema>;
   const emailForm = useForm<TEmail>({ resolver: zodResolver(EmailSchema) });
 
+  // Password step schema
   const PasswordSchema = z
     .object({
       password: z
@@ -60,14 +64,20 @@ export default function ResetPageContent() {
       path: ["password_confirmation"],
     });
   type TPassword = z.infer<typeof PasswordSchema>;
-  const passwordForm = useForm<TPassword>({ resolver: zodResolver(PasswordSchema) });
+  const passwordForm = useForm<TPassword>({
+    resolver: zodResolver(PasswordSchema),
+  });
 
+  // 10-minute countdown, restarted each time we enter the OTP step
   useEffect(() => {
     if (step !== "otp") return;
     setSecondsLeft(600);
     const timer = setInterval(() => {
       setSecondsLeft((s) => {
-        if (s <= 1) { clearInterval(timer); return 0; }
+        if (s <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
         return s - 1;
       });
     }, 1000);
@@ -78,7 +88,7 @@ export default function ResetPageContent() {
     setIsLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/register/email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -86,9 +96,18 @@ export default function ResetPageContent() {
         },
       );
       const json = await res.json();
-      toast.info(json.message || t("email.sent"));
-      setPendingEmail(data.email);
-      setStep("otp");
+      if (res.status === 429) {
+        toast.error(json.message);
+      } else if (res.status === 400) {
+        emailForm.setError("email", {
+          message: t("email.errors.alreadyRegistered"),
+        });
+      } else if (json.status !== "success") {
+        toast.error(json.message || t("errors.failed"));
+      } else {
+        setPendingEmail(data.email);
+        setStep("otp");
+      }
     } catch {
       toast.error(t("errors.failed"));
     }
@@ -99,7 +118,7 @@ export default function ResetPageContent() {
     setIsResending(true);
     try {
       await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/register/email`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -108,7 +127,6 @@ export default function ResetPageContent() {
       );
       setOtpValues(["", "", "", "", "", ""]);
       setOtpError("");
-      setSecondsLeft(600);
       toast.success(t("otp.resent"));
     } catch {
       toast.error(t("errors.failed"));
@@ -123,7 +141,7 @@ export default function ResetPageContent() {
     setOtpError("");
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password/verify-otp`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/register/verify-otp`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -136,7 +154,6 @@ export default function ResetPageContent() {
         setOtpValues(["", "", "", "", "", ""]);
         otpRefs.current[0]?.focus();
       } else {
-        setResetToken(json.resetToken);
         setStep("password");
       }
     } catch {
@@ -146,35 +163,26 @@ export default function ResetPageContent() {
   }
 
   async function submitPassword(data: TPassword) {
-    setSamePasswordError("");
     setIsLoading(true);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password/reset`,
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/register/set-password`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: pendingEmail,
-            resetToken,
             password: data.password,
             password_confirmation: data.password_confirmation,
           }),
         },
       );
       const json = await res.json();
-      if (json.status === "success") {
+      if (json.status !== "success") {
+        toast.error(json.message || t("errors.failed"));
+      } else {
         toast.success(t("password.success"));
         window.location.href = `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/auth/login`;
-      } else if (json.status === "same") {
-        setSamePasswordError(t("errors.same"));
-      } else {
-        toast.error(t("errors.token_expired"));
-        setResetToken("");
-        setOtpValues(["", "", "", "", "", ""]);
-        setOtpError("");
-        passwordForm.reset();
-        setStep("email");
       }
     } catch {
       toast.error(t("errors.failed"));
@@ -190,7 +198,10 @@ export default function ResetPageContent() {
     if (value && index < 5) otpRefs.current[index + 1]?.focus();
   }
 
-  function handleOtpKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
+  function handleOtpKeyDown(
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) {
     if (e.key === "Backspace" && !otpValues[index] && index > 0) {
       otpRefs.current[index - 1]?.focus();
     }
@@ -198,7 +209,10 @@ export default function ResetPageContent() {
 
   function handleOtpPaste(e: React.ClipboardEvent) {
     e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6);
     if (!pasted) return;
     const next = ["", "", "", "", "", ""];
     for (let i = 0; i < pasted.length; i++) next[i] = pasted[i];
@@ -214,7 +228,7 @@ export default function ResetPageContent() {
           {step === "email" && (
             <motion.form
               key="email"
-              id="forgot-email-form"
+              id="register-email-form"
               variants={stepVariants}
               initial="initial"
               animate="animate"
@@ -261,7 +275,11 @@ export default function ResetPageContent() {
                 transition={{ duration: 0.5, delay: 0.6 }}
                 className="w-full hidden lg:flex flex-col gap-8"
               >
-                <ButtonPrimary type="submit" disabled={isLoading} className="w-full">
+                <ButtonPrimary
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full"
+                >
                   {isLoading ? <LoadingCircleSmall /> : t("email.cta")}
                 </ButtonPrimary>
               </motion.div>
@@ -284,16 +302,23 @@ export default function ResetPageContent() {
                 </h3>
                 <p className="text-[1.8rem] text-center leading-10 text-neutral-700">
                   {t("otp.description")}{" "}
-                  <span className="font-semibold text-deep-200">{pendingEmail}</span>
+                  <span className="font-semibold text-deep-200">
+                    {pendingEmail}
+                  </span>
                 </p>
               </div>
 
               <div className="flex flex-col items-center gap-4 w-full">
-                <div className="flex gap-3 justify-center" onPaste={handleOtpPaste}>
+                <div
+                  className="flex gap-3 justify-center"
+                  onPaste={handleOtpPaste}
+                >
                   {otpValues.map((val, i) => (
                     <input
                       key={i}
-                      ref={(el) => { otpRefs.current[i] = el; }}
+                      ref={(el) => {
+                        otpRefs.current[i] = el;
+                      }}
                       type="text"
                       inputMode="numeric"
                       maxLength={1}
@@ -344,11 +369,11 @@ export default function ResetPageContent() {
             </motion.div>
           )}
 
-          {/* ── Step 3: New Password ──────────────────────── */}
+          {/* ── Step 3: Set Password ──────────────────────── */}
           {step === "password" && (
             <motion.form
               key="password"
-              id="forgot-password-form"
+              id="register-password-form"
               variants={stepVariants}
               initial="initial"
               animate="animate"
@@ -374,17 +399,20 @@ export default function ResetPageContent() {
                   {t("password.placeholders.password")}
                 </PasswordInput>
                 <PasswordInput
-                  error={passwordForm.formState.errors.password_confirmation?.message}
+                  error={
+                    passwordForm.formState.errors.password_confirmation?.message
+                  }
                   {...passwordForm.register("password_confirmation")}
                 >
                   {t("password.placeholders.confirm")}
                 </PasswordInput>
-                {samePasswordError && (
-                  <span className="text-[1.3rem] text-failure">{samePasswordError}</span>
-                )}
               </div>
               <div className="w-full hidden lg:flex flex-col gap-4">
-                <ButtonPrimary type="submit" disabled={isLoading} className="w-full">
+                <ButtonPrimary
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full"
+                >
                   {isLoading ? <LoadingCircleSmall /> : t("password.cta")}
                 </ButtonPrimary>
               </div>
@@ -403,7 +431,7 @@ export default function ResetPageContent() {
         <div className="lg:hidden w-full">
           {step === "email" && (
             <ButtonPrimary
-              form="forgot-email-form"
+              form="register-email-form"
               type="submit"
               disabled={isLoading}
               className="w-full"
@@ -432,7 +460,7 @@ export default function ResetPageContent() {
           )}
           {step === "password" && (
             <ButtonPrimary
-              form="forgot-password-form"
+              form="register-password-form"
               type="submit"
               disabled={isLoading}
               className="w-full"
@@ -442,6 +470,7 @@ export default function ResetPageContent() {
           )}
         </div>
 
+        {/* Back to login link — only on first step */}
         {step === "email" && (
           <div className="border border-neutral-100 w-full p-4 pl-6 flex items-center justify-between gap-4 lg:gap-[1.8rem] rounded-[100px]">
             <span className="text-[1.8rem] leading-10 text-neutral-700">

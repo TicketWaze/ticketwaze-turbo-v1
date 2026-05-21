@@ -755,10 +755,10 @@
     "summary": {
       "title": "Récapitulatif",
       "subtotal": "Sous-total",
-      "service_fee": "PSP",
-      "platform_fee": "Frais de service",
-      "no_platform_fee": "Inclus",
+      "transaction_fee": "Frais de transaction",
+      "platform_fee": "Frais de plateforme",
       "total": "Total",
+      "tca": "+ taxes applicables (TCA)",
       "via": "Méthode de paiement",
       "confirm": "Confirmer & Payer",
       "confirm_free": "Obtenir les billets",

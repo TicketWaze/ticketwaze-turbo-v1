@@ -170,7 +170,6 @@ export default function CheckoutFlow({
     selectedWithIndex,
     ticketTypes,
     event.currency,
-    paymentType,
   );
 
   // --- Payment actions ---
@@ -503,6 +502,7 @@ export default function CheckoutFlow({
               paymentType={paymentType}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               register={register as (name: string, options?: object) => any}
+              control={control}
             />
           )}
 
