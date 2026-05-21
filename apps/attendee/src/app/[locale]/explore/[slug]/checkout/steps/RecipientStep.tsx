@@ -23,7 +23,10 @@ interface AttendeeCardProps {
   ticketTypeName: string;
   sameTypeCount: number;
   isGuest: boolean;
-  control: Control<{ tickets: TicketFormData[]; attendees: AttendeeFormData[] }>;
+  control: Control<{
+    tickets: TicketFormData[];
+    attendees: AttendeeFormData[];
+  }>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register: (name: string, options?: object) => any;
 }
@@ -42,7 +45,7 @@ function AttendeeCard({
   const isForSomeoneElse = useWatch({
     control,
     name: `attendees.${attendeeIndex}.isForSomeoneElse` as never,
-  }) as boolean;
+  }) as unknown as boolean;
 
   return (
     <div className="border border-neutral-100 rounded-[15px] flex flex-col gap-[1.5rem] p-[15px]">
@@ -117,7 +120,10 @@ interface Props {
   paymentType: PaymentType;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register: (name: string, options?: object) => any;
-  control: Control<{ tickets: TicketFormData[]; attendees: AttendeeFormData[] }>;
+  control: Control<{
+    tickets: TicketFormData[];
+    attendees: AttendeeFormData[];
+  }>;
 }
 
 export default function RecipientStep({
@@ -145,7 +151,12 @@ export default function RecipientStep({
       className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0"
     >
       <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-[12px] p-[15px]">
-        <Sms size="20" color="#1d4ed8" variant="Bulk" className="shrink-0 mt-[2px]" />
+        <Sms
+          size="20"
+          color="#1d4ed8"
+          variant="Bulk"
+          className="shrink-0 mt-[2px]"
+        />
         <p className="text-[1.35rem] leading-7 text-blue-800">
           {t("recipient.email_info")}
         </p>
@@ -198,7 +209,9 @@ export default function RecipientStep({
               key={`attendee-${attendeeIndex}-${attendee.ticketTypeId}`}
               attendeeIndex={attendeeIndex}
               ticketTypeName={
-                ticketType ? Capitalize(ticketType.ticketTypeName) : "Unknown Ticket"
+                ticketType
+                  ? Capitalize(ticketType.ticketTypeName)
+                  : "Unknown Ticket"
               }
               sameTypeCount={sameTypeCount}
               isGuest={isGuest}
