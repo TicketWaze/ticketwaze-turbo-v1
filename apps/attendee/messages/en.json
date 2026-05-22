@@ -848,6 +848,12 @@
   "Settings": {
     "title": "Settings",
     "forgot": "Forgot password",
+    "addPassword": {
+      "title": "Add a Password",
+      "description": "Set a password so you can also sign in with your email.",
+      "cta": "Add Password",
+      "success": "Password added successfully"
+    },
     "password": {
       "title": "Change Password",
       "cta": "Change Password",

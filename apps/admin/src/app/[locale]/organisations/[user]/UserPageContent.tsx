@@ -1,8 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import BackButton from "@/components/shared/BackButton";
-import { motion } from "framer-motion";
-import { Event } from "@ticketwaze/typescript-config";
 
 import { ButtonRed, ButtonPrimary } from "@/components/shared/buttons";
 import Separator from "@/components/shared/Separator";
@@ -21,7 +20,7 @@ import { Input, TextArea } from "@/components/shared/Inputs";
 import ActivitySummary from "./ActivitySummary";
 import Rema from "@ticketwaze/ui/assets/images/rema.png";
 
-export const mockEvents: Event[] = [
+export const mockEvents: any[] = [
   {
     eventId: "1",
     organisationId: "org-1",

@@ -606,6 +606,70 @@ export async function DeleteEvent(
     };
   }
 }
+export async function RequestEventDeletion(
+  eventId: string,
+  accessToken: string,
+  locale: string,
+  reason: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify({ reason }),
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      return {
+        status: "success" as const,
+        scheduledDeletionAt: response.scheduledDeletionAt as string,
+        delayDays: response.delayDays as number,
+      };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return { error: error?.message ?? "An unknown error occurred" };
+  }
+}
+
+export async function CancelEventDeletion(
+  eventId: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/deletion`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      return { status: "success" as const };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return { error: error?.message ?? "An unknown error occurred" };
+  }
+}
+
 export async function MarkAsInactive(
   eventId: string,
   accessToken: string,

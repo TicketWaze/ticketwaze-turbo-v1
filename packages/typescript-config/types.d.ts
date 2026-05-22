@@ -240,6 +240,10 @@ export interface Event {
   organisation: Organisation;
   createdAt: string;
   updatedAt: string;
+  deletionStatus: "pending_deletion" | "deleted" | null;
+  deletionReason: string | null;
+  deletionRequestedAt: string | null;
+  scheduledDeletionAt: string | null;
 }
 
 export interface User {
@@ -267,6 +271,7 @@ export interface User {
   organisations: Organisation[];
   userPreference: UserPreference;
   isOnboarded: boolean;
+  hasPassword: boolean;
   role: number;
 }
 

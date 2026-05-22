@@ -24,6 +24,7 @@ import {
 } from "@ticketwaze/typescript-config";
 import MoreComponent from "./MoreComponent";
 import CheckingDialog from "./CheckingDialog";
+import DeletionBanner from "./DeletionBanner";
 import Informations from "./Informations";
 import EventArtist from "./EventArtist";
 import TopBar from "@/components/shared/TopBar";
@@ -65,6 +66,17 @@ export default function EventPageDetails({
   const roundedDays = Math.ceil(daysLeft && daysLeft > 0 ? daysLeft : 0);
   const isUpcoming = eventStart.isValid && today < eventStart;
 
+  const [deletionStatus, setDeletionStatus] = useState(
+    event.deletionStatus ?? null,
+  );
+  const [deletionReason, setDeletionReason] = useState(
+    event.deletionReason ?? null,
+  );
+  const [scheduledDeletionAt, setScheduledDeletionAt] = useState(
+    event.scheduledDeletionAt ?? null,
+  );
+  const isPendingDeletion = deletionStatus === "pending_deletion";
+
   const [query, setQuery] = useState("");
   const filteredtickets = tickets.filter((ticket) => {
     const search = query.toLowerCase();
@@ -75,9 +87,11 @@ export default function EventPageDetails({
       <TopBar title={event.eventName}>
         <div className="hidden lg:flex items-center gap-4">
           {isUpcoming &&
-            event.adminStatus === "approved" && <ShareEvent event={event} />}
+            event.adminStatus === "approved" &&
+            !isPendingDeletion && <ShareEvent event={event} />}
           {event.adminStatus === "approved" &&
-            event.eventCategory !== "meet" && (
+            event.eventCategory !== "meet" &&
+            !isPendingDeletion && (
               <CheckingDialog event={event} user={user} />
             )}
           <MoreComponent
@@ -86,6 +100,12 @@ export default function EventPageDetails({
             isFree={isFree}
             slug={slug}
             membershipTier={membershipTier}
+            deletionStatus={deletionStatus}
+            onDeletionScheduled={(scheduledAt, reason) => {
+              setDeletionStatus("pending_deletion");
+              setScheduledDeletionAt(scheduledAt);
+              setDeletionReason(reason);
+            }}
           />
         </div>
       </TopBar>
@@ -161,8 +181,22 @@ export default function EventPageDetails({
           </p>
         </li>
       </ul>
+      {isPendingDeletion &&
+        scheduledDeletionAt &&
+        deletionStatus === "pending_deletion" && (
+          <DeletionBanner
+            eventId={event.eventId}
+            scheduledDeletionAt={scheduledDeletionAt}
+            deletionReason={deletionReason}
+            onCancelled={() => {
+              setDeletionStatus(null);
+              setScheduledDeletionAt(null);
+              setDeletionReason(null);
+            }}
+          />
+        )}
       <div className="flex lg:hidden items-center w-full gap-8 justify-between">
-        {isUpcoming && event.adminStatus === "approved" ? (
+        {isUpcoming && event.adminStatus === "approved" && !isPendingDeletion ? (
           <ShareEvent event={event} />
         ) : (
           <div></div>
@@ -173,13 +207,21 @@ export default function EventPageDetails({
           isFree={isFree}
           slug={slug}
           membershipTier={membershipTier}
+          deletionStatus={deletionStatus}
+          onDeletionScheduled={(scheduledAt, reason) => {
+            setDeletionStatus("pending_deletion");
+            setScheduledDeletionAt(scheduledAt);
+            setDeletionReason(reason);
+          }}
         />
       </div>
-      {event.eventCategory !== "meet" && event.adminStatus === "approved" && (
-        <div className="flex lg:hidden items-center w-full  gap-4 justify-between">
-          <CheckingDialog event={event} user={user} />
-        </div>
-      )}
+      {event.eventCategory !== "meet" &&
+        event.adminStatus === "approved" &&
+        !isPendingDeletion && (
+          <div className="flex lg:hidden items-center w-full gap-4 justify-between">
+            <CheckingDialog event={event} user={user} />
+          </div>
+        )}
       {isUpcoming && (
         <EventArtist
           event={event}

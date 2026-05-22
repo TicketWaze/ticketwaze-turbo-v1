@@ -664,6 +664,22 @@
         "check": "Statut",
         "date_purchased": "Date d'achat",
         "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !"
+      },
+      "deletion": {
+        "schedule_title": "Supprimer l'activité",
+        "warning": "La suppression définitive de cette activité remboursera tous les porteurs de billets sur leur portefeuille Ticketwaze. Les frais de service et de traitement ne sont pas remboursables. Cette action est irréversible après la période de grâce.",
+        "reason_label": "Raison de la suppression",
+        "reason_placeholder": "Expliquez pourquoi vous supprimez cette activité (min. 10 caractères)...",
+        "chars": "caractères",
+        "grace_days": "Cette activité sera définitivement supprimée dans {days} jour(s).",
+        "grace_immediate": "La suppression sera traitée immédiatement.",
+        "schedule_cta": "Planifier la suppression",
+        "banner_title": "Suppression planifiée",
+        "banner_date": "Cette activité sera définitivement supprimée le",
+        "banner_reason_label": "Raison",
+        "banner_refund": "Tous les porteurs de billets seront remboursés sur leur portefeuille Ticketwaze.",
+        "cancel_cta": "Annuler la suppression",
+        "cancel_success": "Suppression annulée avec succès."
       }
     },
     "create_event": {
@@ -683,26 +699,74 @@
           "title": "En présentiel",
           "description": "Activités avec accès basé sur un lieu comme festivals, conférences ou rencontres.",
           "categories": {
-            "conference": { "title": "Conférence", "value": "conference" },
-            "concert": { "title": "Concert", "value": "concert" },
-            "festival": { "title": "Festival", "value": "festival" },
-            "comedy": { "title": "Comédie", "value": "comedy" },
-            "theater": { "title": "Théâtre", "value": "theater_performance" },
-            "tournament": { "title": "Tournoi", "value": "tournament" },
-            "workshop": { "title": "Atelier", "value": "workshop" },
-            "seminar": { "title": "Séminaire", "value": "seminar" },
-            "networking": { "title": "Réseautage", "value": "networking" },
-            "startup": { "title": "Startup", "value": "startup" },
+            "conference": {
+              "title": "Conférence",
+              "value": "conference"
+            },
+            "concert": {
+              "title": "Concert",
+              "value": "concert"
+            },
+            "festival": {
+              "title": "Festival",
+              "value": "festival"
+            },
+            "comedy": {
+              "title": "Comédie",
+              "value": "comedy"
+            },
+            "theater": {
+              "title": "Théâtre",
+              "value": "theater_performance"
+            },
+            "tournament": {
+              "title": "Tournoi",
+              "value": "tournament"
+            },
+            "workshop": {
+              "title": "Atelier",
+              "value": "workshop"
+            },
+            "seminar": {
+              "title": "Séminaire",
+              "value": "seminar"
+            },
+            "networking": {
+              "title": "Réseautage",
+              "value": "networking"
+            },
+            "startup": {
+              "title": "Startup",
+              "value": "startup"
+            },
             "food_festival": {
               "title": "Festival gastronomique",
               "value": "food"
             },
-            "art": { "title": "Art", "value": "art" },
-            "cultural": { "title": "Culturel", "value": "cultural" },
-            "charity": { "title": "Caritatif", "value": "charity" },
-            "fundraiser": { "title": "Levée de fonds", "value": "fundraiser" },
-            "meetup": { "title": "Rencontre", "value": "meetup" },
-            "community": { "title": "Communauté", "value": "community" }
+            "art": {
+              "title": "Art",
+              "value": "art"
+            },
+            "cultural": {
+              "title": "Culturel",
+              "value": "cultural"
+            },
+            "charity": {
+              "title": "Caritatif",
+              "value": "charity"
+            },
+            "fundraiser": {
+              "title": "Levée de fonds",
+              "value": "fundraiser"
+            },
+            "meetup": {
+              "title": "Rencontre",
+              "value": "meetup"
+            },
+            "community": {
+              "title": "Communauté",
+              "value": "community"
+            }
           }
         },
         "meet": {

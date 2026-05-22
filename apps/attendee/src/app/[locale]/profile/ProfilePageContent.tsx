@@ -253,7 +253,7 @@ export default function ProfilePageContent({
             </ButtonPrimary>
           </form>
         </div>
-        <ChangePassword />
+        <ChangePassword user={user} />
         <div className="flex flex-col gap-8">
           <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
             {t("event.title")}
