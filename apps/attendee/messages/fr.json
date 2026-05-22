@@ -886,6 +886,12 @@
   "Settings": {
     "title": "Paramètres",
     "forgot": "Mot de passe oublié",
+    "addPassword": {
+      "title": "Ajouter un mot de passe",
+      "description": "Définissez un mot de passe pour vous connecter aussi avec votre e-mail.",
+      "cta": "Ajouter un mot de passe",
+      "success": "Mot de passe ajouté avec succès"
+    },
     "password": {
       "title": "Changer le mot de passe",
       "cta": "Changer le mot de passe",
