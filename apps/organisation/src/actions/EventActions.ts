@@ -611,6 +611,7 @@ export async function RequestEventDeletion(
   accessToken: string,
   locale: string,
   reason: string,
+  pathname: string,
 ) {
   try {
     const request = await fetch(
@@ -628,6 +629,7 @@ export async function RequestEventDeletion(
     );
     const response = await request.json();
     if (response.status === "success") {
+      revalidatePath(pathname);
       return {
         status: "success" as const,
         scheduledDeletionAt: response.scheduledDeletionAt as string,
@@ -645,6 +647,7 @@ export async function CancelEventDeletion(
   eventId: string,
   accessToken: string,
   locale: string,
+  pathname: string,
 ) {
   try {
     const request = await fetch(
@@ -661,6 +664,7 @@ export async function CancelEventDeletion(
     );
     const response = await request.json();
     if (response.status === "success") {
+      revalidatePath(pathname);
       return { status: "success" as const };
     } else {
       throw new Error(response.message);

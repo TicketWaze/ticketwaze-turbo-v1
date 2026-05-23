@@ -1,5 +1,5 @@
 "use client";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import {
   Popover,
@@ -57,14 +57,13 @@ export default function MoreComponent({
   const [reason, setReason] = useState("");
   const locale = useLocale();
   const { data: session } = useSession();
+  const pathname = usePathname();
 
   const isPendingDeletion = deletionStatus === "pending_deletion";
 
   // Grace period: min(3, ceil(daysLeft)), shown before the API confirms
   const graceDays =
-    daysLeft !== null && daysLeft > 0
-      ? Math.min(3, Math.ceil(daysLeft))
-      : 0;
+    daysLeft !== null && daysLeft > 0 ? Math.min(3, Math.ceil(daysLeft)) : 0;
 
   async function scheduleDeletion() {
     setIsLoading(true);
@@ -73,6 +72,7 @@ export default function MoreComponent({
       session?.user.accessToken ?? "",
       locale,
       reason,
+      pathname,
     );
     setIsLoading(false);
     if ("error" in result) {

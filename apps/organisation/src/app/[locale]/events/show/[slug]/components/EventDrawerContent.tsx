@@ -7,7 +7,7 @@ import {
   DrawerFooter,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Calendar2, Clock, Edit2, Location } from "iconsax-reactjs";
+import { Calendar2, Clock, Edit2, Location, Warning2 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { LinkPrimary } from "@/components/shared/Links";
@@ -146,13 +146,20 @@ export default function EventDrawerContent({ event }: { event: Event }) {
         </div>
       </div>
       <DrawerFooter className="lg:flex-row pb-0">
-        {daysLeft !== null && daysLeft > 0 && (
-          <LinkPrimary
-            href={`/events/show/${slugify(event.eventName, event.eventId)}/edit/${event.eventCategory}`}
-            className="flex-1 gap-4"
-          >
-            <Edit2 variant={"Bulk"} color={"#ffffff"} size={20} /> {t("edit")}
-          </LinkPrimary>
+        {event.deletionStatus != null ? (
+          <div className="flex-1 flex items-center gap-3 rounded-[100px] border border-amber-300 bg-amber-50 px-5 py-[14px] text-amber-700 text-[1.4rem] font-medium leading-8 cursor-not-allowed">
+            <Warning2 variant="Bulk" color="#b45309" size={20} />
+            <span>This event is pending deletion and cannot be edited.</span>
+          </div>
+        ) : (
+          daysLeft !== null && daysLeft > 0 && (
+            <LinkPrimary
+              href={`/events/show/${slugify(event.eventName, event.eventId)}/edit/${event.eventCategory}`}
+              className="flex-1 gap-4"
+            >
+              <Edit2 variant={"Bulk"} color={"#ffffff"} size={20} /> {t("edit")}
+            </LinkPrimary>
+          )
         )}
       </DrawerFooter>
     </DrawerContent>
