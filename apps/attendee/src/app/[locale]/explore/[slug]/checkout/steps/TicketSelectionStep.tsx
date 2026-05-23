@@ -70,8 +70,13 @@ export default function TicketSelectionStep({
       className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0"
     >
       <ul className="flex flex-col gap-8">
-        {fields.map((field, index) => {
-          const ticketType = ticketTypes[index];
+        {[...fields.map((field, index) => ({ field, index, ticketType: ticketTypes[index] }))]
+          .sort((a, b) => {
+            const priceA = event.currency === "USD" ? (a.ticketType.usdPrice ?? 0) : (a.ticketType.ticketTypePrice ?? 0);
+            const priceB = event.currency === "USD" ? (b.ticketType.usdPrice ?? 0) : (b.ticketType.ticketTypePrice ?? 0);
+            return priceA - priceB;
+          })
+          .map(({ field, index, ticketType }) => {
           const quantity = quantities[index] ?? 0;
           const ticketLeft =
             ticketType.ticketTypeQuantity - ticketType.ticketTypeQuantitySold;

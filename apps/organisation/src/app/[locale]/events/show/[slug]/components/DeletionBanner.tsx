@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
+import { usePathname } from "@/i18n/navigation";
 
 export default function DeletionBanner({
   eventId,
@@ -23,6 +24,7 @@ export default function DeletionBanner({
   const { data: session } = useSession();
   const locale = useLocale();
   const [isCancelling, setIsCancelling] = useState(false);
+  const pathname = usePathname();
 
   const scheduledDate = DateTime.fromISO(scheduledDeletionAt).toLocaleString(
     DateTime.DATE_FULL,
@@ -40,6 +42,7 @@ export default function DeletionBanner({
       eventId,
       session?.user.accessToken ?? "",
       locale,
+      pathname,
     );
     setIsCancelling(false);
     if ("error" in result) {
@@ -71,13 +74,12 @@ export default function DeletionBanner({
             )}
           </div>
           <p className="text-[1.4rem] leading-7 text-amber-700">
-            {t("deletion.banner_date")}{" "}
-            <strong>{scheduledDate}</strong>.
+            {t("deletion.banner_date")} <strong>{scheduledDate}</strong>.
           </p>
           {deletionReason && (
             <p className="text-[1.4rem] leading-7 text-amber-700">
-              {t("deletion.banner_reason_label")}:{" "}
-              &ldquo;{deletionReason}&rdquo;
+              {t("deletion.banner_reason_label")}: &ldquo;{deletionReason}
+              &rdquo;
             </p>
           )}
           <p className="text-[1.4rem] leading-7 text-amber-600">

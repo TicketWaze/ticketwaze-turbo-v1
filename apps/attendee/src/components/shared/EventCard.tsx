@@ -10,7 +10,7 @@ import formatDate from "@/lib/FormatDate";
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
   const now = new Date();
   const sortedDays = [...event.eventDays].sort(
-    (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime()
+    (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime(),
   );
   const date =
     sortedDays.find((eventDay) => new Date(eventDay.eventDate) >= now) ??
@@ -18,10 +18,11 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
   const slug = slugify(event.eventName, event.eventId);
   const locale = useLocale();
   const t = useTranslations("Event");
-  const price =
-    event.currency === "USD"
-      ? (event.eventTicketTypes[0]?.usdPrice ?? 0)
-      : (event.eventTicketTypes[0]?.ticketTypePrice ?? 0);
+  const priceField = event.currency === "USD" ? "usdPrice" : "ticketTypePrice";
+  const price = event.eventTicketTypes.reduce((min, tt) => {
+    const p = tt[priceField] ?? 0;
+    return p < min ? p : min;
+  }, event.eventTicketTypes[0]?.[priceField] ?? 0);
   return (
     <Link
       href={`/explore/${slug}`}

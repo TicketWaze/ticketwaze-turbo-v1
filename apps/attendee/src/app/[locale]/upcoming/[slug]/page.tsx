@@ -60,6 +60,37 @@ export default async function UpcomingEventPage({
     <AttendeeLayout title="Event Page">
       <BackButton text={t("back")} />
       {isFromCheckout && <CheckoutEmailAlert />}
+
+      {event.deletionStatus === "pending_deletion" && (
+        <div className="flex items-start gap-4 rounded-2xl border border-amber-300 bg-amber-50 px-5 py-4">
+          <Warning2 size="22" color="#b45309" variant="Bulk" className="shrink-0 mt-[2px]" />
+          <div className="flex flex-col gap-1">
+            <span className="font-semibold text-[1.4rem] leading-8 text-amber-800">
+              This event is scheduled for deletion
+            </span>
+            <p className="text-[1.3rem] leading-7 text-amber-700">
+              The organiser has requested to delete this event and may still cancel that request. If the event is
+              deleted, you will be fully refunded for your tickets. Please note that service fees are non-refundable.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {event.deletionStatus === "deleted" && (
+        <div className="flex items-start gap-4 rounded-2xl border border-red-300 bg-red-50 px-5 py-4">
+          <Warning2 size="22" color="#b91c1c" variant="Bulk" className="shrink-0 mt-[2px]" />
+          <div className="flex flex-col gap-1">
+            <span className="font-semibold text-[1.4rem] leading-8 text-red-800">
+              This event has been deleted
+            </span>
+            <p className="text-[1.3rem] leading-7 text-red-700">
+              This event no longer exists. If you purchased tickets, the organiser will refund you the ticket price.
+              Please note that service fees are non-refundable.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-[29fr_23fr] w-full ">
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
           {event.eventName}

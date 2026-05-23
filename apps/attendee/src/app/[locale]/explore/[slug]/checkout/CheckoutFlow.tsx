@@ -197,9 +197,10 @@ export default function CheckoutFlow({
   function buildGuestTickets(attendees: AttendeeFormData[]) {
     return attendees.map((a) => ({
       ticketTypeId: a.ticketTypeId,
-      name: a.isForSomeoneElse && a.name
-        ? a.name
-        : `${guestInfo.firstName} ${guestInfo.lastName}`,
+      name:
+        a.isForSomeoneElse && a.name
+          ? a.name
+          : `${guestInfo.firstName} ${guestInfo.lastName}`,
       email: a.isForSomeoneElse && a.email ? a.email : guestInfo.email,
     }));
   }
@@ -358,7 +359,11 @@ export default function CheckoutFlow({
 
     if (currentStep === 1) {
       if (isGuest) {
-        if (!guestInfo.firstName.trim() || !guestInfo.lastName.trim() || !guestInfo.email.trim()) {
+        if (
+          !guestInfo.firstName.trim() ||
+          !guestInfo.lastName.trim() ||
+          !guestInfo.email.trim()
+        ) {
           toast.error(t("recipient.guest_info_required"));
           return;
         }
@@ -483,7 +488,9 @@ export default function CheckoutFlow({
               feeBreakdown={feeBreakdown}
               paymentType={paymentType}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              setValue={setValue as (name: string, value: any, options?: object) => void}
+              setValue={
+                setValue as (name: string, value: any, options?: object) => void
+              }
             />
           )}
 
@@ -583,7 +590,7 @@ export default function CheckoutFlow({
       </div>
 
       <Dialog open={stripeDialogOpen} onOpenChange={setStripeDialogOpen}>
-        <DialogContent className="max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-[600px] max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t("payment.card")}</DialogTitle>
           </DialogHeader>
@@ -592,7 +599,7 @@ export default function CheckoutFlow({
               stripe={stripePromise}
               options={{ clientSecret: stripeClientSecret }}
             >
-              <EmbeddedCheckout />
+              <EmbeddedCheckout className="w-full" />
             </EmbeddedCheckoutProvider>
           )}
         </DialogContent>

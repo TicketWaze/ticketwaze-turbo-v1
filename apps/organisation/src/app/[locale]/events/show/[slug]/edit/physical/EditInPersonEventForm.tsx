@@ -25,7 +25,7 @@ import {
 } from "@/actions/EventActions";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import StepBasic from "./BasicDetails";
 import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
@@ -46,8 +46,11 @@ export default function EditInPersonEventForm({
 }) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
+  const router = useRouter();
   const { data: session } = useSession();
   const organisation = session?.activeOrganisation;
+  const [imageChanged, setImageChanged] = useState(false);
+  const [successAlert, setSuccessAlert] = useState<{ requiresReview: boolean } | null>(null);
   const [isFree, setIsfree] = useState(
     (event.eventTicketTypes[0]?.ticketTypePrice ?? 0) < 1,
   );
@@ -127,6 +130,11 @@ export default function EditInPersonEventForm({
 
   // submission
   const processForm: SubmitHandler<TForm> = async (data) => {
+    const requiresReview =
+      data.eventName !== event.eventName ||
+      data.eventDescription !== event.eventDescription ||
+      imageChanged;
+
     const formData = new FormData();
     formData.append("eventName", data.eventName);
     formData.append("eventDescription", data.eventDescription);
@@ -165,10 +173,9 @@ export default function EditInPersonEventForm({
       event.eventId,
     );
     if (result.status === "success") {
-      toast.success("success");
-      redirect(
-        `/events/show/${slugify(result.event.eventName, result.event.eventId)}`,
-      );
+      const redirectUrl = `/events/show/${slugify(result.event.eventName, result.event.eventId)}`;
+      setSuccessAlert({ requiresReview });
+      setTimeout(() => router.push(redirectUrl), 4000);
     }
     if (result.error) toast.error(result.error);
   };
@@ -283,6 +290,7 @@ export default function EditInPersonEventForm({
     });
     setValue("eventImage", file, { shouldValidate: true });
     setImagePreview(URL.createObjectURL(file));
+    setImageChanged(true);
   }
 
   // eventDays + ticketClasses local state (for dynamic add/remove UI)
@@ -433,6 +441,25 @@ export default function EditInPersonEventForm({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {successAlert && (
+        <div
+          className={`flex items-start gap-3 rounded-2xl border px-5 py-4 text-[1.4rem] leading-relaxed ${
+            successAlert.requiresReview
+              ? "border-amber-300 bg-amber-50 text-amber-800"
+              : "border-green-300 bg-green-50 text-green-800"
+          }`}
+        >
+          <span className="mt-[2px] shrink-0 text-[1.8rem]">
+            {successAlert.requiresReview ? "⚠️" : "✅"}
+          </span>
+          <span>
+            {successAlert.requiresReview
+              ? "Your activity has been updated and submitted for review. It will be temporarily unlisted until approved (1–2 business days)."
+              : "Your activity has been updated successfully. No re-review is required."}
+          </span>
+        </div>
+      )}
 
       <form
         className=" flex flex-col gap-12 h-full overflow-y-scroll overflow-x-hidden"

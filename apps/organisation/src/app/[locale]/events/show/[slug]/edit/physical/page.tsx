@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { getLocale } from "next-intl/server";
 import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import { redirect } from "next/navigation";
 
 export default async function EditEvent({
   params,
@@ -35,6 +36,7 @@ export default async function EditEvent({
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
+  if (event.deletionStatus != null) redirect(`/events/show/${slug}`);
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,
     {
