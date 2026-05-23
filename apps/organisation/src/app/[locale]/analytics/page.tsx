@@ -266,7 +266,7 @@ export default async function AnalyticsPage() {
                 >
                   {t("tickets.daily")}
                 </span>
-                <DailyTicketSalesChart ticketsByDay={analytics.ticketsByDay} />
+                <DailyTicketSalesChart ticketSales={analytics.ticketSales} />
               </div>
             </div>
             <div

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<meta name="ProgId" content="Word.Document">
+<meta name="Generator" content="Microsoft Word 15">
+<title>TicketWaze – Full Application Walkthrough</title>
+<style>
+  /* ---- Base ---- */
+  body {
+    font-family: Calibri, sans-serif;
+    font-size: 11pt;
+    color: #1a1a1a;
+    margin: 2.5cm 3cm;
+    line-height: 1.6;
+  }
+
+  /* ---- Cover ---- */
+  .cover {
+    text-align: center;
+    padding: 80px 0 60px;
+    border-bottom: 3px solid #E45B00;
+    margin-bottom: 40px;
+  }
+  .cover-logo {
+    font-size: 42pt;
+    font-weight: 800;
+    color: #E45B00;
+    letter-spacing: -1px;
+  }
+  .cover-sub {
+    font-size: 18pt;
+    color: #444;
+    margin-top: 8px;
+  }
+  .cover-meta {
+    font-size: 10pt;
+    color: #888;
+    margin-top: 24px;
+  }
+
+  /* ---- TOC ---- */
+  .toc {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 24px 32px;
+    margin-bottom: 40px;
+    page-break-after: always;
+  }
+  .toc h2 { color: #E45B00; font-size: 14pt; margin-top: 0; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin: 4px 0; font-size: 10.5pt; }
+  .toc a { color: #1a1a1a; text-decoration: none; }
+
+  /* ---- Headings ---- */
+  h1 {
+    font-size: 22pt;
+    color: #E45B00;
+    border-bottom: 2px solid #E45B00;
+    padding-bottom: 6px;
+    margin-top: 40px;
+    page-break-before: always;
+  }
+  h1:first-of-type { page-break-before: avoid; }
+  h2 {
+    font-size: 15pt;
+    color: #1a1a1a;
+    border-left: 4px solid #E45B00;
+    padding-left: 10px;
+    margin-top: 30px;
+  }
+  h3 {
+    font-size: 12pt;
+    color: #333;
+    margin-top: 20px;
+  }
+
+  /* ---- Feature list ---- */
+  ul {
+    margin: 8px 0 16px 0;
+    padding-left: 22px;
+  }
+  ul li {
+    margin: 4px 0;
+    font-size: 10.5pt;
+  }
+  ul li::marker { color: #E45B00; }
+
+  /* ---- Callout boxes ---- */
+  .note {
+    background: #fff8f4;
+    border-left: 4px solid #E45B00;
+    padding: 10px 16px;
+    margin: 16px 0;
+    font-size: 10pt;
+    color: #555;
+  }
+  .badge {
+    display: inline-block;
+    background: #E45B00;
+    color: #fff;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    vertical-align: middle;
+    margin-left: 6px;
+    letter-spacing: 0.5px;
+  }
+  .badge-blue {
+    background: #1d6ae5;
+  }
+  .badge-green {
+    background: #16a34a;
+  }
+
+  /* ---- Section divider ---- */
+  hr {
+    border: none;
+    border-top: 1px solid #e5e5e5;
+    margin: 28px 0;
+  }
+
+  /* ---- Footer ---- */
+  .footer {
+    text-align: center;
+    font-size: 9pt;
+    color: #aaa;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 16px;
+    margin-top: 60px;
+  }
+
+  p { margin: 6px 0 12px; font-size: 10.5pt; }
+
+  strong { color: #1a1a1a; }
+</style>
+</head>
+<body>
+
+<!-- ==================== COVER ==================== -->
+<div class="cover">
+  <div class="cover-logo">TicketWaze</div>
+  <div class="cover-sub">Full Application Walkthrough</div>
+  <div class="cover-meta">
+    Internal Document &nbsp;·&nbsp; May 2025 &nbsp;·&nbsp; Confidential
+  </div>
+</div>
+
+<!-- ==================== INTRO ==================== -->
+<p>
+  This document is a comprehensive walkthrough of the <strong>TicketWaze</strong> platform from a user perspective.
+  It covers every screen, flow, and feature available across the attendee-facing app, the organiser dashboard,
+  the marketing website, and the payment integration layer. Use it as a reference when onboarding new team members
+  or presenting the product to stakeholders.
+</p>
+
+<!-- ==================== TOC ==================== -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+  <ol>
+    <li><a href="#platform">Platform Overview</a></li>
+    <li><a href="#attendee">Attendee App</a>
+      <ol>
+        <li><a href="#att-auth">Authentication &amp; Onboarding</a></li>
+        <li><a href="#att-discover">Event Discovery &amp; Browsing</a></li>
+        <li><a href="#att-checkout">Checkout &amp; Payment</a></li>
+        <li><a href="#att-tickets">Ticket Management &amp; Upcoming Events</a></li>
+        <li><a href="#att-favorites">Favorites</a></li>
+        <li><a href="#att-organizers">Organiser Profiles &amp; Following</a></li>
+        <li><a href="#att-profile">User Profile &amp; Preferences</a></li>
+        <li><a href="#att-wallet">Wallet &amp; Transactions</a></li>
+        <li><a href="#att-deletion">Deletion Status Notices</a></li>
+      </ol>
+    </li>
+    <li><a href="#org">Organisation App</a>
+      <ol>
+        <li><a href="#org-auth">Authentication &amp; Setup</a></li>
+        <li><a href="#org-create">Event Creation</a></li>
+        <li><a href="#org-edit">Event Editing</a></li>
+        <li><a href="#org-delete">Event Deletion</a></li>
+        <li><a href="#org-view">Event Viewing &amp; Detail</a></li>
+        <li><a href="#org-attendees">Attendee Management &amp; Check-In</a></li>
+        <li><a href="#org-discounts">Discount &amp; Promo Codes</a></li>
+        <li><a href="#org-team">Team &amp; Role Management</a></li>
+        <li><a href="#org-profile">Organisation Profile &amp; Settings</a></li>
+        <li><a href="#org-finance">Finance &amp; Payouts</a></li>
+        <li><a href="#org-payments">Payment Method Configuration</a></li>
+        <li><a href="#org-analytics">Analytics Dashboard</a></li>
+        <li><a href="#org-subscriptions">Subscriptions &amp; Membership Tiers</a></li>
+        <li><a href="#org-share">Event Sharing &amp; Poster Generation</a></li>
+        <li><a href="#org-access">Role-Based Access Control</a></li>
+      </ol>
+    </li>
+    <li><a href="#website">Marketing Website</a></li>
+    <li><a href="#payment">Payment App (MonCash)</a></li>
+    <li><a href="#admin">Admin Panel</a></li>
+    <li><a href="#cross">Cross-Platform Features</a></li>
+  </ol>
+</div>
+
+
+<!-- ==================== 1. PLATFORM OVERVIEW ==================== -->
+<h1 id="platform">1. Platform Overview</h1>
+
+<p>
+  TicketWaze is a full-stack event ticketing and management platform targeting the Haitian and Caribbean market
+  with ambitions for broader expansion. It brings together three types of users under one roof:
+</p>
+
+<ul>
+  <li><strong>Attendees</strong> – people who discover events, purchase tickets, and attend.</li>
+  <li><strong>Organisers</strong> – individuals or teams who create, publish, and manage events.</li>
+  <li><strong>Admins</strong> – platform administrators who monitor the entire system.</li>
+</ul>
+
+<p>The platform is built as a <strong>Turborepo monorepo</strong> with four Next.js applications:</p>
+<ul>
+  <li><strong>Attendee App</strong> – public-facing ticket marketplace.</li>
+  <li><strong>Organisation App</strong> – private dashboard for event organisers.</li>
+  <li><strong>Website App</strong> – marketing and informational site.</li>
+  <li><strong>Payment App</strong> – MonCash mobile money integration landing page.</li>
+</ul>
+
+<p>
+  The platform supports two languages (<strong>French</strong> as default, <strong>English</strong> as secondary),
+  two currencies (<strong>HTG and USD</strong>), and two payment methods (<strong>Stripe</strong> for card payments
+  and <strong>MonCash</strong> for mobile money).
+</p>
+
+
+<!-- ==================== 2. ATTENDEE APP ==================== -->
+<h1 id="attendee">2. Attendee App</h1>
+<p>
+  The attendee app is the public-facing product. Any visitor can browse events; creating an account unlocks
+  purchasing, favorites, following, and order history.
+</p>
+
+<h2 id="att-auth">2.1 Authentication &amp; Onboarding</h2>
+
+<h3>Sign Up</h3>
+<ul>
+  <li>Register with email and password.</li>
+  <li>Optionally provide a <strong>referral code</strong> from an existing user.</li>
+  <li>Account verification email is sent after registration.</li>
+  <li>Google OAuth sign-up (one-click, no password needed).</li>
+</ul>
+
+<h3>Sign In</h3>
+<ul>
+  <li>Sign in with email and password.</li>
+  <li>Google OAuth sign-in.</li>
+  <li>Forgot password → receive reset email → set new password flow.</li>
+</ul>
+
+<h3>Onboarding (first-time users)</h3>
+<ul>
+  <li>Multi-step profile setup after first login.</li>
+  <li>Option to also create an <strong>organisation</strong> (for people who are both attendee and organiser).</li>
+  <li>Invited user onboarding (accepting a team invitation from an organisation).</li>
+</ul>
+
+<hr>
+
+<h2 id="att-discover">2.2 Event Discovery &amp; Browsing</h2>
+
+<h3>Explore Page</h3>
+<ul>
+  <li>Grid of all publicly listed events with event card previews (image, name, date, price).</li>
+  <li>Real-time search by event name.</li>
+  <li>Filter events by category (Conference, Concert, Festival, Comedy, Theater, Tournament, Workshop, Seminar, Networking, Startup, Food Festival, Art, Cultural, Charity, Fundraiser, Meetup, Community, Meet/Virtual).</li>
+</ul>
+
+<h3>Event Detail Page</h3>
+<ul>
+  <li>Full event name, cover image, and description.</li>
+  <li>Organiser name with <strong>verified organisation badge</strong> and profile link.</li>
+  <li>All event dates and times, including timezone.</li>
+  <li>Physical address displayed, with a <strong>Google Maps embed</strong> and a direct "Open in Maps" link (in-person events).</li>
+  <li>Meeting link access for virtual/Meet events.</li>
+  <li>Performer/artist profiles – clickable, with individual bios.</li>
+  <li>Ticket types and pricing listed.</li>
+  <li><strong>Add to Calendar</strong> button (generates calendar event).</li>
+  <li>Share event on social media.</li>
+  <li>Add/remove from favorites.</li>
+</ul>
+
+<div class="note">
+  Private events are invitation-only. Attendees without a valid invitation code cannot view or purchase tickets.
+</div>
+
+<hr>
+
+<h2 id="att-checkout">2.3 Checkout &amp; Payment</h2>
+
+<p>The checkout flow is a multi-step wizard:</p>
+
+<h3>Step 1 – Ticket Selection</h3>
+<ul>
+  <li>Choose ticket type and quantity.</li>
+  <li>Real-time pricing summary updates.</li>
+  <li>Free events skip the payment step entirely.</li>
+</ul>
+
+<h3>Step 2 – Recipient Information</h3>
+<ul>
+  <li>Enter attendee details (for self, or on behalf of someone else).</li>
+  <li>Registered users have their info pre-filled.</li>
+  <li>Guest checkout is supported (no account required for free events or some paid flows).</li>
+</ul>
+
+<h3>Step 3 – Payment</h3>
+<ul>
+  <li>Choose <strong>Stripe</strong> (international credit/debit card) or <strong>MonCash</strong> (Haitian mobile money).</li>
+  <li>Full fee breakdown shown (ticket price + service fee).</li>
+  <li>Stripe uses an embedded checkout component.</li>
+  <li>MonCash redirects to the dedicated payment app for confirmation.</li>
+</ul>
+
+<h3>Step 4 – Order Summary &amp; Confirmation</h3>
+<ul>
+  <li>Review complete order before finalising.</li>
+  <li>Confirmation email sent automatically after successful payment.</li>
+  <li>Order success page shown, with a link to view tickets.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-tickets">2.4 Ticket Management &amp; Upcoming Events</h2>
+
+<h3>Upcoming Events List</h3>
+<ul>
+  <li>Shows all events the attendee has tickets for.</li>
+  <li>Each card links to the full event page with ticket viewer.</li>
+</ul>
+
+<h3>Event Page (Post-Purchase)</h3>
+<ul>
+  <li>View purchased ticket(s) with QR code.</li>
+  <li>Download ticket as PDF or image.</li>
+  <li>View full event details and location.</li>
+  <li>Rate/evaluate an event after it has taken place.</li>
+</ul>
+
+<h3>Return / Refund</h3>
+<ul>
+  <li><strong>Free ticket return</strong> – attendee can return a free ticket if the organiser has enabled returns.</li>
+  <li><strong>Paid ticket refund</strong> – attendee can request a refund if the organiser has enabled refunds and within the allowed window based on event dates.</li>
+  <li>Service fees are <strong>non-refundable</strong>.</li>
+</ul>
+
+<h3>Event History</h3>
+<ul>
+  <li>Past events are listed separately.</li>
+  <li>Post-event evaluation/rating can be submitted from here.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-favorites">2.5 Favorites</h2>
+<ul>
+  <li>Heart/bookmark any event from its detail page or the explore feed.</li>
+  <li>Dedicated <strong>Liked Events</strong> page showing all saved events.</li>
+  <li>Remove events from favorites at any time.</li>
+  <li>Favorites persist across sessions.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-organizers">2.6 Organiser Profiles &amp; Following</h2>
+
+<h3>Organiser Directory</h3>
+<ul>
+  <li>Browse all organisations on the platform.</li>
+  <li>Follow or unfollow any organisation.</li>
+  <li>View the list of organisations you follow.</li>
+</ul>
+
+<h3>Organisation Profile Page</h3>
+<ul>
+  <li>Organisation name, profile image, description, and verified badge.</li>
+  <li>Follower count.</li>
+  <li>List of <strong>upcoming events</strong> by this organiser.</li>
+  <li>List of <strong>past events</strong> by this organiser.</li>
+  <li>Contact details (email, website).</li>
+</ul>
+
+<hr>
+
+<h2 id="att-profile">2.7 User Profile &amp; Preferences</h2>
+
+<h3>Profile Page</h3>
+<ul>
+  <li>View personal information and statistics.</li>
+  <li>Update name, avatar, and contact details.</li>
+</ul>
+
+<h3>Preferences</h3>
+<ul>
+  <li><strong>Email notifications</strong> – toggle which emails you receive.</li>
+  <li><strong>Interest categories</strong> – set preferred event types for personalised recommendations.</li>
+  <li><strong>Language</strong> – switch between French and English.</li>
+  <li><strong>Currency</strong> – choose between HTG and USD display.</li>
+  <li><strong>Privacy settings</strong>.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-wallet">2.8 Wallet &amp; Transactions</h2>
+<ul>
+  <li>View wallet balance in both HTG and USD.</li>
+  <li>Full transaction history with pagination (10 items per page).</li>
+  <li>Each transaction shows type, amount, date, and status.</li>
+  <li>History of all orders and payments made.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-deletion">2.9 Deletion Status Notices</h2>
+<p>
+  When an organiser initiates deletion of an event, attendees who have tickets are proactively informed
+  via a prominent banner on the event's upcoming page:
+</p>
+<ul>
+  <li>
+    <strong>Pending Deletion banner</strong> (amber) – displayed when <code>deletionStatus = "pending_deletion"</code>.
+    Informs the attendee that the organiser has requested deletion but may still cancel it.
+    States that tickets will be refunded if the event is deleted, and that service fees are non-refundable.
+  </li>
+  <li>
+    <strong>Deleted banner</strong> (red) – displayed when <code>deletionStatus = "deleted"</code>.
+    Informs the attendee the event no longer exists and a ticket refund has been initiated.
+    Confirms service fees are non-refundable.
+  </li>
+</ul>
+
+
+<!-- ==================== 3. ORGANISATION APP ==================== -->
+<h1 id="org">3. Organisation App</h1>
+<p>
+  The organisation app is the private dashboard for event organisers. Access is gated by authentication
+  and role-based permissions. Each organisation can have multiple members with different permission levels.
+</p>
+
+<h2 id="org-auth">3.1 Authentication &amp; Setup</h2>
+<ul>
+  <li>Login with email and password.</li>
+  <li>Forgot password flow.</li>
+  <li>Password reset.</li>
+  <li>Accept team invitation (invited members set their password and complete onboarding).</li>
+  <li>Multi-step organisation setup wizard during first login.</li>
+  <li>Session maintains an <strong>active organisation context</strong> (users who manage multiple organisations can switch).</li>
+</ul>
+
+<hr>
+
+<h2 id="org-create">3.2 Event Creation</h2>
+
+<p>Two event types are supported:</p>
+
+<h3>In-Person Event</h3>
+<p>A 3-step wizard:</p>
+<ul>
+  <li>
+    <strong>Step 1 – Basic Details</strong>
+    <ul>
+      <li>Event name, description, and category (17 categories available).</li>
+      <li>Cover image upload with in-browser crop/resize tool.</li>
+      <li>Physical address, city, state, country, and geographic coordinates (map picker).</li>
+      <li>Activity tags for discoverability.</li>
+      <li>Performers / artists management (add multiple with names and bios).</li>
+      <li>Visibility: public or private (invitation-only).</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Step 2 – Dates &amp; Times</strong>
+    <ul>
+      <li>Add one or multiple event days.</li>
+      <li>Each day has its own start time, end time, and timezone.</li>
+      <li>Membership tier limits the number of days allowed.</li>
+    </ul>
+  </li>
+  <li>
+    <strong>Step 3 – Ticket Classes</strong>
+    <ul>
+      <li>Free or paid event toggle.</li>
+      <li>Add multiple ticket types with name, description, price, and quantity.</li>
+      <li>Refundable toggle per ticket class.</li>
+      <li>Currency selection (HTG or USD).</li>
+    </ul>
+  </li>
+</ul>
+
+<h3>Meet / Virtual Event</h3>
+<p>Same 3-step wizard, but:</p>
+<ul>
+  <li>No physical location — Google Meet link is generated automatically via Google OAuth.</li>
+  <li>Address and map fields are replaced with virtual event details.</li>
+</ul>
+
+<div class="note">
+  Event creation validates all basic details server-side before advancing to the next step.
+  A "no changes" guard prevents re-submitting identical data.
+</div>
+
+<hr>
+
+<h2 id="org-edit">3.3 Event Editing</h2>
+
+<p>Organisers can edit any event that has not started and is not pending deletion. The same 3-step wizard is reused, pre-filled with existing values.</p>
+
+<ul>
+  <li>Edit event name, description, or cover image.</li>
+  <li>Edit dates and times.</li>
+  <li>Edit ticket types, prices, and quantities.</li>
+  <li>Edit location details.</li>
+  <li>Edit performers.</li>
+  <li>Edit tags.</li>
+</ul>
+
+<h3>Post-Update Alerts</h3>
+<p>After a successful save, the organiser sees an inline alert explaining what happens next:</p>
+<ul>
+  <li>
+    <strong>Warning (amber)</strong> – if the organiser changed the event <em>name</em>, <em>description</em>, or <em>cover image</em>:
+    the event is re-submitted for review and temporarily unlisted (1–2 business days).
+  </li>
+  <li>
+    <strong>Success (green)</strong> – if only dates, location, tickets, or tags changed:
+    the update goes live immediately with no re-review required.
+  </li>
+</ul>
+
+<h3>Deletion Guard</h3>
+<ul>
+  <li>If an event's deletion has been requested, the edit page redirects the organiser back to the event detail page — editing is blocked server-side.</li>
+  <li>In the event drawer UI, the edit button is replaced with a non-clickable amber warning: <em>"This event is pending deletion and cannot be edited."</em></li>
+</ul>
+
+<hr>
+
+<h2 id="org-delete">3.4 Event Deletion</h2>
+<ul>
+  <li>Organiser can request deletion of any of their events.</li>
+  <li>Deletion status progresses: <code>null → pending_deletion → deleted</code>.</li>
+  <li>Organiser can <strong>cancel</strong> the deletion request while it is still in <code>pending_deletion</code> state.</li>
+  <li>Once fully deleted, the platform initiates automatic refunds to all ticket holders (ticket price only; service fees are non-refundable).</li>
+</ul>
+
+<hr>
+
+<h2 id="org-view">3.5 Event Viewing &amp; Detail</h2>
+
+<h3>Events List</h3>
+<ul>
+  <li>Grid of all events created by the organisation.</li>
+  <li>Quick stats per event card: ticket count, revenue, status.</li>
+</ul>
+
+<h3>Event Detail Drawer</h3>
+<ul>
+  <li>Slide-over drawer with full event information.</li>
+  <li>Event dates and times.</li>
+  <li>Location address.</li>
+  <li>Edit button (if event is upcoming and not pending deletion).</li>
+  <li>Pending-deletion warning replaces the edit button when applicable.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-attendees">3.6 Attendee Management &amp; Check-In</h2>
+<ul>
+  <li>View full attendee list for any event.</li>
+  <li>Search and filter attendees.</li>
+  <li>See each attendee's name, ticket type, and check-in status.</li>
+  <li><strong>Check-in</strong> attendees on arrival (manual or QR-scan based).</li>
+  <li>Export attendee data.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-discounts">3.7 Discount &amp; Promo Codes</h2>
+<ul>
+  <li>View all existing discount codes for the organisation.</li>
+  <li>Create a new discount code with:
+    <ul>
+      <li>Code string (custom or auto-generated).</li>
+      <li>Discount type: percentage or fixed amount.</li>
+      <li>Usage limit (max number of uses).</li>
+      <li>Expiry date.</li>
+    </ul>
+  </li>
+  <li>Track how many times each code has been used.</li>
+  <li>Activate or deactivate codes.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-team">3.8 Team &amp; Role Management</h2>
+
+<h3>Team Members</h3>
+<ul>
+  <li>View all current team members with their roles.</li>
+  <li>Invite new members by email (invitation email sent automatically).</li>
+  <li>Remove existing members.</li>
+  <li>View pending invitations (waitlist).</li>
+  <li>Membership tier determines the maximum number of team members allowed.</li>
+</ul>
+
+<h3>Roles &amp; Permissions</h3>
+<p>Two broad roles exist, with fine-grained permissions:</p>
+<ul>
+  <li><strong>Owner / Admin</strong> – full access to all features.</li>
+  <li><strong>Staff</strong> – restricted access; specific permissions can be granted:
+    <ul>
+      <li>View events</li>
+      <li>Create events</li>
+      <li>Edit events</li>
+      <li>View attendees</li>
+      <li>Check in attendees</li>
+      <li>View discount codes</li>
+      <li>View finance</li>
+      <li>Create withdrawal requests</li>
+      <li>Manage subscriptions</li>
+      <li>View analytics</li>
+      <li>Manage team</li>
+      <li>Update organisation profile</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<h2 id="org-profile">3.9 Organisation Profile &amp; Settings</h2>
+<ul>
+  <li>Update organisation <strong>name</strong>.</li>
+  <li>Upload or replace organisation <strong>logo/profile image</strong>.</li>
+  <li>Edit organisation <strong>bio / description</strong>.</li>
+  <li>Update <strong>contact email</strong>.</li>
+  <li>Update <strong>phone number</strong>.</li>
+  <li>Update <strong>website URL</strong>.</li>
+  <li>Set preferred <strong>currency</strong> (HTG or USD).</li>
+  <li>View current <strong>membership tier</strong> and its feature limits.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-finance">3.10 Finance &amp; Payouts</h2>
+
+<h3>Finance Dashboard</h3>
+<ul>
+  <li>Total revenue earned (all time).</li>
+  <li>Available balance (ready to withdraw).</li>
+  <li>Pending balance (awaiting clearance).</li>
+  <li>Revenue broken down by time period.</li>
+  <li>Full transaction history with date-range filter and pagination.</li>
+</ul>
+
+<h3>Withdrawal / Payout</h3>
+<ul>
+  <li>Initiate a withdrawal request for available funds.</li>
+  <li>Enter withdrawal amount.</li>
+  <li>Provide bank account or mobile money payout details.</li>
+  <li>Track withdrawal request status (pending, approved, completed).</li>
+  <li>View full withdrawal history.</li>
+  <li>Multiple currencies handled separately.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-payments">3.11 Payment Method Configuration</h2>
+<ul>
+  <li>Add and configure <strong>Stripe</strong> account credentials for card payments.</li>
+  <li>Add and configure <strong>MonCash</strong> account credentials for mobile payments.</li>
+  <li>Set a <strong>security PIN</strong> for payment operations.</li>
+  <li>View and update existing payment provider details.</li>
+  <li>Both payment methods can be active simultaneously.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-analytics">3.12 Analytics Dashboard</h2>
+
+<p>A comprehensive analytics page available to all tiers, with some advanced metrics restricted to Pro <span class="badge">PRO</span>:</p>
+
+<h3>Revenue Metrics</h3>
+<ul>
+  <li>Total revenue (all time and by time period).</li>
+  <li>Average order value.</li>
+  <li>Monthly revenue trend chart.</li>
+</ul>
+
+<h3>Ticket Metrics</h3>
+<ul>
+  <li>Total tickets sold.</li>
+  <li>Daily ticket sales chart.</li>
+  <li>Ticket class breakdown (how many of each type sold).</li>
+  <li>Monthly ticket sales trend.</li>
+</ul>
+
+<h3>Event Metrics</h3>
+<ul>
+  <li>Total events created (upcoming and past).</li>
+  <li>Top events by tickets sold.</li>
+  <li>Top events by views.</li>
+  <li>Event views and social shares tracked.</li>
+  <li>Conversion rate (views → purchases).</li>
+  <li>Check-in rate.</li>
+  <li>Refund rate.</li>
+</ul>
+
+<h3>Audience Metrics</h3>
+<ul>
+  <li>Total followers and follower growth.</li>
+  <li>Guest vs. registered attendee split.</li>
+  <li>Payment provider breakdown (Stripe vs. MonCash usage).</li>
+  <li><strong>Gender distribution</strong> <span class="badge">PRO</span> – male / female / other breakdown.</li>
+  <li><strong>Audience demographics</strong> <span class="badge">PRO</span> – detailed demographic data.</li>
+</ul>
+
+<h3>Ratings &amp; Reviews</h3>
+<ul>
+  <li>Star rating average and distribution <span class="badge">PRO</span>.</li>
+  <li>Review count and trends.</li>
+</ul>
+
+<div class="note">
+  Free-tier users see teaser metrics for Pro features with a clear upsell prompt to upgrade.
+</div>
+
+<hr>
+
+<h2 id="org-subscriptions">3.13 Subscriptions &amp; Membership Tiers</h2>
+<ul>
+  <li>View current active subscription / tier.</li>
+  <li>Compare all available plans with feature tables.</li>
+  <li>Upgrade to a Pro tier with an in-app payment flow.</li>
+  <li>Upgrade confirmation page after successful payment.</li>
+  <li>Tier limits govern: number of team members, event days, analytics depth, and invite limits.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-share">3.14 Event Sharing &amp; Poster Generation</h2>
+<ul>
+  <li>Share event link to social media platforms directly from the dashboard.</li>
+  <li>Generate a <strong>visual event poster</strong> (EventPosterGenerator) with event details pre-filled.</li>
+  <li>Customise and download the poster for offline or social promotion.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-access">3.15 Role-Based Access Control Summary</h2>
+<p>
+  Every sensitive page and action in the organisation app is gated by a server-side policy check.
+  If a user lacks the required permission, they see an "Unauthorised" view instead of the content.
+  This prevents lower-privilege staff from accidentally or intentionally accessing restricted data.
+</p>
+
+
+<!-- ==================== 4. MARKETING WEBSITE ==================== -->
+<h1 id="website">4. Marketing Website</h1>
+
+<p>
+  The marketing website serves as the public face of TicketWaze, targeting both potential attendees
+  and potential event organisers.
+</p>
+
+<h2>Pages &amp; Sections</h2>
+
+<h3>Home / Landing Page</h3>
+<ul>
+  <li>Hero banner with primary CTA (Get started / Explore events).</li>
+  <li>Three feature highlight sections (Details 1, 2, 3) with illustrations and copy.</li>
+  <li>FAQ accordion section.</li>
+  <li>Footer with navigation links.</li>
+</ul>
+
+<h3>For Attendees Page</h3>
+<ul>
+  <li>Attendee-focused marketing copy.</li>
+  <li>Feature highlights relevant to ticket buyers.</li>
+</ul>
+
+<h3>For Organisers / Business Page</h3>
+<ul>
+  <li>Organiser-focused marketing copy.</li>
+  <li>Pricing table with plan comparison.</li>
+  <li>CTA to create an organisation account.</li>
+</ul>
+
+<h3>About Page</h3>
+<ul>
+  <li>Company story and mission.</li>
+</ul>
+
+<h3>Contact Page</h3>
+<ul>
+  <li>Contact form for enquiries.</li>
+</ul>
+
+<h3>Legal Page</h3>
+<ul>
+  <li>Terms of service.</li>
+  <li>Privacy policy.</li>
+  <li>GDPR compliance information.</li>
+</ul>
+
+<h3>Waitlist Page</h3>
+<ul>
+  <li>Email sign-up for early access or launch notifications.</li>
+</ul>
+
+<h3>Localisation</h3>
+<ul>
+  <li>French (default) and English language versions of all pages.</li>
+  <li>SEO-optimised with meta tags, Open Graph, JSON-LD structured data, sitemap, and hreflang tags.</li>
+</ul>
+
+
+<!-- ==================== 5. PAYMENT APP ==================== -->
+<h1 id="payment">5. Payment App (MonCash Integration)</h1>
+
+<p>
+  A lightweight Next.js app dedicated to the MonCash mobile money payment flow.
+  When an attendee selects MonCash at checkout, they are redirected here.
+</p>
+<ul>
+  <li>Displays the MonCash payment instructions and confirmation page.</li>
+  <li>Handles the return callback from the MonCash gateway.</li>
+  <li>Communicates payment success or failure back to the attendee app via webhook.</li>
+  <li>Lightweight — no auth required; session is maintained via payment session tokens.</li>
+</ul>
+
+
+<!-- ==================== 6. ADMIN PANEL ==================== -->
+<h1 id="admin">6. Admin Panel</h1>
+
+<p>
+  The admin panel gives the TicketWaze internal team visibility and control over the entire platform.
+  It is accessible only to verified admin users.
+</p>
+
+<h2>Authentication</h2>
+<ul>
+  <li>Admin login page.</li>
+  <li>Admin registration (invitation-based).</li>
+  <li>Password reset.</li>
+  <li>Invitation acceptance with new password setup.</li>
+</ul>
+
+<h2>Dashboard &amp; Monitoring</h2>
+<ul>
+  <li>System-wide analytics overview.</li>
+  <li>Attendees management – view and manage all platform users.</li>
+  <li>Organisations management – view, verify, or suspend organisations.</li>
+  <li>Payments monitoring – track all transactions across the platform.</li>
+  <li>Payout / withdrawal request queue – approve or reject organiser withdrawals.</li>
+  <li>Tickets management – view all issued tickets.</li>
+  <li>Activities log – full audit trail of user and system actions.</li>
+  <li>Admin user management – invite and manage other admins.</li>
+</ul>
+
+
+<!-- ==================== 7. CROSS-PLATFORM FEATURES ==================== -->
+<h1 id="cross">7. Cross-Platform Features</h1>
+
+<h2>Internationalisation (i18n)</h2>
+<ul>
+  <li>All UI text translated into <strong>French</strong> and <strong>English</strong>.</li>
+  <li>Locale-specific date, time, and number formatting.</li>
+  <li>Language switcher available in user preferences.</li>
+  <li>Hreflang tags for SEO on the marketing site.</li>
+</ul>
+
+<h2>Notifications</h2>
+<ul>
+  <li>Transactional emails for registration, payment confirmation, event updates, invitations, and password resets.</li>
+  <li>User-configurable notification preferences (opt in / opt out per type).</li>
+</ul>
+
+<h2>Mobile Responsiveness</h2>
+<ul>
+  <li>Mobile-first design on all apps.</li>
+  <li>Responsive grid layouts that adapt from 1 to 2+ columns.</li>
+  <li>Dedicated mobile navigation (hamburger menus, floating action buttons).</li>
+  <li>Touch-friendly tap targets throughout.</li>
+</ul>
+
+<h2>Image Handling</h2>
+<ul>
+  <li>Cover image upload with in-browser <strong>crop and resize</strong> (react-easy-crop).</li>
+  <li>Next.js optimised image delivery (lazy load, responsive sizes).</li>
+  <li>Avatar / profile image upload for users and organisations.</li>
+</ul>
+
+<h2>UI / UX Patterns</h2>
+<ul>
+  <li>Toast notifications (sonner) for success, error, warning, and info messages.</li>
+  <li>Inline alert banners for important persistent notices.</li>
+  <li>Dialog modals for destructive action confirmations.</li>
+  <li>Animated page transitions (Framer Motion) on multi-step forms.</li>
+  <li>Loading skeleton states while data is fetching.</li>
+  <li>Empty state illustrations with helpful prompts.</li>
+  <li>Form validation with real-time error messages (React Hook Form + Zod).</li>
+</ul>
+
+<h2>Search &amp; Filtering</h2>
+<ul>
+  <li>Real-time search by event name on the explore page.</li>
+  <li>Category filter on the explore page.</li>
+  <li>Attendee search and filter in the organiser dashboard.</li>
+  <li>Date-range filter on transaction history.</li>
+</ul>
+
+<h2>Pagination</h2>
+<ul>
+  <li>Transaction history, attendee lists, and event lists are paginated server-side.</li>
+  <li>Default page sizes: 10 or 15 items per page.</li>
+</ul>
+
+<h2>Google Integrations</h2>
+<ul>
+  <li><strong>Google OAuth</strong> – sign-in for attendees; Meet event creation for organisers.</li>
+  <li><strong>Google Maps</strong> – embed and direction link for in-person events.</li>
+  <li><strong>Google Meet</strong> – auto-generated meeting links for virtual events.</li>
+</ul>
+
+<h2>Security</h2>
+<ul>
+  <li>JWT-based authentication with bearer tokens.</li>
+  <li>Sessions managed via NextAuth.</li>
+  <li>Server-side role and permission checks on every protected page and action.</li>
+  <li>Payment PIN for sensitive financial operations.</li>
+</ul>
+
+<h2>Data Export</h2>
+<ul>
+  <li>Attendee data export from the organiser dashboard.</li>
+  <li>Ticket download (PDF/image) for attendees.</li>
+  <li>Event poster download for organisers.</li>
+</ul>
+
+
+<!-- ==================== FOOTER ==================== -->
+<div class="footer">
+  TicketWaze – Internal Walkthrough Document &nbsp;·&nbsp; May 2025 &nbsp;·&nbsp; Confidential
+  <br>
+  Generated from codebase analysis of the ticketwaze-turbo-v1 monorepo.
+</div>
+
+</body>
+</html>

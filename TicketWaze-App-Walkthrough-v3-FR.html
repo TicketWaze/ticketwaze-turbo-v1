@@ -1,0 +1,884 @@
+﻿<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<meta name="ProgId" content="Word.Document">
+<meta name="Generator" content="Microsoft Word 15">
+<title>Ticketwaze – Guide Complet de l'Application</title>
+<!--[if gte mso 9]><xml>
+  <w:WordDocument>
+    <w:View>Print</w:View>
+    <w:Zoom>100</w:Zoom>
+    <w:DoNotOptimizeForBrowser/>
+  </w:WordDocument>
+</xml><![endif]-->
+<style>
+  @page Section1 {
+    size: 21.0cm 29.7cm;
+    margin: 2.0cm 2.5cm 2.0cm 2.5cm;
+    mso-header-margin: 1.0cm;
+    mso-footer-margin: 1.0cm;
+    mso-page-numbers: 1;
+  }
+  div.Section1 { page: Section1; }
+
+  body {
+    font-family: Calibri, sans-serif;
+    font-size: 11pt;
+    color: #1a1a1a;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  .cover {
+    text-align: center;
+    padding: 80px 0 60px;
+    border-bottom: 3px solid #E45B00;
+    margin-bottom: 40px;
+    width: 100%;
+  }
+  .cover-logo {
+    font-size: 42pt;
+    font-weight: 800;
+    color: #E45B00;
+    letter-spacing: -1px;
+  }
+  .cover-sub {
+    font-size: 18pt;
+    color: #444;
+    margin-top: 8px;
+  }
+  .cover-meta {
+    font-size: 10pt;
+    color: #888;
+    margin-top: 24px;
+  }
+
+  .toc {
+    background: #fafafa;
+    border: 1px solid #e0e0e0;
+    padding: 24px 32px;
+    margin-bottom: 40px;
+    page-break-after: always;
+    width: 100%;
+    mso-element: para-border-div;
+  }
+  .toc h2 { color: #E45B00; font-size: 14pt; margin-top: 0; }
+  .toc ol { margin: 0; padding-left: 20px; }
+  .toc li { margin: 4px 0; font-size: 10.5pt; }
+  .toc a { color: #1a1a1a; text-decoration: none; }
+
+  h1 {
+    font-size: 22pt;
+    color: #E45B00;
+    border-bottom: 2px solid #E45B00;
+    padding-bottom: 6px;
+    margin-top: 40px;
+    page-break-before: always;
+    width: 100%;
+  }
+  h1:first-of-type { page-break-before: avoid; }
+  h2 {
+    font-size: 15pt;
+    color: #1a1a1a;
+    border-left: 4px solid #E45B00;
+    padding-left: 10px;
+    margin-top: 30px;
+    width: 100%;
+  }
+  h3 {
+    font-size: 12pt;
+    color: #333;
+    margin-top: 20px;
+  }
+
+  ul {
+    margin: 8px 0 16px 0;
+    padding-left: 22px;
+    width: 100%;
+  }
+  ul li {
+    margin: 4px 0;
+    font-size: 10.5pt;
+  }
+  ul li::marker { color: #E45B00; }
+
+  .note {
+    background: #fff8f4;
+    border-left: 4px solid #E45B00;
+    padding: 10px 16px;
+    margin: 16px 0;
+    font-size: 10pt;
+    color: #555;
+    width: 100%;
+    mso-element: para-border-div;
+  }
+  .badge {
+    display: inline-block;
+    background: #E45B00;
+    color: #fff;
+    font-size: 8pt;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 100px;
+    vertical-align: middle;
+    margin-left: 6px;
+    letter-spacing: 0.5px;
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid #e5e5e5;
+    margin: 28px 0;
+    width: 100%;
+  }
+
+  .footer {
+    text-align: center;
+    font-size: 9pt;
+    color: #aaa;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 16px;
+    margin-top: 60px;
+    width: 100%;
+  }
+
+  p { margin: 6px 0 12px; font-size: 10.5pt; width: 100%; }
+  strong { color: #1a1a1a; }
+  code {
+    font-family: Consolas, monospace;
+    font-size: 9.5pt;
+    background: #f4f4f4;
+    padding: 1px 4px;
+  }
+</style>
+</head>
+<body>
+<div class="Section1">
+
+<!-- ==================== COUVERTURE ==================== -->
+<div class="cover">
+  <div class="cover-logo">Ticketwaze</div>
+  <div class="cover-sub">Guide Complet de l'Application</div>
+  <div class="cover-meta">
+    Document interne &nbsp;·&nbsp; Mai 2025 &nbsp;·&nbsp; Confidentiel
+  </div>
+</div>
+
+<!-- ==================== INTRODUCTION ==================== -->
+<p>
+  Ce document est un guide complet de la plateforme <strong>Ticketwaze</strong> présenté du point de vue de l'utilisateur.
+  Il couvre chaque écran, flux et fonctionnalité disponibles dans l'application destinée aux participants, le tableau de bord
+  des organisateurs, le site marketing et la couche d'intégration des paiements. Utilisez-le comme référence lors de
+  l'intégration de nouveaux membres de l'équipe ou pour présenter le produit aux parties prenantes.
+</p>
+
+<!-- ==================== TABLE DES MATIÈRES ==================== -->
+<div class="toc">
+  <h2>Table des matières</h2>
+  <ol>
+    <li><a href="#platform">Présentation de la plateforme</a></li>
+    <li><a href="#attendee">Application Participant</a>
+      <ol>
+        <li><a href="#att-auth">Authentification &amp; Intégration</a></li>
+        <li><a href="#att-discover">Découverte &amp; Navigation des activités</a></li>
+        <li><a href="#att-checkout">Paiement &amp; Achat</a></li>
+        <li><a href="#att-tickets">Gestion des billets &amp; Activités à venir</a></li>
+        <li><a href="#att-favorites">Favoris</a></li>
+        <li><a href="#att-organizers">Profils des organisateurs &amp; Abonnements</a></li>
+        <li><a href="#att-profile">Profil utilisateur &amp; Préférences</a></li>
+        <li><a href="#att-wallet">Portefeuille &amp; Transactions</a></li>
+        <li><a href="#att-deletion">Avis de suppression d'activité</a></li>
+      </ol>
+    </li>
+    <li><a href="#org">Application Organisation</a>
+      <ol>
+        <li><a href="#org-auth">Authentification &amp; Configuration</a></li>
+        <li><a href="#org-create">Création d'activité</a></li>
+        <li><a href="#org-edit">Modification d'activité</a></li>
+        <li><a href="#org-delete">Suppression d'activité</a></li>
+        <li><a href="#org-view">Consultation &amp; Détail d'une activité</a></li>
+        <li><a href="#org-attendees">Gestion des participants &amp; Enregistrement</a></li>
+        <li><a href="#org-discounts">Codes de réduction &amp; Promotions</a></li>
+        <li><a href="#org-team">Gestion de l'équipe &amp; des rôles</a></li>
+        <li><a href="#org-profile">Profil &amp; Paramètres de l'organisation</a></li>
+        <li><a href="#org-finance">Finance &amp; Virements</a></li>
+        <li><a href="#org-payments">Configuration des moyens de paiement</a></li>
+        <li><a href="#org-analytics">Tableau de bord analytique</a></li>
+        <li><a href="#org-subscriptions">Abonnements &amp; Niveaux d'adhésion</a></li>
+        <li><a href="#org-share">Partage d'activité &amp; Génération d'affiche</a></li>
+        <li><a href="#org-access">Contrôle d'accès basé sur les rôles</a></li>
+      </ol>
+    </li>
+    <li><a href="#website">Site Marketing</a></li>
+    <li><a href="#payment">Application de paiement (MonCash)</a></li>
+    <li><a href="#admin">Panneau d'administration</a></li>
+    <li><a href="#cross">Fonctionnalités transversales</a></li>
+  </ol>
+</div>
+
+
+<!-- ==================== 1. PRÉSENTATION DE LA PLATEFORME ==================== -->
+<h1 id="platform">1. Présentation de la plateforme</h1>
+
+<p>
+  Ticketwaze est une plateforme complète de billetterie et de gestion d'activités ciblant le marché haïtien et caribéen,
+  avec des ambitions d'expansion internationale. Elle réunit trois types d'utilisateurs :
+</p>
+
+<ul>
+  <li><strong>Participants</strong> – personnes qui découvrent des activités, achètent des billets et y assistent.</li>
+  <li><strong>Organisateurs</strong> – individus ou équipes qui créent, publient et gèrent des activités.</li>
+  <li><strong>Administrateurs</strong> – équipe interne de Ticketwaze qui supervise l'ensemble du système.</li>
+</ul>
+
+<p>La plateforme est construite sous forme d'un <strong>monorepo Turborepo</strong> avec quatre applications Next.js :</p>
+<ul>
+  <li><strong>Application Participant</strong> – marketplace de billets accessible au public.</li>
+  <li><strong>Application Organisation</strong> – tableau de bord privé pour les organisateurs d'activités.</li>
+  <li><strong>Application Site Web</strong> – site marketing et informatif.</li>
+  <li><strong>Application Paiement</strong> – page d'intégration MonCash (mobile money).</li>
+</ul>
+
+<p>
+  La plateforme prend en charge deux langues (<strong>le français</strong> par défaut, <strong>l'anglais</strong> en secondaire),
+  deux devises (<strong>HTG et USD</strong>), et deux moyens de paiement (<strong>Stripe</strong> pour les paiements par carte
+  et <strong>MonCash</strong> pour le mobile money).
+</p>
+
+
+<!-- ==================== 2. APPLICATION PARTICIPANT ==================== -->
+<h1 id="attendee">2. Application Participant</h1>
+<p>
+  L'application participant est le produit accessible au public. Tout visiteur peut parcourir les activités ;
+  la création d'un compte débloque les achats, les favoris, les abonnements aux organisateurs et l'historique des commandes.
+</p>
+
+<h2 id="att-auth">2.1 Authentification &amp; Intégration</h2>
+
+<h3>Inscription</h3>
+<ul>
+  <li>Inscription par e-mail et mot de passe.</li>
+  <li>Possibilité de renseigner un <strong>code de parrainage</strong> d'un utilisateur existant.</li>
+  <li>E-mail de vérification du compte envoyé après l'inscription.</li>
+  <li>Inscription via Google OAuth (en un clic, sans mot de passe).</li>
+</ul>
+
+<h3>Connexion</h3>
+<ul>
+  <li>Connexion par e-mail et mot de passe.</li>
+  <li>Connexion via Google OAuth.</li>
+  <li>Mot de passe oublié → réception d'un e-mail de réinitialisation → création d'un nouveau mot de passe.</li>
+</ul>
+
+<h3>Intégration (premiers utilisateurs)</h3>
+<ul>
+  <li>Configuration du profil en plusieurs étapes après la première connexion.</li>
+  <li>Option pour créer également une <strong>organisation</strong> (pour les personnes qui sont à la fois participant et organisateur).</li>
+  <li>Intégration des utilisateurs invités (acceptation d'une invitation d'équipe d'une organisation).</li>
+</ul>
+
+<hr>
+
+<h2 id="att-discover">2.2 Découverte &amp; Navigation des activités</h2>
+
+<h3>Page Explorer</h3>
+<ul>
+  <li>Grille de toutes les activités publiques avec aperçus (image, nom, date, prix).</li>
+  <li>Recherche en temps réel par nom d'activité.</li>
+  <li>Filtrage par catégorie : Conférence, Concert, Festival, Comédie, Théâtre, Tournoi, Atelier, Séminaire, Réseautage, Startup, Festival gastronomique, Art, Culturel, Charité, Collecte de fonds, Meetup, Communauté, Meet/Virtuel.</li>
+</ul>
+
+<h3>Page de détail d'une activité</h3>
+<ul>
+  <li>Nom complet, image de couverture et description de l'activité.</li>
+  <li>Nom de l'organisateur avec <strong>badge de vérification</strong> et lien vers le profil.</li>
+  <li>Toutes les dates et heures de l'activité, avec le fuseau horaire.</li>
+  <li>Adresse physique avec <strong>carte Google Maps intégrée</strong> et lien direct "Ouvrir dans Maps" (activités en présentiel).</li>
+  <li>Lien de réunion pour les activités virtuelles/Meet.</li>
+  <li>Profils des artistes/intervenants – cliquables, avec biographies individuelles.</li>
+  <li>Types de billets et tarifs disponibles.</li>
+  <li>Bouton <strong>Ajouter au calendrier</strong>.</li>
+  <li>Partage de l'activité sur les réseaux sociaux.</li>
+  <li>Ajouter/retirer des favoris.</li>
+</ul>
+
+<div class="note">
+  Les activités privées sont sur invitation uniquement. Les participants sans code d'invitation valide ne peuvent ni consulter ni acheter de billets.
+</div>
+
+<hr>
+
+<h2 id="att-checkout">2.3 Paiement &amp; Achat</h2>
+
+<p>Le processus d'achat se déroule en plusieurs étapes :</p>
+
+<h3>Étape 1 – Sélection des billets</h3>
+<ul>
+  <li>Choix du type de billet et de la quantité.</li>
+  <li>Résumé des prix mis à jour en temps réel.</li>
+  <li>Les activités gratuites sautent l'étape de paiement.</li>
+</ul>
+
+<h3>Étape 2 – Informations du bénéficiaire</h3>
+<ul>
+  <li>Saisie des coordonnées du participant (pour soi-même ou pour quelqu'un d'autre).</li>
+  <li>Les informations des utilisateurs enregistrés sont pré-remplies.</li>
+  <li>Achat en tant qu'invité possible (sans compte requis pour les activités gratuites ou certains flux payants).</li>
+</ul>
+
+<h3>Étape 3 – Paiement</h3>
+<ul>
+  <li>Choix entre <strong>Stripe</strong> (carte bancaire internationale) ou <strong>MonCash</strong> (mobile money haïtien).</li>
+  <li>Détail complet des frais affiché (prix du billet + frais de service).</li>
+  <li>Stripe utilise un composant de paiement intégré.</li>
+  <li>MonCash redirige vers l'application de paiement dédiée pour confirmation.</li>
+</ul>
+
+<h3>Étape 4 – Récapitulatif &amp; Confirmation</h3>
+<ul>
+  <li>Vérification complète de la commande avant finalisation.</li>
+  <li>E-mail de confirmation envoyé automatiquement après le paiement réussi.</li>
+  <li>Page de succès de la commande affichée, avec un lien pour consulter les billets.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-tickets">2.4 Gestion des billets &amp; Activités à venir</h2>
+
+<h3>Liste des activités à venir</h3>
+<ul>
+  <li>Affiche toutes les activités pour lesquelles le participant possède des billets.</li>
+  <li>Chaque carte renvoie à la page complète de l'activité avec le visualiseur de billets.</li>
+</ul>
+
+<h3>Page d'activité (après achat)</h3>
+<ul>
+  <li>Consultation des billets achetés avec code QR.</li>
+  <li>Téléchargement du billet en PDF ou image.</li>
+  <li>Consultation des détails complets de l'activité et de sa localisation.</li>
+  <li>Évaluation/notation d'une activité après sa tenue.</li>
+</ul>
+
+<h3>Retour / Remboursement</h3>
+<ul>
+  <li><strong>Retour de billet gratuit</strong> – le participant peut retourner un billet gratuit si l'organisateur a activé les retours.</li>
+  <li><strong>Remboursement de billet payant</strong> – le participant peut demander un remboursement si l'organisateur l'a activé et dans la fenêtre autorisée selon les dates de l'activité.</li>
+  <li>Les frais de service sont <strong>non remboursables</strong>.</li>
+</ul>
+
+<h3>Historique des activités</h3>
+<ul>
+  <li>Les activités passées sont listées séparément.</li>
+  <li>L'évaluation/notation post-activité peut être soumise depuis cette section.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-favorites">2.5 Favoris</h2>
+<ul>
+  <li>Ajouter un coup de cœur à n'importe quelle activité depuis sa page de détail ou le fil Explorer.</li>
+  <li>Page dédiée <strong>Activités aimées</strong> affichant toutes les activités sauvegardées.</li>
+  <li>Retirer des activités des favoris à tout moment.</li>
+  <li>Les favoris persistent entre les sessions.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-organizers">2.6 Profils des organisateurs &amp; Abonnements</h2>
+
+<h3>Répertoire des organisateurs</h3>
+<ul>
+  <li>Parcourir toutes les organisations de la plateforme.</li>
+  <li>S'abonner ou se désabonner de n'importe quelle organisation.</li>
+  <li>Consulter la liste des organisations suivies.</li>
+</ul>
+
+<h3>Page de profil d'une organisation</h3>
+<ul>
+  <li>Nom, image de profil, description et badge de vérification de l'organisation.</li>
+  <li>Nombre d'abonnés.</li>
+  <li>Liste des <strong>activités à venir</strong> de cet organisateur.</li>
+  <li>Liste des <strong>activités passées</strong> de cet organisateur.</li>
+  <li>Coordonnées (e-mail, site web).</li>
+</ul>
+
+<hr>
+
+<h2 id="att-profile">2.7 Profil utilisateur &amp; Préférences</h2>
+
+<h3>Page de profil</h3>
+<ul>
+  <li>Consultation des informations personnelles et des statistiques.</li>
+  <li>Mise à jour du nom, de l'avatar et des coordonnées.</li>
+</ul>
+
+<h3>Préférences</h3>
+<ul>
+  <li><strong>Notifications par e-mail</strong> – activer ou désactiver les e-mails reçus.</li>
+  <li><strong>Catégories d'intérêt</strong> – définir les types d'activités préférés pour des recommandations personnalisées.</li>
+  <li><strong>Langue</strong> – basculer entre le français et l'anglais.</li>
+  <li><strong>Devise</strong> – choisir l'affichage en HTG ou USD.</li>
+  <li><strong>Paramètres de confidentialité</strong>.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-wallet">2.8 Portefeuille &amp; Transactions</h2>
+<ul>
+  <li>Consultation du solde du portefeuille en HTG et USD.</li>
+  <li>Historique complet des transactions avec pagination (10 éléments par page).</li>
+  <li>Chaque transaction affiche le type, le montant, la date et le statut.</li>
+  <li>Historique de toutes les commandes et paiements effectués.</li>
+</ul>
+
+<hr>
+
+<h2 id="att-deletion">2.9 Avis de suppression d'activité</h2>
+<p>
+  Lorsqu'un organisateur initie la suppression d'une activité, les participants qui possèdent des billets sont
+  informés de manière proactive via une bannière bien visible sur la page de l'activité à venir :
+</p>
+<ul>
+  <li>
+    <strong>Bannière de suppression en attente (orange)</strong> – affichée lorsque <code>deletionStatus = "pending_deletion"</code>.
+    Informe le participant que l'organisateur a demandé la suppression mais peut encore l'annuler.
+    Indique que les billets seront remboursés si l'activité est supprimée et que les frais de service sont non remboursables.
+  </li>
+  <li>
+    <strong>Bannière de suppression (rouge)</strong> – affichée lorsque <code>deletionStatus = "deleted"</code>.
+    Informe le participant que l'activité n'existe plus et qu'un remboursement de billet a été initié.
+    Confirme que les frais de service sont non remboursables.
+  </li>
+</ul>
+
+
+<!-- ==================== 3. APPLICATION ORGANISATION ==================== -->
+<h1 id="org">3. Application Organisation</h1>
+<p>
+  L'application organisation est le tableau de bord privé destiné aux organisateurs d'activités. L'accès est contrôlé par
+  l'authentification et les permissions basées sur les rôles. Chaque organisation peut avoir plusieurs membres
+  avec différents niveaux de permissions.
+</p>
+
+<h2 id="org-auth">3.1 Authentification &amp; Configuration</h2>
+<ul>
+  <li>Connexion par e-mail et mot de passe.</li>
+  <li>Flux de récupération de mot de passe oublié.</li>
+  <li>Réinitialisation du mot de passe.</li>
+  <li>Acceptation d'une invitation d'équipe (les membres invités définissent leur mot de passe et complètent l'intégration).</li>
+  <li>Assistant de configuration de l'organisation en plusieurs étapes lors de la première connexion.</li>
+  <li>La session maintient un <strong>contexte d'organisation active</strong> (les utilisateurs gérant plusieurs organisations peuvent basculer entre elles).</li>
+</ul>
+
+<hr>
+
+<h2 id="org-create">3.2 Création d'activité</h2>
+
+<p>Deux types d'activités sont pris en charge, chacun utilisant un assistant de création en 3 étapes :</p>
+
+<h3>Activité en présentiel</h3>
+<ul>
+  <li>
+    <strong>Étape 1 – Informations de base :</strong> nom, description, catégorie (17 disponibles), image de couverture avec outil de recadrage intégré au navigateur, adresse physique avec sélecteur de carte, tags, gestion des intervenants/artistes, et visibilité (publique ou privée/sur invitation).
+  </li>
+  <li>
+    <strong>Étape 2 – Dates &amp; Horaires :</strong> un ou plusieurs jours d'activité, chacun avec son heure de début, heure de fin et fuseau horaire. Le niveau d'adhésion limite le nombre de jours autorisés.
+  </li>
+  <li>
+    <strong>Étape 3 – Types de billets :</strong> bascule gratuit/payant, plusieurs types de billets (nom, description, prix, quantité), option remboursable par type, et sélection de la devise (HTG ou USD).
+  </li>
+</ul>
+
+<h3>Activité Meet / Virtuelle</h3>
+<ul>
+  <li>Même assistant en 3 étapes — sans champ d'adresse physique.</li>
+  <li>Le lien Google Meet est généré automatiquement via Google OAuth.</li>
+</ul>
+
+<div class="note">
+  Toutes les informations de base sont validées côté serveur avant que l'assistant n'avance à l'étape suivante. Un garde "aucune modification" empêche de resoumettre des données identiques.
+</div>
+
+<hr>
+
+<h2 id="org-edit">3.3 Modification d'activité</h2>
+
+<p>Les organisateurs peuvent modifier toute activité n'ayant pas encore commencé et non en attente de suppression. Le même assistant en 3 étapes est réutilisé, prérempli avec les valeurs existantes. Champs modifiables : nom, description, image de couverture, dates, horaires, types/prix/quantités de billets, localisation, intervenants et tags.</p>
+
+<h3>Alertes post-mise à jour</h3>
+<ul>
+  <li><strong>Avertissement (orange)</strong> – si le nom, la description ou l'image de couverture ont été modifiés : l'activité est soumise à nouveau pour révision et temporairement dépubliée (1 à 2 jours ouvrables).</li>
+  <li><strong>Succès (vert)</strong> – si seules les dates, la localisation, les billets ou les tags ont été modifiés : la mise à jour est en ligne immédiatement, sans révision requise.</li>
+</ul>
+
+<h3>Garde de suppression</h3>
+<ul>
+  <li>Si une suppression a été demandée, la page de modification redirige l'organisateur vers la page de détail de l'activité — la modification est bloquée côté serveur.</li>
+  <li>Dans l'interface du tiroir d'activité, le bouton de modification est remplacé par un avertissement orange non cliquable : <em>"Cette activité est en attente de suppression et ne peut pas être modifiée."</em></li>
+</ul>
+
+<hr>
+
+<h2 id="org-delete">3.4 Suppression d'activité</h2>
+<ul>
+  <li>L'organisateur peut demander la suppression de n'importe laquelle de ses activités.</li>
+  <li>Le statut de suppression progresse : <code>null → pending_deletion → deleted</code>.</li>
+  <li>L'organisateur peut <strong>annuler</strong> la demande de suppression tant qu'elle est à l'état <code>pending_deletion</code>.</li>
+  <li>Une fois supprimée, la plateforme initie des remboursements automatiques pour tous les détenteurs de billets (prix du billet uniquement ; les frais de service sont non remboursables).</li>
+</ul>
+
+<hr>
+
+<h2 id="org-view">3.5 Consultation &amp; Détail d'une activité</h2>
+
+<h3>Liste des activités</h3>
+<ul>
+  <li>Grille de toutes les activités créées par l'organisation.</li>
+  <li>Statistiques rapides par carte d'activité : nombre de billets, revenus, statut.</li>
+</ul>
+
+<h3>Tiroir de détail d'une activité</h3>
+<ul>
+  <li>Panneau coulissant avec les informations complètes de l'activité, dates, horaires et adresse.</li>
+  <li>Bouton de modification (si l'activité est à venir et non en attente de suppression).</li>
+  <li>L'avertissement de suppression en attente remplace le bouton de modification le cas échéant.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-attendees">3.6 Gestion des participants &amp; Enregistrement</h2>
+<ul>
+  <li>Consultation de la liste complète des participants pour toute activité.</li>
+  <li>Recherche et filtrage des participants.</li>
+  <li>Visualisation du nom, du type de billet et du statut d'enregistrement de chaque participant.</li>
+  <li><strong>Enregistrement</strong> des participants à l'arrivée (manuel ou par lecture de QR code).</li>
+  <li>Exportation des données des participants.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-discounts">3.7 Codes de réduction &amp; Promotions</h2>
+<ul>
+  <li>Consultation de tous les codes de réduction existants pour l'organisation.</li>
+  <li>Création d'un nouveau code avec : chaîne personnalisée ou générée automatiquement, type de réduction (pourcentage ou montant fixe), limite d'utilisation et date d'expiration.</li>
+  <li>Suivi du nombre d'utilisations de chaque code.</li>
+  <li>Activation ou désactivation des codes.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-team">3.8 Gestion de l'équipe &amp; des rôles</h2>
+
+<h3>Membres de l'équipe</h3>
+<ul>
+  <li>Consultation de tous les membres actuels avec leurs rôles.</li>
+  <li>Invitation de nouveaux membres par e-mail (e-mail d'invitation envoyé automatiquement).</li>
+  <li>Suppression de membres existants.</li>
+  <li>Consultation des invitations en attente (liste d'attente).</li>
+  <li>Le niveau d'adhésion détermine le nombre maximum de membres autorisés.</li>
+</ul>
+
+<h3>Rôles &amp; Permissions</h3>
+<p>Deux rôles principaux existent, avec des permissions granulaires :</p>
+<ul>
+  <li><strong>Propriétaire / Administrateur</strong> – accès complet à toutes les fonctionnalités.</li>
+  <li><strong>Personnel</strong> – accès restreint ; des permissions spécifiques peuvent être accordées par membre :
+    <ul>
+      <li>Voir les activités &nbsp;·&nbsp; Créer des activités &nbsp;·&nbsp; Modifier des activités</li>
+      <li>Voir les participants &nbsp;·&nbsp; Enregistrer les participants</li>
+      <li>Voir les codes de réduction</li>
+      <li>Voir les finances &nbsp;·&nbsp; Créer des demandes de retrait</li>
+      <li>Gérer les abonnements &nbsp;·&nbsp; Voir les analyses</li>
+      <li>Gérer l'équipe &nbsp;·&nbsp; Mettre à jour le profil de l'organisation</li>
+    </ul>
+  </li>
+</ul>
+
+<hr>
+
+<h2 id="org-profile">3.9 Profil &amp; Paramètres de l'organisation</h2>
+<ul>
+  <li>Mise à jour du nom, du logo/image de profil, de la bio/description, de l'e-mail de contact, du numéro de téléphone et de l'URL du site web de l'organisation.</li>
+  <li>Définition de la devise préférée (HTG ou USD).</li>
+  <li>Consultation du niveau d'adhésion actuel et de ses limites de fonctionnalités.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-finance">3.10 Finance &amp; Virements</h2>
+
+<h3>Tableau de bord financier</h3>
+<ul>
+  <li>Revenus totaux générés (depuis toujours), solde disponible (prêt à être retiré) et solde en attente (en cours de traitement).</li>
+  <li>Revenus ventilés par période.</li>
+  <li>Historique complet des transactions avec filtre par plage de dates et pagination.</li>
+</ul>
+
+<h3>Retrait / Virement</h3>
+<ul>
+  <li>Initier une demande de retrait, saisir le montant et fournir les coordonnées bancaires ou de mobile money.</li>
+  <li>Suivi du statut de la demande de retrait (en attente, approuvé, complété).</li>
+  <li>Consultation de l'historique complet des retraits.</li>
+  <li>Gestion séparée des différentes devises.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-payments">3.11 Configuration des moyens de paiement</h2>
+<ul>
+  <li>Ajout et configuration des identifiants <strong>Stripe</strong> pour les paiements par carte.</li>
+  <li>Ajout et configuration des identifiants <strong>MonCash</strong> pour les paiements mobile.</li>
+  <li>Définition d'un <strong>code PIN de sécurité</strong> pour les opérations de paiement.</li>
+  <li>Consultation et mise à jour des coordonnées des prestataires de paiement existants.</li>
+  <li>Les deux moyens de paiement peuvent être actifs simultanément.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-analytics">3.12 Tableau de bord analytique</h2>
+
+<p>Une page d'analyses complète disponible pour tous les niveaux, avec certaines métriques avancées réservées au niveau Pro <span class="badge">PRO</span>.</p>
+
+<h3>Métriques de revenus</h3>
+<ul>
+  <li>Revenus totaux (depuis toujours et par période), valeur moyenne des commandes et graphique de tendance mensuelle des revenus.</li>
+</ul>
+
+<h3>Métriques de billets</h3>
+<ul>
+  <li>Total des billets vendus, graphique des ventes de billets par jour, répartition par type de billet et tendance mensuelle des ventes.</li>
+</ul>
+
+<h3>Métriques d'activités</h3>
+<ul>
+  <li>Total des activités créées (à venir et passées), meilleures activités par billets vendus, meilleures activités par vues.</li>
+  <li>Vues des activités et partages sociaux suivis. Taux de conversion, taux d'enregistrement et taux de remboursement.</li>
+</ul>
+
+<h3>Métriques d'audience</h3>
+<ul>
+  <li>Total des abonnés et croissance des abonnés. Répartition invités vs participants enregistrés. Répartition par prestataire de paiement (Stripe vs MonCash).</li>
+  <li><strong>Répartition par genre</strong> <span class="badge">PRO</span> – homme / femme / autre.</li>
+  <li><strong>Données démographiques de l'audience</strong> <span class="badge">PRO</span> – données démographiques détaillées.</li>
+</ul>
+
+<h3>Notes &amp; Avis</h3>
+<ul>
+  <li>Moyenne et distribution des notes étoilées <span class="badge">PRO</span>. Nombre d'avis et tendances.</li>
+</ul>
+
+<div class="note">
+  Les utilisateurs du niveau gratuit voient des métriques d'aperçu pour les fonctionnalités Pro avec une invitation claire à passer au niveau supérieur.
+</div>
+
+<hr>
+
+<h2 id="org-subscriptions">3.13 Abonnements &amp; Niveaux d'adhésion</h2>
+<ul>
+  <li>Consultation de l'abonnement actif et comparaison de tous les forfaits disponibles avec tableaux de fonctionnalités.</li>
+  <li>Passage au niveau Pro via un flux de paiement intégré à l'application et page de confirmation.</li>
+  <li>Les limites de niveau régissent : le nombre de membres d'équipe, les jours d'activité, la profondeur des analyses et les limites d'invitation.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-share">3.14 Partage d'activité &amp; Génération d'affiche</h2>
+<ul>
+  <li>Partage du lien de l'activité sur les réseaux sociaux directement depuis le tableau de bord.</li>
+  <li>Génération d'une <strong>affiche visuelle de l'activité</strong> avec les détails pré-remplis.</li>
+  <li>Personnalisation et téléchargement de l'affiche pour la promotion hors ligne ou sur les réseaux sociaux.</li>
+</ul>
+
+<hr>
+
+<h2 id="org-access">3.15 Résumé du contrôle d'accès basé sur les rôles</h2>
+<p>
+  Chaque page et action sensible de l'application organisation est protégée par une vérification de politique côté serveur.
+  Si un utilisateur ne dispose pas de la permission requise, il voit une vue "Non autorisé" à la place du contenu,
+  empêchant les membres du personnel à faibles privilèges d'accéder aux données restreintes.
+</p>
+
+
+<!-- ==================== 4. SITE MARKETING ==================== -->
+<h1 id="website">4. Site Marketing</h1>
+
+<p>
+  Le site marketing est la vitrine publique de Ticketwaze, ciblant à la fois les participants potentiels
+  et les organisateurs d'activités potentiels.
+</p>
+
+<h3>Page d'accueil</h3>
+<ul>
+  <li>Bannière héros avec CTA principal (Commencer / Explorer les activités).</li>
+  <li>Trois sections de mise en avant de fonctionnalités avec illustrations et texte.</li>
+  <li>Section FAQ en accordéon. Pied de page avec liens de navigation.</li>
+</ul>
+
+<h3>Page Pour les participants</h3>
+<ul>
+  <li>Texte marketing orienté participant et mise en avant des fonctionnalités pertinentes pour les acheteurs de billets.</li>
+</ul>
+
+<h3>Page Pour les organisateurs / Entreprises</h3>
+<ul>
+  <li>Texte marketing orienté organisateur, tableau comparatif des forfaits et CTA pour créer un compte organisation.</li>
+</ul>
+
+<h3>Page À propos</h3>
+<ul>
+  <li>Histoire et mission de l'entreprise.</li>
+</ul>
+
+<h3>Page Contact</h3>
+<ul>
+  <li>Formulaire de contact pour les demandes de renseignements.</li>
+</ul>
+
+<h3>Page Mentions légales</h3>
+<ul>
+  <li>Conditions d'utilisation, politique de confidentialité et informations de conformité RGPD.</li>
+</ul>
+
+<h3>Page Liste d'attente</h3>
+<ul>
+  <li>Inscription par e-mail pour un accès anticipé ou des notifications de lancement.</li>
+</ul>
+
+<h3>Localisation &amp; SEO</h3>
+<ul>
+  <li>Versions française (par défaut) et anglaise de toutes les pages.</li>
+  <li>Optimisation SEO avec balises meta, Open Graph, données structurées JSON-LD, sitemap et balises hreflang.</li>
+</ul>
+
+
+<!-- ==================== 5. APPLICATION DE PAIEMENT ==================== -->
+<h1 id="payment">5. Application de paiement (MonCash)</h1>
+
+<p>
+  Une application Next.js légère dédiée au flux de paiement mobile money MonCash.
+  Lorsqu'un participant sélectionne MonCash lors du paiement, il est redirigé ici.
+</p>
+<ul>
+  <li>Affiche les instructions de paiement MonCash et la page de confirmation.</li>
+  <li>Gère le retour de rappel de la passerelle MonCash.</li>
+  <li>Communique le succès ou l'échec du paiement à l'application participant via webhook.</li>
+  <li>Aucune authentification requise — la session est maintenue via des jetons de session de paiement.</li>
+</ul>
+
+
+<!-- ==================== 6. PANNEAU D'ADMINISTRATION ==================== -->
+<h1 id="admin">6. Panneau d'administration</h1>
+
+<p>
+  Le panneau d'administration offre à l'équipe interne de Ticketwaze une visibilité et un contrôle sur l'ensemble
+  de la plateforme. Accessible uniquement aux administrateurs vérifiés.
+</p>
+
+<h3>Authentification</h3>
+<ul>
+  <li>Connexion admin, inscription sur invitation, réinitialisation du mot de passe et configuration du nouveau mot de passe pour les invités.</li>
+</ul>
+
+<h3>Tableau de bord &amp; Surveillance</h3>
+<ul>
+  <li>Vue d'ensemble des analyses à l'échelle du système.</li>
+  <li>Gestion des participants – consultation et gestion de tous les utilisateurs de la plateforme.</li>
+  <li>Gestion des organisations – consultation, vérification ou suspension des organisations.</li>
+  <li>Surveillance des paiements – suivi de toutes les transactions sur la plateforme.</li>
+  <li>File d'attente des demandes de retrait – approbation ou rejet des retraits des organisateurs.</li>
+  <li>Gestion des billets – consultation de tous les billets émis.</li>
+  <li>Journal des activités – piste d'audit complète des actions des utilisateurs et du système.</li>
+  <li>Gestion des utilisateurs admin – invitation et gestion des autres administrateurs.</li>
+</ul>
+
+
+<!-- ==================== 7. FONCTIONNALITÉS TRANSVERSALES ==================== -->
+<h1 id="cross">7. Fonctionnalités transversales</h1>
+
+<h2>Internationalisation (i18n)</h2>
+<ul>
+  <li>Tous les textes d'interface traduits en <strong>français</strong> et en <strong>anglais</strong>.</li>
+  <li>Formatage des dates, heures et chiffres selon la locale.</li>
+  <li>Sélecteur de langue disponible dans les préférences utilisateur.</li>
+  <li>Balises hreflang pour le SEO sur le site marketing.</li>
+</ul>
+
+<h2>Notifications</h2>
+<ul>
+  <li>E-mails transactionnels pour l'inscription, la confirmation de paiement, les mises à jour d'activités, les invitations et les réinitialisations de mot de passe.</li>
+  <li>Préférences de notification configurables par l'utilisateur (opt in / opt out par type).</li>
+</ul>
+
+<h2>Responsive mobile</h2>
+<ul>
+  <li>Design mobile-first sur toutes les applications, avec des mises en page en grille adaptatives (1 à 2+ colonnes).</li>
+  <li>Navigation mobile dédiée (menus hamburger, boutons d'action flottants).</li>
+  <li>Zones de touche adaptées aux interactions tactiles partout.</li>
+</ul>
+
+<h2>Gestion des images</h2>
+<ul>
+  <li>Upload d'image de couverture avec outil de <strong>recadrage et redimensionnement</strong> intégré au navigateur (react-easy-crop).</li>
+  <li>Livraison d'images optimisée par Next.js (chargement différé, tailles adaptatives).</li>
+  <li>Upload d'avatar/image de profil pour les utilisateurs et les organisations.</li>
+</ul>
+
+<h2>Modèles UI / UX</h2>
+<ul>
+  <li>Notifications toast pour les messages de succès, erreur, avertissement et information.</li>
+  <li>Bannières d'alerte intégrées pour les avis persistants importants.</li>
+  <li>Boîtes de dialogue modales pour la confirmation des actions destructrices.</li>
+  <li>Transitions de page animées sur les formulaires multi-étapes.</li>
+  <li>États de chargement squelette, illustrations d'états vides et validation de formulaire en temps réel.</li>
+</ul>
+
+<h2>Recherche &amp; Filtrage</h2>
+<ul>
+  <li>Recherche en temps réel par nom d'activité sur la page Explorer.</li>
+  <li>Filtre par catégorie sur la page Explorer.</li>
+  <li>Recherche et filtrage des participants dans le tableau de bord organisateur.</li>
+  <li>Filtre par plage de dates sur l'historique des transactions.</li>
+</ul>
+
+<h2>Pagination</h2>
+<ul>
+  <li>L'historique des transactions, les listes de participants et les listes d'activités sont paginés côté serveur (10 ou 15 éléments par page).</li>
+</ul>
+
+<h2>Intégrations Google</h2>
+<ul>
+  <li><strong>Google OAuth</strong> – connexion pour les participants ; création d'activités Meet pour les organisateurs.</li>
+  <li><strong>Google Maps</strong> – carte intégrée et lien d'itinéraire pour les activités en présentiel.</li>
+  <li><strong>Google Meet</strong> – liens de réunion générés automatiquement pour les activités virtuelles.</li>
+</ul>
+
+<h2>Sécurité</h2>
+<ul>
+  <li>Authentification basée sur JWT avec jetons bearer. Sessions gérées via NextAuth.</li>
+  <li>Vérifications des rôles et permissions côté serveur sur chaque page et action protégée.</li>
+  <li>Code PIN de paiement pour les opérations financières sensibles.</li>
+</ul>
+
+<h2>Export de données</h2>
+<ul>
+  <li>Export des données des participants depuis le tableau de bord organisateur.</li>
+  <li>Téléchargement de billets (PDF/image) pour les participants.</li>
+  <li>Téléchargement d'affiche d'activité pour les organisateurs.</li>
+</ul>
+
+
+<!-- ==================== PIED DE PAGE ==================== -->
+<div class="footer">
+  Ticketwaze – Document de présentation interne &nbsp;·&nbsp; Mai 2025 &nbsp;·&nbsp; Confidentiel
+  <br>
+  Généré à partir de l'analyse du dépôt ticketwaze-turbo-v1.
+</div>
+
+</div><!-- /Section1 -->
+</body>
+</html>
+

@@ -1,168 +1,101 @@
 // @ts-nocheck
 "use client";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  TimeScale,
-  Filler,
-} from "chart.js";
-import { useState, useEffect } from "react";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  TimeScale,
-  Filler,
-);
+import { useEffect, useRef } from "react";
+import { Chart, registerables } from "chart.js";
 
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
+Chart.register(...registerables);
 
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+type TicketSale = { createdAt: string };
 
-  return isMobile;
+function processTicketsData(ticketSales: TicketSale[]) {
+  const counts: Record<string, number> = {};
+
+  const today = new Date();
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10); // "YYYY-MM-DD"
+    counts[key] = 0;
+  }
+
+  for (const ticket of ticketSales) {
+    const key = ticket.createdAt.slice(0, 10);
+    if (key in counts) {
+      counts[key]++;
+    }
+  }
+
+  const labels = Object.keys(counts).map((d) => {
+    const [, month, day] = d.split("-");
+    return `${month}/${day}`;
+  });
+  const data = Object.values(counts);
+
+  return { labels, data };
 }
 
-const DailyTicketSalesChart = ({
-  ticketsByDay,
+export default function DailyTicketSalesChart({
+  ticketSales,
 }: {
-  ticketsByDay: Array<{ day: string; count: number }>;
-}) => {
-  const isMobile = useIsMobile();
-  const source = ticketsByDay ?? [];
+  ticketSales: TicketSale[];
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const chartRef = useRef<Chart | null>(null);
 
-  const allLabels = source.map((d) => d.day);
-  const allData = source.map((d) => d.count);
+  useEffect(() => {
+    if (!canvasRef.current) return;
 
-  const mobileCount = 13;
-  const mobileLabels = allLabels.slice(-mobileCount);
-  const mobileData = allData.slice(-mobileCount);
+    const { labels, data } = processTicketsData(ticketSales);
 
-  const data = {
-    labels: isMobile ? mobileLabels : allLabels,
-    datasets: [
-      {
-        label: "Ventes",
-        data: isMobile ? mobileData : allData,
-        fill: {
-          target: "origin",
-          above: (context: any) => {
-            const chart = context.chart;
-            const { ctx, chartArea } = chart;
+    if (chartRef.current) {
+      chartRef.current.destroy();
+    }
 
-            if (!chartArea) return;
-
-            const gradient = ctx.createLinearGradient(
-              0,
-              chartArea.top,
-              0,
-              chartArea.bottom,
-            );
-
-            gradient.addColorStop(0, "rgba(249, 115, 22, 0.3)");
-            gradient.addColorStop(0.5, "rgba(249, 115, 22, 0.15)");
-            gradient.addColorStop(1, "rgba(249, 115, 22, 0)");
-
-            return gradient;
+    chartRef.current = new Chart(canvasRef.current, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Tickets Sold",
+            data,
+            borderColor: "#6366f1",
+            backgroundColor: "rgba(99,102,241,0.08)",
+            borderWidth: 2,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            fill: true,
+            tension: 0.4,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: (ctx) =>
+                ` ${ctx.parsed.y} ticket${ctx.parsed.y !== 1 ? "s" : ""}`,
+            },
           },
         },
-        borderColor: "#F97316",
-        borderWidth: 1.5,
-        tension: 0.3,
-        pointRadius: 0,
-        pointHoverRadius: 5,
-        pointBackgroundColor: "#F97316",
+        scales: {
+          x: {
+            grid: { display: false },
+            ticks: { maxTicksLimit: 10 },
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, precision: 0 },
+          },
+        },
       },
-    ],
-  };
+    });
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        mode: "index",
-        intersect: false,
-        callbacks: {
-          label: (context: any) =>
-            `${context.parsed.y} vente${context.parsed.y > 1 ? "s" : ""}`,
-        },
-        displayColors: false,
-        backgroundColor: "#000000",
-        titleFont: {
-          size: 10,
-          weight: "normal",
-          color: "#8F96A1",
-        },
-        bodyFont: {
-          size: 18,
-          weight: "bold",
-        },
-      },
-    },
-    scales: {
-      x: {
-        grid: {
-          display: false,
-          drawBorder: false,
-        },
-        ticks: {
-          maxRotation: 45,
-          minRotation: 0,
-          padding: 14,
-          autoSkip: isMobile ? false : true,
-          font: (context: any) => ({
-            size: isMobile ? 8 : 10,
-          }),
-          color: "#666",
-        },
-      },
-      y: {
-        beginAtZero: true,
-        grid: {
-          color: "#E5E7EB",
-          drawBorder: false,
-        },
-        border: {
-          display: false,
-        },
-        ticks: {
-          display: false,
-        },
-      },
-    },
-    interaction: {
-      mode: "nearest",
-      axis: "x",
-      intersect: false,
-    },
-  };
+    return () => chartRef.current?.destroy();
+  }, [ticketSales]);
 
-  return (
-    <div className="w-full h-70 lg:h-80">
-      <Line data={data} options={options} />
-    </div>
-  );
-};
-
-export default DailyTicketSalesChart;
+  return <canvas ref={canvasRef} />;
+}
