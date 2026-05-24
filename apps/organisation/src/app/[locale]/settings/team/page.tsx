@@ -28,9 +28,20 @@ export default async function Page() {
     session?.user.userId ?? "",
     session?.activeOrganisation.organisationId ?? "",
   );
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/team`,
-    {
+  const [teamRes, permissionsRes] = await Promise.all([
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/team`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          Authorization: `Bearer ${session?.user.accessToken}`,
+        },
+      },
+    ),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/organisations/permissions`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -38,24 +49,35 @@ export default async function Page() {
         origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
         Authorization: `Bearer ${session?.user.accessToken}`,
       },
-    },
-  );
-  const response = await request.json();
+    }),
+  ]);
+
+  const response = await teamRes.json();
+  const permissionsData = await permissionsRes.json();
+
   const members: OrganisationMember[] = response.members;
   const waitlistMembers: WaitlistMember[] = response.waitlistMembers;
+  const availablePermissions: string[] = permissionsData?.permissions ?? [];
   const totalMembers = members.length + waitlistMembers.length;
+
   return (
     <OrganizerLayout title={t("title")}>
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
         <TopBar title={t("title")}>
-          {manage && <AddMember totalMembers={totalMembers} />}
+          {manage && (
+            <AddMember
+              totalMembers={totalMembers}
+              availablePermissions={availablePermissions}
+            />
+          )}
         </TopBar>
       </div>
       <MemberList
         members={members}
         waitlistMembers={waitlistMembers}
         authorized={manage}
+        availablePermissions={availablePermissions}
       />
     </OrganizerLayout>
   );

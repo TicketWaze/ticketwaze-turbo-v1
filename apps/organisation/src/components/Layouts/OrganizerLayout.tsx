@@ -1,6 +1,7 @@
 import React from "react";
 import Sidebar from "@/components/Layouts/Sidebar";
 import MobileNavigation from "./MobileNavigation";
+import WelcomeTrialModal from "@/components/WelcomeTrialModal";
 import { cn } from "@/lib/utils";
 
 function OrganizerLayout({
@@ -14,6 +15,7 @@ function OrganizerLayout({
 }) {
   return (
     <>
+      <WelcomeTrialModal />
       <div
         className={
           "bg-neutral-200 p-6 pt-8 lg:p-8 h-dvh grid lg:grid-cols-10 overflow-hidden"
