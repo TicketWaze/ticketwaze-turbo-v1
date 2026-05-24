@@ -23,6 +23,7 @@ import { Input } from "@/components/shared/Inputs";
 import { KeyboardEvent, ChangeEvent } from "react";
 import { Warning2 } from "iconsax-reactjs";
 import { Event } from "@ticketwaze/typescript-config";
+import RichTextEditor from "@/components/shared/RichTextEditor";
 
 type Props = {
   register: UseFormRegister<EditMeetFormValues>;
@@ -46,10 +47,6 @@ export default function BasicDetails({
   event,
 }: Props) {
   const t = useTranslations("Events.create_event");
-  const [wordCount, setWordCount] = useState(0);
-  function handleWordCount(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    setWordCount(e.target.value.length);
-  }
   const availableCountries = countries.map((country) => country.name);
   const availableState = countries.map((country) => country.state).flat();
   const [selectedState, setSelectedState] = useState<string>(event.state);
@@ -108,30 +105,18 @@ export default function BasicDetails({
         >
           {t("event_name")}
         </Input>
-        <div>
-          <textarea
-            {...register("eventDescription")}
-            className={
-              "bg-neutral-100 w-full rounded-[2rem] h-[150px] resize-none p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
-            }
-            placeholder={t("description")}
-            minLength={150}
-            maxLength={350}
-            onChange={handleWordCount}
-          />
-          <div className="flex items-center justify-between">
-            <span className={"text-[1.2rem] px-8 py-2 text-failure"}>
-              {errors.eventDescription?.message}
-            </span>
-            {wordCount > 0 && (
-              <span
-                className={`text-[1.2rem] text-nowrap px-8 py-2 ${wordCount < 150 ? "text-failure" : "text-success"}`}
-              >
-                {wordCount} / 350
-              </span>
-            )}
-          </div>
-        </div>
+        <Controller
+          control={control}
+          name="eventDescription"
+          render={({ field }) => (
+            <RichTextEditor
+              value={field.value}
+              onChange={field.onChange}
+              placeholder={t("description")}
+              error={errors.eventDescription?.message}
+            />
+          )}
+        />
       </div>
 
       {/* location */}
