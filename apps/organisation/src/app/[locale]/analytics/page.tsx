@@ -377,308 +377,316 @@ export default async function AnalyticsPage() {
             </div>
           </div>
         ) : (
-          <div className={"flex flex-col gap-10 mb-6"}>
-            <h3
-              className={
-                "font-medium font-primary text-[18px] text-black lg:text-[22px]"
-              }
-            >
-              {t("feedback.title")}
-            </h3>
-            <div
-              className={"flex flex-col gap-6 lg:flex-row lg:justify-between"}
-            >
-              <div className={"flex flex-col gap-4"}>
-                <span className={"text-[14px] text-neutral-500 font-sm"}>
-                  {t("feedback.action.add_favorite")}
-                </span>
-                <p
-                  className={
-                    "font-medium text-[25px] text-black capitalize font-primary"
-                  }
-                >
-                  {analytics.favorites}
-                </p>
-              </div>
+          <>
+            <div className={"flex flex-col gap-10 mb-6"}>
+              <h3
+                className={
+                  "font-medium font-primary text-[18px] text-black lg:text-[22px]"
+                }
+              >
+                {t("feedback.title")}
+              </h3>
+              <div
+                className={"flex flex-col gap-6 lg:flex-row lg:justify-between"}
+              >
+                <div className={"flex flex-col gap-4"}>
+                  <span className={"text-[14px] text-neutral-500 font-sm"}>
+                    {t("feedback.action.add_favorite")}
+                  </span>
+                  <p
+                    className={
+                      "font-medium text-[25px] text-black capitalize font-primary"
+                    }
+                  >
+                    {analytics.favorites}
+                  </p>
+                </div>
 
-              <div className={"flex flex-col gap-4"}>
-                <span className={"text-[14px] text-neutral-500 font-sm"}>
-                  {t("feedback.action.rated")}
-                </span>
-                <div
-                  className={
-                    "flex font-medium text-[25px] capitalize font-primary"
-                  }
-                >
-                  <p className={" text-black "}>{analytics.average}</p>
-                  <span className={"text-neutral-500"}>/5</span>
+                <div className={"flex flex-col gap-4"}>
+                  <span className={"text-[14px] text-neutral-500 font-sm"}>
+                    {t("feedback.action.rated")}
+                  </span>
+                  <div
+                    className={
+                      "flex font-medium text-[25px] capitalize font-primary"
+                    }
+                  >
+                    <p className={" text-black "}>{analytics.average}</p>
+                    <span className={"text-neutral-500"}>/5</span>
+                  </div>
+                </div>
+                <div className={"flex flex-col gap-4"}>
+                  <span className={"text-[14px] text-neutral-500  font-sm"}>
+                    {t("feedback.action.reviews")}
+                  </span>
+                  <p
+                    className={
+                      "font-medium text-[25px] text-black capitalize font-primary"
+                    }
+                  >
+                    {analytics.totalReviews}
+                  </p>
                 </div>
               </div>
-              <div className={"flex flex-col gap-4"}>
-                <span className={"text-[14px] text-neutral-500  font-sm"}>
-                  {t("feedback.action.reviews")}
-                </span>
-                <p
-                  className={
-                    "font-medium text-[25px] text-black capitalize font-primary"
-                  }
-                >
-                  {analytics.totalReviews}
-                </p>
+            </div>
+            {/* ── NEW SECTIONS ── */}
+
+            {/* KPI extras: orders, avg order value, total events, past events, conversion, check-in, refund, shares */}
+            <div className="flex flex-col gap-8 lg:gap-10">
+              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
+                {t("kpi.title")}
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-neutral-100 border-b border-neutral-100">
+                <div className="px-4 py-6 lg:px-6">
+                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
+                    {t("kpi.orders")}
+                  </span>
+                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
+                    {analytics.totalOrders}
+                  </p>
+                </div>
+                <div className="px-4 py-6 lg:px-6">
+                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
+                    {t("kpi.avgOrderValue")}
+                  </span>
+                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
+                    {analytics.averageOrderValue}{" "}
+                    <span className="font-normal text-neutral-500">USD</span>
+                  </p>
+                </div>
+                <div className="px-4 py-6 lg:px-6">
+                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
+                    {t("kpi.totalEvents")}
+                  </span>
+                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
+                    {analytics.totalEvents}
+                  </p>
+                </div>
+                <div className="px-4 py-6 lg:px-6">
+                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
+                    {t("kpi.pastEvents")}
+                  </span>
+                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
+                    {analytics.pastEvents}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
+
+            {/* Engagement */}
+            <div className="flex flex-col gap-8 lg:gap-10">
+              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
+                {t("engagement.title")}
+              </h3>
+              <div className="grid grid-cols-2 lg:grid-cols-5 divide-x divide-neutral-100 border-b border-neutral-100">
+                <div className="px-4 py-6 lg:px-6">
+                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
+                    {t("engagement.views")}
+                  </span>
+                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
+                    {analytics.eventViews}
+                  </p>
+                </div>
+                <div className="px-4 py-6 lg:px-6">
+                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
+                    {t("engagement.shares")}
+                  </span>
+                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
+                    {analytics.socialShares}
+                  </p>
+                </div>
+                <div className="px-4 py-6 lg:px-6">
+                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
+                    {t("engagement.conversion")}
+                  </span>
+                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
+                    {analytics.conversionRate}
+                    <span className="font-normal text-neutral-500">%</span>
+                  </p>
+                </div>
+                <div className="px-4 py-6 lg:px-6">
+                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
+                    {t("engagement.checkIn")}
+                  </span>
+                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
+                    {analytics.checkInRate}
+                    <span className="font-normal text-neutral-500">%</span>
+                  </p>
+                </div>
+                <div className="px-4 py-6 lg:px-6">
+                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
+                    {t("engagement.refund")}
+                  </span>
+                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
+                    {analytics.refundRate}
+                    <span className="font-normal text-neutral-500">%</span>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Monthly Revenue & Tickets chart */}
+            <div className="flex flex-col gap-8 lg:gap-10">
+              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
+                {t("chart.monthly")}
+              </h3>
+              <RevenueTicketsChart
+                revenueByMonth={analytics.revenueByMonth}
+                ticketsByMonth={analytics.ticketsByMonth}
+              />
+            </div>
+
+            {/* Audience donuts */}
+            <div className="flex flex-col gap-8 lg:gap-10">
+              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
+                {t("audience.title")}
+              </h3>
+              {isFree ? (
+                <ProFeatureAlert />
+              ) : (
+                <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 border-neutral-100 lg:border-b pb-8">
+                  <div className="py-6 lg:pr-10 lg:py-0">
+                    <DonutChart
+                      title={t("audience.gender")}
+                      items={genderItems}
+                    />
+                  </div>
+                  <div className="py-6 lg:px-10 lg:py-0">
+                    <DonutChart
+                      title={t("audience.guestVsRegistered")}
+                      items={guestVsRegisteredItems}
+                    />
+                  </div>
+                  <div className="py-6 lg:pl-10 lg:py-0">
+                    <DonutChart
+                      title={t("audience.paymentProviders")}
+                      items={paymentProviderItems}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Top events by tickets & by views */}
+            <div className="flex flex-col gap-8 lg:gap-10">
+              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
+                {t("topEvents.title")}
+              </h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 border-neutral-100 lg:border-b">
+                <div className="flex flex-col gap-6 pb-8 lg:pr-10 lg:pb-10">
+                  <span className="text-[14px] font-medium font-sans text-gray-800">
+                    {t("topEvents.byTickets")}
+                  </span>
+                  {topEventsByTicketsItems.length > 0 ? (
+                    <table className="w-full border-separate border-spacing-y-3">
+                      <tbody>
+                        {topEventsByTicketsItems.map(({ label, value }, i) => {
+                          const num = parseFloat(value);
+                          return (
+                            <tr key={i}>
+                              <td className="w-24 pr-4 max-w-48">
+                                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap truncate block">
+                                  {label}
+                                </span>
+                              </td>
+                              <td className="w-full px-4">
+                                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                                    style={{
+                                      width: isNaN(num) ? "0%" : `${num}%`,
+                                    }}
+                                  />
+                                </div>
+                              </td>
+                              <td className="w-16 pl-4 text-right">
+                                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap">
+                                  {isNaN(num) ? "0%" : `${value}%`}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="flex flex-col justify-center items-center gap-4">
+                      <InfoCircle size="32" color="#D5D8DC" />
+                      <span className="font-primary text-[1.2rem] text-neutral-500">
+                        {t("noActivity")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col gap-6 pt-8 lg:pt-0 lg:pl-10 lg:pb-10">
+                  <span className="text-[14px] font-medium font-sans text-gray-800">
+                    {t("topEvents.byViews")}
+                  </span>
+                  {topEventsByViewsItems.length > 0 ? (
+                    <table className="w-full border-separate border-spacing-y-3">
+                      <tbody>
+                        {topEventsByViewsItems.map(({ label, value }, i) => {
+                          const num = parseFloat(value);
+                          return (
+                            <tr key={i}>
+                              <td className="w-24 pr-4 max-w-48">
+                                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap truncate block">
+                                  {label}
+                                </span>
+                              </td>
+                              <td className="w-full px-4">
+                                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                                  <div
+                                    className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                                    style={{
+                                      width: isNaN(num) ? "0%" : `${num}%`,
+                                    }}
+                                  />
+                                </div>
+                              </td>
+                              <td className="w-16 pl-4 text-right">
+                                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap">
+                                  {isNaN(num) ? "0%" : `${value}%`}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <div className="flex flex-col justify-center items-center gap-4">
+                      <InfoCircle size="32" color="#D5D8DC" />
+                      <span className="font-primary text-[1.2rem] text-neutral-500">
+                        {t("noActivity")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Reviews / Star rating */}
+            <div className="flex flex-col gap-8 lg:gap-10">
+              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
+                {t("reviews.title")}
+              </h3>
+              {isFree ? (
+                <ProFeatureAlert />
+              ) : (
+                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-16 border-b border-neutral-100 pb-10">
+                  <div className="flex-1">
+                    <StarRatingChart
+                      distribution={analytics.reviewDistribution}
+                      average={analytics.average}
+                      total={analytics.totalReviews}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
         )}
-
-        {/* ── NEW SECTIONS ── */}
-
-        {/* KPI extras: orders, avg order value, total events, past events, conversion, check-in, refund, shares */}
-        <div className="flex flex-col gap-8 lg:gap-10">
-          <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-            {t("kpi.title")}
-          </h3>
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-neutral-100 border-b border-neutral-100">
-            <div className="px-4 py-6 lg:px-6">
-              <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                {t("kpi.orders")}
-              </span>
-              <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                {analytics.totalOrders}
-              </p>
-            </div>
-            <div className="px-4 py-6 lg:px-6">
-              <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                {t("kpi.avgOrderValue")}
-              </span>
-              <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                {analytics.averageOrderValue}{" "}
-                <span className="font-normal text-neutral-500">USD</span>
-              </p>
-            </div>
-            <div className="px-4 py-6 lg:px-6">
-              <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                {t("kpi.totalEvents")}
-              </span>
-              <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                {analytics.totalEvents}
-              </p>
-            </div>
-            <div className="px-4 py-6 lg:px-6">
-              <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                {t("kpi.pastEvents")}
-              </span>
-              <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                {analytics.pastEvents}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Engagement */}
-        <div className="flex flex-col gap-8 lg:gap-10">
-          <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-            {t("engagement.title")}
-          </h3>
-          <div className="grid grid-cols-2 lg:grid-cols-5 divide-x divide-neutral-100 border-b border-neutral-100">
-            <div className="px-4 py-6 lg:px-6">
-              <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                {t("engagement.views")}
-              </span>
-              <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                {analytics.eventViews}
-              </p>
-            </div>
-            <div className="px-4 py-6 lg:px-6">
-              <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                {t("engagement.shares")}
-              </span>
-              <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                {analytics.socialShares}
-              </p>
-            </div>
-            <div className="px-4 py-6 lg:px-6">
-              <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                {t("engagement.conversion")}
-              </span>
-              <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                {analytics.conversionRate}
-                <span className="font-normal text-neutral-500">%</span>
-              </p>
-            </div>
-            <div className="px-4 py-6 lg:px-6">
-              <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                {t("engagement.checkIn")}
-              </span>
-              <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                {analytics.checkInRate}
-                <span className="font-normal text-neutral-500">%</span>
-              </p>
-            </div>
-            <div className="px-4 py-6 lg:px-6">
-              <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                {t("engagement.refund")}
-              </span>
-              <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                {analytics.refundRate}
-                <span className="font-normal text-neutral-500">%</span>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Monthly Revenue & Tickets chart */}
-        <div className="flex flex-col gap-8 lg:gap-10">
-          <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-            {t("chart.monthly")}
-          </h3>
-          <RevenueTicketsChart
-            revenueByMonth={analytics.revenueByMonth}
-            ticketsByMonth={analytics.ticketsByMonth}
-          />
-        </div>
-
-        {/* Audience donuts */}
-        <div className="flex flex-col gap-8 lg:gap-10">
-          <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-            {t("audience.title")}
-          </h3>
-          {isFree ? (
-            <ProFeatureAlert />
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 border-neutral-100 lg:border-b pb-8">
-              <div className="py-6 lg:pr-10 lg:py-0">
-                <DonutChart title={t("audience.gender")} items={genderItems} />
-              </div>
-              <div className="py-6 lg:px-10 lg:py-0">
-                <DonutChart
-                  title={t("audience.guestVsRegistered")}
-                  items={guestVsRegisteredItems}
-                />
-              </div>
-              <div className="py-6 lg:pl-10 lg:py-0">
-                <DonutChart
-                  title={t("audience.paymentProviders")}
-                  items={paymentProviderItems}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Top events by tickets & by views */}
-        <div className="flex flex-col gap-8 lg:gap-10">
-          <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-            {t("topEvents.title")}
-          </h3>
-          <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 border-neutral-100 lg:border-b">
-            <div className="flex flex-col gap-6 pb-8 lg:pr-10 lg:pb-10">
-              <span className="text-[14px] font-medium font-sans text-gray-800">
-                {t("topEvents.byTickets")}
-              </span>
-              {topEventsByTicketsItems.length > 0 ? (
-                <table className="w-full border-separate border-spacing-y-3">
-                  <tbody>
-                    {topEventsByTicketsItems.map(({ label, value }, i) => {
-                      const num = parseFloat(value);
-                      return (
-                        <tr key={i}>
-                          <td className="w-24 pr-4 max-w-48">
-                            <span className="text-[14px] font-sans text-black-100 whitespace-nowrap truncate block">
-                              {label}
-                            </span>
-                          </td>
-                          <td className="w-full px-4">
-                            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-amber-500 rounded-full transition-all duration-500"
-                                style={{ width: isNaN(num) ? "0%" : `${num}%` }}
-                              />
-                            </div>
-                          </td>
-                          <td className="w-16 pl-4 text-right">
-                            <span className="text-[14px] font-sans text-black-100 whitespace-nowrap">
-                              {isNaN(num) ? "0%" : `${value}%`}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="flex flex-col justify-center items-center gap-4">
-                  <InfoCircle size="32" color="#D5D8DC" />
-                  <span className="font-primary text-[1.2rem] text-neutral-500">
-                    {t("noActivity")}
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-col gap-6 pt-8 lg:pt-0 lg:pl-10 lg:pb-10">
-              <span className="text-[14px] font-medium font-sans text-gray-800">
-                {t("topEvents.byViews")}
-              </span>
-              {topEventsByViewsItems.length > 0 ? (
-                <table className="w-full border-separate border-spacing-y-3">
-                  <tbody>
-                    {topEventsByViewsItems.map(({ label, value }, i) => {
-                      const num = parseFloat(value);
-                      return (
-                        <tr key={i}>
-                          <td className="w-24 pr-4 max-w-48">
-                            <span className="text-[14px] font-sans text-black-100 whitespace-nowrap truncate block">
-                              {label}
-                            </span>
-                          </td>
-                          <td className="w-full px-4">
-                            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                              <div
-                                className="h-full bg-amber-500 rounded-full transition-all duration-500"
-                                style={{ width: isNaN(num) ? "0%" : `${num}%` }}
-                              />
-                            </div>
-                          </td>
-                          <td className="w-16 pl-4 text-right">
-                            <span className="text-[14px] font-sans text-black-100 whitespace-nowrap">
-                              {isNaN(num) ? "0%" : `${value}%`}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              ) : (
-                <div className="flex flex-col justify-center items-center gap-4">
-                  <InfoCircle size="32" color="#D5D8DC" />
-                  <span className="font-primary text-[1.2rem] text-neutral-500">
-                    {t("noActivity")}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Reviews / Star rating */}
-        <div className="flex flex-col gap-8 lg:gap-10">
-          <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-            {t("reviews.title")}
-          </h3>
-          {isFree ? (
-            <ProFeatureAlert />
-          ) : (
-            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-16 border-b border-neutral-100 pb-10">
-              <div className="flex-1">
-                <StarRatingChart
-                  distribution={analytics.reviewDistribution}
-                  average={analytics.average}
-                  total={analytics.totalReviews}
-                />
-              </div>
-            </div>
-          )}
-        </div>
 
         <div></div>
       </div>

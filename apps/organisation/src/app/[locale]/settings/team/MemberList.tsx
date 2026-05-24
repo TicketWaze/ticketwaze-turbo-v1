@@ -40,10 +40,12 @@ export default function MemberList({
   members,
   waitlistMembers,
   authorized,
+  availablePermissions,
 }: {
   members: OrganisationMember[];
   waitlistMembers: WaitlistMember[];
   authorized: boolean;
+  availablePermissions: string[];
 }) {
   const t = useTranslations("Settings.team");
   const { data: session } = useSession();
@@ -110,7 +112,7 @@ export default function MemberList({
                       )}
                     </span>
                   </DrawerTrigger>
-                  <UserInformation member={member} authorized={authorized} />
+                  <UserInformation member={member} authorized={authorized} availablePermissions={availablePermissions} />
                 </Drawer>
               </TableCell>
               <TableCell
@@ -122,15 +124,22 @@ export default function MemberList({
                   <DrawerTrigger>
                     <span className={"cursor-pointer"}>{member.email}</span>
                   </DrawerTrigger>
-                  <UserInformation member={member} authorized={authorized} />
+                  <UserInformation member={member} authorized={authorized} availablePermissions={availablePermissions} />
                 </Drawer>
               </TableCell>
               <TableCell
                 className={
-                  "text-[1.5rem]  font-medium leading-8 text-neutral-900"
+                  "text-[1.5rem] font-medium leading-8 text-neutral-900"
                 }
               >
-                {member.role}
+                <span className="flex items-center gap-2">
+                  {member.role}
+                  {member.hasCustomPermissions && (
+                    <span className="py-[.2rem] px-2 text-[1rem] font-bold uppercase rounded-full bg-primary-50 text-primary-500">
+                      {t("customPermissions")}
+                    </span>
+                  )}
+                </span>
               </TableCell>
               <TableCell className={"hidden lg:table-cell"}>
                 <span
@@ -192,7 +201,10 @@ export default function MemberList({
                                     color={"#E45B00"}
                                   />
                                 </DialogTrigger>
-                                <EditMemberDialogContent member={member} />
+                                <EditMemberDialogContent
+                                  member={member}
+                                  availablePermissions={availablePermissions}
+                                />
                               </Dialog>
                             </li>
                             <li>

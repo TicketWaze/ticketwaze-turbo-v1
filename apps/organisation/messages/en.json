@@ -920,6 +920,41 @@
       }
     }
   },
+  "WelcomeModal": {
+    "next": "Next",
+    "back": "Back",
+    "getStarted": "Get started",
+    "skipTrial": "Maybe later",
+    "steps": {
+      "welcome": {
+        "title": "Welcome to Ticketwaze!",
+        "description": "We're excited to have you here. Ticketwaze is built to help you grow your organisation, sell tickets effortlessly, and connect with your audience — all in one place."
+      },
+      "activities": {
+        "title": "Create & manage activities",
+        "description": "Easily create in-person activities, Google Meet sessions and more. Set ticket classes, add performers, apply discount codes, and track attendance in real time."
+      },
+      "finance": {
+        "title": "Stay on top of your finances",
+        "description": "Monitor your revenue, view detailed transaction history, and request withdrawals directly to your bank or MonCash account. Everything you need to manage your earnings is right here."
+      },
+      "team": {
+        "title": "Build and manage your team",
+        "description": "Invite collaborators, assign roles, and manage access permissions. Whether it's a co-organiser or a ticket checker, your whole team can work together seamlessly."
+      },
+      "profile": {
+        "title": "Set up your organisation profile",
+        "description": "Head to Organisation Settings to customise your profile — add your logo, a description, your website, and social links. A great profile builds trust with your attendees."
+      },
+      "trial": {
+        "title": "Your 14-day Pro trial is active!",
+        "description": "To help you get the most out of Ticketwaze, we've unlocked a free 14-day Pro trial for your organisation. No credit card needed.",
+        "feature1": "14 days of full Pro access — completely free",
+        "feature2": "Advanced analytics to track sales & audience",
+        "feature3": "Up to 300 free tickets per activity & custom types"
+      }
+    }
+  },
   "Settings": {
     "title": "Settings",
     "help": "Help",
@@ -1039,6 +1074,36 @@
         "status": "Status"
       },
       "requiresAccount": "The person you're inviting must already have a Ticketwaze account.",
+      "permissions": "Permissions",
+      "customPermissions": "Custom",
+      "preset": "Quick presets",
+      "resetToPreset": "Reset to role preset",
+      "apply": "Apply",
+      "save": "Save",
+      "selectAll": "Select all",
+      "deselectAll": "Deselect all",
+      "permissionsSelected": "permissions selected",
+      "permissionsSaved": "Permissions updated",
+      "selectPermission": "Select at least one permission",
+      "noPermissions": "No permissions assigned",
+      "groups": {
+        "organisation": "Organisation",
+        "billing": "Billing",
+        "staff": "Staff",
+        "events": "Events",
+        "tickets": "Tickets",
+        "attendees": "Attendees",
+        "finance": "Finance",
+        "reports": "Reports",
+        "discounts": "Discounts",
+        "other": "Other"
+      },
+      "presets": {
+        "Staff": "Staff",
+        "FinanceManager": "Finance Manager",
+        "EventManager": "Event Manager",
+        "Admin": "Admin"
+      },
       "errors": {
         "name": "Name cannot be blank",
         "email": "Enter a valid email address"
@@ -1066,7 +1131,7 @@
       "enable": "Enable"
     },
     "payment": {
-      "title": "Payment",
+      "title": "Banking",
       "edit": "Edit",
       "save": "Save",
       "back": "Back",

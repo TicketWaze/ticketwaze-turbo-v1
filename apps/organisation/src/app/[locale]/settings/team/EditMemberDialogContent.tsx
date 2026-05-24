@@ -1,5 +1,5 @@
-/* eslint-disable react-hooks/refs */
 "use client";
+import { useState } from "react";
 import {
   DialogContent,
   DialogDescription,
@@ -16,51 +16,75 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useLocale, useTranslations } from "next-intl";
-import * as z from "zod";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import GetRoleName from "@/lib/GetRoleName";
-import { EditMemberAction } from "@/actions/organisationActions";
+import { EditMemberAction, UpdateMemberPermissionsAction } from "@/actions/organisationActions";
 import { useSession } from "next-auth/react";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { toast } from "sonner";
 import { OrganisationMember } from "@ticketwaze/typescript-config";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import PermissionPicker from "./PermissionPicker";
+import { ROLE_NAMES } from "@/lib/permissionConfig";
 
 export default function EditMemberDialogContent({
   member,
+  availablePermissions,
 }: {
   member: OrganisationMember;
+  availablePermissions: string[];
 }) {
   const t = useTranslations("Settings.team");
   const locale = useLocale();
-  const AddMemberSchema = z.object({
-    role: z.string().min(1).max(1),
-  });
-  type TAddMemberSchema = z.infer<typeof AddMemberSchema>;
-  const { control, handleSubmit } = useForm<TAddMemberSchema>({
-    resolver: zodResolver(AddMemberSchema),
-    values: {
-      role: member.role,
-    },
-  });
   const { data: session } = useSession();
-  const organisation = session?.activeOrganisation;
   const CloseDialogRef = useRef<HTMLButtonElement>(null);
+
   const [isLoading, setIsLoading] = useState(false);
-  async function submitHandler(data: TAddMemberSchema) {
-    setIsLoading(true);
+  const [isResetting, setIsResetting] = useState(false);
+  const [selectedPermissions, setSelectedPermissions] = useState<string[]>(
+    member.permissions ?? [],
+  );
+  const [resetRole, setResetRole] = useState<string>("");
+
+  const orgId = session?.activeOrganisation?.organisationId ?? "";
+  const token = session?.user.accessToken ?? "";
+
+  async function savePermissions() {
     if (session?.user.email === member.email) {
       toast.warning(t("noSelfChange"));
-      setIsLoading(false);
-      CloseDialogRef.current?.click();
       return;
     }
-    const result = await EditMemberAction(
-      organisation?.organisationId ?? "",
+    if (selectedPermissions.length === 0) {
+      toast.warning(t("selectPermission"));
+      return;
+    }
+    setIsLoading(true);
+    const result = await UpdateMemberPermissionsAction(
+      orgId,
       member.userId,
-      session?.user.accessToken ?? "",
-      data.role,
+      token,
+      selectedPermissions,
+      locale,
+    );
+    if (result?.status === "success") {
+      toast.success(t("permissionsSaved"));
+    } else {
+      toast.error(result?.error);
+    }
+    setIsLoading(false);
+    CloseDialogRef.current?.click();
+  }
+
+  async function resetToPreset() {
+    if (!resetRole) return;
+    if (session?.user.email === member.email) {
+      toast.warning(t("noSelfChange"));
+      return;
+    }
+    setIsResetting(true);
+    const result = await EditMemberAction(
+      orgId,
+      member.userId,
+      token,
+      resetRole,
       locale,
     );
     if (result?.status === "success") {
@@ -68,69 +92,78 @@ export default function EditMemberDialogContent({
     } else {
       toast.error(result?.error);
     }
-    setIsLoading(false);
+    setIsResetting(false);
     CloseDialogRef.current?.click();
   }
+
   return (
-    <DialogContent className={"w-xl lg:w-208 "}>
-      <DialogHeader>
-        <DialogTitle
-          className={
-            "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
-          }
-        >
-          {t("edit")}
-        </DialogTitle>
-        <DialogDescription className={"sr-only"}>
-          <span>Add Member</span>
-        </DialogDescription>
-      </DialogHeader>
-      <form
-        className={
-          "flex flex-col w-auto justify-center items-center pt-12 gap-12"
-        }
-      >
-        <div className={"w-full flex flex-col gap-6"}>
-          <div>
-            <Controller
-              name="role"
-              control={control}
-              render={({ field }) => (
-                <Select onValueChange={field.onChange}>
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[3rem] p-10 border-none text-[1.4rem] text-neutral-700 leading-8">
-                    <SelectValue placeholder={t("table.role")} />
-                  </SelectTrigger>
-                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                    <SelectGroup className={"divide-y"}>
-                      {Array.from({ length: 4 }).map((_, index) => {
-                        return (
-                          <SelectItem
-                            key={index}
-                            className={"text-[1.4rem] text-deep-100"}
-                            value={(index + 1).toString()}
-                          >
-                            {GetRoleName(index + 1)}
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              )}
-            />
+    <DialogContent className="w-[360px] lg:w-[580px] h-[90dvh] flex flex-col gap-0 p-0 lg:p-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-y-auto px-[20px] pt-[20px] lg:px-[30px] lg:pt-[45px] pb-4 flex flex-col gap-6">
+        <DialogHeader>
+          <DialogTitle className="font-medium border-b border-neutral-100 pb-8 text-[2.6rem] leading-12 text-black font-primary">
+            {t("edit")}
+          </DialogTitle>
+          <DialogDescription className="sr-only">Edit member</DialogDescription>
+        </DialogHeader>
+
+        {/* Custom permissions section */}
+        <div className="flex flex-col gap-3">
+          <p className="text-[1.4rem] font-medium text-neutral-700">
+            {t("permissions")}
+          </p>
+          <PermissionPicker
+            availablePermissions={availablePermissions}
+            selected={selectedPermissions}
+            onChange={setSelectedPermissions}
+          />
+        </div>
+
+        {/* Reset to preset section */}
+        <div className="flex flex-col gap-3 border-t border-neutral-100 pt-4">
+          <p className="text-[1.3rem] font-medium text-neutral-500">
+            {t("resetToPreset")}
+          </p>
+          <div className="flex gap-3 items-center">
+            <Select onValueChange={setResetRole} value={resetRole}>
+              <SelectTrigger className="flex-1 bg-neutral-100 rounded-[3rem] px-6 py-4 border-none text-[1.4rem] text-neutral-700 leading-8">
+                <SelectValue placeholder={t("table.role")} />
+              </SelectTrigger>
+              <SelectContent className="bg-neutral-100 text-[1.4rem]">
+                <SelectGroup>
+                  {Object.entries(ROLE_NAMES).map(([num, name]) => (
+                    <SelectItem
+                      key={num}
+                      className="text-[1.4rem] text-deep-100"
+                      value={num}
+                    >
+                      {name}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            <button
+              type="button"
+              onClick={resetToPreset}
+              disabled={!resetRole || isResetting}
+              className="px-8 py-4 rounded-[3rem] bg-neutral-200 text-neutral-700 text-[1.4rem] font-medium disabled:opacity-40 hover:bg-neutral-300 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              {isResetting ? <LoadingCircleSmall /> : t("apply")}
+            </button>
           </div>
         </div>
-        <DialogClose ref={CloseDialogRef} className="w-full">
-          <span
-            onClick={handleSubmit(submitHandler)}
-            className={
-              "w-full bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 hover:border-primary-600 px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
-            }
-          >
-            {isLoading ? <LoadingCircleSmall /> : t("edit")}
-          </span>
-        </DialogClose>
-      </form>
+      </div>
+
+      <div className="px-[20px] pb-[20px] lg:px-[30px] lg:pb-[45px] pt-4">
+        <DialogClose ref={CloseDialogRef} className="sr-only" />
+        <button
+          onClick={savePermissions}
+          disabled={isLoading}
+          className="w-full bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 hover:border-primary-600 px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
+        >
+          {isLoading ? <LoadingCircleSmall /> : t("save")}
+        </button>
+      </div>
     </DialogContent>
   );
 }

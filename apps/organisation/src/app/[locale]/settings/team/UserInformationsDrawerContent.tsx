@@ -13,13 +13,16 @@ import { useSession } from "next-auth/react";
 import RemoveMember from "./RemoveMember";
 import { OrganisationMember } from "@ticketwaze/typescript-config";
 import Separator from "@/components/shared/Separator";
+import { PERMISSION_LABELS } from "@/lib/permissionConfig";
 
 export default function UserInformation({
   member,
   authorized,
+  availablePermissions = [],
 }: {
   member: OrganisationMember;
   authorized: boolean;
+  availablePermissions?: string[];
 }) {
   const t = useTranslations("Settings.team");
   const locale = useLocale();
@@ -68,14 +71,39 @@ export default function UserInformation({
               }
             >
               {t("table.role")}
-              <span
-                aria-hidden
-                className={"text-deep-100 font-medium leading-8"}
-              >
+              <span aria-hidden className="flex items-center gap-2 text-deep-100 font-medium leading-8">
                 {member.role}
+                {member.hasCustomPermissions && (
+                  <span className="py-[.2rem] px-2 text-[1rem] font-bold uppercase rounded-full bg-primary-50 text-primary-500">
+                    {t("customPermissions")}
+                  </span>
+                )}
               </span>
             </span>
           </span>
+
+          {/* Permissions section */}
+          {member.permissions?.length > 0 && (
+            <>
+              <Separator />
+              <span className="w-full flex flex-col gap-4">
+                <span className="text-[1.4rem] leading-8 text-neutral-600 font-medium">
+                  {t("permissions")}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {member.permissions.map((perm) => (
+                    <span
+                      key={perm}
+                      className="py-[.3rem] px-3 text-[1.1rem] font-medium rounded-full bg-neutral-100 text-neutral-700"
+                    >
+                      {PERMISSION_LABELS[perm] ?? perm}
+                    </span>
+                  ))}
+                </div>
+              </span>
+            </>
+          )}
+
           <Separator />
           <span className={"w-full flex flex-col gap-8"}>
             <span
@@ -157,7 +185,10 @@ export default function UserInformation({
                   {t("edit")}
                 </span>
               </DialogTrigger>
-              <EditMemberDialogContent member={member} />
+              <EditMemberDialogContent
+                member={member}
+                availablePermissions={availablePermissions}
+              />
             </Dialog>
           </div>
         </DrawerFooter>

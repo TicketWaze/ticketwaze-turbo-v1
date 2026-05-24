@@ -239,6 +239,42 @@ export async function AddMemberAction(
   }
 }
 
+export async function UpdateMemberPermissionsAction(
+  organisationId: string,
+  userId: string,
+  accessToken: string,
+  permissions: string[],
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/member-permissions/${userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify({ permissions }),
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath("/settings/team");
+      return { status: "success" };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function EditMemberAction(
   organisationId: string,
   userId: string,

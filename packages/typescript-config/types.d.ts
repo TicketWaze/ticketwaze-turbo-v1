@@ -114,6 +114,8 @@ export interface OrganisationMember {
   addedBy: string;
   joinedAt: DateTime;
   lastLogin: DateTime;
+  permissions: string[];
+  hasCustomPermissions: boolean;
 }
 
 export interface Organisation {

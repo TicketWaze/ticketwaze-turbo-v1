@@ -915,6 +915,41 @@
       }
     }
   },
+  "WelcomeModal": {
+    "next": "Suivant",
+    "back": "Retour",
+    "getStarted": "Commencer",
+    "skipTrial": "Peut-être plus tard",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue sur Ticketwaze !",
+        "description": "Nous sommes ravis de vous accueillir. Ticketwaze est conçu pour vous aider à développer votre organisation, vendre des billets facilement et connecter avec votre public — tout en un seul endroit."
+      },
+      "activities": {
+        "title": "Créez et gérez vos activités",
+        "description": "Créez facilement des activités en présentiel, des sessions Google Meet rt plus. Définissez des catégories de billets, ajoutez des intervenants, appliquez des codes de réduction et suivez les inscriptions en temps réel."
+      },
+      "finance": {
+        "title": "Maîtrisez vos finances",
+        "description": "Suivez vos revenus, consultez l'historique détaillé de vos transactions et effectuez des demandes de retrait vers votre compte bancaire ou MonCash. Tout ce dont vous avez besoin est ici."
+      },
+      "team": {
+        "title": "Constituez et gérez votre équipe",
+        "description": "Invitez des collaborateurs, attribuez des rôles et gérez les accès. Que ce soit un co-organisateur ou un vérificateur de billets, toute votre équipe peut travailler ensemble en toute simplicité."
+      },
+      "profile": {
+        "title": "Configurez votre profil d'organisation",
+        "description": "Rendez-vous dans les Paramètres pour personnaliser votre profil — ajoutez votre logo, une description, votre site web et vos réseaux sociaux. Un bon profil inspire confiance à vos participants."
+      },
+      "trial": {
+        "title": "Votre essai Pro de 14 jours est actif !",
+        "description": "Pour vous aider à tirer le meilleur de Ticketwaze, nous avons débloqué un essai Pro gratuit de 14 jours pour votre organisation. Aucune carte bancaire requise.",
+        "feature1": "14 jours d'accès Pro complet — entièrement gratuit",
+        "feature2": "Analyses avancées pour suivre vos ventes et votre audience",
+        "feature3": "Jusqu'à 300 billets gratuits par activité & types personnalisés"
+      }
+    }
+  },
   "Settings": {
     "title": "Paramètres",
     "help": "Aide",
@@ -1034,6 +1069,36 @@
         "status": "Statut"
       },
       "requiresAccount": "La personne que vous invitez doit déjà posséder un compte Ticketwaze.",
+      "permissions": "Permissions",
+      "customPermissions": "Personnalisé",
+      "preset": "Préréglages rapides",
+      "resetToPreset": "Réinitialiser au rôle prédéfini",
+      "apply": "Appliquer",
+      "save": "Enregistrer",
+      "selectAll": "Tout sélectionner",
+      "deselectAll": "Tout désélectionner",
+      "permissionsSelected": "permissions sélectionnées",
+      "permissionsSaved": "Permissions mises à jour",
+      "selectPermission": "Sélectionnez au moins une permission",
+      "noPermissions": "Aucune permission attribuée",
+      "groups": {
+        "organisation": "Organisation",
+        "billing": "Facturation",
+        "staff": "Personnel",
+        "events": "Activités",
+        "tickets": "Billets",
+        "attendees": "Participants",
+        "finance": "Finance",
+        "reports": "Rapports",
+        "discounts": "Remises",
+        "other": "Autre"
+      },
+      "presets": {
+        "Staff": "Personnel",
+        "FinanceManager": "Gestionnaire financier",
+        "EventManager": "Gestionnaire d'activités",
+        "Admin": "Administrateur"
+      },
       "errors": {
         "name": "Le nom ne peut pas être vide",
         "email": "Saisissez une adresse e-mail valide"
@@ -1061,7 +1126,7 @@
       "enable": "Activer"
     },
     "payment": {
-      "title": "Paiement",
+      "title": "Banque",
       "edit": "Modifier",
       "save": "Sauvegarder",
       "back": "Retour",
