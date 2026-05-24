@@ -175,9 +175,10 @@ export default async function UpcomingEventPage({
             <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
               {t("about")}
             </span>
-            <p className="text-[1.5rem] leading-12 text-neutral-700">
-              {event.eventDescription}
-            </p>
+            <div
+              className="rich-text text-[1.5rem] leading-8 text-neutral-700"
+              dangerouslySetInnerHTML={{ __html: event.eventDescription }}
+            />
           </div>
 
           <Separator />

@@ -182,8 +182,26 @@ export default function EditInPersonEventForm({
   const [showConfirm, setShowConfirm] = useState(false);
 
   const next = async () => {
-    const fields = steps[currentStep]?.fields;
-    const output = await trigger(fields as FieldName[], { shouldFocus: true });
+    let fields: FieldName[];
+    if (currentStep === 1) {
+      const dayCount = getValues("eventDays").length;
+      fields = Array.from({ length: dayCount }, (_, i) => [
+        `eventDays.${i}.eventDate` as FieldName,
+        `eventDays.${i}.startTime` as FieldName,
+        `eventDays.${i}.endTime` as FieldName,
+      ]).flat();
+    } else if (currentStep === 2) {
+      const ticketCount = getValues("ticketTypes").length;
+      fields = Array.from({ length: ticketCount }, (_, i) => [
+        `ticketTypes.${i}.ticketTypeName` as FieldName,
+        `ticketTypes.${i}.ticketTypeDescription` as FieldName,
+        `ticketTypes.${i}.ticketTypePrice` as FieldName,
+        `ticketTypes.${i}.ticketTypeQuantity` as FieldName,
+      ]).flat();
+    } else {
+      fields = steps[currentStep]?.fields as FieldName[];
+    }
+    const output = await trigger(fields, { shouldFocus: true });
     if (!output) return;
     if (currentStep === steps.length - 1) {
       const hasChanges =

@@ -268,7 +268,7 @@ export default function StepTicket({
                       {currency}
                     </span>
                   </div>
-                  <span className="text-[1.2rem] lg:hidden px-8 py-2 text-failure">
+                  <span className="text-[1.2rem] px-8 py-2 text-failure">
                     {errors?.ticketTypes?.[index]?.ticketTypePrice?.message}
                   </span>
                 </div>
@@ -283,7 +283,7 @@ export default function StepTicket({
                       `ticketTypes.${index}.ticketTypeQuantity` as const,
                     )}
                   />
-                  <span className="text-[1.2rem] lg:hidden px-8 py-2 text-failure">
+                  <span className="text-[1.2rem] px-8 py-2 text-failure">
                     {errors?.ticketTypes?.[index]?.ticketTypeQuantity?.message}
                   </span>
                 </div>

@@ -58,9 +58,10 @@ export default function EventDrawerContent({ event }: { event: Event }) {
                   {t("about")}
                 </span>
               </div>
-              <p className={"text-[1.5rem] text-neutral-700"}>
-                {event.eventDescription}
-              </p>
+              <div
+                className="rich-text text-[1.5rem] leading-8 text-neutral-700"
+                dangerouslySetInnerHTML={{ __html: event.eventDescription }}
+              />
             </div>
             <div className={"w-full flex flex-col gap-[1.5rem] justify-start"}>
               <span

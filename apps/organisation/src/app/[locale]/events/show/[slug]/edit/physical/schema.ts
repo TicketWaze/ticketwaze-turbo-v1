@@ -13,8 +13,14 @@ export function makeEditInPersonSchema(isFree: boolean, t: TranslateFn) {
     eventName: z.string().min(10, t("errors.basicDetails.name")).max(150),
     eventDescription: z
       .string()
-      .min(150, t("errors.basicDetails.description.min"))
-      .max(350, t("errors.basicDetails.description.max")),
+      .refine(
+        (v) => v.replace(/<[^>]*>/g, "").trim().length >= 150,
+        t("errors.basicDetails.description.min"),
+      )
+      .refine(
+        (v) => v.replace(/<[^>]*>/g, "").trim().length <= 3000,
+        t("errors.basicDetails.description.max"),
+      ),
     address: z.string().min(1, t("errors.basicDetails.address")),
     state: z.string().min(1, t("errors.basicDetails.state")),
     city: z.string().min(1, t("errors.basicDetails.city")),
