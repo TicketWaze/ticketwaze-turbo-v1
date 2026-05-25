@@ -10,16 +10,8 @@ import {
   UseFormGetValues,
 } from "react-hook-form";
 import Image from "next/image";
-import {
-  Select,
-  SelectContent,
-  SelectTrigger,
-  SelectValue,
-  SelectItem,
-} from "@/components/ui/select";
 import type { CreateMeetFormValues } from "./types";
 import { useTranslations } from "next-intl";
-import countries from "@/lib/Countries";
 import { Input } from "@/components/shared/Inputs";
 import { KeyboardEvent, ChangeEvent } from "react";
 import { Warning2 } from "iconsax-reactjs";
@@ -46,10 +38,6 @@ export default function BasicDetails({
   getValues,
 }: Props) {
   const t = useTranslations("Events.create_event");
-  const availableCountries = countries.map((country) => country.name);
-  const availableState = countries.map((country) => country.state).flat();
-  const [selectedState, setSelectedState] = useState<string>();
-  const cities = availableState.filter((state) => state.name === selectedState);
 
   // tags handler
   const [tags, setTags] = useState<string[]>(getValues("activityTags"));
@@ -116,133 +104,6 @@ export default function BasicDetails({
             />
           )}
         />
-      </div>
-
-      {/* location */}
-      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
-          {t("location")}
-        </span>
-        <Input
-          {...register("address")}
-          type="text"
-          error={errors.address?.message}
-        >
-          {t("address")}
-        </Input>
-        <div>
-          <Controller
-            control={control}
-            name="country"
-            render={({ field }) => (
-              <Select
-                {...field}
-                value={field.value}
-                onValueChange={field.onChange}
-                defaultValue={availableCountries[0]}
-              >
-                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
-                  <SelectValue placeholder={t("country")} />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableCountries.map((country) => {
-                    return (
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        key={country}
-                        value={country}
-                      >
-                        {country}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.country && (
-            <span className="text-[1.2rem] px-8 py-2 text-failure">
-              {errors.country?.message}
-            </span>
-          )}
-        </div>
-        <div className="flex flex-col lg:flex-row w-full gap-6 items-center justify-between">
-          <div className="flex-1 w-full">
-            <Controller
-              control={control}
-              name="state"
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  value={field.value}
-                  onValueChange={(e) => {
-                    field.onChange(e);
-                    setSelectedState(e);
-                    setValue("city", "");
-                  }}
-                  defaultValue={"sud"}
-                >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
-                    <SelectValue placeholder={t("state")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableState.map((state, i) => {
-                      return (
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          key={i}
-                          value={state.name}
-                        >
-                          {state.name}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.state && (
-              <span className="text-[1.2rem] px-8 py-2 text-failure">
-                {errors.state?.message}
-              </span>
-            )}
-          </div>
-          <div className="flex-1 w-full">
-            <Controller
-              control={control}
-              name="city"
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
-                    <SelectValue placeholder={t("city")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {cities[0]?.cities.map((city, i) => {
-                      return (
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          key={i}
-                          value={city}
-                        >
-                          {city}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.city && (
-              <span className="text-[1.2rem] px-8 py-2 text-failure">
-                {errors.city?.message}
-              </span>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* tags */}

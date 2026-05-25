@@ -556,6 +556,10 @@
     "subtitle": "Welcome Back ",
     "search": "Search for activity",
     "description": "You haven’t attended any activities yet. Once you join an activity, it will appear here for you to revisit your past experiences.",
+    "unavailable": {
+      "title": "History is on its way",
+      "description": "We’re connecting this section to our API. Your full activity history will be available here very soon — hang tight!"
+    },
     "activity": {
       "card": {
         "name": "Cap-Haïtien Jazz Festival",
@@ -922,6 +926,40 @@
       "about": "About organisation",
       "contact": "Contact Information",
       "noResult": "There's no result for "
+    }
+  },
+  "WelcomeModal": {
+    "next": "Next",
+    "explore": "Explore Ticketwaze",
+    "steps": {
+      "welcome": {
+        "title": "Welcome to Ticketwaze!",
+        "description": "Concerts, workshops, sports events and more — every ticket for every category, all in one place. Your seamless experience starts right here."
+      },
+      "tickets": {
+        "title": "All your tickets, one place",
+        "description": "Every ticket you purchase is safely stored in your account. Tap Upcoming in the sidebar to instantly access your next experience — no inbox digging needed."
+      },
+      "history": {
+        "title": "Your full ticket history",
+        "description": "Keep a complete record of every event you've attended. Browse past tickets, re-download them anytime, and leave ratings for the activities you loved."
+      },
+      "security": {
+        "title": "Your safety, our priority",
+        "description": "Bought a ticket for a cancelled or fraudulent activity? We've got you covered. Eligible orders are automatically flagged and processed for a full refund."
+      },
+      "transactions": {
+        "title": "Track every payment",
+        "description": "View your complete transaction history, see exactly what you paid and when, and keep a clear record of all your purchases — all in the Wallet section."
+      },
+      "profile": {
+        "title": "Your profile, your identity",
+        "description": "Update your personal information, set a profile picture, and manage your preferences anytime from the Profile section."
+      },
+      "invite": {
+        "title": "Invite friends & earn rewards",
+        "description": "Share your referral link with friends. When they sign up and buy their first ticket, you both earn rewards — check your Wallet to see your balance grow."
+      }
     }
   }
 }

@@ -1,10 +1,11 @@
 "use client";
 import LogoSimpleOrange from "@ticketwaze/ui/assets/images/logo-simple-orange.svg";
+import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
+import { I24Support, Logout } from "iconsax-reactjs";
 import Image from "next/image";
 
 export default function GlobalError({
   error,
-  reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -28,28 +29,10 @@ export default function GlobalError({
           .anim-fade-in-up  { animation: fadeInUp  0.65s ease-out forwards; }
           .anim-pulse-ring  { animation: pulseRing  2.8s ease-in-out infinite; }
           .anim-float       { animation: float      3.2s ease-in-out infinite; }
-          .btn-primary {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            flex: 1; width: 100%; padding: 16px 24px;
-            background: #e45b00; color: #fff; border-radius: 100px;
-            font-size: 1.5rem; font-weight: 500; cursor: pointer; border: none;
-            transition: background 0.2s;
-          }
-          .btn-primary:hover { background: #c94f00; }
-          .btn-black {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            flex: 1; width: 100%; padding: 16px 24px;
-            background: #0d0d0d; color: #fff; border-radius: 100px;
-            font-size: 1.5rem; font-weight: 500; cursor: pointer; border: none;
-            transition: background 0.2s;
-          }
-          .btn-black:hover { background: #333; }
-          .btn-row { display: flex; flex-direction: column; gap: 12px; width: 100%; }
-          @media (min-width: 1024px) { .btn-row { flex-direction: row; } }
         `}</style>
 
         <div className="bg-white rounded-[3rem] h-full w-full flex flex-col items-center justify-center">
-          <div className="max-w-[580px] mx-auto flex flex-col gap-12 p-6 items-center anim-fade-in-up">
+          <div className="max-w-[580px] mx-auto flex flex-col gap-12 p-6 lg:p-10 items-center anim-fade-in-up">
 
             {/* Animated logo bubble */}
             <div className="anim-float">
@@ -66,25 +49,30 @@ export default function GlobalError({
                 Oups, quelque chose s&apos;est mal passé
               </h1>
               <p className="text-[1.5rem] leading-[2.6rem] text-neutral-600">
-                Une erreur est survenue lors du traitement de votre paiement.
-                Vérifiez votre connexion internet et réessayez. Si le problème
-                persiste, contactez notre équipe de support.
+                Une erreur inattendue s&apos;est produite. Vérifiez votre
+                connexion internet et réessayez. Si le problème persiste,
+                notre équipe de support est disponible pour vous aider.
               </p>
             </div>
 
             {/* Actions */}
-            <div className="btn-row">
-              <button className="btn-primary" onClick={reset}>
-                Réessayer
-              </button>
-              <button
-                className="btn-black"
+            <div className="w-full flex flex-col lg:flex-row items-center gap-6">
+              <ButtonPrimary
+                onClick={() => (window.location.href = "/auth/login")}
+                className="flex-1 w-full flex items-center gap-4"
+              >
+                <Logout size="24" color="#fff" variant="Bulk" />
+                Se déconnecter
+              </ButtonPrimary>
+              <ButtonBlack
                 onClick={() =>
                   (window.location.href = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`)
                 }
+                className="flex-1 w-full flex items-center gap-4"
               >
+                <I24Support size="24" color="#fff" variant="Bulk" />
                 Contacter le support
-              </button>
+              </ButtonBlack>
             </div>
 
             {error.message && (

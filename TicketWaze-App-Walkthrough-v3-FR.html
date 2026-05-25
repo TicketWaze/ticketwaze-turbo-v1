@@ -192,6 +192,8 @@
         <li><a href="#att-profile">Profil utilisateur &amp; Préférences</a></li>
         <li><a href="#att-wallet">Portefeuille &amp; Transactions</a></li>
         <li><a href="#att-deletion">Avis de suppression d'activité</a></li>
+        <li><a href="#att-welcome">Modal de bienvenue</a></li>
+        <li><a href="#att-unavailable">Page temporairement indisponible</a></li>
       </ol>
     </li>
     <li><a href="#org">Application Organisation</a>
@@ -456,6 +458,44 @@
 </ul>
 
 
+<h2 id="att-welcome">2.10 Modal de bienvenue</h2>
+<p>
+  À leur première connexion, les nouveaux participants voient une modale de bienvenue animée qui se parcourt étape par étape.
+  La modale n'est affichée qu'une seule fois : une fois fermée ou complétée, elle ne réapparaît plus (état persisté via
+  <code>hasSeenWelcomeModal</code> sur le profil utilisateur).
+</p>
+<ul>
+  <li><strong>Étape 1 – Bienvenue :</strong> logo Ticketwaze et message d'accueil — présente la plateforme comme une destination unique pour tous types de billets et toutes catégories d'activités.</li>
+  <li><strong>Étape 2 – Tous vos billets :</strong> explique que chaque billet acheté est conservé dans le compte et accessible depuis la section "À venir".</li>
+  <li><strong>Étape 3 – Historique :</strong> présente la section Historique pour retrouver toutes les activités passées, re-télécharger les billets et laisser des avis.</li>
+  <li><strong>Étape 4 – Sécurité :</strong> rassure l'utilisateur sur la protection contre les activités annulées ou frauduleuses — remboursement automatique des commandes éligibles.</li>
+  <li><strong>Étape 5 – Transactions :</strong> présente la section Wallet pour suivre l'intégralité des paiements effectués.</li>
+  <li><strong>Étape 6 – Profil :</strong> invite l'utilisateur à compléter son profil, ajouter une photo et gérer ses préférences.</li>
+  <li><strong>Étape 7 – Invitation &amp; Récompenses :</strong> présente le programme de parrainage — partager un lien de parrainage rapporte des récompenses au portefeuille lorsqu'un ami effectue son premier achat. Le bouton de cette dernière étape redirige vers la page Explorer.</li>
+</ul>
+<p>
+  La navigation entre étapes utilise une animation de glissement horizontal. Des indicateurs de progression (points) sont affichés en bas de la modale.
+  L'API expose deux routes pour gérer l'état :
+  <code>GET /users/me/welcome-modal</code> (vérifier si déjà vu) et <code>PUT /users/me/welcome-modal</code> (marquer comme vu).
+</p>
+
+<hr>
+
+<h2 id="att-unavailable">2.11 Page temporairement indisponible</h2>
+<p>
+  Certaines sections de l'application participant ne sont pas encore connectées à l'API backend. Plutôt qu'une erreur brute,
+  un composant dédié <strong>TemporarilyUnavailable</strong> est affiché à la place du contenu.
+</p>
+<ul>
+  <li>Trois anneaux SVG concentriques animés en orbite autour du logo Ticketwaze (rotation à des vitesses et directions différentes — 12 s sens horaire, 7 s sens anti-horaire, 2,5 s sens horaire).</li>
+  <li>Chaque anneau possède un point plein à son extrémité qui "tire" l'arc derrière lui, créant un effet orbital.</li>
+  <li>Le logo Ticketwaze au centre pulse doucement.</li>
+  <li>Un titre et une description contextuels informent l'utilisateur que la section sera disponible prochainement.</li>
+  <li><strong>Historique des activités</strong> – section actuellement en attente de connexion API ; le composant TemporarilyUnavailable est affiché à la place de la liste d'activités passées. La bascule <code>apiConnected</code> dans le code permettra d'activer la section réelle dès que l'API sera prête.</li>
+</ul>
+
+<hr>
+
 <!-- ==================== 3. APPLICATION ORGANISATION ==================== -->
 <h1 id="org">3. Application Organisation</h1>
 <p>
@@ -483,7 +523,7 @@
 <h3>Activité en présentiel</h3>
 <ul>
   <li>
-    <strong>Étape 1 – Informations de base :</strong> nom, description, catégorie (17 disponibles), image de couverture avec outil de recadrage intégré au navigateur, adresse physique avec sélecteur de carte, tags, gestion des intervenants/artistes, et visibilité (publique ou privée/sur invitation).
+    <strong>Étape 1 – Informations de base :</strong> nom, description enrichie (éditeur de texte riche avec mise en forme), catégorie (17 disponibles), image de couverture avec outil de recadrage intégré au navigateur, localisation avec <strong>sélecteurs en cascade</strong> (pays → département → ville, chaque champ se déverrouille et se filtre en fonction de la sélection précédente), sélecteur de carte Google Maps, tags, gestion des intervenants/artistes, et visibilité (publique ou privée/sur invitation).
   </li>
   <li>
     <strong>Étape 2 – Dates &amp; Horaires :</strong> un ou plusieurs jours d'activité, chacun avec son heure de début, heure de fin et fuseau horaire. Le niveau d'adhésion limite le nombre de jours autorisés.
@@ -833,7 +873,25 @@
   <li>Bannières d'alerte intégrées pour les avis persistants importants.</li>
   <li>Boîtes de dialogue modales pour la confirmation des actions destructrices.</li>
   <li>Transitions de page animées sur les formulaires multi-étapes.</li>
-  <li>États de chargement squelette, illustrations d'états vides et validation de formulaire en temps réel.</li>
+  <li>États de chargement squelette sur les pages à contenu riche (explore, organisateurs, etc.).</li>
+  <li>Validation de formulaire en temps réel et illustrations d'états vides.</li>
+  <li>
+    <strong>Écrans de chargement animés</strong> – les pages sans squelette spécifique affichent une animation de logo Ticketwaze :
+    trois anneaux SVG concentriques (pointillés) orbitant autour du logo à des vitesses et directions alternées,
+    avec un point plein à l'avant de chaque anneau pour un effet orbital. Le logo pulse au centre.
+    Utilisé sur : détail d'activité, billet à venir, paramètres, activités aimées et paiement.
+  </li>
+  <li>
+    <strong>Pages d'erreur globales redessinées</strong> – toutes les applications (participant, organisation, admin, site web, paiement)
+    disposent d'une page d'erreur globale cohérente avec : logo Ticketwaze dans une bulle animée (fondu à l'entrée,
+    pulsation de l'anneau, flottement), texte en français clair ("Oups, quelque chose s'est mal passé"),
+    et boutons d'action contextuels (se déconnecter / contacter le support, réessayer pour le paiement,
+    retour à l'accueil pour le site web).
+  </li>
+  <li>
+    <strong>Composant "Page temporairement indisponible"</strong> – affiché sur les sections en attente de connexion API,
+    avec la même animation orbitale que les écrans de chargement et un message contextuel par page.
+  </li>
 </ul>
 
 <h2>Recherche &amp; Filtrage</h2>
