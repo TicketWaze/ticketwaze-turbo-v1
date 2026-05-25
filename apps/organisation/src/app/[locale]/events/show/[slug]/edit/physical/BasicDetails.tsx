@@ -51,9 +51,13 @@ export default function BasicDetails({
 }: Props) {
   const t = useTranslations("Events.create_event");
   const availableCountries = countries.map((country) => country.name);
-  const availableState = countries.map((country) => country.state).flat();
-  const [selectedState, setSelectedState] = useState<string>(event.state);
-  const cities = availableState.filter((state) => state.name === selectedState);
+  const [selectedCountry, setSelectedCountry] = useState<string>(getValues("country") ?? "");
+  const [selectedState, setSelectedState] = useState<string>(getValues("state") ?? "");
+
+  const availableStates =
+    countries.find((c) => c.name === selectedCountry)?.state ?? [];
+  const availableCities =
+    availableStates.find((s) => s.name === selectedState)?.cities ?? [];
 
   // tags handler
   const [tags, setTags] = useState<string[]>(getValues("activityTags"));
@@ -142,8 +146,13 @@ export default function BasicDetails({
               <Select
                 {...field}
                 value={field.value}
-                onValueChange={field.onChange}
-                defaultValue={availableCountries[0]}
+                onValueChange={(value) => {
+                  field.onChange(value);
+                  setSelectedCountry(value);
+                  setSelectedState("");
+                  setValue("state", "");
+                  setValue("city", "");
+                }}
               >
                 <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
                   <SelectValue placeholder={t("country")} />
@@ -184,13 +193,13 @@ export default function BasicDetails({
                     setSelectedState(e);
                     setValue("city", "");
                   }}
-                  defaultValue={"sud"}
+                  disabled={!selectedCountry}
                 >
                   <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
                     <SelectValue placeholder={t("state")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableState.map((state, i) => {
+                    {availableStates.map((state, i) => {
                       return (
                         <SelectItem
                           className={"text-[1.4rem] text-deep-100"}
@@ -220,12 +229,13 @@ export default function BasicDetails({
                   {...field}
                   value={field.value}
                   onValueChange={field.onChange}
+                  disabled={!selectedState}
                 >
                   <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
                     <SelectValue placeholder={t("city")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {cities[0]?.cities.map((city, i) => {
+                    {availableCities.map((city, i) => {
                       return (
                         <SelectItem
                           className={"text-[1.4rem] text-deep-100"}
