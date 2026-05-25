@@ -50,8 +50,8 @@ export default function BasicDetails({
 }: Props) {
   const t = useTranslations("Events.create_event");
   const availableCountries = countries.map((country) => country.name);
-  const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [selectedState, setSelectedState] = useState<string>("");
+  const [selectedCountry, setSelectedCountry] = useState<string>(getValues("country") ?? "");
+  const [selectedState, setSelectedState] = useState<string>(getValues("state") ?? "");
 
   const availableStates =
     countries.find((c) => c.name === selectedCountry)?.state ?? [];
