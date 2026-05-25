@@ -85,7 +85,7 @@ export default function UpcomingPageContent({ events }: { events: any }) {
           )}
         </div>
       </header>
-      <ul className="list pt-4">
+      <ul className="list pt-4 overflow-y-scroll">
         {filteredEvents.map((event: any) => {
           const today = DateTime.now();
           const eventStart = event.eventDays?.[0]?.eventDate
