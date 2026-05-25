@@ -1,9 +1,9 @@
 import HistoryCard from "@/components/HistoryCard";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
+import TemporarilyUnavailable from "@/components/shared/TemporarilyUnavailable";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/lib/auth";
 import Rema from "@ticketwaze/ui/assets/images/rema.png";
-import { Clock } from "iconsax-reactjs";
 import { getLocale, getTranslations } from "next-intl/server";
 
 export default async function HistoryPage() {
@@ -13,7 +13,9 @@ export default async function HistoryPage() {
     redirect({ href: "/auth/login", locale });
   }
   const t = await getTranslations("History");
-  const history = true;
+
+  // Flip to `true` once the history API endpoint is wired up.
+  const apiConnected = false;
 
   return (
     <AttendeeLayout title="HistoryPage" className="overflow-x-hidden">
@@ -87,7 +89,7 @@ export default async function HistoryPage() {
         </header>
 
         {/* main */}
-        {history ? (
+        {apiConnected ? (
           <ul className="list pt-4 w-full overflow-y-auto lg:-mx-4 px-4 pb-8 flex flex-col gap-4">
             {Array.from({ length: 5 }).map((_, index) => {
               const randomStars = Math.floor(Math.random() * 5) + 1;
@@ -106,35 +108,10 @@ export default async function HistoryPage() {
             })}
           </ul>
         ) : (
-          // no history
-          <div
-            className={
-              "w-132 lg:w-184 mx-auto flex flex-col h-full justify-center items-center gap-20"
-            }
-          >
-            <div
-              className={
-                "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
-              }
-            >
-              <div
-                className={
-                  "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
-                }
-              >
-                <Clock size="50" color="#0d0d0d" variant="Bulk" />
-              </div>
-            </div>
-            <div className={"flex flex-col gap-12 items-center text-center"}>
-              <p
-                className={
-                  "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
-                }
-              >
-                {t("description")}
-              </p>
-            </div>
-          </div>
+          <TemporarilyUnavailable
+            title={t("unavailable.title")}
+            description={t("unavailable.description")}
+          />
         )}
       </>
     </AttendeeLayout>

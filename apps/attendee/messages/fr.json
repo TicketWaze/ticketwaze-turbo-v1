@@ -594,6 +594,10 @@
     "subtitle": "Bon retour ",
     "search": "Rechercher une activité",
     "description": "Vous n'avez encore participé à aucune activité. Une fois que vous rejoignez une activité, elle apparaîtra ici pour retrouver vos expériences passées.",
+    "unavailable": {
+      "title": "L'historique arrive bientôt",
+      "description": "Nous connectons cette section à notre API. Votre historique d'activités complet sera disponible ici très prochainement — restez connecté !"
+    },
     "activity": {
       "card": {
         "name": "Festival de Jazz de Cap-Haïtien",
@@ -960,6 +964,40 @@
       "about": "À propos de l'organisation",
       "contact": "Informations de contact",
       "noResult": "Il n'y a aucun résultat pour "
+    }
+  },
+  "WelcomeModal": {
+    "next": "Suivant",
+    "explore": "Explorer Ticketwaze",
+    "steps": {
+      "welcome": {
+        "title": "Bienvenue sur Ticketwaze !",
+        "description": "Concerts, ateliers, événements sportifs et bien plus encore — tous vos billets, toutes les catégories, dans une seule application. Votre expérience sans friction commence maintenant."
+      },
+      "tickets": {
+        "title": "Tous vos billets au même endroit",
+        "description": "Chaque billet acheté est conservé en sécurité dans votre compte. Appuyez sur À venir dans le menu pour accéder instantanément à votre prochaine activité."
+      },
+      "history": {
+        "title": "Votre historique de billets",
+        "description": "Gardez une trace complète de chaque événement auquel vous avez participé. Retrouvez vos anciens billets, téléchargez-les à nouveau et notez les activités que vous avez aimées."
+      },
+      "security": {
+        "title": "Votre sécurité, notre priorité",
+        "description": "Vous avez acheté un billet pour une activité annulée ou frauduleuse ? Nous vous protégeons. Les commandes éligibles sont automatiquement signalées et traitées pour un remboursement complet."
+      },
+      "transactions": {
+        "title": "Suivez chaque paiement",
+        "description": "Consultez votre historique complet de transactions, vérifiez ce que vous avez payé et quand, et gardez une vue claire de tous vos achats depuis la section Wallet."
+      },
+      "profile": {
+        "title": "Votre profil, votre identité",
+        "description": "Mettez à jour vos informations personnelles, définissez une photo de profil et gérez vos préférences à tout moment depuis la section Profil."
+      },
+      "invite": {
+        "title": "Invitez des amis, gagnez des récompenses",
+        "description": "Partagez votre lien de parrainage avec vos amis. Lorsqu'ils s'inscrivent et achètent leur premier billet, vous gagnez tous les deux des récompenses — consultez votre Wallet pour voir votre solde."
+      }
     }
   }
 }

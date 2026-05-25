@@ -93,6 +93,7 @@ export default function WelcomeTrialModal() {
     )
       .then((r) => r.json())
       .then((data) => {
+        console.log(data);
         if (data?.hasSeenWelcomeModal === false) setOpen(true);
       })
       .catch(() => {});

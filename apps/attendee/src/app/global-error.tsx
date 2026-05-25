@@ -1,7 +1,7 @@
 "use client";
-import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-orange.svg";
+import LogoSimpleOrange from "@ticketwaze/ui/assets/images/logo-simple-orange.svg";
 import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
-import { I24Support, Logout, Warning2 } from "iconsax-reactjs";
+import { I24Support, Logout } from "iconsax-reactjs";
 import Image from "next/image";
 
 export default function GlobalError({
@@ -13,45 +13,56 @@ export default function GlobalError({
   return (
     <html>
       <body className="w-full h-dvh overflow-hidden flex flex-col items-center justify-center bg-neutral-200 p-8">
+        <style>{`
+          @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(32px); }
+            to   { opacity: 1; transform: translateY(0);    }
+          }
+          @keyframes pulseRing {
+            0%, 100% { transform: scale(1);    opacity: 1;   }
+            50%       { transform: scale(1.07); opacity: 0.75; }
+          }
+          @keyframes float {
+            0%, 100% { transform: translateY(0px);  }
+            50%       { transform: translateY(-10px); }
+          }
+          .anim-fade-in-up  { animation: fadeInUp  0.65s ease-out forwards; }
+          .anim-pulse-ring  { animation: pulseRing  2.8s ease-in-out infinite; }
+          .anim-float       { animation: float      3.2s ease-in-out infinite; }
+        `}</style>
+
         <div className="bg-white rounded-[3rem] h-full w-full flex flex-col items-center justify-center">
-          <div className="max-w-280 mx-auto overflow-y-scroll flex flex-col gap-16 p-4 lg:p-8 items-center ">
-            <Image src={Logo} alt="Ticketwaze" />
-            <div
-              className={
-                " h-full w-full justify-center mx-auto flex flex-col items-center gap-12"
-              }
-            >
-              <div
-                className={
-                  "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
-                }
-              >
-                <div
-                  className={
-                    "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
-                  }
-                >
-                  <Warning2 size="50" color="#0d0d0d" variant="Bulk" />
+          <div className="max-w-[580px] mx-auto flex flex-col gap-12 p-6 lg:p-10 items-center anim-fade-in-up">
+
+            {/* Animated logo bubble */}
+            <div className="anim-float">
+              <div className="w-[180px] h-[180px] rounded-full flex items-center justify-center bg-orange-50 anim-pulse-ring">
+                <div className="w-[136px] h-[136px] rounded-full flex items-center justify-center bg-orange-100">
+                  <Image src={LogoSimpleOrange} alt="Ticketwaze" width={72} />
                 </div>
               </div>
-              <div className={"flex flex-col gap-12 items-center text-center"}>
-                <p className={"text-[1.8rem] leading-10 text-neutral-600 "}>
-                  Something went wrong while processing your request. This may
-                  be due to a temporary issue, a weak internet connection, or an
-                  unexpected error in the system. Please try again after a short
-                  while. If the problem continues, check your connection and
-                  restart the app. For further assistance, you can reach out to
-                  our support team, who will be happy to help resolve the issue.
-                </p>
-              </div>
             </div>
+
+            {/* Message */}
+            <div className="flex flex-col gap-5 items-center text-center">
+              <h1 className="text-[2.2rem] font-bold leading-snug text-deep-100">
+                Oups, quelque chose s&apos;est mal passé
+              </h1>
+              <p className="text-[1.5rem] leading-[2.6rem] text-neutral-600">
+                Une erreur inattendue s&apos;est produite. Vérifiez votre
+                connexion internet et réessayez. Si le problème persiste,
+                notre équipe de support est disponible pour vous aider.
+              </p>
+            </div>
+
+            {/* Actions */}
             <div className="w-full flex flex-col lg:flex-row items-center gap-6">
               <ButtonPrimary
                 onClick={() => (window.location.href = "/")}
                 className="flex-1 w-full flex items-center gap-4"
               >
                 <Logout size="24" color="#fff" variant="Bulk" />
-                Refresh
+                Actualiser la page
               </ButtonPrimary>
               <ButtonBlack
                 onClick={() =>
@@ -60,12 +71,15 @@ export default function GlobalError({
                 className="flex-1 w-full flex items-center gap-4"
               >
                 <I24Support size="24" color="#fff" variant="Bulk" />
-                Support
+                Contacter le support
               </ButtonBlack>
             </div>
-            <p className="text-[1rem] text-failure leading-8">
-              {error.message}
-            </p>
+
+            {error.message && (
+              <p className="text-[1rem] text-failure leading-8 text-center">
+                {error.message}
+              </p>
+            )}
           </div>
         </div>
       </body>

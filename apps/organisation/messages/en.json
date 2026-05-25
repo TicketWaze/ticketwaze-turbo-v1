@@ -34,9 +34,40 @@
         "next": "Next",
         "submit": "Submit",
         "started": "Let's begin",
-        "finish": "Explore Ticketwaze",
+        "finish": "Finish setup",
+        "finishing": "Setting up your workspace...",
+        "skip": "Skip for now",
         "error": "Please select an option",
         "onboarded": "User already onboarded",
+        "success": {
+          "title": "You're all set!",
+          "description": "Taking you to your dashboard..."
+        },
+        "steps": {
+          "name": {
+            "title": "What's your organisation called?",
+            "description": "You can update this anytime from your settings.",
+            "placeholder": "Organisation name"
+          },
+          "type": {
+            "title": "What type of organisation are you?"
+          },
+          "volume": {
+            "title": "How many events do you run per year?",
+            "description": "This helps us tailor your experience."
+          },
+          "activities": {
+            "title": "What kinds of activities do you host?",
+            "description": "Select everything that applies.",
+            "error": "Please select at least one activity type."
+          },
+          "business": {
+            "title": "What's your business structure?"
+          },
+          "goal": {
+            "title": "What's your main goal for the next 12 months?"
+          }
+        },
         "first": {
           "question": "What is the name of your organisation?"
         },

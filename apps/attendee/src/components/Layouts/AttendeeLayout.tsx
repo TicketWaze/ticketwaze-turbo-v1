@@ -3,6 +3,7 @@ import Sidebar from "@/components/Layouts/Sidebar";
 import MobileNavigation from "./MobileNavigation";
 import Head from "next/head";
 import { cn } from "@/lib/utils";
+import WelcomeModal from "@/components/WelcomeModal";
 
 function AttendeeLayout({
   title,
@@ -18,6 +19,7 @@ function AttendeeLayout({
       <Head>
         <title>{title} - Ticketwaze</title>
       </Head>
+      <WelcomeModal />
       <div
         className={
           "bg-neutral-200 p-6 pt-8 lg:p-8 h-dvh grid lg:grid-cols-12 overflow-hidden"

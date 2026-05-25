@@ -4,7 +4,6 @@ import Image from "next/image";
 
 export default function GlobalError({
   error,
-  reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -49,7 +48,7 @@ export default function GlobalError({
         `}</style>
 
         <div className="bg-white rounded-[3rem] h-full w-full flex flex-col items-center justify-center">
-          <div className="max-w-[580px] mx-auto flex flex-col gap-12 p-6 items-center anim-fade-in-up">
+          <div className="max-w-[580px] mx-auto flex flex-col gap-12 p-6 lg:p-10 items-center anim-fade-in-up">
 
             {/* Animated logo bubble */}
             <div className="anim-float">
@@ -66,22 +65,23 @@ export default function GlobalError({
                 Oups, quelque chose s&apos;est mal passé
               </h1>
               <p className="text-[1.5rem] leading-[2.6rem] text-neutral-600">
-                Une erreur est survenue lors du traitement de votre paiement.
-                Vérifiez votre connexion internet et réessayez. Si le problème
-                persiste, contactez notre équipe de support.
+                Une erreur inattendue s&apos;est produite. Vérifiez votre
+                connexion internet et réessayez. Si le problème persiste,
+                notre équipe de support est disponible pour vous aider.
               </p>
             </div>
 
             {/* Actions */}
             <div className="btn-row">
-              <button className="btn-primary" onClick={reset}>
-                Réessayer
+              <button
+                className="btn-primary"
+                onClick={() => (window.location.href = "/")}
+              >
+                Retour à l&apos;accueil
               </button>
               <button
                 className="btn-black"
-                onClick={() =>
-                  (window.location.href = `${process.env.NEXT_PUBLIC_WEBSITE_URL}/contact`)
-                }
+                onClick={() => (window.location.href = "/contact")}
               >
                 Contacter le support
               </button>

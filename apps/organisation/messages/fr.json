@@ -34,9 +34,40 @@
         "next": "Suivant",
         "submit": "Valider",
         "started": "Commençons",
-        "finish": "Explorer Ticketwaze",
+        "finish": "Terminer la configuration",
+        "finishing": "Configuration de votre espace...",
+        "skip": "Passer pour l'instant",
         "error": "Veuillez sélectionner une option",
         "onboarded": "Utilisateur déjà enregistré",
+        "success": {
+          "title": "Tout est prêt !",
+          "description": "Vous allez être redirigé vers votre tableau de bord..."
+        },
+        "steps": {
+          "name": {
+            "title": "Comment s'appelle votre organisation ?",
+            "description": "Vous pouvez le modifier à tout moment depuis vos paramètres.",
+            "placeholder": "Nom de l'organisation"
+          },
+          "type": {
+            "title": "Quel type d'organisation êtes-vous ?"
+          },
+          "volume": {
+            "title": "Combien d'événements organisez-vous par an ?",
+            "description": "Cela nous aide à personnaliser votre expérience."
+          },
+          "activities": {
+            "title": "Quels types d'activités organisez-vous ?",
+            "description": "Sélectionnez tout ce qui s'applique.",
+            "error": "Veuillez sélectionner au moins un type d'activité."
+          },
+          "business": {
+            "title": "Quelle est votre structure juridique ?"
+          },
+          "goal": {
+            "title": "Quel est votre principal objectif pour les 12 prochains mois ?"
+          }
+        },
         "first": {
           "question": "Quel est le nom de votre organisation ?"
         },

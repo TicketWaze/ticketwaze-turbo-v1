@@ -59,16 +59,7 @@ export default function CreateMeetEventForm({
   const steps = [
     {
       name: t("basic"),
-      fields: [
-        "eventName",
-        "eventDescription",
-        "address",
-        "state",
-        "city",
-        "country",
-        "activityTags",
-        "eventImage",
-      ],
+      fields: ["eventName", "eventDescription", "activityTags", "eventImage"],
     },
     { name: t("date_time"), fields: ["eventDays"] },
     { name: t("ticket"), fields: ["ticketTypes"] },
@@ -91,10 +82,6 @@ export default function CreateMeetEventForm({
     defaultValues: {
       eventName: "",
       eventDescription: "",
-      address: "",
-      state: "",
-      city: "",
-      country: "Haiti",
       eventImage: undefined as unknown as File,
       eventDays: [
         {
@@ -125,10 +112,6 @@ export default function CreateMeetEventForm({
     const formData = new FormData();
     formData.append("eventName", data.eventName);
     formData.append("eventDescription", data.eventDescription);
-    formData.append("address", data.address);
-    formData.append("state", data.state);
-    formData.append("city", data.city);
-    formData.append("country", data.country);
     formData.append("eventImage", data.eventImage);
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
@@ -198,10 +181,6 @@ export default function CreateMeetEventForm({
       const formData = new FormData();
       formData.append("eventName", getValues("eventName"));
       formData.append("eventDescription", getValues("eventDescription"));
-      formData.append("address", getValues("address"));
-      formData.append("state", getValues("state"));
-      formData.append("city", getValues("city"));
-      formData.append("country", getValues("country"));
       formData.append("eventImage", getValues("eventImage"));
       formData.append("eventType", eventType);
       formData.append(

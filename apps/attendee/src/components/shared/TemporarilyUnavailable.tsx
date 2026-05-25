@@ -1,12 +1,13 @@
-import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import Image from "next/image";
 
-export default function Loading() {
+type Props = {
+  title?: string;
+  description?: string;
+};
+
+export default function TemporarilyUnavailable({ title, description }: Props) {
   return (
-    <AttendeeLayout
-      title=""
-      className="h-full flex items-center justify-center"
-    >
+    <div className="flex flex-col items-center justify-center h-full gap-14 select-none">
       {/* ── Animated logo ── */}
       <div className="relative w-[280px] h-[280px] flex items-center justify-center">
         {/*
@@ -102,9 +103,7 @@ export default function Loading() {
         {/* ── Center: nested circles + pulsing logo ── */}
         <div
           className="absolute w-[130px] h-[130px] rounded-full flex items-center justify-center"
-          style={{
-            background: "radial-gradient(circle, #fff7f0 0%, #ffe8d6 100%)",
-          }}
+          style={{ background: "radial-gradient(circle, #fff7f0 0%, #ffe8d6 100%)" }}
         >
           <div className="w-[96px] h-[96px] rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
             <Image
@@ -118,6 +117,16 @@ export default function Loading() {
           </div>
         </div>
       </div>
-    </AttendeeLayout>
+
+      {/* ── Text ── */}
+      <div className="flex flex-col gap-4 items-center text-center max-w-[38rem] px-4">
+        <h2 className="text-[2rem] font-semibold leading-snug text-deep-100">
+          {title}
+        </h2>
+        <p className="text-[1.45rem] leading-[2.5rem] text-neutral-500">
+          {description}
+        </p>
+      </div>
+    </div>
   );
 }

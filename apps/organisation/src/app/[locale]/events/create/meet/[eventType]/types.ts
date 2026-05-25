@@ -16,10 +16,6 @@ export type EventDay = {
 export type CreateMeetFormValues = {
   eventName: string;
   eventDescription: string;
-  address: string;
-  state: string;
-  city: string;
-  country: string;
   eventImage: File;
   eventDays: EventDay[];
   activityTags: string[];
