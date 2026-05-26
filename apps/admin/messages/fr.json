@@ -689,5 +689,95 @@
       }
     }
   },
-  "attendees": {}
+
+  "Attendees": {
+    "title": "Aperçu des participants",
+    "total": "Total des participants",
+    "active": "Participants actifs",
+    "repeat": "Participants réguliers",
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "status": "Tous les statuts",
+      "time": "Toute la période"
+    },
+    "attendees_list": {
+      "title": "Liste des participants",
+      "table": {
+        "name": "Nom",
+        "email": "Email",
+        "phone": "Téléphone",
+        "activity_count": "Nombre d'activités",
+        "status": "Statut",
+        "joined": "Date d'inscription"
+      },
+      "no_history": "Une fois que les participants commencent à s'inscrire, acheter des billets et rejoindre des activités, ils apparaîtront ici."
+    },
+    "profile": {
+      "title": "Profil utilisateur",
+      "back": "Retour",
+      "button": {
+        "suspend": "Suspendre le compte",
+        "edit": "Modifier le profil"
+      },
+      "change_profile": "Changer la photo de profil",
+      "information": "Informations personnelles",
+      "summary": {
+        "title": "Résumé des activités",
+        "count": "Nombre d'activités",
+        "total_ticket_bought": "Total des billets achetés",
+        "missed": "Nombre d'activités manquées",
+        "total_spent": "Total dépensé",
+        "joined_on": "Inscrit le"
+      },
+      "ticket_history": {
+        "title": "Historique des billets",
+        "table": {
+          "name": "Nom de l'activité",
+          "class": "Classe du billet",
+          "amount": "Montant payé",
+          "status": "Statut d'enregistrement",
+          "purchase": "Date d'achat"
+        },
+        "filters": {
+          "status": "Tous les statuts",
+          "period": "Toute la période"
+        },
+        "tickets": {
+          "general": "Général",
+          "vip": "VIP",
+          "premium": "VIP Premium"
+        },
+        "status": {
+          "check-in": "Enregistré"
+        }
+      },
+      "Ticket": {
+        "details": {
+          "title": "Détails du billet",
+          "attendee": "Nom du participant",
+          "mail": "Email",
+          "activity": "Nom de l'activité",
+          "date": "Date",
+          "time": "Heure",
+          "location": "Lieu",
+          "class": "Classe du billet",
+          "price": "Prix",
+          "id": "ID du billet",
+          "total": "Total",
+          "transaction_id": "ID de transaction",
+          "payment_method": "Méthode de paiement",
+          "payment_date": "Date de paiement",
+          "transaction_status": "Statut de la transaction",
+          "check_status": "Statut d'enregistrement",
+          "check_time": "Heure d'enregistrement"
+        },
+        "cta": {
+          "close": "Fermer",
+          "resend": "Renvoyer le billet"
+        }
+      }
+    }
+  }
 }
