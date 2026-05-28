@@ -695,5 +695,94 @@
     }
   },
 
-  "attendees": {}
+  "Attendees": {
+    "title": "Attendees Overview",
+    "total": "Total Attendees",
+    "active": "Active Attendees",
+    "repeat": "Repeat Attendees",
+    "filters": {
+      "period": {
+        "actual": "Ce mois-ci"
+      },
+      "status": "All status",
+      "time": "All time"
+    },
+    "attendees_list": {
+      "title": "Attendees list",
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "activity_count": "Activity Count",
+        "status": "Status",
+        "joined": "Date Joined"
+      },
+      "no_history": "Once attendees start signing up, buying tickets and joining activities, they’ll appear here."
+    },
+    "profile": {
+      "title": "User Profile",
+      "back": "Back",
+      "button": {
+        "suspend": "Suspend account",
+        "edit": "Edit profile"
+      },
+      "change_profile": "Change profile image",
+      "information": "Personal Information",
+      "summary": {
+        "title": "Activity Summary",
+        "count": "Activity count",
+        "total_ticket_bought": "Total tickets bought",
+        "missed": "Number of activities missed",
+        "total_spent": "Total spent",
+        "joined_on": "Joined On"
+      },
+      "ticket_history": {
+        "title": "Ticket History",
+        "table": {
+          "name": "Activity name",
+          "class": "Ticket class",
+          "amount": "Amount paid",
+          "status": "Ckeck-in status",
+          "purchase": "Purchase date"
+        },
+        "filters": {
+          "status": "All status",
+          "period": "All time"
+        },
+        "tickets": {
+          "general": "General",
+          "vip": "Vip",
+          "premium": "Premium Vip"
+        },
+        "status": {
+          "check-in": "Check-in"
+        }
+      },
+      "Ticket": {
+        "details": {
+          "title": "Ticket Details",
+          "attendee": "Attendee Name",
+          "mail": "Email",
+          "activity": "Activity Name",
+          "date": "Date",
+          "time": "Time",
+          "location": "Location",
+          "class": "Ticket Class",
+          "price": "Price",
+          "id": "Ticket ID",
+          "total": "Total",
+          "transaction_id": "Transaction ID",
+          "payment_method": "Payment Method",
+          "payment_date": "Payment Date",
+          "transaction_status": "Transaction Status",
+          "check_status": "Checked-In Status",
+          "check_time": "Check-In Time"
+        },
+        "cta": {
+          "close": "Close",
+          "resend": "Resend ticket"
+        }
+    }
+    }
+  }
 }
