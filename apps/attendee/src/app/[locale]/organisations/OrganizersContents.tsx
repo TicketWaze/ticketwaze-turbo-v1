@@ -111,7 +111,7 @@ export default function OrganizersContents({
               className="lg:hidden absolute bottom-43 right-10 w-[60px] h-[60px] bg-primary-500 rounded-full flex items-center justify-center"
               target="_blank"
               rel="noopener noreferrer"
-              href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/login`}
+              href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/analytics`}
             >
               {/* {t("create")} */}
               <Building size="32" variant="Bulk" color="#ffffff" />
@@ -173,7 +173,7 @@ export default function OrganizersContents({
           {session?.user.organisations &&
           session?.user.organisations?.length > 0 ? (
             <LinkPrimary
-              href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/login`}
+              href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/analytics`}
               className="hidden lg:flex"
               target="_blank"
               rel="noopener noreferrer"

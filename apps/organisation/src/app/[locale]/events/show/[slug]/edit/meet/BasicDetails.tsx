@@ -92,6 +92,49 @@ export default function BasicDetails({
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div className="flex flex-col gap-12">
+      {/* image */}
+      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
+        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
+          {t("thumbnail")}
+        </span>
+
+        {imagePreview ? (
+          <div className="relative w-full h-[300px]">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="w-full h-[300px] object-cover object-top rounded-2xl"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
+            />
+          </div>
+        ) : (
+          <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
+            <div className="flex flex-col items-center gap-4 ">
+              <p className="text-[1.5rem] leading-8 text-neutral-500 ">
+                {t("thumbnail_text")}{" "}
+                <span className="font-medium text-primary-500">
+                  {t("browse")}
+                </span>
+              </p>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
+              />
+            </div>
+          </div>
+        )}
+
+        <span className="text-[1.2rem] px-8 py-2 text-failure">
+          {errors.eventImage?.message}
+        </span>
+      </div>
       {/* Event details */}
       <div className="p-[15px] max-w-[540px] w-full mx-auto rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
         <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
@@ -288,50 +331,6 @@ export default function BasicDetails({
             {errors.activityTags?.message}
           </span>
         )}
-      </div>
-
-      {/* image */}
-      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
-          {t("thumbnail")}
-        </span>
-
-        {imagePreview ? (
-          <div className="relative w-full h-[300px]">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="w-full h-[300px] object-cover object-top rounded-2xl"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
-            />
-          </div>
-        ) : (
-          <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
-            <div className="flex flex-col items-center gap-4 ">
-              <p className="text-[1.5rem] leading-8 text-neutral-500 ">
-                {t("thumbnail_text")}{" "}
-                <span className="font-medium text-primary-500">
-                  {t("browse")}
-                </span>
-              </p>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
-              />
-            </div>
-          </div>
-        )}
-
-        <span className="text-[1.2rem] px-8 py-2 text-failure">
-          {errors.eventImage?.message}
-        </span>
       </div>
 
       <div></div>

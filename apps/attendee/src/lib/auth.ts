@@ -5,11 +5,10 @@ import Google from "next-auth/providers/google";
 const nextAuthResult = NextAuth({
   session: {
     strategy: "jwt",
-    maxAge: 2 * 60 * 60, // 2 hours
+    maxAge: 14 * 24 * 60 * 60,
   },
-
   jwt: {
-    maxAge: 2 * 60 * 60,
+    maxAge: 14 * 24 * 60 * 60,
   },
 
   providers: [
