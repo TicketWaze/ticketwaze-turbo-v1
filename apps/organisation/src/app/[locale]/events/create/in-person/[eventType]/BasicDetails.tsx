@@ -50,8 +50,12 @@ export default function BasicDetails({
 }: Props) {
   const t = useTranslations("Events.create_event");
   const availableCountries = countries.map((country) => country.name);
-  const [selectedCountry, setSelectedCountry] = useState<string>(getValues("country") ?? "");
-  const [selectedState, setSelectedState] = useState<string>(getValues("state") ?? "");
+  const [selectedCountry, setSelectedCountry] = useState<string>(
+    getValues("country") ?? "",
+  );
+  const [selectedState, setSelectedState] = useState<string>(
+    getValues("state") ?? "",
+  );
 
   const availableStates =
     countries.find((c) => c.name === selectedCountry)?.state ?? [];
@@ -98,6 +102,57 @@ export default function BasicDetails({
   const inputRef = useRef<HTMLInputElement>(null);
   return (
     <div className="flex flex-col gap-12">
+      {/* image */}
+      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
+        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
+          {t("thumbnail")}
+        </span>
+
+        {imagePreview ? (
+          <div className="relative w-full h-120">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="w-full h-120 object-cover object-top rounded-2xl"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
+            />
+          </div>
+        ) : (
+          <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
+            <div className="flex flex-col items-center gap-4 ">
+              <div className="flex flex-col gap-4 items-center">
+                <Image
+                  src={UploadDocument}
+                  alt="upload"
+                  width={24}
+                  height={24}
+                />
+                <p className="text-[1.5rem] leading-6 text-neutral-500 ">
+                  {t("thumbnail_text")}{" "}
+                  <span className="font-medium text-primary-500">
+                    {t("browse")}
+                  </span>
+                </p>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
+              />
+            </div>
+          </div>
+        )}
+
+        <span className="text-[1.2rem] px-8 py-2 text-failure">
+          {errors.eventImage?.message}
+        </span>
+      </div>
       {/* Event details */}
       <div className="p-6 max-w-216 w-full mx-auto rounded-[15px] flex flex-col gap-6 border border-neutral-100">
         <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
@@ -308,58 +363,6 @@ export default function BasicDetails({
             {errors.activityTags?.message}
           </span>
         )}
-      </div>
-
-      {/* image */}
-      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
-          {t("thumbnail")}
-        </span>
-
-        {imagePreview ? (
-          <div className="relative w-full h-120">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="w-full h-120 object-cover object-top rounded-2xl"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
-            />
-          </div>
-        ) : (
-          <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
-            <div className="flex flex-col items-center gap-4 ">
-              <div className="flex flex-col gap-4 items-center">
-                <Image
-                  src={UploadDocument}
-                  alt="upload"
-                  width={24}
-                  height={24}
-                />
-                <p className="text-[1.5rem] leading-6 text-neutral-500 ">
-                  {t("thumbnail_text")}{" "}
-                  <span className="font-medium text-primary-500">
-                    {t("browse")}
-                  </span>
-                </p>
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
-              />
-            </div>
-          </div>
-        )}
-
-        <span className="text-[1.2rem] px-8 py-2 text-failure">
-          {errors.eventImage?.message}
-        </span>
       </div>
 
       <div></div>

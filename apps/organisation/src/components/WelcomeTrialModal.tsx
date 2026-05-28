@@ -75,6 +75,7 @@ export default function WelcomeTrialModal() {
   const t = useTranslations("WelcomeModal");
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
+  const [isAdmin, setIsAdmin] = useState(true);
   const direction = useRef(1);
 
   useEffect(() => {
@@ -93,8 +94,10 @@ export default function WelcomeTrialModal() {
     )
       .then((r) => r.json())
       .then((data) => {
-        console.log(data);
-        if (data?.hasSeenWelcomeModal === false) setOpen(true);
+        if (data?.hasSeenWelcomeModal === false) {
+          setIsAdmin(data.isAdmin !== false);
+          setOpen(true);
+        }
       })
       .catch(() => {});
   }, [session?.activeOrganisation?.organisationId, session?.user?.accessToken]);
@@ -126,8 +129,9 @@ export default function WelcomeTrialModal() {
     if (!value) dismiss();
   }
 
-  const current = STEPS[step];
-  const isLast = step === STEPS.length - 1;
+  const steps = isAdmin ? STEPS : STEPS.filter((s) => s.key !== "trial");
+  const current = steps[step];
+  const isLast = step === steps.length - 1;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -197,7 +201,7 @@ export default function WelcomeTrialModal() {
 
         {/* Step indicator dots */}
         <div className="flex justify-center gap-[6px] pt-6 pb-4 px-[20px] lg:px-[30px]">
-          {STEPS.map((_, i) => (
+          {steps.map((_, i) => (
             <div
               key={i}
               className={`h-[7px] rounded-full transition-all duration-300 ${

@@ -1,21 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft2 } from "iconsax-reactjs";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import Cropper from "react-easy-crop";
-import getCroppedImg from "@/lib/GetCroppedImage";
 import { motion } from "motion/react";
+import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -237,37 +226,19 @@ export default function CreateInPersonEventForm({
     }
   };
 
-  // Image handling (same as original)
+  // Image handling
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const triggerRef = useRef<HTMLSpanElement>(null);
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
-
-  const onCropComplete = useCallback(
-    (_: any, croppedPixels: any) => setCroppedAreaPixels(croppedPixels),
-    [],
-  );
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const input = e.target;
+    const file = input.files?.[0];
     if (!file) return;
-    triggerRef.current?.click();
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => setImageSrc(reader.result as string);
+    const blob = await resizeImage(file);
+    const resized = new File([blob], "event-image.jpg", { type: "image/jpeg" });
+    setValue("eventImage", resized, { shouldValidate: true });
+    setImagePreview(URL.createObjectURL(resized));
+    input.value = "";
   };
-
-  async function cropImage() {
-    if (!imageSrc || !croppedAreaPixels) return;
-    const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-    const file = new File([croppedBlob], "profile.jpg", {
-      type: croppedBlob.type,
-    });
-    setValue("eventImage", file, { shouldValidate: true });
-    setImagePreview(URL.createObjectURL(file));
-  }
 
   // eventDays (for dynamic add/remove UI)
   const [eventDays, setEventDays] = useState<EventDay[]>([
@@ -353,42 +324,6 @@ export default function CreateInPersonEventForm({
           </div>
         </div>
       )}
-
-      <Dialog>
-        <DialogTrigger asChild className="hidden">
-          <span ref={triggerRef} className="hidden">
-            open
-          </span>
-        </DialogTrigger>
-        <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle>{t("resize")}</DialogTitle>
-            <DialogDescription className="sr-only">
-              This action cannot be undone
-            </DialogDescription>
-            {imageSrc && (
-              <div className="relative w-full h-120">
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={1}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                />
-              </div>
-            )}
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild onClick={cropImage}>
-              <span className="bg-primary-500 px-12 py-6 border-2 border-transparent rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center w-full">
-                {t("resize")}
-              </span>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
 
       <form
         className=" flex flex-col gap-12 h-full overflow-y-scroll overflow-x-hidden"

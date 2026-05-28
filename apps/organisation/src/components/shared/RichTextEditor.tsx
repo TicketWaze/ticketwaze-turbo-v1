@@ -1,10 +1,19 @@
 "use client";
 import { useEditor, EditorContent, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
 import { useEffect, useRef, useState } from "react";
-import { Bold, Italic, List, ListOrdered, Heading2, Heading3 } from "lucide-react";
+import {
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  List,
+  ListOrdered,
+  Heading2,
+  Heading3,
+} from "lucide-react";
 
 interface RichTextEditorProps {
   value: string;
@@ -61,6 +70,7 @@ export default function RichTextEditor({
   const editor = useEditor({
     extensions: [
       StarterKit.configure({ heading: { levels: [2, 3] } }),
+      Underline,
       Placeholder.configure({ placeholder: placeholder ?? "" }),
       CharacterCount,
     ],
@@ -71,6 +81,9 @@ export default function RichTextEditor({
       onChange(html);
     },
     editorProps: {
+      transformPastedHTML(html) {
+        return html.replace(/<a\b[^>]*>([\s\S]*?)<\/a>/gi, "$1");
+      },
       attributes: {
         class:
           "outline-none min-h-[120px] text-[1.5rem] leading-8 text-deep-200 rich-text",
@@ -90,6 +103,7 @@ export default function RichTextEditor({
     selector: (ctx) => ({
       bold: ctx.editor?.isActive("bold") ?? false,
       italic: ctx.editor?.isActive("italic") ?? false,
+      underline: ctx.editor?.isActive("underline") ?? false,
       h2: ctx.editor?.isActive("heading", { level: 2 }) ?? false,
       h3: ctx.editor?.isActive("heading", { level: 3 }) ?? false,
       bulletList: ctx.editor?.isActive("bulletList") ?? false,
@@ -125,6 +139,13 @@ export default function RichTextEditor({
           title="Italic"
         >
           <Italic size={15} />
+        </ToolbarBtn>
+        <ToolbarBtn
+          onClick={() => editor?.chain().focus().toggleUnderline().run()}
+          active={activeState.underline}
+          title="Underline"
+        >
+          <UnderlineIcon size={15} />
         </ToolbarBtn>
         <div className="w-px h-5 bg-neutral-200 mx-1" />
         <ToolbarBtn

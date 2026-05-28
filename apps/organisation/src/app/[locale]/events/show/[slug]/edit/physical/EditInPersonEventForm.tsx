@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft2 } from "iconsax-reactjs";
 import {
@@ -11,11 +11,9 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import Cropper from "react-easy-crop";
-import getCroppedImg from "@/lib/GetCroppedImage";
 import { motion } from "framer-motion";
+import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -50,7 +48,6 @@ export default function EditInPersonEventForm({
   const { data: session } = useSession();
   const organisation = session?.activeOrganisation;
   const [imageChanged, setImageChanged] = useState(false);
-  const [successAlert, setSuccessAlert] = useState<{ requiresReview: boolean } | null>(null);
   const [isFree, setIsfree] = useState(
     (event.eventTicketTypes[0]?.ticketTypePrice ?? 0) < 1,
   );
@@ -130,11 +127,6 @@ export default function EditInPersonEventForm({
 
   // submission
   const processForm: SubmitHandler<TForm> = async (data) => {
-    const requiresReview =
-      data.eventName !== event.eventName ||
-      data.eventDescription !== event.eventDescription ||
-      imageChanged;
-
     const formData = new FormData();
     formData.append("eventName", data.eventName);
     formData.append("eventDescription", data.eventDescription);
@@ -174,8 +166,7 @@ export default function EditInPersonEventForm({
     );
     if (result.status === "success") {
       const redirectUrl = `/events/show/${slugify(result.event.eventName, result.event.eventId)}`;
-      setSuccessAlert({ requiresReview });
-      setTimeout(() => router.push(redirectUrl), 4000);
+      router.push(redirectUrl);
     }
     if (result.error) toast.error(result.error);
   };
@@ -209,6 +200,7 @@ export default function EditInPersonEventForm({
     if (currentStep === steps.length - 1) {
       const hasChanges =
         isDirty ||
+        imageChanged ||
         isFree !== event.isFree ||
         isRefundable !== (event.eventTicketTypes[0]?.isRefundable ?? false);
       if (!hasChanges) {
@@ -259,13 +251,8 @@ export default function EditInPersonEventForm({
     }
   };
 
-  // Image handling (same as original)
+  // Image handling
   const [imagePreview, setImagePreview] = useState<string>(event.eventImageUrl);
-  const triggerRef = useRef<HTMLSpanElement>(null);
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
   useEffect(() => {
     const loadExistingImage = async () => {
       if (event.eventImageUrl) {
@@ -286,30 +273,17 @@ export default function EditInPersonEventForm({
     loadExistingImage();
   }, [event.eventImageUrl, setValue]);
 
-  const onCropComplete = useCallback(
-    (_: any, croppedPixels: any) => setCroppedAreaPixels(croppedPixels),
-    [],
-  );
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    const input = e.target;
+    const file = input.files?.[0];
     if (!file) return;
-    triggerRef.current?.click();
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => setImageSrc(reader.result as string);
-  };
-
-  async function cropImage() {
-    if (!imageSrc || !croppedAreaPixels) return;
-    const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
-    const file = new File([croppedBlob], "profile.jpg", {
-      type: croppedBlob.type,
-    });
-    setValue("eventImage", file, { shouldValidate: true });
-    setImagePreview(URL.createObjectURL(file));
+    const blob = await resizeImage(file);
+    const resized = new File([blob], "event-image.jpg", { type: "image/jpeg" });
+    setValue("eventImage", resized, { shouldValidate: true });
+    setImagePreview(URL.createObjectURL(resized));
     setImageChanged(true);
-  }
+    input.value = "";
+  };
 
   // eventDays + ticketClasses local state (for dynamic add/remove UI)
   const [eventDays, setEventDays] = useState<EventDay[]>(
@@ -398,42 +372,6 @@ export default function EditInPersonEventForm({
         </div>
       )}
 
-      <Dialog>
-        <DialogTrigger asChild className="hidden">
-          <span ref={triggerRef} className="hidden">
-            open
-          </span>
-        </DialogTrigger>
-        <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle>{t("resize")}</DialogTitle>
-            <DialogDescription className="sr-only">
-              This action cannot be undone
-            </DialogDescription>
-            {imageSrc && (
-              <div className="relative w-full h-[300px]">
-                <Cropper
-                  image={imageSrc}
-                  crop={crop}
-                  zoom={zoom}
-                  aspect={1}
-                  onCropChange={setCrop}
-                  onZoomChange={setZoom}
-                  onCropComplete={onCropComplete}
-                />
-              </div>
-            )}
-          </DialogHeader>
-          <DialogFooter>
-            <DialogClose asChild onClick={cropImage}>
-              <span className="bg-primary-500 px-[3rem] py-[15px] border-2 border-transparent rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center w-full">
-                {t("resize")}
-              </span>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
         <DialogContent>
           <DialogHeader>
@@ -460,24 +398,6 @@ export default function EditInPersonEventForm({
         </DialogContent>
       </Dialog>
 
-      {successAlert && (
-        <div
-          className={`flex items-start gap-3 rounded-2xl border px-5 py-4 text-[1.4rem] leading-relaxed ${
-            successAlert.requiresReview
-              ? "border-amber-300 bg-amber-50 text-amber-800"
-              : "border-green-300 bg-green-50 text-green-800"
-          }`}
-        >
-          <span className="mt-[2px] shrink-0 text-[1.8rem]">
-            {successAlert.requiresReview ? "⚠️" : "✅"}
-          </span>
-          <span>
-            {successAlert.requiresReview
-              ? "Your activity has been updated and submitted for review. It will be temporarily unlisted until approved (1–2 business days)."
-              : "Your activity has been updated successfully. No re-review is required."}
-          </span>
-        </div>
-      )}
 
       <form
         className=" flex flex-col gap-12 h-full overflow-y-scroll overflow-x-hidden"

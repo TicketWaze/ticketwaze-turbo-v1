@@ -15,6 +15,7 @@ import ReturnFreeTicketView from "./ReturnFreeTicketView";
 import { extractIdFromSlug } from "@/lib/Slugify";
 import ReturnPaidTicketView from "./ReturnPaidTicketView";
 import CheckoutEmailAlert from "./CheckoutEmailAlert";
+import EventImageLightbox from "@/components/shared/EventImageLightbox";
 
 export default async function UpcomingEventPage({
   params,
@@ -63,14 +64,21 @@ export default async function UpcomingEventPage({
 
       {event.deletionStatus === "pending_deletion" && (
         <div className="flex items-start gap-4 rounded-2xl border border-amber-300 bg-amber-50 px-5 py-4">
-          <Warning2 size="22" color="#b45309" variant="Bulk" className="shrink-0 mt-[2px]" />
+          <Warning2
+            size="22"
+            color="#b45309"
+            variant="Bulk"
+            className="shrink-0 mt-[2px]"
+          />
           <div className="flex flex-col gap-1">
             <span className="font-semibold text-[1.4rem] leading-8 text-amber-800">
               This event is scheduled for deletion
             </span>
             <p className="text-[1.3rem] leading-7 text-amber-700">
-              The organiser has requested to delete this event and may still cancel that request. If the event is
-              deleted, you will be fully refunded for your tickets. Please note that service fees are non-refundable.
+              The organiser has requested to delete this event and may still
+              cancel that request. If the event is deleted, you will be fully
+              refunded for your tickets. Please note that service fees are
+              non-refundable.
             </p>
           </div>
         </div>
@@ -78,14 +86,20 @@ export default async function UpcomingEventPage({
 
       {event.deletionStatus === "deleted" && (
         <div className="flex items-start gap-4 rounded-2xl border border-red-300 bg-red-50 px-5 py-4">
-          <Warning2 size="22" color="#b91c1c" variant="Bulk" className="shrink-0 mt-[2px]" />
+          <Warning2
+            size="22"
+            color="#b91c1c"
+            variant="Bulk"
+            className="shrink-0 mt-[2px]"
+          />
           <div className="flex flex-col gap-1">
             <span className="font-semibold text-[1.4rem] leading-8 text-red-800">
               This event has been deleted
             </span>
             <p className="text-[1.3rem] leading-7 text-red-700">
-              This event no longer exists. If you purchased tickets, the organiser will refund you the ticket price.
-              Please note that service fees are non-refundable.
+              This event no longer exists. If you purchased tickets, the
+              organiser will refund you the ticket price. Please note that
+              service fees are non-refundable.
             </p>
           </div>
         </div>
@@ -130,15 +144,12 @@ export default async function UpcomingEventPage({
       <main className="w-full gap-8 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:min-h-0 overflow-y-auto h-full">
         {/* Left column content */}
         <div className="flex flex-col gap-8 lg:overflow-y-auto min-h-0">
-          <div className="w-full max-h-[29.8rem] overflow-hidden rounded-[10px] shrink-0">
-            <Image
-              src={event.eventImageUrl}
-              width={580}
-              height={298}
-              alt={event.eventName}
-              className="w-full"
-            />
-          </div>
+          <EventImageLightbox
+            src={event.eventImageUrl}
+            alt={event.eventName}
+            width={580}
+            height={298}
+          />
 
           <EventActions
             event={event}
@@ -176,14 +187,14 @@ export default async function UpcomingEventPage({
               {t("about")}
             </span>
             <div
-              className="rich-text text-[1.5rem] leading-8 text-neutral-700"
+              className="rich-text text-[1.6rem] font-sans leading-10 text-neutral-700"
               dangerouslySetInnerHTML={{ __html: event.eventDescription }}
             />
           </div>
 
           <Separator />
 
-          <div>
+          {/* <div>
             <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
               {t("contact")}
             </span>
@@ -195,12 +206,12 @@ export default async function UpcomingEventPage({
                 {organisation.organisationEmail}
               </span>
             </div>
-            {/* <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4">
               <Call size="20" color="#737c8a" variant="Bulk" />
               <span className="font-normal text-[1.5rem] leading-[30px] text-neutral-700">
                 {organisation.organisationPhoneNumber}
               </span>
-            </div> */}
+            </div>
             {organisation.organisationWebsite && (
               <div className="flex items-center gap-4">
                 <Global size="20" color="#737c8a" variant="Bulk" />
@@ -237,7 +248,7 @@ export default async function UpcomingEventPage({
             <div></div>
             <div></div>
             <div></div>
-          </div>
+          </div> */}
 
           {/* Tickets on mobile */}
           <div className="lg:hidden flex flex-col gap-4">

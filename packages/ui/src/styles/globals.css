@@ -310,3 +310,12 @@ input:not(:placeholder-shown) + label {
 .rich-text li {
   margin-bottom: 0.2rem;
 }
+.rich-text u {
+  text-decoration: underline;
+}
+.rich-text a {
+  color: inherit;
+  text-decoration: none;
+  pointer-events: none;
+  cursor: default;
+}

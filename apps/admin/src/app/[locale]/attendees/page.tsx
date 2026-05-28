@@ -1,5 +1,5 @@
-import AdminLayout from "@/components/Layouts/AdminLayout";
+import AttendeesPageContent from "./AttendeesPageContent";
 
 export default function AttendeesPage() {
-  return <AdminLayout>AttendeesPage</AdminLayout>;
+  return <AttendeesPageContent />;
 }

@@ -26,6 +26,7 @@ import { extractIdFromSlug } from "@/lib/Slugify";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 import AnimatedEventPage from "./AnimatedEventPage";
+import EventImageLightbox from "@/components/shared/EventImageLightbox";
 
 export async function generateMetadata({
   params,
@@ -132,15 +133,12 @@ export default async function EventPage({
         </span>
         <main className="w-full gap-8 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:min-h-0 overflow-y-auto h-full">
           <div className="flex flex-col gap-8 overflow-y-auto min-h-0">
-            <div className="w-full max-h-[298px] overflow-hidden rounded-[10px] flex-shrink-0">
-              <Image
-                src={event.eventImageUrl}
-                width={580}
-                height={298}
-                alt={event.eventName}
-                className="w-full"
-              />
-            </div>
+            <EventImageLightbox
+              src={event.eventImageUrl}
+              alt={event.eventName}
+              width={580}
+              height={298}
+            />
             <EventActions
               event={event}
               isFavorite={favoriteResponse.isFavorite}
@@ -151,7 +149,7 @@ export default async function EventPage({
                 {t("about")}
               </span>
               <div
-                className="rich-text text-[1.5rem] leading-8 text-neutral-700"
+                className="rich-text text-[1.6rem] font-sans leading-10 text-neutral-700"
                 dangerouslySetInnerHTML={{ __html: event.eventDescription }}
               />
             </div>
