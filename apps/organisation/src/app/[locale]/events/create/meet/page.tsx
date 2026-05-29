@@ -1,10 +1,7 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import { Link } from "@/i18n/navigation";
-import { auth } from "@/lib/auth";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { ArrowRight2, Icon, Microphone2, People } from "iconsax-reactjs";
 import {
   Building2,
@@ -27,12 +24,6 @@ export default async function InPersonEventTypePage({
 }: {
   searchParams: Promise<{ code: string | undefined }>;
 }) {
-  const session = await auth();
-  const authorized = await organisationPolicy.createEvent(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) return <UnauthorizedView />;
   const t = await getTranslations("Events.create_event.list.inPerson");
   const { code } = await searchParams;
   const links = [

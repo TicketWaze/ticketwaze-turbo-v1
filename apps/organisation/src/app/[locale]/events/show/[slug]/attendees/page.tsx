@@ -4,7 +4,6 @@ import { Event } from "@ticketwaze/typescript-config";
 import { getTranslations, getLocale } from "next-intl/server";
 import BackButton from "@/components/shared/BackButton";
 import { auth } from "@/lib/auth";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 
 export default async function Attendees({
@@ -16,11 +15,6 @@ export default async function Attendees({
   const t = await getTranslations("Events.single_event.attendees");
   const locale = await getLocale();
   const session = await auth();
-  const authorized = await organisationPolicy.viewAttendees(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) return <UnauthorizedView />;
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/events/${slug}`,
     {
@@ -33,6 +27,9 @@ export default async function Attendees({
       },
     },
   );
+  if (eventRequest.status === 403) {
+    return <UnauthorizedView />;
+  }
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
 

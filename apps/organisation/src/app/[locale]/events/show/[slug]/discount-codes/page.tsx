@@ -4,7 +4,6 @@ import DiscountPageContent from "./DiscountPageContent";
 import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import { extractIdFromSlug } from "@/lib/Slugify";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { auth } from "@/lib/auth";
 
@@ -15,11 +14,6 @@ export default async function DiscountCode({
 }) {
   const session = await auth();
   const locale = await getLocale();
-  const authorized = await organisationPolicy.viewDiscounts(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) return <UnauthorizedView />;
   const t = await getTranslations("Events.single_event.discount");
   const { slug } = await params;
   const eventId = extractIdFromSlug(slug);
@@ -35,6 +29,9 @@ export default async function DiscountCode({
       },
     },
   );
+  if (eventRequest.status === 403) {
+    return <UnauthorizedView />;
+  }
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
   return (

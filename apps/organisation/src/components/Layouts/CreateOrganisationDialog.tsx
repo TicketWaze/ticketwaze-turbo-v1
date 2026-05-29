@@ -1,5 +1,5 @@
 "use client";
-import { SetStateAction, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   Dialog,
   DialogClose,
@@ -17,15 +17,8 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import LoadingCircleSmall from "../shared/LoadingCircleSmall";
 import PageLoader from "../PageLoader";
-import { Organisation } from "@ticketwaze/typescript-config";
 
-export default function CreateOrganisationDialog({
-  setSelectedOrganisation,
-}: {
-  setSelectedOrganisation: React.Dispatch<
-    SetStateAction<Organisation | undefined>
-  >;
-}) {
+export default function CreateOrganisationDialog() {
   const closeRef = useRef<HTMLButtonElement>(null);
   const t = useTranslations("Layout.sidebar");
   const locale = useLocale();
@@ -51,8 +44,7 @@ export default function CreateOrganisationDialog({
         await update({
           activeOrganisation: res.organisation,
         });
-        // router.refresh();
-        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/analytics`;
+        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/onboarding/organisation`;
       } else {
         toast.error("Failed to Creare Organisation");
       }

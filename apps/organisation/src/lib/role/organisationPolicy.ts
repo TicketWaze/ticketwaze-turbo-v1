@@ -1,7 +1,71 @@
 import { Permission, TPermission } from "./organisationRole";
 import { can, getUserRole } from "./permission";
 
+/** Sync permission checker built from the session's myPermissions array. */
+export function sessionChecker(permissions: string[]) {
+  const set = new Set(permissions);
+  const has = (key: string) => set.has(key);
+  return {
+    can: has,
+    viewOrganisation: () => has("organisation.view"),
+    manageOrganisation: () => has("organisation.manage"),
+    deleteOrganisation: () => has("organisation.delete"),
+    transferOwnership: () => has("organisation.transfer_ownership"),
+    viewBilling: () => has("billing.view"),
+    manageBilling: () => has("billing.manage"),
+    manageSubscription: () => has("subscription.manage"),
+    viewStaff: () => has("staff.view"),
+    manageStaff: () => has("staff.manage"),
+    manageRoles: () => has("roles.manage"),
+    viewEvents: () => has("events.view"),
+    createEvent: () => has("events.create"),
+    editEvent: () => has("events.edit"),
+    deleteEvent: () => has("events.delete"),
+    publishEvent: () => has("events.publish"),
+    manageEventDays: () => has("event_days.manage"),
+    manageSessions: () => has("sessions.manage"),
+    viewTickets: () => has("tickets.view"),
+    manageTickets: () => has("tickets.manage"),
+    refundTicket: () => has("tickets.refund"),
+    cancelTicket: () => has("tickets.cancel"),
+    resendTicket: () => has("tickets.resend"),
+    viewAttendees: () => has("attendees.view"),
+    exportAttendees: () => has("attendees.export"),
+    viewFinance: () => has("finance.view"),
+    exportFinance: () => has("finance.export"),
+    viewPayouts: () => has("finance.payouts.view"),
+    viewReports: () => has("reports.view"),
+    exportReports: () => has("reports.export"),
+    viewDiscounts: () => has("discounts.view"),
+    manageDiscounts: () => has("discounts.manage"),
+    manageMemberships: () => has("memberships.manage"),
+    manageReservations: () => has("reservations.manage"),
+    performCheckin: () => has("checkin.perform"),
+    useScanner: () => has("scanner.use"),
+    manageIntegrations: () => has("integrations.manage"),
+    manageApiKeys: () => has("api_keys.manage"),
+    manageWebhooks: () => has("webhooks.manage"),
+    manageSettings: () => has("settings.manage"),
+    manageBranding: () => has("branding.manage"),
+    // Backward-compatible aliases
+    addMember: () => has("staff.manage"),
+    removeMember: () => has("staff.manage"),
+    updateMember: () => has("roles.manage"),
+    viewAnalytics: () => has("reports.view"),
+    viewEvent: () => has("events.view"),
+    updateFinance: () => has("finance.export"),
+    checking: () => has("checkin.perform"),
+    CreateWithdrawalRequest: () => has("finance.payouts.view"),
+    manageTeam: () => has("staff.manage"),
+  };
+}
+
 export class OrganisationPolicy {
+  /** Build a sync checker from the session's myPermissions array (no API call). */
+  static fromSession(permissions: string[]) {
+    return sessionChecker(permissions);
+  }
+
   private async check(
     userId: string,
     organisationId: string,

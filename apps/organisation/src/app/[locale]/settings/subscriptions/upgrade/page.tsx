@@ -1,8 +1,6 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import TopBar from "@/components/shared/TopBar";
 import { auth } from "@/lib/auth";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { getLocale, getTranslations } from "next-intl/server";
 import SubscriptionUpgradePageContent from "./SubscriptionUpgradePageContent";
 import { MembershipTier } from "@ticketwaze/typescript-config";
@@ -12,13 +10,6 @@ export default async function SubscriptionUpgradePage() {
   const t = await getTranslations("Settings.subscriptions");
   const locale = await getLocale();
   const session = await auth();
-  const authorized = await organisationPolicy.manageMemberships(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) {
-    return <UnauthorizedView />;
-  }
 
   const [subRequest, tiersRequest] = await Promise.all([
     fetch(
@@ -41,6 +32,9 @@ export default async function SubscriptionUpgradePage() {
       },
     }),
   ]);
+  if (subRequest.status === 403) {
+    return <UnauthorizedView />;
+  }
 
   const subResponse = await subRequest.json();
   const tiersResponse = await tiersRequest.json();

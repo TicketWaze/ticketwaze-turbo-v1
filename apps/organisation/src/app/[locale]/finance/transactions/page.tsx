@@ -1,6 +1,5 @@
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { auth } from "@/lib/auth";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { OrganisationOrders } from "@ticketwaze/typescript-config";
 import { getLocale, getTranslations } from "next-intl/server";
 import OrganisationPageWrapper from "./OrganisationPageWrapper";
@@ -15,13 +14,6 @@ export default async function OrganisationTransactions({
   const t = await getTranslations("Finance");
   const locale = await getLocale();
   const session = await auth();
-  const authorized = await organisationPolicy.viewFinance(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) {
-    return <UnauthorizedView />;
-  }
   const { page } = await searchParams;
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/orders?limit=15&page=${page ?? 1}`,
@@ -35,6 +27,9 @@ export default async function OrganisationTransactions({
       },
     },
   );
+  if (request.status === 403) {
+    return <UnauthorizedView />;
+  }
   const response = await request.json();
   const organisationOrders: OrganisationOrders = await response.orders;
   return (

@@ -5,7 +5,6 @@ import { extractIdFromSlug } from "@/lib/Slugify";
 import { auth } from "@/lib/auth";
 import { getLocale } from "next-intl/server";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { redirect } from "next/navigation";
 
 export default async function EditEvent({
@@ -17,11 +16,6 @@ export default async function EditEvent({
   const eventId = extractIdFromSlug(slug);
   const session = await auth();
   const locale = await getLocale();
-  const authorized = await organisationPolicy.editEvent(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) return <UnauthorizedView />;
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/events/${eventId}`,
     {
@@ -34,6 +28,9 @@ export default async function EditEvent({
       },
     },
   );
+  if (eventRequest.status === 403) {
+    return <UnauthorizedView />;
+  }
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
   if (event.deletionStatus != null) redirect(`/events/show/${slug}`);

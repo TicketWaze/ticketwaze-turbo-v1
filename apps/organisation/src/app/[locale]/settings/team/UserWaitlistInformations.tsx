@@ -14,10 +14,8 @@ import { WaitlistMember } from "@ticketwaze/typescript-config";
 import Separator from "@/components/shared/Separator";
 export default function UserWaitlistInformation({
   member,
-  authorized,
 }: {
   member: WaitlistMember;
-  authorized: boolean;
 }) {
   const t = useTranslations("Settings.team");
   const locale = useLocale();
@@ -108,24 +106,22 @@ export default function UserWaitlistInformation({
         </DrawerDescription>
       </div>
 
-      {authorized && (
-        <DrawerFooter>
-          <div className={"flex gap-8 w-full items-center"}>
-            <Dialog>
-              <DialogTrigger className={"w-full flex-1"}>
-                <span
-                  className={
-                    "w-full border-failure text-failure bg-[#FCE5EA] px-4 py-6 border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
-                  }
-                >
-                  {t("remove_invitation")}
-                </span>
-              </DialogTrigger>
-              <RemoveInvitationDrawerContent email={member.email} />
-            </Dialog>
-          </div>
-        </DrawerFooter>
-      )}
+      <DrawerFooter>
+        <div className={"flex gap-8 w-full items-center"}>
+          <Dialog>
+            <DialogTrigger className={"w-full flex-1"}>
+              <span
+                className={
+                  "w-full border-failure text-failure bg-[#FCE5EA] px-4 py-6 border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
+                }
+              >
+                {t("remove_invitation")}
+              </span>
+            </DialogTrigger>
+            <RemoveInvitationDrawerContent email={member.email} />
+          </Dialog>
+        </div>
+      </DrawerFooter>
     </DrawerContent>
   );
 }
