@@ -35,18 +35,15 @@ export default function SwitchOrganisationMobile() {
   useEffect(() => {
     if (!session?.user?.accessToken) return;
     setIsLoading(true);
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session.activeOrganisation.organisationId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.user.accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-        },
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.user.accessToken}`,
+        "Accept-Language": locale,
+        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
       },
-    )
+    })
       .then((res) => res.json())
       .then((res) => setAllOrganisations(res.organisations))
       .finally(() => setIsLoading(false));
@@ -61,7 +58,30 @@ export default function SwitchOrganisationMobile() {
 
   async function switchOrganisation(organisation: Organisation) {
     setLoading(true);
-    await update({ activeOrganisation: organisation });
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisation.organisationId}/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.user.accessToken}`,
+            "Accept-Language": locale,
+            Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          },
+        },
+      );
+      const data = await res.json();
+      const enriched: Organisation =
+        data.status === "success"
+          ? {
+              ...organisation,
+              myRole: data.myRole,
+              myPermissions: data.myPermissions,
+            }
+          : organisation;
+      await update({ activeOrganisation: enriched });
+    } catch {
+      await update({ activeOrganisation: organisation });
+    }
     setLoading(false);
     CloseRef.current?.click();
     router.refresh();
@@ -181,9 +201,7 @@ export default function SwitchOrganisationMobile() {
             "py-14 px-6 lg:hidden rounded-[10px] w-full bg-neutral-100 hover:bg-primary-50 flex justify-between transition-all duration-500 cursor-pointer group"
           }
         >
-          <CreateOrganisationDialog
-            setSelectedOrganisation={setSelectedOrganisation}
-          />
+          <CreateOrganisationDialog />
           <div
             className={
               "w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 bg-neutral-200 group-hover:bg-primary-100"

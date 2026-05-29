@@ -11,10 +11,8 @@ import Separator from "@/components/shared/Separator";
 
 export default function CurrencyPreference({
   organisation,
-  authorized,
 }: {
   organisation: Organisation;
-  authorized: boolean;
 }) {
   const t = useTranslations("Settings.profile.preferences");
   const locale = useLocale();
@@ -46,11 +44,10 @@ export default function CurrencyPreference({
   return (
     <div className="flex flex-col gap-6">
       <PageLoader isLoading={isLoading} />
-      <span className="font-medium text-[1.8rem] mb-4 leading-[25px] text-deep-100">
+      <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
         {t("currency")}
       </span>
       <RadioGroup
-        disabled={!authorized}
         defaultValue={organisation.currency}
         onValueChange={(e) => updateCurrency(e)}
         className="flex flex-col gap-6 w-full justify-between lg:justify-around"

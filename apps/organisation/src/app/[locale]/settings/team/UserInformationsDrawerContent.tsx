@@ -17,11 +17,9 @@ import { PERMISSION_LABELS } from "@/lib/permissionConfig";
 
 export default function UserInformation({
   member,
-  authorized,
   availablePermissions = [],
 }: {
   member: OrganisationMember;
-  authorized: boolean;
   availablePermissions?: string[];
 }) {
   const t = useTranslations("Settings.team");
@@ -71,7 +69,10 @@ export default function UserInformation({
               }
             >
               {t("table.role")}
-              <span aria-hidden className="flex items-center gap-2 text-deep-100 font-medium leading-8">
+              <span
+                aria-hidden
+                className="flex items-center gap-2 text-deep-100 font-medium leading-8"
+              >
                 {member.role}
                 {member.hasCustomPermissions && (
                   <span className="py-[.2rem] px-2 text-[1rem] font-bold uppercase rounded-full bg-primary-50 text-primary-500">
@@ -160,7 +161,7 @@ export default function UserInformation({
         </DrawerDescription>
       </div>
 
-      {authorized && session?.user.email !== member.email && (
+      {session?.user.email !== member.email && (
         <DrawerFooter>
           <div className={"flex gap-8 w-full items-center"}>
             <Dialog>

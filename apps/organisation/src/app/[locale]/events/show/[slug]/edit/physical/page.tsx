@@ -35,6 +35,9 @@ export default async function EditEvent({
     },
   );
   const eventResponse = await eventRequest.json();
+  if (eventRequest.status === 403) {
+    return <UnauthorizedView />;
+  }
   const event: Event = eventResponse.event;
   if (event.deletionStatus != null) redirect(`/events/show/${slug}`);
   const request = await fetch(

@@ -20,11 +20,9 @@ import {
 import { InfoCircle } from "iconsax-reactjs";
 
 export default function ProfileForm({
-  authorized,
   organisation,
   membershipTier,
 }: {
-  authorized: boolean;
   organisation: Organisation;
   membershipTier: MembershipTier;
 }) {
@@ -108,14 +106,13 @@ export default function ProfileForm({
         error={errors.organisationName?.message}
         type="text"
         isLoading={isSubmitting}
-        disabled={!authorized}
       >
         {t("placeholders.name")}
       </Input>
       <div>
         <textarea
           {...register("organisationDescription")}
-          disabled={isSubmitting || !authorized}
+          disabled={isSubmitting}
           className={`bg-neutral-100 w-full rounded-4xl resize-none h-60 p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500 {isLoading ? 'animate-pulse' : null}`}
           minLength={150}
           maxLength={350}
@@ -156,7 +153,6 @@ export default function ProfileForm({
         type="url"
         error={errors.organisationWebsite?.message}
         isLoading={isSubmitting}
-        disabled={!authorized}
         placeholder="https://yourwebsite.com"
       >
         {t("placeholders.website")}
@@ -191,7 +187,7 @@ export default function ProfileForm({
         <input
           {...register("instagram")}
           type="text"
-          disabled={!authorized || isSubmitting}
+          disabled={isSubmitting}
           placeholder={t("placeholders.instagram")}
           className="flex-1 bg-transparent py-6 pr-8 text-[1.5rem] leading-8 text-deep-200 outline-none disabled:text-neutral-600 disabled:cursor-not-allowed"
         />
@@ -204,21 +200,19 @@ export default function ProfileForm({
         <input
           {...register("twitter")}
           type="text"
-          disabled={!authorized || isSubmitting}
+          disabled={isSubmitting}
           placeholder={t("placeholders.twitter")}
           className="flex-1 bg-transparent py-6 pr-8 text-[1.5rem] leading-8 text-deep-200 outline-none disabled:text-neutral-600 disabled:cursor-not-allowed"
         />
       </div>
 
       <div></div>
-      {authorized && (
-        <ButtonPrimary
-          disabled={isSubmitting || (!isDirty && !saved)}
-          type="submit"
-        >
-          {t("save")}
-        </ButtonPrimary>
-      )}
+      <ButtonPrimary
+        disabled={isSubmitting || (!isDirty && !saved)}
+        type="submit"
+      >
+        {t("save")}
+      </ButtonPrimary>
     </form>
   );
 }

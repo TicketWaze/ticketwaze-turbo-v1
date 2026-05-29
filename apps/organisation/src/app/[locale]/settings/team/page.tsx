@@ -9,7 +9,6 @@ import {
 } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 
 export default async function Page() {
@@ -17,17 +16,6 @@ export default async function Page() {
   const locale = await getLocale();
   const session = await auth();
   const organisationId = session?.activeOrganisation.organisationId;
-  const authorized = await organisationPolicy.viewStaff(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) {
-    return <UnauthorizedView />;
-  }
-  const manage = await organisationPolicy.manageStaff(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
   const [teamRes, permissionsRes] = await Promise.all([
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/team`,
@@ -53,6 +41,9 @@ export default async function Page() {
   ]);
 
   const response = await teamRes.json();
+  if (teamRes.status === 403) {
+    return <UnauthorizedView />;
+  }
   const permissionsData = await permissionsRes.json();
 
   const members: OrganisationMember[] = response.members;
@@ -65,18 +56,15 @@ export default async function Page() {
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
         <TopBar title={t("title")}>
-          {manage && (
-            <AddMember
-              totalMembers={totalMembers}
-              availablePermissions={availablePermissions}
-            />
-          )}
+          <AddMember
+            totalMembers={totalMembers}
+            availablePermissions={availablePermissions}
+          />
         </TopBar>
       </div>
       <MemberList
         members={members}
         waitlistMembers={waitlistMembers}
-        authorized={manage}
         availablePermissions={availablePermissions}
       />
     </OrganizerLayout>

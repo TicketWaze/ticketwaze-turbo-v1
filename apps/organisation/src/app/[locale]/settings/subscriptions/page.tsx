@@ -1,29 +1,18 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import TopBar from "@/components/shared/TopBar";
 import { auth } from "@/lib/auth";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { getLocale, getTranslations } from "next-intl/server";
 import SubscriptionPageContent from "./SubscriptionPageContent";
 import {
   OrganisationSubscription,
   MembershipTier,
 } from "@ticketwaze/typescript-config";
-import { LinkPrimary } from "@/components/shared/Links";
-import { Crown } from "iconsax-reactjs";
 import BackButton from "@/components/shared/BackButton";
 
 export default async function SubscriptionPage() {
   const t = await getTranslations("Settings.subscriptions");
   const locale = await getLocale();
   const session = await auth();
-  const authorized = await organisationPolicy.manageMemberships(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) {
-    return <UnauthorizedView />;
-  }
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/subscriptions`,
     {
@@ -36,6 +25,9 @@ export default async function SubscriptionPage() {
       },
     },
   );
+  if (request.status === 403) {
+    return <UnauthorizedView />;
+  }
   const response = await request.json();
   const organisationSubscriptions: OrganisationSubscription[] =
     response.organisationSubscriptions;

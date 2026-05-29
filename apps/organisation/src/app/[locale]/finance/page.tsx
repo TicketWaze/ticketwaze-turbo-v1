@@ -2,7 +2,6 @@ import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import { getLocale, getTranslations } from "next-intl/server";
 import FinancePageContent from "./FinancePageContent";
 import { auth } from "@/lib/auth";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import TopBar from "@/components/shared/TopBar";
 import InitiateWithdrawalButton from "./InitiateWithdrawalButton";
@@ -11,17 +10,6 @@ export default async function FinancePage() {
   const t = await getTranslations("Finance");
   const locale = await getLocale();
   const session = await auth();
-  const authorized = await organisationPolicy.viewFinance(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  const authorizedUpdate = await organisationPolicy.updateFinance(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) {
-    return <UnauthorizedView />;
-  }
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/transactions`,
     {
@@ -34,11 +22,15 @@ export default async function FinancePage() {
       },
     },
   );
+  const authorized = request.status === 200;
+  if (request.status === 403) {
+    return <UnauthorizedView />;
+  }
   const transactions = await request.json();
   return (
     <OrganizerLayout title="Finance">
       <TopBar title={t("title")}>
-        {authorizedUpdate && (
+        {authorized && (
           <div className="hidden lg:block">
             <InitiateWithdrawalButton
               organisation={transactions.organisation}
@@ -48,7 +40,7 @@ export default async function FinancePage() {
       </TopBar>
       <FinancePageContent
         transactions={transactions}
-        authorizedUpdate={authorizedUpdate}
+        authorizedUpdate={authorized}
       />
     </OrganizerLayout>
   );

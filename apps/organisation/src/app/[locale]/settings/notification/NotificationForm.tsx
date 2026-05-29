@@ -10,10 +10,8 @@ import { toast } from "sonner";
 
 export default function NotificationForm({
   notificationPreferences,
-  authorized,
 }: {
   notificationPreferences: NotificationPreference;
-  authorized: boolean;
 }) {
   const t = useTranslations("Settings.notification");
   const locale = useLocale();
@@ -69,7 +67,7 @@ export default function NotificationForm({
             {t("ticket_sales")}
           </p>
           <label
-            className={`relative inline-block h-12 w-20 rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 ${authorized ? "cursor-pointer" : "cursor-not-allowed"}`}
+            className={`relative inline-block h-12 w-20 rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 cursor-pointer`}
           >
             <input
               className="peer sr-only"
@@ -77,7 +75,6 @@ export default function NotificationForm({
               defaultChecked={notificationPreferences.emailTicketSalesUpdate}
               name={"emailTicketSalesUpdate"}
               type="checkbox"
-              disabled={!authorized}
             />
             <ToggleIcon />
           </label>
@@ -92,7 +89,7 @@ export default function NotificationForm({
             {t("payment_update")}
           </p>
           <label
-            className={`relative inline-block h-12 w-20 rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 ${authorized ? "cursor-pointer" : "cursor-not-allowed"}`}
+            className={`relative inline-block h-12 w-20 rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 cursor-pointer`}
           >
             <input
               className="peer sr-only"
@@ -100,7 +97,6 @@ export default function NotificationForm({
               defaultChecked={notificationPreferences.emailPaymentUpdates}
               name={"emailPaymentUpdates"}
               type="checkbox"
-              disabled={!authorized}
             />
             <ToggleIcon />
           </label>
@@ -115,7 +111,7 @@ export default function NotificationForm({
             {t("platform")}
           </p>
           <label
-            className={`relative inline-block h-12 w-20 rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 ${authorized ? "cursor-pointer" : "cursor-not-allowed"}`}
+            className={`relative inline-block h-12 w-20 rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 cursor-pointer`}
           >
             <input
               className="peer sr-only"
@@ -125,7 +121,6 @@ export default function NotificationForm({
               }
               name={"emailPlatformAnnouncements"}
               type="checkbox"
-              disabled={!authorized}
             />
             <ToggleIcon />
           </label>

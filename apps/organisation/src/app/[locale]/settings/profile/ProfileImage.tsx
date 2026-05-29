@@ -22,7 +22,7 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import Image from "next/image";
 
-function ProfileImage({ authorized }: { authorized: boolean }) {
+function ProfileImage() {
   const t = useTranslations("Settings.profile");
   const { data: session, update } = useSession();
   const [isUploading, setIsUploading] = useState(false);
@@ -182,36 +182,34 @@ function ProfileImage({ authorized }: { authorized: boolean }) {
         ) : (
           <div className="h-20 w-full bg-primary-50/40 rounded-[30px] animate-pulse"></div>
         )}
-        {authorized && (
-          <form
-            encType={"multipart/form-data"}
+        <form
+          encType={"multipart/form-data"}
+          className={
+            "px-6 lg:px-12 py-6 relative rounded-[100px] flex items-center justify-center gap-2 bg-black"
+          }
+        >
+          {isUploading ? (
+            <LoadingCircleSmall />
+          ) : (
+            <>
+              <ImageIcon size="20" color="#ffffff" variant="Bulk" />
+              <span
+                className={"font-semibold text-[1.5rem] leading-8 text-white"}
+              >
+                {t("setProfile")}
+              </span>
+            </>
+          )}
+          <input
+            type={"file"}
+            accept={"image/*"}
+            name={"user-profile"}
+            onChange={handleFileChange}
             className={
-              "px-6 lg:px-12 py-6 relative rounded-[100px] flex items-center justify-center gap-2 bg-black"
+              "absolute top-0 left-0 w-full h-full opacity-0 z-50 cursor-pointer "
             }
-          >
-            {isUploading ? (
-              <LoadingCircleSmall />
-            ) : (
-              <>
-                <ImageIcon size="20" color="#ffffff" variant="Bulk" />
-                <span
-                  className={"font-semibold text-[1.5rem] leading-8 text-white"}
-                >
-                  {t("setProfile")}
-                </span>
-              </>
-            )}
-            <input
-              type={"file"}
-              accept={"image/*"}
-              name={"user-profile"}
-              onChange={handleFileChange}
-              className={
-                "absolute top-0 left-0 w-full h-full opacity-0 z-50 cursor-pointer "
-              }
-            />
-          </form>
-        )}
+          />
+        </form>
       </div>
     </div>
   );

@@ -11,6 +11,11 @@ export function can(role: TRole, permission: TPermission): boolean {
   return (mask & permission) === permission;
 }
 
+/** Check a permission key against the myPermissions array from the session. */
+export function checkPermission(permissions: string[], key: string): boolean {
+  return permissions.includes(key);
+}
+
 export async function getUserRole(
   userId: string,
   organisationId: string,

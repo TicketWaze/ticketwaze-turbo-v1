@@ -122,6 +122,8 @@ export interface Organisation {
   organisationId: string;
   userId: string;
   organisationName: string;
+  myRole?: string | null;
+  myPermissions?: string[];
   organisationDescription: string;
   organisationEmail: string;
   organisationWebsite: string;

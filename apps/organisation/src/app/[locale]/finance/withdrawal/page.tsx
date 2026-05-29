@@ -2,7 +2,6 @@ import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import TopBar from "@/components/shared/TopBar";
 import { auth } from "@/lib/auth";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
 import { OrganisationWithdrawalRequest } from "@ticketwaze/typescript-config";
 import { getLocale, getTranslations } from "next-intl/server";
 import WithdrawalRequestPageContent from "./WithdrawalRequestPageContent";
@@ -15,13 +14,6 @@ export default async function WithdrawalPage({
   const t = await getTranslations("Finance");
   const locale = await getLocale();
   const session = await auth();
-  const authorized = await organisationPolicy.viewFinance(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
-  if (!authorized) {
-    return <UnauthorizedView />;
-  }
   const { page } = await searchParams;
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/withdrawal?limit=15&page=${page ?? 1}`,
@@ -35,6 +27,9 @@ export default async function WithdrawalPage({
       },
     },
   );
+  if (request.status === 403) {
+    return <UnauthorizedView />;
+  }
   const response = await request.json();
   const withdrawalRequest: OrganisationWithdrawalRequest =
     response.withdrawalRequest;

@@ -54,7 +54,6 @@ function Sidebar({ className }: { className: string }) {
       setIsLoading(false);
       return;
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${organisation?.organisationId}`,
@@ -74,11 +73,7 @@ function Sidebar({ className }: { className: string }) {
         setMembershipTier(res.membershipTier ?? null);
       })
       .finally(() => setIsLoading(false));
-  }, [
-    session?.user.accessToken,
-    organisation?.organisationId,
-    locale,
-  ]);
+  }, [session?.user.accessToken, organisation?.organisationId, locale]);
 
   const links = [
     {
@@ -112,7 +107,30 @@ function Sidebar({ className }: { className: string }) {
 
   async function switchOrganisation(organisation: Organisation) {
     setLoading(true);
-    await update({ activeOrganisation: organisation });
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisation.organisationId}/me`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.user.accessToken}`,
+            "Accept-Language": locale,
+            Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          },
+        },
+      );
+      const data = await res.json();
+      const enriched: Organisation =
+        data.status === "success"
+          ? {
+              ...organisation,
+              myRole: data.myRole,
+              myPermissions: data.myPermissions,
+            }
+          : organisation;
+      await update({ activeOrganisation: enriched });
+    } catch {
+      await update({ activeOrganisation: organisation });
+    }
     setLoading(false);
     CloseRef.current?.click();
     router.refresh();
@@ -268,9 +286,7 @@ function Sidebar({ className }: { className: string }) {
                 </li>
               )}
           {!isLoading && hasOrganisation.length === 0 && (
-            <CreateOrganisationDialog
-              setSelectedOrganisation={setSelectedOrganisation}
-            />
+            <CreateOrganisationDialog />
           )}
 
           {/* logout */}
@@ -310,7 +326,9 @@ function Sidebar({ className }: { className: string }) {
                     />
                   ) : (
                     <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
-                      {organisation?.organisationName?.slice()[0]?.toUpperCase()}
+                      {organisation?.organisationName
+                        ?.slice()[0]
+                        ?.toUpperCase()}
                     </span>
                   )}
 
