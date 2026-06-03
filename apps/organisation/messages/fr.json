@@ -557,6 +557,11 @@
     "create": "Créer une activité",
     "description": "Vos activités apparaîtront ici une fois que vous commencerez à les créer.",
     "nothing": "Rien à voir ici",
+    "upcoming": "À venir",
+    "ongoing": "En cours",
+    "history": "Historique",
+    "deleted": "Supprimées",
+    "deleted_description": "Vos activités supprimées apparaîtront ici.",
     "from": "À partir de",
     "free": "Gratuit",
     "single_event": {
@@ -680,10 +685,12 @@
           }
         }
       },
+      "deleted_notice": "Cette activité a été définitivement supprimée et ne peut pas être récupérée.",
       "filters": {
         "all": "Tous les statuts",
         "pending": "En attente",
-        "checked": "Enregistré"
+        "checked": "Enregistré",
+        "returned": "Remboursé"
       },
       "all": "Tous",
       "search": "Rechercher un ID de billet",
@@ -695,6 +702,32 @@
         "check": "Statut",
         "date_purchased": "Date d'achat",
         "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !"
+      },
+      "ticket_returns": {
+        "title": "Billets retournés",
+        "badge_suffix": "billet(s) retourné(s)",
+        "empty": "Aucun billet retourné.",
+        "drawer_title": "Détails du retour",
+        "close": "Fermer",
+        "table": {
+          "ticket_id": "ID du billet",
+          "full_name": "Nom complet",
+          "email": "Email",
+          "ticket_type": "Type de billet",
+          "amount_paid": "Prix payé",
+          "refunded": "Remboursé",
+          "reason": "Raison",
+          "was_checked": "Était enregistré",
+          "return_date": "Date de retour"
+        },
+        "reason": {
+          "user_initiated": "Retour client",
+          "event_cancelled": "Activité annulée"
+        },
+        "checked": {
+          "yes": "Oui",
+          "no": "Non"
+        }
       },
       "deletion": {
         "schedule_title": "Supprimer l'activité",

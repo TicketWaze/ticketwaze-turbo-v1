@@ -85,6 +85,27 @@ export interface UserAnalytic {
   updatedAt: DateTime;
 }
 
+export interface TicketReturn {
+  ticketReturnId: string;
+  ticketId: string | null;
+  ticketName: string;
+  ticketType: string;
+  fullName: string | null;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  ticketPrice: number;
+  ticketUsdPrice: number;
+  originalStatus: "PENDING" | "CHECKED";
+  eventId: string;
+  orderId: string;
+  organisationId: string;
+  ticketOwnerUserId: string | null;
+  reason: "USER_INITIATED" | "EVENT_CANCELLED";
+  initiatedByUserId: string | null;
+  createdAt: string;
+}
+
 export interface Ticket {
   ticketId: string;
   ticketName: string;
@@ -248,6 +269,7 @@ export interface Event {
   deletionReason: string | null;
   deletionRequestedAt: string | null;
   scheduledDeletionAt: string | null;
+  ticketReturns: TicketReturn[];
 }
 
 export interface User {
