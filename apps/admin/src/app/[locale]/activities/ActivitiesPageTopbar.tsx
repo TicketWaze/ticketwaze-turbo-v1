@@ -32,7 +32,7 @@ export default function ActivitiesPageTopbar({
           >
             {title}
           </h3>
-          <Select defaultValue="this_month">
+          {/* <Select defaultValue="this_month">
             <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
               <SelectValue placeholder="" />
             </SelectTrigger>
@@ -58,7 +58,7 @@ export default function ActivitiesPageTopbar({
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
-          </Select>
+          </Select> */}
         </div>
       </div>
     </div>
