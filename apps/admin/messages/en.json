@@ -784,5 +784,51 @@
         }
     }
     }
+  },
+
+  "Analytics": {
+    "title": "Platform Overview",
+    "description": "Track platform-wide metrics in real time and understand key trends.",
+    "revenue": "Total Revenue",
+    "users_registered": "Total Users Registered",
+    "attendees_registered": "Total Attendees Registered",
+    "organizers_registered": "Total Organizers Registered",
+    "activity_created": "Total Event Created",
+    "sold": "Total Tickets Sold",
+    "avg_tickets": "Avg. Tickets Per Attendee",
+    "top_organizer_revenue": "Top Organizer Revenue",
+    "noActivity": "No Activity",
+    "filters": {
+      "first": {
+        "all": "All activities",
+        "date": "This month"
+      }
+    },
+    "income": {
+      "title": "Income Performance",
+      "revenue": "Revenue Growth"
+    },
+    "user_demographics": {
+      "title": "User Demographics",
+      "gender_distribution": {
+        "title": "Gender Distribution",
+        "gender": {
+          "male": "Male",
+          "female": "Female",
+          "others": "Others"
+        }
+      },
+      "events_top": {
+        "title": "Top Activities"
+      }
+    },
+    "user": {
+      "title": "User Growth",
+      "chart": {
+        "sugn_ups": "User Signups",
+        "attendee": "Attendee",
+        "organizer": "Organizer"
+      }
+    }
   }
 }

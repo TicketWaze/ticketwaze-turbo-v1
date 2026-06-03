@@ -2,7 +2,12 @@ import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import { getLocale, getTranslations } from "next-intl/server";
 import EventPageDetails from "./components/EventPageDetails";
 import { auth } from "@/lib/auth";
-import { Event, EventPerformer, User } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  EventPerformer,
+  TicketReturn,
+  User,
+} from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import { extractIdFromSlug } from "@/lib/Slugify";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
@@ -37,6 +42,7 @@ export default async function Page({
   const tickets = event.tickets;
   const orders = event.orders;
   const eventPerformers: EventPerformer[] = event.eventPerformers;
+  const ticketReturns: TicketReturn[] = eventResponse.ticketReturns ?? [];
 
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,
@@ -64,6 +70,7 @@ export default async function Page({
         orders={orders}
         eventPerformers={eventPerformers}
         membershipTier={membershipTier}
+        ticketReturns={ticketReturns}
       />
     </OrganizerLayout>
   );

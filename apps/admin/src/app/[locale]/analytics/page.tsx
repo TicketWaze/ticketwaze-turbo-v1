@@ -1,5 +1,5 @@
-import AdminLayout from "@/components/Layouts/AdminLayout";
+import AnalyticsPageContent from "./AnalyticsPageContent";
 
 export default function AanalyticsPage() {
-  return <AdminLayout>AanalyticsPage</AdminLayout>;
+  return <AnalyticsPageContent/>
 }

@@ -779,5 +779,51 @@
         }
       }
     }
+  },
+
+  "Analytics": {
+    "title": "Vue d'ensemble de la plateforme",
+    "description": "Suivez les métriques de la plateforme en temps réel et comprenez les tendances clés.",
+    "revenue": "Revenu total",
+    "users_registered": "Total des utilisateurs inscrits",
+    "attendees_registered": "Total des participants inscrits",
+    "organizers_registered": "Total des organisateurs inscrits",
+    "activity_created": "Total des événements créés",
+    "sold": "Total des billets vendus",
+    "avg_tickets": "Moy. de billets par participant",
+    "top_organizer_revenue": "Revenu du meilleur organisateur",
+    "noActivity": "Aucune Activité",
+    "filters": {
+      "first": {
+        "all": "Toutes les activités",
+        "date": "Ce mois-ci"
+      }
+    },
+    "income": {
+      "title": "Performance des revenus",
+      "revenue": "Croissance des revenus"
+    },
+    "user_demographics": {
+      "title": "Démographie des utilisateurs",
+      "gender_distribution": {
+        "title": "Répartition par genre",
+        "gender": {
+          "male": "Homme",
+          "female": "Femme",
+          "others": "Autres"
+        }
+      },
+      "events_top": {
+        "title": "Meilleures activités"
+      }
+    },
+    "user": {
+      "title": "Croissance des utilisateurs",
+      "chart": {
+        "sugn_ups": "Inscriptions",
+        "attendee": "Participant",
+        "organizer": "Organisateur"
+      }
+    }
   }
 }
