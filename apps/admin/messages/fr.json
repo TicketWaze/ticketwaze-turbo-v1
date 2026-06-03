@@ -280,20 +280,13 @@
       },
       "details": {
         "title": "Plus de détails",
-        "organiser": {
-          "name": "Cap-Haïtien Music Alliance",
-          "followers": "823 abonnés"
-        },
         "button": {
-          "view": "Voir le profil"
-        },
-        "date": "11 août 2024",
-        "hour": "11h00 AM - 17h00 PM",
-        "address": "Centre Culturel de Cap-Haïtien, Rue 20 Avenue, Cap-Haïtien, Haïti"
+          "view": "Profil"
+        }
       },
       "resume": {
         "performance": {
-          "title": "Performance de l'activité",
+          "title": "Performance",
           "total": "Revenu total",
           "tickets": {
             "sold": "Billets vendus",

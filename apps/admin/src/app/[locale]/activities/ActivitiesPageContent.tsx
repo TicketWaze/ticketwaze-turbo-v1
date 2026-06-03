@@ -49,7 +49,7 @@ export default function ActivitiesPageContent({
     router.push(`/activities?status=${value}`);
   }
   return (
-    <>
+    <div className="overflow-y-scroll flex flex-col gap-8">
       <PageLoader isLoading={isLoading} />
       <ActivitiesPageTopbar
         title={t("title")}
@@ -116,7 +116,7 @@ export default function ActivitiesPageContent({
           </p>
         </div>
       </div>
-      <div className="flex justify-between">
+      <div className="flex flex-col lg:flex-row gap-4 justify-between">
         <h4 className="font-medium inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
           {t("list.title")}
         </h4>
@@ -157,7 +157,7 @@ export default function ActivitiesPageContent({
               </SelectGroup>
             </SelectContent>
           </Select>
-          <Select defaultValue="all_period">
+          {/* <Select defaultValue="all_period">
             <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
               <SelectValue placeholder="" />
             </SelectTrigger>
@@ -183,7 +183,7 @@ export default function ActivitiesPageContent({
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
-          </Select>
+          </Select> */}
         </div>
       </div>
       <Table>
@@ -212,7 +212,7 @@ export default function ActivitiesPageContent({
             </TableHead>
             <TableHead
               className={
-                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
               }
             >
               {t("list.table.sold")}
@@ -280,7 +280,7 @@ export default function ActivitiesPageContent({
                 </TableCell>
                 <TableCell
                   className={
-                    "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                    "text-[1.5rem] font-medium hidden lg:table-cell leading-8 text-neutral-900"
                   }
                 >
                   <span className={"cursor-pointer py-6"}>
@@ -344,11 +344,11 @@ export default function ActivitiesPageContent({
               <Image src={MoneySend} alt="No Events" width={50} height={50} />
             </div>
           </div>
-          <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+          <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
             {t("list.noActivities")}
           </p>
         </div>
       )}
-    </>
+    </div>
   );
 }
