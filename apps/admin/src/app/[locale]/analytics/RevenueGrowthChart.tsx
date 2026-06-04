@@ -18,15 +18,15 @@ function generateRandomData() {
       labels.push(i.toString().padStart(2, "0"));
     }
 
-    // Algorithme pour simuler la forme de ton image (fausse tendance)
+
     let baseValue = 40;
     if (i <= 20) {
-      baseValue += i * 1.8; // Ça monte jusqu'à l'index 20
+      baseValue += i * 1.8; 
     } else {
-      baseValue += 20 * 1.8 - (i - 20) * 2.5; // Ça redescend après
+      baseValue += 20 * 1.8 - (i - 20) * 2.5; 
     }
 
-    // On ajoute un facteur random de +/- 3 pour que ce soit vivant mais pas chaotique
+    
     const randomNoise = (Math.random() - 0.5) * 6;
     data.push(Math.max(10, Math.round(baseValue + randomNoise)));
   }
@@ -44,7 +44,7 @@ export default function RevenueGrowthChart() {
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
 
-    // Génération des fausses données au montage du composant
+    
     const { labels, data } = generateRandomData();
 
     if (chartRef.current) {
@@ -69,7 +69,7 @@ export default function RevenueGrowthChart() {
             pointHoverRadius: 5,
             fill: true,
             backgroundColor: gradient,
-            tension: 0.1, // Garde les lignes semi-tendues de ton screen
+            tension: 0.1, 
           },
         ],
       },
@@ -99,7 +99,7 @@ export default function RevenueGrowthChart() {
     });
 
     return () => chartRef.current?.destroy();
-  }, []); // Tableau de dépendances vide = s'exécute une seule fois au chargement
+  }, []); 
 
   return (
     <div style={{ width: "100%", height: "200px" }}>

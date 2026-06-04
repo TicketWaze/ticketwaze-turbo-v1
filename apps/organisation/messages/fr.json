@@ -360,7 +360,20 @@
     "tickets": {
       "title": "Informations sur les ventes de billets",
       "classes": "Distribution des classes de billets",
-      "daily": "Ventes de billets quotidiennes"
+      "daily": "Ventes de billets quotidiennes",
+      "daily_chart": {
+      "today": "Aujourd'hui",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven",
+      "sat": "Sam",
+      "sun": "Dim",
+      "tickets": "ticket",
+      "ticketsPlural": "tickets",
+      "forecast": "Prévisions"
+      }
     },
     "event": {
       "event_demographics": {
