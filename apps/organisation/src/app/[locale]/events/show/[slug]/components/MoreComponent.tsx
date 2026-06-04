@@ -60,6 +60,7 @@ export default function MoreComponent({
   const pathname = usePathname();
 
   const isPendingDeletion = deletionStatus === "pending_deletion";
+  const isDeleted = deletionStatus === "deleted";
 
   // Grace period: min(3, ceil(daysLeft)), shown before the API confirms
   const graceDays =
@@ -138,7 +139,8 @@ export default function MoreComponent({
               daysLeft !== null &&
               daysLeft > 0 &&
               !isFree &&
-              !isPendingDeletion && (
+              !isPendingDeletion &&
+              !isDeleted && (
                 <li>
                   <Link
                     href={`${slug}/discount-codes`}
@@ -153,7 +155,7 @@ export default function MoreComponent({
                   </Link>
                 </li>
               )}
-            {daysLeft !== null && daysLeft > 0 && !isPendingDeletion && (
+            {daysLeft !== null && daysLeft > 0 && !isPendingDeletion && !isDeleted && (
               <li>
                 <Dialog>
                   <DialogTrigger className="w-full">

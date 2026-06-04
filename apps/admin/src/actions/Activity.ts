@@ -7,6 +7,7 @@ export async function UpdateEventStatusAction(
   adminStatus: string,
   accessToken: string,
   locale: string,
+  rejectionReason?: string,
 ) {
   try {
     const request = await fetch(
@@ -19,7 +20,12 @@ export async function UpdateEventStatusAction(
           "Accept-Language": locale,
           origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
         },
-        body: JSON.stringify({ status: adminStatus }),
+        body: JSON.stringify({
+          status: adminStatus,
+          ...(adminStatus === "rejected" && rejectionReason
+            ? { rejectionReason }
+            : {}),
+        }),
       },
     );
     const data = await request.json();

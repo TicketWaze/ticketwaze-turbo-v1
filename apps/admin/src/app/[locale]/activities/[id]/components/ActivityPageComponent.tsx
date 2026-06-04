@@ -1,12 +1,12 @@
 "use client";
 import BackButton from "@/components/shared/BackButton";
 import { ButtonBlack } from "@/components/shared/buttons";
+import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar2, Location, Clock } from "iconsax-reactjs";
 import Separator from "@/components/shared/Separator";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import Link from "next/link";
 import { ActivityAttendances } from "./ActivityAttendances";
 import { Event } from "@ticketwaze/typescript-config";
@@ -74,31 +74,30 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
   return (
     <div className="flex flex-col gap-8 h-full overflow-hidden">
       <BackButton text={t("activity.back")}></BackButton>
-      <div className="mb-6 flex justify-between items-center">
+      <div className="flex justify-between items-center">
         <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem]">
           {event.eventName}
         </h2>
-        <EventStatusDialog event={event} />
+        <EventStatusDialog event={event} className="hidden lg:flex" />
       </div>
-      <main className="w-full gap-16 flex flex-col lg:grid lg:grid-cols-[15fr_21fr] lg:min-h-0">
-        <div className="flex flex-col gap-8 overflow-y-auto min-h-0 max-h-[calc(100vh-200px)]">
-          <div className="w-fit max-h-[29.8rem] overflow-hidden rounded-[10px] shrink-0">
-            <Image
-              src={event.eventImageUrl}
-              width={400}
-              height={298}
-              alt="img"
-              className="w-full"
-            />
-          </div>
+      <main className="w-full gap-16 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden flex flex-col lg:grid lg:grid-cols-[15fr_21fr]">
+        <div className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
+          <EventStatusDialog event={event} className="lg:hidden" />
+          <EventImageLightbox
+            src={event.eventImageUrl}
+            width={400}
+            height={298}
+            alt={event.eventName}
+          />
           <Separator />
           <div className="flex flex-col gap-4">
             <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
               {t("activity.about.title")}
             </span>
-            <p className="text-[1.5rem] leading-12 text-neutral-700">
-              {event.eventDescription}
-            </p>
+            <div
+              className="rich-text text-[1.5rem] leading-8 text-neutral-700"
+              dangerouslySetInnerHTML={{ __html: event.eventDescription }}
+            />
           </div>
           <Separator />
           <div className="flex flex-col gap-8">
@@ -166,7 +165,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
           <div></div>
         </div>
 
-        <div className="overflow-y-auto min-h-0 max-h-[calc(100vh-200px)]">
+        <div className="lg:overflow-y-auto lg:min-h-0">
           <Tabs defaultValue="performance" className="w-full">
             <TabsList className="w-full lg:w-fit mx-auto lg:mx-0 mb-8">
               <TabsTrigger value="performance">
@@ -221,6 +220,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
             <ActivityAttendances event={event} />
           </Tabs>
         </div>
+        <div className="lg:hidden"></div>
       </main>
     </div>
   );

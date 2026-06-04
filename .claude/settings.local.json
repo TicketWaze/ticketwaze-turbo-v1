@@ -47,7 +47,11 @@
       "Bash(git checkout *)",
       "Bash(pnpm --filter organisation add @tiptap/extension-underline)",
       "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\organisation\" -Exclude node_modules -Recurse -File | Where-Object { $_.Extension -in @\\('.ts', '.tsx', '.js', '.jsx', '.json'\\) } | Select-Object -ExpandProperty FullName | Select-Object -First 100)",
-      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\organisation\" -Recurse -File | Where-Object { $_.Directory -notmatch 'node_modules|\\\\.next' -and $_.Extension -in @\\('.ts', '.tsx', '.js', '.jsx', '.json'\\) } | Select-Object -ExpandProperty FullName | Select-Object -First 200)"
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\ezena\\\\Documents\\\\TicketWaze\\\\ticketwaze-turbo-v1\\\\apps\\\\organisation\" -Recurse -File | Where-Object { $_.Directory -notmatch 'node_modules|\\\\.next' -and $_.Extension -in @\\('.ts', '.tsx', '.js', '.jsx', '.json'\\) } | Select-Object -ExpandProperty FullName | Select-Object -First 200)",
+      "Bash(Format-Table FullName)",
+      "Bash(dir /s /b \"C:\\\\Users\\\\Windows\\\\Documents\\\\ticketwaze\\\\ticketwaze-turbo-v1\\\\apps\\\\organisation\\\\src\\\\app\")",
+      "Bash(findstr /i upgrade)",
+      "Bash(dir *)"
     ]
   }
 }

@@ -571,6 +571,11 @@
     "create": "Create activity",
     "description": "Your activities will show up here once you start creating.",
     "nothing": "Nothing to see here",
+    "upcoming": "Upcoming",
+    "ongoing": "Ongoing",
+    "history": "History",
+    "deleted": "Deleted",
+    "deleted_description": "Your deleted activities will appear here.",
     "from": "From",
     "free": "Free",
     "single_event": {
@@ -694,10 +699,12 @@
           }
         }
       },
+      "deleted_notice": "This activity has been permanently deleted and cannot be recovered.",
       "filters": {
         "all": "All status",
         "pending": "Pending",
-        "checked": "Checked-In"
+        "checked": "Checked-In",
+        "returned": "Returned"
       },
       "all": "All",
       "search": "Search ticketID",
@@ -709,6 +716,32 @@
         "check": "Check-in status",
         "date_purchased": "Date purchased",
         "description": "Once attendees start purchasing tickets, the details will appear here. Promote your activity to drive sales!"
+      },
+      "ticket_returns": {
+        "title": "Returned Tickets",
+        "badge_suffix": "ticket(s) returned",
+        "empty": "No tickets have been returned.",
+        "drawer_title": "Return Details",
+        "close": "Close",
+        "table": {
+          "ticket_id": "Ticket ID",
+          "full_name": "Full Name",
+          "email": "Email",
+          "ticket_type": "Ticket Type",
+          "amount_paid": "Amount Paid",
+          "refunded": "Refunded",
+          "reason": "Reason",
+          "was_checked": "Was Checked In",
+          "return_date": "Return Date"
+        },
+        "reason": {
+          "user_initiated": "Customer Return",
+          "event_cancelled": "Event Cancelled"
+        },
+        "checked": {
+          "yes": "Yes",
+          "no": "No"
+        }
       },
       "deletion": {
         "schedule_title": "Delete Activity",

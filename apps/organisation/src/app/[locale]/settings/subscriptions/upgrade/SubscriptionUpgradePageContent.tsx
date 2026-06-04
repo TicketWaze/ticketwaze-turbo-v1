@@ -3,7 +3,7 @@ import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationChec
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { Input } from "@/components/shared/Inputs";
-import { MembershipTier } from "@ticketwaze/typescript-config";
+import { MembershipTier, OrganisationSubscription } from "@ticketwaze/typescript-config";
 import {
   ArrowLeft2,
   CardPos,
@@ -102,14 +102,21 @@ function StepIndicator({
 export default function SubscriptionUpgradePageContent({
   membershipTier,
   membershipTiers,
+  organisationSubscriptions,
 }: {
   membershipTier: MembershipTier;
   membershipTiers: MembershipTier[];
+  organisationSubscriptions: OrganisationSubscription[];
 }) {
   const t = useTranslations("Settings.subscriptions");
   const { data: session } = useSession();
   const router = useRouter();
   const currentPlan = membershipTier.membershipName;
+
+  const activeSub = organisationSubscriptions.find(
+    (s) => s.status === "ACTIVE" || s.status === "CANCELED",
+  );
+  const isOnTrial = activeSub?.isTrial === true;
 
   const [step, setStep] = useState<Step>("plans");
   const [selectedPlan, setSelectedPlan] = useState<MembershipTier | null>(null);
@@ -251,7 +258,7 @@ export default function SubscriptionUpgradePageContent({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
-                  className={`flex-1 flex flex-col rounded-[24px] overflow-hidden ${currentPlan === "pro" ? "opacity-60 pointer-events-none" : ""}`}
+                  className={`flex-1 flex flex-col rounded-[24px] overflow-hidden ${currentPlan === "pro" && !isOnTrial ? "opacity-60 pointer-events-none" : ""}`}
                 >
                   <div className="bg-primary-900 px-8 pt-8 pb-12 flex flex-col gap-3">
                     <div className="flex items-start justify-between gap-3">
@@ -261,9 +268,9 @@ export default function SubscriptionUpgradePageContent({
                           : t("payment.billed_yearly")}
                       </span>
                       <span
-                        className={`shrink-0 text-[1rem] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${currentPlan === "pro" ? "bg-primary-500 text-white" : "bg-white/10 text-white/70"}`}
+                        className={`shrink-0 text-[1rem] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${currentPlan === "pro" && !isOnTrial ? "bg-primary-500 text-white" : "bg-white/10 text-white/70"}`}
                       >
-                        {currentPlan === "pro" ? t("pro.tag") : t("pro.most")}
+                        {currentPlan === "pro" && !isOnTrial ? t("pro.tag") : t("pro.most")}
                       </span>
                     </div>
                     <h2 className="text-white font-primary font-medium text-[4.5rem] leading-[1]">
@@ -288,11 +295,11 @@ export default function SubscriptionUpgradePageContent({
                       <Feature>{t("pro.list.7")}</Feature>
                     </ul>
 
-                    {currentPlan === "pro" ? (
+                    {currentPlan === "pro" && !isOnTrial ? (
                       <p className="text-center text-[1.3rem] font-medium text-primary-500 py-2">
                         {t("pro.tag")} ✓
                       </p>
-                    ) : currentPlan === "free" ? (
+                    ) : currentPlan === "free" || isOnTrial ? (
                       <div className="flex flex-col gap-3">
                         <button
                           onClick={() => selectPlan(proTier)}
@@ -301,17 +308,19 @@ export default function SubscriptionUpgradePageContent({
                           <Crown size="18" color="#fff" variant="Bulk" />
                           {t("pro.cta")}
                         </button>
-                        <button
-                          onClick={startTrial}
-                          disabled={isStartingTrial}
-                          className="w-full py-[14px] rounded-full border border-primary-900/25 text-primary-900 font-medium text-[1.4rem] cursor-pointer hover:bg-primary-900/5 transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
-                        >
-                          {isStartingTrial ? (
-                            <LoadingCircleSmall />
-                          ) : (
-                            t("trial_cta", { days: TRIAL_DAYS })
-                          )}
-                        </button>
+                        {!isOnTrial && (
+                          <button
+                            onClick={startTrial}
+                            disabled={isStartingTrial}
+                            className="w-full py-[14px] rounded-full border border-primary-900/25 text-primary-900 font-medium text-[1.4rem] cursor-pointer hover:bg-primary-900/5 transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                          >
+                            {isStartingTrial ? (
+                              <LoadingCircleSmall />
+                            ) : (
+                              t("trial_cta", { days: TRIAL_DAYS })
+                            )}
+                          </button>
+                        )}
                       </div>
                     ) : null}
                   </div>

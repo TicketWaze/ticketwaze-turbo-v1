@@ -43,9 +43,14 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
             {event.adminStatus.toUpperCase()}
           </div>
         )}
-        {event.adminStatus === "approved" && (
+        {event.adminStatus === "approved" && event.deletionStatus !== "deleted" && (
           <div className="bg-success block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
             {event.adminStatus.toUpperCase()}
+          </div>
+        )}
+        {event.deletionStatus === "deleted" && (
+          <div className="bg-neutral-500 block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
+            DELETED
           </div>
         )}
         {event.adminStatus === "rejected" && (

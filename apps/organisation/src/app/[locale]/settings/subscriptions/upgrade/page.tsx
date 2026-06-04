@@ -3,7 +3,7 @@ import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { auth } from "@/lib/auth";
 import { getLocale, getTranslations } from "next-intl/server";
 import SubscriptionUpgradePageContent from "./SubscriptionUpgradePageContent";
-import { MembershipTier } from "@ticketwaze/typescript-config";
+import { MembershipTier, OrganisationSubscription } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 
 export default async function SubscriptionUpgradePage() {
@@ -40,6 +40,8 @@ export default async function SubscriptionUpgradePage() {
   const tiersResponse = await tiersRequest.json();
   const membershipTier: MembershipTier = subResponse.membershipTier;
   const membershipTiers: MembershipTier[] = tiersResponse.memberships ?? [];
+  const organisationSubscriptions: OrganisationSubscription[] =
+    subResponse.organisationSubscriptions ?? [];
 
   return (
     <OrganizerLayout title="" className="">
@@ -48,6 +50,7 @@ export default async function SubscriptionUpgradePage() {
       <SubscriptionUpgradePageContent
         membershipTier={membershipTier}
         membershipTiers={membershipTiers}
+        organisationSubscriptions={organisationSubscriptions}
       />
     </OrganizerLayout>
   );
