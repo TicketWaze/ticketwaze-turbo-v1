@@ -361,7 +361,20 @@
     "tickets": {
       "title": "Ticket Sales Insights",
       "classes": "Ticket Classes Distribution",
-      "daily": "Daily Ticket Sales"
+      "daily": "Daily Ticket Sales",
+      "daily_chart": {
+        "today": "Today",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun",
+        "tickets": "ticket",
+        "ticketsPlural": "tickets",
+        "forecast": "Forecast"
+      }
     },
     "event": {
       "event_demographics": {
