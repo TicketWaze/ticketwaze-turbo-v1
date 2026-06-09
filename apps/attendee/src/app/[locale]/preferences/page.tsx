@@ -36,7 +36,7 @@ export default async function PreferencesPage() {
       <SimpleTopbar title={t("title")} />
       <div
         className={
-          "flex flex-col gap-16 w-full lg:w-212 mx-auto overflow-y-scroll overflow-x-hidden h-full"
+          "flex flex-col gap-16 w-full lg:w-212 mx-auto lg:overflow-y-scroll lg:overflow-x-hidden lg:h-full"
         }
       >
         <UserInterest userPreferences={userPreferences} />

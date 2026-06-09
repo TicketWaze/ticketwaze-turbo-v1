@@ -188,7 +188,7 @@ export default function HistoryEventPage() {
           </Link>
         </div>
       </div>
-      <main className="w-full gap-8 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:min-h-0 overflow-y-auto h-full">
+      <main className="w-full gap-8 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:min-h-0 lg:overflow-y-auto lg:h-full">
         {/* Left column content */}
         <div className="flex flex-col gap-8 lg:overflow-y-auto min-h-0">
           <div className="w-full max-h-[29.8rem] overflow-hidden rounded-[10px] shrink-0">

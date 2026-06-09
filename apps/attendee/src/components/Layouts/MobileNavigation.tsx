@@ -90,7 +90,7 @@ export default function MobileNavigation({
     return pathname.startsWith(path);
   }
   return (
-    <nav className={cn(`lg:hidden rounded-t-3xl px-[1.5rem]`, className)}>
+    <nav className={cn("fixed bottom-0 inset-x-0 z-50 lg:hidden rounded-t-3xl px-6 pt-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] bg-neutral-200", className)}>
       <ul className={" flex gap-4 justify-between w-full"}>
         <li>
           <Link

@@ -131,7 +131,7 @@ export default async function EventPage({
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
           {event.eventName}
         </span>
-        <main className="w-full gap-8 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:min-h-0 overflow-y-auto h-full">
+        <main className="w-full gap-8 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:min-h-0 lg:overflow-y-auto lg:h-full">
           <div className="flex flex-col gap-8 overflow-y-auto min-h-0">
             <EventImageLightbox
               src={event.eventImageUrl}

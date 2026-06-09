@@ -57,7 +57,7 @@ export default function WalletPageContent({
           </span>
         </div>
       </header>
-      <div className="overflow-y-scroll h-full ">
+      <div className="lg:overflow-y-scroll lg:h-full ">
         <div
           className={
             "grid grid-cols-2 lg:grid-cols-4 divide-x divide-neutral-100 mb-10 border-neutral-100 border-b"
