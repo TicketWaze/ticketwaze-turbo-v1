@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
 
 const TRIAL_DAYS = 15; // change this to update the free trial duration
+const YEARLY_DISCOUNT = 0.1; // 10% off for annual billing
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
@@ -113,9 +114,9 @@ export default function SubscriptionUpgradePageContent({
   const router = useRouter();
   const currentPlan = membershipTier.membershipName;
 
-  const activeSub = organisationSubscriptions.find(
-    (s) => s.status === "ACTIVE" || s.status === "CANCELED",
-  );
+  const activeSub =
+    organisationSubscriptions.find((s) => s.status === "ACTIVE") ??
+    organisationSubscriptions.find((s) => s.status === "CANCELED");
   const isOnTrial = activeSub?.isTrial === true;
 
   const [step, setStep] = useState<Step>("plans");
@@ -208,8 +209,15 @@ export default function SubscriptionUpgradePageContent({
   const planLabel = (tier: MembershipTier) =>
     tier.membershipName === "pro" ? t("pro.title") : t("premium.title");
 
-  const displayPrice = (tier: MembershipTier) =>
-    `$${Number(tier.membershipUsdPrice).toFixed(2)}`;
+  const basePrice = (tier: MembershipTier) => Number(tier.membershipUsdPrice);
+  const displayPrice = (tier: MembershipTier) => {
+    const price = billingCycle === "yearly"
+      ? basePrice(tier) * (1 - YEARLY_DISCOUNT)
+      : basePrice(tier);
+    return `$${price.toFixed(2)}`;
+  };
+  const originalPrice = (tier: MembershipTier) =>
+    `$${basePrice(tier).toFixed(2)}`;
 
   return (
     <div className="overflow-y-auto pb-16">
@@ -276,7 +284,12 @@ export default function SubscriptionUpgradePageContent({
                     <h2 className="text-white font-primary font-medium text-[4.5rem] leading-[1]">
                       {t("pro.title")}
                     </h2>
-                    <div className="flex items-baseline gap-1 mt-1">
+                    <div className="flex items-baseline gap-2 mt-1 flex-wrap">
+                      {billingCycle === "yearly" && (
+                        <span className="text-white/40 text-[2rem] font-primary font-medium line-through">
+                          {originalPrice(proTier)}
+                        </span>
+                      )}
                       <span className="text-white text-[2.8rem] font-primary font-medium">
                         {displayPrice(proTier)}
                       </span>
@@ -352,7 +365,12 @@ export default function SubscriptionUpgradePageContent({
                       <h2 className="text-white font-primary font-medium text-[4.5rem] leading-[1]">
                         {t("premium.title")}
                       </h2>
-                      <div className="flex items-baseline gap-1 mt-1">
+                      <div className="flex items-baseline gap-2 mt-1 flex-wrap">
+                        {billingCycle === "yearly" && (
+                          <span className="text-white/40 text-[2rem] font-primary font-medium line-through">
+                            {originalPrice(premiumTier)}
+                          </span>
+                        )}
                         <span className="text-white text-[2.8rem] font-primary font-medium">
                           {displayPrice(premiumTier)}
                         </span>
@@ -447,6 +465,11 @@ export default function SubscriptionUpgradePageContent({
                 </div>
               </div>
               <div className="text-right shrink-0">
+                {billingCycle === "yearly" && (
+                  <div className="text-[1.4rem] text-neutral-400 line-through font-primary leading-none mb-0.5">
+                    {originalPrice(selectedPlan)}
+                  </div>
+                )}
                 <span className="text-[2rem] font-primary font-medium text-black">
                   {displayPrice(selectedPlan)}
                 </span>
