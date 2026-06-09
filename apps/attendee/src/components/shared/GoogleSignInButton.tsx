@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import LoadingCircleSmall from "./LoadingCircleSmall";
 
@@ -17,6 +18,7 @@ export default function GoogleSignInButton({ referralCode, callbackUrl }: Props)
   const [buttonWidth, setButtonWidth] = useState(0);
   const { update } = useSession();
   const router = useRouter();
+  const t = useTranslations("Auth.login");
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -43,6 +45,10 @@ export default function GoogleSignInButton({ referralCode, callbackUrl }: Props)
         return;
       }
       const session = await update();
+      if (session?.user.deletionCancelled) {
+        toast.success(t("deletionCancelled"));
+        update({ user: { deletionCancelled: false } });
+      }
       if (!session?.user.isOnboarded) {
         router.push("/auth/onboarding");
       } else if (callbackUrl) {

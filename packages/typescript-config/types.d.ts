@@ -299,6 +299,7 @@ export interface User {
   isOnboarded: boolean;
   hasPassword: boolean;
   role: number;
+  deletionCancelled?: boolean;
 }
 
 export interface Admin {
