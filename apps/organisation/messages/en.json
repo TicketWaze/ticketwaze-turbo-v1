@@ -361,7 +361,20 @@
     "tickets": {
       "title": "Ticket Sales Insights",
       "classes": "Ticket Classes Distribution",
-      "daily": "Daily Ticket Sales"
+      "daily": "Daily Ticket Sales",
+      "daily_chart": {
+        "today": "Today",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat",
+        "sun": "Sun",
+        "tickets": "ticket",
+        "ticketsPlural": "tickets",
+        "forecast": "Forecast"
+      }
     },
     "event": {
       "event_demographics": {
@@ -1262,6 +1275,8 @@
       "trial_success": "Your {days}-day free trial is now active!",
       "trial_error": "Failed to start trial. Please try again.",
       "manage_billing": "Manage billing",
+      "resubscribe": "Get a new plan",
+      "canceled_notice": "Your subscription is canceled. You still have access until {date}.",
       "cancel_sub": "Cancel subscription",
       "cancel_title": "Cancel subscription",
       "cancel_warning": "Are you sure you want to cancel? You’ll keep access to your plan features until the end of the current period, then your account will revert to the Free plan.",
@@ -1277,6 +1292,24 @@
         "amount": "Amount paid",
         "status": "Transaction Status",
         "date": "Date Purchased"
+      },
+      "drawer": {
+        "title": "Subscription details",
+        "plan": "Plan",
+        "billing_cycle": "Billing cycle",
+        "payment_method": "Payment method",
+        "amount_usd": "Amount paid",
+        "start_date": "Start date",
+        "end_date": "End date",
+        "subscription_id": "Subscription ID",
+        "stripe_id": "Stripe ID",
+        "trial_label": "Trial subscription",
+        "cancel_at_end": "Cancels at period end",
+        "monthly": "Monthly",
+        "yearly": "Annual",
+        "stripe": "Credit / Debit Card",
+        "moncash": "Mon Cash",
+        "close": "Close"
       },
       "free": {
         "subtitle": "$0 / month",
@@ -1334,7 +1367,7 @@
         "billed_yearly": "Yearly",
         "billing_monthly": "Monthly",
         "billing_yearly": "Yearly",
-        "billing_save": "2 months free",
+        "billing_save": "10% off",
         "billed_yearly_label": "Billed annually",
         "back_plan": "Back to plans",
         "back_payment": "Back to payment",

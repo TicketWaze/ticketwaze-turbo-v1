@@ -2,7 +2,14 @@
 import { LinkPrimary } from "@/components/shared/Links";
 import { ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { Table, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogClose,
@@ -17,6 +24,8 @@ import {
   MembershipTier,
   OrganisationSubscription,
 } from "@ticketwaze/typescript-config";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
+import SubscriptionDetailDrawerContent from "./SubscriptionDetailDrawerContent";
 import { Calendar, Crown, Money3, Verify } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
@@ -61,9 +70,9 @@ export default function SubscriptionPageContent({
   const closeRef = useRef<HTMLButtonElement>(null);
   const [isCanceling, setIsCanceling] = useState(false);
 
-  const activeSub = organisationSubscriptions.find(
-    (s) => s.status === "ACTIVE" || s.status === "CANCELED",
-  );
+  const activeSub =
+    organisationSubscriptions.find((s) => s.status === "ACTIVE") ??
+    organisationSubscriptions.find((s) => s.status === "CANCELED");
 
   const now = new Date();
   const startDate = activeSub
@@ -168,6 +177,14 @@ export default function SubscriptionPageContent({
 
             {/* Card body */}
             <div className="bg-white px-8 py-7 flex flex-col gap-6">
+              {/* Canceled notice */}
+              {activeSub.status === "CANCELED" && endDate && (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-[12px] bg-[#FCE5EA] border border-failure/20">
+                  <span className="text-[1.3rem] text-failure leading-6">
+                    {t("canceled_notice", { date: formatDate(endDate, locale) })}
+                  </span>
+                </div>
+              )}
               {/* Dates row */}
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-center gap-3">
@@ -259,8 +276,17 @@ export default function SubscriptionPageContent({
                   </button>
                 )}
 
-                {!activeSub.cancelAtPeriodEnd ||
-                  (isTrial && (
+                {activeSub.status === "CANCELED" && (
+                  <LinkPrimary
+                    href="/settings/subscriptions/upgrade"
+                    className="flex-1 w-full gap-3 items-center justify-center whitespace-nowrap"
+                  >
+                    <Crown size="16" color="#fff" variant="Bulk" />
+                    {t("resubscribe")}
+                  </LinkPrimary>
+                )}
+
+                {activeSub.status !== "CANCELED" && (!activeSub.cancelAtPeriodEnd || isTrial) && (
                     <Dialog>
                       <DialogTrigger asChild>
                         <button className="flex-1 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full border border-failure/30 text-failure text-[1.3rem] font-medium hover:bg-[#FCE5EA] transition-colors cursor-pointer">
@@ -302,7 +328,7 @@ export default function SubscriptionPageContent({
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
-                  ))}
+                )}
               </div>
             </div>
           </div>
@@ -340,29 +366,8 @@ export default function SubscriptionPageContent({
         <span className="font-primary font-medium text-[18px] leading-10 text-black">
           {t("history")}
         </span>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                {t("table.id")}
-              </TableHead>
-              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                {t("table.tier")}
-              </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                {t("table.amount")}
-              </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                {t("table.status")}
-              </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                {t("table.date")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-        </Table>
 
-        {true && (
+        {organisationSubscriptions.length === 0 ? (
           <div className="w-132 lg:w-184 mx-auto flex flex-col items-center gap-20">
             <div className="w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100">
               <div className="w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200">
@@ -373,6 +378,54 @@ export default function SubscriptionPageContent({
               {t("description")}
             </p>
           </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                  {t("table.id")}
+                </TableHead>
+                <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                  {t("table.tier")}
+                </TableHead>
+                <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                  {t("table.amount")}
+                </TableHead>
+                <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                  {t("table.status")}
+                </TableHead>
+                <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                  {t("table.date")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {organisationSubscriptions.map((sub) => (
+                <Drawer key={sub.organisationSubscriptionId} direction="right">
+                  <DrawerTrigger asChild>
+                    <TableRow className="cursor-pointer hover:bg-neutral-50 transition-colors">
+                      <TableCell className="text-[1.3rem] text-neutral-600 py-5 font-mono">
+                        {sub.organisationSubscriptionId.slice(0, 8)}…
+                      </TableCell>
+                      <TableCell className="text-[1.3rem] font-medium text-black py-5 capitalize">
+                        {sub.membershipTier}
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-600 py-5">
+                        ${Number(sub.usdAmountPaid).toFixed(2)}
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell py-5">
+                        <StatusBadge status={sub.status} />
+                      </TableCell>
+                      <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-500 py-5">
+                        {formatDate(new Date(sub.createdAt as unknown as string), locale)}
+                      </TableCell>
+                    </TableRow>
+                  </DrawerTrigger>
+                  <SubscriptionDetailDrawerContent sub={sub} />
+                </Drawer>
+              ))}
+            </TableBody>
+          </Table>
         )}
         <div />
       </div>

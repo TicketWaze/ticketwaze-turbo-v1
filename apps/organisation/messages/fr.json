@@ -360,7 +360,20 @@
     "tickets": {
       "title": "Informations sur les ventes de billets",
       "classes": "Distribution des classes de billets",
-      "daily": "Ventes de billets quotidiennes"
+      "daily": "Ventes de billets quotidiennes",
+      "daily_chart": {
+      "today": "Aujourd'hui",
+      "mon": "Lun",
+      "tue": "Mar",
+      "wed": "Mer",
+      "thu": "Jeu",
+      "fri": "Ven",
+      "sat": "Sam",
+      "sun": "Dim",
+      "tickets": "ticket",
+      "ticketsPlural": "tickets",
+      "forecast": "Prévisions"
+      }
     },
     "event": {
       "event_demographics": {
@@ -1257,6 +1270,8 @@
       "trial_success": "Votre essai gratuit de {days} jours est maintenant actif !",
       "trial_error": "Échec du démarrage de l'essai. Veuillez réessayer.",
       "manage_billing": "Gérer la facturation",
+      "resubscribe": "Choisir un nouveau plan",
+      "canceled_notice": "Votre abonnement est annulé. Vous gardez l'accès jusqu'au {date}.",
       "cancel_sub": "Annuler l’abonnement",
       "cancel_title": "Annuler l’abonnement",
       "cancel_warning": "Êtes-vous sûr de vouloir annuler ? Vous conserverez l’accès aux fonctionnalités de votre plan jusqu’à la fin de la période en cours, puis votre compte reviendra au plan Gratuit.",
@@ -1272,6 +1287,24 @@
         "amount": "Montant payé",
         "status": "Statut de la transaction",
         "date": "Date d’achat"
+      },
+      "drawer": {
+        "title": "Détails de l’abonnement",
+        "plan": "Plan",
+        "billing_cycle": "Cycle de facturation",
+        "payment_method": "Méthode de paiement",
+        "amount_usd": "Montant payé",
+        "start_date": "Date de début",
+        "end_date": "Date de fin",
+        "subscription_id": "ID d’abonnement",
+        "stripe_id": "ID Stripe",
+        "trial_label": "Abonnement d’essai",
+        "cancel_at_end": "Annulation en fin de période",
+        "monthly": "Mensuel",
+        "yearly": "Annuel",
+        "stripe": "Carte bancaire",
+        "moncash": "Mon Cash",
+        "close": "Fermer"
       },
       "free": {
         "subtitle": "0 $ / mois",
@@ -1329,7 +1362,7 @@
         "billed_yearly": "Annuel",
         "billing_monthly": "Mensuel",
         "billing_yearly": "Annuel",
-        "billing_save": "2 mois offerts",
+        "billing_save": "-10%",
         "billed_yearly_label": "Facturé annuellement",
         "back_plan": "Retour aux plans",
         "back_payment": "Retour au paiement",
