@@ -62,7 +62,8 @@
         "terms": "Conditions d'utilisation",
         "and": " et notre ",
         "privacy": "Politique de confidentialité"
-      }
+      },
+      "deletionCancelled": "La suppression programmée de votre compte a été annulée. Bienvenue !"
     },
     "register": {
       "title": "Créer un compte",
@@ -842,7 +843,37 @@
     "account": {
       "title": "Compte",
       "created": "Date de création",
-      "delete": "Supprimer le compte"
+      "delete": "Supprimer le compte",
+      "delete_modal": {
+        "title": "Supprimer votre compte",
+        "body": "Cette action programmera l'anonymisation de votre compte. Toutes vos données personnelles seront définitivement supprimées après 30 jours. Vous pouvez annuler à tout moment en vous reconnectant.",
+        "reason_label": "Pourquoi partez-vous ? (requis)",
+        "reasons": {
+          "no_longer_needed": "Je n'ai plus besoin de ce compte",
+          "privacy_concerns": "Problèmes de confidentialité",
+          "found_better_alternative": "J'ai trouvé une meilleure alternative",
+          "too_many_emails": "Trop d'emails",
+          "other": "Autre"
+        },
+        "notes_placeholder": "Notes supplémentaires (facultatif)",
+        "cancel": "Annuler",
+        "submit": "Planifier la suppression",
+        "blocked_title": "Transférez la propriété d'abord",
+        "blocked_body": "Vous êtes propriétaire des organisations suivantes qui ont d'autres membres. Vous devez transférer la propriété avant de pouvoir supprimer votre compte :",
+        "blocked_solo_body": "Les organisations suivantes n'ont pas d'autres membres et seront désactivées lors de la suppression de votre compte :",
+        "go_to_settings": "Accéder aux paramètres",
+        "confirm_title": "Encore une chose",
+        "confirm_body": "Vous êtes le seul membre des organisations suivantes. Lorsque votre compte sera supprimé, vous perdrez définitivement l'accès à ces organisations et à toutes leurs données :",
+        "confirm_question": "Voulez-vous tout de même continuer ?",
+        "go_back": "Retour",
+        "confirm_deletion": "Confirmer la suppression",
+        "success_title": "Suppression planifiée",
+        "success_body": "Votre compte est programmé pour anonymisation le {date}. D'ici là, tout fonctionne normalement.",
+        "success_hint": "Vous avez changé d'avis ? Reconnectez-vous simplement et le processus sera automatiquement annulé.",
+        "anonymization_date": "Date d'anonymisation",
+        "countdown": "Déconnexion automatique en cours…",
+        "cancel_success": "Votre demande de suppression a été annulée."
+      }
     },
     "errors": {
       "firstname_length": "Le prénom doit contenir au moins 2 caractères",

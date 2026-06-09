@@ -63,6 +63,10 @@ export default function LoginPageContent({
       toast.error("Login failed");
     } else {
       const session = await update();
+      if (session?.user.deletionCancelled) {
+        toast.success(t("deletionCancelled"));
+        update({ user: { deletionCancelled: false } });
+      }
       if (!session?.user.userPreference) {
         if (
           session?.user?.organisations &&

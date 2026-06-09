@@ -10,10 +10,11 @@ import { UpdateUserProfile } from "@/actions/userActions";
 import { toast } from "sonner";
 import { User, UserAnalytic } from "@ticketwaze/typescript-config";
 import PageLoader from "@/components/PageLoader";
-import { ButtonPrimary, ButtonRed } from "@/components/shared/buttons";
+import { ButtonPrimary } from "@/components/shared/buttons";
 import { Input } from "@/components/shared/Inputs";
 import Separator from "@/components/shared/Separator";
 import ChangePassword from "./ChangePassword";
+import DeleteAccountModal from "./DeleteAccountModal";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import SendIcon from "./send-sqaure-2.svg";
@@ -321,7 +322,7 @@ export default function ProfilePageContent({
               {FormatDate(user.createdAt, locale, "local")}
             </span>
           </div>
-          <ButtonRed>{t("account.delete")}</ButtonRed>
+          <DeleteAccountModal />
         </div>
         <div></div>
       </div>

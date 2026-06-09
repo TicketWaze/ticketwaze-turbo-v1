@@ -373,7 +373,8 @@
         "sun": "Sun",
         "tickets": "ticket",
         "ticketsPlural": "tickets",
-        "forecast": "Forecast"
+        "forecast": "Forecast",
+        "ticketsSold": "Tickets Sold"
       }
     },
     "event": {

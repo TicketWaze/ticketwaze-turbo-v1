@@ -50,7 +50,8 @@
       "footer": {
         "text": "Don’t own an account?",
         "cta": "Sign up"
-      }
+      },
+      "deletionCancelled": "Your scheduled account deletion has been cancelled. Welcome back!"
     },
     "register": {
       "title": "Create an Account",
@@ -792,7 +793,37 @@
     "account": {
       "title": "Account",
       "created": "Date created",
-      "delete": "Delete Account"
+      "delete": "Delete Account",
+      "delete_modal": {
+        "title": "Delete your account",
+        "body": "This action will schedule your account for anonymization. All your personal data will be permanently removed after 30 days. You can cancel at any time by simply logging in again.",
+        "reason_label": "Why are you leaving? (required)",
+        "reasons": {
+          "no_longer_needed": "I no longer need this account",
+          "privacy_concerns": "Privacy concerns",
+          "found_better_alternative": "I found a better alternative",
+          "too_many_emails": "Too many emails",
+          "other": "Other"
+        },
+        "notes_placeholder": "Additional notes (optional)",
+        "cancel": "Cancel",
+        "submit": "Schedule deletion",
+        "blocked_title": "Transfer ownership first",
+        "blocked_body": "You are the owner of the following organisation(s) that have other members. You must transfer ownership before you can delete your account:",
+        "blocked_solo_body": "The following organisations have no other members and will be deactivated when your account is deleted:",
+        "go_to_settings": "Go to settings",
+        "confirm_title": "One last thing",
+        "confirm_body": "You are the sole member of the following organisation(s). When your account is deleted, you will permanently lose access to them and all their data:",
+        "confirm_question": "Do you still want to proceed?",
+        "go_back": "Go back",
+        "confirm_deletion": "Confirm deletion",
+        "success_title": "Deletion scheduled",
+        "success_body": "Your account is scheduled for anonymization on {date}. Until then, everything works as usual.",
+        "success_hint": "Changed your mind? Simply log in again and the process will be automatically cancelled.",
+        "anonymization_date": "Anonymization date",
+        "countdown": "Signing you out automatically…",
+        "cancel_success": "Your deletion request has been cancelled."
+      }
     },
     "errors": {
       "firstname_length": "First name must be at least 2 characters",
