@@ -19,6 +19,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import LoadingCircleSmall from "@/components/LoadingCircleSmall";
 import { useRouter } from "@/i18n/navigation";
+import { useRef, useState } from "react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+
+// Cloudflare's official always-pass test key — replace with your real site key via NEXT_PUBLIC_TURNSTILE_SITE_KEY
+const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
 
 function Hero() {
   const t = useTranslations("WaitlistPage.hero");
@@ -38,7 +44,19 @@ function Hero() {
   });
   const locale = useLocale();
   const router = useRouter();
+
+  // Honeypot ref — filled by bots, always empty for real users
+  const honeypotRef = useRef<HTMLInputElement>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
   async function submitHandler(data: TWaitlistSchema) {
+    // First-line defence: bots fill hidden fields, humans never do
+    if (honeypotRef.current?.value) return;
+
+    // Turnstile must have resolved before we proceed
+    if (!turnstileToken) return;
+
     try {
       const request = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/waitlist`,
@@ -49,7 +67,7 @@ function Hero() {
             origin: process.env.NEXT_PUBLIC_WEBSITE_URL!,
             "Accept-Language": locale,
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify({ ...data, turnstileToken }),
         },
       );
       const response = await request.json();
@@ -65,8 +83,13 @@ function Hero() {
       }
     } catch {
       toast.error(t("errors.failed"));
+    } finally {
+      // Always reset so the user can submit again without a page reload
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     }
   }
+
   return (
     <section className="bg-white py-[2.5rem] px-4 rounded-[3rem] flex flex-col gap-[6.5rem] items-center">
       <Navbar />
@@ -102,6 +125,23 @@ function Hero() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="flex flex-col gap-8 w-full items-center z-50 justify-center"
         >
+          {/* Honeypot — visually hidden, real users never touch it */}
+          <input
+            ref={honeypotRef}
+            name="_website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              opacity: 0,
+              height: 0,
+              width: 0,
+              pointerEvents: "none",
+            }}
+          />
+
           <div className="flex flex-col lg:flex-row gap-8 w-full">
             <div className="w-full">
               <input
@@ -139,22 +179,23 @@ function Hero() {
               )}
             </div>
           </div>
+
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={TURNSTILE_SITE_KEY}
+            onSuccess={setTurnstileToken}
+            onExpire={() => setTurnstileToken(null)}
+            onError={() => setTurnstileToken(null)}
+            options={{ theme: "light", size: "normal" }}
+          />
+
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !turnstileToken}
             className="px-12 py-5 w-full cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8 disabled:cursor-not-allowed flex items-center justify-center disabled:bg-primary-500/50"
           >
             {isSubmitting ? <LoadingCircleSmall /> : t("join")}
           </button>
-          {/* <Link
-                  href={"/waitlist"}
-                  className="px-[3rem] py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center gap-4"
-                >
-                  <Timer1 size="20" color="#E45B00" variant="Bulk" />
-                  <span className="font-medium font-sans text-[1.5rem] text-primary-500">
-                    {t("cta.waitlist")}
-                  </span>
-                </Link> */}
         </motion.form>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -176,45 +217,6 @@ function Hero() {
         </motion.div>
         <Image className={"absolute bottom-0"} src={HeroBg} alt={"Hero bg"} />
       </div>
-      {/* <header className={"flex relative flex-col items-center gap-[60px]"}>
-        <div
-          className={
-            "flex flex-col gap-8 items-center max-w-[340px] lg:max-w-[890px] mx-auto text-center pt-[50px] lg:pt-[80px]"
-          }
-        >
-          <h1
-            className={
-              "font-medium font-primary text-[3.8rem] lg:text-[7.8rem] leading-[45px] lg:leading-[90px] text-neutral-800"
-            }
-          >
-            {t("title-1")}
-            <span className={"text-primary-500 font-bold"}>
-              {t("title-2")}{" "}
-            </span>
-          </h1>
-          <p
-            className={
-              "font-normal text-[1.6rem] lg:text-[2.6rem] leading-[22.5px] lg:leading-[35px] text-neutral-700"
-            }
-          >
-            {t("description")}
-          </p>
-          <div className={"w-full flex flex-col gap-8"}>
-            <div className={"flex flex-col lg:flex-row gap-8"}>inputs</div>
-          </div>
-        </div>
-        <Image
-          src={WaitlistImg}
-          className={"hidden lg:block z-50"}
-          alt={"Waitlist image"}
-        />
-        <Image
-          src={WaitlistImgSm}
-          className={"lg:hidden z-50"}
-          alt={"Waitlist image"}
-        />
-        <Image className={"absolute bottom-0"} src={HeroBg} alt={"Hero bg"} />
-      </header> */}
     </section>
   );
 }
