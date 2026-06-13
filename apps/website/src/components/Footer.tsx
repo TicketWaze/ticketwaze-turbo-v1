@@ -18,7 +18,6 @@ import { toast } from "sonner";
 
 function Footer() {
   const t = useTranslations("HomePage.footer");
-  // TODO newsletter
   const NewsletterSchema = z.object({
     email: z.email({ error: t("emailError") }),
   });
@@ -44,7 +43,7 @@ function Footer() {
             "Accept-Language": locale,
           },
           body: JSON.stringify({ ...data, source: "website" }),
-        }
+        },
       );
       const response = await request.json();
       if (response.status === "success") {
@@ -266,7 +265,7 @@ function FooterLink({
       scroll={true}
       className={cn(
         "px-8 lg:px-[30px] py-4 lg:py-8 rounded-[100px] bg-primary-800 text-[1.6rem] leading-[22.5px]",
-        className
+        className,
       )}
       href={href}
     >

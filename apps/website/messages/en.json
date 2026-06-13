@@ -116,11 +116,11 @@
       "question-1": "Is Ticketwaze free to use?",
       "answer-1": "Creating an account and browsing activities is free. Ticket prices and any applicable fees are shown clearly before checkout.",
       "question-2": "Do I need an account to buy tickets?",
-      "answer-2": "Yes. You need a Ticketwaze account to purchase tickets so you can access, manage, and validate them securely.",
+      "answer-2": "No — you can check out as a guest without creating an account. However, guest purchases are not eligible for refunds and you won't have access to ticket management or order history. Creating a free Ticketwaze account unlocks the full experience, including refunds, ticket access, and more.",
       "question-3": "Can I buy multiple tickets at once?",
       "answer-3": "Yes, you can purchase multiple tickets in a single order, depending on the activity's limits.",
       "question-4": "Can I get a refund?",
-      "answer-4": "Refunds depend on the activity's refund policy set by the organizer. Please check the activity details before purchasing.",
+      "answer-4": "Refunds are available to registered users and depend on the activity's refund policy set by the organizer. Guest purchases are not eligible for refunds. Please check the activity details before purchasing.",
       "question-5": "Is my payment information secure?",
       "answer-5": "Yes. Ticketwaze uses secure payment processing and does not store sensitive card information."
     },

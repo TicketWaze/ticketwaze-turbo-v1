@@ -16,48 +16,46 @@ import LoadingCircleSmall from "@/components/LoadingCircleSmall";
 import { toast } from "sonner";
 import { useState } from "react";
 
+// Subject values are kept as stable English keys so they match the Zod enum
+// regardless of the UI locale. Display labels are translated separately.
+const GENERAL_SUBJECTS = [
+  "General questions",
+  "Media",
+  "Partnerships",
+  "Business collaborations",
+  "Non-urgent concerns.",
+] as const;
+
+const SUPPORT_SUBJECTS = [
+  "Account related issues",
+  "Activity help",
+  "Ticketing",
+  "Technical support",
+] as const;
+
 export default function ContactSection() {
   const t = useTranslations("ContactPage.section");
 
-  // General Contact Schema
   const GeneralContactSchema = z.object({
     fullName: z
       .string()
       .min(2, { error: t("errors.name.min") })
       .max(100, { error: t("errors.name.max") }),
     email: z.email({ error: t("errors.email") }),
-    subject: z.enum(
-      [
-        "General questions",
-        "Media",
-        "Partnerships",
-        "Business collaborations",
-        "Non-urgent concerns.",
-      ],
-      { error: t("errors.subject") }
-    ),
+    subject: z.enum(GENERAL_SUBJECTS, { error: t("errors.subject") }),
     message: z
       .string()
       .min(10, { error: t("errors.message.min") })
       .max(2000, { error: t("errors.message.max") }),
   });
 
-  // Support Contact Schema
   const SupportContactSchema = z.object({
     fullName: z
       .string()
       .min(2, { error: t("errors.name.min") })
       .max(100, { error: t("errors.name.max") }),
     email: z.email({ error: t("errors.email") }),
-    subject: z.enum(
-      [
-        "Account related issues",
-        "Activity help",
-        "Ticketing",
-        "Technical support",
-      ],
-      { error: t("errors.subject") }
-    ),
+    subject: z.enum(SUPPORT_SUBJECTS, { error: t("errors.subject") }),
     message: z
       .string()
       .min(10, { error: t("errors.message.min") })
@@ -67,28 +65,43 @@ export default function ContactSection() {
   type TGeneralContactSchema = z.infer<typeof GeneralContactSchema>;
   type TSupportContactSchema = z.infer<typeof SupportContactSchema>;
 
-  // General form
   const {
     register: registerGeneral,
     handleSubmit: handleSubmitGeneral,
     setValue: setValueGeneral,
-    resetField: resetFieldGeneral,
+    reset: resetGeneral,
+    watch: watchGeneral,
     formState: { errors: errorsGeneral, isSubmitting: isSubmittingGeneral },
   } = useForm<TGeneralContactSchema>({
     resolver: zodResolver(GeneralContactSchema),
   });
 
-  // Support form
   const {
     register: registerSupport,
     handleSubmit: handleSubmitSupport,
     setValue: setValueSupport,
-    resetField: resetFieldSupport,
+    reset: resetSupport,
+    watch: watchSupport,
     formState: { errors: errorsSupport, isSubmitting: isSubmittingSupport },
   } = useForm<TSupportContactSchema>({
     resolver: zodResolver(SupportContactSchema),
   });
+
   const locale = useLocale();
+
+  // Track a reset key for each Select so we can force a visual reset on success
+  const [generalSelectKey, setGeneralSelectKey] = useState(0);
+  const [supportSelectKey, setSupportSelectKey] = useState(0);
+
+  // Use watch() to track message length — avoids clobbering RHF's own onChange
+  const generalMessageLength = (watchGeneral("message") ?? "").length;
+  const supportMessageLength = (watchSupport("message") ?? "").length;
+
+  function charCounterClass(length: number) {
+    if (length === 0) return "";
+    return length >= 10 && length <= 2000 ? "text-success" : "text-failure";
+  }
+
   async function submitGeneralHandler(data: TGeneralContactSchema) {
     try {
       const request = await fetch(
@@ -106,14 +119,12 @@ export default function ContactSection() {
       const response = await request.json();
       if (response.status === "success") {
         toast.success(t("errors.success"));
-        resetFieldGeneral("email");
-        resetFieldGeneral("fullName");
-        resetFieldGeneral("message");
-        resetFieldGeneral("subject");
+        resetGeneral();
+        setGeneralSelectKey((k) => k + 1);
       } else {
         toast.error(t("errors.failed"));
       }
-    } catch (error) {
+    } catch {
       toast.error(t("errors.failed"));
     }
   }
@@ -135,20 +146,15 @@ export default function ContactSection() {
       const response = await request.json();
       if (response.status === "success") {
         toast.success(t("errors.success"));
-        resetFieldSupport("email");
-        resetFieldSupport("fullName");
-        resetFieldSupport("message");
-        resetFieldSupport("subject");
+        resetSupport();
+        setSupportSelectKey((k) => k + 1);
       } else {
         toast.error(t("errors.failed"));
       }
-    } catch (error) {
+    } catch {
       toast.error(t("errors.failed"));
     }
   }
-
-  const [generalWord, setGeneralWord] = useState(0);
-  const [supportWord, setSupportWord] = useState(0);
 
   return (
     <section className="bg-white py-[3rem] lg:py-[7.5rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center gap-[3.5rem] lg:gap-[100px]">
@@ -221,10 +227,13 @@ export default function ContactSection() {
                 className="w-full max-w-[493px]"
               >
                 <Select
-                  onValueChange={(e) =>
+                  key={generalSelectKey}
+                  disabled={isSubmittingGeneral}
+                  onValueChange={(value) =>
                     setValueGeneral(
                       "subject",
-                      e as TGeneralContactSchema["subject"]
+                      value as TGeneralContactSchema["subject"],
+                      { shouldValidate: true }
                     )
                   }
                 >
@@ -232,15 +241,15 @@ export default function ContactSection() {
                     <SelectValue placeholder={t("subject")} />
                   </SelectTrigger>
                   <SelectContent position="popper">
-                    <SelectItem value={t("genQuest")}>
+                    <SelectItem value="General questions">
                       {t("genQuest")}
                     </SelectItem>
-                    <SelectItem value={t("media")}>{t("media")}</SelectItem>
-                    <SelectItem value={t("partner")}>{t("partner")}</SelectItem>
-                    <SelectItem value={t("business")}>
+                    <SelectItem value="Media">{t("media")}</SelectItem>
+                    <SelectItem value="Partnerships">{t("partner")}</SelectItem>
+                    <SelectItem value="Business collaborations">
                       {t("business")}
                     </SelectItem>
-                    <SelectItem value={t("nonUgent")}>
+                    <SelectItem value="Non-urgent concerns.">
                       {t("nonUgent")}
                     </SelectItem>
                   </SelectContent>
@@ -255,7 +264,6 @@ export default function ContactSection() {
               <div className="w-full flex flex-col items-center max-w-[493px]">
                 <motion.textarea
                   {...registerGeneral("message")}
-                  onChange={(e) => setGeneralWord(e.target.value.length)}
                   disabled={isSubmittingGeneral}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -264,11 +272,11 @@ export default function ContactSection() {
                   placeholder={t("message")}
                   className="p-8 bg-neutral-100 h-[266px] resize-none rounded-[1.5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
                 />
-                {generalWord > 0 && (
+                {generalMessageLength > 0 && (
                   <span
-                    className={`self-end mt-3 text-[1.2rem] font-primary leading-8 ${generalWord >= 10 ? "text-success" : "text-failure"}`}
+                    className={`self-end mt-3 text-[1.2rem] font-primary leading-8 ${charCounterClass(generalMessageLength)}`}
                   >
-                    {generalWord}/2000
+                    {generalMessageLength}/2000
                   </span>
                 )}
                 {errorsGeneral.message && (
@@ -355,10 +363,13 @@ export default function ContactSection() {
                 className="w-full max-w-[493px]"
               >
                 <Select
-                  onValueChange={(e) =>
+                  key={supportSelectKey}
+                  disabled={isSubmittingSupport}
+                  onValueChange={(value) =>
                     setValueSupport(
                       "subject",
-                      e as TSupportContactSchema["subject"]
+                      value as TSupportContactSchema["subject"],
+                      { shouldValidate: true }
                     )
                   }
                 >
@@ -366,14 +377,14 @@ export default function ContactSection() {
                     <SelectValue placeholder={t("subject")} />
                   </SelectTrigger>
                   <SelectContent position="popper">
-                    <SelectItem value={t("account")}>{t("account")}</SelectItem>
-                    <SelectItem value={t("activity")}>
+                    <SelectItem value="Account related issues">
+                      {t("account")}
+                    </SelectItem>
+                    <SelectItem value="Activity help">
                       {t("activity")}
                     </SelectItem>
-                    <SelectItem value={t("ticketing")}>
-                      {t("ticketing")}
-                    </SelectItem>
-                    <SelectItem value={t("technical")}>
+                    <SelectItem value="Ticketing">{t("ticketing")}</SelectItem>
+                    <SelectItem value="Technical support">
                       {t("technical")}
                     </SelectItem>
                   </SelectContent>
@@ -387,7 +398,6 @@ export default function ContactSection() {
               <div className="w-full flex flex-col items-center max-w-[493px]">
                 <motion.textarea
                   {...registerSupport("message")}
-                  onChange={(e) => setSupportWord(e.target.value.length)}
                   disabled={isSubmittingSupport}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -396,11 +406,11 @@ export default function ContactSection() {
                   placeholder={t("message")}
                   className="p-8 bg-neutral-100 h-[266px] resize-none rounded-[1.5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
                 />
-                {supportWord > 0 && (
+                {supportMessageLength > 0 && (
                   <span
-                    className={`self-end mt-3 text-[1.2rem] font-primary leading-8 ${supportWord >= 10 ? "text-success" : "text-failure"}`}
+                    className={`self-end mt-3 text-[1.2rem] font-primary leading-8 ${charCounterClass(supportMessageLength)}`}
                   >
-                    {supportWord}/2000
+                    {supportMessageLength}/2000
                   </span>
                 )}
                 {errorsSupport.message && (
