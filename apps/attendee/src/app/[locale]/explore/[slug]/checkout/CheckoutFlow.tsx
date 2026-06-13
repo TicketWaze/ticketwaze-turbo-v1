@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft2 } from "iconsax-reactjs";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -69,6 +69,8 @@ export default function CheckoutFlow({
     lastName: "",
     email: "",
   });
+
+  const idempotencyKey = useRef(crypto.randomUUID());
 
   const { control, register, watch, setValue, getValues } = useForm<{
     tickets: TicketFormData[];
@@ -215,7 +217,10 @@ export default function CheckoutFlow({
         `${process.env.NEXT_PUBLIC_API_URL}/guest/events/${event.eventId}/payments/moncash`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            "X-Idempotency-Key": idempotencyKey.current,
+          },
           body: JSON.stringify({ guest: guestInfo, tickets }),
         },
       );
@@ -239,6 +244,7 @@ export default function CheckoutFlow({
         headers: {
           Authorization: `Bearer ${user!.accessToken}`,
           "Content-Type": "application/json",
+          "X-Idempotency-Key": idempotencyKey.current,
         },
         body: JSON.stringify(validAttendees),
       },
@@ -314,6 +320,7 @@ export default function CheckoutFlow({
         headers: {
           Authorization: `Bearer ${user!.accessToken}`,
           "Content-Type": "application/json",
+          "X-Idempotency-Key": idempotencyKey.current,
         },
         body: JSON.stringify(validAttendees),
       },

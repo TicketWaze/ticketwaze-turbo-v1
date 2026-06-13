@@ -32,7 +32,7 @@ export default function GoogleSignInButton({ referralCode, callbackUrl }: Props)
   }, []);
 
   async function handleSuccess(credentialResponse: CredentialResponse) {
-    if (!credentialResponse.credential) return;
+    if (!credentialResponse.credential || isLoading) return;
     setIsLoading(true);
     try {
       const result = await signIn("credentials", {
@@ -45,11 +45,22 @@ export default function GoogleSignInButton({ referralCode, callbackUrl }: Props)
         return;
       }
       const session = await update();
-      if (session?.user.deletionCancelled) {
+
+      // update() can return null in NextAuth v5 if the session cookie hasn't
+      // been flushed yet. Fall back to a hard redirect so the page reinitialises
+      // with the fresh cookie rather than acting on a stale/null session.
+      if (!session) {
+        window.location.href = callbackUrl
+          ? callbackUrl
+          : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/fr/explore`;
+        return;
+      }
+
+      if (session.user.deletionCancelled) {
         toast.success(t("deletionCancelled"));
         update({ user: { deletionCancelled: false } });
       }
-      if (!session?.user.isOnboarded) {
+      if (!session.user.isOnboarded) {
         router.push("/auth/onboarding");
       } else if (callbackUrl) {
         router.push(callbackUrl, { locale: session.user.userPreference?.appLanguage ?? "fr" });

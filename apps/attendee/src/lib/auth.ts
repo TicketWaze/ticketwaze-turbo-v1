@@ -88,36 +88,26 @@ const nextAuthResult = NextAuth({
      */
     async signIn({ user, account }) {
       if (account?.provider === "google") {
-        try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                idToken: account.id_token,
-              }),
-            },
-          );
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idToken: account.id_token }),
+          },
+        );
 
-          const data = await res.json();
-          if (data.status !== "success") {
-            throw new Error(
-              encodeURIComponent(
-                data.message || "Google authentication failed",
-              ),
-            );
-          }
-          // Map userId to id and attach to user
-          Object.assign(user, {
-            ...data.user,
-            id: data.user.userId,
-            deletionCancelled: data.deletionCancelled ?? false,
-          });
-          return true;
-        } catch (error) {
-          throw error;
+        const data = await res.json();
+        if (data.status !== "success") {
+          throw new Error(
+            encodeURIComponent(data.message || "Google authentication failed"),
+          );
         }
+        Object.assign(user, {
+          ...data.user,
+          id: data.user.userId,
+          deletionCancelled: data.deletionCancelled ?? false,
+        });
       }
 
       return true;
