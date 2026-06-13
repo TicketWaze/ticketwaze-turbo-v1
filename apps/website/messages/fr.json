@@ -116,11 +116,11 @@
       "question-1": "Ticketwaze est-il gratuit ?",
       "answer-1": "La création d’un compte et la navigation dans les activités sont gratuites. Les prix des billets et éventuels frais sont affichés clairement avant le paiement.",
       "question-2": "Ai-je besoin d’un compte pour acheter des billets ?",
-      "answer-2": "Oui. Un compte Ticketwaze est nécessaire pour acheter, gérer et valider vos billets en toute sécurité.",
+      "answer-2": "Non — vous pouvez acheter en mode invité sans créer de compte. Cependant, les achats en mode invité ne sont pas éligibles aux remboursements et vous n’aurez pas accès à la gestion de vos billets ni à l’historique de vos commandes. Créer un compte Ticketwaze gratuit vous donne accès à l’expérience complète : remboursements, gestion des billets, et bien plus.",
       "question-3": "Puis-je acheter plusieurs billets en une seule fois ?",
       "answer-3": "Oui, vous pouvez acheter plusieurs billets dans une même commande, selon les limites fixées par l’organisateur.",
       "question-4": "Puis-je obtenir un remboursement ?",
-      "answer-4": "Les remboursements dépendent de la politique de l’organisateur. Vérifiez les conditions de l’activité avant l’achat.",
+      "answer-4": "Les remboursements sont réservés aux utilisateurs disposant d’un compte et dépendent de la politique de remboursement définie par l’organisateur. Les achats en mode invité ne sont pas éligibles aux remboursements. Vérifiez les conditions de l’activité avant l’achat.",
       "question-5": "Mes informations de paiement sont-elles sécurisées ?",
       "answer-5": "Oui. Ticketwaze utilise un traitement de paiement sécurisé et ne conserve pas vos données sensibles."
     },
