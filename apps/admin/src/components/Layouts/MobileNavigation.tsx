@@ -8,6 +8,7 @@ import {
   Logout,
   Money,
   MoneyRecive,
+  Note,
   SecurityUser,
   Ticket,
   UserSquare,
@@ -29,10 +30,11 @@ export default function MobileNavigation({
   const primaryLinks = [
     { label: t("links.analytics"), path: "/analytics", Icon: Chart1 },
     { label: t("links.activities"), path: "/activities", Icon: Calendar },
-    { label: t("links.attendees"), path: "/attendees", Icon: UserSquare },
+    { label: t("links.waitlist"), path: "/waitlist", Icon: Note },
   ];
 
   const moreLinks = [
+    { label: t("links.attendees"), path: "/attendees", Icon: UserSquare },
     { label: t("links.organisations"), path: "/organisations", Icon: Building },
     { label: t("links.admins"), path: "/admins", Icon: SecurityUser },
     { label: t("links.tickets"), path: "/tickets", Icon: Ticket },
@@ -122,7 +124,9 @@ export default function MobileNavigation({
                         />
                         <span
                           className={`text-[1.4rem] leading-4 ${
-                            isActive(path) ? "text-primary-500" : "text-neutral-700"
+                            isActive(path)
+                              ? "text-primary-500"
+                              : "text-neutral-700"
                           }`}
                         >
                           {label}
