@@ -57,6 +57,9 @@ function Hero() {
     // Turnstile must have resolved before we proceed
     if (!turnstileToken) return;
 
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
     try {
       const request = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/waitlist`,
@@ -68,8 +71,10 @@ function Hero() {
             "Accept-Language": locale,
           },
           body: JSON.stringify({ ...data, turnstileToken }),
+          signal: controller.signal,
         },
       );
+      clearTimeout(timeout);
       const response = await request.json();
       if (response.status === "success") {
         toast.success(t("errors.success"));

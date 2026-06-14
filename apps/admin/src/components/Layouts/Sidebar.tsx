@@ -8,6 +8,7 @@ import {
   Logout,
   Money,
   MoneyRecive,
+  Note,
   SecurityUser,
   Ticket,
   UserSquare,
@@ -22,10 +23,15 @@ import { cn } from "@/lib/utils";
 function Sidebar({ className }: { className: string }) {
   const t = useTranslations("Layout.sidebar");
   const pathname = usePathname();
-  const locale = useLocale()
+  const locale = useLocale();
   useAuthInterceptor();
 
   const userLinks = [
+    {
+      label: t("links.waitlist"),
+      path: `/waitlist`,
+      Icon: Note,
+    },
     {
       label: t("links.attendees"),
       path: `/attendees`,
@@ -71,7 +77,9 @@ function Sidebar({ className }: { className: string }) {
 
   function isUserGroupActive() {
     return (
-      pathname.startsWith(`/attendees`) || pathname.startsWith(`/organisations`)
+      pathname.startsWith(`/waitlist`) ||
+      pathname.startsWith(`/attendees`) ||
+      pathname.startsWith(`/organisations`)
     );
   }
 

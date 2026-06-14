@@ -219,6 +219,7 @@
       "links": {
         "title1": "Users",
         "analytics": "Analytics",
+        "waitlist": "Waitlist",
         "attendees": "Attendees",
         "organisations": "Organisations",
         "admins": "Administrators",
@@ -783,6 +784,57 @@
           "resend": "Resend ticket"
         }
     }
+    }
+  },
+
+  "Waitlist": {
+    "title": "Waitlist",
+    "stats": {
+      "total": "Total Users",
+      "pending": "Pending",
+      "personal": "Personal",
+      "business": "Business"
+    },
+    "filters": {
+      "all": "All types",
+      "personal": "Personal",
+      "business": "Business"
+    },
+    "list": {
+      "title": "Waitlist users",
+      "selected": "selected",
+      "empty": "No users on the waitlist yet.",
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "entity": "Type",
+        "joined": "Date Joined",
+        "status": "Status"
+      }
+    },
+    "status": {
+      "pending": "Pending",
+      "invited": "Invited"
+    },
+    "invite": {
+      "all": "Invite All",
+      "selected": "Invite Selected ({count})",
+      "success": "Invitation sent successfully.",
+      "success_all": "All users have been invited.",
+      "error": "Failed to send invitation. Please try again."
+    },
+    "drawer": {
+      "title": "User Details",
+      "email": "Email",
+      "first_name": "First Name",
+      "last_name": "Last Name",
+      "entity": "Type",
+      "joined": "Joined On",
+      "status": "Status",
+      "invite": "Invite",
+      "already_invited": "Already Invited",
+      "invited_at": "Invited On",
+      "close": "Close"
     }
   },
 

@@ -218,6 +218,7 @@
       "links": {
         "title1": "Utilisateurs",
         "analytics": "Analyses",
+        "waitlist": "Liste d'attente",
         "attendees": "Participants",
         "organisations": "Organisations",
         "admins": "Administrateurs",
@@ -771,6 +772,57 @@
           "resend": "Renvoyer le billet"
         }
       }
+    }
+  },
+
+  "Waitlist": {
+    "title": "Liste d'attente",
+    "stats": {
+      "total": "Total utilisateurs",
+      "pending": "En attente",
+      "personal": "Personnels",
+      "business": "Entreprises"
+    },
+    "filters": {
+      "all": "Tous les types",
+      "personal": "Personnel",
+      "business": "Entreprise"
+    },
+    "list": {
+      "title": "Utilisateurs en attente",
+      "selected": "sélectionnés",
+      "empty": "Aucun utilisateur en liste d'attente pour l'instant.",
+      "table": {
+        "name": "Nom",
+        "email": "Email",
+        "entity": "Type",
+        "joined": "Date d'inscription",
+        "status": "Statut"
+      }
+    },
+    "status": {
+      "pending": "En attente",
+      "invited": "Invité"
+    },
+    "invite": {
+      "all": "Inviter tous",
+      "selected": "Inviter la sélection ({count})",
+      "success": "Invitation envoyée avec succès.",
+      "success_all": "Tous les utilisateurs ont été invités.",
+      "error": "Échec de l'envoi de l'invitation. Veuillez réessayer."
+    },
+    "drawer": {
+      "title": "Détails de l'utilisateur",
+      "email": "Email",
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "entity": "Type",
+      "joined": "Inscrit le",
+      "status": "Statut",
+      "invite": "Inviter",
+      "already_invited": "Déjà invité",
+      "invited_at": "Invité le",
+      "close": "Fermer"
     }
   },
 
