@@ -361,6 +361,24 @@
       }
     }
   },
+  "SupportChat": {
+    "title": "Chat de support",
+    "you": "Vous",
+    "support_team": "Équipe support",
+    "open_badge": "Ouvert",
+    "closed_badge": "Fermé",
+    "started": "Démarré le",
+    "placeholder": "Écrivez votre message… (Entrée pour envoyer, Maj+Entrée pour un saut de ligne)",
+    "send": "Envoyer",
+    "empty": "Aucun message pour l'instant.",
+    "closed": "Conversation terminée",
+    "closed_description": "Ce fil de support a été résolu. Vous pouvez toujours consulter l'historique ci-dessous.",
+    "error": "Conversation introuvable",
+    "error_description": "Ce lien est peut-être invalide ou expiré. Veuillez vérifier votre e-mail ou nous recontacter.",
+    "error_back": "Contacter le support",
+    "error_send": "Échec de l'envoi de votre message. Veuillez réessayer.",
+    "team_note": "Notre équipe support vous répondra dès que possible. Vous recevrez également les réponses par e-mail."
+  },
   "ContactPage": {
     "hero": {
       "title-1": "Nous sommes là pour vous accompagner — que vous soyez",
@@ -404,7 +422,7 @@
           "max": "Le message ne peut dépasser 2000 caractères"
         },
         "failed": "Échec de l’envoi du message. Si le problème persiste, contactez notre support.",
-        "success": "Merci d’avoir contacté notre support."
+        "success": "Message envoyé ! Consultez votre e-mail pour accéder à votre lien de conversation."
       }
     }
   },

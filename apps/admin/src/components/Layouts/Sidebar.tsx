@@ -5,6 +5,7 @@ import {
   Building,
   Calendar,
   Chart1,
+  Headphone,
   Logout,
   Money,
   MoneyRecive,
@@ -112,6 +113,24 @@ function Sidebar({ className }: { className: string }) {
               variant="Bulk"
             />
             <span>{t("links.analytics")}</span>
+            <div
+              className={
+                "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"
+              }
+            ></div>
+          </Link>
+        </li>
+        <li>
+          <Link
+            href={"/support"}
+            className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive("/support") ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
+          >
+            <Headphone
+              size="20"
+              className={`transition-all duration-500 ${isActive("/support") ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
+              variant="Bulk"
+            />
+            <span>{t("links.support")}</span>
             <div
               className={
                 "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"
