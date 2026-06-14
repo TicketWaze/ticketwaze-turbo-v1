@@ -361,6 +361,24 @@
       }
     }
   },
+  "SupportChat": {
+    "title": "Support Chat",
+    "you": "You",
+    "support_team": "Support Team",
+    "open_badge": "Open",
+    "closed_badge": "Closed",
+    "started": "Started",
+    "placeholder": "Type your message… (Enter to send, Shift+Enter for a new line)",
+    "send": "Send",
+    "empty": "No messages yet.",
+    "closed": "Conversation closed",
+    "closed_description": "This support thread has been resolved. You can still view the conversation history below.",
+    "error": "Conversation not found",
+    "error_description": "This link may be invalid or expired. Please check your email or contact us again.",
+    "error_back": "Contact support",
+    "error_send": "Failed to send your message. Please try again.",
+    "team_note": "Our support team will reply as soon as possible. You'll also receive replies by email."
+  },
   "ContactPage": {
     "hero": {
       "title-1": "We're here to support you — whether you’re an",
@@ -404,7 +422,7 @@
           "max": "Message cannot exceed 2000 characters"
         },
         "failed": "Failed to send message. If this error persist, please reach out to support",
-        "success": "Thanks for reaching support"
+        "success": "Message sent! Check your email for a link to continue your conversation with our team."
       }
     }
   },

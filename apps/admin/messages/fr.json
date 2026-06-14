@@ -226,7 +226,8 @@
         "activities": "Activités",
         "tickets": "Billets",
         "payments": "Paiements",
-        "payouts": "Versements"
+        "payouts": "Versements",
+        "support": "Support"
       }
     },
     "topbar": {
@@ -870,5 +871,48 @@
         "organizer": "Organisateur"
       }
     }
+  },
+
+  "Support": {
+    "title": "Boîte de support",
+    "back": "Retour",
+    "filters": {
+      "all": "Tous les messages",
+      "open": "Ouverts",
+      "resolved": "Résolus"
+    },
+    "table": {
+      "sender": "Expéditeur",
+      "subject": "Sujet",
+      "status": "Statut",
+      "date": "Date"
+    },
+    "status": {
+      "open": "Ouvert",
+      "resolved": "Résolu"
+    },
+    "detail": {
+      "title": "Détails du fil",
+      "from": "De",
+      "email": "Email",
+      "subject": "Sujet",
+      "conversation": "Conversation",
+      "no_messages": "Aucun message pour l'instant.",
+      "admin_label": "Vous",
+      "customer_label": "Client",
+      "chat_link": "Lien chat client",
+      "copy": "Copier",
+      "copied": "Copié !",
+      "notes": "Notes internes",
+      "notes_placeholder": "Ajouter des notes internes...",
+      "reply": "Répondre au client",
+      "reply_placeholder": "Saisissez votre réponse...",
+      "save_notes": "Enregistrer",
+      "send_reply": "Envoyer la réponse",
+      "mark_resolved": "Marquer comme résolu",
+      "resolved_badge": "Résolu",
+      "close": "Fermer"
+    },
+    "empty": "Aucun message de support pour l'instant. Les messages des clients apparaîtront ici."
   }
 }

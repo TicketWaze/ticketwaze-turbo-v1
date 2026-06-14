@@ -5,6 +5,7 @@ import {
   Calendar,
   Chart1,
   HamburgerMenu,
+  Headphone,
   Logout,
   Money,
   MoneyRecive,
@@ -40,6 +41,7 @@ export default function MobileNavigation({
     { label: t("links.tickets"), path: "/tickets", Icon: Ticket },
     { label: t("links.payments"), path: "/payments", Icon: Money },
     { label: t("links.payouts"), path: "/payouts", Icon: MoneyRecive },
+    { label: t("links.support"), path: "/support", Icon: Headphone },
   ];
 
   const morePathPrefixes = moreLinks.map((l) => l.path);

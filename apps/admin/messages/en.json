@@ -227,7 +227,8 @@
         "activities": "Activities",
         "tickets": "Tickets",
         "payments": "Payments",
-        "payouts": "Payouts"
+        "payouts": "Payouts",
+        "support": "Support"
       }
     },
     "topbar": {
@@ -882,5 +883,48 @@
         "organizer": "Organizer"
       }
     }
+  },
+
+  "Support": {
+    "title": "Support Inbox",
+    "back": "Back",
+    "filters": {
+      "all": "All messages",
+      "open": "Open",
+      "resolved": "Resolved"
+    },
+    "table": {
+      "sender": "Sender",
+      "subject": "Subject",
+      "status": "Status",
+      "date": "Date"
+    },
+    "status": {
+      "open": "Open",
+      "resolved": "Resolved"
+    },
+    "detail": {
+      "title": "Thread Details",
+      "from": "From",
+      "email": "Email",
+      "subject": "Subject",
+      "conversation": "Conversation",
+      "no_messages": "No messages yet.",
+      "admin_label": "You",
+      "customer_label": "Customer",
+      "chat_link": "Customer chat link",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "notes": "Internal Notes",
+      "notes_placeholder": "Add internal notes...",
+      "reply": "Reply to Customer",
+      "reply_placeholder": "Type your reply...",
+      "save_notes": "Save Notes",
+      "send_reply": "Send Reply",
+      "mark_resolved": "Mark as Resolved",
+      "resolved_badge": "Resolved",
+      "close": "Close"
+    },
+    "empty": "No support messages yet. When customers reach out, their messages will appear here."
   }
 }
