@@ -133,10 +133,7 @@ export default function MobileNavigation({
                 <ul className="flex flex-col gap-2">
                   {moreLinks.map(({ label, path, Icon, badge }) => (
                     <li key={path}>
-                      <Link
-                        href={path}
-                        className="flex items-center gap-4 py-3"
-                      >
+                      <Link href={path} className="flex items-center gap-4 py-3">
                         <Icon
                           size="20"
                           className={`transition-all duration-300 ${
@@ -148,9 +145,7 @@ export default function MobileNavigation({
                         />
                         <span
                           className={`text-[1.4rem] leading-4 flex-1 ${
-                            isActive(path)
-                              ? "text-primary-500"
-                              : "text-neutral-700"
+                            isActive(path) ? "text-primary-500" : "text-neutral-700"
                           }`}
                         >
                           {label}

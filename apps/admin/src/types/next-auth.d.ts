@@ -5,6 +5,9 @@ export interface AdminUser {
   adminId: string;
   email: string;
   role: number;
+  roleLabel: string;
+  customPermissions: string[] | null;
+  effectivePermissionKeys: string[];
   id: string;
   accessTokenExpires?: number;
 }

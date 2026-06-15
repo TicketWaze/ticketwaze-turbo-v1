@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
-import Google from "next-auth/providers/google";
 
 function nextMidnightUnix(): number {
   const midnight = new Date();
@@ -19,37 +18,24 @@ const nextAuthResult = NextAuth({
   },
 
   providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID!,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
-      authorization: {
-        params: {
-          redirect_uri: `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/api/auth/callback/google`,
-        },
-      },
-    }),
     Credentials({
       credentials: {
-        email: {},
-        otp: {},
+        googleIdToken: {},
       },
       authorize: async (credentials) => {
         const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/verify-otp`,
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/login/google`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: credentials.email,
-              otp: credentials.otp,
-            }),
+            body: JSON.stringify({ idToken: credentials.googleIdToken }),
           },
         );
 
         const data = await response.json();
 
         if (data.status !== "success") {
-          throw new Error(data.message || "Invalid verification code");
+          throw new Error(data.message || "Google sign-in failed");
         }
 
         return { ...data.admin, id: data.admin.adminId };
@@ -64,52 +50,10 @@ const nextAuthResult = NextAuth({
 
   callbacks: {
     /**
-     * SIGN IN — handle Google automated user creation via API
-     */
-    async signIn({ user, account }) {
-      if (account?.provider === "google") {
-        try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
-            {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                email: user.email,
-                name: user.name,
-                avatar: user.image,
-              }),
-            },
-          );
-
-          const data = await res.json();
-          if (data.status !== "success") {
-            throw new Error(
-              encodeURIComponent(
-                data.message || "Google authentication failed",
-              ),
-            );
-          }
-          // Map userId to id and attach to user
-          Object.assign(user, {
-            ...data.user,
-            id: data.user.userId,
-          });
-          return true;
-        } catch (error) {
-          throw error;
-        }
-      }
-
-      return true;
-    },
-
-    /**
      * JWT CALLBACK
      */
     async jwt({ token, user, trigger, session }) {
-      // First login (credentials or google) — store midnight expiry in a custom
-      // field; NextAuth v5 overwrites the reserved `exp` claim with iat+maxAge.
+      // First login — store the API token and its midnight expiry.
       if (user) {
         return { ...token, ...user, accessTokenExpires: nextMidnightUnix() };
       }
@@ -117,6 +61,14 @@ const nextAuthResult = NextAuth({
       // Manual update() call
       if (trigger === "update" && session?.user) {
         return { ...token, ...session.user };
+      }
+
+      // API token has expired — mark the session so the client can sign out.
+      if (
+        token.accessTokenExpires &&
+        Date.now() / 1000 > (token.accessTokenExpires as number)
+      ) {
+        return { ...token, error: "AccessTokenExpired" as const };
       }
 
       return token;
@@ -127,6 +79,9 @@ const nextAuthResult = NextAuth({
      */
     async session({ session, token }) {
       session.user = token as unknown as never;
+      if (token.error) {
+        (session as unknown as Record<string, unknown>).error = token.error;
+      }
       return session;
     },
 

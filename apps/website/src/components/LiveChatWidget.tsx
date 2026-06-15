@@ -245,8 +245,7 @@ export default function LiveChatWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 24 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-[9.5rem] right-10 z-50 w-[380px] bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden"
-            style={{ height: "520px", maxHeight: "calc(100vh - 11rem)" }}
+            className="fixed inset-4 sm:inset-auto sm:bottom-[9.5rem] sm:right-10 sm:w-[380px] sm:h-[520px] sm:max-h-[calc(100vh-11rem)] z-50 bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="bg-primary-500 px-6 py-5 shrink-0 flex items-center gap-4">
@@ -274,6 +273,16 @@ export default function LiveChatWidget() {
                   </span>
                 </div>
               </div>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label={t("button")}
+                className="w-[3.2rem] h-[3.2rem] rounded-full bg-white/15 hover:bg-white/25 flex items-center justify-center text-white transition-colors cursor-pointer shrink-0"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
             </div>
 
             {/* Messages area */}

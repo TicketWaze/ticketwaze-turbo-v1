@@ -46,48 +46,17 @@ function Sidebar({ className }: { className: string }) {
   }, [pathname, clearContactBadge]);
 
   const userLinks = [
-    {
-      label: t("links.waitlist"),
-      path: `/waitlist`,
-      Icon: Note,
-    },
-    {
-      label: t("links.attendees"),
-      path: `/attendees`,
-      Icon: UserSquare,
-    },
-    {
-      label: t("links.organisations"),
-      path: `/organisations`,
-      Icon: Building,
-    },
-    {
-      label: t("links.admins"),
-      path: `/admins`,
-      Icon: SecurityUser,
-    },
+    { label: t("links.waitlist"), path: `/waitlist`, Icon: Note },
+    { label: t("links.attendees"), path: `/attendees`, Icon: UserSquare },
+    { label: t("links.organisations"), path: `/organisations`, Icon: Building },
+    { label: t("links.admins"), path: `/admins`, Icon: SecurityUser },
   ];
+
   const operationsLinks = [
-    {
-      label: t("links.activities"),
-      path: `/activities`,
-      Icon: Calendar,
-    },
-    {
-      label: t("links.tickets"),
-      path: `/tickets`,
-      Icon: Ticket,
-    },
-    {
-      label: t("links.payments"),
-      path: `/payments`,
-      Icon: Money,
-    },
-    {
-      label: t("links.payouts"),
-      path: `/payouts`,
-      Icon: MoneyRecive,
-    },
+    { label: t("links.activities"), path: `/activities`, Icon: Calendar },
+    { label: t("links.tickets"), path: `/tickets`, Icon: Ticket },
+    { label: t("links.payments"), path: `/payments`, Icon: Money },
+    { label: t("links.payouts"), path: `/payouts`, Icon: MoneyRecive },
   ];
 
   function isActive(path: string) {
@@ -131,11 +100,7 @@ function Sidebar({ className }: { className: string }) {
                 variant="Bulk"
               />
               <span>{t("links.analytics")}</span>
-              <div
-                className={
-                  "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"
-                }
-              ></div>
+              <div className={"absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"} />
             </Link>
           </li>
           <li>
@@ -154,11 +119,7 @@ function Sidebar({ className }: { className: string }) {
                   {liveThreadBadge > 9 ? "9+" : liveThreadBadge}
                 </span>
               )}
-              <div
-                className={
-                  "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"
-                }
-              ></div>
+              <div className={"absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"} />
             </Link>
           </li>
           <li>
@@ -177,11 +138,7 @@ function Sidebar({ className }: { className: string }) {
                   {contactBadge > 9 ? "9+" : contactBadge}
                 </span>
               )}
-              <div
-                className={
-                  "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"
-                }
-              ></div>
+              <div className={"absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"} />
             </Link>
           </li>
         </ul>
@@ -192,28 +149,22 @@ function Sidebar({ className }: { className: string }) {
             {t("links.title1")}
           </div>
           <ul className="flex flex-col gap-4">
-            {userLinks.map(({ path, Icon, label }) => {
-              return (
-                <li key={label}>
-                  <Link
-                    href={path}
-                    className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
-                  >
-                    <Icon
-                      size="20"
-                      className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                      variant="Bulk"
-                    />
-                    <span>{label}</span>
-                    <div
-                      className={
-                        "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"
-                      }
-                    ></div>
-                  </Link>
-                </li>
-              );
-            })}
+            {userLinks.map(({ path, Icon, label }) => (
+              <li key={label}>
+                <Link
+                  href={path}
+                  className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
+                >
+                  <Icon
+                    size="20"
+                    className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
+                    variant="Bulk"
+                  />
+                  <span>{label}</span>
+                  <div className={"absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"} />
+                </Link>
+              </li>
+            ))}
           </ul>
         </nav>
         <nav>
@@ -223,28 +174,22 @@ function Sidebar({ className }: { className: string }) {
             {t("links.title2")}
           </div>
           <ul className="flex flex-col gap-4">
-            {operationsLinks.map(({ path, Icon, label }) => {
-              return (
-                <li key={label}>
-                  <Link
-                    href={path}
-                    className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
-                  >
-                    <Icon
-                      size="20"
-                      className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                      variant="Bulk"
-                    />
-                    <span>{label}</span>
-                    <div
-                      className={
-                        "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"
-                      }
-                    ></div>
-                  </Link>
-                </li>
-              );
-            })}
+            {operationsLinks.map(({ path, Icon, label }) => (
+              <li key={label}>
+                <Link
+                  href={path}
+                  className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
+                >
+                  <Icon
+                    size="20"
+                    className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
+                    variant="Bulk"
+                  />
+                  <span>{label}</span>
+                  <div className={"absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"} />
+                </Link>
+              </li>
+            ))}
             <button
               onClick={() =>
                 signOut({
@@ -255,9 +200,7 @@ function Sidebar({ className }: { className: string }) {
               className="flex items-center gap-4 py-2 mt-6"
             >
               <Logout size="20" color="#737c8a" variant="Bulk" />
-              <span
-                className={`text-[1.5rem] leading-4 text-neutral-700 cursor-pointer`}
-              >
+              <span className={`text-[1.5rem] leading-4 text-neutral-700 cursor-pointer`}>
                 {t("logout")}
               </span>
             </button>
