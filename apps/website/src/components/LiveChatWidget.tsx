@@ -26,7 +26,6 @@ export default function LiveChatWidget() {
   const t = useTranslations("LiveChat");
   const locale = useLocale();
   const router = useRouter();
-  const pathname = usePathname();
 
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
@@ -77,7 +76,6 @@ export default function LiveChatWidget() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-
   async function addBot(
     text: string,
     quickReplies?: Array<{ label: string; value: string }>,
@@ -86,7 +84,10 @@ export default function LiveChatWidget() {
     setIsTyping(true);
     await pause(ms);
     setIsTyping(false);
-    setMessages((prev) => [...prev, { id: uid(), sender: "bot", text, quickReplies }]);
+    setMessages((prev) => [
+      ...prev,
+      { id: uid(), sender: "bot", text, quickReplies },
+    ]);
   }
 
   async function handleSend() {
@@ -108,7 +109,6 @@ export default function LiveChatWidget() {
       setUserData((u) => ({ ...u, name: text }));
       setStep("email");
       await addBot(t("bot.got_name", { name: text }));
-
     } else if (step === "email") {
       if (!isValidEmail(text)) {
         await addBot(t("bot.invalid_email"), undefined, 600);
@@ -117,7 +117,6 @@ export default function LiveChatWidget() {
       setUserData((u) => ({ ...u, email: text }));
       setStep("subject");
       await addBot(t("bot.ask_subject"), subjects);
-
     } else if (step === "message") {
       if (text.length < 10) {
         await addBot(t("bot.message_too_short"), undefined, 600);
@@ -135,7 +134,10 @@ export default function LiveChatWidget() {
   }
 
   async function handleQuickReply(value: string, label: string) {
-    setMessages((prev) => [...prev, { id: uid(), sender: "user", text: label }]);
+    setMessages((prev) => [
+      ...prev,
+      { id: uid(), sender: "user", text: label },
+    ]);
     setUserData((u) => ({ ...u, subject: value }));
     setStep("message");
     await addBot(t("bot.ask_message"));
@@ -146,20 +148,23 @@ export default function LiveChatWidget() {
     await addBot(t("bot.connecting", { name: data.name }), undefined, 600);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/support/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          origin: process.env.NEXT_PUBLIC_WEBSITE_URL!,
-          "Accept-Language": locale,
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/support/chat`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            origin: process.env.NEXT_PUBLIC_WEBSITE_URL!,
+            "Accept-Language": locale,
+          },
+          body: JSON.stringify({
+            fullName: data.name,
+            email: data.email,
+            subject: data.subject,
+            message: data.message,
+          }),
         },
-        body: JSON.stringify({
-          fullName: data.name,
-          email: data.email,
-          subject: data.subject,
-          message: data.message,
-        }),
-      });
+      );
       const json = await res.json();
 
       if (json.status === "success" && json.accessToken) {
@@ -191,7 +196,7 @@ export default function LiveChatWidget() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.92 }}
           aria-label={t("button")}
-          className="relative w-[6rem] h-[6rem] bg-primary-500 text-white rounded-full shadow-xl flex items-center justify-center cursor-pointer"
+          className="relative w-24 h-24 bg-primary-500 text-white rounded-full shadow-xl flex items-center justify-center cursor-pointer"
         >
           <AnimatePresence mode="wait" initial={false}>
             {open ? (
@@ -240,25 +245,29 @@ export default function LiveChatWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 24 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-[9.5rem] right-10 z-50 w-[380px] bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-38 right-10 z-50 w-95 bg-white rounded-4xl shadow-2xl flex flex-col overflow-hidden"
             style={{ height: "520px", maxHeight: "calc(100vh - 11rem)" }}
           >
             {/* Header */}
             <div className="bg-primary-500 px-6 py-5 shrink-0 flex items-center gap-4">
-              <div className="w-[4.5rem] h-[4.5rem] rounded-full bg-white/20 flex items-center justify-center shrink-0">
+              <div className="w-18 h-18 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                 <span className="text-white font-primary font-bold text-[1.9rem] leading-none">
                   T
                 </span>
               </div>
-              <div className="flex-1 flex flex-col gap-[4px]">
+              <div className="flex-1 flex flex-col gap-[.4rem]">
                 <span className="font-primary font-semibold text-white text-[1.6rem] leading-7">
                   {t("title")}
                 </span>
-                <div className="flex items-center gap-[6px]">
+                <div className="flex items-center gap-[.6rem]">
                   <motion.span
-                    className="w-[0.75rem] h-[0.75rem] bg-green-400 rounded-full inline-block"
+                    className="w-3 h-3 bg-green-400 rounded-full inline-block"
                     animate={{ opacity: [1, 0.5, 1] }}
-                    transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
+                    transition={{
+                      repeat: Infinity,
+                      duration: 2.2,
+                      ease: "easeInOut",
+                    }}
                   />
                   <span className="text-white/75 text-[1.2rem] leading-5 font-sans">
                     {t("subtitle")}
@@ -276,7 +285,7 @@ export default function LiveChatWidget() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.22, ease: "easeOut" }}
-                    className={`flex flex-col gap-[10px] ${
+                    className={`flex flex-col gap-4 ${
                       msg.sender === "user" ? "items-end" : "items-start"
                     }`}
                   >
@@ -367,8 +376,15 @@ export default function LiveChatWidget() {
                     <motion.span
                       key={i}
                       className="w-[0.85rem] h-[0.85rem] bg-primary-500 rounded-full inline-block"
-                      animate={{ scale: [1, 1.55, 1], opacity: [0.35, 1, 0.35] }}
-                      transition={{ repeat: Infinity, duration: 0.85, delay: i * 0.2 }}
+                      animate={{
+                        scale: [1, 1.55, 1],
+                        opacity: [0.35, 1, 0.35],
+                      }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 0.85,
+                        delay: i * 0.2,
+                      }}
                     />
                   ))}
                   <span className="text-[1.3rem] text-neutral-400 font-sans ml-[6px]">
