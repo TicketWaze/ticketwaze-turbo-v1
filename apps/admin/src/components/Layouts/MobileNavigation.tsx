@@ -7,6 +7,7 @@ import {
   HamburgerMenu,
   Headphone,
   Logout,
+  Message,
   Money,
   MoneyRecive,
   Note,
@@ -18,6 +19,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { signOut } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { useAdminSocket } from "@/lib/AdminSocketContext";
+import { useEffect } from "react";
 
 export default function MobileNavigation({
   className,
@@ -28,6 +31,17 @@ export default function MobileNavigation({
   const pathname = usePathname();
   const locale = useLocale();
 
+  const { liveThreadBadge, contactBadge, clearLiveThreadBadge, clearContactBadge } =
+    useAdminSocket();
+
+  useEffect(() => {
+    if (pathname.startsWith("/support")) clearLiveThreadBadge();
+  }, [pathname, clearLiveThreadBadge]);
+
+  useEffect(() => {
+    if (pathname.startsWith("/contact")) clearContactBadge();
+  }, [pathname, clearContactBadge]);
+
   const primaryLinks = [
     { label: t("links.analytics"), path: "/analytics", Icon: Chart1 },
     { label: t("links.activities"), path: "/activities", Icon: Calendar },
@@ -35,13 +49,14 @@ export default function MobileNavigation({
   ];
 
   const moreLinks = [
-    { label: t("links.attendees"), path: "/attendees", Icon: UserSquare },
-    { label: t("links.organisations"), path: "/organisations", Icon: Building },
-    { label: t("links.admins"), path: "/admins", Icon: SecurityUser },
-    { label: t("links.tickets"), path: "/tickets", Icon: Ticket },
-    { label: t("links.payments"), path: "/payments", Icon: Money },
-    { label: t("links.payouts"), path: "/payouts", Icon: MoneyRecive },
-    { label: t("links.support"), path: "/support", Icon: Headphone },
+    { label: t("links.attendees"), path: "/attendees", Icon: UserSquare, badge: 0 },
+    { label: t("links.organisations"), path: "/organisations", Icon: Building, badge: 0 },
+    { label: t("links.admins"), path: "/admins", Icon: SecurityUser, badge: 0 },
+    { label: t("links.tickets"), path: "/tickets", Icon: Ticket, badge: 0 },
+    { label: t("links.payments"), path: "/payments", Icon: Money, badge: 0 },
+    { label: t("links.payouts"), path: "/payouts", Icon: MoneyRecive, badge: 0 },
+    { label: t("links.support"), path: "/support", Icon: Headphone, badge: liveThreadBadge },
+    { label: t("links.contact"), path: "/contact", Icon: Message, badge: contactBadge },
   ];
 
   const morePathPrefixes = moreLinks.map((l) => l.path);
@@ -53,6 +68,8 @@ export default function MobileNavigation({
   function isMoreActive() {
     return morePathPrefixes.some((p) => pathname.startsWith(p));
   }
+
+  const totalMoreBadge = liveThreadBadge + contactBadge;
 
   return (
     <nav className={cn("lg:hidden rounded-t-3xl px-6", className)}>
@@ -85,12 +102,17 @@ export default function MobileNavigation({
           <Popover>
             <PopoverTrigger asChild>
               <button
-                className={`group flex flex-col items-center gap-1 text-[1.2rem] leading-6 cursor-pointer ${
+                className={`group relative flex flex-col items-center gap-1 text-[1.2rem] leading-6 cursor-pointer ${
                   isMoreActive()
                     ? "font-semibold text-primary-500"
                     : "text-neutral-700 hover:text-primary-500"
                 }`}
               >
+                {totalMoreBadge > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[1.6rem] h-[1.6rem] rounded-full bg-failure text-white text-[1rem] font-bold flex items-center justify-center px-[3px] leading-none">
+                    {totalMoreBadge > 9 ? "9+" : totalMoreBadge}
+                  </span>
+                )}
                 <HamburgerMenu
                   size="22"
                   className={`transition-all duration-300 ${
@@ -109,7 +131,7 @@ export default function MobileNavigation({
                   {t("more")}
                 </span>
                 <ul className="flex flex-col gap-2">
-                  {moreLinks.map(({ label, path, Icon }) => (
+                  {moreLinks.map(({ label, path, Icon, badge }) => (
                     <li key={path}>
                       <Link
                         href={path}
@@ -125,7 +147,7 @@ export default function MobileNavigation({
                           variant="Bulk"
                         />
                         <span
-                          className={`text-[1.4rem] leading-4 ${
+                          className={`text-[1.4rem] leading-4 flex-1 ${
                             isActive(path)
                               ? "text-primary-500"
                               : "text-neutral-700"
@@ -133,6 +155,11 @@ export default function MobileNavigation({
                         >
                           {label}
                         </span>
+                        {badge > 0 && (
+                          <span className="min-w-[1.8rem] h-[1.8rem] rounded-full bg-failure text-white text-[1rem] font-bold flex items-center justify-center px-1 leading-none">
+                            {badge > 9 ? "9+" : badge}
+                          </span>
+                        )}
                       </Link>
                     </li>
                   ))}

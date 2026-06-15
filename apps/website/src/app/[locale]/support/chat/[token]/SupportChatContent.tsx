@@ -5,6 +5,9 @@ import { motion } from "motion/react";
 import Navbar from "@/components/Navbar";
 import LoadingCircleSmall from "@/components/LoadingCircleSmall";
 import { Link } from "@/i18n/navigation";
+import { toast } from "sonner";
+import { getSocket } from "@/hooks/useSocket";
+import { Send2 } from "iconsax-reactjs";
 
 export type SupportMessage = {
   messageId: string;
@@ -50,6 +53,7 @@ export default function SupportChatContent({
   const [messages, setMessages] = useState<SupportMessage[]>(
     initialThread?.messages ?? [],
   );
+  const [resolved, setResolved] = useState(initialThread?.resolved ?? false);
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState(false);
@@ -59,20 +63,67 @@ export default function SupportChatContent({
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // WebSocket: connect on mount, join room, listen for events, disconnect on unmount
+  useEffect(() => {
+    if (!initialThread) return;
+
+    const socket = getSocket();
+    socket.connect();
+    socket.emit("thread:join", { accessToken: token });
+
+    const onThreadJoined = (data: {
+      threadId: string;
+      subject: string;
+      resolved: boolean;
+    }) => {
+      setResolved(data.resolved);
+    };
+
+    const onMessageNew = (msg: {
+      messageId: string;
+      sender: "customer" | "admin";
+      message: string;
+      createdAt: string;
+    }) => {
+      setMessages((prev) => {
+        if (prev.some((m) => m.messageId === msg.messageId)) return prev;
+        return [...prev, msg];
+      });
+    };
+
+    const onThreadResolved = () => {
+      setResolved(true);
+    };
+
+    const onThreadReopened = () => {
+      setResolved(false);
+    };
+
+    const onError = (err: { message: string }) => {
+      toast.error(err.message);
+    };
+
+    socket.on("thread:joined", onThreadJoined);
+    socket.on("message:new", onMessageNew);
+    socket.on("thread:resolved", onThreadResolved);
+    socket.on("thread:reopened", onThreadReopened);
+    socket.on("error", onError);
+
+    return () => {
+      socket.off("thread:joined", onThreadJoined);
+      socket.off("message:new", onMessageNew);
+      socket.off("thread:resolved", onThreadResolved);
+      socket.off("thread:reopened", onThreadReopened);
+      socket.off("error", onError);
+      socket.disconnect();
+    };
+  }, [token, initialThread]);
+
   async function sendMessage() {
     const text = inputText.trim();
     if (!text || isSending) return;
 
     setSendError(false);
-
-    const optimistic: SupportMessage = {
-      messageId: `opt-${Date.now()}`,
-      sender: "customer",
-      message: text,
-      createdAt: new Date().toISOString(),
-    };
-
-    setMessages((prev) => [...prev, optimistic]);
     setInputText("");
     setIsSending(true);
 
@@ -91,23 +142,9 @@ export default function SupportChatContent({
       );
 
       if (!res.ok) throw new Error();
-
-      const threadRes = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/support/chat/${token}`,
-        {
-          headers: {
-            origin: process.env.NEXT_PUBLIC_WEBSITE_URL ?? "",
-            "Accept-Language": locale,
-          },
-        },
-      );
-      const data = await threadRes.json();
-      if (data.status === "success") {
-        setMessages(data.thread.messages);
-      }
+      // message:new WS event will append the message
     } catch {
       setSendError(true);
-      setMessages((prev) => prev.filter((m) => m.messageId !== optimistic.messageId));
       setInputText(text);
     } finally {
       setIsSending(false);
@@ -160,8 +197,7 @@ export default function SupportChatContent({
 
   // ── Chat UI ─────────────────────────────────────────────────────────────────
   return (
-    <section className="bg-white rounded-[3rem] h-screen flex flex-col overflow-hidden">
-
+    <section className="bg-white rounded-[3rem] h-full flex flex-col overflow-hidden">
       {/* Navbar */}
       <div className="shrink-0 py-[2.5rem] px-4 lg:px-[10rem]">
         <Navbar />
@@ -174,16 +210,14 @@ export default function SupportChatContent({
         transition={{ duration: 0.4 }}
         className="flex flex-1 min-h-0 px-4 lg:px-[10rem] pb-[3rem] gap-8 lg:gap-12"
       >
-
         {/* ── LEFT: Thread details (desktop only) ─────────────────────────── */}
         <div className="hidden lg:flex flex-col gap-6 w-[260px] xl:w-[300px] shrink-0 overflow-y-auto">
-
           {/* Subject + status */}
           <div className="flex flex-col gap-3">
             <h1 className="font-primary font-semibold text-[2.4rem] leading-tight text-neutral-900">
               {thread.subject}
             </h1>
-            {thread.resolved ? (
+            {resolved ? (
               <span className="self-start py-[0.3rem] px-4 text-[1.1rem] font-bold uppercase text-[#349C2E] rounded-[30px] bg-[#349C2E]/10">
                 {t("closed_badge")}
               </span>
@@ -216,14 +250,13 @@ export default function SupportChatContent({
 
         {/* ── RIGHT: Chat panel ────────────────────────────────────────────── */}
         <div className="flex-1 flex flex-col min-h-0 lg:pl-8 lg:border-l lg:border-neutral-100">
-
           {/* Mobile-only header */}
           <div className="lg:hidden shrink-0 flex flex-col gap-2 pb-5 border-b border-neutral-100 mb-4">
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="font-primary font-medium text-[2rem] leading-tight text-neutral-900">
                 {thread.subject}
               </h1>
-              {thread.resolved ? (
+              {resolved ? (
                 <span className="py-[0.3rem] px-3 text-[1.1rem] font-bold uppercase text-[#349C2E] rounded-[30px] bg-[#349C2E]/10">
                   {t("closed_badge")}
                 </span>
@@ -234,7 +267,8 @@ export default function SupportChatContent({
               )}
             </div>
             <p className="text-[1.3rem] text-neutral-400 font-sans">
-              {thread.fullName} · {t("started")} {formatDate(thread.createdAt, locale)}
+              {thread.fullName} · {t("started")}{" "}
+              {formatDate(thread.createdAt, locale)}
             </p>
           </div>
 
@@ -265,6 +299,7 @@ export default function SupportChatContent({
                     {msg.message}
                   </div>
                   <span className="text-[1.1rem] text-neutral-400 font-sans px-2">
+                    {formatDate(msg.createdAt, locale)} ·{" "}
                     {formatTime(msg.createdAt, locale)}
                   </span>
                 </div>
@@ -275,7 +310,7 @@ export default function SupportChatContent({
 
           {/* Input / Closed notice — pinned to bottom */}
           <div className="shrink-0 pt-4">
-            {thread.resolved ? (
+            {resolved ? (
               <div className="bg-[#349C2E]/10 border border-[#349C2E]/20 rounded-[1.5rem] px-8 py-6 flex flex-col gap-2 text-center">
                 <p className="text-[1.5rem] font-medium text-[#349C2E] font-primary">
                   {t("closed")}
@@ -307,9 +342,9 @@ export default function SupportChatContent({
                   <button
                     onClick={sendMessage}
                     disabled={isSending || !inputText.trim()}
-                    className="px-10 py-6 rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8 cursor-pointer disabled:cursor-not-allowed disabled:bg-primary-500/50 flex items-center justify-center min-w-[10rem] shrink-0"
+                    className="px-4 py-4 rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8 cursor-pointer disabled:cursor-not-allowed disabled:bg-primary-500/50 flex items-center justify-center  shrink-0"
                   >
-                    {isSending ? <LoadingCircleSmall /> : t("send")}
+                    {isSending ? <LoadingCircleSmall /> : <Send2 />}
                   </button>
                 </div>
               </div>

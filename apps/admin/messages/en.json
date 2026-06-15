@@ -228,7 +228,8 @@
         "tickets": "Tickets",
         "payments": "Payments",
         "payouts": "Payouts",
-        "support": "Support"
+        "support": "Live Chat",
+        "contact": "Contact Messages"
       }
     },
     "topbar": {
@@ -885,8 +886,38 @@
     }
   },
 
+  "Contact": {
+    "title": "Contact Messages",
+    "back": "Back",
+    "filters": {
+      "open": "Open",
+      "resolved": "Resolved"
+    },
+    "table": {
+      "sender": "Sender",
+      "subject": "Subject",
+      "status": "Status",
+      "date": "Date"
+    },
+    "status": {
+      "open": "Open",
+      "resolved": "Resolved"
+    },
+    "detail": {
+      "email": "Email",
+      "subject": "Subject",
+      "message": "Message",
+      "notes": "Internal Notes",
+      "notes_placeholder": "Add internal notes...",
+      "save_notes": "Save Notes",
+      "mark_resolved": "Mark as Resolved",
+      "resolved_badge": "Resolved"
+    },
+    "empty": "No contact messages yet. When customers reach out, their messages will appear here."
+  },
+
   "Support": {
-    "title": "Support Inbox",
+    "title": "Live Chat",
     "back": "Back",
     "filters": {
       "all": "All messages",
@@ -921,7 +952,10 @@
       "reply_placeholder": "Type your reply...",
       "save_notes": "Save Notes",
       "send_reply": "Send Reply",
+      "actions": "Actions",
+      "date": "Date",
       "mark_resolved": "Mark as Resolved",
+      "mark_open": "Reopen Thread",
       "resolved_badge": "Resolved",
       "close": "Close"
     },
