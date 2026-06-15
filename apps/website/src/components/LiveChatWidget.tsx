@@ -196,7 +196,7 @@ export default function LiveChatWidget() {
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.92 }}
           aria-label={t("button")}
-          className="relative w-24 h-24 bg-primary-500 text-white rounded-full shadow-xl flex items-center justify-center cursor-pointer"
+          className="relative w-[6rem] h-[6rem] bg-primary-500 text-white rounded-full shadow-xl flex items-center justify-center cursor-pointer"
         >
           <AnimatePresence mode="wait" initial={false}>
             {open ? (
@@ -245,23 +245,23 @@ export default function LiveChatWidget() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 24 }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed bottom-38 right-10 z-50 w-95 bg-white rounded-4xl shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-[9.5rem] right-10 z-50 w-[380px] bg-white rounded-[2rem] shadow-2xl flex flex-col overflow-hidden"
             style={{ height: "520px", maxHeight: "calc(100vh - 11rem)" }}
           >
             {/* Header */}
             <div className="bg-primary-500 px-6 py-5 shrink-0 flex items-center gap-4">
-              <div className="w-18 h-18 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+              <div className="w-[4.5rem] h-[4.5rem] rounded-full bg-white/20 flex items-center justify-center shrink-0">
                 <span className="text-white font-primary font-bold text-[1.9rem] leading-none">
                   T
                 </span>
               </div>
-              <div className="flex-1 flex flex-col gap-[.4rem]">
+              <div className="flex-1 flex flex-col gap-[4px]">
                 <span className="font-primary font-semibold text-white text-[1.6rem] leading-7">
                   {t("title")}
                 </span>
-                <div className="flex items-center gap-[.6rem]">
+                <div className="flex items-center gap-[6px]">
                   <motion.span
-                    className="w-3 h-3 bg-green-400 rounded-full inline-block"
+                    className="w-[0.75rem] h-[0.75rem] bg-green-400 rounded-full inline-block"
                     animate={{ opacity: [1, 0.5, 1] }}
                     transition={{
                       repeat: Infinity,
@@ -285,7 +285,7 @@ export default function LiveChatWidget() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.22, ease: "easeOut" }}
-                    className={`flex flex-col gap-4 ${
+                    className={`flex flex-col gap-[10px] ${
                       msg.sender === "user" ? "items-end" : "items-start"
                     }`}
                   >
