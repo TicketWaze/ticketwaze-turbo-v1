@@ -52,7 +52,8 @@
       "Bash(dir /s /b \"C:\\\\Users\\\\Windows\\\\Documents\\\\ticketwaze\\\\ticketwaze-turbo-v1\\\\apps\\\\organisation\\\\src\\\\app\")",
       "Bash(findstr /i upgrade)",
       "Bash(dir *)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(yarn install *)"
     ]
   }
 }
