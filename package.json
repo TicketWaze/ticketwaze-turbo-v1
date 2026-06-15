@@ -21,7 +21,7 @@
     "@parcel/watcher-linux-x64-glibc": "2.5.1"
   },
   "engines": {
-    "node": ">=18"
+    "node": "22.x"
   },
   "packageManager": "yarn@1.22.22",
   "workspaces": [
