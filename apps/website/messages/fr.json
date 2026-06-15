@@ -361,6 +361,44 @@
       }
     }
   },
+  "LiveChat": {
+    "button": "Discuter avec nous",
+    "title": "Support Ticketwaze",
+    "subtitle": "En ligne · Répond en quelques minutes",
+    "connecting": "Connexion en cours…",
+    "pick_hint": "Choisissez un sujet ci-dessus ↑",
+    "bot": {
+      "welcome": "👋 Bonjour ! Bienvenue sur le support en direct de Ticketwaze — nous sommes ravis de vous avoir !",
+      "ask_name": "Pour vous mettre en relation avec notre équipe, puis-je commencer par votre prénom ?",
+      "got_name": "Ravi de vous rencontrer, {name} ! 😊 Quelle est votre adresse e-mail pour que notre équipe puisse vous recontacter ?",
+      "invalid_email": "Cet e-mail ne semble pas valide — pourriez-vous le vérifier ?",
+      "name_too_short": "Votre prénom doit contenir au moins 2 caractères — comment vous appelez-vous ?",
+      "name_too_long": "Ce prénom est un peu trop long (100 caractères max) — pourriez-vous le raccourcir ?",
+      "message_too_short": "Pourriez-vous nous en dire un peu plus ? Il nous faut au moins 10 caractères pour vous aider.",
+      "message_too_long": "Votre message est trop long (2000 caractères max) — pourriez-vous le raccourcir ?",
+      "ask_subject": "Merci ! Pourquoi nous contactez-vous aujourd'hui ?",
+      "ask_message": "Décrivez ce qui se passe et notre équipe s'en occupe immédiatement 💬",
+      "connecting": "Parfait, {name} ! Un instant — je vous connecte à un agent en direct 🔌",
+      "connected": "Vous êtes prêt ! Ouverture de votre chat en direct maintenant ✨",
+      "error": "Une erreur s'est produite de notre côté. Veuillez réessayer — nous nous en excusons !"
+    },
+    "subjects": {
+      "account": "Problème de compte",
+      "activity": "Aide sur une activité",
+      "ticketing": "Billetterie",
+      "technical": "Support technique",
+      "general": "Question générale",
+      "media": "Médias",
+      "partnerships": "Partenariats",
+      "business": "Collaborations commerciales",
+      "non_urgent": "Préoccupations non urgentes"
+    },
+    "placeholder": {
+      "name": "Votre prénom…",
+      "email": "Votre e-mail…",
+      "message": "Décrivez votre problème…"
+    }
+  },
   "SupportChat": {
     "title": "Chat de support",
     "you": "Vous",

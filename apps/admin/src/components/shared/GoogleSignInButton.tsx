@@ -1,0 +1,73 @@
+"use client";
+import { useEffect, useRef, useState } from "react";
+import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
+import { signIn } from "next-auth/react";
+import { useLocale } from "next-intl";
+import { toast } from "sonner";
+import LoadingCircleSmall from "./LoadingCircleSmall";
+
+export default function GoogleSignInButton() {
+  const [isLoading, setIsLoading] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [buttonWidth, setButtonWidth] = useState(0);
+  const locale = useLocale();
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver(([entry]) => {
+      if (entry)
+        setButtonWidth(Math.min(400, Math.floor(entry.contentRect.width)));
+    });
+    observer.observe(containerRef.current);
+    setButtonWidth(Math.min(400, Math.floor(containerRef.current.offsetWidth)));
+    return () => observer.disconnect();
+  }, []);
+
+  async function handleSuccess(credentialResponse: CredentialResponse) {
+    if (!credentialResponse.credential || isLoading) return;
+    setIsLoading(true);
+    try {
+      const result = await signIn("credentials", {
+        googleIdToken: credentialResponse.credential,
+        redirect: false,
+      });
+      if (result?.error) {
+        toast.error("Sign-in failed. Only @ticketwaze.com accounts are allowed.");
+        return;
+      }
+      window.location.href = `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/analytics`;
+    } catch {
+      toast.error("Google sign-in failed, please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  function handleError() {
+    toast.error("Google sign-in failed, please try again.");
+  }
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex justify-center py-6">
+        <LoadingCircleSmall />
+      </div>
+    );
+  }
+
+  return (
+    <div ref={containerRef} className="w-full flex justify-center">
+      {buttonWidth > 0 && (
+        <GoogleLogin
+          onSuccess={handleSuccess}
+          onError={handleError}
+          theme="filled_black"
+          size="large"
+          shape="pill"
+          text="continue_with"
+          width={String(buttonWidth)}
+        />
+      )}
+    </div>
+  );
+}

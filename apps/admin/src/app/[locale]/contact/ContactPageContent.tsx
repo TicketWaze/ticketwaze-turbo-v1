@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/Layouts/AdminLayout";
@@ -16,12 +15,12 @@ import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
 import formatDate from "@/lib/FormatDate";
 import PageLoader from "@/components/PageLoader";
 
-export type SupportThread = {
-  threadId: string;
+export type ContactMessage = {
+  contactMessageId: string;
   fullName: string;
   email: string;
   subject: string;
-  accessToken: string;
+  message: string;
   resolved: boolean;
   supportNotes: string | null;
   appLanguage: string;
@@ -29,14 +28,7 @@ export type SupportThread = {
   updatedAt: string;
 };
 
-export type SupportMessage = {
-  messageId: string;
-  sender: "customer" | "admin";
-  message: string;
-  createdAt: string;
-};
-
-type ThreadsMeta = {
+type Meta = {
   total: number;
   perPage: number;
   currentPage: number;
@@ -48,29 +40,29 @@ type ThreadsMeta = {
   previousPageUrl: string | null;
 };
 
-export type SupportThreadsResponse = {
-  data: SupportThread[];
-  meta: ThreadsMeta;
+export type ContactMessagesResponse = {
+  data: ContactMessage[];
+  meta: Meta;
 };
 
-export default function SupportPageContent({
-  threads,
+export default function ContactPageContent({
+  messages,
   resolved,
 }: {
-  threads: SupportThreadsResponse;
+  messages: ContactMessagesResponse;
   resolved: string;
   accessToken: string;
 }) {
-  const t = useTranslations("Support");
+  const t = useTranslations("Contact");
   const locale = useLocale();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsLoading(false);
-  }, [resolved, threads]);
+  }, [resolved, messages]);
 
-  const { meta } = threads;
+  const { meta } = messages;
   const currentPage = meta.currentPage;
   const hasPrev = currentPage > meta.firstPage;
   const hasNext = currentPage < meta.lastPage;
@@ -85,17 +77,17 @@ export default function SupportPageContent({
   };
 
   function buildPageHref(page: number) {
-    return `/support?page=${page}&resolved=${resolved}`;
+    return `/contact?page=${page}&resolved=${resolved}`;
   }
 
   function handleTabChange(value: string) {
     setIsLoading(true);
-    router.push(`/support?page=1&resolved=${value}`);
+    router.push(`/contact?page=1&resolved=${value}`);
   }
 
-  function openThread(id: string) {
+  function openMessage(id: string) {
     setIsLoading(true);
-    router.push(`/support/${id}`);
+    router.push(`/contact/${id}`);
   }
 
   return (
@@ -113,7 +105,7 @@ export default function SupportPageContent({
           <div className="flex bg-neutral-100 rounded-[3rem] p-1 gap-1">
             <button
               onClick={() => resolved !== "false" && handleTabChange("false")}
-              className={`px-6 py-2 rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
+              className={`px-6 py-[0.5rem] rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
                 resolved === "false"
                   ? "bg-white text-primary-500 font-medium shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900"
@@ -123,7 +115,7 @@ export default function SupportPageContent({
             </button>
             <button
               onClick={() => resolved !== "true" && handleTabChange("true")}
-              className={`px-6 py-2 rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
+              className={`px-6 py-[0.5rem] rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
                 resolved === "true"
                   ? "bg-white text-[#349C2E] font-medium shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900"
@@ -135,7 +127,7 @@ export default function SupportPageContent({
         </div>
 
         {/* Table */}
-        <Table id="support-table">
+        <Table id="contact-table">
           <TableHeader>
             <TableRow>
               <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
@@ -153,25 +145,25 @@ export default function SupportPageContent({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {threads.data.map((thread) => (
+            {messages.data.map((msg) => (
               <TableRow
-                key={thread.threadId}
-                onClick={() => openThread(thread.threadId)}
+                key={msg.contactMessageId}
+                onClick={() => openMessage(msg.contactMessageId)}
                 className="cursor-pointer"
               >
                 <TableCell className="py-6">
                   <p className="text-[1.5rem] leading-8 text-neutral-900 font-medium">
-                    {thread.fullName}
+                    {msg.fullName}
                   </p>
                   <p className="text-[1.3rem] leading-6 text-neutral-500">
-                    {thread.email}
+                    {msg.email}
                   </p>
                 </TableCell>
                 <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900 py-6">
-                  {thread.subject}
+                  {msg.subject}
                 </TableCell>
                 <TableCell className="py-6">
-                  {thread.resolved ? (
+                  {msg.resolved ? (
                     <span className="py-[0.3rem] text-[1.1rem] font-bold leading-6 uppercase text-[#349C2E] px-2 rounded-[30px] bg-[#f5f5f5]">
                       {t("status.resolved")}
                     </span>
@@ -182,14 +174,14 @@ export default function SupportPageContent({
                   )}
                 </TableCell>
                 <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900">
-                  {formatDate(thread.updatedAt, locale, "local")}
+                  {formatDate(msg.createdAt, locale, "local")}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
 
-        {threads.data.length === 0 && (
+        {messages.data.length === 0 && (
           <div className="flex flex-col items-center mt-8 gap-4 self-center">
             <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
               {t("empty")}

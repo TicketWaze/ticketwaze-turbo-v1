@@ -227,7 +227,8 @@
         "tickets": "Billets",
         "payments": "Paiements",
         "payouts": "Versements",
-        "support": "Support"
+        "support": "Chat en direct",
+        "contact": "Messages de contact"
       }
     },
     "topbar": {
@@ -873,8 +874,38 @@
     }
   },
 
+  "Contact": {
+    "title": "Messages de contact",
+    "back": "Retour",
+    "filters": {
+      "open": "Ouverts",
+      "resolved": "Résolus"
+    },
+    "table": {
+      "sender": "Expéditeur",
+      "subject": "Sujet",
+      "status": "Statut",
+      "date": "Date"
+    },
+    "status": {
+      "open": "Ouvert",
+      "resolved": "Résolu"
+    },
+    "detail": {
+      "email": "Email",
+      "subject": "Sujet",
+      "message": "Message",
+      "notes": "Notes internes",
+      "notes_placeholder": "Ajouter des notes internes...",
+      "save_notes": "Enregistrer",
+      "mark_resolved": "Marquer comme résolu",
+      "resolved_badge": "Résolu"
+    },
+    "empty": "Aucun message de contact pour l'instant. Les messages des clients apparaîtront ici."
+  },
+
   "Support": {
-    "title": "Boîte de support",
+    "title": "Chat en direct",
     "back": "Retour",
     "filters": {
       "all": "Tous les messages",
@@ -909,7 +940,10 @@
       "reply_placeholder": "Saisissez votre réponse...",
       "save_notes": "Enregistrer",
       "send_reply": "Envoyer la réponse",
+      "actions": "Actions",
+      "date": "Date",
       "mark_resolved": "Marquer comme résolu",
+      "mark_open": "Rouvrir le fil",
       "resolved_badge": "Résolu",
       "close": "Fermer"
     },
