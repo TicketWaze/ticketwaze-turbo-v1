@@ -5,7 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { Toaster } from "sonner";
 import { getTranslations } from "next-intl/server";
 import TopLoader from "@/components/TopLoader";
-import LiveChatWidget from "@/components/LiveChatWidget";
+import LiveChatWidgetMount from "@/components/LiveChatWidgetMount";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -130,7 +130,7 @@ export default async function RootLayout({
         <NextIntlClientProvider>
           <Toaster richColors position="top-right" />
           {children}
-          <LiveChatWidget />
+          <LiveChatWidgetMount />
           <TopLoader />
         </NextIntlClientProvider>
       </body>

@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter, usePathname } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 
 type Step = "name" | "email" | "subject" | "message" | "connecting" | "done";
 
@@ -44,9 +44,6 @@ export default function LiveChatWidget() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  if (pathname.includes("/support/chat/")) return null;
-
-  // Subject options — display labels are translated, values match the API enum exactly
   const subjects = [
     { label: t("subjects.general"), value: "General questions" },
     { label: t("subjects.account"), value: "Account related issues" },
@@ -79,6 +76,7 @@ export default function LiveChatWidget() {
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
+
 
   async function addBot(
     text: string,
