@@ -53,12 +53,14 @@ export default function SupportDetailContent({
   const [replySent, setReplySent] = useState(false);
   const [notesSaved, setNotesSaved] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isCustomerTyping, setIsCustomerTyping] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-  }, [messages]);
+  }, [messages, isCustomerTyping]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -68,6 +70,14 @@ export default function SupportDetailContent({
     });
 
     const onThreadReopened = () => setIsResolved(false);
+
+    const onTypingStart = ({ sender }: { sender: "customer" | "admin" }) => {
+      if (sender === "customer") setIsCustomerTyping(true);
+    };
+
+    const onTypingStop = ({ sender }: { sender: "customer" | "admin" }) => {
+      if (sender === "customer") setIsCustomerTyping(false);
+    };
 
     const onMessageNew = (msg: {
       messageId: string;
@@ -83,16 +93,36 @@ export default function SupportDetailContent({
 
     socket.on("message:new", onMessageNew);
     socket.on("thread:reopened", onThreadReopened);
+    socket.on("typing:start", onTypingStart);
+    socket.on("typing:stop", onTypingStop);
 
     return () => {
       socket.off("message:new", onMessageNew);
       socket.off("thread:reopened", onThreadReopened);
+      socket.off("typing:start", onTypingStart);
+      socket.off("typing:stop", onTypingStop);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     };
   }, [thread.threadId, accessToken]);
+
+  function emitTypingStart() {
+    const socket = getSocket();
+    socket.emit("typing:start", { threadId: thread.threadId, sender: "admin" });
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("typing:stop", { threadId: thread.threadId, sender: "admin" });
+    }, 1000);
+  }
+
+  function emitTypingStop() {
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    getSocket().emit("typing:stop", { threadId: thread.threadId, sender: "admin" });
+  }
 
   async function sendReply() {
     const text = replyText.trim();
     if (!text) return;
+    emitTypingStop();
     setIsSendingReply(true);
     setReplySent(false);
     try {
@@ -388,6 +418,32 @@ export default function SupportDetailContent({
                 ))}
               </AnimatePresence>
             )}
+            <AnimatePresence>
+              {isCustomerTyping && (
+                <motion.div
+                  key="customer-typing"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 6 }}
+                  transition={{ duration: 0.18 }}
+                  className="flex flex-col gap-1 items-start"
+                >
+                  <span className="text-[1.2rem] text-neutral-400 px-2">
+                    {thread.fullName}
+                  </span>
+                  <div className="bg-neutral-100 rounded-[1.5rem] rounded-bl-[0.4rem] px-5 py-3 flex items-center gap-[6px]">
+                    {[0, 1, 2].map((i) => (
+                      <motion.span
+                        key={i}
+                        className="w-[0.5rem] h-[0.5rem] bg-neutral-400 rounded-full inline-block"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ repeat: Infinity, duration: 0.7, delay: i * 0.13, ease: "easeInOut" }}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div ref={messagesEndRef} />
           </div>
 
@@ -417,7 +473,9 @@ export default function SupportDetailContent({
                   onChange={(e) => {
                     setReplyText(e.target.value);
                     setReplySent(false);
+                    emitTypingStart();
                   }}
+                  onBlur={emitTypingStop}
                   onKeyDown={handleKeyDown}
                 />
                 <button

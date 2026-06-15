@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import Navbar from "@/components/Navbar";
 import LoadingCircleSmall from "@/components/LoadingCircleSmall";
 import { Link } from "@/i18n/navigation";
@@ -57,11 +57,13 @@ export default function SupportChatContent({
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState(false);
+  const [isAdminTyping, setIsAdminTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isAdminTyping]);
 
   // WebSocket: connect on mount, join room, listen for events, disconnect on unmount
   useEffect(() => {
@@ -103,11 +105,21 @@ export default function SupportChatContent({
       toast.error(err.message);
     };
 
+    const onTypingStart = ({ sender }: { sender: "customer" | "admin" }) => {
+      if (sender === "admin") setIsAdminTyping(true);
+    };
+
+    const onTypingStop = ({ sender }: { sender: "customer" | "admin" }) => {
+      if (sender === "admin") setIsAdminTyping(false);
+    };
+
     socket.on("thread:joined", onThreadJoined);
     socket.on("message:new", onMessageNew);
     socket.on("thread:resolved", onThreadResolved);
     socket.on("thread:reopened", onThreadReopened);
     socket.on("error", onError);
+    socket.on("typing:start", onTypingStart);
+    socket.on("typing:stop", onTypingStop);
 
     return () => {
       socket.off("thread:joined", onThreadJoined);
@@ -115,14 +127,34 @@ export default function SupportChatContent({
       socket.off("thread:resolved", onThreadResolved);
       socket.off("thread:reopened", onThreadReopened);
       socket.off("error", onError);
+      socket.off("typing:start", onTypingStart);
+      socket.off("typing:stop", onTypingStop);
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
       socket.disconnect();
     };
   }, [token, initialThread]);
+
+  function emitTypingStart() {
+    if (!initialThread) return;
+    const socket = getSocket();
+    socket.emit("typing:start", { threadId: initialThread.threadId, sender: "customer" });
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("typing:stop", { threadId: initialThread.threadId, sender: "customer" });
+    }, 1000);
+  }
+
+  function emitTypingStop() {
+    if (!initialThread) return;
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    getSocket().emit("typing:stop", { threadId: initialThread.threadId, sender: "customer" });
+  }
 
   async function sendMessage() {
     const text = inputText.trim();
     if (!text || isSending) return;
 
+    emitTypingStop();
     setSendError(false);
     setInputText("");
     setIsSending(true);
@@ -305,6 +337,32 @@ export default function SupportChatContent({
                 </div>
               ))
             )}
+            <AnimatePresence>
+              {isAdminTyping && (
+                <motion.div
+                  key="admin-typing"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 6 }}
+                  transition={{ duration: 0.18 }}
+                  className="flex flex-col gap-1 items-start"
+                >
+                  <span className="text-[1.2rem] text-neutral-400 font-sans px-2">
+                    {t("support_team")}
+                  </span>
+                  <div className="bg-neutral-100 rounded-[2rem] rounded-bl-[0.5rem] px-6 py-4 flex items-center gap-[6px]">
+                    {[0, 1, 2].map((i) => (
+                      <motion.span
+                        key={i}
+                        className="w-[0.55rem] h-[0.55rem] bg-neutral-400 rounded-full inline-block"
+                        animate={{ y: [0, -4, 0] }}
+                        transition={{ repeat: Infinity, duration: 0.7, delay: i * 0.13, ease: "easeInOut" }}
+                      />
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <div ref={messagesEndRef} />
           </div>
 
@@ -332,7 +390,9 @@ export default function SupportChatContent({
                     onChange={(e) => {
                       setInputText(e.target.value);
                       setSendError(false);
+                      emitTypingStart();
                     }}
+                    onBlur={emitTypingStop}
                     onKeyDown={handleKeyDown}
                     placeholder={t("placeholder")}
                     rows={2}
