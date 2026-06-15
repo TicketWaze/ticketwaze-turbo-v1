@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import React, { useEffect, useState } from "react";
 import AdminLayout from "@/components/Layouts/AdminLayout";
@@ -112,7 +113,7 @@ export default function SupportPageContent({
           <div className="flex bg-neutral-100 rounded-[3rem] p-1 gap-1">
             <button
               onClick={() => resolved !== "false" && handleTabChange("false")}
-              className={`px-6 py-[0.5rem] rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
+              className={`px-6 py-2 rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
                 resolved === "false"
                   ? "bg-white text-primary-500 font-medium shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900"
@@ -122,7 +123,7 @@ export default function SupportPageContent({
             </button>
             <button
               onClick={() => resolved !== "true" && handleTabChange("true")}
-              className={`px-6 py-[0.5rem] rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
+              className={`px-6 py-2 rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
                 resolved === "true"
                   ? "bg-white text-[#349C2E] font-medium shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900"

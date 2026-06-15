@@ -28,8 +28,6 @@ export default function LiveChatWidget() {
   const router = useRouter();
   const pathname = usePathname();
 
-  if (pathname.includes("/support/chat/")) return null;
-
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [step, setStep] = useState<Step>("name");
@@ -45,6 +43,8 @@ export default function LiveChatWidget() {
   const hasStartedRef = useRef(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  if (pathname.includes("/support/chat/")) return null;
 
   // Subject options — display labels are translated, values match the API enum exactly
   const subjects = [

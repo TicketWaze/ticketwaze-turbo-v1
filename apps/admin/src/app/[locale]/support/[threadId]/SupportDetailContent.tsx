@@ -208,7 +208,7 @@ export default function SupportDetailContent({
 
       {/* Chat URL */}
       {chatUrl && (
-        <div className="flex items-center gap-3 bg-neutral-50 border border-neutral-200 rounded-[1rem] px-4 py-3">
+        <div className="flex items-center gap-3 bg-neutral-50 border border-neutral-200 rounded-2xl px-4 py-3">
           <span className="text-[1.2rem] text-neutral-400 shrink-0">
             {t("detail.chat_link")}:
           </span>
@@ -235,7 +235,7 @@ export default function SupportDetailContent({
           {t("detail.notes")}
         </span>
         <textarea
-          className="w-full rounded-[1rem] border border-neutral-200 bg-neutral-50 p-4 text-[1.4rem] text-neutral-900 leading-8 resize-none focus:outline-none focus:border-primary-500 transition-colors"
+          className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 p-4 text-[1.4rem] text-neutral-900 leading-8 resize-none focus:outline-none focus:border-primary-500 transition-colors"
           rows={3}
           placeholder={t("detail.notes_placeholder")}
           value={notesText}
@@ -265,7 +265,7 @@ export default function SupportDetailContent({
         <button
           onClick={reopenThread}
           disabled={isReopening}
-          className="w-full bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[1.4rem] font-semibold py-4 rounded-[1rem] transition-colors disabled:opacity-50 cursor-pointer"
+          className="w-full bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[1.4rem] font-semibold py-4 rounded-2xl transition-colors disabled:opacity-50 cursor-pointer"
         >
           {isReopening ? "..." : t("detail.mark_open")}
         </button>
@@ -273,7 +273,7 @@ export default function SupportDetailContent({
         <button
           onClick={resolveThread}
           disabled={isResolving}
-          className="w-full bg-[#349C2E]/10 hover:bg-[#349C2E]/20 text-[#349C2E] text-[1.4rem] font-semibold py-4 rounded-[1rem] transition-colors disabled:opacity-50 cursor-pointer"
+          className="w-full bg-[#349C2E]/10 hover:bg-[#349C2E]/20 text-[#349C2E] text-[1.4rem] font-semibold py-4 rounded-2xl transition-colors disabled:opacity-50 cursor-pointer"
         >
           {isResolving ? "..." : t("detail.mark_resolved")}
         </button>
@@ -341,41 +341,6 @@ export default function SupportDetailContent({
             </Drawer>
           </div>
         </div>
-
-        {/* Subject — always visible */}
-        {/* <p className="text-[1.4rem] text-neutral-600">
-          <span className="text-neutral-400">{t("detail.subject")}: </span>
-          <span className="font-medium">{thread.subject}</span>
-        </p> */}
-
-        {/* Desktop-only: email + chat URL */}
-        {/* <div className="hidden lg:flex flex-col gap-2 mt-1">
-          <p className="text-[1.4rem] text-neutral-600">
-            <span className="text-neutral-400">{t("detail.email")}: </span>
-            {thread.email}
-          </p>
-          {chatUrl && (
-            <div className="flex items-center gap-3 bg-neutral-50 border border-neutral-200 rounded-[1rem] px-4 py-3">
-              <span className="text-[1.2rem] text-neutral-400 shrink-0">
-                {t("detail.chat_link")}:
-              </span>
-              <a
-                href={chatUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[1.3rem] text-primary-500 underline truncate flex-1"
-              >
-                {chatUrl}
-              </a>
-              <button
-                onClick={copyUrl}
-                className="shrink-0 text-[1.2rem] font-medium text-neutral-600 hover:text-primary-500 transition-colors px-3 py-1 bg-neutral-100 rounded-[3rem] cursor-pointer"
-              >
-                {copied ? t("detail.copied") : t("detail.copy")}
-              </button>
-            </div>
-          )}
-        </div> */}
       </div>
 
       {/* ── Main split ─────────────────────────────────────────────────────── */}
@@ -407,10 +372,10 @@ export default function SupportDetailContent({
                         : thread.fullName}
                     </span>
                     <div
-                      className={`px-5 py-3 text-[1.4rem] leading-8 max-w-[80%] lg:max-w-[75%] whitespace-pre-wrap break-words ${
+                      className={`px-5 py-3 text-[1.4rem] leading-8 max-w-[80%] lg:max-w-[75%] whitespace-pre-wrap wrap-break-word ${
                         msg.sender === "admin"
-                          ? "bg-primary-500 text-white rounded-[1.5rem] rounded-br-[0.4rem]"
-                          : "bg-neutral-100 text-neutral-900 rounded-[1.5rem] rounded-bl-[0.4rem]"
+                          ? "bg-primary-500 text-white rounded-3xl rounded-br-[0.4rem]"
+                          : "bg-neutral-100 text-neutral-900 rounded-3xl rounded-bl-[0.4rem]"
                       }`}
                     >
                       {msg.message}
@@ -429,7 +394,7 @@ export default function SupportDetailContent({
           {/* Reply — pinned below the conversation on all screen sizes */}
           <div className="shrink-0 pt-3 border-t border-neutral-100">
             {isResolved ? (
-              <div className="flex items-center justify-center gap-3 py-3 rounded-[1rem] bg-[#349C2E]/5 border border-[#349C2E]/20">
+              <div className="flex items-center justify-center gap-3 py-3 rounded-2xl bg-[#349C2E]/5 border border-[#349C2E]/20">
                 <span className="text-[1.3rem] font-medium text-[#349C2E]">
                   {t("status.resolved")}
                 </span>
@@ -444,7 +409,7 @@ export default function SupportDetailContent({
             ) : (
               <div className="flex gap-3 items-end">
                 <textarea
-                  className="flex-1 rounded-[1rem] border border-neutral-200 bg-neutral-50 p-4 text-[1.4rem] text-neutral-900 leading-8 resize-none focus:outline-none focus:border-primary-500 transition-colors"
+                  className="flex-1 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 text-[1.4rem] text-neutral-900 leading-8 resize-none focus:outline-none focus:border-primary-500 transition-colors"
                   rows={2}
                   placeholder={t("detail.reply_placeholder")}
                   value={replyText}
@@ -458,7 +423,7 @@ export default function SupportDetailContent({
                 <button
                   onClick={sendReply}
                   disabled={isSendingReply || !replyText.trim()}
-                  className="shrink-0 bg-primary-500 text-white px-6 py-4 rounded-[1rem] text-[1.3rem] font-medium disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed transition-colors"
+                  className="shrink-0 bg-primary-500 text-white px-6 py-4 rounded-2xl text-[1.3rem] font-medium disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed transition-colors"
                 >
                   {isSendingReply ? "..." : replySent ? "✓" : <Send2 />}
                 </button>
@@ -468,7 +433,7 @@ export default function SupportDetailContent({
         </div>
 
         {/* Desktop right panel ─────────────────────────────────────────────── */}
-        <div className="hidden lg:flex flex-col gap-6 lg:w-[320px] xl:w-[360px] shrink-0 overflow-y-auto pb-4">
+        <div className="hidden lg:flex flex-col gap-6 lg:w-[320px] xl:w-90 shrink-0 overflow-y-auto pb-4">
           {ActionsPanel}
         </div>
       </div>
