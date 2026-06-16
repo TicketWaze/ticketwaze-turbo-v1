@@ -702,12 +702,14 @@
     "title": "Attendees Overview",
     "total": "Total Attendees",
     "active": "Active Attendees",
-    "repeat": "Repeat Attendees",
+    "guest": "Guest Attendees",
     "filters": {
       "period": {
         "actual": "Ce mois-ci"
       },
       "status": "All status",
+      "status_active": "Active",
+      "status_suspended": "Suspended",
       "time": "All time"
     },
     "attendees_list": {
@@ -720,14 +722,38 @@
         "status": "Status",
         "joined": "Date Joined"
       },
+      "status": {
+        "active": "ACTIVE",
+        "pending": "PENDING",
+        "suspended": "SUSPENDED"
+      },
       "no_history": "Once attendees start signing up, buying tickets and joining activities, they’ll appear here."
     },
     "profile": {
       "title": "User Profile",
       "back": "Back",
       "button": {
-        "suspend": "Suspend account",
         "edit": "Edit profile"
+      },
+      "suspend": {
+        "trigger": "Suspend account",
+        "title": "Suspend Account",
+        "description": "This will suspend the user's account. They will be notified by email with the reason you provide.",
+        "reason_label": "Reason for suspension",
+        "reason_placeholder": "Explain why this account is being suspended...",
+        "cancel": "Cancel",
+        "confirm": "Suspend Account",
+        "success": "Account suspended successfully",
+        "error": "Failed to suspend account"
+      },
+      "reactivate": {
+        "trigger": "Reactivate account",
+        "title": "Reactivate Account",
+        "description": "This will reactivate the user's account. They will be notified by email that their account is active again.",
+        "cancel": "Cancel",
+        "confirm": "Reactivate Account",
+        "success": "Account reactivated successfully",
+        "error": "Failed to reactivate account"
       },
       "change_profile": "Change profile image",
       "information": "Personal Information",

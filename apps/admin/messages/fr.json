@@ -690,12 +690,14 @@
     "title": "Aperçu des participants",
     "total": "Total des participants",
     "active": "Participants actifs",
-    "repeat": "Participants réguliers",
+    "guest": "Participants invités",
     "filters": {
       "period": {
         "actual": "Ce mois-ci"
       },
       "status": "Tous les statuts",
+      "status_active": "Actif",
+      "status_suspended": "Suspendu",
       "time": "Toute la période"
     },
     "attendees_list": {
@@ -708,14 +710,38 @@
         "status": "Statut",
         "joined": "Date d'inscription"
       },
+      "status": {
+        "active": "ACTIF",
+        "pending": "EN ATTENTE",
+        "suspended": "SUSPENDU"
+      },
       "no_history": "Une fois que les participants commencent à s'inscrire, acheter des billets et rejoindre des activités, ils apparaîtront ici."
     },
     "profile": {
       "title": "Profil utilisateur",
       "back": "Retour",
       "button": {
-        "suspend": "Suspendre le compte",
         "edit": "Modifier le profil"
+      },
+      "suspend": {
+        "trigger": "Suspendre le compte",
+        "title": "Suspendre le compte",
+        "description": "Cela suspendra le compte de l'utilisateur. Il sera notifié par e-mail avec la raison que vous fournissez.",
+        "reason_label": "Raison de la suspension",
+        "reason_placeholder": "Expliquez pourquoi ce compte est suspendu...",
+        "cancel": "Annuler",
+        "confirm": "Suspendre le compte",
+        "success": "Compte suspendu avec succès",
+        "error": "Échec de la suspension du compte"
+      },
+      "reactivate": {
+        "trigger": "Réactiver le compte",
+        "title": "Réactiver le compte",
+        "description": "Cela réactivera le compte de l'utilisateur. Il sera notifié par e-mail que son compte est à nouveau actif.",
+        "cancel": "Annuler",
+        "confirm": "Réactiver le compte",
+        "success": "Compte réactivé avec succès",
+        "error": "Échec de la réactivation du compte"
       },
       "change_profile": "Changer la photo de profil",
       "information": "Informations personnelles",

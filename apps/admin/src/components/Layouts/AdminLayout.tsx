@@ -22,7 +22,7 @@ function AdminLayout({
         <main className="flex flex-col flex-1 overflow-y-auto justify-between lg:col-start-3 lg:col-end-13">
           <div
             className={cn(
-              "bg-white h-full flex flex-col gap-8 main rounded-[3rem] overflow-y-hidden p-6 lg:p-16 pb-0 lg:pb-0",
+              "bg-white h-full flex flex-col gap-8 main rounded-[3rem] overflow-y-auto lg:overflow-y-hidden p-6 lg:p-16 pb-0 lg:pb-0",
               className,
             )}
           >

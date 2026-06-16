@@ -121,6 +121,7 @@ export interface Ticket {
   isRefundable: boolean;
   status: "PENDING" | "CHECKED" | "RETURNED";
   event: Event;
+  order?: Order;
   createdAt: DateTime;
   updatedAt: DateTime;
 }
@@ -455,4 +456,47 @@ export interface AdminEventsRequest {
     previousPageUrl: string | null;
   };
   data: Event[];
+}
+
+export interface AdminUser {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  gender: string | null;
+  whatsappPhoneNumber: string | null;
+  profileImageUrl: string | null;
+  country: string | null;
+  state: string | null;
+  city: string | null;
+  dateOfBirth: string | null;
+  isVerified: boolean;
+  isSuspended: boolean;
+  suspensionReason: string | null;
+  referralCode: string;
+  createdAt: string;
+  updatedAt: string;
+  userAnalytic: UserAnalytic | null;
+  tickets: Ticket[];
+}
+
+export interface AdminAttendeesRequest {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string | null;
+    lastPageUrl: string | null;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: AdminUser[];
+}
+
+export interface AdminAttendeeStats {
+  total: number;
+  active: number;
+  guest: number;
 }
