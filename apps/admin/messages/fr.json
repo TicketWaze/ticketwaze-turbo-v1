@@ -215,6 +215,7 @@
       "more": "Plus",
       "help": "Aide",
       "logout": "Déconnexion",
+      "verified": "Vérifié",
       "links": {
         "title1": "Utilisateurs",
         "analytics": "Analyses",
@@ -641,47 +642,81 @@
     "title": "Aperçu des organisateurs",
     "total": "Total des organisateurs",
     "active": "Organisateurs actifs",
-    "new": "Nouveaux organisateurs",
+    "new": "Nouveaux ce mois-ci",
     "filters": {
       "period": {
         "actual": "Ce mois-ci"
       },
       "status": "Tous les statuts",
-      "time": "Toute la période"
+      "status_active": "Actif",
+      "status_suspended": "Suspendu",
+      "time": "Toute la période",
+      "last_week": "Semaine dernière",
+      "last_month": "Mois dernier"
     },
     "organisations_list": {
       "title": "Liste des organisateurs",
       "table": {
         "name": "Nom",
         "email": "Email",
-        "status": "Statut",
         "activity_count": "Nombre d'activités",
-        "revenue": "Revenu",
         "joined": "Date d'inscription"
       },
-      "no_history": "Une fois que les participants commencent à s'inscrire, acheter des billets et rejoindre des événements, ils apparaîtront ici."
+      "no_history": "Une fois que les organisateurs s'inscrivent et créent des activités, ils apparaîtront ici."
     },
     "profile": {
-      "title": "Profil utilisateur",
+      "title": "Profil de l'organisateur",
       "back": "Retour",
-      "button": {
-        "suspend": "Suspendre le compte",
-        "edit": "Modifier le profil"
-      },
       "profile": "Profil de l'organisation",
       "information": "Informations de l'organisateur",
+      "suspend": {
+        "trigger": "Suspendre le compte",
+        "title": "Suspendre le compte",
+        "description": "Cela suspendra le compte de l'organisateur. Il sera notifié par e-mail avec la raison que vous fournissez.",
+        "reason_label": "Raison de la suspension",
+        "reason_placeholder": "Expliquez pourquoi ce compte est suspendu...",
+        "cancel": "Annuler",
+        "confirm": "Suspendre le compte",
+        "success": "Compte suspendu avec succès",
+        "error": "Échec de la suspension du compte"
+      },
+      "reactivate": {
+        "trigger": "Réactiver le compte",
+        "title": "Réactiver le compte",
+        "description": "Cela réactivera le compte de l'organisateur. Il sera notifié par e-mail que son compte est à nouveau actif.",
+        "cancel": "Annuler",
+        "confirm": "Réactiver le compte",
+        "success": "Compte réactivé avec succès",
+        "error": "Échec de la réactivation du compte"
+      },
+      "verify": {
+        "trigger": "Vérifier l'organisation",
+        "trigger_remove": "Retirer la vérification",
+        "title": "Vérifier l'organisation",
+        "title_remove": "Retirer la vérification",
+        "description": "Cela accordera le statut vérifié à cette organisation. Elle sera notifiée par e-mail.",
+        "description_remove": "Cela retirera le badge vérifié de cette organisation. Aucun e-mail ne sera envoyé.",
+        "cancel": "Annuler",
+        "confirm": "Vérifier",
+        "confirm_remove": "Retirer",
+        "success": "Organisation vérifiée avec succès",
+        "success_remove": "Vérification retirée avec succès",
+        "error": "Échec de la mise à jour du statut de vérification"
+      },
       "summary": {
         "title": "Résumé des activités",
         "created": "Activités créées",
         "cancelled": "Activités annulées",
+        "no_activities": "Aucune activité active.",
+        "no_cancelled": "Aucune activité annulée.",
         "joined_on": "Inscrit le"
       },
       "finance": {
         "title": "Finances",
         "total_ticket_sold": "Total des billets vendus",
         "total_revenue": "Revenu total",
-        "total_profit": "Bénéfice total",
-        "balance": "Solde"
+        "pending_balance": "Solde en attente",
+        "balance": "Solde disponible"
       }
     }
   },

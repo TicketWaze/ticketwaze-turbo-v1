@@ -500,3 +500,50 @@ export interface AdminAttendeeStats {
   active: number;
   guest: number;
 }
+
+export interface AdminOrganisation {
+  organisationId: string;
+  organisationName: string;
+  organisationEmail: string;
+  organisationWebsite: string | null;
+  organisationPhoneNumber: string;
+  organisationDescription: string;
+  country: string;
+  state: string;
+  city: string;
+  profileImageUrl: string | null;
+  currency: string;
+  availableBalance: number;
+  pendingBalance: number;
+  usdAvailableBalance: number;
+  usdPendingBalance: number;
+  isVerified: boolean;
+  isPublished: boolean;
+  isSuspended: boolean;
+  suspensionReason: string | null;
+  events: Event[];
+  subscription: OrganisationSubscription | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminOrganisationsRequest {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string | null;
+    lastPageUrl: string | null;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: AdminOrganisation[];
+}
+
+export interface AdminOrganisationStats {
+  total: number;
+  active: number;
+  new: number;
+}

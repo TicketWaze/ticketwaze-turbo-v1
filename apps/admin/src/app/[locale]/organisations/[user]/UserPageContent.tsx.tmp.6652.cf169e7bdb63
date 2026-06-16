@@ -178,7 +178,7 @@ export default function UserPageContent({
           </div>
         </main>
 
-        <div className="lg:hidden flex flex-col gap-4 pb-6">
+        <div className="lg:hidden flex gap-4 pb-6">
           <VerifyDialog
             organisationId={organisation.organisationId}
             isVerified={organisation.isVerified}
