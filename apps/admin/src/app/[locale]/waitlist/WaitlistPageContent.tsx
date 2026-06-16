@@ -22,9 +22,10 @@ import {
   Drawer,
   DrawerClose,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
-  DrawerHeader,
   DrawerTitle,
+  DrawerTrigger,
 } from "@/components/ui/drawer";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import formatDate from "@/lib/FormatDate";
@@ -64,8 +65,6 @@ export default function WaitlistPageContent({
   const [entityFilter, setEntityFilter] = useState<
     "all" | "personal" | "business"
   >("all");
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerUser, setDrawerUser] = useState<WaitlistEntry | null>(null);
   const [isInvitingSelected, setIsInvitingSelected] = useState(false);
   const [invitingOneId, setInvitingOneId] = useState<string | null>(null);
 
@@ -102,11 +101,6 @@ export default function WaitlistPageContent({
     });
   }
 
-  function openDrawer(user: WaitlistEntry) {
-    setDrawerUser(user);
-    setDrawerOpen(true);
-  }
-
   async function handleInviteSelected() {
     setIsInvitingSelected(true);
     try {
@@ -138,7 +132,6 @@ export default function WaitlistPageContent({
       });
       if ("status" in result) {
         toast.success(t("invite.success"));
-        setDrawerOpen(false);
       } else {
         toast.error(result.error);
       }
@@ -147,10 +140,6 @@ export default function WaitlistPageContent({
     } finally {
       setInvitingOneId(null);
     }
-  }
-
-  function getInitials(user: WaitlistEntry) {
-    return user.email[0].toUpperCase();
   }
 
   return (
@@ -265,9 +254,6 @@ export default function WaitlistPageContent({
               />
             </TableHead>
             <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("list.table.name")}
-            </TableHead>
-            <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("list.table.email")}
             </TableHead>
             <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
@@ -283,11 +269,7 @@ export default function WaitlistPageContent({
         </TableHeader>
         <TableBody>
           {filteredUsers.map((user) => (
-            <TableRow
-              key={user.waitlistUserId}
-              className="cursor-pointer"
-              onClick={() => openDrawer(user)}
-            >
+            <TableRow key={user.waitlistUserId}>
               <TableCell
                 onClick={(e) =>
                   !user.invitedAt && toggleSelect(user.waitlistUserId, e)
@@ -302,7 +284,141 @@ export default function WaitlistPageContent({
                 />
               </TableCell>
               <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900 max-w-56 lg:max-w-none">
-                <span className="block truncate">{user.email}</span>
+                <Drawer direction="right">
+                  <DrawerTrigger>
+                    <span className="block truncate cursor-pointer">
+                      {user.email}
+                    </span>
+                  </DrawerTrigger>
+                  <DrawerContent
+                    className={"w-xl lg:w-208 bg-white my-6 p-12 rounded-[30px]"}
+                  >
+                    <div
+                      className={"w-full flex flex-col items-center overflow-y-scroll"}
+                    >
+                      <DrawerTitle className={"pb-16"}>
+                        <span
+                          className={
+                            "font-primary font-medium text-center text-[2.6rem] leading-12 text-black"
+                          }
+                        >
+                          {user.email}
+                        </span>
+                      </DrawerTitle>
+                      <DrawerDescription className={"w-full"}>
+                        <span className={"w-full flex flex-col gap-8"}>
+                          <span
+                            className={
+                              "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                            }
+                          >
+                            {t("drawer.email")}
+                            <span
+                              className={"text-deep-100 font-medium leading-8"}
+                            >
+                              {user.email}
+                            </span>
+                          </span>
+                          <span
+                            className={
+                              "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                            }
+                          >
+                            {t("drawer.entity")}
+                            <span
+                              className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
+                                user.entity === "personal"
+                                  ? "bg-blue-50 text-blue-600"
+                                  : "bg-orange-50 text-orange-600"
+                              }`}
+                            >
+                              {user.entity === "personal"
+                                ? t("filters.personal")
+                                : t("filters.business")}
+                            </span>
+                          </span>
+                          <span
+                            className={
+                              "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                            }
+                          >
+                            {t("drawer.joined")}
+                            <span
+                              className={"text-deep-100 font-medium leading-8"}
+                            >
+                              {formatDate(user.createdAt, locale, "local")}
+                            </span>
+                          </span>
+                          <span
+                            className={
+                              "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                            }
+                          >
+                            {t("drawer.status")}
+                            <span
+                              className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
+                                user.invitedAt
+                                  ? "bg-neutral-100 text-success"
+                                  : "bg-neutral-100 text-neutral-500"
+                              }`}
+                            >
+                              {user.invitedAt
+                                ? t("status.invited")
+                                : t("status.pending")}
+                            </span>
+                          </span>
+                          {user.invitedAt && (
+                            <span
+                              className={
+                                "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                              }
+                            >
+                              {t("drawer.invited_at")}
+                              <span
+                                className={"text-deep-100 font-medium leading-8"}
+                              >
+                                {formatDate(user.invitedAt, locale, "local")}
+                              </span>
+                            </span>
+                          )}
+                        </span>
+                      </DrawerDescription>
+                    </div>
+                    <DrawerFooter>
+                      <div className={"flex gap-8 w-full items-center"}>
+                        <button
+                          onClick={() =>
+                            handleInviteOne(user.waitlistUserId)
+                          }
+                          disabled={
+                            invitingOneId === user.waitlistUserId ||
+                            !!user.invitedAt
+                          }
+                          className={
+                            "w-full bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center disabled:cursor-not-allowed"
+                          }
+                        >
+                          {invitingOneId === user.waitlistUserId ? (
+                            <LoadingCircleSmall />
+                          ) : user.invitedAt ? (
+                            t("drawer.already_invited")
+                          ) : (
+                            t("drawer.invite")
+                          )}
+                        </button>
+                        <DrawerClose asChild>
+                          <button
+                            className={
+                              "w-full border-neutral-200 text-neutral-700 bg-neutral-100 px-4 py-6 border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
+                            }
+                          >
+                            {t("drawer.close")}
+                          </button>
+                        </DrawerClose>
+                      </div>
+                    </DrawerFooter>
+                  </DrawerContent>
+                </Drawer>
               </TableCell>
               <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900">
                 <span
@@ -348,121 +464,6 @@ export default function WaitlistPageContent({
           </p>
         </div>
       )}
-
-      {/* User detail drawer */}
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen} direction="right">
-        <DrawerContent>
-          <DrawerHeader className="px-8 pt-8 pb-4 border-b border-neutral-100">
-            <DrawerTitle className="text-[1.8rem] font-primary font-semibold text-black">
-              {t("drawer.title")}
-            </DrawerTitle>
-          </DrawerHeader>
-
-          {drawerUser && (
-            <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-6">
-              {/* Avatar + email */}
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-primary-100 flex items-center justify-center">
-                  <span className="text-primary-500 font-bold text-[1.8rem]">
-                    {getInitials(drawerUser)}
-                  </span>
-                </div>
-                <p className="font-semibold text-[1.6rem] leading-8 text-neutral-900 font-primary">
-                  {drawerUser.email}
-                </p>
-              </div>
-
-              {/* Details */}
-              <div className="flex flex-col gap-4">
-                <div className="flex justify-between py-4 border-b border-neutral-100">
-                  <span className="text-[1.4rem] text-neutral-500 leading-8">
-                    {t("drawer.email")}
-                  </span>
-                  <span className="text-[1.4rem] text-neutral-900 leading-8 font-medium">
-                    {drawerUser.email}
-                  </span>
-                </div>
-                <div className="flex justify-between py-4 border-b border-neutral-100">
-                  <span className="text-[1.4rem] text-neutral-500 leading-8">
-                    {t("drawer.entity")}
-                  </span>
-                  <span
-                    className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
-                      drawerUser.entity === "personal"
-                        ? "bg-blue-50 text-blue-600"
-                        : "bg-orange-50 text-orange-600"
-                    }`}
-                  >
-                    {drawerUser.entity === "personal"
-                      ? t("filters.personal")
-                      : t("filters.business")}
-                  </span>
-                </div>
-                <div className="flex justify-between py-4 border-b border-neutral-100">
-                  <span className="text-[1.4rem] text-neutral-500 leading-8">
-                    {t("drawer.joined")}
-                  </span>
-                  <span className="text-[1.4rem] text-neutral-900 leading-8 font-medium">
-                    {formatDate(drawerUser.createdAt, locale, "local")}
-                  </span>
-                </div>
-                <div className="flex justify-between py-4 border-b border-neutral-100">
-                  <span className="text-[1.4rem] text-neutral-500 leading-8">
-                    {t("drawer.status")}
-                  </span>
-                  <span
-                    className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
-                      drawerUser.invitedAt
-                        ? "bg-neutral-100 text-success"
-                        : "bg-neutral-100 text-neutral-500"
-                    }`}
-                  >
-                    {drawerUser.invitedAt
-                      ? t("status.invited")
-                      : t("status.pending")}
-                  </span>
-                </div>
-                {drawerUser.invitedAt && (
-                  <div className="flex justify-between py-4 border-b border-neutral-100">
-                    <span className="text-[1.4rem] text-neutral-500 leading-8">
-                      {t("drawer.invited_at")}
-                    </span>
-                    <span className="text-[1.4rem] text-neutral-900 leading-8 font-medium">
-                      {formatDate(drawerUser.invitedAt, locale, "local")}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          <DrawerFooter className="px-8 pb-8 flex flex-col gap-3">
-            <button
-              onClick={() =>
-                drawerUser && handleInviteOne(drawerUser.waitlistUserId)
-              }
-              disabled={
-                invitingOneId === drawerUser?.waitlistUserId ||
-                !!drawerUser?.invitedAt
-              }
-              className="w-full flex items-center justify-center px-6 py-4 rounded-[3rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            >
-              {invitingOneId === drawerUser?.waitlistUserId ? (
-                <LoadingCircleSmall />
-              ) : drawerUser?.invitedAt ? (
-                t("drawer.already_invited")
-              ) : (
-                t("drawer.invite")
-              )}
-            </button>
-            <DrawerClose asChild>
-              <button className="w-full px-6 py-4 rounded-[3rem] border border-neutral-200 text-neutral-700 text-[1.5rem] font-medium leading-8 cursor-pointer">
-                {t("drawer.close")}
-              </button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
     </div>
   );
 }
