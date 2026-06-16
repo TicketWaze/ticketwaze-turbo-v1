@@ -6,12 +6,31 @@ import {
   DrawerFooter,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Separator from "@/components/shared/Separator";
 import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
+import { Ticket } from "@ticketwaze/typescript-config";
+import formatDate from "@/lib/FormatDate";
+import formatTime from "@/lib/formatTime";
 
-export default function TicketDetails({}) {
+export default function TicketDetails({ ticket }: { ticket: Ticket }) {
   const t = useTranslations("Attendees.profile");
+  const locale = useLocale();
+
+  const event = ticket.event;
+  const order = ticket.order;
+  const firstDay = event?.eventDays?.[0];
+  const location = [event?.address, event?.city, event?.country]
+    .filter(Boolean)
+    .join(", ");
+
+  const ticketStatusColor =
+    ticket.status === "CHECKED"
+      ? "text-success"
+      : ticket.status === "RETURNED"
+        ? "text-failure"
+        : "text-warning";
+
   return (
     <DrawerContent className={"my-8 p-12 rounded-[30px] w-full"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
@@ -34,7 +53,7 @@ export default function TicketDetails({}) {
               >
                 {t("Ticket.details.attendee")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  Jean Baptiste
+                  {ticket.fullName}
                 </span>
               </p>
               <p
@@ -42,9 +61,9 @@ export default function TicketDetails({}) {
                   "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("Ticket.details.mail")}{" "}
+                {t("Ticket.details.mail")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  jean@gmail.com
+                  {ticket.email}
                 </span>
               </p>
             </div>
@@ -55,47 +74,59 @@ export default function TicketDetails({}) {
                   "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("Ticket.details.activity")}{" "}
+                {t("Ticket.details.activity")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  Cap-Haïtien Jazz Festival
+                  {event?.eventName ?? "—"}
                 </span>
               </p>
-              <ul className="flex flex-col gap-6 w-full">
-                <li>
-                  <p
-                    className={
-                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                    }
-                  >
-                    {t("Ticket.details.date")}{" "}
-                    <span className={"text-deep-100 font-medium leading-8"}>
-                      13 August 2027
-                    </span>
-                  </p>
-                  <p
-                    className={
-                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                    }
-                  >
-                    {t("Ticket.details.time")}{" "}
-                    <span className={"text-deep-100 font-medium leading-8"}>
-                      11:00 AM - 13:00 PM{" "}
-                    </span>
-                  </p>
-                </li>
-              </ul>
+              {firstDay && (
+                <ul className="flex flex-col gap-6 w-full">
+                  <li>
+                    <p
+                      className={
+                        "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                      }
+                    >
+                      {t("Ticket.details.date")}
+                      <span className={"text-deep-100 font-medium leading-8"}>
+                        {formatDate(firstDay.eventDate, locale, "local")}
+                      </span>
+                    </p>
+                    <p
+                      className={
+                        "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                      }
+                    >
+                      {t("Ticket.details.time")}
+                      <span className={"text-deep-100 font-medium leading-8"}>
+                        {formatTime(
+                          firstDay.startTime,
+                          firstDay.timezone,
+                          locale,
+                        )}{" "}
+                        -{" "}
+                        {formatTime(
+                          firstDay.endTime,
+                          firstDay.timezone,
+                          locale,
+                        )}
+                      </span>
+                    </p>
+                  </li>
+                </ul>
+              )}
               <p
                 className={
                   "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("Ticket.details.location")}{" "}
+                {t("Ticket.details.location")}
                 <span
                   className={
                     "text-deep-100 font-medium leading-8 max-w-[39.9rem] text-right"
                   }
                 >
-                  Cap-Haïtien Cultural Center, Rue 20 Avenue, Cap-Haïtien, Haiti
+                  {location || "—"}
                 </span>
               </p>
             </div>
@@ -106,17 +137,16 @@ export default function TicketDetails({}) {
                   "flex justify-between items-center text-[1.4rem] text-neutral-600"
                 }
               >
-                {t("Ticket.details.class")}{" "}
+                {t("Ticket.details.class")}
                 <span
                   className={
-                    "text-deep-100 flex items-center gap-4 font-medium leading-6 "
+                    "text-deep-100 flex items-center gap-4 font-medium leading-6"
                   }
                 >
-                  1X
                   <span
                     className={`py-[0.3rem] px-2 bg-neutral-200 text-[#EF1870] font-bold rounded-[30px] text-[11px]`}
                   >
-                    GENERAL
+                    {ticket.ticketType.toUpperCase()}
                   </span>
                 </span>
               </p>
@@ -125,9 +155,9 @@ export default function TicketDetails({}) {
                   "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("Ticket.details.price")}{" "}
+                {t("Ticket.details.price")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  400 HTG
+                  {ticket.ticketPrice} {event?.currency ?? "HTG"}
                 </span>
               </p>
               <p
@@ -135,9 +165,9 @@ export default function TicketDetails({}) {
                   "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("Ticket.details.id")}{" "}
+                {t("Ticket.details.id")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  #TICK1234567
+                  #{ticket.ticketId.slice(0, 12).toUpperCase()}
                 </span>
               </p>
               <p
@@ -145,12 +175,63 @@ export default function TicketDetails({}) {
                   "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("Ticket.details.total")}{" "}
-                <span className={"text-deep-100  font-medium leading-8"}>
-                  400 {""} HTG
+                {t("Ticket.details.total")}
+                <span className={"text-deep-100 font-medium leading-8"}>
+                  {ticket.ticketPrice} {event?.currency ?? "HTG"}
                 </span>
               </p>
             </div>
+            {order && (
+              <>
+                <Separator />
+                <div className={"w-full flex flex-col gap-8 py-6"}>
+                  <p
+                    className={
+                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                    }
+                  >
+                    {t("Ticket.details.transaction_id")}
+                    <span className={"text-deep-100 font-medium leading-8"}>
+                      #{order.orderId.slice(0, 12).toUpperCase()}
+                    </span>
+                  </p>
+                  <p
+                    className={
+                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                    }
+                  >
+                    {t("Ticket.details.payment_method")}
+                    <span className={"text-deep-100 font-medium leading-8"}>
+                      {order.provider}
+                    </span>
+                  </p>
+                  <p
+                    className={
+                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                    }
+                  >
+                    {t("Ticket.details.payment_date")}
+                    <span className={"text-deep-100 font-medium leading-8"}>
+                      {formatDate(
+                        order.createdAt as unknown as string,
+                        locale,
+                        "local",
+                      )}
+                    </span>
+                  </p>
+                  <p
+                    className={
+                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                    }
+                  >
+                    {t("Ticket.details.transaction_status")}
+                    <span className={"text-deep-100 font-medium leading-8"}>
+                      {order.status}
+                    </span>
+                  </p>
+                </div>
+              </>
+            )}
             <Separator />
             <div className={"w-full flex flex-col gap-8 py-6"}>
               <p
@@ -158,66 +239,13 @@ export default function TicketDetails({}) {
                   "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("Ticket.details.transaction_id")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
-                  Jean Baptiste
-                </span>
-              </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("Ticket.details.payment_method")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
-                  Card
-                </span>
-              </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("Ticket.details.payment_date")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
-                  23 May 2026, 12:00 AM
-                </span>
-              </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("Ticket.details.transaction_status")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
-                  jean@gmail.com
-                </span>
-              </p>
-            </div>
-            <Separator />
-            <div className={"w-full flex flex-col gap-8 py-6"}>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("Ticket.details.check_status")}{" "}
+                {t("Ticket.details.check_status")}
                 <span className={"text-deep-100 font-medium leading-8"}>
                   <span
-                    className={`py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase  text-success px-2 rounded-[30px] bg-neutral-200`}
+                    className={`py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase ${ticketStatusColor} px-2 rounded-[30px] bg-neutral-200`}
                   >
-                    CHECKED
+                    {ticket.status}
                   </span>
-                </span>
-              </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("Ticket.details.check_time")}{" "}
-                <span className={"text-deep-100 font-medium leading-8"}>
-                  12 May 2026, 12:00 AM
                 </span>
               </p>
               <div></div>
