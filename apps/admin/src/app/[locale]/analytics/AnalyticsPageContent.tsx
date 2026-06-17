@@ -7,10 +7,78 @@ import UserGrowthChart from "./UserGrowthChat";
 import RevenueGrowthChart from "./RevenueGrowthChart";
 import Image from "next/image";
 import ArrowUp from "@ticketwaze/ui/assets/icons/arrow-up.svg";
+import ArrowDown from "@ticketwaze/ui/assets/icons/arrow-down.svg";
 
-export default function AnalyticsPageContent() {
+type ChartPoint = { label: string; value: number };
+type UserGrowthPoint = { label: string; attendees: number; organizers: number };
+type TopEvent = { name: string; percent: number };
+
+export type AnalyticsData = {
+  stats: {
+    totalRevenue: number;
+    totalRevenueGrowth: number;
+    totalUsers: number;
+    totalUsersGrowth: number;
+    totalAttendees: number;
+    totalAttendeesGrowth: number;
+    totalOrganizers: number;
+    totalOrganizersGrowth: number;
+    totalEvents: number;
+    totalEventsGrowth: number;
+    totalTicketsSold: number;
+    totalTicketsSoldGrowth: number;
+    avgTicketsPerAttendee: number;
+    avgTicketsGrowth: number;
+    topOrganizerRevenue: number;
+    topOrganizerRevenueGrowth: number;
+  };
+  revenueChart: ChartPoint[];
+  userGrowthChart: UserGrowthPoint[];
+  genderDistribution: {
+    malePercent: number;
+    femalePercent: number;
+    othersPercent: number;
+  };
+  topEvents: TopEvent[];
+  topOrganizers: TopEvent[];
+  paymentMethods: { provider: string; percent: number }[];
+  activityStatus: { approved: number; inReview: number; rejected: number };
+};
+
+function GrowthBadge({ value }: { value: number }) {
+  const isPositive = value >= 0;
+  return (
+    <span
+      className={`pl-4 flex gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10 ${isPositive ? "text-success" : "text-red-500"}`}
+    >
+      {Math.abs(value)}%
+      <Image
+        src={isPositive ? ArrowUp : ArrowDown}
+        alt={isPositive ? "arrow up" : "arrow down"}
+        width={20}
+        height={20}
+      />
+    </span>
+  );
+}
+
+export default function AnalyticsPageContent({
+  data,
+}: {
+  data: AnalyticsData;
+}) {
   const t = useTranslations("Analytics");
-  const top_e = 1;
+  const {
+    stats,
+    revenueChart,
+    userGrowthChart,
+    genderDistribution,
+    topEvents,
+    topOrganizers,
+    paymentMethods,
+    activityStatus,
+  } = data;
+
   return (
     <AdminLayout>
       <>
@@ -20,7 +88,11 @@ export default function AnalyticsPageContent() {
           filter={t("filters.first.date")}
           className="pb-16"
         />
-        <div className={"flex flex-col gap-12 overflow-y-scroll lg:gap-16"}>
+        <div
+          className={
+            "flex flex-col gap-12 overflow-y-scroll overflow-x-hidden lg:gap-16"
+          }
+        >
           <div>
             <div
               className={
@@ -40,15 +112,7 @@ export default function AnalyticsPageContent() {
                       }
                     >
                       {t("revenue")}
-                       <span className="pl-4 flex text-success gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10">
-                        80%
-                        <Image
-                          src={ArrowUp}
-                          alt="arrow up"
-                          width={20}
-                          height={20}
-                        />
-                      </span>
+                      <GrowthBadge value={stats.totalRevenueGrowth} />
                     </span>
                   </div>
                   <p
@@ -56,7 +120,9 @@ export default function AnalyticsPageContent() {
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
                     }
                   >
-                    20,553,758.90{" "}
+                    {stats.totalRevenue.toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}{" "}
                     <span className={"font-normal text-neutral-500"}>USD</span>
                   </p>
                 </div>
@@ -71,15 +137,7 @@ export default function AnalyticsPageContent() {
                       }
                     >
                       {t("users_registered")}
-                       <span className="pl-4 flex text-success gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10">
-                        80%
-                        <Image
-                          src={ArrowUp}
-                          alt="arrow up"
-                          width={20}
-                          height={20}
-                        />
-                      </span>
+                      <GrowthBadge value={stats.totalUsersGrowth} />
                     </span>
                   </div>
                   <p
@@ -87,7 +145,7 @@ export default function AnalyticsPageContent() {
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px] mt-4"
                     }
                   >
-                    1,500,000
+                    {stats.totalUsers.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -105,15 +163,7 @@ export default function AnalyticsPageContent() {
                       }
                     >
                       {t("attendees_registered")}
-                       <span className="pl-4 flex text-success gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10">
-                        80%
-                        <Image
-                          src={ArrowUp}
-                          alt="arrow up"
-                          width={20}
-                          height={20}
-                        />
-                      </span>
+                      <GrowthBadge value={stats.totalAttendeesGrowth} />
                     </span>
                   </div>
                   <p
@@ -121,7 +171,7 @@ export default function AnalyticsPageContent() {
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
                     }
                   >
-                    1,250,000
+                    {stats.totalAttendees.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -135,15 +185,7 @@ export default function AnalyticsPageContent() {
                       }
                     >
                       {t("organizers_registered")}
-                       <span className="pl-4 flex text-success gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10">
-                        80%
-                        <Image
-                          src={ArrowUp}
-                          alt="arrow up"
-                          width={20}
-                          height={20}
-                        />
-                      </span>
+                      <GrowthBadge value={stats.totalOrganizersGrowth} />
                     </span>
                   </div>
                   <p
@@ -151,7 +193,7 @@ export default function AnalyticsPageContent() {
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
                     }
                   >
-                    250,000
+                    {stats.totalOrganizers.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -174,15 +216,7 @@ export default function AnalyticsPageContent() {
                       }
                     >
                       {t("activity_created")}
-                       <span className="pl-4 flex text-success gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10">
-                        80%
-                        <Image
-                          src={ArrowUp}
-                          alt="arrow up"
-                          width={20}
-                          height={20}
-                        />
-                      </span>
+                      <GrowthBadge value={stats.totalEventsGrowth} />
                     </span>
                   </div>
                   <p
@@ -190,7 +224,7 @@ export default function AnalyticsPageContent() {
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
                     }
                   >
-                    4,954
+                    {stats.totalEvents.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -204,15 +238,7 @@ export default function AnalyticsPageContent() {
                       }
                     >
                       {t("sold")}
-                       <span className="pl-4 flex text-success gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10">
-                        80%
-                        <Image
-                          src={ArrowUp}
-                          alt="arrow up"
-                          width={20}
-                          height={20}
-                        />
-                      </span>
+                      <GrowthBadge value={stats.totalTicketsSoldGrowth} />
                     </span>
                   </div>
                   <p
@@ -220,7 +246,7 @@ export default function AnalyticsPageContent() {
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px] mt-4"
                     }
                   >
-                    8,339,120
+                    {stats.totalTicketsSold.toLocaleString()}
                   </p>
                 </div>
               </div>
@@ -238,15 +264,7 @@ export default function AnalyticsPageContent() {
                       }
                     >
                       {t("avg_tickets")}
-                       <span className="pl-4 flex text-success gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10">
-                        80%
-                        <Image
-                          src={ArrowUp}
-                          alt="arrow up"
-                          width={20}
-                          height={20}
-                        />
-                      </span>
+                      <GrowthBadge value={stats.avgTicketsGrowth} />
                     </span>
                   </div>
                   <p
@@ -254,7 +272,7 @@ export default function AnalyticsPageContent() {
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
                     }
                   >
-                    2.9
+                    {stats.avgTicketsPerAttendee}
                   </p>
                 </div>
               </div>
@@ -268,15 +286,7 @@ export default function AnalyticsPageContent() {
                       }
                     >
                       {t("top_organizer_revenue")}
-                      <span className="pl-4 flex text-success gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10">
-                        80%
-                        <Image
-                          src={ArrowUp}
-                          alt="arrow up"
-                          width={20}
-                          height={20}
-                        />
-                      </span>
+                      <GrowthBadge value={stats.topOrganizerRevenueGrowth} />
                     </span>
                   </div>
                   <p
@@ -284,7 +294,9 @@ export default function AnalyticsPageContent() {
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
                     }
                   >
-                    51,407,125.90{" "}
+                    {stats.topOrganizerRevenue.toLocaleString(undefined, {
+                      maximumFractionDigits: 2,
+                    })}{" "}
                     <span className={"font-normal text-neutral-500"}>USD</span>
                   </p>
                 </div>
@@ -311,7 +323,7 @@ export default function AnalyticsPageContent() {
                 >
                   {t("income.revenue")}
                 </span>
-                <RevenueGrowthChart />
+                <RevenueGrowthChart data={revenueChart} />
               </div>
             </div>
           </div>
@@ -349,10 +361,10 @@ export default function AnalyticsPageContent() {
                     category3={t(
                       "user_demographics.gender_distribution.gender.others",
                     )}
-                    percent1={`5%`}
-                    percent2={`18%`}
-                    percent3={`89%`}
-                  ></BarChart>
+                    percent1={`${genderDistribution.malePercent}%`}
+                    percent2={`${genderDistribution.femalePercent}%`}
+                    percent3={`${genderDistribution.othersPercent}%`}
+                  />
                 </div>
               </div>
               <div className={"flex flex-col gap-9 lg:pl-10 lg:pb-8 "}>
@@ -364,14 +376,20 @@ export default function AnalyticsPageContent() {
                   {t("user_demographics.events_top.title")}
                 </span>
                 <div className={"w-full"}>
-                  {top_e > 0 ? (
+                  {topEvents.length > 0 && topEvents[0].name ? (
                     <BarChart
-                      category1={`Cap-Haïtien Jazz Night`}
-                      category2={`Sunset by the Sea`}
-                      category3={`Wave beach rewind`}
-                      percent1={`35%`}
-                      percent2={`90%`}
-                      percent3={`57%`}
+                      category1={topEvents[0]?.name}
+                      category2={topEvents[1]?.name}
+                      category3={topEvents[2]?.name}
+                      percent1={
+                        topEvents[0] ? `${topEvents[0].percent}%` : undefined
+                      }
+                      percent2={
+                        topEvents[1] ? `${topEvents[1].percent}%` : undefined
+                      }
+                      percent3={
+                        topEvents[2] ? `${topEvents[2].percent}%` : undefined
+                      }
                     />
                   ) : (
                     <div className="flex flex-col justify-center items-center gap-4">
@@ -398,13 +416,13 @@ export default function AnalyticsPageContent() {
             <div
               className={"w-full pt-6 pb-8 lg:pr-12 lg:pb-12 lg:col-span-11 "}
             >
-              <div className={"flex flex-col gap-8 lg:gap-10"}>
+              <div className={"flex flex-col gap-4 lg:gap-10"}>
                 <div
                   className={
                     "flex text-[14px] font-sans justify-between text-gray-800 text-base font-medium leading-tight lg:text-[15px]"
                   }
                 >
-                  {t("income.revenue")}
+                  {/* {t("income.revenue")} */}
                   <div className="flex gap-6 ">
                     <div className="flex items-center gap-2">
                       <div className="w-6 h-6 bg-primary-500"></div>
@@ -420,7 +438,122 @@ export default function AnalyticsPageContent() {
                     </div>
                   </div>
                 </div>
-                <UserGrowthChart />
+                <UserGrowthChart data={userGrowthChart} />
+              </div>
+            </div>
+          </div>
+
+          {/* platform health */}
+          <div className={"flex flex-col gap-8 lg:gap-10"}>
+            <h3
+              className={
+                "font-medium font-primary text-[18px] leading-12 text-black lg:text-[22px]"
+              }
+            >
+              {t("platform_health.title")}
+            </h3>
+            <div
+              className={
+                "grid grid-cols-1 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 divide-neutral-100 border-neutral-100 lg:border-b"
+              }
+            >
+              <div className={"flex flex-col gap-9 pb-6 lg:pr-10 lg:pb-8"}>
+                <span className={"text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"}>
+                  {t("top_organizers.title")}
+                </span>
+                <div className={"w-full"}>
+                  {topOrganizers.length > 0 && topOrganizers[0].name ? (
+                    <BarChart
+                      category1={topOrganizers[0]?.name}
+                      category2={topOrganizers[1]?.name}
+                      category3={topOrganizers[2]?.name}
+                      percent1={topOrganizers[0] ? `${topOrganizers[0].percent}%` : undefined}
+                      percent2={topOrganizers[1] ? `${topOrganizers[1].percent}%` : undefined}
+                      percent3={topOrganizers[2] ? `${topOrganizers[2].percent}%` : undefined}
+                    />
+                  ) : (
+                    <div className="flex flex-col justify-center items-center gap-4">
+                      <InfoCircle size="32" color="#D5D8DC" />
+                      <span className="font-primary text-[1.2rem] text-neutral-500">
+                        {t("noActivity")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className={"flex flex-col gap-9 lg:pl-10 lg:pb-8"}>
+                <span className={"text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"}>
+                  {t("payment_methods.title")}
+                </span>
+                <div className={"w-full"}>
+                  {paymentMethods.length > 0 ? (
+                    <BarChart
+                      category1={paymentMethods[0] ? paymentMethods[0].provider.charAt(0).toUpperCase() + paymentMethods[0].provider.slice(1) : undefined}
+                      category2={paymentMethods[1] ? paymentMethods[1].provider.charAt(0).toUpperCase() + paymentMethods[1].provider.slice(1) : undefined}
+                      category3={paymentMethods[2] ? paymentMethods[2].provider.charAt(0).toUpperCase() + paymentMethods[2].provider.slice(1) : undefined}
+                      percent1={paymentMethods[0] ? `${paymentMethods[0].percent}%` : undefined}
+                      percent2={paymentMethods[1] ? `${paymentMethods[1].percent}%` : undefined}
+                      percent3={paymentMethods[2] ? `${paymentMethods[2].percent}%` : undefined}
+                    />
+                  ) : (
+                    <div className="flex flex-col justify-center items-center gap-4">
+                      <InfoCircle size="32" color="#D5D8DC" />
+                      <span className="font-primary text-[1.2rem] text-neutral-500">
+                        {t("noActivity")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* activity status */}
+          <div className={"flex flex-col gap-8 lg:gap-10"}>
+            <h3
+              className={
+                "font-medium font-primary text-[18px] leading-12 text-black lg:text-[22px]"
+              }
+            >
+              {t("activity_status.title")}
+            </h3>
+            <div
+              className={
+                "grid grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b pb-12"
+              }
+            >
+              <div className={"flex flex-col gap-4 pr-10"}>
+                <div className="flex items-center gap-3">
+                  <span className="w-[8px] h-[8px] rounded-full bg-green-500 flex-shrink-0" />
+                  <span className={"text-[14px] text-neutral-600 font-sans leading-tight"}>
+                    {t("activity_status.approved")}
+                  </span>
+                </div>
+                <p className={"text-[16px] font-medium font-primary lg:text-[25px]"}>
+                  {activityStatus.approved.toLocaleString()}
+                </p>
+              </div>
+              <div className={"flex flex-col gap-4 px-10"}>
+                <div className="flex items-center gap-3">
+                  <span className="w-[8px] h-[8px] rounded-full bg-amber-400 flex-shrink-0" />
+                  <span className={"text-[14px] text-neutral-600 font-sans leading-tight"}>
+                    {t("activity_status.in_review")}
+                  </span>
+                </div>
+                <p className={"text-[16px] font-medium font-primary lg:text-[25px]"}>
+                  {activityStatus.inReview.toLocaleString()}
+                </p>
+              </div>
+              <div className={"flex flex-col gap-4 pl-10"}>
+                <div className="flex items-center gap-3">
+                  <span className="w-[8px] h-[8px] rounded-full bg-red-400 flex-shrink-0" />
+                  <span className={"text-[14px] text-neutral-600 font-sans leading-tight"}>
+                    {t("activity_status.rejected")}
+                  </span>
+                </div>
+                <p className={"text-[16px] font-medium font-primary lg:text-[25px]"}>
+                  {activityStatus.rejected.toLocaleString()}
+                </p>
               </div>
             </div>
           </div>

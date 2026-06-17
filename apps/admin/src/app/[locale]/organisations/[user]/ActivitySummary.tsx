@@ -21,8 +21,15 @@ export default function ActivitySummary({
   const [showCreated, setShowCreated] = useState(true);
   const [showCancelled, setShowCancelled] = useState(true);
 
-  const activeEvents = events.filter((e) => e.isActive && e.adminStatus !== "rejected");
-  const cancelledEvents = events.filter((e) => !e.isActive || e.adminStatus === "rejected");
+  const activeEvents = events.filter(
+    (e) => e.adminStatus !== "rejected" && e.deletionStatus !== "deleted",
+  );
+  const cancelledEvents = events.filter(
+    (e) =>
+      e.adminStatus === "rejected" ||
+      e.deletionStatus === "deleted" ||
+      e.deletionStatus === "pending_deletion",
+  );
 
   return (
     <TabsContent

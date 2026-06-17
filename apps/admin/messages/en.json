@@ -944,7 +944,27 @@
         "attendee": "Attendee",
         "organizer": "Organizer"
       }
+    },
+    "platform_health": {
+      "title": "Platform Health"
+    },
+    "top_organizers": {
+      "title": "Top Organizers"
+    },
+    "payment_methods": {
+      "title": "Payment Methods"
+    },
+    "activity_status": {
+      "title": "Activity Status",
+      "approved": "Approved",
+      "in_review": "In Review",
+      "rejected": "Rejected"
     }
+  },
+
+  "Event": {
+    "from": "From",
+    "free": "Free"
   },
 
   "Contact": {

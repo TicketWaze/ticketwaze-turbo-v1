@@ -8,7 +8,7 @@ import { Event } from "@ticketwaze/typescript-config";
 import formatDate from "@/lib/FormatDate";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
-  const date = event.eventDays.filter(
+  const date = event.eventDays?.filter(
     (eventDay) => eventDay.dayNumber === 1,
   )[0];
   const slug = slugify(event.eventName, event.eventId);
@@ -16,8 +16,8 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
   const t = useTranslations("Event");
   const price =
     event.currency === "USD"
-      ? (event.eventTicketTypes[0]?.usdPrice ?? 0)
-      : (event.eventTicketTypes[0]?.ticketTypePrice ?? 0);
+      ? (event.eventTicketTypes?.[0]?.usdPrice ?? 0)
+      : (event.eventTicketTypes?.[0]?.ticketTypePrice ?? 0);
   return (
     <Link
       href={`/explore/${slug}`}
@@ -75,7 +75,7 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
             <span
               className={"font-medium text-[1rem] text-deep-100 leading-[15px]"}
             >
-              {formatDate(date.eventDate, locale, date.timezone)}
+              {date ? formatDate(date.eventDate, locale, date.timezone) : "—"}
             </span>
           </div>
           {event.eventCategory === "meet" ? (

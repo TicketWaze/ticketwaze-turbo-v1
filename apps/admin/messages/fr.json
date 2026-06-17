@@ -932,7 +932,27 @@
         "attendee": "Participant",
         "organizer": "Organisateur"
       }
+    },
+    "platform_health": {
+      "title": "Santé de la plateforme"
+    },
+    "top_organizers": {
+      "title": "Meilleurs organisateurs"
+    },
+    "payment_methods": {
+      "title": "Méthodes de paiement"
+    },
+    "activity_status": {
+      "title": "Statut des activités",
+      "approved": "Approuvées",
+      "in_review": "En révision",
+      "rejected": "Rejetées"
     }
+  },
+
+  "Event": {
+    "from": "À partir de",
+    "free": "Gratuit"
   },
 
   "Contact": {
