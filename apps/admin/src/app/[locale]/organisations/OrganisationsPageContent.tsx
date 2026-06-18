@@ -74,7 +74,7 @@ export default function OrganisationsPageContent({
         title={t("title")}
         filter={t("filters.period.actual")}
       />
-      <div className="grid grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b">
+      <div className="grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b">
         <div className="pb-12">
           <span className="flex justify-between text-[14px] text-neutral-600 leading-8 pb-2">
             {t("total")}
@@ -117,10 +117,16 @@ export default function OrganisationsPageContent({
                 <SelectItem className="text-[1.4rem] text-deep-100" value="all">
                   {t("filters.status")}
                 </SelectItem>
-                <SelectItem className="text-[1.4rem] text-deep-100" value="active">
+                <SelectItem
+                  className="text-[1.4rem] text-deep-100"
+                  value="active"
+                >
                   {t("filters.status_active")}
                 </SelectItem>
-                <SelectItem className="text-[1.4rem] text-deep-100" value="suspended">
+                <SelectItem
+                  className="text-[1.4rem] text-deep-100"
+                  value="suspended"
+                >
                   {t("filters.status_suspended")}
                 </SelectItem>
               </SelectGroup>
@@ -135,13 +141,22 @@ export default function OrganisationsPageContent({
             </SelectTrigger>
             <SelectContent className="bg-neutral-100 text-[1.4rem]">
               <SelectGroup>
-                <SelectItem className="text-[1.4rem] text-deep-100" value="all_period">
+                <SelectItem
+                  className="text-[1.4rem] text-deep-100"
+                  value="all_period"
+                >
                   {t("filters.time")}
                 </SelectItem>
-                <SelectItem className="text-[1.4rem] text-deep-100" value="last_week">
+                <SelectItem
+                  className="text-[1.4rem] text-deep-100"
+                  value="last_week"
+                >
                   {t("filters.last_week")}
                 </SelectItem>
-                <SelectItem className="text-[1.4rem] text-deep-100" value="last_month">
+                <SelectItem
+                  className="text-[1.4rem] text-deep-100"
+                  value="last_month"
+                >
                   {t("filters.last_month")}
                 </SelectItem>
               </SelectGroup>
@@ -183,7 +198,9 @@ export default function OrganisationsPageContent({
                   </span>
                 </TableCell>
                 <TableCell className="text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900">
-                  <span className="cursor-pointer">{org.organisationEmail}</span>
+                  <span className="cursor-pointer">
+                    {org.organisationEmail}
+                  </span>
                 </TableCell>
                 <TableCell className="text-[1.5rem] font-medium leading-8 text-neutral-900">
                   {org.events?.length ?? 0}
@@ -200,12 +217,7 @@ export default function OrganisationsPageContent({
         <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">
           <div className="rounded-full bg-neutral-100 p-6 w-fit">
             <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
-              <Image
-                src={User}
-                alt="no organisations"
-                width={50}
-                height={50}
-              />
+              <Image src={User} alt="no organisations" width={50} height={50} />
             </div>
           </div>
           <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">

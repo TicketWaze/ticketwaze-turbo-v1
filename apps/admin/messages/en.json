@@ -604,9 +604,9 @@
   },
 
   "Tickets": {
-    "title": "Tickets Overview",
-    "total_sold": "Total Tickets Sold",
-    "total_created": "Total Refunded Tickets",
+    "title": "Tickets",
+    "total_sold": "Total Sold",
+    "total_created": "Total Refunded",
     "checked-in": "Checked-In Tickets",
     "filters": {
       "period": {
@@ -651,10 +651,10 @@
     }
   },
   "Organisations": {
-    "title": "Organizers Overview",
-    "total": "Total Organizers",
-    "active": "Active Organizers",
-    "new": "New This Month",
+    "title": "Organisations",
+    "total": "Total",
+    "active": "Active",
+    "new": "This Month",
     "filters": {
       "period": {
         "actual": "This month"
@@ -667,7 +667,7 @@
       "last_month": "Last month"
     },
     "organisations_list": {
-      "title": "Organizers list",
+      "title": "Organisations list",
       "table": {
         "name": "Name",
         "email": "Email",
@@ -677,9 +677,9 @@
       "no_history": "Once organizers sign up and create activities, they will appear here."
     },
     "profile": {
-      "title": "Organizer Profile",
+      "title": "Profile",
       "back": "Back",
-      "profile": "Organization Profile",
+      "profile": "Profile",
       "information": "Organizer Information",
       "suspend": {
         "trigger": "Suspend account",
@@ -846,7 +846,7 @@
           "close": "Close",
           "resend": "Resend ticket"
         }
-    }
+      }
     }
   },
 

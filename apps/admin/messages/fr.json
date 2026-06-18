@@ -592,9 +592,9 @@
   },
 
   "Tickets": {
-    "title": "Aperçu des billets",
-    "total_sold": "Total des billets vendus",
-    "total_created": "Total des billets remis",
+    "title": "Tickets",
+    "total_sold": "Total  vendus",
+    "total_created": "Total remis",
     "checked-in": "Billets enregistrés",
     "filters": {
       "period": {
@@ -607,11 +607,11 @@
     "tickets_list": {
       "title": "Liste des billets",
       "table": {
-        "transaction_id": "ID du billet",
+        "transaction_id": "ID",
         "attendee": "Participant",
         "activity_name": "Nom de l'activité",
-        "ticket_class": "Classe de billet",
-        "check-in": "Statut d'enregistrement",
+        "ticket_class": "Classe ",
+        "check-in": "Statut",
         "purchase": "Date d'achat"
       },
       "no_history": "Vous verrez ici tous les billets des participants une fois que les événements commenceront à être vendus."
@@ -639,10 +639,10 @@
     }
   },
   "Organisations": {
-    "title": "Aperçu des organisateurs",
-    "total": "Total des organisateurs",
-    "active": "Organisateurs actifs",
-    "new": "Nouveaux ce mois-ci",
+    "title": "Organisations",
+    "total": "Total",
+    "active": "Actifs",
+    "new": "Ce mois-ci",
     "filters": {
       "period": {
         "actual": "Ce mois-ci"
@@ -655,7 +655,7 @@
       "last_month": "Mois dernier"
     },
     "organisations_list": {
-      "title": "Liste des organisateurs",
+      "title": "Liste des organisations",
       "table": {
         "name": "Nom",
         "email": "Email",
@@ -665,9 +665,9 @@
       "no_history": "Une fois que les organisateurs s'inscrivent et créent des activités, ils apparaîtront ici."
     },
     "profile": {
-      "title": "Profil de l'organisateur",
+      "title": "Profil",
       "back": "Retour",
-      "profile": "Profil de l'organisation",
+      "profile": "Profil",
       "information": "Informations de l'organisateur",
       "suspend": {
         "trigger": "Suspendre le compte",

@@ -15,11 +15,10 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useTranslations, useLocale } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Input, TextArea } from "@/components/shared/Inputs";
 import ActivitySummary from "./ActivitySummary";
 import { AdminOrganisation } from "@ticketwaze/typescript-config";
-import formatDate from "@/lib/FormatDate";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 
 export default function UserPageContent({

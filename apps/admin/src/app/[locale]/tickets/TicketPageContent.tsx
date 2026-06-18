@@ -19,17 +19,62 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { useTranslations } from "next-intl";
+import { useRouter, usePathname } from "next/navigation";
 import TicketsPageTopbar from "./TicketsPageTopbar";
 import TicketDetails from "./TicketDetails";
 import { Ticket } from "@ticketwaze/typescript-config";
 
+const statusColors: Record<"PENDING" | "CHECKED" | "RETURNED", string> = {
+  PENDING: "text-[#EA961C]",
+  CHECKED: "text-success",
+  RETURNED: "text-[#EF1870]",
+};
+
+function getTicketTypeColor(ticketType: string) {
+  const upper = ticketType.toUpperCase();
+  if (upper.includes("PREMIUM")) return "#2E3237";
+  if (upper.includes("VIP")) return "#7A19C7";
+  return "#EF1870";
+}
+
+function formatDate(dateStr: string) {
+  try {
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
 export default function TicketPageContent({
   allTickets,
+  tickets,
+  activeStatus,
 }: {
   allTickets: Ticket[];
+  tickets: Ticket[];
+  activeStatus: string;
 }) {
   const t = useTranslations("Tickets");
-  const history = true;
+  const router = useRouter();
+  const pathname = usePathname();
+  const history = tickets.length > 0;
+
+  const selectDefaultStatus = ["PENDING", "CHECKED", "RETURNED"].includes(
+    activeStatus,
+  )
+    ? activeStatus
+    : "all";
+
+  const handleStatusChange = (value: string) => {
+    router.push(value === "all" ? pathname : `${pathname}?status=${value}`);
+  };
+
   return (
     <>
       <TicketsPageTopbar
@@ -38,7 +83,7 @@ export default function TicketPageContent({
       />
       <div
         className={
-          "grid grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b"
+          "grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b"
         }
       >
         <div className={"pb-12"}>
@@ -79,11 +124,14 @@ export default function TicketPageContent({
         </div>
       </div>
       <div className="flex justify-between">
-        <h4 className="font-medium inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
+        <h4 className="hidden font-medium lg:inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
           {t("tickets_list.title")}
         </h4>
         <div className="flex gap-4">
-          <Select defaultValue="all">
+          <Select
+            defaultValue={selectDefaultStatus}
+            onValueChange={handleStatusChange}
+          >
             <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
               <SelectValue placeholder="" />
             </SelectTrigger>
@@ -97,15 +145,21 @@ export default function TicketPageContent({
                 </SelectItem>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value="Checked-In"
+                  value="CHECKED"
                 >
                   Checked-In
                 </SelectItem>
                 <SelectItem
                   className={"text-[1.4rem] text-deep-100"}
-                  value="pending"
+                  value="PENDING"
                 >
                   Pending
+                </SelectItem>
+                <SelectItem
+                  className={"text-[1.4rem] text-deep-100"}
+                  value="RETURNED"
+                >
+                  Returned
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -133,33 +187,6 @@ export default function TicketPageContent({
                   value="last_month"
                 >
                   Last month
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select defaultValue="all">
-            <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
-              <SelectValue placeholder="" />
-            </SelectTrigger>
-            <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-              <SelectGroup>
-                <SelectItem
-                  className={"text-[1.4rem] text-deep-100"}
-                  value="all"
-                >
-                  {t("filters.ticket_class")}
-                </SelectItem>
-                <SelectItem
-                  className={"text-[1.4rem] text-deep-100"}
-                  value="pending"
-                >
-                  General
-                </SelectItem>
-                <SelectItem
-                  className={"text-[1.4rem] text-deep-100"}
-                  value="pending"
-                >
-                  VIP
                 </SelectItem>
               </SelectGroup>
             </SelectContent>
@@ -215,8 +242,8 @@ export default function TicketPageContent({
         </TableHeader>
         {history ? (
           <TableBody>
-            {Array.from({ length: 4 }).map((_, index) => (
-              <Drawer key={index} direction="right">
+            {tickets.map((ticket) => (
+              <Drawer key={ticket.ticketId} direction="right">
                 <DrawerTrigger asChild>
                   <TableRow className="cursor-pointer">
                     <TableCell
@@ -224,7 +251,9 @@ export default function TicketPageContent({
                         "text-[1.5rem] py-6 leading-8 text-neutral-900"
                       }
                     >
-                      <span className={"cursor-pointer"}>TCK12345GA</span>
+                      <span className={"cursor-pointer"}>
+                        {ticket.ticketId.slice(0, 8).toUpperCase()}
+                      </span>
                     </TableCell>
                     <TableCell
                       className={
@@ -232,8 +261,7 @@ export default function TicketPageContent({
                       }
                     >
                       <span className={"cursor-pointer"}>
-                        {/* {order.provider.toUpperCase()} */}
-                        Marie Jean-Louis
+                        {ticket.fullName}
                       </span>
                     </TableCell>
                     <TableCell
@@ -241,8 +269,7 @@ export default function TicketPageContent({
                         "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
                       }
                     >
-                      {/* {order.tickets.length} */}
-                      Global Events Hub
+                      {ticket.event?.eventName ?? "—"}
                     </TableCell>
                     <TableCell
                       className={
@@ -250,18 +277,19 @@ export default function TicketPageContent({
                       }
                     >
                       <span
-                        className={`py-[0.3rem] px-2 bg-neutral-100 text-[#EF1870] font-bold rounded-[30px] text-[11px]`}
+                        style={{
+                          color: getTicketTypeColor(ticket.ticketType ?? ""),
+                        }}
+                        className="py-[0.3rem] px-2 bg-neutral-100 font-bold rounded-[30px] text-[11px] uppercase"
                       >
-                        GENERAL
+                        {ticket.ticketType}
                       </span>
                     </TableCell>
                     <TableCell className="py-6">
                       <span
-                        className={
-                          "py-[0.3rem] px-2 cursor-pointer text-[1.1rem] font-bold text-center uppercase text-[#EA961C]  rounded-[30px] bg-neutral-100"
-                        }
+                        className={`py-[0.3rem] px-2 cursor-pointer text-[1.1rem] font-bold text-center uppercase ${statusColors[ticket.status] ?? "text-neutral-600"} rounded-[30px] bg-neutral-100`}
                       >
-                        Pending
+                        {ticket.status}
                       </span>
                     </TableCell>
                     <TableCell
@@ -269,18 +297,18 @@ export default function TicketPageContent({
                         "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
                       }
                     >
-                      Jan 16, 2025 12:21 PM
+                      {formatDate(ticket.createdAt as unknown as string)}
                     </TableCell>
                   </TableRow>
                 </DrawerTrigger>
-                <TicketDetails></TicketDetails>
+                <TicketDetails ticket={ticket} />
               </Drawer>
             ))}
           </TableBody>
         ) : null}
       </Table>
       {!history && (
-        <div className="flex flex-col w-fit  gap-12 items-center mt-8 self-center">
+        <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">
           <div className="rounded-full bg-neutral-100 p-6 w-fit">
             <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
               <Image
