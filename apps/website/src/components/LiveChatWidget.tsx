@@ -285,6 +285,14 @@ export default function LiveChatWidget() {
               </button>
             </div>
 
+            {/* Notice banner */}
+            <div className="shrink-0 mx-4 mt-3 mb-1 flex items-start gap-[0.6rem] bg-amber-50 border border-amber-200 rounded-[1rem] px-4 py-[0.7rem]">
+              <span className="text-amber-500 text-[1.3rem] mt-[1px] shrink-0">⚠️</span>
+              <p className="text-[1.15rem] leading-[1.55] text-amber-700 font-sans">
+                {t("notice")}
+              </p>
+            </div>
+
             {/* Messages area */}
             <div className="flex-1 overflow-y-auto px-5 py-5 flex flex-col gap-4 min-h-0">
               <AnimatePresence initial={false}>

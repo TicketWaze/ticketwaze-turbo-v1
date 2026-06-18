@@ -46,10 +46,12 @@ export default function SupportDetailContent({
   const [replyText, setReplyText] = useState("");
   const [notesText, setNotesText] = useState(thread.supportNotes ?? "");
   const [isResolved, setIsResolved] = useState(thread.resolved);
+  const [isAccepted, setIsAccepted] = useState(thread.accepted);
   const [isSendingReply, setIsSendingReply] = useState(false);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [isResolving, setIsResolving] = useState(false);
   const [isReopening, setIsReopening] = useState(false);
+  const [isAccepting, setIsAccepting] = useState(false);
   const [replySent, setReplySent] = useState(false);
   const [notesSaved, setNotesSaved] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -202,6 +204,22 @@ export default function SupportDetailContent({
     }
   }
 
+  async function acceptThread() {
+    setIsAccepting(true);
+    try {
+      await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/support/${thread.threadId}/accept`,
+        {
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${accessToken}` },
+        },
+      );
+      setIsAccepted(true);
+    } finally {
+      setIsAccepting(false);
+    }
+  }
+
   function copyUrl() {
     navigator.clipboard.writeText(chatUrl).catch(() => {});
     setCopied(true);
@@ -327,6 +345,10 @@ export default function SupportDetailContent({
               <span className="shrink-0 py-[0.3rem] text-[1.1rem] font-bold leading-6 uppercase text-[#349C2E] px-2 rounded-[30px] bg-[#f5f5f5]">
                 {t("status.resolved")}
               </span>
+            ) : !isAccepted ? (
+              <span className="shrink-0 py-[0.3rem] text-[1.1rem] font-bold leading-6 uppercase text-primary-500 px-2 rounded-[30px] bg-[#f5f5f5]">
+                Waiting
+              </span>
             ) : (
               <span className="shrink-0 py-[0.3rem] text-[1.1rem] font-bold leading-6 uppercase text-[#EA961C] px-2 rounded-[30px] bg-[#f5f5f5]">
                 {t("status.open")}
@@ -449,7 +471,20 @@ export default function SupportDetailContent({
 
           {/* Reply — pinned below the conversation on all screen sizes */}
           <div className="shrink-0 pt-3 border-t border-neutral-100">
-            {isResolved ? (
+            {!isAccepted ? (
+              <div className="flex flex-col items-center gap-3 py-4 rounded-2xl bg-neutral-50 border border-neutral-200">
+                <p className="text-[1.3rem] text-neutral-500 text-center">
+                  Accept this chat request to start replying to the customer.
+                </p>
+                <button
+                  onClick={acceptThread}
+                  disabled={isAccepting}
+                  className="px-8 py-[0.8rem] rounded-[3rem] bg-primary-500 hover:bg-primary-500/90 text-white text-[1.4rem] font-semibold transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
+                >
+                  {isAccepting ? "Accepting…" : "✓ Accept Chat"}
+                </button>
+              </div>
+            ) : isResolved ? (
               <div className="flex items-center justify-center gap-3 py-3 rounded-2xl bg-[#349C2E]/5 border border-[#349C2E]/20">
                 <span className="text-[1.3rem] font-medium text-[#349C2E]">
                   {t("status.resolved")}

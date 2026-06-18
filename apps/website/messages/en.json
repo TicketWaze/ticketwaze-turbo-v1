@@ -393,6 +393,7 @@
       "business": "Business collaborations",
       "non_urgent": "Non-urgent concerns"
     },
+    "notice": "This chat is for genuine support requests only. Agents may not respond to off-topic, incomplete, or abusive messages — and repeated misuse will be marked as spam.",
     "placeholder": {
       "name": "Your name…",
       "email": "Your email…",
@@ -415,7 +416,10 @@
     "error_description": "This link may be invalid or expired. Please check your email or contact us again.",
     "error_back": "Contact support",
     "error_send": "Failed to send your message. Please try again.",
-    "team_note": "Our support team will reply as soon as possible. You'll also receive replies by email."
+    "team_note": "Our support team will reply as soon as possible. You'll also receive replies by email.",
+    "waiting_title": "Connecting you to an agent…",
+    "waiting_description": "Your request has been received. A member of our support team will accept your chat shortly. Please stay on this page.",
+    "waiting_badge": "In Queue"
   },
   "ContactPage": {
     "hero": {
