@@ -50,7 +50,7 @@ export default function LoginWrapper() {
       toast.error(t("errors.wrong"));
     } else {
       const session = await update();
-      const lang = session?.user.userPreference.appLanguage;
+      const lang = session?.user?.userPreference?.appLanguage ?? "en";
       window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${lang}/auth/onboarding`;
     }
     setIsloading(false);
