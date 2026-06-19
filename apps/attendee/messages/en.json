@@ -726,6 +726,7 @@
       "platform_fee": "Platform fee",
       "total": "Total",
       "tca": "+ taxes may apply (TCA)",
+      "tax_label": "VAT",
       "via": "Payment method",
       "confirm": "Confirm & Pay",
       "confirm_free": "Get Tickets",

@@ -28,5 +28,6 @@ export interface FeeBreakdown {
   subtotal: number;
   serviceFee: number;
   platformFee: number;
+  transactionFee: number;
   total: number;
 }
