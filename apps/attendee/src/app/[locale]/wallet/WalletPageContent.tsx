@@ -583,7 +583,7 @@ export default function WalletPageContent({
                       <TableCell
                         className={"text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"}
                       >
-                        {FormatDate(req.createdAt)}
+                        {FormatDate(req.createdAt, locale, "local")}
                       </TableCell>
                     </TableRow>
                   ))}
