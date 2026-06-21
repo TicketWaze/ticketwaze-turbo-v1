@@ -25,17 +25,10 @@ export default async function MoncashGateway({
     },
   );
   const response = await request.json();
-  console.log(response);
-  if (response.status === "failed") {
-    redirect({
-      href: `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/explore`,
-      locale: locale,
-    });
-  } else {
-    redirect({
-      href: response.redirectUrl,
-      locale: locale,
-    });
-  }
+  const fallbackUrl = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/explore`;
+  redirect({
+    href: response.redirectUrl ?? fallbackUrl,
+    locale: locale,
+  });
   return <PageLoader isLoading={true} />;
 }
