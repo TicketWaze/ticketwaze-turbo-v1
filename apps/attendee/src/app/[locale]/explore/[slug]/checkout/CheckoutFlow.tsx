@@ -172,6 +172,7 @@ export default function CheckoutFlow({
     selectedWithIndex,
     ticketTypes,
     event.currency,
+    paymentType,
   );
 
   // --- Payment actions ---

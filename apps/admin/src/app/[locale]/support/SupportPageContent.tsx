@@ -23,6 +23,7 @@ export type SupportThread = {
   subject: string;
   accessToken: string;
   resolved: boolean;
+  accepted: boolean;
   supportNotes: string | null;
   appLanguage: string;
   createdAt: string;

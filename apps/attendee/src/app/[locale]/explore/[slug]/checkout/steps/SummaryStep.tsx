@@ -7,7 +7,7 @@ import { Event, EventTicketType } from "@ticketwaze/typescript-config";
 import moncash from "../moncash.svg";
 import Capitalize from "@/lib/Capitalize";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "../checkout.types";
-import { TRANSACTION_FEE_RATE } from "../checkoutUtils";
+import { SERVICE_FEE_RATE } from "../checkoutUtils";
 
 interface Props {
   delta: number;
@@ -50,8 +50,9 @@ export default function SummaryStep({
   feeBreakdown,
 }: Props) {
   const t = useTranslations("Checkout");
-  const { subtotal, serviceFee, platformFee, total } = feeBreakdown;
-  const transactionFeeLabel = `${(TRANSACTION_FEE_RATE * 100).toFixed(0)}%`;
+  const { subtotal, serviceFee, platformFee, transactionFee, total } = feeBreakdown;
+  const ticketwazeFee = serviceFee + platformFee;
+  const serviceFeeLabel = `${(SERVICE_FEE_RATE * 100).toFixed(0)}%`;
 
   const paymentLabel =
     paymentType === "wallet"
@@ -141,20 +142,22 @@ export default function SummaryStep({
             </div>
             <div className="flex items-center justify-between text-[1.4rem]">
               <span className="text-neutral-500">
-                {t("summary.transaction_fee")} ({transactionFeeLabel})
+                Ticketwaze fee ({serviceFeeLabel} + {t("summary.tax_label")})
               </span>
               <span className="text-deep-100 font-medium">
-                {serviceFee.toFixed(2)} {event.currency}
+                {ticketwazeFee.toFixed(2)} {event.currency}
               </span>
             </div>
-            <div className="flex items-center justify-between text-[1.4rem]">
-              <span className="text-neutral-500">
-                {t("summary.platform_fee")}
-              </span>
-              <span className="text-deep-100 font-medium">
-                {platformFee.toFixed(2)} {event.currency}
-              </span>
-            </div>
+            {transactionFee > 0 && (
+              <div className="flex items-center justify-between text-[1.4rem]">
+                <span className="text-neutral-500">
+                  {t("summary.transaction_fee")}
+                </span>
+                <span className="text-deep-100 font-medium">
+                  {transactionFee.toFixed(2)} {event.currency}
+                </span>
+              </div>
+            )}
           </div>
         )}
 

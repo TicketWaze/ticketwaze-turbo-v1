@@ -776,6 +776,7 @@
       "platform_fee": "Frais de plateforme",
       "total": "Total",
       "tca": "+ taxes applicables (TCA)",
+      "tax_label": "TCA",
       "via": "Méthode de paiement",
       "confirm": "Confirmer & Payer",
       "confirm_free": "Obtenir les billets",

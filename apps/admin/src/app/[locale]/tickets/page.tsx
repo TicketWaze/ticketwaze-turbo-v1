@@ -24,7 +24,11 @@ export default async function TicketPage({
   const response = await request.json();
   return (
     <AdminLayout>
-      <TicketPageContent allTickets={response.allTickets} />
+      <TicketPageContent
+        allTickets={response.allTickets ?? []}
+        tickets={response.tickets?.data ?? []}
+        activeStatus={activeStatus}
+      />
     </AdminLayout>
   );
 }

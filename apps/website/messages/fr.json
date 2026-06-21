@@ -393,6 +393,7 @@
       "business": "Collaborations commerciales",
       "non_urgent": "Préoccupations non urgentes"
     },
+    "notice": "Ce chat est réservé aux demandes d'assistance légitimes. Les agents peuvent ne pas répondre aux messages hors sujet, incomplets ou abusifs — et les abus répétés seront marqués comme spam.",
     "placeholder": {
       "name": "Votre prénom…",
       "email": "Votre e-mail…",
@@ -415,7 +416,10 @@
     "error_description": "Ce lien est peut-être invalide ou expiré. Veuillez vérifier votre e-mail ou nous recontacter.",
     "error_back": "Contacter le support",
     "error_send": "Échec de l'envoi de votre message. Veuillez réessayer.",
-    "team_note": "Notre équipe support vous répondra dès que possible. Vous recevrez également les réponses par e-mail."
+    "team_note": "Notre équipe support vous répondra dès que possible. Vous recevrez également les réponses par e-mail.",
+    "waiting_title": "Connexion à un agent en cours…",
+    "waiting_description": "Votre demande a été reçue. Un membre de notre équipe acceptera votre chat dans un instant. Veuillez rester sur cette page.",
+    "waiting_badge": "En attente"
   },
   "ContactPage": {
     "hero": {

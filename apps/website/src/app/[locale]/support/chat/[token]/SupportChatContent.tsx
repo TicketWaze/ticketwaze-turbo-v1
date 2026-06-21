@@ -21,6 +21,7 @@ export type SupportThread = {
   fullName: string;
   subject: string;
   resolved: boolean;
+  accepted: boolean;
   createdAt: string;
   messages: SupportMessage[];
 };
@@ -54,6 +55,7 @@ export default function SupportChatContent({
     initialThread?.messages ?? [],
   );
   const [resolved, setResolved] = useState(initialThread?.resolved ?? false);
+  const [accepted, setAccepted] = useState(initialThread?.accepted ?? false);
   const [inputText, setInputText] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState(false);
@@ -77,8 +79,14 @@ export default function SupportChatContent({
       threadId: string;
       subject: string;
       resolved: boolean;
+      accepted: boolean;
     }) => {
       setResolved(data.resolved);
+      setAccepted(data.accepted);
+    };
+
+    const onThreadAccepted = () => {
+      setAccepted(true);
     };
 
     const onMessageNew = (msg: {
@@ -114,6 +122,7 @@ export default function SupportChatContent({
     };
 
     socket.on("thread:joined", onThreadJoined);
+    socket.on("thread:accepted", onThreadAccepted);
     socket.on("message:new", onMessageNew);
     socket.on("thread:resolved", onThreadResolved);
     socket.on("thread:reopened", onThreadReopened);
@@ -123,6 +132,7 @@ export default function SupportChatContent({
 
     return () => {
       socket.off("thread:joined", onThreadJoined);
+      socket.off("thread:accepted", onThreadAccepted);
       socket.off("message:new", onMessageNew);
       socket.off("thread:resolved", onThreadResolved);
       socket.off("thread:reopened", onThreadReopened);
@@ -226,6 +236,64 @@ export default function SupportChatContent({
   }
 
   const thread = initialThread;
+
+  // ── Waiting room ─────────────────────────────────────────────────────────────
+  if (!accepted) {
+    return (
+      <section className="bg-white py-[2.5rem] px-4 lg:px-0 rounded-[3rem] flex flex-col gap-[6rem]">
+        <Navbar />
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex flex-col items-center gap-10 px-[1.5rem] lg:px-[10rem] py-[6rem]"
+        >
+          {/* Pulsing ring animation */}
+          <div className="relative flex items-center justify-center">
+            <motion.div
+              className="absolute w-32 h-32 rounded-full bg-primary-500/10"
+              animate={{ scale: [1, 1.4, 1], opacity: [0.6, 0, 0.6] }}
+              transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+            />
+            <motion.div
+              className="absolute w-24 h-24 rounded-full bg-primary-500/15"
+              animate={{ scale: [1, 1.3, 1], opacity: [0.8, 0, 0.8] }}
+              transition={{ repeat: Infinity, duration: 2, delay: 0.3, ease: "easeInOut" }}
+            />
+            <div className="w-16 h-16 rounded-full bg-primary-500/20 flex items-center justify-center z-10">
+              <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center">
+                <span className="text-white text-[1.6rem]">💬</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center gap-4 text-center max-w-[480px]">
+            <span className="py-[0.3rem] px-4 text-[1.1rem] font-bold uppercase text-primary-500 rounded-[30px] bg-primary-500/10">
+              {t("waiting_badge")}
+            </span>
+            <h1 className="font-primary font-bold text-[2.8rem] lg:text-[3.6rem] leading-tight text-neutral-900">
+              {t("waiting_title")}
+            </h1>
+            <p className="text-[1.5rem] leading-8 text-neutral-500 font-sans">
+              {t("waiting_description")}
+            </p>
+          </div>
+
+          {/* Animated dots to reinforce "live" feel */}
+          <div className="flex items-center gap-[6px]">
+            {[0, 1, 2].map((i) => (
+              <motion.span
+                key={i}
+                className="w-[0.8rem] h-[0.8rem] bg-primary-500/40 rounded-full inline-block"
+                animate={{ y: [0, -6, 0], opacity: [0.4, 1, 0.4] }}
+                transition={{ repeat: Infinity, duration: 1, delay: i * 0.2, ease: "easeInOut" }}
+              />
+            ))}
+          </div>
+        </motion.div>
+      </section>
+    );
+  }
 
   // ── Chat UI ─────────────────────────────────────────────────────────────────
   return (

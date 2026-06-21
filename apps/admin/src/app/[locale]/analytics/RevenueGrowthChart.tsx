@@ -5,53 +5,25 @@ import { Chart, registerables } from "chart.js";
 
 Chart.register(...registerables);
 
-// Fonction qui génère 31 points randomisés mais stylisés (courbe montante puis descendante)
-function generateRandomData() {
-  const labels: string[] = [];
-  const data: number[] = [];
+type ChartPoint = { label: string; value: number };
 
-  for (let i = 0; i <= 30; i++) {
-    // Label "Now" à l'avant-dernière position (index 29)
-    if (i === 29) {
-      labels.push("Now");
-    } else {
-      labels.push(i.toString().padStart(2, "0"));
-    }
-
-
-    let baseValue = 40;
-    if (i <= 20) {
-      baseValue += i * 1.8; 
-    } else {
-      baseValue += 20 * 1.8 - (i - 20) * 2.5; 
-    }
-
-    
-    const randomNoise = (Math.random() - 0.5) * 6;
-    data.push(Math.max(10, Math.round(baseValue + randomNoise)));
-  }
-
-  return { labels, data };
-}
-
-export default function RevenueGrowthChart() {
+export default function RevenueGrowthChart({ data }: { data: ChartPoint[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart | null>(null);
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || data.length === 0) return;
 
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
 
-    
-    const { labels, data } = generateRandomData();
+    const labels = data.map((d, i) => (i === data.length - 1 ? "Now" : d.label));
+    const values = data.map((d) => d.value);
 
     if (chartRef.current) {
       chartRef.current.destroy();
     }
 
-    // Dégradé orange sous la courbe
     const gradient = ctx.createLinearGradient(0, 0, 0, 200);
     gradient.addColorStop(0, "rgba(235, 104, 25, 0.15)");
     gradient.addColorStop(1, "rgba(235, 104, 25, 0.00)");
@@ -62,14 +34,14 @@ export default function RevenueGrowthChart() {
         labels,
         datasets: [
           {
-            data,
+            data: values,
             borderColor: "#eb6819",
             borderWidth: 2,
             pointRadius: 0,
             pointHoverRadius: 5,
             fill: true,
             backgroundColor: gradient,
-            tension: 0.1, 
+            tension: 0.1,
           },
         ],
       },
@@ -84,9 +56,8 @@ export default function RevenueGrowthChart() {
             grid: { display: false },
             ticks: {
               maxTicksLimit: 31,
-              color: (context) => {
-                return context.tick.label === "Now" ? "#eb6819" : "#b5b5b5";
-              },
+              color: (context) =>
+                context.tick.label === "Now" ? "#eb6819" : "#b5b5b5",
               font: { size: 11 },
             },
           },
@@ -99,7 +70,7 @@ export default function RevenueGrowthChart() {
     });
 
     return () => chartRef.current?.destroy();
-  }, []); 
+  }, [data]);
 
   return (
     <div style={{ width: "100%", height: "200px" }}>

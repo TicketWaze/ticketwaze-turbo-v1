@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import {
   Select,
@@ -7,6 +9,8 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useCallback } from "react";
 
 export default function AnalyticsPageTopbar({
   title,
@@ -19,6 +23,22 @@ export default function AnalyticsPageTopbar({
   filter1: string;
   filter: string;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const updateParam = useCallback(
+    (key: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(key, value);
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [router, pathname, searchParams],
+  );
+
+  const currentPeriod = searchParams.get("period") ?? "this_month";
+  const currentActivities = searchParams.get("activities") ?? "all";
+
   return (
     <div className={cn("", className)}>
       <div
@@ -26,7 +46,7 @@ export default function AnalyticsPageTopbar({
           "flex flex-col gap-8 items-start lg:flex-row lg:items-center lg:justify-between"
         }
       >
-        <div className="flex justify-between w-full">
+        <div className="flex flex-col gap-4 lg:gap-0 lg:flex-row justify-between w-full">
           <h3
             className={
               "font-medium inline-flex items-center gap-2 font-primary text-[2.6rem] leading-12 text-black"
@@ -35,7 +55,10 @@ export default function AnalyticsPageTopbar({
             {title}
           </h3>
           <div className="flex gap-4">
-            <Select defaultValue="all">
+            <Select
+              defaultValue={currentActivities}
+              onValueChange={(v) => updateParam("activities", v)}
+            >
               <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
                 <SelectValue placeholder="" />
               </SelectTrigger>
@@ -62,7 +85,10 @@ export default function AnalyticsPageTopbar({
                 </SelectGroup>
               </SelectContent>
             </Select>
-            <Select defaultValue="this_month">
+            <Select
+              defaultValue={currentPeriod}
+              onValueChange={(v) => updateParam("period", v)}
+            >
               <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
                 <SelectValue placeholder="" />
               </SelectTrigger>
@@ -82,7 +108,7 @@ export default function AnalyticsPageTopbar({
                   </SelectItem>
                   <SelectItem
                     className={"text-[1.4rem] text-deep-100"}
-                    value="last_months"
+                    value="last_6_months"
                   >
                     Last 6 months
                   </SelectItem>

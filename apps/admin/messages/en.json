@@ -216,6 +216,7 @@
       "more": "More",
       "help": "Help",
       "logout": "Logout",
+      "verified": "Verified",
       "links": {
         "title1": "Users",
         "analytics": "Analytics",
@@ -603,9 +604,9 @@
   },
 
   "Tickets": {
-    "title": "Tickets Overview",
-    "total_sold": "Total Tickets Sold",
-    "total_created": "Total Refunded Tickets",
+    "title": "Tickets",
+    "total_sold": "Total Sold",
+    "total_created": "Total Refunded",
     "checked-in": "Checked-In Tickets",
     "filters": {
       "period": {
@@ -650,50 +651,84 @@
     }
   },
   "Organisations": {
-    "title": "Organizers Oververview",
-    "total": "Total Organizers",
-    "active": "Active Organizers",
-    "new": "New Organizers",
+    "title": "Organisations",
+    "total": "Total",
+    "active": "Active",
+    "new": "This Month",
     "filters": {
       "period": {
-        "actual": "Ce mois-ci"
+        "actual": "This month"
       },
       "status": "All status",
-      "time": "All time"
+      "status_active": "Active",
+      "status_suspended": "Suspended",
+      "time": "All time",
+      "last_week": "Last week",
+      "last_month": "Last month"
     },
     "organisations_list": {
-      "title": "Organizers list",
+      "title": "Organisations list",
       "table": {
         "name": "Name",
         "email": "Email",
-        "status": "Status",
         "activity_count": "Activity Count",
-        "revenue": "Revenue",
         "joined": "Date Joined"
       },
-      "no_history": "Once attendees start signing up, buying tickets and joining events, they’ll appear here."
+      "no_history": "Once organizers sign up and create activities, they will appear here."
     },
     "profile": {
-      "title": "User Profile",
+      "title": "Profile",
       "back": "Back",
-      "button": {
-        "suspend": "Suspend account",
-        "edit": "Edit profile"
-      },
-      "profile": "Organization Profile",
+      "profile": "Profile",
       "information": "Organizer Information",
+      "suspend": {
+        "trigger": "Suspend account",
+        "title": "Suspend Account",
+        "description": "This will suspend the organizer’s account. They will be notified by email with the reason you provide.",
+        "reason_label": "Reason for suspension",
+        "reason_placeholder": "Explain why this account is being suspended...",
+        "cancel": "Cancel",
+        "confirm": "Suspend Account",
+        "success": "Account suspended successfully",
+        "error": "Failed to suspend account"
+      },
+      "reactivate": {
+        "trigger": "Reactivate account",
+        "title": "Reactivate Account",
+        "description": "This will reactivate the organizer’s account. They will be notified by email that their account is active again.",
+        "cancel": "Cancel",
+        "confirm": "Reactivate Account",
+        "success": "Account reactivated successfully",
+        "error": "Failed to reactivate account"
+      },
+      "verify": {
+        "trigger": "Verify organisation",
+        "trigger_remove": "Remove verification",
+        "title": "Verify Organisation",
+        "title_remove": "Remove Verification",
+        "description": "This will grant verified status to this organisation. They will be notified by email.",
+        "description_remove": "This will remove the verified badge from this organisation. No email will be sent.",
+        "cancel": "Cancel",
+        "confirm": "Verify",
+        "confirm_remove": "Remove",
+        "success": "Organisation verified successfully",
+        "success_remove": "Verification removed successfully",
+        "error": "Failed to update verification status"
+      },
       "summary": {
         "title": "Activity Summary",
-        "created": "Activity Created",
-        "cancelled": "Cancelled Activity",
+        "created": "Activities Created",
+        "cancelled": "Cancelled Activities",
+        "no_activities": "No active activities.",
+        "no_cancelled": "No cancelled activities.",
         "joined_on": "Joined On"
       },
       "finance": {
         "title": "Finance",
         "total_ticket_sold": "Total tickets sold",
         "total_revenue": "Total revenue",
-        "total_profit": "Total profit",
-        "balance": "Balance"
+        "pending_balance": "Pending balance",
+        "balance": "Available balance"
       }
     }
   },
@@ -811,7 +846,7 @@
           "close": "Close",
           "resend": "Resend ticket"
         }
-    }
+      }
     }
   },
 
@@ -909,7 +944,27 @@
         "attendee": "Attendee",
         "organizer": "Organizer"
       }
+    },
+    "platform_health": {
+      "title": "Platform Health"
+    },
+    "top_organizers": {
+      "title": "Top Organizers"
+    },
+    "payment_methods": {
+      "title": "Payment Methods"
+    },
+    "activity_status": {
+      "title": "Activity Status",
+      "approved": "Approved",
+      "in_review": "In Review",
+      "rejected": "Rejected"
     }
+  },
+
+  "Event": {
+    "from": "From",
+    "free": "Free"
   },
 
   "Contact": {

@@ -32,26 +32,22 @@ export default function GoogleSignInButton() {
       });
       if (result?.error) {
         toast.error(
-          "You need a Ticketwaze account to sign in here. Please create an account first.",
+          "This Google account is not linked to any Ticketwaze organisation account. Please sign in with your email and password instead.",
         );
         return;
       }
       const data = await update();
-      const locale = data?.user.userPreference.appLanguage;
+      const locale = data?.user?.userPreference?.appLanguage ?? "en";
       window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`;
     } catch {
-      toast.error(
-        "You need a Ticketwaze account to sign in here. Please create an account first.",
-      );
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
   }
 
   function handleError() {
-    toast.error(
-      "You need a Ticketwaze account to sign in here. Please create an account first.",
-    );
+    toast.error("Google sign-in failed. Please try again.");
   }
 
   if (isLoading) {
