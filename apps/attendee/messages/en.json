@@ -543,6 +543,21 @@
         "status": "Transaction Status",
         "date": "Date Purchased"
       }
+    },
+    "cashout": {
+      "trigger": "Withdrawal",
+      "title": "Withdraw to MonCash",
+      "available_label": "Available Balance",
+      "moncash_number_label": "MonCash Number",
+      "moncash_number_placeholder": "E.g. 50912345678",
+      "amount_label": "Amount to withdraw (HTG)",
+      "use_max": "Use full balance",
+      "disclaimer": "The amount will be transferred directly to your MonCash account. This operation is irreversible.",
+      "submit": "Confirm withdrawal",
+      "submitting": "Processing…",
+      "success": "Withdrawal completed successfully",
+      "error": "Something went wrong. Please try again.",
+      "insufficient_balance": "Insufficient balance to complete this withdrawal"
     }
   },
   "Upcoming": {

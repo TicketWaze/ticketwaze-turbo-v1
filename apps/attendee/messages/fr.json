@@ -593,6 +593,21 @@
         "status": "Statut de la transaction",
         "date": "Date d'achat"
       }
+    },
+    "cashout": {
+      "trigger": "Retrait",
+      "title": "Retrait vers MonCash",
+      "available_label": "Solde disponible",
+      "moncash_number_label": "Numéro MonCash",
+      "moncash_number_placeholder": "Ex : 50912345678",
+      "amount_label": "Montant à retirer (HTG)",
+      "use_max": "Utiliser le solde total",
+      "disclaimer": "Le montant sera transféré directement sur votre compte MonCash. Cette opération est irréversible.",
+      "submit": "Confirmer le retrait",
+      "submitting": "Traitement en cours…",
+      "success": "Retrait effectué avec succès",
+      "error": "Une erreur est survenue. Veuillez réessayer.",
+      "insufficient_balance": "Solde insuffisant pour effectuer ce retrait"
     }
   },
   "Upcoming": {

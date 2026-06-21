@@ -198,9 +198,9 @@ export default async function UpcomingEventPage({
             <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
               {t("contact")}
             </span>
-          </div>
+          </div> */}
           <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <Sms size="20" color="#737c8a" variant="Bulk" />
               <span className="font-normal text-[1.5rem] leading-12 text-neutral-700">
                 {organisation.organisationEmail}
@@ -219,10 +219,10 @@ export default async function UpcomingEventPage({
                   {organisation.organisationWebsite}
                 </span>
               </div>
-            )}
+            )} */}
+            {/* <div></div>
             <div></div>
-            <div></div>
-            <div></div>
+            <div></div> */}
             <div className=" flex-col w-full gap-3 hidden lg:flex">
               {event.eventTicketTypes[0].isRefundable && event.isFree && (
                 <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
@@ -248,7 +248,7 @@ export default async function UpcomingEventPage({
             <div></div>
             <div></div>
             <div></div>
-          </div> */}
+          </div>
 
           {/* Tickets on mobile */}
           <div className="lg:hidden flex flex-col gap-4">

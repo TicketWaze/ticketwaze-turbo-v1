@@ -120,8 +120,8 @@ export default function OrganisationPageWrapper({
                   }
                 >
                   {order.tickets[0].event.currency === "USD"
-                    ? order.usdPrice
-                    : order.amount}{" "}
+                    ? order.tickets.reduce((sum, t) => sum + Number(t.ticketUsdPrice), 0)
+                    : order.tickets.reduce((sum, t) => sum + Number(t.ticketPrice), 0)}{" "}
                   {order.tickets[0].event.currency}
                 </TableCell>
                 <TableCell className={"hidden lg:table-cell"}>
