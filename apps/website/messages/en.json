@@ -163,8 +163,9 @@
       "description": "We’re working behind the scenes to bring you a whole new way to buy, manage, and enjoy tickets.",
       "email": "Email Address",
       "who": "Who are you joining as?",
-      "attendee": "Personal",
+      "attendee": "Attendee",
       "organizer": "Business",
+      "both": "Both (Attendee & Organizer)",
       "join": "Join Waitlist",
       "errors": {
         "email": "Enter a valid email address",

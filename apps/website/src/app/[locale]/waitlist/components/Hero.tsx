@@ -30,7 +30,7 @@ function Hero() {
   const t = useTranslations("WaitlistPage.hero");
   const WaitlistSchema = z.object({
     email: z.email({ error: t("errors.email") }),
-    entity: z.enum(["personal", "business"], { error: t("errors.entity") }),
+    entity: z.enum(["attendee", "business", "both"], { error: t("errors.entity") }),
   });
   type TWaitlistSchema = z.infer<typeof WaitlistSchema>;
   const {
@@ -166,15 +166,16 @@ function Hero() {
               <Select
                 disabled={isSubmitting}
                 onValueChange={(e) =>
-                  setValue("entity", e as "personal" | "business")
+                  setValue("entity", e as "attendee" | "business" | "both")
                 }
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder={t("who")} />
                 </SelectTrigger>
                 <SelectContent position="popper">
-                  <SelectItem value="personal">{t("attendee")}</SelectItem>
+                  <SelectItem value="attendee">{t("attendee")}</SelectItem>
                   <SelectItem value="business">{t("organizer")}</SelectItem>
+                  <SelectItem value="both">{t("both")}</SelectItem>
                 </SelectContent>
               </Select>
               {errors.entity && (
