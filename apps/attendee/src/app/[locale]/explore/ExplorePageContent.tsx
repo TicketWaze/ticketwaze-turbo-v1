@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Link } from "@/i18n/navigation";
-import { Event, UserWallet } from "@ticketwaze/typescript-config";
+import { Event } from "@ticketwaze/typescript-config";
 import {
   CloseCircle,
   Heart,
@@ -23,10 +23,9 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function ExplorePageContent({
   events,
-  // wallet,
 }: {
   events: Event[];
-  wallet: UserWallet;
+  wallet: null;
 }) {
   const t = useTranslations("Explore");
   const [query, setQuery] = useState("");
