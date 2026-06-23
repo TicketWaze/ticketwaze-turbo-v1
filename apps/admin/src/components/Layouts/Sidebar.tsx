@@ -10,6 +10,7 @@ import {
   Message,
   Money,
   MoneyRecive,
+  MoneySend,
   Note,
   SecurityUser,
   Ticket,
@@ -57,6 +58,7 @@ function Sidebar({ className }: { className: string }) {
     { label: t("links.tickets"), path: `/tickets`, Icon: Ticket },
     { label: t("links.payments"), path: `/payments`, Icon: Money },
     { label: t("links.payouts"), path: `/payouts`, Icon: MoneyRecive },
+    { label: t("links.user_withdrawals"), path: `/user-withdrawals`, Icon: MoneySend },
   ];
 
   function isActive(path: string) {

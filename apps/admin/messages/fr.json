@@ -228,6 +228,7 @@
         "tickets": "Billets",
         "payments": "Paiements",
         "payouts": "Versements",
+        "user_withdrawals": "Retraits utilisateurs",
         "support": "Chat en direct",
         "contact": "Messages de contact"
       }
@@ -1029,5 +1030,73 @@
       "close": "Fermer"
     },
     "empty": "Aucun message de support pour l'instant. Les messages des clients apparaîtront ici."
+  },
+  "UserWithdrawals": {
+    "list": {
+      "title": "Demandes de retrait utilisateurs",
+      "filter": {
+        "pending": "En attente",
+        "accepted": "Accepté",
+        "rejected": "Refusé"
+      },
+      "table": {
+        "name": "Nom",
+        "reference": "Référence",
+        "method": "Méthode",
+        "amount": "Montant",
+        "status": "Statut",
+        "date": "Date"
+      },
+      "method_bank": "Virement bancaire",
+      "method_moncash": "MonCash",
+      "status_accepted": "Accepté",
+      "status_pending": "En attente",
+      "status_rejected": "Refusé",
+      "empty": "Aucune demande de retrait {status}."
+    },
+    "detail": {
+      "title": "Demande de retrait",
+      "back": "Retour aux demandes",
+      "not_found": "Demande introuvable.",
+      "status_accepted": "Accepté",
+      "status_pending": "En attente",
+      "status_rejected": "Refusé",
+      "accept": "Accepter",
+      "reject": "Refuser",
+      "method_bank": "Virement bancaire",
+      "method_moncash": "MonCash",
+      "cards": {
+        "user": "Utilisateur",
+        "no_user": "Aucune donnée utilisateur disponible.",
+        "account": "Détails du compte",
+        "request": "Détails de la demande",
+        "rejection": "Motif du refus"
+      },
+      "fields": {
+        "name": "Nom",
+        "email": "E-mail",
+        "method": "Méthode",
+        "bank_name": "Nom de la banque",
+        "account_name": "Nom du compte",
+        "account_number": "Numéro de compte",
+        "moncash_number": "Numéro MonCash",
+        "amount": "Montant",
+        "reference": "Référence",
+        "date": "Date"
+      },
+      "reject_dialog": {
+        "title": "Refuser la demande de retrait",
+        "description": "Veuillez fournir un motif. L'utilisateur sera notifié et le montant recrédité sur son portefeuille.",
+        "reason_label": "Motif",
+        "reason_placeholder": "ex. Les coordonnées du compte n'ont pas pu être vérifiées",
+        "warning": "Le montant sera recrédité sur le portefeuille de l'utilisateur.",
+        "cancel": "Annuler",
+        "confirm": "Refuser"
+      },
+      "toasts": {
+        "accepted": "Demande acceptée et utilisateur notifié.",
+        "rejected": "Demande refusée et utilisateur notifié."
+      }
+    }
   }
 }

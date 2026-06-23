@@ -108,8 +108,8 @@ export default function OrdersInformations({
                 {t("transactions.details.price")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
                   {tickets[0].event.currency === "USD"
-                    ? order.usdPrice
-                    : order.amount}{" "}
+                    ? tickets.reduce((sum, t) => sum + Number(t.ticketUsdPrice), 0)
+                    : tickets.reduce((sum, t) => sum + Number(t.ticketPrice), 0)}{" "}
                   {tickets[0].event.currency}
                 </span>
               </p>

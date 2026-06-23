@@ -229,6 +229,7 @@
         "tickets": "Tickets",
         "payments": "Payments",
         "payouts": "Payouts",
+        "user_withdrawals": "User Withdrawals",
         "support": "Live Chat",
         "contact": "Contact Messages"
       }
@@ -1041,5 +1042,73 @@
       "close": "Close"
     },
     "empty": "No support messages yet. When customers reach out, their messages will appear here."
+  },
+  "UserWithdrawals": {
+    "list": {
+      "title": "User Withdrawal Requests",
+      "filter": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected"
+      },
+      "table": {
+        "name": "Name",
+        "reference": "Reference",
+        "method": "Method",
+        "amount": "Amount",
+        "status": "Status",
+        "date": "Date"
+      },
+      "method_bank": "Bank Transfer",
+      "method_moncash": "MonCash",
+      "status_accepted": "Accepted",
+      "status_pending": "Pending",
+      "status_rejected": "Rejected",
+      "empty": "No {status} withdrawal requests."
+    },
+    "detail": {
+      "title": "Withdrawal Request",
+      "back": "Back to requests",
+      "not_found": "Request not found.",
+      "status_accepted": "Accepted",
+      "status_pending": "Pending",
+      "status_rejected": "Rejected",
+      "accept": "Accept",
+      "reject": "Reject",
+      "method_bank": "Bank Transfer",
+      "method_moncash": "MonCash",
+      "cards": {
+        "user": "User",
+        "no_user": "No user data available.",
+        "account": "Account Details",
+        "request": "Request Details",
+        "rejection": "Rejection Reason"
+      },
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "method": "Method",
+        "bank_name": "Bank Name",
+        "account_name": "Account Name",
+        "account_number": "Account Number",
+        "moncash_number": "MonCash Number",
+        "amount": "Amount",
+        "reference": "Reference",
+        "date": "Date"
+      },
+      "reject_dialog": {
+        "title": "Reject Withdrawal Request",
+        "description": "Please provide a reason. The user will be notified and the amount returned to their wallet.",
+        "reason_label": "Reason",
+        "reason_placeholder": "e.g. Account details could not be verified",
+        "warning": "The amount will be returned to the user's wallet.",
+        "cancel": "Cancel",
+        "confirm": "Reject"
+      },
+      "toasts": {
+        "accepted": "Request accepted and user notified.",
+        "rejected": "Request rejected and user notified."
+      }
+    }
   }
 }

@@ -262,3 +262,34 @@ export async function UnfollowOrganisationAction(
     };
   }
 }
+
+export async function CreateUserWithdrawalRequestAction(
+  accessToken: string,
+  body: {
+    accountType: "bank" | "moncash";
+    currency: "HTG" | "USD";
+    bankName?: string;
+    accountName: string;
+    accountNumber: string;
+    amount: number;
+  },
+) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/withdrawal`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath("/wallet");
+      return { status: "success" as const };
+    }
+    return { status: "failed" as const, message: data.message as string };
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "An unknown error occurred" };
+  }
+}

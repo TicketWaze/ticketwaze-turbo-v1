@@ -11,7 +11,8 @@ import Image from "next/image";
 import Whatsapp from "@/assets/icons/whatsApp.svg";
 import Twitter from "@/assets/icons/twitter.svg";
 import Linkedin from "@/assets/icons/linkedIn.svg";
-import { UserOrdersRequest, UserWallet } from "@ticketwaze/typescript-config";
+import { UserOrdersRequest, UserWallet, UserWithdrawalRequest } from "@ticketwaze/typescript-config";
+import WithdrawalRequestDialog from "./WithdrawalRequestDialog";
 import {
   Dialog,
   DialogContent,
@@ -33,9 +34,11 @@ import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 export default function WalletPageContent({
   ordersRequest,
   wallet,
+  withdrawalRequests,
 }: {
   ordersRequest: UserOrdersRequest;
   wallet: UserWallet;
+  withdrawalRequests: UserWithdrawalRequest[];
 }) {
   const t = useTranslations("Wallet");
   const locale = useLocale();
@@ -473,6 +476,8 @@ export default function WalletPageContent({
             )}
             <div></div>
           </div>
+
+          {/* Withdrawal Requests */}
           <div className={"flex flex-col gap-8"}>
             <div
               className={
@@ -481,24 +486,15 @@ export default function WalletPageContent({
             >
               <span
                 className={
-                  "font-primary  w-full font-medium text-[18px] leading-[25px] text-black"
+                  "font-primary w-full font-medium text-[18px] leading-[25px] text-black"
                 }
               >
                 {t("withdrawal.title")}
               </span>
-              {/* <div
-                className={
-                  "bg-neutral-100 rounded-[30px] flex items-center gap-2 w-full lg:w-auto lg:min-w-[243px] px-[1.5rem] py-4"
-                }
-              >
-                <input
-                  placeholder={t("search")}
-                  className={
-                    "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
-                  }
-                />
-                <SearchNormal size="20" color="#737c8a" variant="Bulk" />
-              </div> */}
+              <WithdrawalRequestDialog
+                htgAvailableBalance={wallet.htgAvailableBalance}
+                usdAvailableBalance={wallet.usdAvailableBalance}
+              />
             </div>
             <Table>
               <TableHeader>
@@ -508,14 +504,14 @@ export default function WalletPageContent({
                       "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
                     }
                   >
-                    {t("withdrawal.table.id")}
+                    {t("withdrawal.table.reference")}
                   </TableHead>
                   <TableHead
                     className={
                       "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
                     }
                   >
-                    {t("withdrawal.table.provider")}
+                    {t("withdrawal.table.method")}
                   </TableHead>
                   <TableHead
                     className={
@@ -540,87 +536,65 @@ export default function WalletPageContent({
                   </TableHead>
                 </TableRow>
               </TableHeader>
-              {/* <TableBody>
-            {orders.map((order, index) => {
-              return (
-                <TableRow key={order.orderId}>
-                  <TableCell
-                    className={
-                      "text-[1.5rem] py-[15px] leading-8 text-neutral-900"
-                    }
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {TruncateUrl(order.orderName, 12)}
-                        </span>
-                      </DrawerTrigger>
-                      <WalletOrderDrawerContent order={order} />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell
-                    className={
-                      "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-                    }
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {order.provider.toUpperCase()}
-                        </span>
-                      </DrawerTrigger>
-                      <WalletOrderDrawerContent order={order} />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell
-                    className={
-                      "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                    }
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {session?.user.userPreference.currency === "USD"
-                            ? `${order.usdPrice} USD`
-                            : `${order.amount} HTG`}
-                        </span>
-                      </DrawerTrigger>
-                      <WalletOrderDrawerContent order={order} />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell className={"hidden lg:table-cell"}>
-                    {order?.status === "SUCCESSFUL" && (
-                      <span
-                        className={
-                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                        }
+              {withdrawalRequests.length > 0 ? (
+                <TableBody>
+                  {withdrawalRequests.map((req) => (
+                    <TableRow key={req.userWithdrawalRequestId}>
+                      <TableCell
+                        className={"text-[1.5rem] py-[15px] leading-8 text-neutral-900"}
                       >
-                        {t("filters.successful")}
-                      </span>
-                    )}
-                    {order?.status === "PENDING" && (
-                      <span
-                        className={
-                          "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                        }
+                        {TruncateUrl(req.reference ?? req.userWithdrawalRequestId, 14)}
+                      </TableCell>
+                      <TableCell
+                        className={"text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900 capitalize"}
                       >
-                        {t("filters.pending")}
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell
-                    className={
-                      "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-                    }
-                  >
-                    {FormatDate(order.createdAt)}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody> */}
+                        {req.accountType === "bank" ? t("withdrawal.method_bank") : t("withdrawal.method_moncash")}
+                      </TableCell>
+                      <TableCell
+                        className={"text-[1.5rem] font-medium leading-8 text-neutral-900"}
+                      >
+                        {req.amount.toLocaleString()} {req.currency ?? "HTG"}
+                      </TableCell>
+                      <TableCell className={"hidden lg:table-cell"}>
+                        {req.status === "ACCEPTED" && (
+                          <span
+                            className={
+                              "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E] px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                            }
+                          >
+                            {t("withdrawal.status_accepted")}
+                          </span>
+                        )}
+                        {req.status === "PENDING" && (
+                          <span
+                            className={
+                              "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C] px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                            }
+                          >
+                            {t("withdrawal.status_pending")}
+                          </span>
+                        )}
+                        {req.status === "REJECTED" && (
+                          <span
+                            className={
+                              "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#E53935] px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                            }
+                          >
+                            {t("withdrawal.status_rejected")}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell
+                        className={"text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"}
+                      >
+                        {FormatDate(req.createdAt, locale, "local")}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              ) : null}
             </Table>
-            {true && (
+            {withdrawalRequests.length === 0 && (
               <div
                 className={
                   "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
@@ -639,9 +613,7 @@ export default function WalletPageContent({
                     <Money3 size="50" color="#0d0d0d" variant="Bulk" />
                   </div>
                 </div>
-                <div
-                  className={"flex flex-col gap-12 items-center text-center"}
-                >
+                <div className={"flex flex-col gap-12 items-center text-center"}>
                   <p
                     className={
                       "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
@@ -652,19 +624,6 @@ export default function WalletPageContent({
                 </div>
               </div>
             )}
-            {/* {tickets.length > 0 && (
-          <div className={"w-full flex justify-end"}>
-            <Link
-              href={"/finance/transactions"}
-              className={
-                "text-primary-500 justify-end flex gap-4 items-center text-[1.5rem] leading-8"
-              }
-            >
-              {t("transactions.more")}
-              <ArrowRight2 size="20" color="#E45B00" variant="Bulk" />
-            </Link>
-          </div>
-        )} */}
             <div></div>
           </div>
         </div>
