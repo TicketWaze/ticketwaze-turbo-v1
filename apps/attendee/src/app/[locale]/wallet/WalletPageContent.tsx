@@ -5,15 +5,14 @@ import { useLocale, useTranslations } from "next-intl";
 import FormatDate from "@/lib/FormatDate";
 import TruncateUrl from "@/lib/TruncateUrl";
 import WalletOrderDrawerContent from "./WalletOrderDrawerContent";
-import CashoutDialog from "./CashoutDialog";
 import { toast } from "sonner";
 import { Link } from "@/i18n/navigation";
 import Image from "next/image";
 import Whatsapp from "@/assets/icons/whatsApp.svg";
 import Twitter from "@/assets/icons/twitter.svg";
 import Linkedin from "@/assets/icons/linkedIn.svg";
-import { UserOrdersRequest, UserWallet } from "@ticketwaze/typescript-config";
-import { UserCashoutRequest } from "./types";
+import { UserOrdersRequest, UserWallet, UserWithdrawalRequest } from "@ticketwaze/typescript-config";
+import WithdrawalRequestDialog from "./WithdrawalRequestDialog";
 import {
   Dialog,
   DialogContent,
@@ -35,11 +34,11 @@ import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 export default function WalletPageContent({
   ordersRequest,
   wallet,
-  cashoutRequests,
+  withdrawalRequests,
 }: {
   ordersRequest: UserOrdersRequest;
   wallet: UserWallet;
-  cashoutRequests: UserCashoutRequest[];
+  withdrawalRequests: UserWithdrawalRequest[];
 }) {
   const t = useTranslations("Wallet");
   const locale = useLocale();
@@ -477,6 +476,8 @@ export default function WalletPageContent({
             )}
             <div></div>
           </div>
+
+          {/* Withdrawal Requests */}
           <div className={"flex flex-col gap-8"}>
             <div
               className={
@@ -485,12 +486,15 @@ export default function WalletPageContent({
             >
               <span
                 className={
-                  "font-primary  w-full font-medium text-[18px] leading-[25px] text-black"
+                  "font-primary w-full font-medium text-[18px] leading-[25px] text-black"
                 }
               >
                 {t("withdrawal.title")}
               </span>
-              <CashoutDialog htgAvailableBalance={wallet.htgAvailableBalance} />
+              <WithdrawalRequestDialog
+                htgAvailableBalance={wallet.htgAvailableBalance}
+                usdAvailableBalance={wallet.usdAvailableBalance}
+              />
             </div>
             <Table>
               <TableHeader>
@@ -500,14 +504,14 @@ export default function WalletPageContent({
                       "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
                     }
                   >
-                    {t("withdrawal.table.id")}
+                    {t("withdrawal.table.reference")}
                   </TableHead>
                   <TableHead
                     className={
                       "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
                     }
                   >
-                    {t("withdrawal.table.provider")}
+                    {t("withdrawal.table.method")}
                   </TableHead>
                   <TableHead
                     className={
@@ -532,33 +536,33 @@ export default function WalletPageContent({
                   </TableHead>
                 </TableRow>
               </TableHeader>
-              {cashoutRequests.length > 0 ? (
+              {withdrawalRequests.length > 0 ? (
                 <TableBody>
-                  {cashoutRequests.map((req) => (
-                    <TableRow key={req.cashoutRequestId}>
+                  {withdrawalRequests.map((req) => (
+                    <TableRow key={req.userWithdrawalRequestId}>
                       <TableCell
                         className={"text-[1.5rem] py-[15px] leading-8 text-neutral-900"}
                       >
-                        {TruncateUrl(req.reference, 14)}
+                        {TruncateUrl(req.reference ?? req.userWithdrawalRequestId, 14)}
                       </TableCell>
                       <TableCell
-                        className={"text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"}
+                        className={"text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900 capitalize"}
                       >
-                        MonCash
+                        {req.accountType === "bank" ? t("withdrawal.method_bank") : t("withdrawal.method_moncash")}
                       </TableCell>
                       <TableCell
                         className={"text-[1.5rem] font-medium leading-8 text-neutral-900"}
                       >
-                        {req.amount.toLocaleString()} HTG
+                        {req.amount.toLocaleString()} {req.currency ?? "HTG"}
                       </TableCell>
                       <TableCell className={"hidden lg:table-cell"}>
-                        {req.status === "SUCCESSFUL" && (
+                        {req.status === "ACCEPTED" && (
                           <span
                             className={
                               "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E] px-[5px] rounded-[30px] bg-[#f5f5f5]"
                             }
                           >
-                            {t("filters.successful")}
+                            {t("withdrawal.status_accepted")}
                           </span>
                         )}
                         {req.status === "PENDING" && (
@@ -567,16 +571,16 @@ export default function WalletPageContent({
                               "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C] px-[5px] rounded-[30px] bg-[#f5f5f5]"
                             }
                           >
-                            {t("filters.pending")}
+                            {t("withdrawal.status_pending")}
                           </span>
                         )}
-                        {req.status === "FAILED" && (
+                        {req.status === "REJECTED" && (
                           <span
                             className={
                               "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#E53935] px-[5px] rounded-[30px] bg-[#f5f5f5]"
                             }
                           >
-                            {t("filters.failed")}
+                            {t("withdrawal.status_rejected")}
                           </span>
                         )}
                       </TableCell>
@@ -590,7 +594,7 @@ export default function WalletPageContent({
                 </TableBody>
               ) : null}
             </Table>
-            {cashoutRequests.length === 0 && (
+            {withdrawalRequests.length === 0 && (
               <div
                 className={
                   "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"

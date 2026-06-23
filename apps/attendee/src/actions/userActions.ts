@@ -263,12 +263,19 @@ export async function UnfollowOrganisationAction(
   }
 }
 
-export async function CashoutToMoncashAction(
+export async function CreateUserWithdrawalRequestAction(
   accessToken: string,
-  body: { amount: number; moncashNumber: string },
+  body: {
+    accountType: "bank" | "moncash";
+    currency: "HTG" | "USD";
+    bankName?: string;
+    accountName: string;
+    accountNumber: string;
+    amount: number;
+  },
 ) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/cashout`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/withdrawal`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

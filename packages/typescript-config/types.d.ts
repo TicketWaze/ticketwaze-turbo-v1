@@ -547,3 +547,40 @@ export interface AdminOrganisationStats {
   active: number;
   new: number;
 }
+
+export interface UserWithdrawalRequest {
+  userWithdrawalRequestId: string;
+  userId: string;
+  accountType: 'bank' | 'moncash';
+  currency: 'HTG' | 'USD';
+  bankName: string | null;
+  accountName: string;
+  accountNumber: string;
+  amount: number;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  reason: string | null;
+  reference: string | null;
+  user?: {
+    userId: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface UserWithdrawalRequestsPage {
+  meta: {
+    total: number;
+    perPage: number;
+    currentPage: number;
+    lastPage: number;
+    firstPage: number;
+    firstPageUrl: string | null;
+    lastPageUrl: string | null;
+    nextPageUrl: string | null;
+    previousPageUrl: string | null;
+  };
+  data: UserWithdrawalRequest[];
+}
