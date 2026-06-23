@@ -438,14 +438,14 @@ export default function WaitlistPageContent({
               <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900">
                 <span
                   className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
-                    user.entity === "personal"
+                    user.entity === "attendee"
                       ? "bg-blue-50 text-blue-600"
-                      : "bg-orange-50 text-orange-600"
+                      : user.entity === "business"
+                        ? "bg-orange-50 text-orange-600"
+                        : "bg-purple-50 text-purple-600"
                   }`}
                 >
-                  {user.entity === "personal"
-                    ? t("filters.personal")
-                    : t("filters.business")}
+                  {t(`filters.${user.entity}`)}
                 </span>
               </TableCell>
               <TableCell className="text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900">

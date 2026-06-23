@@ -6,7 +6,7 @@ export default async function WaitlistPage() {
   const session = await auth();
 
   let users: WaitlistEntry[] = [];
-  let stats: WaitlistStats = { total: 0, invited: 0, pending: 0, personal: 0, business: 0 };
+  let stats: WaitlistStats = { total: 0, invited: 0, pending: 0, attendee: 0, business: 0, both: 0 };
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
