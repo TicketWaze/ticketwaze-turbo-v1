@@ -275,6 +275,8 @@ export interface Event {
 
 export interface User {
   accessToken: string;
+  refreshToken: string;
+  accessTokenExpires: number;
   userId: string;
   firstName: string;
   lastName: string;

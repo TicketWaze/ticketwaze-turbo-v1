@@ -2,13 +2,40 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
+async function refreshAccessToken(token: Record<string, unknown>) {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token.refreshToken}` },
+    });
+
+    const data = await res.json();
+
+    if (res.status === 401 || data.status !== "success") {
+      // Refresh token is revoked or expired — clear the session
+      return null;
+    }
+
+    return {
+      ...token,
+      accessToken: data.accessToken,
+      refreshToken: data.refreshToken,
+      accessTokenExpires: data.accessTokenExpires,
+      error: undefined,
+    };
+  } catch {
+    // Network/server error — keep the existing token and retry next time
+    return { ...token, error: "RefreshAccessTokenError" as const };
+  }
+}
+
 const nextAuthResult = NextAuth({
   session: {
     strategy: "jwt",
-    maxAge: 14 * 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60,
   },
   jwt: {
-    maxAge: 14 * 24 * 60 * 60,
+    maxAge: 30 * 24 * 60 * 60,
   },
 
   providers: [
@@ -51,7 +78,11 @@ const nextAuthResult = NextAuth({
             }
             throw new Error(data.message || "Google sign-in failed");
           }
-          return { ...data.user, id: data.user.userId, deletionCancelled: data.deletionCancelled ?? false };
+          return {
+            ...data.user,
+            id: data.user.userId,
+            deletionCancelled: data.deletionCancelled ?? false,
+          };
         }
 
         const response = await fetch(
@@ -83,9 +114,6 @@ const nextAuthResult = NextAuth({
   },
 
   callbacks: {
-    /**
-     * SIGN IN — handle Google automated user creation via API
-     */
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         const res = await fetch(
@@ -113,32 +141,41 @@ const nextAuthResult = NextAuth({
       return true;
     },
 
-    /**
-     * JWT CALLBACK
-     */
     async jwt({ token, user, trigger, session }) {
-      // First login (credentials or google)
+      // First login — seed all fields from the API response
       if (user) {
         return { ...token, ...user };
       }
 
-      // Manual update() call
+      // Manual update() call (e.g. profile refresh)
       if (trigger === "update" && session?.user) {
         return { ...token, ...session.user };
       }
 
-      return token;
+      // Old session (before this update) has no accessTokenExpires — leave it alone
+      if (!token.accessTokenExpires) {
+        return token;
+      }
+
+      // Token still has more than 1 minute of life left
+      if (Date.now() < (token.accessTokenExpires as number) - 60_000) {
+        return token;
+      }
+
+      // No refresh token available (shouldn't happen after a fresh login)
+      if (!token.refreshToken) {
+        return token;
+      }
+
+      return refreshAccessToken(token as Record<string, unknown>);
     },
 
-    /**
-     * SESSION CALLBACK
-     */
     async session({ session, token }) {
       session.user = token as unknown as never;
       return session;
     },
 
-    redirect({ url, baseUrl }) {
+    redirect({ url }) {
       return url;
     },
   },
