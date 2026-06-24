@@ -34,7 +34,7 @@ import { InviteUsersAction } from "@/actions/Waitlist";
 export type WaitlistEntry = {
   waitlistUserId: string;
   email: string;
-  entity: "personal" | "business";
+  entity: "attendee" | "business" | "both";
   invitedAt: string | null;
   createdAt: string;
 };
@@ -43,8 +43,9 @@ export type WaitlistStats = {
   total: number;
   invited: number;
   pending: number;
-  personal: number;
+  attendee: number;
   business: number;
+  both: number;
 };
 
 type Props = {
@@ -63,7 +64,7 @@ export default function WaitlistPageContent({
 
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [entityFilter, setEntityFilter] = useState<
-    "all" | "personal" | "business"
+    "all" | "attendee" | "business" | "both"
   >("all");
   const [isInvitingSelected, setIsInvitingSelected] = useState(false);
   const [invitingOneId, setInvitingOneId] = useState<string | null>(null);
@@ -165,7 +166,7 @@ export default function WaitlistPageContent({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-neutral-100 border-neutral-100 border-b">
+      <div className="grid grid-cols-2 lg:grid-cols-5 divide-x divide-neutral-100 border-neutral-100 border-b">
         <div className="pb-8 lg:pb-12">
           <span className="text-[14px] text-neutral-600 leading-8 pb-2 block">
             {t("stats.total")}
@@ -184,10 +185,10 @@ export default function WaitlistPageContent({
         </div>
         <div className="pt-8 lg:pt-0 lg:pl-10 pb-8 lg:pb-12">
           <span className="text-[14px] text-neutral-600 leading-8 pb-2 block">
-            {t("stats.personal")}
+            {t("stats.attendee")}
           </span>
           <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
-            {stats.personal}
+            {stats.attendee}
           </p>
         </div>
         <div className="pl-6 lg:pl-10 pt-8 lg:pt-0 pb-8 lg:pb-12">
@@ -196,6 +197,14 @@ export default function WaitlistPageContent({
           </span>
           <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
             {stats.business}
+          </p>
+        </div>
+        <div className="pl-6 lg:pl-10 pt-8 lg:pt-0 pb-8 lg:pb-12">
+          <span className="text-[14px] text-neutral-600 leading-8 pb-2 block">
+            {t("stats.both")}
+          </span>
+          <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
+            {stats.both}
           </p>
         </div>
       </div>
@@ -213,7 +222,7 @@ export default function WaitlistPageContent({
         <Select
           defaultValue="all"
           onValueChange={(v) =>
-            setEntityFilter(v as "all" | "personal" | "business")
+            setEntityFilter(v as "all" | "attendee" | "business" | "both")
           }
         >
           <SelectTrigger className="bg-neutral-100 w-full cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none lg:w-fit text-[1.4rem] text-neutral-700 leading-8">
@@ -226,15 +235,21 @@ export default function WaitlistPageContent({
               </SelectItem>
               <SelectItem
                 className="text-[1.4rem] text-deep-100"
-                value="personal"
+                value="attendee"
               >
-                {t("filters.personal")}
+                {t("filters.attendee")}
               </SelectItem>
               <SelectItem
                 className="text-[1.4rem] text-deep-100"
                 value="business"
               >
                 {t("filters.business")}
+              </SelectItem>
+              <SelectItem
+                className="text-[1.4rem] text-deep-100"
+                value="both"
+              >
+                {t("filters.both")}
               </SelectItem>
             </SelectGroup>
           </SelectContent>
@@ -327,14 +342,14 @@ export default function WaitlistPageContent({
                             {t("drawer.entity")}
                             <span
                               className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
-                                user.entity === "personal"
+                                user.entity === "attendee"
                                   ? "bg-blue-50 text-blue-600"
-                                  : "bg-orange-50 text-orange-600"
+                                  : user.entity === "business"
+                                    ? "bg-orange-50 text-orange-600"
+                                    : "bg-purple-50 text-purple-600"
                               }`}
                             >
-                              {user.entity === "personal"
-                                ? t("filters.personal")
-                                : t("filters.business")}
+                              {t(`filters.${user.entity}`)}
                             </span>
                           </span>
                           <span
@@ -423,14 +438,14 @@ export default function WaitlistPageContent({
               <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900">
                 <span
                   className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
-                    user.entity === "personal"
+                    user.entity === "attendee"
                       ? "bg-blue-50 text-blue-600"
-                      : "bg-orange-50 text-orange-600"
+                      : user.entity === "business"
+                        ? "bg-orange-50 text-orange-600"
+                        : "bg-purple-50 text-purple-600"
                   }`}
                 >
-                  {user.entity === "personal"
-                    ? t("filters.personal")
-                    : t("filters.business")}
+                  {t(`filters.${user.entity}`)}
                 </span>
               </TableCell>
               <TableCell className="text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900">

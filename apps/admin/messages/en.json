@@ -856,13 +856,15 @@
     "stats": {
       "total": "Total Users",
       "pending": "Pending",
-      "personal": "Personal",
-      "business": "Business"
+      "attendee": "Attendees",
+      "business": "Businesses",
+      "both": "Both"
     },
     "filters": {
       "all": "All types",
-      "personal": "Personal",
-      "business": "Business"
+      "attendee": "Attendee",
+      "business": "Business",
+      "both": "Both"
     },
     "list": {
       "title": "Waitlist users",

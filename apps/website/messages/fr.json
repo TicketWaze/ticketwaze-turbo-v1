@@ -163,8 +163,9 @@
       "description": "Nous travaillons en coulisses pour vous offrir une nouvelle façon d’acheter, gérer et profiter de vos billets.",
       "email": "Adresse e-mail",
       "who": "Vous rejoignez en tant que :",
-      "attendee": "Particulier",
+      "attendee": "Participant",
       "organizer": "Professionnel",
+      "both": "Les deux (Participant & Organisateur)",
       "join": "Rejoindre la liste d’attente",
       "errors": {
         "email": "Veuillez saisir une adresse e-mail valide",

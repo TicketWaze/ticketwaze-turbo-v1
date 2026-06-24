@@ -844,13 +844,15 @@
     "stats": {
       "total": "Total utilisateurs",
       "pending": "En attente",
-      "personal": "Personnels",
-      "business": "Entreprises"
+      "attendee": "Participants",
+      "business": "Entreprises",
+      "both": "Les deux"
     },
     "filters": {
       "all": "Tous les types",
-      "personal": "Personnel",
-      "business": "Entreprise"
+      "attendee": "Participant",
+      "business": "Entreprise",
+      "both": "Les deux"
     },
     "list": {
       "title": "Utilisateurs en attente",
