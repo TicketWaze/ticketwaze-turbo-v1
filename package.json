@@ -17,6 +17,10 @@
   "dependencies": {
     "luxon": "^3.6.1"
   },
+  "resolutions": {
+    "ws": "^8.21.0",
+    "next-intl": "^4.9.2"
+  },
   "optionalDependencies": {
     "@parcel/watcher-linux-x64-glibc": "2.5.1"
   },

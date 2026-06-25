@@ -173,8 +173,13 @@ const nextAuthResult = NextAuth({
       return session;
     },
 
-    redirect({ url }) {
-      return url;
+    redirect({ url, baseUrl }) {
+      // Prevent open redirects: allow only relative paths or same-origin URLs.
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      try {
+        if (new URL(url).origin === baseUrl) return url;
+      } catch {}
+      return baseUrl;
     },
   },
 });

@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import { getTranslations } from "next-intl/server";
 import TopLoader from "@/components/shared/TopLoader";
 import AuthProvider from "@/lib/AuthProvider";
+import { Analytics } from "@vercel/analytics/next";
 import "@ticketwaze/ui/styles/globals.css";
 
 const bricolageGrotesque = Bricolage_Grotesque({
@@ -56,6 +57,7 @@ export default async function RootLayout({
           <AuthProvider>{children}</AuthProvider>
           <TopLoader />
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );

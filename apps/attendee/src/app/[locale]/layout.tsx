@@ -7,6 +7,7 @@ import { routing } from "@/i18n/routing";
 import AuthProvider from "@/lib/AuthProvider";
 import { Toaster } from "sonner";
 import TopLoader from "@/components/shared/TopLoader";
+import { Analytics } from "@vercel/analytics/next";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -63,6 +64,7 @@ export default async function RootLayout({
           <Toaster richColors position="top-right" />
           <TopLoader />
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );
