@@ -5,6 +5,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import BackButton from "@/components/shared/BackButton";
 import { auth } from "@/lib/auth";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import { extractIdFromSlug } from "@/lib/Slugify";
 
 export default async function Attendees({
   params,
@@ -12,18 +13,19 @@ export default async function Attendees({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const eventId = extractIdFromSlug(slug);
   const t = await getTranslations("Events.single_event.attendees");
   const locale = await getLocale();
   const session = await auth();
   const eventRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/${slug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/events/${eventId}`,
     {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.user.accessToken}`,
         "Accept-Language": locale,
         origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-        Authorization: `Bearer ${session?.user.accessToken}`,
       },
     },
   );

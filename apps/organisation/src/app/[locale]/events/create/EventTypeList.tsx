@@ -168,87 +168,88 @@ export default function EventTypeList({
       </div>
       <ul className="list overflow-y-scroll py-2 px-2">
         {filteredCategories.map((category, index) => {
-          if (category.value === "meet") {
-            return (
-              <li key={index}>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <div
-                      className={`h-[165px] cursor-pointer lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300 `}
-                    >
-                      <Image
-                        src={category.image}
-                        alt={category.title}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        width={255}
-                        height={191}
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-black via-black/80 to-black/10" />
-                      <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
-                        <h3 className="text-[2.6rem] font-primary leading-12 font-bold">
-                          {category.title}
-                        </h3>
-                        <p className="text-[1.5rem] text-neutral-300">
-                          {category.description}
-                        </p>
-                      </div>
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className={"w-[360px] lg:w-[520px] "}>
-                    <DialogHeader>
-                      <DialogTitle
-                        className={
-                          "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
-                        }
-                      >
-                        {category.title}
-                      </DialogTitle>
-                      <DialogDescription className={"sr-only"}>
-                        <span>Add artist</span>
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="py-8 flex flex-col gap-8 items-center">
-                      <div
-                        className={
-                          "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
-                        }
-                      >
-                        <div
-                          className={
-                            "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
-                          }
-                        >
-                          <InfoCircle
-                            size="30"
-                            color="#0d0d0d"
-                            variant="Bulk"
-                          />
-                        </div>
-                      </div>
-                      <p
-                        className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
-                      >
-                        {t("list.meet.warning")}
-                      </p>
-                    </div>
-                    <DialogFooter>
-                      <ButtonPrimary
-                        onClick={proceedGoogleMeet}
-                        disabled={isLoading}
-                        className="w-full"
-                      >
-                        {isLoading ? <LoadingCircleSmall /> : t("proceed")}
-                      </ButtonPrimary>
-                      <DialogClose
-                        ref={closeRef}
-                        className="sr-only"
-                      ></DialogClose>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </li>
-            );
-          } else if (
+          // if (category.value === "meet") {
+          //   return (
+          //     <li key={index}>
+          //       <Dialog>
+          //         <DialogTrigger asChild>
+          //           <div
+          //             className={`h-[165px] cursor-pointer lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300 `}
+          //           >
+          //             <Image
+          //               src={category.image}
+          //               alt={category.title}
+          //               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          //               width={255}
+          //               height={191}
+          //             />
+          //             <div className="absolute inset-0 bg-linear-to-t from-black via-black/80 to-black/10" />
+          //             <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
+          //               <h3 className="text-[2.6rem] font-primary leading-12 font-bold">
+          //                 {category.title}
+          //               </h3>
+          //               <p className="text-[1.5rem] text-neutral-300">
+          //                 {category.description}
+          //               </p>
+          //             </div>
+          //           </div>
+          //         </DialogTrigger>
+          //         <DialogContent className={"w-[360px] lg:w-[520px] "}>
+          //           <DialogHeader>
+          //             <DialogTitle
+          //               className={
+          //                 "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
+          //               }
+          //             >
+          //               {category.title}
+          //             </DialogTitle>
+          //             <DialogDescription className={"sr-only"}>
+          //               <span>Add artist</span>
+          //             </DialogDescription>
+          //           </DialogHeader>
+          //           <div className="py-8 flex flex-col gap-8 items-center">
+          //             <div
+          //               className={
+          //                 "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+          //               }
+          //             >
+          //               <div
+          //                 className={
+          //                   "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+          //                 }
+          //               >
+          //                 <InfoCircle
+          //                   size="30"
+          //                   color="#0d0d0d"
+          //                   variant="Bulk"
+          //                 />
+          //               </div>
+          //             </div>
+          //             <p
+          //               className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
+          //             >
+          //               {t("list.meet.warning")}
+          //             </p>
+          //           </div>
+          //           <DialogFooter>
+          //             <ButtonPrimary
+          //               onClick={proceedGoogleMeet}
+          //               disabled={isLoading}
+          //               className="w-full"
+          //             >
+          //               {isLoading ? <LoadingCircleSmall /> : t("proceed")}
+          //             </ButtonPrimary>
+          //             <DialogClose
+          //               ref={closeRef}
+          //               className="sr-only"
+          //             ></DialogClose>
+          //           </DialogFooter>
+          //         </DialogContent>
+          //       </Dialog>
+          //     </li>
+          //   );
+          if (
+            category.value === "meet" ||
             category.value === "reservations" ||
             category.value === "transportations" ||
             category.value === "tours" ||

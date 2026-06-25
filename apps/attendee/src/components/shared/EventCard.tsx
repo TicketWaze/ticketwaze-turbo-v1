@@ -44,6 +44,11 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         >
           {event.eventType.toUpperCase()}
         </div>
+        {event.isPrivate && (
+          <div className="bg-deep-100 block absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-[15px] w-fit">
+            {t("private")}
+          </div>
+        )}
       </div>
 
       <div

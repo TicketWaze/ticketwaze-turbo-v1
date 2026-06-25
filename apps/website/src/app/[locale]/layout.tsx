@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { getTranslations } from "next-intl/server";
 import TopLoader from "@/components/TopLoader";
 import LiveChatWidgetMount from "@/components/LiveChatWidgetMount";
+import { Analytics } from "@vercel/analytics/next";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -133,6 +134,7 @@ export default async function RootLayout({
           <LiveChatWidgetMount />
           <TopLoader />
         </NextIntlClientProvider>
+        <Analytics />
       </body>
     </html>
   );

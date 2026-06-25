@@ -650,6 +650,7 @@
   "Event": {
     "from": "From",
     "free": "Free",
+    "private": "Private",
     "back": "Back",
     "notInvited": "Access Restricted: This is a private activity visible only to invited participants.",
     "share": "Share activity",
@@ -716,12 +717,14 @@
       "login_description": "Access your tickets, wallet, and personalized recommendations.",
       "guest": "Continue as guest",
       "guest_description": "Quick checkout without creating an account.",
+      "private_note": "This is a private activity. Please sign in with the email you were invited with to purchase tickets.",
       "back": "Back"
     }
   },
   "Checkout": {
     "back": "Back",
     "free": "Free",
+    "private_login_required": "This is a private activity. Please sign in with your invited email to purchase tickets.",
     "purchased": "Ticket purchased",
     "purchased_cta": "Opening upcoming activities ...",
     "purchased_text": "Your purchase is confirmed! Access it anytime in upcoming activities or check your email for a copy",

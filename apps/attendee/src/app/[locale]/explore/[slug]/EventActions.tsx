@@ -145,6 +145,7 @@ export default function EventActions({
           </DialogTrigger>
           <BuyTicketAuthDialog
             checkoutUrl={`/explore/${slugify(event.eventName, event.eventId)}/checkout`}
+            isPrivate={event.isPrivate}
           />
         </Dialog>
       )}

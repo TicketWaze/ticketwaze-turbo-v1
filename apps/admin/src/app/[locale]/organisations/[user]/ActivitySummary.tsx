@@ -55,10 +55,10 @@ export default function ActivitySummary({
         {showCreated && (
           <div>
             {activeEvents.length > 0 ? (
-              <ul className="grid grid-cols-2 gap-4 pt-4 -ml-3">
+              <ul className="flex flex-col gap-4 pt-4">
                 {activeEvents.map((event) => (
-                  <li key={event.eventId} className="w-114">
-                    <EventCard event={event} />
+                  <li key={event.eventId} className="w-full">
+                    <EventCard event={event} aside />
                   </li>
                 ))}
               </ul>
@@ -90,10 +90,10 @@ export default function ActivitySummary({
         {showCancelled && (
           <div>
             {cancelledEvents.length > 0 ? (
-              <ul className="grid grid-cols-2 gap-4 pt-4 -ml-3">
+              <ul className="flex flex-col gap-4 pt-4">
                 {cancelledEvents.map((event) => (
-                  <li key={event.eventId} className="w-114">
-                    <EventCard event={event} />
+                  <li key={event.eventId} className="w-full">
+                    <EventCard event={event} aside />
                   </li>
                 ))}
               </ul>

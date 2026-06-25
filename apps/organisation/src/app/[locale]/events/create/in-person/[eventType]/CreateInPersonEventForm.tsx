@@ -38,6 +38,7 @@ export default function CreateInPersonEventForm({
   const organisation = session?.activeOrganisation;
   const [isFree, setIsfree] = useState(false);
   const [isRefundable, setIsRefundable] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
 
   // create schema using factory (depends on isFree)
   const FormDataSchema = makeCreateInPersonSchema(isFree, (k: string) => t(k));
@@ -125,6 +126,7 @@ export default function CreateInPersonEventForm({
     formData.append("isFree", JSON.stringify(data.isFree));
     formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("isRefundable", JSON.stringify(isRefundable));
+    formData.append("isPrivate", JSON.stringify(isPrivate));
     if (isFree) {
       formData.append(
         "ticketTypes",
@@ -346,6 +348,8 @@ export default function CreateInPersonEventForm({
               // mapContainerRef={mapContainerRef}
               setValue={setValue}
               getValues={getValues}
+              isPrivate={isPrivate}
+              setIsPrivate={setIsPrivate}
             />
           </motion.div>
         )}
