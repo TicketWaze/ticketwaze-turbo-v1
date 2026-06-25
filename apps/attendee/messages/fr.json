@@ -700,6 +700,7 @@
   "Event": {
     "from": "À partir de",
     "free": "Gratuit",
+    "private": "Privé",
     "back": "Retour",
     "notInvited": "Accès restreint : il s'agit d'une activité privée visible uniquement par les participants invités.",
     "share": "Partager",
@@ -766,12 +767,14 @@
       "login_description": "Accédez à vos billets, votre portefeuille et vos recommandations personnalisées.",
       "guest": "Continuer en tant qu’invité",
       "guest_description": "Paiement rapide sans créer de compte.",
+      "private_note": "Ceci est une activité privée. Veuillez vous connecter avec l’adresse e-mail avec laquelle vous avez été invité pour acheter des billets.",
       "back": "Retour"
     }
   },
   "Checkout": {
     "back": "Retour",
     "free": "Gratuit",
+    "private_login_required": "Ceci est une activité privée. Veuillez vous connecter avec l’adresse e-mail avec laquelle vous avez été invité pour acheter des billets.",
     "purchased": "Billet acheté",
     "purchased_cta": "Ouverture des activités à venir...",
     "purchased_text": "Votre achat est confirmé ! Vous pouvez y accéder à tout moment dans les Activités à venir ou vérifier votre e-mail pour une copie.",

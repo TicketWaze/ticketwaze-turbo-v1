@@ -26,6 +26,7 @@ import { Warning2 } from "iconsax-reactjs";
 import RichTextEditor from "@/components/shared/RichTextEditor";
 import LocationPicker from "@/lib/LocationPicker";
 import UploadDocument from "@/assets/icons/document-upload.svg";
+import ToggleIcon from "@/components/shared/ToggleIcon";
 
 type Props = {
   register: UseFormRegister<CreateInPersonFormValues>;
@@ -36,6 +37,8 @@ type Props = {
   // mapContainerRef: React.RefObject<HTMLDivElement | null>;
   setValue: UseFormSetValue<CreateInPersonFormValues>;
   getValues: UseFormGetValues<CreateInPersonFormValues>;
+  isPrivate: boolean;
+  setIsPrivate: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function BasicDetails({
@@ -47,6 +50,8 @@ export default function BasicDetails({
   // mapContainerRef,
   setValue,
   getValues,
+  isPrivate,
+  setIsPrivate,
 }: Props) {
   const t = useTranslations("Events.create_event");
   const availableCountries = countries.map((country) => country.name);
@@ -178,6 +183,28 @@ export default function BasicDetails({
             />
           )}
         />
+      </div>
+
+      {/* mark as private */}
+      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
+        <div className="flex items-center justify-between">
+          <p className="text-[1.6rem] leading-8 text-deep-100 max-w-152">
+            {t("mark_as_private")}
+          </p>
+          <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 has-disabled:cursor-not-allowed">
+            <input
+              className="peer sr-only"
+              id="private-event"
+              type="checkbox"
+              checked={isPrivate}
+              onChange={() => setIsPrivate((prev) => !prev)}
+            />
+            <ToggleIcon />
+          </label>
+        </div>
+        <p className="text-[1.2rem] leading-8 text-neutral-800">
+          {t("private_tip")}
+        </p>
       </div>
 
       {/* location */}

@@ -54,6 +54,7 @@ export default function EditInPersonEventForm({
   const [isRefundable, setIsRefundable] = useState(
     event.eventTicketTypes[0]?.isRefundable ?? false,
   );
+  const [isPrivate, setIsPrivate] = useState(event.isPrivate ?? false);
 
   // create schema using factory (depends on isFree)
   const FormDataSchema = makeEditInPersonSchema(isFree, (k: string) => t(k));
@@ -141,6 +142,7 @@ export default function EditInPersonEventForm({
     formData.append("eventCurrency", data.eventCurrency);
     formData.append("isRefundable", JSON.stringify(isRefundable));
     formData.append("isFree", JSON.stringify(isFree));
+    formData.append("isPrivate", JSON.stringify(isPrivate));
     if (isFree) {
       formData.append(
         "ticketTypes",
@@ -420,6 +422,8 @@ export default function EditInPersonEventForm({
               setValue={setValue}
               getValues={getValues}
               event={event}
+              isPrivate={isPrivate}
+              setIsPrivate={setIsPrivate}
             />
           </motion.div>
         )}

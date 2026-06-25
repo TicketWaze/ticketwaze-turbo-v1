@@ -111,7 +111,7 @@ export default function MoreComponent({
             {t("more")}
           </span>
           <div className={"flex flex-col gap-4"}>
-            {event.eventType === "private" && (
+            {event.isPrivate && (
               <li>
                 <Link
                   href={`${slug}/attendees`}

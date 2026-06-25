@@ -921,6 +921,8 @@
       "password": "Password (if needed)",
       "mark_as_free": "Mark this activity as free",
       "mark_as_refundable": "Mark tickets as refundable",
+      "mark_as_private": "Make this a private activity",
+      "private_tip": "Private activities stay listed with a Private tag, but only the guests you add to the attendee list can buy tickets.",
       "currency": "Currency",
       "general_default": "Enjoy full access without any cost! Join us for an unforgettable experience. Secure your spot today!",
       "meet_default": "Join our Meet session with full access! Connect, and enjoy anywhere. Reserve your place today!",

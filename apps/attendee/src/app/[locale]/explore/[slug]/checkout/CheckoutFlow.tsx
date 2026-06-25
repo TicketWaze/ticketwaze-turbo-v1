@@ -72,6 +72,15 @@ export default function CheckoutFlow({
 
   const idempotencyKey = useRef(crypto.randomUUID());
 
+  // Private activities cannot be purchased as a guest — send guests back to the event
+  // page to sign in with their invited email. (The API enforces this too.)
+  useEffect(() => {
+    if (isGuest && event.isPrivate) {
+      toast.error(t("private_login_required"));
+      router.push(`/explore/${slugify(event.eventName, event.eventId)}`);
+    }
+  }, [isGuest, event, router, t]);
+
   const { control, register, watch, setValue, getValues } = useForm<{
     tickets: TicketFormData[];
     attendees: AttendeeFormData[];

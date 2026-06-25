@@ -251,6 +251,7 @@ export interface Event {
   adminStatus: "review" | "approved" | "rejected" | "requested";
   isActive: boolean;
   isFree: boolean;
+  isPrivate: boolean;
   currency: string;
   activityTags: string[];
   eventDays: EventDay[];

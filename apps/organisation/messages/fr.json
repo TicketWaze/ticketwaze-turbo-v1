@@ -920,6 +920,8 @@
       "password": "Mot de passe (si nécessaire)",
       "mark_as_free": "Marquer cette activité comme gratuite",
       "mark_as_refundable": "Marquer les billets comme remboursables",
+      "mark_as_private": "Faire de cette activité une activité privée",
+      "private_tip": "Les activités privées restent affichées avec une étiquette Privée, mais seuls les invités que vous ajoutez à la liste des participants peuvent acheter des billets.",
       "currency": "Devise",
       "general_default": "Profitez d’un accès complet sans aucun coût ! Rejoignez-nous pour une expérience inoubliable. Réservez votre place dès aujourd’hui !",
       "meet_default": "Participez à notre session Meet avec un accès complet ! Connectez-vous et profitez de partout. Réservez votre place dès aujourd’hui !",

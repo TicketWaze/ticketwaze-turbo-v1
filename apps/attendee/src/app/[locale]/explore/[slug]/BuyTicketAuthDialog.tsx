@@ -51,8 +51,10 @@ function TermsNote() {
 
 export default function BuyTicketAuthDialog({
   checkoutUrl,
+  isPrivate = false,
 }: {
   checkoutUrl: string;
+  isPrivate?: boolean;
 }) {
   const [view, setView] = useState<View>("choice");
   const [isLoading, setIsLoading] = useState(false);
@@ -148,26 +150,36 @@ export default function BuyTicketAuthDialog({
                 <ArrowRight2 size={20} color="#737C8A" variant="Bulk" className="shrink-0" />
               </button>
 
-              <button
-                onClick={() => router.push(checkoutUrl)}
-                className="flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-[44px] h-[44px] rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
-                    <UserOctagon size={20} color="#737C8A" variant="Bulk" />
+              {/* Guest checkout is not available for private activities — buyers must
+                  sign in with the invited account email. */}
+              {!isPrivate && (
+                <button
+                  onClick={() => router.push(checkoutUrl)}
+                  className="flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-[44px] h-[44px] rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
+                      <UserOctagon size={20} color="#737C8A" variant="Bulk" />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
+                        {t("guest")}
+                      </span>
+                      <span className="text-[1.3rem] leading-6 text-neutral-600">
+                        {t("guest_description")}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1">
-                    <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-                      {t("guest")}
-                    </span>
-                    <span className="text-[1.3rem] leading-6 text-neutral-600">
-                      {t("guest_description")}
-                    </span>
-                  </div>
-                </div>
-                <ArrowRight2 size={20} color="#737C8A" variant="Bulk" className="shrink-0" />
-              </button>
+                  <ArrowRight2 size={20} color="#737C8A" variant="Bulk" className="shrink-0" />
+                </button>
+              )}
             </div>
+
+            {isPrivate && (
+              <p className="text-[1.4rem] leading-7 text-neutral-600 text-center">
+                {t("private_note")}
+              </p>
+            )}
 
             <div className="flex flex-col gap-4">
               <span className="text-neutral-700 text-center text-[1.6rem] leading-8">

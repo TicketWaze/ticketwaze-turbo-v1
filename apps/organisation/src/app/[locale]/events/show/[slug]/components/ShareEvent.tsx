@@ -28,10 +28,7 @@ export default function ShareEvent({ event }: { event: Event }) {
   const t = useTranslations("Events.single_event");
   const locale = useLocale();
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const eventLink =
-    event.eventType === "private"
-      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${slugify(event.eventName, event.eventId)}`
-      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`;
+  const eventLink = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`;
 
   function handleDownloadQR() {
     const canvas = canvasRef.current;

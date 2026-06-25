@@ -562,10 +562,7 @@ export default function EventPosterGenerator({ event }: { event: Event }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [phase, setPhase] = useState<"idle" | "busy" | "done">("idle");
 
-  const eventLink =
-    event.eventType === "private"
-      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/private/${slugify(event.eventName, event.eventId)}`
-      : `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`;
+  const eventLink = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slugify(event.eventName, event.eventId)}`;
 
   async function generate() {
     const canvas = canvasRef.current;
