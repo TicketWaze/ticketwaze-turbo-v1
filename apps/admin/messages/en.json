@@ -716,6 +716,31 @@
         "success_remove": "Verification removed successfully",
         "error": "Failed to update verification status"
       },
+      "grant_subscription": {
+        "trigger": "Give subscription",
+        "title": "Give a complimentary subscription",
+        "description": "Grant this organisation a free Pro subscription for the selected period. They won't be charged. Any existing complimentary subscription will be replaced.",
+        "days": "days",
+        "cancel": "Cancel",
+        "confirm": "Grant subscription",
+        "success": "Granted a {days}-day complimentary subscription",
+        "error": "Failed to grant the subscription"
+      },
+      "subscription": {
+        "title": "Subscription",
+        "plan": "Plan",
+        "free": "Free",
+        "trial": "Trial",
+        "complimentary": "Complimentary",
+        "active": "Active",
+        "billing": "Billing",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "started": "Started",
+        "expires": "Ends",
+        "method": "Payment method",
+        "none": "This organisation is on the free plan."
+      },
       "summary": {
         "title": "Activity Summary",
         "created": "Activities Created",

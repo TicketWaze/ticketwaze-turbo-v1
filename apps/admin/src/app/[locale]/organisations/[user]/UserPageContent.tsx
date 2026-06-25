@@ -4,6 +4,7 @@ import BackButton from "@/components/shared/BackButton";
 import { SuspendDialog } from "./SuspendDialog";
 import { ReactivateDialog } from "./ReactivateDialog";
 import { VerifyDialog } from "./VerifyDialog";
+import { GrantSubscriptionDialog } from "./GrantSubscriptionDialog";
 import Separator from "@/components/shared/Separator";
 import Image from "next/image";
 import {
@@ -15,8 +16,9 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Input, TextArea } from "@/components/shared/Inputs";
+import formatDate from "@/lib/FormatDate";
 import ActivitySummary from "./ActivitySummary";
 import { AdminOrganisation } from "@ticketwaze/typescript-config";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
@@ -31,6 +33,13 @@ export default function UserPageContent({
   totalTicketsSold: number;
 }) {
   const t = useTranslations("Organisations.profile");
+  const locale = useLocale();
+
+  const sub = organisation?.subscription ?? null;
+  const subActive =
+    !!sub &&
+    sub.status === "ACTIVE" &&
+    new Date(sub.endsAt as unknown as string).getTime() > Date.now();
 
   if (!organisation) {
     return (
@@ -54,6 +63,9 @@ export default function UserPageContent({
             {organisation.isVerified && <VerifiedOrganisationCheckMark />}
           </h2>
           <div className="hidden lg:flex gap-4 items-center h-fit">
+            <GrantSubscriptionDialog
+              organisationId={organisation.organisationId}
+            />
             <VerifyDialog
               organisationId={organisation.organisationId}
               isVerified={organisation.isVerified}
@@ -66,7 +78,7 @@ export default function UserPageContent({
           </div>
         </div>
 
-        <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] gap-8 lg:gap-16 lg:flex-1 lg:min-h-0">
+        <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] lg:grid-rows-1 gap-8 lg:gap-16 lg:flex-1 lg:min-h-0">
           <div className="w-full flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
             <form className="flex flex-col gap-12 w-full pb-4 overflow-x-hidden">
               <div className="flex flex-col gap-6">
@@ -154,9 +166,93 @@ export default function UserPageContent({
                 )}
               </div>
             </form>
+
+            {/* Subscription */}
+            <div className="flex flex-col gap-6 w-full pb-4">
+              <h3 className="text-deep-100 font-primary font-medium text-[1.8rem] leading-10">
+                {t("subscription.title")}
+              </h3>
+              <div className="flex flex-col gap-6 border border-neutral-100 rounded-[20px] p-6">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-[1.6rem] text-neutral-600 leading-8">
+                    {t("subscription.plan")}
+                  </span>
+                  <span className="flex items-center gap-3">
+                    <span className="text-[1.6rem] font-medium text-deep-100 capitalize leading-8">
+                      {subActive ? sub!.membershipTier : t("subscription.free")}
+                    </span>
+                    {subActive &&
+                      (sub!.paymentMethod === "complimentary" ? (
+                        <span className="text-[1.1rem] font-bold uppercase leading-6 text-primary-500 bg-primary-50 px-2 py-[0.3rem] rounded-[30px]">
+                          {t("subscription.complimentary")}
+                        </span>
+                      ) : sub!.isTrial ? (
+                        <span className="text-[1.1rem] font-bold uppercase leading-6 text-[#EA961C] bg-[#FEF3E2] px-2 py-[0.3rem] rounded-[30px]">
+                          {t("subscription.trial")}
+                        </span>
+                      ) : (
+                        <span className="text-[1.1rem] font-bold uppercase leading-6 text-emerald-600 bg-emerald-50 px-2 py-[0.3rem] rounded-[30px]">
+                          {t("subscription.active")}
+                        </span>
+                      ))}
+                  </span>
+                </div>
+
+                {subActive ? (
+                  <>
+                    {!sub!.isTrial && (
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-[1.6rem] text-neutral-600 leading-8">
+                          {t("subscription.billing")}
+                        </span>
+                        <span className="text-[1.6rem] text-deep-100 leading-8">
+                          {t(`subscription.${sub!.billingCycle}`)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[1.6rem] text-neutral-600 leading-8">
+                        {t("subscription.started")}
+                      </span>
+                      <span className="text-[1.6rem] text-deep-100 leading-8">
+                        {formatDate(
+                          sub!.createdAt as unknown as string,
+                          locale,
+                          "local",
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[1.6rem] text-neutral-600 leading-8">
+                        {t("subscription.expires")}
+                      </span>
+                      <span className="text-[1.6rem] text-deep-100 leading-8">
+                        {formatDate(
+                          sub!.endsAt as unknown as string,
+                          locale,
+                          "local",
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                      <span className="text-[1.6rem] text-neutral-600 leading-8">
+                        {t("subscription.method")}
+                      </span>
+                      <span className="text-[1.6rem] text-deep-100 leading-8 capitalize">
+                        {sub!.paymentMethod}
+                      </span>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-[1.4rem] text-neutral-500 leading-7">
+                    {t("subscription.none")}
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div className="lg:min-h-[75vh]">
+          <div className="min-h-[75vh] lg:min-h-0">
             <Tabs defaultValue="summary" className="w-full h-full">
               <TabsList className="w-full lg:w-fit mx-auto lg:mx-0 mb-8">
                 <TabsTrigger value="summary">{t("summary.title")}</TabsTrigger>
@@ -178,6 +274,9 @@ export default function UserPageContent({
         </main>
 
         <div className="lg:hidden flex flex-col gap-4 pb-6">
+          <GrantSubscriptionDialog
+            organisationId={organisation.organisationId}
+          />
           <VerifyDialog
             organisationId={organisation.organisationId}
             isVerified={organisation.isVerified}
