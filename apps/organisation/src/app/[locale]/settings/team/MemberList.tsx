@@ -35,6 +35,7 @@ import {
   WaitlistMember,
 } from "@ticketwaze/typescript-config";
 import TransfertOwnershipView from "./TransfertOwnershipView";
+import { usePermission } from "@/hooks/usePermission";
 
 export default function MemberList({
   members,
@@ -47,6 +48,12 @@ export default function MemberList({
 }) {
   const t = useTranslations("Settings.team");
   const { data: session } = useSession();
+  const { can } = usePermission();
+  const canEditMembers = can("roles.manage");
+  const canRemoveMembers = can("staff.manage");
+  const canTransferOwnership = can("organisation.transfer_ownership");
+  const canManageAnyMember =
+    canEditMembers || canRemoveMembers || canTransferOwnership;
   return (
     <main className="min-h-[70dvh]">
       <Table>
@@ -154,7 +161,7 @@ export default function MemberList({
                   Active
                 </span>
               </TableCell>
-              {session?.user.userId !== member.userId && (
+              {session?.user.userId !== member.userId && canManageAnyMember && (
                 <TableCell
                   className={
                     "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
@@ -188,86 +195,92 @@ export default function MemberList({
                           {t("more")}
                         </span>
                         <ul className={"flex flex-col gap-4"}>
-                          <li>
-                            <Dialog>
-                              <DialogTrigger
-                                className={`font-normal group text-[1.4rem] py-4 leading-8 text-primary-500 flex items-center justify-between gap-4 w-full cursor-pointer  border-b-[.1rem] border-neutral-200`}
-                              >
-                                <span className={""}>{t("edit")}</span>
-                                <Edit2
-                                  size="20"
-                                  variant="Bulk"
-                                  color={"#E45B00"}
+                          {canEditMembers && (
+                            <li>
+                              <Dialog>
+                                <DialogTrigger
+                                  className={`font-normal group text-[1.4rem] py-4 leading-8 text-primary-500 flex items-center justify-between gap-4 w-full cursor-pointer  border-b-[.1rem] border-neutral-200`}
+                                >
+                                  <span className={""}>{t("edit")}</span>
+                                  <Edit2
+                                    size="20"
+                                    variant="Bulk"
+                                    color={"#E45B00"}
+                                  />
+                                </DialogTrigger>
+                                <EditMemberDialogContent
+                                  member={member}
+                                  availablePermissions={availablePermissions}
                                 />
-                              </DialogTrigger>
-                              <EditMemberDialogContent
-                                member={member}
-                                availablePermissions={availablePermissions}
-                              />
-                            </Dialog>
-                          </li>
-                          <li>
-                            <Dialog>
-                              <DialogTrigger className={"w-full flex-1"}>
-                                <span
-                                  className={`font-normal w-full cursor-pointer group text-[1.4rem] py-4 leading-8 text-failure flex items-center justify-between gap-4`}
-                                >
-                                  <span className={""}>{t("remove")}</span>
-                                  <Trash
-                                    size="20"
-                                    variant="Bulk"
-                                    color={"#DE0028"}
-                                  />
-                                </span>
-                              </DialogTrigger>
-                              <DialogContent className={"w-xl lg:w-208 "}>
-                                <DialogHeader>
-                                  <DialogTitle
-                                    className={
-                                      "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
-                                    }
+                              </Dialog>
+                            </li>
+                          )}
+                          {canRemoveMembers && (
+                            <li>
+                              <Dialog>
+                                <DialogTrigger className={"w-full flex-1"}>
+                                  <span
+                                    className={`font-normal w-full cursor-pointer group text-[1.4rem] py-4 leading-8 text-failure flex items-center justify-between gap-4`}
                                   >
-                                    {t("remove")}
-                                  </DialogTitle>
-                                  <DialogDescription className={"sr-only"}>
-                                    <span>Remove member</span>
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <RemoveMember email={member.email} />
-                              </DialogContent>
-                            </Dialog>
-                          </li>
-                          <li>
-                            <Dialog>
-                              <DialogTrigger className={"w-full flex-1"}>
-                                <span
-                                  className={`font-normal w-full cursor-pointer group text-[1.4rem] py-4 leading-8 text-failure flex items-center justify-between gap-4`}
-                                >
-                                  <span className={""}>{t("transfer")}</span>
-                                  <ArrowSwapHorizontal
-                                    size="20"
-                                    variant="Bulk"
-                                    color={"#DE0028"}
-                                  />
-                                </span>
-                              </DialogTrigger>
-                              <DialogContent className={"w-xl lg:w-208 "}>
-                                <DialogHeader>
-                                  <DialogTitle
-                                    className={
-                                      "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
-                                    }
+                                    <span className={""}>{t("remove")}</span>
+                                    <Trash
+                                      size="20"
+                                      variant="Bulk"
+                                      color={"#DE0028"}
+                                    />
+                                  </span>
+                                </DialogTrigger>
+                                <DialogContent className={"w-xl lg:w-208 "}>
+                                  <DialogHeader>
+                                    <DialogTitle
+                                      className={
+                                        "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
+                                      }
+                                    >
+                                      {t("remove")}
+                                    </DialogTitle>
+                                    <DialogDescription className={"sr-only"}>
+                                      <span>Remove member</span>
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <RemoveMember email={member.email} />
+                                </DialogContent>
+                              </Dialog>
+                            </li>
+                          )}
+                          {canTransferOwnership && (
+                            <li>
+                              <Dialog>
+                                <DialogTrigger className={"w-full flex-1"}>
+                                  <span
+                                    className={`font-normal w-full cursor-pointer group text-[1.4rem] py-4 leading-8 text-failure flex items-center justify-between gap-4`}
                                   >
-                                    {t("transfer")}
-                                  </DialogTitle>
-                                  <DialogDescription className={"sr-only"}>
-                                    <span>Remove member</span>
-                                  </DialogDescription>
-                                </DialogHeader>
-                                <TransfertOwnershipView email={member.email} />
-                              </DialogContent>
-                            </Dialog>
-                          </li>
+                                    <span className={""}>{t("transfer")}</span>
+                                    <ArrowSwapHorizontal
+                                      size="20"
+                                      variant="Bulk"
+                                      color={"#DE0028"}
+                                    />
+                                  </span>
+                                </DialogTrigger>
+                                <DialogContent className={"w-xl lg:w-208 "}>
+                                  <DialogHeader>
+                                    <DialogTitle
+                                      className={
+                                        "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
+                                      }
+                                    >
+                                      {t("transfer")}
+                                    </DialogTitle>
+                                    <DialogDescription className={"sr-only"}>
+                                      <span>Remove member</span>
+                                    </DialogDescription>
+                                  </DialogHeader>
+                                  <TransfertOwnershipView email={member.email} />
+                                </DialogContent>
+                              </Dialog>
+                            </li>
+                          )}
                         </ul>
                       </div>
                     </PopoverContent>
@@ -320,6 +333,7 @@ export default function MemberList({
                   {t("invited")}
                 </span>
               </TableCell>
+              {canRemoveMembers && (
               <TableCell
                 className={
                   "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
@@ -382,6 +396,7 @@ export default function MemberList({
                   </PopoverContent>
                 </Popover>
               </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
