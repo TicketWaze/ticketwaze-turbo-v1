@@ -29,7 +29,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { useAuthInterceptor } from "@/hooks/useAuthInterceptor";
 import { cn } from "@/lib/utils";
-import { usePermission } from "@/hooks/usePermission";
 import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 import { ButtonPrimary } from "../shared/buttons";
 import LoadingCircleSmall from "../shared/LoadingCircleSmall";
@@ -76,35 +75,31 @@ function Sidebar({ className }: { className: string }) {
       .finally(() => setIsLoading(false));
   }, [session?.user.accessToken, organisation?.organisationId, locale]);
 
-  const { can } = usePermission();
-
+  // All navigation links stay visible to every member. Pages the member
+  // lacks access to render an UnauthorizedView (driven by the API 403),
+  // so we no longer filter the sidebar by permission.
   const links = [
     {
       label: t("analytics"),
       path: "/analytics",
       Icon: Chart1,
-      permission: "reports.view",
     },
     {
       label: t("events"),
       path: "/events",
       Icon: Ticket,
-      permission: "events.view",
     },
     {
       label: t("finance"),
       path: "/finance",
       Icon: Moneys,
-      permission: "finance.view",
     },
     {
-      // Settings hub stays visible to every member (personal profile & preferences).
       label: t("settings"),
       path: "/settings",
       Icon: Setting2,
-      permission: null,
     },
-  ].filter(({ permission }) => permission === null || can(permission));
+  ];
 
   function isActive(path: string) {
     return pathname.startsWith(path);
