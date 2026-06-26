@@ -976,7 +976,8 @@
           "priceMinUSD": "Le prix doit être d'au moins 5 USD",
           "quantity": {
             "empty": "La quantité ne peut pas être vide",
-            "decimal": "La quantité ne peut pas contenir de décimales ni de zéro final"
+            "decimal": "La quantité ne peut pas contenir de décimales ni de zéro final",
+            "exceedsLimit": "La quantité ne peut pas dépasser la limite de {limit} billets gratuits de votre forfait"
           }
         }
       }

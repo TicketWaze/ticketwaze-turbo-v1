@@ -43,7 +43,11 @@ export default function CreateMeetEventForm({
   const [isPrivate, setIsPrivate] = useState(false);
 
   // create schema using factory (depends on isFree)
-  const FormDataSchema = makeMeetPersonSchema(isFree, (k: string) => t(k));
+  const FormDataSchema = makeMeetPersonSchema(
+    isFree,
+    (k, values) => t(k, values),
+    membershipTier.freeTickets,
+  );
   type TForm = z.infer<typeof FormDataSchema>;
 
   const steps = [
@@ -118,7 +122,9 @@ export default function CreateMeetEventForm({
             ticketTypeName: "General",
             ticketTypeDescription: t("general_default"),
             ticketTypePrice: "",
-            ticketTypeQuantity: String(membershipTier.freeTickets),
+            ticketTypeQuantity:
+              data.ticketTypes[0]?.ticketTypeQuantity ||
+              String(membershipTier.freeTickets),
           },
         ]),
       );

@@ -57,7 +57,11 @@ export default function EditInPersonEventForm({
   const [isPrivate, setIsPrivate] = useState(event.isPrivate ?? false);
 
   // create schema using factory (depends on isFree)
-  const FormDataSchema = makeEditMeetSchema(isFree, (k: string) => t(k));
+  const FormDataSchema = makeEditMeetSchema(
+    isFree,
+    (k, values) => t(k, values),
+    membershipTier.freeTickets,
+  );
   type TForm = z.infer<typeof FormDataSchema>;
 
   const steps = [
@@ -148,7 +152,9 @@ export default function EditInPersonEventForm({
             ticketTypeName: "general",
             ticketTypeDescription: t("general_default"),
             ticketTypePrice: "",
-            ticketTypeQuantity: "100",
+            ticketTypeQuantity:
+              data.ticketTypes[0]?.ticketTypeQuantity ||
+              String(membershipTier.freeTickets),
           },
         ]),
       );
