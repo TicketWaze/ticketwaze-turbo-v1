@@ -22,6 +22,7 @@ import { Metadata } from "next";
 import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Capitalize from "@/lib/Capitalize";
+import StripHtml from "@/lib/StripHtml";
 import { extractIdFromSlug } from "@/lib/Slugify";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
@@ -40,9 +41,34 @@ export async function generateMetadata({
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
+  // Descriptions are rich text (HTML); strip tags so they don't leak into
+  // meta/OpenGraph previews, and trim to a sensible preview length.
+  const plainDescription = StripHtml(event.eventDescription).slice(0, 200);
   return {
     title: event.eventName,
-    description: event.eventDescription,
+    description: plainDescription,
+    openGraph: {
+      title: event.eventName,
+      description: plainDescription,
+      type: "website",
+      images: event.eventImageUrl
+        ? [
+            {
+              url: event.eventImageUrl,
+              secureUrl: event.eventImageUrl,
+              width: 1200,
+              height: 630,
+              alt: event.eventName,
+            },
+          ]
+        : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: event.eventName,
+      description: plainDescription,
+      images: event.eventImageUrl ? [event.eventImageUrl] : undefined,
+    },
   };
 }
 
