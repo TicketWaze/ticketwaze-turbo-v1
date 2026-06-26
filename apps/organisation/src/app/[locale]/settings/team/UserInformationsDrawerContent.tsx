@@ -14,6 +14,7 @@ import RemoveMember from "./RemoveMember";
 import { OrganisationMember } from "@ticketwaze/typescript-config";
 import Separator from "@/components/shared/Separator";
 import { PERMISSION_LABELS } from "@/lib/permissionConfig";
+import { usePermission } from "@/hooks/usePermission";
 
 export default function UserInformation({
   member,
@@ -25,6 +26,9 @@ export default function UserInformation({
   const t = useTranslations("Settings.team");
   const locale = useLocale();
   const { data: session } = useSession();
+  const { can } = usePermission();
+  const canRemoveMembers = can("staff.manage");
+  const canEditMembers = can("roles.manage");
   return (
     <DrawerContent
       className={"w-xl lg:w-208 bg-white my-6 p-12 rounded-[30px]"}
@@ -161,39 +165,44 @@ export default function UserInformation({
         </DrawerDescription>
       </div>
 
-      {session?.user.email !== member.email && (
-        <DrawerFooter>
-          <div className={"flex gap-8 w-full items-center"}>
-            <Dialog>
-              <DialogTrigger className={"w-full flex-1"}>
-                <span
-                  className={
-                    "w-full border-failure text-failure bg-[#FCE5EA] px-4 py-6 border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
-                  }
-                >
-                  {t("remove")}
-                </span>
-              </DialogTrigger>
-              <RemoveMember email={member.email} />
-            </Dialog>
-            <Dialog>
-              <DialogTrigger className={"w-full flex-1"}>
-                <span
-                  className={
-                    "w-full bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 hover:border-primary-600 px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
-                  }
-                >
-                  {t("edit")}
-                </span>
-              </DialogTrigger>
-              <EditMemberDialogContent
-                member={member}
-                availablePermissions={availablePermissions}
-              />
-            </Dialog>
-          </div>
-        </DrawerFooter>
-      )}
+      {session?.user.email !== member.email &&
+        (canRemoveMembers || canEditMembers) && (
+          <DrawerFooter>
+            <div className={"flex gap-8 w-full items-center"}>
+              {canRemoveMembers && (
+                <Dialog>
+                  <DialogTrigger className={"w-full flex-1"}>
+                    <span
+                      className={
+                        "w-full border-failure text-failure bg-[#FCE5EA] px-4 py-6 border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
+                      }
+                    >
+                      {t("remove")}
+                    </span>
+                  </DialogTrigger>
+                  <RemoveMember email={member.email} />
+                </Dialog>
+              )}
+              {canEditMembers && (
+                <Dialog>
+                  <DialogTrigger className={"w-full flex-1"}>
+                    <span
+                      className={
+                        "w-full bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 hover:border-primary-600 px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
+                      }
+                    >
+                      {t("edit")}
+                    </span>
+                  </DialogTrigger>
+                  <EditMemberDialogContent
+                    member={member}
+                    availablePermissions={availablePermissions}
+                  />
+                </Dialog>
+              )}
+            </div>
+          </DrawerFooter>
+        )}
     </DrawerContent>
   );
 }

@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { Input } from "@/components/shared/Inputs";
 import PermissionPicker from "./PermissionPicker";
+import { usePermission } from "@/hooks/usePermission";
 
 export default function AddMember({
   totalMembers,
@@ -28,6 +29,7 @@ export default function AddMember({
   availablePermissions: string[];
 }) {
   const t = useTranslations("Settings.team");
+  const { can } = usePermission();
 
   const AddMemberSchema = z.object({
     fullName: z.string().min(1, t("errors.name")),
@@ -84,6 +86,9 @@ export default function AddMember({
     setIsLoading(false);
     CloseDialogRef.current?.click();
   }
+
+  // Inviting assigns a permission set — Owner-only (roles.manage).
+  if (!can("roles.manage")) return null;
 
   return (
     <Dialog>

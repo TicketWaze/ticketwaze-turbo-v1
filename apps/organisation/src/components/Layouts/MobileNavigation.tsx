@@ -2,6 +2,7 @@
 import { useAuthInterceptor } from "@/hooks/useAuthInterceptor";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+import { usePermission } from "@/hooks/usePermission";
 import { Chart1, Moneys, Setting2, Ticket } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 
@@ -13,28 +14,34 @@ export default function MobileNavigation({
   const t = useTranslations("Layout.sidebar");
   useAuthInterceptor();
   const pathname = usePathname();
+  const { can } = usePermission();
   const links = [
     {
       label: t("analytics"),
       path: "/analytics",
       Icon: Chart1,
+      permission: "reports.view",
     },
     {
       label: t("events"),
       path: "/events",
       Icon: Ticket,
+      permission: "events.view",
     },
     {
       label: t("finance"),
       path: "/finance",
       Icon: Moneys,
+      permission: "finance.view",
     },
     {
+      // Settings hub stays visible to every member (personal profile & preferences).
       label: t("settings"),
       path: "/settings",
       Icon: Setting2,
+      permission: null,
     },
-  ];
+  ].filter(({ permission }) => permission === null || can(permission));
   function isActive(path: string) {
     return pathname.startsWith(path);
   }
