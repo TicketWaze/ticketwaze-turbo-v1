@@ -8,7 +8,11 @@ import type { TranslateFn } from "./types";
  * - Accepts `isFree` so ticket price requirement can change.
  * - Accepts `t` translation function (same style as useTranslations).
  */
-export function makeEditMeetSchema(isFree: boolean, t: TranslateFn) {
+export function makeEditMeetSchema(
+  isFree: boolean,
+  t: TranslateFn,
+  freeTicketLimit: number,
+) {
   return z.object({
     eventName: z.string().min(10, t("errors.basicDetails.name")).max(150),
     eventDescription: z
@@ -110,7 +114,21 @@ export function makeEditMeetSchema(isFree: boolean, t: TranslateFn) {
     eventCurrency: z.string(),
     isFree: z.boolean(),
   }).superRefine((data, ctx) => {
-    if (data.isFree) return;
+    if (data.isFree) {
+      data.ticketTypes.forEach((ticket, index) => {
+        const quantity = parseInt(ticket.ticketTypeQuantity, 10);
+        if (!isNaN(quantity) && quantity > freeTicketLimit) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("errors.ticketClass.quantity.exceedsLimit", {
+              limit: freeTicketLimit,
+            }),
+            path: ["ticketTypes", index, "ticketTypeQuantity"],
+          });
+        }
+      });
+      return;
+    }
     const isHTG = data.eventCurrency === "HTG";
     const isUSD = data.eventCurrency === "USD";
     data.ticketTypes.forEach((ticket, index) => {

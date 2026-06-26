@@ -534,7 +534,7 @@ async function buildPoster(
   const firstDay =
     event.eventDays.find((d) => d.dayNumber === 1) ?? event.eventDays[0];
   const date = firstDay
-    ? DateTime.fromISO(firstDay.eventDate)
+    ? DateTime.fromISO(firstDay.eventDate, { zone: "utc" })
         .setLocale(locale)
         .toFormat("MMM d, yyyy")
     : "";

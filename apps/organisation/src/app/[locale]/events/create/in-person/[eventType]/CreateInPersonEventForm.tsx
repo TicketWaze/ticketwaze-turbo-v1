@@ -41,7 +41,11 @@ export default function CreateInPersonEventForm({
   const [isPrivate, setIsPrivate] = useState(false);
 
   // create schema using factory (depends on isFree)
-  const FormDataSchema = makeCreateInPersonSchema(isFree, (k: string) => t(k));
+  const FormDataSchema = makeCreateInPersonSchema(
+    isFree,
+    (k, values) => t(k, values),
+    membershipTier.freeTickets,
+  );
   type TForm = z.infer<typeof FormDataSchema>;
 
   const steps = [
@@ -135,7 +139,9 @@ export default function CreateInPersonEventForm({
             ticketTypeName: "General",
             ticketTypeDescription: t("general_default"),
             ticketTypePrice: "",
-            ticketTypeQuantity: String(membershipTier.freeTickets),
+            ticketTypeQuantity:
+              data.ticketTypes[0]?.ticketTypeQuantity ||
+              String(membershipTier.freeTickets),
           },
         ]),
       );

@@ -30,4 +30,7 @@ export type CreateInPersonFormValues = {
 };
 
 // Small helper to allow passing translation function
-export type TranslateFn = (key: string) => string;
+export type TranslateFn = (
+  key: string,
+  values?: Record<string, string | number>,
+) => string;

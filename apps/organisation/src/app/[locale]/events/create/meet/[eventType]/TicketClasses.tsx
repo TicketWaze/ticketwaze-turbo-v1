@@ -46,6 +46,7 @@ export default function StepTicket({
   });
   const [currency, setCurrency] = useState("HTG");
   const [wordCounts, setWordCounts] = useState<number[]>(fields.map(() => 0));
+  const canEditFreeQuantity = membershipTier.membershipName !== "free";
   function addClass() {
     if (membershipTier.membershipName === "free") {
       toast.info(t("pro"));
@@ -177,9 +178,26 @@ export default function StepTicket({
             <Input defaultValue={"Free"} disabled readOnly>
               {t("price")}
             </Input>
-            <Input defaultValue={membershipTier.freeTickets} readOnly disabled>
-              {t("quantity")}
-            </Input>
+            {canEditFreeQuantity ? (
+              <div className="flex-1">
+                <input
+                  className="flex-1 bg-neutral-100 text-[1.5rem] w-full rounded-[5rem] p-8"
+                  type="number"
+                  step="1"
+                  min={1}
+                  max={membershipTier.freeTickets}
+                  placeholder={t("quantity")}
+                  {...register("ticketTypes.0.ticketTypeQuantity" as const)}
+                />
+                <span className="text-[1.2rem] px-8 py-2 text-failure">
+                  {errors?.ticketTypes?.[0]?.ticketTypeQuantity?.message}
+                </span>
+              </div>
+            ) : (
+              <Input defaultValue={membershipTier.freeTickets} readOnly disabled>
+                {t("quantity")}
+              </Input>
+            )}
           </div>
         </div>
       ) : (

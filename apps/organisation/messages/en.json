@@ -981,7 +981,8 @@
           },
           "quantity": {
             "empty": "Quantity cannot be empty",
-            "decimal": "Quantity cannot have decimal or trailling zero"
+            "decimal": "Quantity cannot have decimal or trailling zero",
+            "exceedsLimit": "Quantity cannot exceed your plan limit of {limit} free tickets"
           }
         }
       }
