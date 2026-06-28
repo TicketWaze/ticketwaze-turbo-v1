@@ -21,7 +21,6 @@ import {
   Order,
   Ticket,
   TicketReturn,
-  User,
 } from "@ticketwaze/typescript-config";
 import MoreComponent from "./MoreComponent";
 import CheckingDialog from "./CheckingDialog";
@@ -38,7 +37,6 @@ export default function EventPageDetails({
   tickets,
   orders,
   slug,
-  user,
   eventPerformers,
   membershipTier,
   ticketReturns,
@@ -47,7 +45,6 @@ export default function EventPageDetails({
   tickets: Ticket[];
   orders: Order[];
   slug: string;
-  user: User;
   eventPerformers: EventPerformer[];
   membershipTier: MembershipTier;
   ticketReturns: TicketReturn[];
@@ -100,7 +97,7 @@ export default function EventPageDetails({
             event.eventCategory !== "meet" &&
             !isPendingDeletion &&
             deletionStatus !== "deleted" && (
-              <CheckingDialog event={event} user={user} />
+              <CheckingDialog event={event} />
             )}
           <MoreComponent
             daysLeft={daysLeft}
@@ -239,15 +236,11 @@ export default function EventPageDetails({
         !isPendingDeletion &&
         deletionStatus !== "deleted" && (
           <div className="flex lg:hidden items-center w-full gap-4 justify-between">
-            <CheckingDialog event={event} user={user} />
+            <CheckingDialog event={event} />
           </div>
         )}
       {isUpcoming && deletionStatus !== "deleted" && (
-        <EventArtist
-          event={event}
-          user={user}
-          eventPerformers={eventPerformers}
-        />
+        <EventArtist event={event} eventPerformers={eventPerformers} />
       )}
 
       {/* ticket tabs details */}

@@ -466,11 +466,11 @@
         "1": "Category",
         "2": "Location",
         "3": {
-          "title": "Date",
           "1": "This week",
           "2": "This month",
           "3": "Next month",
-          "4": "This Year"
+          "4": "This Year",
+          "title": "Date"
         }
       }
     }
@@ -651,6 +651,7 @@
     "from": "From",
     "free": "Free",
     "private": "Private",
+    "soldOut": "Sold out",
     "back": "Back",
     "notInvited": "Access Restricted: This is a private activity visible only to invited participants.",
     "share": "Share activity",

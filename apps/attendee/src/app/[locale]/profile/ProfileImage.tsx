@@ -21,16 +21,12 @@ import { User } from "@ticketwaze/typescript-config";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 
-function ProfileImage({
-  user,
-  accessToken,
-}: {
-  user: User;
-  accessToken: string;
-}) {
+function ProfileImage({ user }: { user: User }) {
   const t = useTranslations("Profile");
   const locale = useLocale();
+  const { data: session } = useSession();
   const [isUploading, setIsUploading] = useState(false);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const CloseRef = useRef<HTMLSpanElement>(null);
@@ -69,7 +65,7 @@ function ProfileImage({
 
     try {
       const response = await UpdateUserProfileImage(
-        accessToken,
+        session?.user.accessToken ?? "",
         formData,
         locale,
       );

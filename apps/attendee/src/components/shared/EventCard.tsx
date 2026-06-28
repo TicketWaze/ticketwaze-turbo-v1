@@ -23,6 +23,11 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
     const p = tt[priceField] ?? 0;
     return p < min ? p : min;
   }, event.eventTicketTypes[0]?.[priceField] ?? 0);
+  const isSoldOut =
+    event.eventTicketTypes.length > 0 &&
+    event.eventTicketTypes.every(
+      (tt) => tt.ticketTypeQuantity - tt.ticketTypeQuantitySold <= 0,
+    );
   return (
     <Link
       href={`/explore/${slug}`}
@@ -44,11 +49,18 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         >
           {event.eventType.toUpperCase()}
         </div>
-        {event.isPrivate && (
-          <div className="bg-deep-100 block absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-[15px] w-fit">
-            {t("private")}
-          </div>
-        )}
+        <div className="absolute top-4 left-4 flex flex-col items-start gap-2">
+          {isSoldOut && (
+            <div className="bg-red-600 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-[15px] w-fit">
+              {t("soldOut")}
+            </div>
+          )}
+          {event.isPrivate && (
+            <div className="bg-deep-100 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-[15px] w-fit">
+              {t("private")}
+            </div>
+          )}
+        </div>
       </div>
 
       <div

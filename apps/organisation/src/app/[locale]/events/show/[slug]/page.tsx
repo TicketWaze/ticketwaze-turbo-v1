@@ -6,7 +6,6 @@ import {
   Event,
   EventPerformer,
   TicketReturn,
-  User,
 } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import { extractIdFromSlug } from "@/lib/Slugify";
@@ -63,7 +62,6 @@ export default async function Page({
     <OrganizerLayout title="">
       <BackButton text={t("back")} />
       <EventPageDetails
-        user={session?.user as User}
         event={event}
         tickets={tickets}
         slug={slug}

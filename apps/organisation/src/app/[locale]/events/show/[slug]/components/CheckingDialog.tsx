@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 "use client";
-import { Event, User } from "@ticketwaze/typescript-config";
+import { Event } from "@ticketwaze/typescript-config";
 import {
   Dialog,
   DialogClose,
@@ -60,13 +60,7 @@ function getCheckingWindowStatus(event: Event): {
   return { status: "open" };
 }
 
-export default function CheckingDialog({
-  event,
-  user,
-}: {
-  event: Event;
-  user: User;
-}) {
+export default function CheckingDialog({ event }: { event: Event }) {
   const t = useTranslations("Events.single_event");
   const closeRef = useRef<HTMLButtonElement>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -84,13 +78,7 @@ export default function CheckingDialog({
   async function CheckQrCode(id: string) {
     setIsLoading(true);
     setIsScanning(false);
-    const response = await CheckInWithQrCode(
-      event.eventId,
-      user.accessToken,
-      pathname,
-      id,
-      locale,
-    );
+    const response = await CheckInWithQrCode(event.eventId, pathname, id, locale);
     setScanResult(response);
     setIsLoading(false);
   }
@@ -113,7 +101,6 @@ export default function CheckingDialog({
     setIsLoading(true);
     const response = await CheckInWithTicketID(
       event.eventId,
-      user.accessToken,
       pathname,
       id,
       locale,

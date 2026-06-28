@@ -24,7 +24,6 @@ export default async function ProfilePage() {
       <ProfilePageContent
         analytics={response.userAnalytic}
         user={response.user}
-        accessToken={session?.user.accessToken as string}
       />
     </AttendeeLayout>
   );

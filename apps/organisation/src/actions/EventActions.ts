@@ -2,6 +2,7 @@
 "use server";
 import { slugify } from "@/lib/Slugify";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 
 /*
   ====================GOOGLE MEET===================
@@ -712,12 +713,22 @@ export async function MarkAsInactive(
 
 export async function CheckInWithTicketID(
   eventId: string,
-  accessToken: string,
   pathname: string,
   ticketID: string,
   locale: string,
 ) {
   try {
+    // Read the token from the session at call time, not from a prop captured at
+    // page render: the scanner stays open longer than the 15-min access token, so
+    // a render-time token would 401 mid-session. auth() refreshes it if needed.
+    const session = await auth();
+    const accessToken = session?.user.accessToken;
+    if (!accessToken) {
+      return {
+        status: "failed" as const,
+        message: "Your session has expired. Please log in again.",
+      };
+    }
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/ticket-id/${ticketID}`,
       {
@@ -753,12 +764,22 @@ export async function CheckInWithTicketID(
 
 export async function CheckInWithQrCode(
   eventId: string,
-  accessToken: string,
   pathname: string,
   ticketID: string,
   locale: string,
 ) {
   try {
+    // Read the token from the session at call time, not from a prop captured at
+    // page render: the scanner stays open longer than the 15-min access token, so
+    // a render-time token would 401 mid-session. auth() refreshes it if needed.
+    const session = await auth();
+    const accessToken = session?.user.accessToken;
+    if (!accessToken) {
+      return {
+        status: "failed" as const,
+        message: "Your session has expired. Please log in again.",
+      };
+    }
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/checking/event/${eventId}/qr/${ticketID}`,
       {
