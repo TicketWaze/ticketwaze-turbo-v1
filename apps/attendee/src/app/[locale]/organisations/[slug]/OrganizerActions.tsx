@@ -2,8 +2,7 @@
 "use client";
 import { Layer, Star, User as UserIcon } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
-import Unfollow from "../../explore/[slug]/Unfollow";
-import Follow from "../../explore/[slug]/Follow";
+import FollowButton from "../../explore/[slug]/FollowButton";
 import { useSession } from "next-auth/react";
 import { Event, User } from "@ticketwaze/typescript-config";
 
@@ -46,11 +45,10 @@ export default function OrganizerActions({
             {events.length} {t("event")}
           </div>
         </div>
-        {isFollowing.length > 0 ? (
-          <Unfollow organisationId={organisation.organisationId} />
-        ) : (
-          <Follow organisationId={organisation.organisationId} />
-        )}
+        <FollowButton
+          organisationId={organisation.organisationId}
+          initialIsFollowing={!!isFollowing && isFollowing.length > 0}
+        />
       </div>
       <div className="flex lg:hidden gap-8 items-center">
         <div className="flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">
