@@ -4,6 +4,7 @@ import {
   UnfollowOrganisationAction,
 } from "@/actions/userActions";
 import NoAuthDialog from "@/components/Layouts/NoAuthDialog";
+import PageLoader from "@/components/PageLoader";
 import { ButtonBlack } from "@/components/shared/buttons";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { usePathname } from "@/i18n/navigation";
@@ -63,17 +64,22 @@ export default function FollowButton({
     );
   }
 
-  return isFollowing ? (
-    <button
-      disabled={isLoading}
-      onClick={toggle}
-      className="py-[7.5px] px-12 rounded-[100px] cursor-pointer border-2 border-black text-[1.4rem] leading-8 text-black disabled:opacity-50"
-    >
-      {t("unfollow")}
-    </button>
-  ) : (
-    <ButtonBlack disabled={isLoading} onClick={toggle}>
-      {t("follow")}
-    </ButtonBlack>
+  return (
+    <>
+      <PageLoader isLoading={isLoading} />
+      {isFollowing ? (
+        <button
+          disabled={isLoading}
+          onClick={toggle}
+          className="py-[7.5px] px-12 rounded-[100px] cursor-pointer border-2 border-black text-[1.4rem] leading-8 text-black disabled:opacity-50"
+        >
+          {t("unfollow")}
+        </button>
+      ) : (
+        <ButtonBlack disabled={isLoading} onClick={toggle}>
+          {t("follow")}
+        </ButtonBlack>
+      )}
+    </>
   );
 }

@@ -425,6 +425,7 @@ export default function EventPageDetails({
                             {t("filters.returned")}
                           </span>
                         )}
+                        <TimeInsideBadge ticket={ticket} />
                       </TableCell>
                       <TableCell
                         className={
@@ -712,6 +713,7 @@ export default function EventPageDetails({
                                 {t("filters.returned")}
                               </span>
                             )}
+                            <TimeInsideBadge ticket={ticket} />
                           </TableCell>
                           <TableCell
                             className={
@@ -834,6 +836,30 @@ export default function EventPageDetails({
 
       <ReturnedTicketsSection event={event} ticketReturns={ticketReturns} />
     </div>
+  );
+}
+
+function formatDuration(totalMinutes: number) {
+  const m = Math.max(0, Math.round(totalMinutes));
+  const h = Math.floor(m / 60);
+  const mins = m % 60;
+  if (h > 0) return `${h}h ${mins}m`;
+  return `${mins}m`;
+}
+
+// Compact attendance summary shown under the check-in status in the records
+// table: total time inside, plus a live "inside" marker when the attendee has
+// an open session.
+function TimeInsideBadge({ ticket }: { ticket: Ticket }) {
+  const t = useTranslations("Events.single_event");
+  if (ticket.status !== "CHECKED" || !ticket.entriesCount) return null;
+  return (
+    <span className="block mt-2 text-[1.1rem] font-medium leading-[15px] text-neutral-500">
+      {formatDuration(ticket.totalMinutesInside ?? 0)}
+      {ticket.presence === "inside" && (
+        <span className="ml-1 text-[#349C2E]">• {t("filters.inside")}</span>
+      )}
+    </span>
   );
 }
 

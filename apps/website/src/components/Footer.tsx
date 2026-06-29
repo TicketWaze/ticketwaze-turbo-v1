@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+import React, { useRef, useState } from "react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import FooterImg from "@/assets/images/waitlist-image-sm.svg";
 import Image from "next/image";
 import { Link } from "@/i18n/navigation";
@@ -16,6 +17,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import LoadingCircleSmall from "./LoadingCircleSmall";
 import { toast } from "sonner";
 
+// Cloudflare's official always-pass test key — replace with your real site key via NEXT_PUBLIC_TURNSTILE_SITE_KEY
+const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
+
 function Footer() {
   const t = useTranslations("HomePage.footer");
   const NewsletterSchema = z.object({
@@ -31,7 +36,18 @@ function Footer() {
     resolver: zodResolver(NewsletterSchema),
   });
   const locale = useLocale();
+
+  // Honeypot ref — filled by bots, always empty for real users
+  const honeypotRef = useRef<HTMLInputElement>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
   async function subscribeToNewsletter(data: TNewsletterSchema) {
+    // First-line defence: bots fill hidden fields, humans never do
+    if (honeypotRef.current?.value) return;
+    // Turnstile must have resolved before we proceed
+    if (!turnstileToken) return;
+
     try {
       const request = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/support/newsletter`,
@@ -42,7 +58,7 @@ function Footer() {
             origin: process.env.NEXT_PUBLIC_WEBSITE_URL!,
             "Accept-Language": locale,
           },
-          body: JSON.stringify({ ...data, source: "website" }),
+          body: JSON.stringify({ ...data, source: "website", turnstileToken }),
         },
       );
       const response = await request.json();
@@ -54,6 +70,10 @@ function Footer() {
       }
     } catch (error) {
       toast.error(t("failed"));
+    } finally {
+      // Always reset so the user can submit again without a page reload
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     }
   }
   const date = new Date();
@@ -76,6 +96,22 @@ function Footer() {
           onSubmit={handleSubmit(subscribeToNewsletter)}
           className={"flex-1 max-w-[493px] flex flex-col items-start gap-8"}
         >
+          {/* Honeypot — visually hidden, real users never touch it */}
+          <input
+            ref={honeypotRef}
+            name="_website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              opacity: 0,
+              height: 0,
+              width: 0,
+              pointerEvents: "none",
+            }}
+          />
           <h2
             className={
               "font-primary text-[3.8rem] lg:text-[7.8rem] leading-[45px] text-start lg:leading-[90px] font-semibold"
@@ -99,9 +135,17 @@ function Footer() {
               </span>
             )}
           </div>
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={TURNSTILE_SITE_KEY}
+            onSuccess={setTurnstileToken}
+            onExpire={() => setTurnstileToken(null)}
+            onError={() => setTurnstileToken(null)}
+            options={{ theme: "light", size: "normal" }}
+          />
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isSubmitting || !turnstileToken}
             className="px-12 py-8 cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.4rem] leading-8 disabled:cursor-not-allowed disabled:bg-primary-500/50 "
           >
             {isSubmitting ? <LoadingCircleSmall /> : t("sub")}
