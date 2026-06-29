@@ -2,6 +2,7 @@
 "use server";
 import { slugify } from "@/lib/Slugify";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 
 /*
   ====================GOOGLE MEET===================
@@ -712,12 +713,22 @@ export async function MarkAsInactive(
 
 export async function CheckInWithTicketID(
   eventId: string,
-  accessToken: string,
   pathname: string,
   ticketID: string,
   locale: string,
 ) {
   try {
+    // Read the token from the session at call time, not from a prop captured at
+    // page render: the scanner stays open longer than the 15-min access token, so
+    // a render-time token would 401 mid-session. auth() refreshes it if needed.
+    const session = await auth();
+    const accessToken = session?.user.accessToken;
+    if (!accessToken) {
+      return {
+        status: "failed" as const,
+        message: "Your session has expired. Please log in again.",
+      };
+    }
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/ticket-id/${ticketID}`,
       {
@@ -753,12 +764,22 @@ export async function CheckInWithTicketID(
 
 export async function CheckInWithQrCode(
   eventId: string,
-  accessToken: string,
   pathname: string,
   ticketID: string,
   locale: string,
 ) {
   try {
+    // Read the token from the session at call time, not from a prop captured at
+    // page render: the scanner stays open longer than the 15-min access token, so
+    // a render-time token would 401 mid-session. auth() refreshes it if needed.
+    const session = await auth();
+    const accessToken = session?.user.accessToken;
+    if (!accessToken) {
+      return {
+        status: "failed" as const,
+        message: "Your session has expired. Please log in again.",
+      };
+    }
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/checking/event/${eventId}/qr/${ticketID}`,
       {
@@ -784,6 +805,192 @@ export async function CheckInWithQrCode(
         message: response.message ?? "An unknown error occurred",
       };
     }
+  } catch (error: any) {
+    return {
+      status: "failed" as const,
+      message: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+type ScannedTicket = {
+  ticketId: string;
+  fullName: string;
+  ticketName: string;
+  ticketType: string;
+};
+
+/*
+  ====================SCANNER (TWO-STEP CHECK-IN / CHECK-OUT)===================
+  Step 1: scan/validate a ticket without mutating it. Tells the checker which
+  action (check-in or check-out) is available next.
+*/
+export async function ScanTicketAction(
+  eventId: string,
+  accessToken: string,
+  ticketId: string,
+  locale: string,
+) {
+  try {
+    // Token comes from the client's live useSession() so it stays fresh while
+    // the scanner is open, and avoids the rotating-refresh-token pitfall of
+    // calling auth() inside a server action.
+    if (!accessToken) {
+      return {
+        status: "failed" as const,
+        message: "Your session has expired. Please log in again.",
+      };
+    }
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/checking/event/${eventId}/scan/${ticketId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const response = await request.json();
+
+    if (response.status === "success") {
+      return {
+        status: "success" as const,
+        ticket: response.ticket as ScannedTicket,
+        presence: response.presence as "inside" | "outside",
+        availableAction: response.availableAction as "check_in" | "check_out",
+        canCheckIn: Boolean(response.canCheckIn),
+        checkInWindow: response.checkInWindow as "open" | "too_early" | "closed",
+        opensAt: (response.opensAt ?? null) as string | null,
+        totalMinutesInside: (response.totalMinutesInside ?? 0) as number,
+        entriesCount: (response.entriesCount ?? 0) as number,
+        currentSessionCheckedInAt: (response.currentSessionCheckedInAt ??
+          null) as string | null,
+      };
+    }
+    return {
+      status: "failed" as const,
+      message: response.message ?? "An unknown error occurred",
+      ticket: (response.ticket ?? null) as ScannedTicket | null,
+    };
+  } catch (error: any) {
+    return {
+      status: "failed" as const,
+      message: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+/*
+  Step 2a: open an attendance session (check the attendee in).
+*/
+export async function CheckInTicketAction(
+  eventId: string,
+  accessToken: string,
+  pathname: string,
+  ticketId: string,
+  locale: string,
+) {
+  try {
+    if (!accessToken) {
+      return {
+        status: "failed" as const,
+        message: "Your session has expired. Please log in again.",
+      };
+    }
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/checking/event/${eventId}/check-in/${ticketId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const response = await request.json();
+
+    if (response.status === "success") {
+      revalidatePath(pathname);
+      return {
+        status: "success" as const,
+        ticket: response.ticket as ScannedTicket,
+      };
+    } else if (response.status === "already_checked") {
+      return {
+        status: "already_checked" as const,
+        message: response.message,
+        ticket: response.ticket as ScannedTicket,
+      };
+    }
+    return {
+      status: "failed" as const,
+      message: response.message ?? "An unknown error occurred",
+    };
+  } catch (error: any) {
+    return {
+      status: "failed" as const,
+      message: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+/*
+  Step 2b: close the open attendance session (check the attendee out) and
+  surface how long they stayed.
+*/
+export async function CheckOutTicketAction(
+  eventId: string,
+  accessToken: string,
+  pathname: string,
+  ticketId: string,
+  locale: string,
+) {
+  try {
+    if (!accessToken) {
+      return {
+        status: "failed" as const,
+        message: "Your session has expired. Please log in again.",
+      };
+    }
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/checking/event/${eventId}/check-out/${ticketId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const response = await request.json();
+
+    if (response.status === "success") {
+      revalidatePath(pathname);
+      return {
+        status: "success" as const,
+        ticket: response.ticket as ScannedTicket,
+        sessionMinutes: (response.sessionMinutes ?? 0) as number,
+        totalMinutesInside: (response.totalMinutesInside ?? 0) as number,
+        entriesCount: (response.entriesCount ?? 0) as number,
+      };
+    } else if (response.status === "not_inside") {
+      return {
+        status: "not_inside" as const,
+        message: response.message,
+        ticket: response.ticket as ScannedTicket,
+      };
+    }
+    return {
+      status: "failed" as const,
+      message: response.message ?? "An unknown error occurred",
+    };
   } catch (error: any) {
     return {
       status: "failed" as const,

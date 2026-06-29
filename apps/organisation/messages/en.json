@@ -547,6 +547,11 @@
         "transaction_status": "Transaction Status",
         "check_status": "Checked-In Status",
         "check_time": "Check-In Time",
+        "time_inside": "Total Time Inside",
+        "entries": "Entries",
+        "presence": "Presence",
+        "inside": "Inside",
+        "checked_out": "Checked out",
         "close": "Close",
         "resend": "Resend Ticket"
       }
@@ -583,6 +588,7 @@
       "close": "Close",
       "edit": "Edit",
       "check_in": "Check In",
+      "scan_ticket": "Scan Ticket",
       "back": "Back",
       "share": "Share Activity",
       "share_text": "Spread the word and invite your friends! Share this activity on social media or via direct message.",
@@ -603,6 +609,7 @@
         "start": "Start Scanning",
         "stop": "Stop Scanning",
         "scan_next": "Scan Next",
+        "validate": "Validate",
         "success": "Checked In!",
         "already_checked": "Already Checked In",
         "failed": "Invalid Ticket",
@@ -610,7 +617,17 @@
         "closed": "The check-in window for this event has closed.",
         "tab_qr": "QR Code",
         "ticket_id_placeholder": "Enter ticket ID...",
-        "id_description": "Enter the attendee's ticket ID to check them in manually."
+        "id_description": "Enter the attendee's ticket ID to check them in manually.",
+        "check_in": "Check In",
+        "check_out": "Check Out",
+        "checked_in": "Checked In!",
+        "checked_out": "Checked Out!",
+        "inside": "Inside",
+        "outside": "Not Inside",
+        "time_inside": "Time Inside",
+        "entries": "Entries",
+        "stayed": "Stayed",
+        "since": "Inside since {time}"
       },
       "ticketID": "Ticket ID",
       "revenue": "Total Revenue",
@@ -705,7 +722,9 @@
         "all": "All status",
         "pending": "Pending",
         "checked": "Checked-In",
-        "returned": "Returned"
+        "returned": "Returned",
+        "inside": "Inside",
+        "checked_out": "Checked out"
       },
       "all": "All",
       "search": "Search ticketID",
@@ -715,6 +734,8 @@
         "ticket_class": "Ticket Class",
         "amount": "Amount Paid",
         "check": "Check-in status",
+        "time_inside": "Time inside",
+        "entries": "Entries",
         "date_purchased": "Date purchased",
         "description": "Once attendees start purchasing tickets, the details will appear here. Promote your activity to drive sales!"
       },

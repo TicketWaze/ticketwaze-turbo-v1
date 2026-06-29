@@ -8,11 +8,12 @@ import { Link } from "@/i18n/navigation";
 import MapComponent from "./MapComponent";
 import { Global, RouteSquare, Sms, Warning2 } from "iconsax-reactjs";
 import TicketViewer from "./TicketViewer";
-import { Event, Ticket, User } from "@ticketwaze/typescript-config";
+import { Event, Ticket } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
 import ReturnFreeTicketView from "./ReturnFreeTicketView";
 import { extractIdFromSlug } from "@/lib/Slugify";
+import { notFound } from "next/navigation";
 import ReturnPaidTicketView from "./ReturnPaidTicketView";
 import CheckoutEmailAlert from "./CheckoutEmailAlert";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
@@ -38,12 +39,19 @@ export default async function UpcomingEventPage({
         Authorization: `Bearer ${session?.user.accessToken}`,
         "Content-Type": "application/json",
       },
+      cache: "no-store",
     },
   );
   const eventResponse = await eventRequest.json();
-  const event: Event = eventResponse.event;
+  // GetUpcomingEvent uses firstOrFail and 404s for ended/deleted events, so the
+  // response may not contain `event`. Bail to the not-found page instead of
+  // crashing on `event.organisation` / `event.eventTicketTypes[0]`.
+  const event: Event | undefined = eventResponse?.event;
+  if (!eventRequest.ok || !event) {
+    notFound();
+  }
   const organisation = event.organisation;
-  const tickets: Ticket[] = event.tickets;
+  const tickets: Ticket[] = event.tickets ?? [];
 
   const favoriteRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/favorite`,
@@ -53,9 +61,10 @@ export default async function UpcomingEventPage({
         Authorization: `Bearer ${session?.user.accessToken}`,
         "Content-Type": "application/json",
       },
+      cache: "no-store",
     },
   );
-  const favoriteResponse = await favoriteRequest.json();
+  const favoriteResponse = await favoriteRequest.json().catch(() => ({}));
 
   return (
     <AttendeeLayout title="Event Page">
@@ -153,8 +162,7 @@ export default async function UpcomingEventPage({
 
           <EventActions
             event={event}
-            user={session?.user as User}
-            isFavorite={favoriteResponse.isFavorite}
+            isFavorite={favoriteResponse?.isFavorite}
           />
           <Separator />
 
@@ -224,7 +232,7 @@ export default async function UpcomingEventPage({
             <div></div>
             <div></div> */}
             <div className=" flex-col w-full gap-3 hidden lg:flex">
-              {event.eventTicketTypes[0].isRefundable && event.isFree && (
+              {event.eventTicketTypes[0]?.isRefundable && event.isFree && (
                 <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
                   <Warning2 size="24" color="#737C8A" variant="Bulk" />
                   <div>
@@ -234,10 +242,10 @@ export default async function UpcomingEventPage({
                   </div>
                 </div>
               )}
-              {event.eventTicketTypes[0].isRefundable && event.isFree && (
+              {event.eventTicketTypes[0]?.isRefundable && event.isFree && (
                 <ReturnFreeTicketView ticket={tickets[0]} />
               )}
-              {event.eventTicketTypes[0].isRefundable && !event.isFree && (
+              {event.eventTicketTypes[0]?.isRefundable && !event.isFree && (
                 <ReturnPaidTicketView
                   tickets={tickets}
                   eventDays={event.eventDays}
@@ -255,7 +263,7 @@ export default async function UpcomingEventPage({
             <TicketViewer tickets={tickets} event={event} />
           </div>
           <div className="flex lg:hidden flex-col w-full gap-3 ">
-            {event.eventTicketTypes[0].isRefundable && event.isFree && (
+            {event.eventTicketTypes[0]?.isRefundable && event.isFree && (
               <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
                 <Warning2 size="24" color="#737C8A" variant="Bulk" />
                 <div>
@@ -265,10 +273,10 @@ export default async function UpcomingEventPage({
                 </div>
               </div>
             )}
-            {event.eventTicketTypes[0].isRefundable && event.isFree && (
+            {event.eventTicketTypes[0]?.isRefundable && event.isFree && (
               <ReturnFreeTicketView ticket={tickets[0]} />
             )}
-            {event.eventTicketTypes[0].isRefundable && !event.isFree && (
+            {event.eventTicketTypes[0]?.isRefundable && !event.isFree && (
               <ReturnPaidTicketView
                 tickets={tickets}
                 eventDays={event.eventDays}

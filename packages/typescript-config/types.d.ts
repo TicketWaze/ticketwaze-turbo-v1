@@ -106,6 +106,19 @@ export interface TicketReturn {
   createdAt: string;
 }
 
+export interface TicketCheckIn {
+  ticketCheckInId: string;
+  ticketId: string;
+  eventId: string;
+  organisationId: string;
+  checkedInAt: DateTime;
+  checkedOutAt: DateTime | null;
+  checkedInBy: string | null;
+  checkedOutBy: string | null;
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
+
 export interface Ticket {
   ticketId: string;
   ticketName: string;
@@ -122,6 +135,12 @@ export interface Ticket {
   status: "PENDING" | "CHECKED" | "RETURNED";
   event: Event;
   order?: Order;
+  // Attendance (check-in/out) summary — present on the event records payload.
+  checkIns?: TicketCheckIn[];
+  presence?: "inside" | "outside";
+  totalMinutesInside?: number;
+  entriesCount?: number;
+  currentSessionCheckedInAt?: string | null;
   createdAt: DateTime;
   updatedAt: DateTime;
 }

@@ -546,6 +546,11 @@
         "transaction_status": "Statut de la transaction",
         "check_status": "Statut d'enregistrement",
         "check_time": "Heure d'enregistrement",
+        "time_inside": "Temps total à l'intérieur",
+        "entries": "Entrées",
+        "presence": "Présence",
+        "inside": "À l'intérieur",
+        "checked_out": "Sorti",
         "close": "Fermer",
         "resend": "Renvoyer le billet"
       }
@@ -582,6 +587,7 @@
       "close": "Fermer",
       "edit": "Modifier",
       "check_in": "Enregistrement",
+      "scan_ticket": "Scanner le billet",
       "back": "Retour",
       "share": "Partager",
       "share_text": "Faites passer le mot et invitez vos amis ! Partagez cette activité sur les réseaux sociaux ou par message direct.",
@@ -602,6 +608,7 @@
         "start": "Démarrer le scan",
         "stop": "Arrêter le scan",
         "scan_next": "Scanner suivant",
+        "validate": "Valider",
         "success": "Enregistré !",
         "already_checked": "Déjà enregistré",
         "failed": "Billet invalide",
@@ -609,7 +616,17 @@
         "closed": "La fenêtre d'enregistrement pour cet événement est fermée.",
         "tab_qr": "QR Code",
         "ticket_id_placeholder": "Saisir l'ID du billet...",
-        "id_description": "Saisissez l'ID du billet du participant pour l'enregistrer manuellement."
+        "id_description": "Saisissez l'ID du billet du participant pour l'enregistrer manuellement.",
+        "check_in": "Enregistrer",
+        "check_out": "Sortie",
+        "checked_in": "Enregistré !",
+        "checked_out": "Sorti !",
+        "inside": "À l'intérieur",
+        "outside": "Pas à l'intérieur",
+        "time_inside": "Temps à l'intérieur",
+        "entries": "Entrées",
+        "stayed": "Durée",
+        "since": "À l'intérieur depuis {time}"
       },
       "ticketID": "ID du billet",
       "revenue": "Revenus totaux",
@@ -704,7 +721,9 @@
         "all": "Tous les statuts",
         "pending": "En attente",
         "checked": "Enregistré",
-        "returned": "Remboursé"
+        "returned": "Remboursé",
+        "inside": "À l'intérieur",
+        "checked_out": "Sorti"
       },
       "all": "Tous",
       "search": "Rechercher un ID de billet",
@@ -714,6 +733,8 @@
         "ticket_class": "Classe de billet",
         "amount": "Montant payé",
         "check": "Statut",
+        "time_inside": "Temps à l'intérieur",
+        "entries": "Entrées",
         "date_purchased": "Date d'achat",
         "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !"
       },

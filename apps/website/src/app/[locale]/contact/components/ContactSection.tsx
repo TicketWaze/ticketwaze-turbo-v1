@@ -14,7 +14,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import LoadingCircleSmall from "@/components/LoadingCircleSmall";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
+
+// Cloudflare's official always-pass test key — replace with your real site key via NEXT_PUBLIC_TURNSTILE_SITE_KEY
+const TURNSTILE_SITE_KEY =
+  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? "1x00000000000000000000AA";
 
 // Subject values are kept as stable English keys so they match the Zod enum
 // regardless of the UI locale. Display labels are translated separately.
@@ -93,6 +98,18 @@ export default function ContactSection() {
   const [generalSelectKey, setGeneralSelectKey] = useState(0);
   const [supportSelectKey, setSupportSelectKey] = useState(0);
 
+  // Bot defences per form: a honeypot (bots fill hidden fields) + Turnstile.
+  const generalHoneypotRef = useRef<HTMLInputElement>(null);
+  const supportHoneypotRef = useRef<HTMLInputElement>(null);
+  const generalTurnstileRef = useRef<TurnstileInstance>(null);
+  const supportTurnstileRef = useRef<TurnstileInstance>(null);
+  const [generalTurnstileToken, setGeneralTurnstileToken] = useState<
+    string | null
+  >(null);
+  const [supportTurnstileToken, setSupportTurnstileToken] = useState<
+    string | null
+  >(null);
+
   // Use watch() to track message length — avoids clobbering RHF's own onChange
   const generalMessageLength = (watchGeneral("message") ?? "").length;
   const supportMessageLength = (watchSupport("message") ?? "").length;
@@ -103,6 +120,8 @@ export default function ContactSection() {
   }
 
   async function submitGeneralHandler(data: TGeneralContactSchema) {
+    if (generalHoneypotRef.current?.value) return;
+    if (!generalTurnstileToken) return;
     try {
       const request = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/support/contact`,
@@ -113,7 +132,10 @@ export default function ContactSection() {
             origin: process.env.NEXT_PUBLIC_WEBSITE_URL!,
             "Accept-Language": locale,
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            ...data,
+            turnstileToken: generalTurnstileToken,
+          }),
         }
       );
       const response = await request.json();
@@ -126,10 +148,15 @@ export default function ContactSection() {
       }
     } catch {
       toast.error(t("errors.failed"));
+    } finally {
+      setGeneralTurnstileToken(null);
+      generalTurnstileRef.current?.reset();
     }
   }
 
   async function submitSupportHandler(data: TSupportContactSchema) {
+    if (supportHoneypotRef.current?.value) return;
+    if (!supportTurnstileToken) return;
     try {
       const request = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/support/contact`,
@@ -140,7 +167,10 @@ export default function ContactSection() {
             origin: process.env.NEXT_PUBLIC_WEBSITE_URL!,
             "Accept-Language": locale,
           },
-          body: JSON.stringify(data),
+          body: JSON.stringify({
+            ...data,
+            turnstileToken: supportTurnstileToken,
+          }),
         }
       );
       const response = await request.json();
@@ -153,6 +183,9 @@ export default function ContactSection() {
       }
     } catch {
       toast.error(t("errors.failed"));
+    } finally {
+      setSupportTurnstileToken(null);
+      supportTurnstileRef.current?.reset();
     }
   }
 
@@ -182,6 +215,22 @@ export default function ContactSection() {
             onSubmit={handleSubmitGeneral(submitGeneralHandler)}
             className="flex-1 flex flex-col items-center w-full gap-[4rem]"
           >
+            {/* Honeypot — visually hidden, real users never touch it */}
+            <input
+              ref={generalHoneypotRef}
+              name="_website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                opacity: 0,
+                height: 0,
+                width: 0,
+                pointerEvents: "none",
+              }}
+            />
             <div className="flex flex-col gap-[1.5rem] w-full items-center">
               <div className="w-full flex flex-col items-center max-w-[493px]">
                 <motion.input
@@ -286,13 +335,21 @@ export default function ContactSection() {
                 )}
               </div>
             </div>
+            <Turnstile
+              ref={generalTurnstileRef}
+              siteKey={TURNSTILE_SITE_KEY}
+              onSuccess={setGeneralTurnstileToken}
+              onExpire={() => setGeneralTurnstileToken(null)}
+              onError={() => setGeneralTurnstileToken(null)}
+              options={{ theme: "light", size: "normal" }}
+            />
             <motion.button
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               type="submit"
-              disabled={isSubmittingGeneral}
+              disabled={isSubmittingGeneral || !generalTurnstileToken}
               className="px-12 py-8 w-full max-w-[493px] cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8 disabled:cursor-not-allowed disabled:bg-primary-500/50 flex items-center justify-center"
             >
               {isSubmittingGeneral ? <LoadingCircleSmall /> : t("send")}
@@ -318,6 +375,22 @@ export default function ContactSection() {
             onSubmit={handleSubmitSupport(submitSupportHandler)}
             className="flex-1 flex flex-col items-center w-full gap-[4rem]"
           >
+            {/* Honeypot — visually hidden, real users never touch it */}
+            <input
+              ref={supportHoneypotRef}
+              name="_website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                opacity: 0,
+                height: 0,
+                width: 0,
+                pointerEvents: "none",
+              }}
+            />
             <div className="flex flex-col w-full items-center gap-[1.5rem]">
               <div className="w-full flex flex-col items-center max-w-[493px]">
                 <motion.input
@@ -420,6 +493,14 @@ export default function ContactSection() {
                 )}
               </div>
             </div>
+            <Turnstile
+              ref={supportTurnstileRef}
+              siteKey={TURNSTILE_SITE_KEY}
+              onSuccess={setSupportTurnstileToken}
+              onExpire={() => setSupportTurnstileToken(null)}
+              onError={() => setSupportTurnstileToken(null)}
+              options={{ theme: "light", size: "normal" }}
+            />
             <motion.button
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -427,7 +508,7 @@ export default function ContactSection() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="px-12 py-8 w-full max-w-[493px] cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8 disabled:cursor-not-allowed disabled:bg-primary-500/50 flex items-center justify-center"
               type="submit"
-              disabled={isSubmittingSupport}
+              disabled={isSubmittingSupport || !supportTurnstileToken}
             >
               {isSubmittingSupport ? <LoadingCircleSmall /> : t("get")}
             </motion.button>

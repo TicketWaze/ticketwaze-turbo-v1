@@ -12,9 +12,8 @@ import {
   SecurityUser,
 } from "iconsax-reactjs";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
-import Follow from "./Follow";
+import FollowButton from "./FollowButton";
 import { auth } from "@/lib/auth";
-import Unfollow from "./Unfollow";
 import Map from "./MapComponent";
 import { Link, redirect } from "@/i18n/navigation";
 import AddToCalendar from "./AddToCalendar";
@@ -293,11 +292,10 @@ export default async function EventPage({
                       </span>
                     </div>
                   </Link>
-                  {isFollowing.length > 0 ? (
-                    <Unfollow organisationId={event.organisationId} />
-                  ) : (
-                    <Follow organisationId={event.organisationId} />
-                  )}
+                  <FollowButton
+                    organisationId={event.organisationId}
+                    initialIsFollowing={isFollowing.length > 0}
+                  />
                 </div>
                 <ul className="flex flex-col w-full gap-6">
                   {event.eventDays.map((eventDate) => {
@@ -481,11 +479,10 @@ export default async function EventPage({
                     </span>
                   </div>
                 </Link>
-                {isFollowing.length > 0 ? (
-                  <Unfollow organisationId={event.organisationId} />
-                ) : (
-                  <Follow organisationId={event.organisationId} />
-                )}
+                <FollowButton
+                  organisationId={event.organisationId}
+                  initialIsFollowing={isFollowing.length > 0}
+                />
               </div>
               <ul className="flex flex-col gap-8">
                 {event.eventDays.map((eventDate) => {

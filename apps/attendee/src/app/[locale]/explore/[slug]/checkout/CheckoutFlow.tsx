@@ -19,6 +19,7 @@ import { FreeEventTicket } from "@/actions/paymentActions";
 import { useRouter } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
 import { Event, EventTicketType, User } from "@ticketwaze/typescript-config";
+import { useSession } from "next-auth/react";
 import PageLoader from "@/components/PageLoader";
 import BackButton from "@/components/shared/BackButton";
 import { ButtonPrimary } from "@/components/shared/buttons";
@@ -53,6 +54,12 @@ export default function CheckoutFlow({
   const t = useTranslations("Checkout");
   const locale = useLocale();
   const router = useRouter();
+  const { data: session } = useSession();
+  // Token comes from the live session (refreshed by next-auth), not from the
+  // `user` prop captured at render — checkout can take longer than the 15-min
+  // access token, which would otherwise 401 mid-payment. `user` is still used
+  // for guest detection and prefilling identity.
+  const accessToken = session?.user?.accessToken ?? "";
   const isFree = event.isFree;
   const isGuest = !user;
 
@@ -193,7 +200,7 @@ export default function CheckoutFlow({
       (a: AttendeeFormData) => !a.isForSomeoneElse || (a.name && a.email),
     );
     const result = await FreeEventTicket(
-      user!.accessToken,
+      accessToken,
       event.eventId,
       validAttendees,
       locale,
@@ -252,7 +259,7 @@ export default function CheckoutFlow({
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${user!.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
           "X-Idempotency-Key": idempotencyKey.current,
         },
@@ -301,7 +308,7 @@ export default function CheckoutFlow({
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${user!.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify(validAttendees),
@@ -328,7 +335,7 @@ export default function CheckoutFlow({
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${user!.accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
           "X-Idempotency-Key": idempotencyKey.current,
         },

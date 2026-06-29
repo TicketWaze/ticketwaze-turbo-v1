@@ -115,6 +115,7 @@ export default function EditInPersonEventForm({
         };
       }),
       ticketTypes: event.eventTicketTypes.map((ticketType) => ({
+        eventTicketTypeId: ticketType.eventTicketTypeId,
         ticketTypeDescription: ticketType.ticketTypeDescription,
         ticketTypeName: ticketType.ticketTypeName,
         ticketTypePrice:
@@ -149,7 +150,8 @@ export default function EditInPersonEventForm({
         "ticketTypes",
         JSON.stringify([
           {
-            ticketTypeName: "general",
+            eventTicketTypeId: event.eventTicketTypes[0]?.eventTicketTypeId,
+            ticketTypeName: "General",
             ticketTypeDescription: t("general_default"),
             ticketTypePrice: "",
             ticketTypeQuantity:

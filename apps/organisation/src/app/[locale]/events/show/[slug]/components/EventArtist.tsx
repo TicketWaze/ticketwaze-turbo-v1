@@ -3,7 +3,8 @@ import { AddArtist, RemoveArtist } from "@/actions/EventActions";
 import { usePathname } from "@/i18n/navigation";
 import getCroppedImg from "@/lib/GetCroppedImage";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Event, EventPerformer, User } from "@ticketwaze/typescript-config";
+import { Event, EventPerformer } from "@ticketwaze/typescript-config";
+import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogClose,
@@ -36,14 +37,13 @@ const httpsUrlRegex = /^https:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
 
 export default function EventArtist({
   event,
-  user,
   eventPerformers,
 }: {
   event: Event;
-  user: User;
   eventPerformers: EventPerformer[];
 }) {
   const t = useTranslations("Events.single_event.artist");
+  const { data: session } = useSession();
   const closeRef = useRef<HTMLButtonElement>(null);
   const AddArtistSchema = z.object({
     performerName: z.string().min(1, t("errors.name")).max(50),
@@ -80,7 +80,7 @@ export default function EventArtist({
     formData.append("performerImage", data.performerImage);
     const result = await AddArtist(
       event.eventId,
-      user.accessToken,
+      session?.user.accessToken ?? "",
       pathname,
       formData,
       locale,
@@ -97,7 +97,7 @@ export default function EventArtist({
     const result = await RemoveArtist(
       event.eventId,
       eventPerformerId,
-      user.accessToken,
+      session?.user.accessToken ?? "",
       pathname,
       locale,
     );

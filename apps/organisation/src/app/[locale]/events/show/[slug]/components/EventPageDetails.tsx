@@ -21,7 +21,6 @@ import {
   Order,
   Ticket,
   TicketReturn,
-  User,
 } from "@ticketwaze/typescript-config";
 import MoreComponent from "./MoreComponent";
 import CheckingDialog from "./CheckingDialog";
@@ -38,7 +37,6 @@ export default function EventPageDetails({
   tickets,
   orders,
   slug,
-  user,
   eventPerformers,
   membershipTier,
   ticketReturns,
@@ -47,7 +45,6 @@ export default function EventPageDetails({
   tickets: Ticket[];
   orders: Order[];
   slug: string;
-  user: User;
   eventPerformers: EventPerformer[];
   membershipTier: MembershipTier;
   ticketReturns: TicketReturn[];
@@ -99,9 +96,7 @@ export default function EventPageDetails({
           {event.adminStatus === "approved" &&
             event.eventCategory !== "meet" &&
             !isPendingDeletion &&
-            deletionStatus !== "deleted" && (
-              <CheckingDialog event={event} user={user} />
-            )}
+            deletionStatus !== "deleted" && <CheckingDialog event={event} />}
           <MoreComponent
             daysLeft={daysLeft}
             event={event}
@@ -239,15 +234,11 @@ export default function EventPageDetails({
         !isPendingDeletion &&
         deletionStatus !== "deleted" && (
           <div className="flex lg:hidden items-center w-full gap-4 justify-between">
-            <CheckingDialog event={event} user={user} />
+            <CheckingDialog event={event} />
           </div>
         )}
       {isUpcoming && deletionStatus !== "deleted" && (
-        <EventArtist
-          event={event}
-          user={user}
-          eventPerformers={eventPerformers}
-        />
+        <EventArtist event={event} eventPerformers={eventPerformers} />
       )}
 
       {/* ticket tabs details */}
@@ -295,7 +286,7 @@ export default function EventPageDetails({
                 <TableRow>
                   <TableHead
                     className={
-                      "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                     }
                   >
                     {t("table.id")}
@@ -323,7 +314,7 @@ export default function EventPageDetails({
                   </TableHead>
                   <TableHead
                     className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                      "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                     }
                   >
                     {t("table.check")}
@@ -350,336 +341,31 @@ export default function EventPageDetails({
                     (order) => ticket.orderId === order.orderId,
                   );
                   return (
-                    <TableRow key={ticket.ticketId}>
-                      <TableCell
-                        className={
-                          "text-[1.5rem] py-[15px] leading-8 text-neutral-900"
-                        }
-                      >
-                        <Drawer direction={"right"}>
-                          <DrawerTrigger>
-                            <span className={"cursor-pointer"}>
-                              {ticket.ticketName}
-                            </span>
-                          </DrawerTrigger>
-                          <Informations
-                            event={event}
-                            ticket={ticket}
-                            order={order as Order}
-                          />
-                        </Drawer>
-                      </TableCell>
-                      <TableCell
-                        className={"text-[1.5rem] leading-8 text-neutral-900"}
-                      >
-                        <Drawer direction={"right"}>
-                          <DrawerTrigger>
-                            <span className={"cursor-pointer"}>
-                              {ticket.fullName}
-                            </span>
-                          </DrawerTrigger>
-                          <Informations
-                            event={event}
-                            ticket={ticket}
-                            order={order as Order}
-                          />
-                        </Drawer>
-                      </TableCell>
-                      <TableCell className={"hidden lg:table-cell"}>
-                        <span
-                          className={
-                            "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                          }
-                        >
-                          {ticket.ticketType}
-                        </span>
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "hidden lg:table-cell text-[1.5rem] font-medium leading-8 text-neutral-900"
-                        }
-                      >
-                        {ticket.event.currency === "USD"
-                          ? ticket.ticketUsdPrice
-                          : ticket.ticketPrice}{" "}
-                        {event.currency}
-                      </TableCell>
-                      <TableCell className={"hidden lg:table-cell"}>
-                        {ticket.status === "CHECKED" && (
-                          <span
-                            className={
-                              "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                            }
-                          >
-                            {t("filters.checked")}
-                          </span>
-                        )}
-                        {ticket.status === "PENDING" && (
-                          <span
-                            className={
-                              "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                            }
-                          >
-                            {t("filters.pending")}
-                          </span>
-                        )}
-                        {ticket.status === "RETURNED" && (
-                          <span
-                            className={
-                              "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-neutral-500  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                            }
-                          >
-                            {t("filters.returned")}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell
-                        className={
-                          "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                        }
-                      >
-                        {FormatDate(
-                          ticket.createdAt,
-                          locale,
-                          event.eventDays[0].timezone,
-                        )}
-                      </TableCell>
-                      {/* <TableCell className={'text-[1.5rem] leading-8 text-neutral-900'}>
-                        <Popover>
-                          <PopoverTrigger>
-                            <button
-                              className={
-                                'w-[35px] h-[35px] cursor-pointer rounded-full bg-neutral-100 flex items-center justify-center'
-                              }
-                            >
-                              <MoreCircle variant={'Bulk'} size={20} color={'#737C8A'} />
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className={
-                              'w-[250px] p-0 m-0 bg-none shadow-none border-none mx-4'
-                            }
-                          >
-                            <ul
-                              className={
-                                'bg-neutral-100 border border-neutral-200 right-8 p-4  mb-8 rounded-[1rem] shadow-xl bottom-full flex flex-col gap-4'
-                              }
-                            >
-                              <span
-                                className={
-                                  'font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8'
-                                }
-                              >
-                                {t('more')}
-                              </span>
-                              <div className={'flex flex-col gap-4'}>
-                                <li className={''}>
-                                  <Drawer direction={'right'}>
-                                    <DrawerTrigger className={'w-full'}>
-                                      <button
-                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 border-b-[1px] border-neutral-200 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                                      >
-                                        <span className={''}>{t('details')}</span>
-                                        <HambergerMenu
-                                          size="20"
-                                          variant="Bulk"
-                                          color={'#2E3237'}
-                                        />
-                                      </button>
-                                    </DrawerTrigger>
-                                    <Informations />
-                                  </Drawer>
-                                </li>
-                                <li className={''}>
-                                  <button
-                                    className={`font-normal group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                                  >
-                                    <span className={'text-primary-500'}>
-                                      {single_event.mark_as_check}
-                                    </span>
-                                    <TickCircle size="20" variant="Bulk" color={'#E45B00'} />
-                                  </button>
-                                </li>
-                              </div>
-                            </ul>
-                          </PopoverContent>
-                        </Popover>
-                      </TableCell> */}
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-            {tickets.length === 0 && (
-              <div
-                className={
-                  "w-132 lg:w-184 mx-auto flex flex-col items-center mt-8 gap-20"
-                }
-              >
-                <div
-                  className={
-                    "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
-                  }
-                >
-                  <div
-                    className={
-                      "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
-                    }
-                  >
-                    <Money3 size="50" color="#0d0d0d" variant="Bulk" />
-                  </div>
-                </div>
-                <div
-                  className={"flex flex-col gap-12 items-center text-center"}
-                >
-                  <p
-                    className={
-                      "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
-                    }
-                  >
-                    {t("table.description")}
-                  </p>
-                  <div></div>
-                </div>
-              </div>
-            )}
-          </TabsContent>
-          {event.eventTicketTypes.map((ticketClass, index) => {
-            return (
-              <TabsContent
-                key={ticketClass.ticketTypeName}
-                value={ticketClass.ticketTypeName}
-                className={"w-full"}
-              >
-                <Table className={"mt-4"}>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead
-                        className={
-                          "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.id")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.name")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.ticket_class")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.amount")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.check")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.date_purchased")}
-                      </TableHead>
-                      {/* <TableHead
-                      className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 w-[40px] leading-6 text-deep-100 uppercase"
-                      }
-                    >
-                      {single_event.table.date_purchased}
-                    </TableHead> */}
-                    </TableRow>
-                  </TableHeader>
-                  {filteredtickets
-                    .filter(
-                      (ticket) =>
-                        ticket.ticketType === ticketClass.ticketTypeName,
-                    )
-                    .map((ticket) => {
-                      const [order] = orders.filter(
-                        (order) => ticket.orderId === order.orderId,
-                      );
-                      return (
-                        <TableRow key={ticket.ticketId}>
+                    <Drawer key={ticket.ticketId} direction={"right"}>
+                      <DrawerTrigger asChild>
+                        <TableRow className={"cursor-pointer"}>
                           <TableCell
                             className={
-                              "text-[1.5rem] py-[15px] leading-8 text-neutral-900"
+                              "hidden lg:table-cell text-[1.5rem] py-[15px] leading-8 text-neutral-900"
                             }
                           >
-                            <Drawer direction={"right"}>
-                              <DrawerTrigger>
-                                <span className={"cursor-pointer"}>
-                                  {ticket.ticketName}
-                                </span>
-                              </DrawerTrigger>
-                              <Informations
-                                event={event}
-                                ticket={ticket}
-                                order={order as Order}
-                              />
-                            </Drawer>
+                            {ticket.ticketName}
                           </TableCell>
                           <TableCell
                             className={
                               "text-[1.5rem] leading-8 text-neutral-900"
                             }
                           >
-                            <Drawer direction={"right"}>
-                              <DrawerTrigger>
-                                <span className={"cursor-pointer"}>
-                                  {ticket.fullName}
-                                </span>
-                              </DrawerTrigger>
-                              <Informations
-                                event={event}
-                                ticket={ticket}
-                                order={order as Order}
-                              />
-                            </Drawer>
+                            {ticket.fullName}
                           </TableCell>
                           <TableCell className={"hidden lg:table-cell"}>
-                            {ticket.ticketType === "general" && (
-                              <span
-                                className={
-                                  "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                                }
-                              >
-                                general
-                              </span>
-                            )}
-                            {ticket.ticketType === "vip" && (
-                              <span
-                                className={
-                                  "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                                }
-                              >
-                                vip
-                              </span>
-                            )}
-                            {ticket.ticketType === "vvip" && (
-                              <span
-                                className={
-                                  "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-deep-100  px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                                }
-                              >
-                                Premium vip
-                              </span>
-                            )}
+                            <span
+                              className={
+                                "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                              }
+                            >
+                              {ticket.ticketType}
+                            </span>
                           </TableCell>
                           <TableCell
                             className={
@@ -691,11 +377,11 @@ export default function EventPageDetails({
                               : ticket.ticketPrice}{" "}
                             {event.currency}
                           </TableCell>
-                          <TableCell className={"hidden lg:table-cell"}>
+                          <TableCell>
                             {ticket.status === "CHECKED" && (
                               <span
                                 className={
-                                  "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                  "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
                                 }
                               >
                                 {t("filters.checked")}
@@ -704,7 +390,7 @@ export default function EventPageDetails({
                             {ticket.status === "PENDING" && (
                               <span
                                 className={
-                                  "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                  "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
                                 }
                               >
                                 {t("filters.pending")}
@@ -713,12 +399,13 @@ export default function EventPageDetails({
                             {ticket.status === "RETURNED" && (
                               <span
                                 className={
-                                  "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-neutral-500  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                  "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-neutral-500  px-[5px] rounded-[30px] bg-[#f5f5f5]"
                                 }
                               >
                                 {t("filters.returned")}
                               </span>
                             )}
+                            <TimeInsideBadge ticket={ticket} />
                           </TableCell>
                           <TableCell
                             className={
@@ -793,6 +480,288 @@ export default function EventPageDetails({
                         </Popover>
                       </TableCell> */}
                         </TableRow>
+                      </DrawerTrigger>
+                      <Informations
+                        event={event}
+                        ticket={ticket}
+                        order={order as Order}
+                      />
+                    </Drawer>
+                  );
+                })}
+              </TableBody>
+            </Table>
+            {tickets.length === 0 && (
+              <div
+                className={
+                  "w-132 lg:w-184 mx-auto flex flex-col items-center mt-8 gap-20"
+                }
+              >
+                <div
+                  className={
+                    "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                  }
+                >
+                  <div
+                    className={
+                      "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                    }
+                  >
+                    <Money3 size="50" color="#0d0d0d" variant="Bulk" />
+                  </div>
+                </div>
+                <div
+                  className={"flex flex-col gap-12 items-center text-center"}
+                >
+                  <p
+                    className={
+                      "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                    }
+                  >
+                    {t("table.description")}
+                  </p>
+                  <div></div>
+                </div>
+              </div>
+            )}
+          </TabsContent>
+          {event.eventTicketTypes.map((ticketClass, index) => {
+            return (
+              <TabsContent
+                key={ticketClass.ticketTypeName}
+                value={ticketClass.ticketTypeName}
+                className={"w-full"}
+              >
+                <Table className={"mt-4"}>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead
+                        className={
+                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                        }
+                      >
+                        {t("table.id")}
+                      </TableHead>
+                      <TableHead
+                        className={
+                          "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                        }
+                      >
+                        {t("table.name")}
+                      </TableHead>
+                      <TableHead
+                        className={
+                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                        }
+                      >
+                        {t("table.ticket_class")}
+                      </TableHead>
+                      <TableHead
+                        className={
+                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                        }
+                      >
+                        {t("table.amount")}
+                      </TableHead>
+                      <TableHead
+                        className={
+                          "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                        }
+                      >
+                        {t("table.check")}
+                      </TableHead>
+                      <TableHead
+                        className={
+                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                        }
+                      >
+                        {t("table.date_purchased")}
+                      </TableHead>
+                      {/* <TableHead
+                      className={
+                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 w-[40px] leading-6 text-deep-100 uppercase"
+                      }
+                    >
+                      {single_event.table.date_purchased}
+                    </TableHead> */}
+                    </TableRow>
+                  </TableHeader>
+                  {filteredtickets
+                    .filter(
+                      (ticket) =>
+                        ticket.ticketType === ticketClass.ticketTypeName,
+                    )
+                    .map((ticket) => {
+                      const [order] = orders.filter(
+                        (order) => ticket.orderId === order.orderId,
+                      );
+                      return (
+                        <Drawer key={ticket.ticketId} direction={"right"}>
+                          <DrawerTrigger asChild>
+                            <TableRow className={"cursor-pointer"}>
+                              <TableCell
+                                className={
+                                  "hidden lg:table-cell text-[1.5rem] py-[15px] leading-8 text-neutral-900"
+                                }
+                              >
+                                {ticket.ticketName}
+                              </TableCell>
+                              <TableCell
+                                className={
+                                  "text-[1.5rem] leading-8 text-neutral-900"
+                                }
+                              >
+                                {ticket.fullName}
+                              </TableCell>
+                              <TableCell className={"hidden lg:table-cell"}>
+                                {ticket.ticketType === "general" && (
+                                  <span
+                                    className={
+                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                    }
+                                  >
+                                    general
+                                  </span>
+                                )}
+                                {ticket.ticketType === "vip" && (
+                                  <span
+                                    className={
+                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                    }
+                                  >
+                                    vip
+                                  </span>
+                                )}
+                                {ticket.ticketType === "vvip" && (
+                                  <span
+                                    className={
+                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-deep-100  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                    }
+                                  >
+                                    Premium vip
+                                  </span>
+                                )}
+                              </TableCell>
+                              <TableCell
+                                className={
+                                  "hidden lg:table-cell text-[1.5rem] font-medium leading-8 text-neutral-900"
+                                }
+                              >
+                                {ticket.event.currency === "USD"
+                                  ? ticket.ticketUsdPrice
+                                  : ticket.ticketPrice}{" "}
+                                {event.currency}
+                              </TableCell>
+                              <TableCell>
+                                {ticket.status === "CHECKED" && (
+                                  <span
+                                    className={
+                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                    }
+                                  >
+                                    {t("filters.checked")}
+                                  </span>
+                                )}
+                                {ticket.status === "PENDING" && (
+                                  <span
+                                    className={
+                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                    }
+                                  >
+                                    {t("filters.pending")}
+                                  </span>
+                                )}
+                                {ticket.status === "RETURNED" && (
+                                  <span
+                                    className={
+                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-neutral-500  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                    }
+                                  >
+                                    {t("filters.returned")}
+                                  </span>
+                                )}
+                                <TimeInsideBadge ticket={ticket} />
+                              </TableCell>
+                              <TableCell
+                                className={
+                                  "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                                }
+                              >
+                                {FormatDate(
+                                  ticket.createdAt,
+                                  locale,
+                                  event.eventDays[0].timezone,
+                                )}
+                              </TableCell>
+                              {/* <TableCell className={'text-[1.5rem] leading-8 text-neutral-900'}>
+                        <Popover>
+                          <PopoverTrigger>
+                            <button
+                              className={
+                                'w-[35px] h-[35px] cursor-pointer rounded-full bg-neutral-100 flex items-center justify-center'
+                              }
+                            >
+                              <MoreCircle variant={'Bulk'} size={20} color={'#737C8A'} />
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className={
+                              'w-[250px] p-0 m-0 bg-none shadow-none border-none mx-4'
+                            }
+                          >
+                            <ul
+                              className={
+                                'bg-neutral-100 border border-neutral-200 right-8 p-4  mb-8 rounded-[1rem] shadow-xl bottom-full flex flex-col gap-4'
+                              }
+                            >
+                              <span
+                                className={
+                                  'font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8'
+                                }
+                              >
+                                {t('more')}
+                              </span>
+                              <div className={'flex flex-col gap-4'}>
+                                <li className={''}>
+                                  <Drawer direction={'right'}>
+                                    <DrawerTrigger className={'w-full'}>
+                                      <button
+                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 border-b-[1px] border-neutral-200 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                      >
+                                        <span className={''}>{t('details')}</span>
+                                        <HambergerMenu
+                                          size="20"
+                                          variant="Bulk"
+                                          color={'#2E3237'}
+                                        />
+                                      </button>
+                                    </DrawerTrigger>
+                                    <Informations />
+                                  </Drawer>
+                                </li>
+                                <li className={''}>
+                                  <button
+                                    className={`font-normal group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                                  >
+                                    <span className={'text-primary-500'}>
+                                      {single_event.mark_as_check}
+                                    </span>
+                                    <TickCircle size="20" variant="Bulk" color={'#E45B00'} />
+                                  </button>
+                                </li>
+                              </div>
+                            </ul>
+                          </PopoverContent>
+                        </Popover>
+                      </TableCell> */}
+                            </TableRow>
+                          </DrawerTrigger>
+                          <Informations
+                            event={event}
+                            ticket={ticket}
+                            order={order as Order}
+                          />
+                        </Drawer>
                       );
                     })}
                 </Table>
@@ -841,6 +810,30 @@ export default function EventPageDetails({
 
       <ReturnedTicketsSection event={event} ticketReturns={ticketReturns} />
     </div>
+  );
+}
+
+function formatDuration(totalMinutes: number) {
+  const m = Math.max(0, Math.round(totalMinutes));
+  const h = Math.floor(m / 60);
+  const mins = m % 60;
+  if (h > 0) return `${h}h ${mins}m`;
+  return `${mins}m`;
+}
+
+// Compact attendance summary shown under the check-in status in the records
+// table: total time inside, plus a live "inside" marker when the attendee has
+// an open session.
+function TimeInsideBadge({ ticket }: { ticket: Ticket }) {
+  const t = useTranslations("Events.single_event");
+  if (ticket.status !== "CHECKED" || !ticket.entriesCount) return null;
+  return (
+    <span className="block mt-2 text-[1.1rem] font-medium leading-[15px] text-neutral-500">
+      {formatDuration(ticket.totalMinutesInside ?? 0)}
+      {ticket.presence === "inside" && (
+        <span className="ml-1 text-[#349C2E]">• {t("filters.inside")}</span>
+      )}
+    </span>
   );
 }
 

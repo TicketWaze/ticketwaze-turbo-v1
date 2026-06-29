@@ -106,6 +106,7 @@ export function makeEditInPersonSchema(
     ),
     ticketTypes: z.array(
       z.object({
+        eventTicketTypeId: z.string().optional(),
         ticketTypeName: z.string().min(3, t("errors.ticketClass.name")),
         ticketTypeDescription: z
           .string()

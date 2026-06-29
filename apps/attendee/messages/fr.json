@@ -57,12 +57,6 @@
         "text": "Pas de compte ?",
         "cta": "S'inscrire"
       },
-      "terms": {
-        "before": "En continuant, vous acceptez nos ",
-        "terms": "Conditions d'utilisation",
-        "and": " et notre ",
-        "privacy": "Politique de confidentialité"
-      },
       "deletionCancelled": "La suppression programmée de votre compte a été annulée. Bienvenue !"
     },
     "register": {
@@ -516,11 +510,11 @@
         "1": "Catégorie",
         "2": "Lieu",
         "3": {
-          "title": "Date",
           "1": "Cette semaine",
           "2": "Ce mois-ci",
           "3": "Le mois prochain",
-          "4": "Cette année"
+          "4": "Cette année",
+          "title": "Date"
         }
       }
     }
@@ -701,6 +695,7 @@
     "from": "À partir de",
     "free": "Gratuit",
     "private": "Privé",
+    "soldOut": "Complet",
     "back": "Retour",
     "notInvited": "Accès restreint : il s'agit d'une activité privée visible uniquement par les participants invités.",
     "share": "Partager",

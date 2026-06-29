@@ -27,7 +27,6 @@ export default function Informations({
 }) {
   const t = useTranslations("Finance");
   const locale = useLocale();
-  const checkingTime = new Date(ticket.updatedAt.toString());
   const date = event.eventDays.filter((day) => day.dayNumber === 1);
   return (
     <DrawerContent className={"my-6 p-12 rounded-[30px] w-full"}>
@@ -187,16 +186,42 @@ export default function Informations({
                 </span>
               </p>
               {ticket.status === "CHECKED" && (
-                <p
-                  className={
-                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                  }
-                >
-                  {t("transactions.details.check_time")}{" "}
-                  <span className={"text-deep-100 font-medium leading-8"}>
-                    {checkingTime.toTimeString()}
-                  </span>
-                </p>
+                <>
+                  <p
+                    className={
+                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                    }
+                  >
+                    {t("transactions.details.presence")}{" "}
+                    <span
+                      className={`py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase ${ticket.presence === "inside" ? "text-success" : "text-neutral-500"} px-[5px] rounded-[30px] bg-[#f5f5f5]`}
+                    >
+                      {ticket.presence === "inside"
+                        ? t("transactions.details.inside")
+                        : t("transactions.details.checked_out")}
+                    </span>
+                  </p>
+                  <p
+                    className={
+                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                    }
+                  >
+                    {t("transactions.details.time_inside")}{" "}
+                    <span className={"text-deep-100 font-medium leading-8"}>
+                      {formatDuration(ticket.totalMinutesInside ?? 0)}
+                    </span>
+                  </p>
+                  <p
+                    className={
+                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                    }
+                  >
+                    {t("transactions.details.entries")}{" "}
+                    <span className={"text-deep-100 font-medium leading-8"}>
+                      {ticket.entriesCount ?? 0}
+                    </span>
+                  </p>
+                </>
               )}
               <div></div>
             </div>
@@ -218,6 +243,14 @@ export default function Informations({
       </DrawerFooter>
     </DrawerContent>
   );
+}
+
+function formatDuration(totalMinutes: number) {
+  const m = Math.max(0, Math.round(totalMinutes));
+  const h = Math.floor(m / 60);
+  const mins = m % 60;
+  if (h > 0) return `${h}h ${mins}m`;
+  return `${mins}m`;
 }
 
 function Separator() {

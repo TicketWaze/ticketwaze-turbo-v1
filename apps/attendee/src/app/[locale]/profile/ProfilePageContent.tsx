@@ -37,11 +37,9 @@ import TruncateUrl from "@/lib/TruncateUrl";
 export default function ProfilePageContent({
   analytics,
   user,
-  accessToken,
 }: {
   analytics: UserAnalytic;
   user: User;
-  accessToken: string;
 }) {
   const t = useTranslations("Profile");
 
@@ -190,7 +188,7 @@ export default function ProfilePageContent({
           "flex flex-col gap-16 w-full lg:w-212 mx-auto lg:overflow-y-scroll lg:overflow-x-hidden lg:h-full"
         }
       >
-        <ProfileImage user={user} accessToken={accessToken} />
+        <ProfileImage user={user} />
         <div className="flex flex-col gap-8">
           <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
             {t("personal")}

@@ -12,9 +12,10 @@ export default function UpcomingPageContent({ events }: { events: any }) {
   const t = useTranslations("Upcoming");
   const { data: session } = useSession();
   const [query, setQuery] = useState("");
-  const filteredEvents = events.filter((event: any) => {
+  const list: any[] = Array.isArray(events) ? events : [];
+  const filteredEvents = list.filter((event: any) => {
     const search = query.toLowerCase();
-    return event.eventName.toLowerCase().includes(search);
+    return event?.eventName?.toLowerCase().includes(search);
   });
 
   const [mobileSearch, setMobileSearch] = useState(false);
@@ -105,13 +106,13 @@ export default function UpcomingPageContent({ events }: { events: any }) {
                 image={event.eventImageUrl}
                 name={event.eventName}
                 day={roundedDays}
-                tickets={event.tickets.length}
+                tickets={event.tickets?.length ?? 0}
               />
             </li>
           );
         })}
       </ul>
-      {events.length > 0 && filteredEvents.length === 0 && (
+      {list.length > 0 && filteredEvents.length === 0 && (
         <div className="flex flex-col h-full justify-center items-center gap-12">
           <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
             <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
@@ -123,7 +124,7 @@ export default function UpcomingPageContent({ events }: { events: any }) {
           </span>
         </div>
       )}
-      {events.length === 0 && (
+      {list.length === 0 && (
         <div
           className={
             "w-132 lg:w-184 mx-auto h-full flex flex-col items-center justify-center gap-20"
