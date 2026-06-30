@@ -491,7 +491,7 @@ export default function WalletPageContent({
               >
                 {t("withdrawal.title")}
               </span>
-              <WithdrawalRequestDialog
+              <WithdrawalRequestDialog 
                 htgAvailableBalance={wallet.htgAvailableBalance}
                 usdAvailableBalance={wallet.usdAvailableBalance}
               />

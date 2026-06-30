@@ -7,7 +7,7 @@ export default function PageLoader({ isLoading }: { isLoading: boolean }) {
     <AnimatePresence>
       {isLoading && (
         <motion.div
-          className="absolute top-0 left-0 w-screen h-dvh bg-neutral-400/70 z-9999999 flex items-center justify-center"
+          className="fixed top-0 left-0 w-screen lg:absolute h-screen bg-neutral-400/70 z-9999999 flex items-center justify-center"
           initial={{ opacity: 0 }} // when it first appears
           animate={{ opacity: 1 }} // when visible
           exit={{ opacity: 0 }} // when leaving
