@@ -25,12 +25,14 @@ export default function Loading() {
         <ul className="w-full list pt-4 h-screen overflow-hidden">
           {Array.from({ length: 6 }).map((_, index) => (
             <li key={index} className="mb-4">
-              <div className="w-full rounded-2xl bg-neutral-100 animate-pulse p-4 flex flex-col gap-4">
-                <div className="w-full h-60 lg:h-[19.1rem] rounded-xl bg-neutral-200 shrink-0" />
-                <div className="flex flex-col gap-4 flex-1 justify-center">
+              <div className="w-full rounded-2xl bg-neutral-100 animate-pulse p-4 flex lg:flex-col gap-4">
+                <div className="w-62 h-62 lg:h-[19.1rem] rounded-xl bg-neutral-200 shrink-0 flex-1 lg:flex-auto " />
+                <div className="flex flex-col gap-4 flex-1 lg:justify-center">
                   <div className="h-[1.9rem] w-3/4 bg-neutral-200 rounded-full" />
-                  <div className="h-[1.7rem] w-full bg-neutral-200 rounded-full" />
+                  <div className="h-4 w-24 bg-neutral-200 rounded-full lg:w-full lg:h-[1.7rem]" />
                   <div className="h-[1.9rem] w-32 bg-neutral-200 rounded-full" />
+                  <div className="h-[1.9rem] w-40 bg-neutral-200 rounded-full lg:w-32 lg:hidden" />
+                  <div className="h-[1.9rem] w-10 bg-neutral-200 rounded-full lg:w-32 lg:hidden" />
                 </div>
               </div>
             </li>

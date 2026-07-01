@@ -15,6 +15,16 @@ import { Download, ImagePlay, Share2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import QRCode from "qrcode";
 import { useRef, useState } from "react";
+import { renderToStaticMarkup } from "react-dom/server";
+import { Calendar, Location, DollarSquare } from "iconsax-reactjs";
+
+// ─── pour transformer les icon en texte ──────────────────────────────────────────────────────────────
+function iconToDataUrl(IconComponent: React.ComponentType<any>, color: string) {
+  const svgString = renderToStaticMarkup(
+    <IconComponent size="34" color={color} variant="Bulk" />,
+  );
+  return `data:image/svg+xml;base64,${btoa(svgString)}`;
+}
 
 // ─── Canvas spec ──────────────────────────────────────────────────────────────
 const W = 1080; // Instagram portrait width
@@ -52,6 +62,7 @@ const C = {
   border2: "#2c2c2c",
   orange: "#E45B00",
   orangeA: "rgba(228,91,0,0.22)",
+  orangeB: "#FF6319",
   white: "#FFFFFF",
   offwhite: "#EEEEEE",
   muted: "#777777",
@@ -293,13 +304,13 @@ async function paintDetailAndQR(
   // Left column: 3 rows that span the same height as the QR card
   const ITEM_H = QR_BOX / 3;
   const items = [
-    { emoji: "📅", label: "DATE", value: date || "—" },
-    { emoji: "📍", label: "VENUE", value: venue || "—" },
-    { emoji: "💰", label: "PRICE", value: price || "—" },
+    { icon: Calendar, label: "DATE", value: date || "—" },
+    { icon: Location, label: "VENUE", value: venue || "—" },
+    { icon: DollarSquare, label: "PRICE", value: price || "—" },
   ];
 
   // ── Left column ─────────────────────────────────────────────────────────────
-  items.forEach(({ emoji, label, value }, i) => {
+  items.forEach(async ({ icon, label, value }, i) => {
     const iy = QR_Y + i * ITEM_H;
 
     // row separator (not on first)
@@ -320,24 +331,30 @@ async function paintDetailAndQR(
     const textX = LEFT_X + 20;
     const textY = iy + ITEM_H / 2;
 
-    // emoji
-    ctx.font = "34px sans-serif";
+    // Icon
+    const iconUrl = iconToDataUrl(icon, C.orangeB);
+    const iconImg = await loadImg(iconUrl);
+    if (iconImg) {
+      ctx.drawImage(iconImg, textX, textY - 50, 40, 40);
+    }
+
     ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
-    ctx.fillText(emoji, textX, textY - 14);
+    ctx.textBaseline = "alphabetic";
 
     // label
     ctx.font = font("700", 20);
     ctx.fillStyle = C.orange;
-    ctx.fillText(label, textX + 44, textY - 18);
+    ctx.fillText(label, textX + 50, textY - 25);
 
     // value — wrap to two lines within column width
     ctx.font = font("500", 26);
     ctx.fillStyle = C.offwhite;
     ctx.textBaseline = "top";
-    drawWrapped(ctx, value, textX + 44, textY - 2, LEFT_W - 64, 32, 2);
-  });
+    ctx.textAlign = "left"; // Sécurité pour drawWrapped
 
+    // J'ai harmonisé ici à textX + 50 pour que la value soit alignée pile sous le label
+    drawWrapped(ctx, value, textX + 50, textY - 5, LEFT_W - 64, 32, 2);
+  });
   // bottom border under last item
   ctx.strokeStyle = C.border;
   ctx.lineWidth = 1;
