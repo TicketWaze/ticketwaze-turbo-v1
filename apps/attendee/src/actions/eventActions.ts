@@ -79,6 +79,49 @@ export async function ReturnPaidTicketAction(
   }
 }
 
+// Upserts the user's rating and/or written feedback for a past activity.
+export async function SubmitReviewAction(
+  accessToken: string,
+  eventId: string,
+  body: { rating?: number; reviewText?: string },
+  pathname: string,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/review`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
+        },
+        body: JSON.stringify(body),
+      },
+    );
+    const data = await res.json();
+
+    if (data.status === "success") {
+      revalidatePath(pathname);
+      return {
+        status: "success" as const,
+        review: data.review as { rating: number; reviewText: string },
+      };
+    }
+    return {
+      status: "failed" as const,
+      message: data.message ?? "An unknown error occurred",
+    };
+  } catch (err: unknown) {
+    return {
+      status: "failed" as const,
+      message: err instanceof Error ? err.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function AddEventToFavorite(
   accessToken: string,
   eventId: string,

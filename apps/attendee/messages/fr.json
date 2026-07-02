@@ -498,6 +498,7 @@
     "search": "Rechercher une activité",
     "noResult": "Il n'y a aucun résultat pour ",
     "noEvent": "Il n'y a pas d'activités à venir pour le moment. Revenez plus tard ou explorez d'autres catégories pour découvrir des activités passionnantes près de chez vous !",
+    "pastActivities": "Activités passées",
     "liked": "Activités aimées",
     "filters": {
       "first": {
@@ -645,7 +646,14 @@
     "subtitle": "Bon retour ",
     "search": "Rechercher une activité à venir",
     "description": "Il n'y a aucune activité à venir pour le moment. Restez à l'écoute pour découvrir et réserver les prochains !",
-    "noResult": "Il n'y a aucun résultat pour "
+    "noResult": "Il n'y a aucun résultat pour ",
+    "countdown": {
+      "ongoing": "En cours",
+      "days": "{count, plural, one {# jour} other {# jours}} <muted>restant(s)</muted>",
+      "hours": "{count, plural, one {# heure} other {# heures}} <muted>restante(s)</muted>",
+      "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>restante(s)</muted>",
+      "soon": "<muted>Commence bientôt</muted>"
+    }
   },
   "History": {
     "title": "Historique des activités",
@@ -704,6 +712,7 @@
     "share_text": "Faites passer le mot et invitez vos amis ! Partagez cette activité sur les réseaux sociaux ou par message direct.",
     "copy": "Copier",
     "buy": "Acheter",
+    "ended": "Activité terminée",
     "buy_more": "Acheter plus",
     "about": "À propos de l'activité",
     "contact": "Informations de contact",

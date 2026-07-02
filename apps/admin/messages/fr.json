@@ -459,6 +459,18 @@
     "total": "Total des virements",
     "pending": "Demandes de virement en attente",
     "total_paid": "Total des organisateurs payés",
+    "summary": {
+      "total_paid": "Total des virements",
+      "total_paid_count": "Total des virements (nombre)",
+      "pending_org": "Organisation en attente",
+      "pending_org_count": "Organisation en attente (nombre)",
+      "pending_user": "Utilisateur en attente",
+      "pending_user_count": "Utilisateur en attente (nombre)"
+    },
+    "tabs": {
+      "organisation": "Organisations",
+      "user": "Utilisateurs"
+    },
 
     "filters": {
       "period": {
@@ -470,6 +482,7 @@
       "title": "Demandes de virement",
       "table": {
         "withdrawal_id": "ID de retrait",
+        "name": "Nom",
         "bank_name": "Nom de la banque",
         "account_number": "Numéro de compte",
         "amount": "Montant",
@@ -477,7 +490,9 @@
         "request_status": {
           "title": "Statut de la demande",
           "approved": "Approuvé",
-          "pending": "En attente"
+          "pending": "En attente",
+          "failed": "Échoué",
+          "rejected": "Rejeté"
         }
       },
       "no_request": "Vous verrez ici les nouvelles demandes de virement des organisateurs lorsqu'ils souhaitent retirer leurs gains."

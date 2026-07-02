@@ -8,10 +8,11 @@ export default async function Explore() {
   });
   const response = await request.json();
   const events: Event[] = response.events;
+  const pastEvents: Event[] = response.pastEvents ?? [];
 
   return (
     <AttendeeLayout title="Explore" className="overflow-x-hidden">
-      <ExplorePageContent events={events} wallet={null} />
+      <ExplorePageContent events={events} pastEvents={pastEvents} wallet={null} />
     </AttendeeLayout>
   );
 }

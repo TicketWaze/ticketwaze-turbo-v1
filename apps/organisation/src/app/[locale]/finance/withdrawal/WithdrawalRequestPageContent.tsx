@@ -203,6 +203,15 @@ export default function WithdrawalRequestPageContent({
                             {t("filters.pending")}
                           </span>
                         )}
+                        {request.status.toUpperCase() === "FAILED" && (
+                          <span
+                            className={
+                              "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-failure px-4 rounded-[30px] bg-failure/20"
+                            }
+                          >
+                            {t("filters.failed")}
+                          </span>
+                        )}
                       </span>
                     </DrawerTrigger>
                     <WithdrawalInformations request={request} />

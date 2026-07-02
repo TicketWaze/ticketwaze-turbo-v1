@@ -28,9 +28,11 @@ import ShareEvent from "@/components/shared/ShareEvent";
 export default function EventActions({
   event,
   isFavorite,
+  isPast = false,
 }: {
   event: Event;
   isFavorite: boolean;
+  isPast?: boolean;
 }) {
   const t = useTranslations("Event");
   const locale = useLocale();
@@ -130,7 +132,13 @@ export default function EventActions({
           </PopoverContent>
         </Popover>
       </div>
-      {session?.user ? (
+      {/* The activity is over: tickets can no longer be bought, so show an
+          "ended" note in place of the buy button. */}
+      {isPast ? (
+        <span className="px-12 py-6 rounded-[100px] text-center text-neutral-600 font-medium text-[1.5rem] leading-8 flex items-center justify-center bg-neutral-100">
+          {t("ended")}
+        </span>
+      ) : session?.user ? (
         <LinkPrimary
           href={`/explore/${slugify(event.eventName, event.eventId)}/checkout`}
         >

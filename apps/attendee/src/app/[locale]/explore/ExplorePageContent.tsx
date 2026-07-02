@@ -23,16 +23,21 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function ExplorePageContent({
   events,
+  pastEvents = [],
 }: {
   events: Event[];
+  pastEvents?: Event[];
   wallet: null;
 }) {
   const t = useTranslations("Explore");
   const [query, setQuery] = useState("");
-  const filteredEvents = events.filter((event) => {
-    const search = query.toLowerCase();
-    return event.eventName.toLowerCase().includes(search);
-  });
+  const matchesQuery = (event: Event) =>
+    event.eventName.toLowerCase().includes(query.toLowerCase());
+  const filteredEvents = events.filter(matchesQuery);
+  const filteredPastEvents = pastEvents.filter(matchesQuery);
+  const hasAnyEvents = events.length > 0 || pastEvents.length > 0;
+  const noSearchResults =
+    filteredEvents.length === 0 && filteredPastEvents.length === 0;
   const { data: session } = useSession();
 
   const [mobileSearch, setMobileSearch] = useState(false);
@@ -161,22 +166,43 @@ export default function ExplorePageContent({
           </div>
         </div>
       </motion.header>
-      {events.length > 0 ? (
-        <>
-          <ul className="list pt-4 overflow-y-scroll">
-            {filteredEvents.map((event, index) => (
-              <motion.li
-                key={event.eventId}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.35, ease: "easeOut", delay: Math.min(index * 0.06, 0.3) }}
-              >
-                <EventCard event={event} />
-              </motion.li>
-            ))}
-          </ul>
+      {hasAnyEvents ? (
+        <div className="pt-4 overflow-y-scroll flex flex-col gap-8">
+          {filteredEvents.length > 0 && (
+            <ul className="list">
+              {filteredEvents.map((event, index) => (
+                <motion.li
+                  key={event.eventId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: "easeOut", delay: Math.min(index * 0.06, 0.3) }}
+                >
+                  <EventCard event={event} />
+                </motion.li>
+              ))}
+            </ul>
+          )}
+          {filteredPastEvents.length > 0 && (
+            <section className="flex flex-col gap-6">
+              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black">
+                {t("pastActivities")}
+              </span>
+              <ul className="list opacity-70">
+                {filteredPastEvents.map((event, index) => (
+                  <motion.li
+                    key={event.eventId}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, ease: "easeOut", delay: Math.min(index * 0.06, 0.3) }}
+                  >
+                    <EventCard event={event} />
+                  </motion.li>
+                ))}
+              </ul>
+            </section>
+          )}
           <AnimatePresence>
-            {filteredEvents.length === 0 && (
+            {noSearchResults && (
               <motion.div
                 className="flex flex-col h-full justify-center items-center gap-[30px]"
                 initial={{ opacity: 0, scale: 0.96 }}
@@ -195,7 +221,7 @@ export default function ExplorePageContent({
               </motion.div>
             )}
           </AnimatePresence>
-        </>
+        </div>
       ) : (
         <motion.div
           className="w-[330px] lg:w-[460px] mx-auto h-full justify-center flex flex-col items-center gap-[5rem]"

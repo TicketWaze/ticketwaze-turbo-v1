@@ -466,8 +466,9 @@
     "moncash_number_hint": "Doit comporter exactement 8 chiffres (ex. 47123456)",
     "saveMoncashInfo": "Mémoriser mon numéro MonCash",
     "saveMoncashInfo_hint": "Conserver ce numéro pour votre prochain retrait",
-    "amount": "Montant du retrait",
-    "amount_hint": "Saisissez le montant que vous souhaitez retirer de votre solde disponible",
+    "amount": "Retrait",
+    "amount_hint": "La totalité de votre solde disponible sera retirée. Pour un virement bancaire, choisissez la devise que vous souhaitez recevoir.",
+    "withdraw_all_note": "Les retraits partiels ne sont pas pris en charge — la totalité du solde disponible est retirée en une seule fois.",
     "bank_details_hint": "Saisissez les informations de votre compte bancaire pour le virement",
     "incorrectInfoWarning": "Veuillez vérifier vos informations de compte. Si les informations saisies sont incorrectes, le virement échouera et votre retrait pourrait être retardé.",
     "bank_name": "Nom de la banque",
@@ -566,7 +567,8 @@
         "account": "Numéro de compte",
         "amount": "Montant",
         "status": "Statut",
-        "date": "Date"
+        "date": "Date",
+        "reason": "Motif du rejet"
       }
     }
   },

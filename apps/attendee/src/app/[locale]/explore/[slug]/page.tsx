@@ -27,6 +27,7 @@ import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 import AnimatedEventPage from "./AnimatedEventPage";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
+import isEventPast from "@/lib/isEventPast";
 
 export async function generateMetadata({
   params,
@@ -167,6 +168,7 @@ export default async function EventPage({
             <EventActions
               event={event}
               isFavorite={favoriteResponse.isFavorite}
+              isPast={isEventPast(event)}
             />
             <Separator />
             <div className="flex flex-col gap-4">

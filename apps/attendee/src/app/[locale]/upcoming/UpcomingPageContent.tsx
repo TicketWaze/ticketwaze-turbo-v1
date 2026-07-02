@@ -3,7 +3,6 @@
 import UpcomingCard from "@/components/UpcomingCard";
 import { slugify } from "@/lib/Slugify";
 import { CloseCircle, Money3, SearchNormal, Star } from "iconsax-reactjs";
-import { DateTime } from "luxon";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -88,16 +87,6 @@ export default function UpcomingPageContent({ events }: { events: any }) {
       </header>
       <ul className="list pt-4 overflow-y-scroll">
         {filteredEvents.map((event: any) => {
-          const today = DateTime.now();
-          const eventStart = event.eventDays?.[0]?.eventDate
-            ? DateTime.fromISO(event.eventDays[0].eventDate)
-            : null;
-          const daysLeft = eventStart
-            ? eventStart.diff(today, "days").days
-            : null;
-          const roundedDays = Math.ceil(
-            daysLeft && daysLeft > 0 ? daysLeft : 0,
-          );
           const slug = slugify(event.eventName, event.eventId);
           return (
             <li key={event.eventId}>
@@ -105,7 +94,7 @@ export default function UpcomingPageContent({ events }: { events: any }) {
                 href={`upcoming/${slug}`}
                 image={event.eventImageUrl}
                 name={event.eventName}
-                day={roundedDays}
+                eventDays={event.eventDays ?? []}
                 tickets={event.tickets?.length ?? 0}
               />
             </li>

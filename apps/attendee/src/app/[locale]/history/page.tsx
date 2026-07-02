@@ -1,10 +1,33 @@
 import HistoryCard from "@/components/HistoryCard";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
-import TemporarilyUnavailable from "@/components/shared/TemporarilyUnavailable";
 import { redirect } from "@/i18n/navigation";
 import { auth } from "@/lib/auth";
-import Rema from "@ticketwaze/ui/assets/images/rema.png";
+import { Event } from "@ticketwaze/typescript-config";
+import { DateTime } from "luxon";
+import { Calendar2 } from "iconsax-reactjs";
 import { getLocale, getTranslations } from "next-intl/server";
+
+// A past event carries the signed-in user's own rating (0 when not rated).
+type PastEvent = Event & { userRating: number };
+
+// How many days ago the activity took place, based on its last day in its own
+// timezone. Clamped at 0 so a same-day event reads as "0 days ago".
+function daysAgo(event: Event): number {
+  const days = [...(event.eventDays ?? [])].sort(
+    (a, b) => b.dayNumber - a.dayNumber,
+  );
+  const last = days[0];
+  if (!last) return 0;
+  const eventDate = DateTime.fromISO(String(last.eventDate), { zone: "utc" })
+    .setZone(last.timezone, { keepLocalTime: true })
+    .startOf("day");
+  if (!eventDate.isValid) return 0;
+  const diff = Math.floor(
+    DateTime.now().setZone(last.timezone).startOf("day").diff(eventDate, "days")
+      .days,
+  );
+  return diff > 0 ? diff : 0;
+}
 
 export default async function HistoryPage() {
   const locale = await getLocale();
@@ -14,14 +37,36 @@ export default async function HistoryPage() {
   }
   const t = await getTranslations("History");
 
-  // Flip to `true` once the history API endpoint is wired up.
-  const apiConnected = false;
+  // Authenticated, per-user request — never cache. Guard every failure path so
+  // the page renders an empty state instead of crashing.
+  let events: PastEvent[] = [];
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/history`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session?.user.accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+        },
+        cache: "no-store",
+      },
+    );
+    const response = await request.json();
+    if (request.ok && Array.isArray(response?.events)) {
+      events = response.events;
+    } else {
+      console.error("Failed to load history events:", response);
+    }
+  } catch (error) {
+    console.error("Error fetching history events:", error);
+  }
 
   return (
     <AttendeeLayout title="HistoryPage" className="overflow-x-hidden">
       <>
         <header className="w-full flex items-center justify-between">
-          {/* {!mobileSearch && ( */}
           <div className="flex flex-col gap-2">
             {session?.user && (
               <span className="text-[1.6rem] leading-8 text-neutral-600">
@@ -33,85 +78,34 @@ export default async function HistoryPage() {
               {t("title")}
             </span>
           </div>
-          {/* )} */}
-          {/* <div
-            className={`flex items-center gap-4 ${mobileSearch && "w-full"}`}
-          >
-            {mobileSearch && (
-              <div
-                className={
-                  "bg-neutral-100 w-full rounded-[30px] flex items-center justify-between lg:hidden px-[1.5rem] py-4"
-                }
-              >
-                <input
-                  placeholder={t("search")}
-                  className={
-                    "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
-                  }
-                  autoFocus
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-                <button
-                  onClick={() => {
-                    setMobileSearch(!mobileSearch);
-                    setQuery("");
-                  }}
-                >
-                  <CloseCircle size="20" color="#737c8a" variant="Bulk" />
-                </button>
-              </div>
-            )}
-            <div
-              className={
-                "hidden bg-neutral-100 rounded-[30px] lg:flex items-center justify-between w-[243px] px-[1.5rem] py-4"
-              }
-            >
-              <input
-                placeholder={t("search")}
-                className={
-                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
-                }
-                onChange={(e) => setQuery(e.target.value)}
-              />
-              <SearchNormal size="20" color="#737c8a" variant="Bulk" />
-            </div>
-            {!mobileSearch && (
-              <button
-                onClick={() => setMobileSearch(!mobileSearch)}
-                className={
-                  "w-[35px] h-[35px] bg-neutral-100 rounded-full flex lg:hidden items-center justify-center"
-                }
-              >
-                <SearchNormal size="20" color="#737c8a" variant="Bulk" />
-              </button>
-            )}
-          </div> */}
         </header>
 
         {/* main */}
-        {apiConnected ? (
+        {events.length > 0 ? (
           <ul className="list pt-4 w-full overflow-y-auto lg:-mx-4 px-4 pb-8 flex flex-col gap-4">
-            {Array.from({ length: 5 }).map((_, index) => {
-              const randomStars = Math.floor(Math.random() * 5) + 1;
-
-              return (
-                <li key={index}>
-                  <HistoryCard
-                    href={`history/${index + 1}`}
-                    image={Rema}
-                    name={t("activity.card.name")}
-                    day={1}
-                    rated={randomStars}
-                  />
-                </li>
-              );
-            })}
+            {events.map((event) => (
+              <li key={event.eventId}>
+                <HistoryCard
+                  href={`history/${event.eventId}`}
+                  image={event.eventImageUrl}
+                  name={event.eventName}
+                  day={daysAgo(event)}
+                  rated={event.userRating ?? 0}
+                />
+              </li>
+            ))}
           </ul>
         ) : (
-          <TemporarilyUnavailable
-            title={t("unavailable.title")}
-            description={t("unavailable.description")}
-          />
+          <div className="w-[330px] lg:w-[460px] mx-auto h-full justify-center flex flex-col items-center gap-[5rem]">
+            <div className="w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100">
+              <div className="w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200">
+                <Calendar2 size="50" color="#0d0d0d" variant="Bulk" />
+              </div>
+            </div>
+            <p className="text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px] text-center">
+              {t("description")}
+            </p>
+          </div>
         )}
       </>
     </AttendeeLayout>

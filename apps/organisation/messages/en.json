@@ -467,8 +467,9 @@
     "moncash_number_hint": "Must be exactly 8 digits (e.g. 47123456)",
     "saveMoncashInfo": "Remember my MonCash number",
     "saveMoncashInfo_hint": "Keep this number saved for your next withdrawal",
-    "amount": "Withdrawal Amount",
-    "amount_hint": "Enter the amount you'd like to withdraw from your available balance",
+    "amount": "Withdrawal",
+    "amount_hint": "Your full available balance will be withdrawn. For a bank transfer, choose the currency you'd like to receive.",
+    "withdraw_all_note": "Partial withdrawals aren't supported — the entire available balance is withdrawn at once.",
     "bank_details_hint": "Enter your bank account details for the transfer",
     "incorrectInfoWarning": "Please double-check your account details. If the information entered is incorrect, the transfer will fail and your withdrawal may be delayed.",
     "bank_name": "Bank Name",
@@ -567,7 +568,8 @@
         "account": "Account Number",
         "amount": "Amount",
         "status": "Status",
-        "date": "Date"
+        "date": "Date",
+        "reason": "Rejection reason"
       }
     }
   },
