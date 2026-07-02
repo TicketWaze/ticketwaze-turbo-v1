@@ -50,14 +50,14 @@ export default function ExplorePageContent({
         transition={{ duration: 0.35, ease: "easeOut" }}
       >
         {!mobileSearch && (
-          <div className="flex flex-col gap-[5px]">
+          <div className="flex flex-col gap-2">
             {session?.user && (
               <span className="text-[1.6rem] leading-8 text-neutral-600">
                 {t("subtitle")}{" "}
                 <span className="text-deep-100">{session?.user.firstName}</span>
               </span>
             )}
-            <span className="font-primary font-medium text-[1.8rem] lg:text-[2.6rem] leading-[2.5rem] lg:leading-12 text-black">
+            <span className="font-primary font-medium text-[1.8rem] lg:text-[2.6rem] leading-10 lg:leading-12 text-black">
               {t("title")}
             </span>
           </div>
@@ -66,7 +66,7 @@ export default function ExplorePageContent({
           {mobileSearch && (
             <div
               className={
-                "bg-neutral-100 w-full rounded-[30px] flex items-center justify-between lg:hidden px-[1.5rem] py-4"
+                "bg-neutral-100 w-full rounded-[30px] flex items-center justify-between lg:hidden px-6 py-4"
               }
             >
               <input
@@ -90,7 +90,7 @@ export default function ExplorePageContent({
           <div className="flex items-center gap-4">
             <div
               className={
-                "hidden bg-neutral-100 rounded-[30px] lg:flex items-center justify-between w-[243px] px-[1.5rem] py-4"
+                "hidden bg-neutral-100 rounded-[30px] lg:flex items-center justify-between w-[24.3rem] px-6 py-4"
               }
             >
               <input
@@ -102,12 +102,12 @@ export default function ExplorePageContent({
               />
               <SearchNormal size="20" color="#737c8a" variant="Bulk" />
             </div>
-            <div className="w-[1px] h-[18px] bg-neutral-100"></div>
+            <div className="w-[0.1rem] h-[1.8rem] bg-neutral-100"></div>
             {!mobileSearch && (
               <button
                 onClick={() => setMobileSearch(!mobileSearch)}
                 className={
-                  "w-[35px] h-[35px] bg-neutral-100 rounded-full flex lg:hidden items-center justify-center"
+                  "w-14 h-14 bg-neutral-100 rounded-full flex lg:hidden items-center justify-center"
                 }
               >
                 <SearchNormal size="20" color="#737c8a" variant="Bulk" />
@@ -119,7 +119,7 @@ export default function ExplorePageContent({
                 <TooltipTrigger asChild>
                   <Link
                     href={"/explore/liked"}
-                    className="w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                    className="w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                   >
                     <Heart size={20} color="#737C8A" variant="Bulk" />
                   </Link>
@@ -131,7 +131,7 @@ export default function ExplorePageContent({
             ) : (
               <Dialog>
                 <DialogTrigger>
-                  <div className="w-[35px] h-[35px] cursor-pointer flex items-center justify-center bg-neutral-100 rounded-full">
+                  <div className="w-14 h-14 cursor-pointer flex items-center justify-center bg-neutral-100 rounded-full">
                     <Heart size={20} color="#737C8A" variant="Bulk" />
                   </div>
                 </DialogTrigger>
@@ -204,14 +204,14 @@ export default function ExplorePageContent({
           <AnimatePresence>
             {noSearchResults && (
               <motion.div
-                className="flex flex-col h-full justify-center items-center gap-[30px]"
+                className="flex flex-col h-full justify-center items-center gap-12"
                 initial={{ opacity: 0, scale: 0.96 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.96 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="h-[120px] w-[120px] bg-neutral-100 rounded-full flex items-center justify-center">
-                  <div className="w-[90px] h-[90px] bg-neutral-200 flex items-center justify-center rounded-full">
+                <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
+                  <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
                     <Ticket size="50" color="#0D0D0D" variant="Bulk" />
                   </div>
                 </div>
@@ -224,19 +224,19 @@ export default function ExplorePageContent({
         </div>
       ) : (
         <motion.div
-          className="w-[330px] lg:w-[460px] mx-auto h-full justify-center flex flex-col items-center gap-[5rem]"
+          className="w-132 lg:w-184 mx-auto h-full justify-center flex flex-col items-center gap-20"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <div
             className={
-              "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+              "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
             }
           >
             <div
               className={
-                "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
               }
             >
               <Money3 size="50" color="#0d0d0d" variant="Bulk" />
@@ -245,7 +245,7 @@ export default function ExplorePageContent({
           <div className={"flex flex-col gap-12 items-center text-center"}>
             <p
               className={
-                "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
               }
             >
               {t("noEvent")}

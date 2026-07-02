@@ -299,10 +299,10 @@ export default async function EventPage({
                     initialIsFollowing={isFollowing.length > 0}
                   />
                 </div>
-                <ul className="flex flex-col w-full gap-6">
+                <ul className="flex flex-col w-full">
                   {event.eventDays.map((eventDate) => {
                     return (
-                      <li key={eventDate.eventDayId}>
+                      <li key={eventDate.eventDayId} className="flex flex-col gap-6">
                         {/*  date*/}
                         <div className={"flex items-center gap-[5px]"}>
                           <div
