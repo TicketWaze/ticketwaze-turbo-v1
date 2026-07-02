@@ -94,16 +94,6 @@ export default function UpcomingPageContent({ events }: { events: any }) {
       <>
         <ul className="list pt-4 overflow-y-scroll">
           {filteredEvents.map((event: any, index) => {
-            const today = DateTime.now();
-            const eventStart = event.eventDays?.[0]?.eventDate
-              ? DateTime.fromISO(event.eventDays[0].eventDate)
-              : null;
-            const daysLeft = eventStart
-              ? eventStart.diff(today, "days").days
-              : null;
-            const roundedDays = Math.ceil(
-              daysLeft && daysLeft > 0 ? daysLeft : 0,
-            );
             const slug = slugify(event.eventName, event.eventId);
             return (
               <motion.li
@@ -120,7 +110,7 @@ export default function UpcomingPageContent({ events }: { events: any }) {
                   href={`upcoming/${slug}`}
                   image={event.eventImageUrl}
                   name={event.eventName}
-                  day={roundedDays}
+                  eventDays={event.eventDays ?? []}
                   tickets={event.tickets?.length ?? 0}
                 />
               </motion.li>
