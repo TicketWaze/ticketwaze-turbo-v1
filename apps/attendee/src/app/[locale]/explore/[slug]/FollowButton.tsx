@@ -57,7 +57,7 @@ export default function FollowButton({
     return (
       <Dialog>
         <DialogTrigger asChild>
-          <ButtonBlack>{t("follow")}</ButtonBlack>
+          <ButtonBlack >{t("follow")}</ButtonBlack>
         </DialogTrigger>
         <NoAuthDialog callbackUrl={pathname} />
       </Dialog>

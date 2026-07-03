@@ -82,29 +82,33 @@ export default async function HistoryPage() {
 
         {/* main */}
         {events.length > 0 ? (
-          <ul className="list pt-4 w-full overflow-y-auto lg:-mx-4 px-4 pb-8 flex flex-col gap-4">
-            {events.map((event) => (
-              <li key={event.eventId}>
-                <HistoryCard
-                  href={`history/${event.eventId}`}
-                  image={event.eventImageUrl}
-                  name={event.eventName}
-                  day={daysAgo(event)}
-                  rated={event.userRating ?? 0}
-                />
-              </li>
-            ))}
-          </ul>
+          <div className="pt-4 overflow-y-scroll flex flex-col gap-8">
+            <ul className="list">
+              {events.map((event) => (
+                <li key={event.eventId}>
+                  <HistoryCard
+                    href={`history/${event.eventId}`}
+                    image={event.eventImageUrl}
+                    name={event.eventName}
+                    day={daysAgo(event)}
+                    rated={event.userRating ?? 0}
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
         ) : (
-          <div className="w-[330px] lg:w-[460px] mx-auto h-full justify-center flex flex-col items-center gap-[5rem]">
-            <div className="w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100">
-              <div className="w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200">
+          <div className="w-132 lg:w-184 mx-auto h-full justify-center flex flex-col items-center gap-20">
+            <div className="w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100">
+              <div className="w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200">
                 <Calendar2 size="50" color="#0d0d0d" variant="Bulk" />
               </div>
             </div>
-            <p className="text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px] text-center">
-              {t("description")}
-            </p>
+            <div className={"flex flex-col gap-12 items-center text-center"}>
+              <p className="text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]">
+                {t("description")}
+              </p>
+            </div>
           </div>
         )}
       </>

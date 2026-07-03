@@ -594,7 +594,7 @@ export default async function AnalyticsPage() {
                               </td>
                               <td className="w-16 pl-4 text-right">
                                 <span className="text-[14px] font-sans text-black-100 whitespace-nowrap">
-                                  {isNaN(num) ? "0%" : `${value}%`}
+                                  {isNaN(num) ? "0%" : `${value}`}
                                 </span>
                               </td>
                             </tr>

@@ -22,7 +22,7 @@ function HistoryCard({
   return (
     <Link
       href={href}
-      className={`flex flex-col  lg:items-stretch  gap-4 w-full bg-white shadow-lg rounded-[10px] overflow-hidden pb-4`}
+      className={`flex flex-col  lg:items-stretch  gap-4 w-full mb-8 lg:ml-4 bg-white shadow-lg rounded-[10px] overflow-hidden pb-4  hover:shadow-xl`}
     >
       <Image
         src={image}
@@ -31,6 +31,7 @@ function HistoryCard({
         height={191}
         width={255}
       />
+
       <div className="w-full flex items-center justify-center gap-5 overflow-hidden">
         {Array.from({ length: 10 }).map((_, index) => (
           <div
