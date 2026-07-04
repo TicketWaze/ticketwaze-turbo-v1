@@ -470,6 +470,18 @@
     "total": "Total Payouts",
     "pending": "Pending Payout Requests",
     "total_paid": "Total Organizers Paid",
+    "summary": {
+      "total_paid": "Total payouts",
+      "total_paid_count": "Total payouts (count)",
+      "pending_org": "Pending organisation",
+      "pending_org_count": "Pending organisation (count)",
+      "pending_user": "Pending user",
+      "pending_user_count": "Pending user (count)"
+    },
+    "tabs": {
+      "organisation": "Organisations",
+      "user": "Users"
+    },
 
     "filters": {
       "period": {
@@ -481,6 +493,7 @@
       "title": "Payout requests",
       "table": {
         "withdrawal_id": "Withdrawal ID",
+        "name": "Name",
         "bank_name": "Bank Name",
         "account_number": "Account number",
         "amount": "Amount",
@@ -489,7 +502,8 @@
           "title": "Request Status",
           "approved": "Approved",
           "pending": "Pending",
-          "failed": "Failed"
+          "failed": "Failed",
+          "rejected": "Rejected"
         }
       },
       "no_request": "You'll see new payout requests from organizers here when they request to withdraw their earnings."

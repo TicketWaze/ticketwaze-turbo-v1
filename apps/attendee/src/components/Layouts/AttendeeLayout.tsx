@@ -26,7 +26,7 @@ function AttendeeLayout({
         }
       >
         <Sidebar className={"col-start-1 col-end-3 pr-8"} />
-        <main className="flex flex-col flex-1 lg:overflow-y-auto lg:col-start-3 lg:col-end-13 ">
+        <main className="flex flex-col flex-1 overflow-x-hidden  lg:overflow-y-auto lg:col-start-3 lg:col-end-13 ">
           <div
             className={cn(
               "bg-white min-h-[calc(100dvh-3.5rem)] lg:min-h-0 lg:h-full flex flex-col gap-8 main rounded-[3rem] lg:overflow-y-hidden p-6 lg:p-16 pb-[calc(9rem+env(safe-area-inset-bottom))] lg:pb-0 overflow-x-hidden",

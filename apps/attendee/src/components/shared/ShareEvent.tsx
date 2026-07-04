@@ -25,7 +25,7 @@ export default function ShareEvent({ event }: { event: Event }) {
   return (
     <Dialog>
       <DialogTrigger>
-        <span className="px-6 py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
+        <span className="p-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.4rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
           <Send2 variant={"Bulk"} color={"#737C8A"} size={20} />
           <span className="hidden lg:inline">{t("share")}</span>
         </span>

@@ -5,6 +5,7 @@ import Details2 from "./components/Details2";
 import Hero from "./components/Hero";
 import Footer from "@/components/Footer";
 import Testimonials from "./components/Testimonials";
+import { JsonLd, buildBreadcrumbs } from "@/lib/structuredData";
 
 const siteUrl = "https://ticketwaze.com";
 
@@ -40,7 +41,15 @@ export async function generateMetadata({
   };
 }
 
-export default function AboutPage() {
+export default async function AboutPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  const localePath = locale === "fr" ? "" : `/${locale}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "AboutPage",
@@ -52,6 +61,10 @@ export default function AboutPage() {
     isPartOf: { "@id": `${siteUrl}/#website` },
     about: { "@id": `${siteUrl}/#organization` },
   };
+  const breadcrumbs = buildBreadcrumbs(
+    [{ name: t("home"), path: "" }, { name: t("about.title") }],
+    localePath,
+  );
 
   return (
     <>
@@ -59,6 +72,7 @@ export default function AboutPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <JsonLd data={breadcrumbs} />
       <Hero />
       <Details1 />
       <Details2 />

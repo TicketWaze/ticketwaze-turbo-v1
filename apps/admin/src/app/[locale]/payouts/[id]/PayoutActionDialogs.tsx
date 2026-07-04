@@ -15,7 +15,7 @@ import {
   ButtonRed,
 } from "@/components/shared/buttons";
 import { InfoCircle, Warning2 } from "iconsax-reactjs";
-import { MarkFailedAction } from "@/actions/Payout";
+import { MarkFailedAction, MarkPaidAction } from "@/actions/Payout";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -29,10 +29,24 @@ export function MarkPaidDialog({
 }) {
   const t = useTranslations("Payouts.dialogs");
   const [open, setOpen] = useState(false);
+  const { data: session } = useSession();
+  const locale = useLocale();
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleConfirm() {
-    // TODO: call API
-    setOpen(false);
+  async function handleConfirm() {
+    setIsLoading(true);
+    const result = await MarkPaidAction(
+      session?.user.accessToken ?? "",
+      locale,
+      withdrawalRequestId,
+    );
+    if (result.status === "sucess") {
+      setOpen(false);
+      toast.success("success");
+    } else {
+      toast.error(result.error);
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -63,8 +77,12 @@ export function MarkPaidDialog({
           <DialogClose asChild>
             <ButtonNeutral className="flex-1">{t("cancel")}</ButtonNeutral>
           </DialogClose>
-          <ButtonPrimary className="flex-1" onClick={handleConfirm}>
-            {t("paid.confirm")}
+          <ButtonPrimary
+            className="flex-1"
+            disabled={isLoading}
+            onClick={handleConfirm}
+          >
+            {isLoading ? <LoadingCircleSmall /> : t("paid.confirm")}
           </ButtonPrimary>
         </DialogFooter>
       </DialogContent>

@@ -454,6 +454,7 @@
     "search": "Search for activity",
     "noResult": "There's no result for ",
     "noEvent": "Looks like there are no upcoming activities at the moment. Check back later or explore other categories to discover exciting activities near you!",
+    "pastActivities": "Past activities",
     "liked": "Liked activities",
     "filters": {
       "first": {
@@ -601,7 +602,14 @@
     "subtitle": "Welcome Back ",
     "search": "Search for upcoming activity",
     "description": "There are no upcoming activity right now. Stay tuned to discover and book the next ones!",
-    "noResult": "There's no result for "
+    "noResult": "There's no result for ",
+    "countdown": {
+      "ongoing": "Ongoing",
+      "days": "{count, plural, one {# day} other {# days}} <muted>to go</muted>",
+      "hours": "{count, plural, one {# hour} other {# hours}} <muted>to go</muted>",
+      "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>to go</muted>",
+      "soon": "<muted>Starting soon</muted>"
+    }
   },
   "History": {
     "title": "Activities history",
@@ -660,6 +668,7 @@
     "share_text": "Spread the word and invite your friends! Share this activity on social media or via direct message.",
     "copy": "Copy",
     "buy": "Buy ticket",
+    "ended": "Activity ended",
     "buy_more": "Buy more ticket",
     "about": "About activity",
     "contact": "Contact Information",

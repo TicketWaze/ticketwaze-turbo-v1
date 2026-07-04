@@ -26,7 +26,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Event, MembershipTier } from "@ticketwaze/typescript-config";
+import { Event, MembershipTier, Ticket } from "@ticketwaze/typescript-config";
+import DownloadReport from "./DownloadReport";
 import { RequestEventDeletion } from "@/actions/EventActions";
 import { toast } from "sonner";
 import { ButtonRed } from "@/components/shared/buttons";
@@ -36,16 +37,20 @@ import { DateTime } from "luxon";
 
 export default function MoreComponent({
   event,
+  tickets,
   daysLeft,
   isFree,
+  isPast,
   slug,
   membershipTier,
   deletionStatus,
   onDeletionScheduled,
 }: {
   event: Event;
+  tickets: Ticket[];
   daysLeft: number | null;
   isFree: boolean;
+  isPast: boolean;
   slug: string;
   membershipTier: MembershipTier;
   deletionStatus: "pending_deletion" | "deleted" | null;
@@ -135,6 +140,14 @@ export default function MoreComponent({
                 <EventDrawerContent event={event} />
               </Drawer>
             </li>
+            {membershipTier.membershipName !== "free" &&
+              isPast &&
+              event.adminStatus === "approved" &&
+              !isDeleted && (
+                <li>
+                  <DownloadReport event={event} tickets={tickets} />
+                </li>
+              )}
             {membershipTier.membershipName !== "free" &&
               daysLeft !== null &&
               daysLeft > 0 &&

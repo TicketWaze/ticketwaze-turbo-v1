@@ -144,7 +144,7 @@ export default function WithdrawalRequestDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild className="flex justify-center w-full lg:w-fit ">
         <button className="flex items-center gap-2 px-[15px] py-[7px] rounded-[10rem] text-[1.4rem] leading-7 font-medium text-primary-500 border-2 border-primary-500 bg-primary-50 cursor-pointer">
           <ArrowUp size="16" color="#E45B00" variant="Bulk" />
           {t("trigger")}

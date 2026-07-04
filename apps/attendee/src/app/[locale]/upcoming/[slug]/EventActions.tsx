@@ -143,6 +143,11 @@ export default function EventActions({
   }
   const isLive = useIsEventLive(event.eventDays);
   const countdown = useCountdownToNextDay(event.eventDays);
+  // A live event is only "joinable" when it actually has a meet link. In-person
+  // events have a null googleMeetLink, and passing null to <Link> crashes it
+  // ("Cannot read properties of null (reading 'pathname')").
+  const canJoinLive = isLive && Boolean(event.googleMeetLink);
+  const joinHref = (isLive && event.googleMeetLink) || "#";
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
@@ -201,13 +206,15 @@ export default function EventActions({
           <LinkPrimary
             target="_blank"
             rel="noopener noreferrer"
-            href={isLive ? event.googleMeetLink : "#"}
-            aria-disabled={!isLive}
+            href={joinHref}
+            aria-disabled={!canJoinLive}
             onClick={(e) => {
-              if (!isLive) e.preventDefault();
+              if (!canJoinLive) e.preventDefault();
             }}
             className={
-              !isLive ? "opacity-50 pointer-events-none cursor-not-allowed" : ""
+              !canJoinLive
+                ? "opacity-50 pointer-events-none cursor-not-allowed"
+                : ""
             }
           >
             {!isLive ? countdown : "test"}
@@ -218,13 +225,13 @@ export default function EventActions({
         <LinkPrimary
           target="_blank"
           rel="noopener noreferrer"
-          href={isLive ? event.googleMeetLink : "#"}
-          aria-disabled={!isLive}
+          href={joinHref}
+          aria-disabled={!canJoinLive}
           onClick={(e) => {
-            if (!isLive) e.preventDefault();
+            if (!canJoinLive) e.preventDefault();
           }}
           className={
-            !isLive
+            !canJoinLive
               ? "opacity-50 pointer-events-none cursor-not-allowed w-full"
               : "w-full"
           }

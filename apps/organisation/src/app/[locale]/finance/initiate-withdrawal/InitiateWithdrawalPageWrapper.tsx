@@ -192,7 +192,6 @@ export default function InitiateWithdrawalPageWrapper({
     null,
   );
   const [bankCurrency, setBankCurrency] = useState<"HTG" | "USD">("HTG");
-  const [amount, setAmount] = useState("");
 
   // Bank state
   const [bankName, setBankName] = useState(organisation.bankName ?? "");
@@ -247,40 +246,11 @@ export default function InitiateWithdrawalPageWrapper({
     t("security"),
   ];
 
-  /* ── Amount helpers ──────────────────────────────────────────── */
-
-  function computeAmounts(num: number) {
-    if (activeCurrency === "HTG") {
-      const ratio =
-        organisation.availableBalance > 0
-          ? num / organisation.availableBalance
-          : 0;
-      return {
-        amount: parseFloat(num.toFixed(3)),
-        usdAmount: parseFloat(
-          (organisation.usdAvailableBalance * ratio).toFixed(3),
-        ),
-      };
-    } else {
-      const ratio =
-        organisation.usdAvailableBalance > 0
-          ? num / organisation.usdAvailableBalance
-          : 0;
-      return {
-        amount: parseFloat((organisation.availableBalance * ratio).toFixed(3)),
-        usdAmount: parseFloat(num.toFixed(3)),
-      };
-    }
-  }
-
   /* ── Submission ──────────────────────────────────────────────── */
 
   async function handleWithdrawal() {
     setIsLoading(true);
     try {
-      const num = parseFloat(amount);
-      const { amount: htgAmount, usdAmount } = computeAmounts(num);
-
       const accountName =
         accountType === "bank" ? bankAccountName : moncashAccountName;
       const accountNumber =
@@ -317,8 +287,8 @@ export default function InitiateWithdrawalPageWrapper({
           pin_confirmation: pinConfirmation,
           accountName,
           accountNumber,
-          amount: htgAmount,
-          usdAmount,
+          // No amount — the full available balance is withdrawn. MonCash is
+          // always HTG; bank uses the chosen currency.
           currency: activeCurrency,
           bankName: accountType === "bank" ? bankName : "Moncash",
         },
@@ -361,12 +331,7 @@ export default function InitiateWithdrawalPageWrapper({
     }
 
     if (currentStep === 2) {
-      const num = parseFloat(amount);
-      if (!amount || isNaN(num) || num <= 0) {
-        toast.error(t("errors.invalidAmount"));
-        return;
-      }
-      if (num > activeCurrencyBalance) {
+      if (activeCurrencyBalance <= 0) {
         toast.error(t("errors.insufficient"));
         return;
       }
@@ -685,17 +650,14 @@ export default function InitiateWithdrawalPageWrapper({
                   </p>
                 </div>
 
-                {/* Currency toggle – bank only */}
+                {/* Currency choice – bank only (MonCash is always HTG) */}
                 {accountType === "bank" && (
                   <div className="flex gap-1 p-1 bg-neutral-100 rounded-[12px]">
                     {(["HTG", "USD"] as const).map((curr) => (
                       <motion.button
                         key={curr}
                         whileTap={{ scale: 0.96 }}
-                        onClick={() => {
-                          setBankCurrency(curr);
-                          setAmount("");
-                        }}
+                        onClick={() => setBankCurrency(curr)}
                         animate={{
                           backgroundColor:
                             bankCurrency === curr ? "#e45b00" : "transparent",
@@ -710,58 +672,25 @@ export default function InitiateWithdrawalPageWrapper({
                   </div>
                 )}
 
-                {/* Available balance */}
-                <div className="flex items-center justify-between p-5 rounded-[14px] bg-neutral-100">
-                  <span className="text-[1.4rem] text-neutral-600">
+                {/* Full available balance that will be withdrawn */}
+                <div className="flex flex-col items-center gap-2 py-10 rounded-[16px] bg-neutral-100">
+                  <span className="font-semibold text-[1.4rem] leading-8 text-neutral-600">
                     {t("amounts.availableBalance")}
                   </span>
-                  <span className="font-bold text-[1.6rem] text-deep-100">
-                    {activeCurrencyBalance}{" "}
-                    <span className="text-neutral-400 font-normal text-[1.3rem]">
+                  <p className="font-primary font-bold text-[4.5rem] leading-[50px] text-black">
+                    {activeCurrencyBalance}
+                    <span className="text-neutral-400 text-[3rem]">
+                      {" "}
                       {activeCurrency}
                     </span>
-                  </span>
+                  </p>
                 </div>
 
-                <div className="flex flex-col gap-4">
-                  <div className="relative">
-                    <input
-                      type="number"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      min={1}
-                      max={activeCurrencyBalance}
-                      placeholder="0"
-                      className="w-full bg-neutral-100 rounded-[14px] px-8 py-7 text-[2.6rem] font-bold text-deep-100 outline-none border-2 border-transparent focus:border-primary-500 transition-all duration-200 placeholder:text-neutral-300 pr-24"
-                    />
-                    <span className="absolute right-8 top-1/2 -translate-y-1/2 text-[1.6rem] font-semibold text-neutral-400 pointer-events-none">
-                      {activeCurrency}
-                    </span>
+                <div className="flex items-start gap-3 p-4 rounded-[12px] border border-amber-200 bg-amber-50 text-[1.3rem] leading-7 text-amber-800">
+                  <div className="shrink-0 mt-[2px]">
+                    <InfoCircle size="18" color="#b45309" />
                   </div>
-
-                  <div className="flex gap-3">
-                    {([0.25, 0.5, 0.75, 1] as const).map((ratio) => {
-                      const val = parseFloat(
-                        (activeCurrencyBalance * ratio).toFixed(3),
-                      );
-                      const isActive = parseFloat(amount) === val;
-                      return (
-                        <motion.button
-                          key={ratio}
-                          whileTap={{ scale: 0.93 }}
-                          onClick={() => setAmount(String(val))}
-                          animate={{
-                            backgroundColor: isActive ? "#e45b00" : "#f1f2f3",
-                            color: isActive ? "#ffffff" : "#737c8a",
-                          }}
-                          transition={{ duration: 0.15 }}
-                          className="flex-1 py-3 rounded-[10px] text-[1.25rem] font-semibold"
-                        >
-                          {ratio === 1 ? "Max" : `${ratio * 100}%`}
-                        </motion.button>
-                      );
-                    })}
-                  </div>
+                  <span>{t("withdraw_all_note")}</span>
                 </div>
               </motion.div>
             )}
@@ -926,7 +855,7 @@ export default function InitiateWithdrawalPageWrapper({
                       {t("withdraw")}
                     </span>
                     <span className="font-bold text-[2rem] text-deep-100">
-                      {amount}{" "}
+                      {activeCurrencyBalance}{" "}
                       <span className="text-neutral-400 font-normal text-[1.3rem]">
                         {activeCurrency}
                       </span>

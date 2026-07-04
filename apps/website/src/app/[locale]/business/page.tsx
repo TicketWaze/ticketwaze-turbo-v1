@@ -5,6 +5,7 @@ import Hero from "./components/Hero";
 import Footer from "@/components/Footer";
 import Details1 from "./components/Details1";
 import Pricing from "./components/Pricing";
+import { JsonLd, buildBreadcrumbs } from "@/lib/structuredData";
 
 const siteUrl = "https://ticketwaze.com";
 
@@ -40,12 +41,22 @@ export async function generateMetadata({
   };
 }
 
-export default function BusinessPage() {
+export default async function BusinessPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  const localePath = locale === "fr" ? "" : `/${locale}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: "Ticketwaze for Business",
     applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    author: { "@id": `${siteUrl}/#organization` },
     url: `${siteUrl}/business`,
     offers: [
       {
@@ -74,6 +85,10 @@ export default function BusinessPage() {
       },
     ],
   };
+  const breadcrumbs = buildBreadcrumbs(
+    [{ name: t("home"), path: "" }, { name: t("business.title") }],
+    localePath,
+  );
 
   return (
     <>
@@ -81,6 +96,7 @@ export default function BusinessPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <JsonLd data={breadcrumbs} />
       <Hero />
       <Details1 />
       <Pricing />

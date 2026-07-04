@@ -61,7 +61,7 @@ export default function EventPageContent({ events }: { events: Event[] }) {
   ];
 
   return (
-    <div className="min-h-[75vh]">
+    <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
       <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)} className="w-full h-full">
         {/* Desktop tabs */}
         <TabsList className={"hidden lg:flex w-fit mx-0"}>

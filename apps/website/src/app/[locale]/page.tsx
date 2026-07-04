@@ -48,6 +48,7 @@ export default async function Home({
 }) {
   const { locale } = await params;
   const localePath = locale === "fr" ? "" : `/${locale}`;
+  const faqT = await getTranslations({ locale, namespace: "HomePage.faq" });
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -74,12 +75,17 @@ export default async function Home({
         },
         description:
           "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+        email: "hello@ticketwaze.com",
         contactPoint: {
           "@type": "ContactPoint",
           contactType: "customer support",
+          email: "hello@ticketwaze.com",
           url: `${siteUrl}${localePath}/contact`,
         },
-        sameAs: ["https://twitter.com/ticketwaze"],
+        sameAs: [
+          "https://instagram.com/ticketwaze",
+          "https://x.com/ticketwaze",
+        ],
       },
       {
         "@type": "WebApplication",
@@ -94,6 +100,19 @@ export default async function Home({
           priceCurrency: "USD",
           description: "Free plan available",
         },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${siteUrl}${localePath}/#faq`,
+        // Mirrors the visible FrequentlyAskedQuestions accordion on this page
+        mainEntity: [1, 2, 3, 4, 5].map((i) => ({
+          "@type": "Question",
+          name: faqT(`question-${i}`),
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faqT(`answer-${i}`),
+          },
+        })),
       },
     ],
   };

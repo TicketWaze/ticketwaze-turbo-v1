@@ -69,6 +69,24 @@ export default function EventPageDetails({
   const roundedDays = Math.ceil(daysLeft && daysLeft > 0 ? daysLeft : 0);
   const isUpcoming = eventStart.isValid && today < eventStart;
 
+  // The report is only available once the activity is fully over (after the
+  // last day's end time, in the event's timezone).
+  const sortedDays = [...event.eventDays].sort(
+    (a, b) => a.dayNumber - b.dayNumber,
+  );
+  const lastDay = sortedDays[sortedDays.length - 1];
+  const lastDate = lastDay
+    ? DateTime.fromISO(lastDay.eventDate, { zone: "utc" })
+        .setZone(lastDay.timezone, { keepLocalTime: true })
+        .toISODate()
+    : null;
+  const eventEnd = lastDay
+    ? DateTime.fromISO(`${lastDate}T${lastDay.endTime}`, {
+        zone: lastDay.timezone,
+      })
+    : null;
+  const isPast = !!eventEnd?.isValid && today > eventEnd;
+
   const [deletionStatus, setDeletionStatus] = useState(
     event.deletionStatus ?? null,
   );
@@ -100,6 +118,8 @@ export default function EventPageDetails({
           <MoreComponent
             daysLeft={daysLeft}
             event={event}
+            tickets={tickets}
+            isPast={isPast}
             isFree={isFree}
             slug={slug}
             membershipTier={membershipTier}
@@ -149,16 +169,16 @@ export default function EventPageDetails({
           return (
             <li
               key={t.ticketTypeName}
-              className={`${index % 2 === 0 ? "pl-[25px] " : "pl-0 pt-[20px] "} lg:pt-0 lg:pl-10 pb-[30px] ${index === 2 && "pt-[20px]"}`}
+              className={`${index % 2 === 0 ? "pl-10 " : "pl-0 pt-8 "} lg:pt-0 lg:pl-10 pb-12 ${index === 2 && "pt-8"}`}
             >
               <span
-                className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}
+                className={"text-[14px] text-neutral-600 leading-8 pb-2"}
               >
                 {Capitalize(t.ticketTypeName)}
               </span>
               <p
                 className={
-                  "font-medium text-[25px] leading-[30px] font-primary"
+                  "font-medium text-[25px] leading-12 font-primary"
                 }
               >
                 {quantity}{" "}
@@ -170,12 +190,12 @@ export default function EventPageDetails({
           );
         })}
         <li
-          className={`${event.eventTicketTypes.length == 1 && "py-[20px] lg:pl-[25px] lg:py-0"} `}
+          className={`${event.eventTicketTypes.length == 1 && "py-8 lg:pl-10 lg:py-0"} `}
         >
-          <span className={"text-[14px] text-neutral-600 leading-8 pb-[5px]"}>
+          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
             {t("count_down")}
           </span>
-          <p className={"font-medium  text-[25px] leading-[30px] font-primary"}>
+          <p className={"font-medium  text-[25px] leading-12 font-primary"}>
             {roundedDays}
             <span className={"font-normal text-[20px] text-neutral-500"}>
               {" "}
@@ -200,7 +220,7 @@ export default function EventPageDetails({
         )}
       {deletionStatus === "deleted" && (
         <div className="flex items-start gap-4 rounded-[15px] border border-neutral-200 bg-neutral-50 p-6">
-          <div className="w-[8px] h-[8px] rounded-full bg-neutral-400 mt-[6px] shrink-0" />
+          <div className="w-[0.8rem] h-[0.8rem] rounded-full bg-neutral-400 mt-[0.6rem] shrink-0" />
           <p className="text-[1.5rem] leading-8 text-neutral-600">
             {t("deleted_notice")}
           </p>
@@ -218,6 +238,8 @@ export default function EventPageDetails({
         <MoreComponent
           daysLeft={daysLeft}
           event={event}
+          tickets={tickets}
+          isPast={isPast}
           isFree={isFree}
           slug={slug}
           membershipTier={membershipTier}
@@ -346,7 +368,7 @@ export default function EventPageDetails({
                         <TableRow className={"cursor-pointer"}>
                           <TableCell
                             className={
-                              "hidden lg:table-cell text-[1.5rem] py-[15px] leading-8 text-neutral-900"
+                              "hidden lg:table-cell text-[1.5rem] py-6 leading-8 text-neutral-900"
                             }
                           >
                             {ticket.ticketName}
@@ -361,7 +383,7 @@ export default function EventPageDetails({
                           <TableCell className={"hidden lg:table-cell"}>
                             <span
                               className={
-                                "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-2 rounded-[30px] bg-[#f5f5f5]"
                               }
                             >
                               {ticket.ticketType}
@@ -381,7 +403,7 @@ export default function EventPageDetails({
                             {ticket.status === "CHECKED" && (
                               <span
                                 className={
-                                  "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                  "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
                                 }
                               >
                                 {t("filters.checked")}
@@ -390,7 +412,7 @@ export default function EventPageDetails({
                             {ticket.status === "PENDING" && (
                               <span
                                 className={
-                                  "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                  "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
                                 }
                               >
                                 {t("filters.pending")}
@@ -399,7 +421,7 @@ export default function EventPageDetails({
                             {ticket.status === "RETURNED" && (
                               <span
                                 className={
-                                  "py-[3px] text-[1.1rem] font-bold leading-6 text-center uppercase text-neutral-500  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                  "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-neutral-500  px-2 rounded-[30px] bg-[#f5f5f5]"
                                 }
                               >
                                 {t("filters.returned")}
@@ -499,12 +521,12 @@ export default function EventPageDetails({
               >
                 <div
                   className={
-                    "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                    "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
                   }
                 >
                   <div
                     className={
-                      "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                      "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
                     }
                   >
                     <Money3 size="50" color="#0d0d0d" variant="Bulk" />
@@ -515,7 +537,7 @@ export default function EventPageDetails({
                 >
                   <p
                     className={
-                      "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                      "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
                     }
                   >
                     {t("table.description")}
@@ -601,7 +623,7 @@ export default function EventPageDetails({
                             <TableRow className={"cursor-pointer"}>
                               <TableCell
                                 className={
-                                  "hidden lg:table-cell text-[1.5rem] py-[15px] leading-8 text-neutral-900"
+                                  "hidden lg:table-cell text-[1.5rem] py-6 leading-8 text-neutral-900"
                                 }
                               >
                                 {ticket.ticketName}
@@ -617,7 +639,7 @@ export default function EventPageDetails({
                                 {ticket.ticketType === "general" && (
                                   <span
                                     className={
-                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EF1870]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-2 rounded-[30px] bg-[#f5f5f5]"
                                     }
                                   >
                                     general
@@ -626,7 +648,7 @@ export default function EventPageDetails({
                                 {ticket.ticketType === "vip" && (
                                   <span
                                     className={
-                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#7A19C7]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#7A19C7]  px-2 rounded-[30px] bg-[#f5f5f5]"
                                     }
                                   >
                                     vip
@@ -635,7 +657,7 @@ export default function EventPageDetails({
                                 {ticket.ticketType === "vvip" && (
                                   <span
                                     className={
-                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-deep-100  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                      "py-[p.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-deep-100  px-2 rounded-[30px] bg-[#f5f5f5]"
                                     }
                                   >
                                     Premium vip
@@ -656,7 +678,7 @@ export default function EventPageDetails({
                                 {ticket.status === "CHECKED" && (
                                   <span
                                     className={
-                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
                                     }
                                   >
                                     {t("filters.checked")}
@@ -665,7 +687,7 @@ export default function EventPageDetails({
                                 {ticket.status === "PENDING" && (
                                   <span
                                     className={
-                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C]  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
                                     }
                                   >
                                     {t("filters.pending")}
@@ -674,7 +696,7 @@ export default function EventPageDetails({
                                 {ticket.status === "RETURNED" && (
                                   <span
                                     className={
-                                      "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-neutral-500  px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-neutral-500  px-2 rounded-[30px] bg-[#f5f5f5]"
                                     }
                                   >
                                     {t("filters.returned")}
@@ -770,17 +792,17 @@ export default function EventPageDetails({
                 ).length === 0 && (
                   <div
                     className={
-                      "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center mt-8 gap-[5rem]"
+                      "w-132 lg:w-184 mx-auto flex flex-col items-center mt-8 gap-2"
                     }
                   >
                     <div
                       className={
-                        "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                        "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
                       }
                     >
                       <div
                         className={
-                          "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                          "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
                         }
                       >
                         <Money3 size="50" color="#0d0d0d" variant="Bulk" />
@@ -793,7 +815,7 @@ export default function EventPageDetails({
                     >
                       <p
                         className={
-                          "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                          "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
                         }
                       >
                         {t("table.description")}
@@ -828,7 +850,7 @@ function TimeInsideBadge({ ticket }: { ticket: Ticket }) {
   const t = useTranslations("Events.single_event");
   if (ticket.status !== "CHECKED" || !ticket.entriesCount) return null;
   return (
-    <span className="block mt-2 text-[1.1rem] font-medium leading-[15px] text-neutral-500">
+    <span className="block mt-2 text-[1.1rem] font-medium leading-6 text-neutral-500">
       {formatDuration(ticket.totalMinutesInside ?? 0)}
       {ticket.presence === "inside" && (
         <span className="ml-1 text-[#349C2E]">• {t("filters.inside")}</span>
@@ -839,8 +861,8 @@ function TimeInsideBadge({ ticket }: { ticket: Ticket }) {
 
 export function Separator() {
   return (
-    <div className={"w-full py-[15px]"}>
-      <div className={"bg-neutral-200 w-full h-[2px]"}></div>
+    <div className={"w-full py-6"}>
+      <div className={"bg-neutral-200 w-full h-[0.2rem]"}></div>
     </div>
   );
 }

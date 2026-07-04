@@ -122,7 +122,28 @@ export default function WithdrawalInformations({
                     {t("filters.pending")}
                   </span>
                 )}
+                {request.status.toUpperCase() === "FAILED" && (
+                  <span
+                    className={
+                      "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-failure px-4 rounded-[30px] bg-failure/20"
+                    }
+                  >
+                    {t("filters.failed")}
+                  </span>
+                )}
               </p>
+              {request.status.toUpperCase() === "FAILED" && request.reason && (
+                <p
+                  className={
+                    "flex justify-between items-start gap-8 text-[1.4rem] leading-8 text-neutral-600"
+                  }
+                >
+                  {t("withdrawal.table.reason")}
+                  <span className={"text-failure font-medium leading-8 text-right"}>
+                    {request.reason}
+                  </span>
+                </p>
+              )}
               <p
                 className={
                   "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"

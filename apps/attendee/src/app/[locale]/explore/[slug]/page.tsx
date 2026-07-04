@@ -27,6 +27,12 @@ import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 import AnimatedEventPage from "./AnimatedEventPage";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
+import isEventPast from "@/lib/isEventPast";
+import {
+  JsonLd,
+  buildEventJsonLd,
+  buildBreadcrumbJsonLd,
+} from "@/lib/structuredData";
 
 export async function generateMetadata({
   params,
@@ -99,17 +105,17 @@ export default async function EventPage({
           </span>
           <div
             className={
-              "w-[330px] lg:w-[460px] mx-auto h-full justify-center flex flex-col items-center gap-[5rem]"
+              "w-132 lg:w-184 mx-auto h-full justify-center flex flex-col items-center gap-20"
             }
           >
             <div
               className={
-                "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
               }
             >
               <div
                 className={
-                  "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                  "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
                 }
               >
                 <SecurityUser size="50" color="#0d0d0d" variant="Bulk" />
@@ -118,7 +124,7 @@ export default async function EventPage({
             <div className={"flex flex-col gap-12 items-center text-center"}>
               <p
                 className={
-                  "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                  "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
                 }
               >
                 {t("notInvited")}
@@ -149,8 +155,23 @@ export default async function EventPage({
   const isFollowing = organisation.followers.filter(
     (follower: any) => follower.userId === session?.user.userId,
   );
+
+  const layoutT = await getTranslations("Layout");
+  const eventUrl = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slug}`;
+  const eventJsonLd = buildEventJsonLd({
+    event,
+    organisation,
+    url: eventUrl,
+  });
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: layoutT("links.explore"), path: `/${locale}/explore` },
+    { name: event.eventName },
+  ]);
+
   return (
     <AttendeeLayout title={event.eventName}>
+      <JsonLd data={eventJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
       <AnimatedEventPage>
         <BackButton text={t("back")} />
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
@@ -167,6 +188,7 @@ export default async function EventPage({
             <EventActions
               event={event}
               isFavorite={favoriteResponse.isFavorite}
+              isPast={isEventPast(event)}
             />
             <Separator />
             <div className="flex flex-col gap-4">
@@ -181,13 +203,13 @@ export default async function EventPage({
             {eventPerformers.length > 0 && (
               <>
                 <Separator />
-                <ul className=" flex items-center gap-8 overflow-x-auto scroll-smooth scrollbar-hide w-full min-h-[120px]">
+                <ul className=" flex items-center gap-8 overflow-x-auto scroll-smooth scrollbar-hide w-full min-h-48">
                   {eventPerformers.map((eventPerformer) => (
                     <Link
                       href={eventPerformer.performerLink}
                       target="_blank"
                       key={eventPerformer.eventPerformerId}
-                      className="flex items-center justify-center w-[120px] h-[120px] overflow-hidden rounded-full flex-shrink-0"
+                      className="flex items-center justify-center w-48 h-48 overflow-hidden rounded-full shrink-0"
                     >
                       <Image
                         src={eventPerformer.performerProfileUrl}
@@ -207,7 +229,7 @@ export default async function EventPage({
                 {t("contact")}
               </span>
             </div>
-            <div className={"flex flex-col gap-[5px]"}>
+            <div className={"flex flex-col gap-2"}>
               <div className={"flex items-center gap-4"}>
                 <Sms size="20" color="#737c8a" variant="Bulk" />
                 <span
@@ -266,7 +288,7 @@ export default async function EventPage({
                         className="rounded-full"
                       />
                     ) : (
-                      <span className="w-[35px] h-[35px] flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-[30px] font-primary">
+                      <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
                         {organisation?.organisationName
                           .slice()[0]
                           ?.toUpperCase()}
@@ -297,15 +319,15 @@ export default async function EventPage({
                     initialIsFollowing={isFollowing.length > 0}
                   />
                 </div>
-                <ul className="flex flex-col w-full gap-6">
+                <ul className="flex flex-col w-full">
                   {event.eventDays.map((eventDate) => {
                     return (
-                      <li key={eventDate.eventDayId}>
+                      <li key={eventDate.eventDayId} className="flex flex-col gap-6">
                         {/*  date*/}
-                        <div className={"flex items-center gap-[5px]"}>
+                        <div className={"flex items-center gap-2"}>
                           <div
                             className={
-                              "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                              "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                             }
                           >
                             <Calendar2
@@ -330,10 +352,10 @@ export default async function EventPage({
                           )}
                         </div>
                         {/*  time*/}
-                        <div className={"flex items-center gap-[5px]"}>
+                        <div className={"flex items-center gap-2"}>
                           <div
                             className={
-                              "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                              "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                             }
                           >
                             <Clock size="20" color="#737c8a" variant="Bulk" />
@@ -363,17 +385,17 @@ export default async function EventPage({
                 </ul>
                 {/*  address*/}
                 {event.eventCategory === "meet" && (
-                  <div className={"flex items-center gap-[5px] "}>
+                  <div className={"flex items-center gap-2 "}>
                     <div
                       className={
-                        "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                        "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                       }
                     >
                       <Google size="20" color="#737c8a" variant="Bulk" />
                     </div>
                     <span
                       className={
-                        "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[293px]"
+                        "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
                       }
                     >
                       Meet, Google
@@ -381,17 +403,17 @@ export default async function EventPage({
                   </div>
                 )}
                 {event.eventCategory !== "meet" && (
-                  <div className={"flex items-center gap-[5px] "}>
+                  <div className={"flex items-center gap-2 "}>
                     <div
                       className={
-                        "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                        "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                       }
                     >
                       <Location size="20" color="#737c8a" variant="Bulk" />
                     </div>
                     <span
                       className={
-                        "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[293px]"
+                        "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
                       }
                     >
                       {event.address}, {event.city}, {Capitalize(event.state)},{" "}
@@ -455,7 +477,7 @@ export default async function EventPage({
                       className="rounded-full"
                     />
                   ) : (
-                    <span className="w-[35px] h-[35px] flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-[30px] font-primary">
+                    <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
                       {organisation?.organisationName.slice()[0]?.toUpperCase()}
                     </span>
                   )}
@@ -492,10 +514,10 @@ export default async function EventPage({
                       className="flex flex-col w-full gap-2"
                     >
                       {/*  date*/}
-                      <div className={"flex items-center gap-[5px]"}>
+                      <div className={"flex items-center gap-2"}>
                         <div
                           className={
-                            "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                            "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                           }
                         >
                           <Calendar2 size="20" color="#737c8a" variant="Bulk" />
@@ -516,10 +538,10 @@ export default async function EventPage({
                         )}
                       </div>
                       {/*  time*/}
-                      <div className={"flex items-center gap-[5px]"}>
+                      <div className={"flex items-center gap-2"}>
                         <div
                           className={
-                            "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                            "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                           }
                         >
                           <Clock size="20" color="#737c8a" variant="Bulk" />
@@ -549,17 +571,17 @@ export default async function EventPage({
               </ul>
               {/*  address*/}
               {event.eventCategory === "meet" && (
-                <div className={"flex items-center gap-[5px] "}>
+                <div className={"flex items-center gap-2 "}>
                   <div
                     className={
-                      "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                      "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                     }
                   >
                     <Google size="20" color="#737c8a" variant="Bulk" />
                   </div>
                   <span
                     className={
-                      "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[293px]"
+                      "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
                     }
                   >
                     Meet, Google
@@ -567,17 +589,17 @@ export default async function EventPage({
                 </div>
               )}
               {event.eventCategory !== "meet" && (
-                <div className={"flex items-center gap-[5px] "}>
+                <div className={"flex items-center gap-2 "}>
                   <div
                     className={
-                      "w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+                      "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
                     }
                   >
                     <Location size="20" color="#737c8a" variant="Bulk" />
                   </div>
                   <span
                     className={
-                      "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[293px]"
+                      "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
                     }
                   >
                     {event.address}, {event.city}, {Capitalize(event.state)},{" "}
@@ -621,5 +643,5 @@ export default async function EventPage({
 }
 
 function Separator() {
-  return <div className="bg-neutral-100 h-[2px] w-full flex-shrink-0"></div>;
+  return <div className="bg-neutral-100 h-[0.2rem] w-full shrink-0"></div>;
 }

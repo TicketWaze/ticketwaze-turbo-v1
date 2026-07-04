@@ -25,7 +25,7 @@ function processTicketsDataByDay(
   const today = new Date();
 
   // On génère 7 jours passés + Aujourd'hui (Now) + 2 jours futurs = 10 jours au total sur la courbe
-  for (let i = 7; i >= -2; i--) {
+  for (let i = 7; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
     const key = d.toISOString().slice(0, 10); // "YYYY-MM-DD"
@@ -44,19 +44,15 @@ function processTicketsDataByDay(
   const keys = Object.keys(counts);
   const data = Object.values(counts);
   const totalPoints = data.length;
-  const todayIndex = totalPoints - 3;
+  const todayIndex = totalPoints - 1;
 
-  // Prévisions pour les 2 jours futurs (J+1 et J+2)
-  const valueAtNow = data[todayIndex];
-  data[totalPoints - 2] = Math.round(valueAtNow * 1.08);
-  data[totalPoints - 1] = Math.round(valueAtNow * 1.15);
 
   // Conversion des clés de date en jours de la semaine traduits
   const labels = keys.map((key, index) => {
     if (index === todayIndex) {
       return translations.today;
     }
-    const d = new Date(key);
+    const d = new Date(key + "T00:00:00");
     return translations.days[d.getDay()]; // Récupère le bon jour traduit (Mon, Tue...)
   });
 
@@ -125,10 +121,6 @@ export default function DailyTicketSalesChart({
             pointHoverRadius: 5,
             fill: true,
             tension: 0.1,
-            segment: {
-              borderDash: (ctx) =>
-                ctx.p1DataIndex >= labels.length - 2 ? [6, 6] : undefined,
-            },
           },
         ],
       },
@@ -171,6 +163,7 @@ export default function DailyTicketSalesChart({
             },
           },
           y: {
+            display: false,
             beginAtZero: true,
             grid: {
               display: true,

@@ -3,10 +3,10 @@
 import UpcomingCard from "@/components/UpcomingCard";
 import { slugify } from "@/lib/Slugify";
 import { CloseCircle, Money3, SearchNormal, Star } from "iconsax-reactjs";
-import { DateTime } from "luxon";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function UpcomingPageContent({ events }: { events: any }) {
   const t = useTranslations("Upcoming");
@@ -21,7 +21,12 @@ export default function UpcomingPageContent({ events }: { events: any }) {
   const [mobileSearch, setMobileSearch] = useState(false);
   return (
     <>
-      <header className="w-full flex items-center justify-between">
+      <motion.header
+        className="w-full flex items-center justify-between"
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+      >
         {!mobileSearch && (
           <div className="flex flex-col gap-2">
             {session?.user && (
@@ -85,50 +90,62 @@ export default function UpcomingPageContent({ events }: { events: any }) {
             </button>
           )}
         </div>
-      </header>
-      <ul className="list pt-4 overflow-y-scroll">
-        {filteredEvents.map((event: any) => {
-          const today = DateTime.now();
-          const eventStart = event.eventDays?.[0]?.eventDate
-            ? DateTime.fromISO(event.eventDays[0].eventDate)
-            : null;
-          const daysLeft = eventStart
-            ? eventStart.diff(today, "days").days
-            : null;
-          const roundedDays = Math.ceil(
-            daysLeft && daysLeft > 0 ? daysLeft : 0,
-          );
-          const slug = slugify(event.eventName, event.eventId);
-          return (
-            <li key={event.eventId}>
-              <UpcomingCard
-                href={`upcoming/${slug}`}
-                image={event.eventImageUrl}
-                name={event.eventName}
-                day={roundedDays}
-                tickets={event.tickets?.length ?? 0}
-              />
-            </li>
-          );
-        })}
-      </ul>
-      {list.length > 0 && filteredEvents.length === 0 && (
-        <div className="flex flex-col h-full justify-center items-center gap-12">
-          <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
-            <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
-              <Star size="50" color="#0D0D0D" variant="Bulk" />
-            </div>
-          </div>
-          <span className="font-primary text-[1.8rem] text-center leading-8 text-neutral-600">
-            {t("noResult")} <span className="text-deep-100">{query}</span>
-          </span>
-        </div>
-      )}
+      </motion.header>
+      <>
+        <ul className="list pt-4 overflow-y-scroll">
+          {filteredEvents.map((event: any, index) => {
+            const slug = slugify(event.eventName, event.eventId);
+            return (
+              <motion.li
+                key={event.eventId}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  ease: "easeOut",
+                  delay: Math.min(index * 0.06, 0.3),
+                }}
+              >
+                <UpcomingCard
+                  href={`upcoming/${slug}`}
+                  image={event.eventImageUrl}
+                  name={event.eventName}
+                  eventDays={event.eventDays ?? []}
+                  tickets={event.tickets?.length ?? 0}
+                />
+              </motion.li>
+            );
+          })}
+        </ul>
+        <AnimatePresence>
+          {list.length > 0 && filteredEvents.length === 0 && (
+            <motion.div
+              className="flex flex-col h-full justify-center items-center gap-12"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
+                <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
+                  <Star size="50" color="#0D0D0D" variant="Bulk" />
+                </div>
+              </div>
+              <span className="font-primary text-[1.8rem] text-center leading-8 text-neutral-600">
+                {t("noResult")} <span className="text-deep-100">{query}</span>
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </>
       {list.length === 0 && (
-        <div
+        <motion.div
           className={
             "w-132 lg:w-184 mx-auto h-full flex flex-col items-center justify-center gap-20"
           }
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
         >
           <div
             className={
@@ -152,7 +169,7 @@ export default function UpcomingPageContent({ events }: { events: any }) {
               {t("description")}
             </p>
           </div>
-        </div>
+        </motion.div>
       )}
     </>
   );

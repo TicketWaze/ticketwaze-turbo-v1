@@ -1,0 +1,15 @@
+{
+  "name": "@ticketwaze/security-headers",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@ticketwaze/typescript-config": "*",
+    "typescript": "5.9.2"
+  }
+}

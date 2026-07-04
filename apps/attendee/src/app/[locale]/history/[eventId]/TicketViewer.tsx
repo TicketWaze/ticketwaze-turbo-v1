@@ -200,34 +200,36 @@ export default function TicketViewer({
         </div>
       </div>
 
-      <div className="border border-neutral-100 rounded-[100px] py-4 px-6 flex justify-between">
-        <div className="flex items-center gap-[1.8rem]">
-          <button
-            onClick={goToPrevious}
-            disabled={mockTickets.length <= 1}
-            className="w-14 cursor-pointer h-14 disabled:cursor-not-allowed rounded-full bg-neutral-100 flex items-center justify-center"
-          >
-            <ArrowLeft2 variant="Bulk" size={20} color="#0D0D0D" />
-          </button>
-          <span className="text-[2.2rem] leading-12 text-neutral-600">
-            <span className="text-primary-500">{currentIndex + 1}</span>/
-            {mockTickets.length}
-          </span>
-          <button
-            onClick={goToNext}
-            disabled={mockTickets.length <= 1}
-            className="w-14 cursor-pointer h-14 disabled:cursor-not-allowed rounded-full bg-neutral-100 flex items-center justify-center"
-          >
-            <ArrowRight2 variant="Bulk" size={20} color="#0D0D0D" />
-          </button>
+      {event.eventCategory !== "meet" && (
+        <div className="border border-neutral-100 rounded-[100px] py-4 px-6 flex justify-between">
+          <div className="flex items-center gap-[1.8rem]">
+            <button
+              onClick={goToPrevious}
+              disabled={mockTickets.length <= 1}
+              className="w-14 cursor-pointer h-14 disabled:cursor-not-allowed rounded-full bg-neutral-100 flex items-center justify-center"
+            >
+              <ArrowLeft2 variant="Bulk" size={20} color="#0D0D0D" />
+            </button>
+            <span className="text-[2.2rem] leading-12 text-neutral-600">
+              <span className="text-primary-500">{currentIndex + 1}</span>/
+              {mockTickets.length}
+            </span>
+            <button
+              onClick={goToNext}
+              disabled={mockTickets.length <= 1}
+              className="w-14 cursor-pointer h-14 disabled:cursor-not-allowed rounded-full bg-neutral-100 flex items-center justify-center"
+            >
+              <ArrowRight2 variant="Bulk" size={20} color="#0D0D0D" />
+            </button>
+          </div>
+          <div className="cursor-pointer px-12 py-[7.5px] bg-neutral-300  rounded-[100px] flex gap-4 items-center justify-center disabled:cursor-not-allowed text-deep-100 ">
+            <TicketExpired size="20" variant="Bulk"/>
+            <span className="text-[1.5rem] ">
+              {t("not_used")}
+            </span>
+          </div>
         </div>
-        <div className="cursor-pointer px-12 py-[7.5px] bg-neutral-300  rounded-[100px] flex gap-4 items-center justify-center disabled:cursor-not-allowed text-deep-100 ">
-          <TicketExpired size="20" variant="Bulk"/>
-          <span className="text-[1.5rem] ">
-            {t("not_used")}
-          </span>
-        </div>
-      </div>
+      )}
     </>
   );
 }
