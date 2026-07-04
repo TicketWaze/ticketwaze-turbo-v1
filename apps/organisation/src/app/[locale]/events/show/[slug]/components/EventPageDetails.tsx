@@ -69,6 +69,24 @@ export default function EventPageDetails({
   const roundedDays = Math.ceil(daysLeft && daysLeft > 0 ? daysLeft : 0);
   const isUpcoming = eventStart.isValid && today < eventStart;
 
+  // The report is only available once the activity is fully over (after the
+  // last day's end time, in the event's timezone).
+  const sortedDays = [...event.eventDays].sort(
+    (a, b) => a.dayNumber - b.dayNumber,
+  );
+  const lastDay = sortedDays[sortedDays.length - 1];
+  const lastDate = lastDay
+    ? DateTime.fromISO(lastDay.eventDate, { zone: "utc" })
+        .setZone(lastDay.timezone, { keepLocalTime: true })
+        .toISODate()
+    : null;
+  const eventEnd = lastDay
+    ? DateTime.fromISO(`${lastDate}T${lastDay.endTime}`, {
+        zone: lastDay.timezone,
+      })
+    : null;
+  const isPast = !!eventEnd?.isValid && today > eventEnd;
+
   const [deletionStatus, setDeletionStatus] = useState(
     event.deletionStatus ?? null,
   );
@@ -100,6 +118,8 @@ export default function EventPageDetails({
           <MoreComponent
             daysLeft={daysLeft}
             event={event}
+            tickets={tickets}
+            isPast={isPast}
             isFree={isFree}
             slug={slug}
             membershipTier={membershipTier}
@@ -218,6 +238,8 @@ export default function EventPageDetails({
         <MoreComponent
           daysLeft={daysLeft}
           event={event}
+          tickets={tickets}
+          isPast={isPast}
           isFree={isFree}
           slug={slug}
           membershipTier={membershipTier}
