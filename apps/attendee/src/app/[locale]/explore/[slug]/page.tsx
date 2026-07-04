@@ -28,6 +28,11 @@ import formatTime from "@/lib/formatTime";
 import AnimatedEventPage from "./AnimatedEventPage";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import isEventPast from "@/lib/isEventPast";
+import {
+  JsonLd,
+  buildEventJsonLd,
+  buildBreadcrumbJsonLd,
+} from "@/lib/structuredData";
 
 export async function generateMetadata({
   params,
@@ -150,8 +155,23 @@ export default async function EventPage({
   const isFollowing = organisation.followers.filter(
     (follower: any) => follower.userId === session?.user.userId,
   );
+
+  const layoutT = await getTranslations("Layout");
+  const eventUrl = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slug}`;
+  const eventJsonLd = buildEventJsonLd({
+    event,
+    organisation,
+    url: eventUrl,
+  });
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: layoutT("links.explore"), path: `/${locale}/explore` },
+    { name: event.eventName },
+  ]);
+
   return (
     <AttendeeLayout title={event.eventName}>
+      <JsonLd data={eventJsonLd} />
+      <JsonLd data={breadcrumbJsonLd} />
       <AnimatedEventPage>
         <BackButton text={t("back")} />
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">

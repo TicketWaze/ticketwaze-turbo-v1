@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import Footer from "@/components/Footer";
 import Hero from "./components/Hero";
 import ContactSection from "./components/ContactSection";
+import { JsonLd, buildBreadcrumbs } from "@/lib/structuredData";
 
 const siteUrl = "https://ticketwaze.com";
 
@@ -38,7 +39,15 @@ export async function generateMetadata({
   };
 }
 
-export default function ContactPage() {
+export default async function ContactPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  const localePath = locale === "fr" ? "" : `/${locale}`;
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "ContactPage",
@@ -49,6 +58,10 @@ export default function ContactPage() {
       "Get in touch with the Ticketwaze support team for help, partnerships, media inquiries, or general questions.",
     isPartOf: { "@id": `${siteUrl}/#website` },
   };
+  const breadcrumbs = buildBreadcrumbs(
+    [{ name: t("home"), path: "" }, { name: t("contact.title") }],
+    localePath,
+  );
 
   return (
     <>
@@ -56,6 +69,7 @@ export default function ContactPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <JsonLd data={breadcrumbs} />
       <Hero />
       <ContactSection />
       <Footer />

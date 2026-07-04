@@ -8,6 +8,7 @@ import AuthProvider from "@/lib/AuthProvider";
 import { Toaster } from "sonner";
 import TopLoader from "@/components/shared/TopLoader";
 import { Analytics } from "@vercel/analytics/next";
+import { JsonLd, buildSiteJsonLd } from "@/lib/structuredData";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -56,6 +57,7 @@ export default async function RootLayout({
       <body
         className={`${bricolageGrotesque.variable} ${dmMono.variable} ${dmSans.className} `}
       >
+        <JsonLd data={buildSiteJsonLd(locale)} />
         <NextIntlClientProvider>
           <AuthProvider>
             {/* <OrganisationProvider/> */}
