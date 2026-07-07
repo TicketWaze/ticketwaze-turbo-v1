@@ -7,7 +7,15 @@ import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 import FormatDate from "@/lib/FormatDate";
 
-function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
+function EventCard({
+  event,
+  aside,
+  ongoing,
+}: {
+  event: Event;
+  aside?: boolean;
+  ongoing?: boolean;
+}) {
   const date = event.eventDays.filter(
     (eventDay) => eventDay.dayNumber === 1,
   )[0];
@@ -50,7 +58,13 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         )}
         {event.deletionStatus === "deleted" && (
           <div className="bg-neutral-500 block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
-            DELETED
+            {t("deleted").toUpperCase()}
+          </div>
+        )}
+        {ongoing && (
+          <div className="bg-success absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit flex items-center gap-2">
+            <span className="w-[6px] h-[6px] rounded-full bg-white animate-pulse shrink-0" />
+            {t("ongoing").toUpperCase()}
           </div>
         )}
         {event.adminStatus === "rejected" && (

@@ -577,6 +577,7 @@
     "title": "Activity Overview",
     "search": "Search for activity",
     "create": "Create activity",
+    "create_short": "Create",
     "description": "Your activities will show up here once you start creating.",
     "nothing": "Nothing to see here",
     "upcoming": "Upcoming",
@@ -994,6 +995,7 @@
       "errors": {
         "basicDetails": {
           "name": "Activity name should be at leat 10 characters",
+          "nameTaken": "This activity name is already taken",
           "no_special": "This field doesn't allow special characters",
           "description": {
             "min": "Activity description cannot be less than 150 characters",

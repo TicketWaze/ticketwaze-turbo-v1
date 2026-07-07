@@ -576,6 +576,7 @@
     "title": "Aperçu des activités",
     "search": "Rechercher une activité",
     "create": "Créer une activité",
+    "create_short": "Créer",
     "description": "Vos activités apparaîtront ici une fois que vous commencerez à les créer.",
     "nothing": "Rien à voir ici",
     "upcoming": "À venir",
@@ -993,6 +994,7 @@
       "errors": {
         "basicDetails": {
           "name": "Le nom de l’activité doit comporter au moins 10 caractères",
+          "nameTaken": "Ce nom d’activité est déjà utilisé",
           "no_special": "Ce champ n’autorise pas les caractères spéciaux",
           "description": {
             "min": "La description de l’activité ne peut pas contenir moins de 150 caractères",

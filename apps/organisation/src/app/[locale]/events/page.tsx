@@ -4,7 +4,6 @@ import EventPageContent from "./EventPageContent";
 import { auth } from "@/lib/auth";
 import TopBar from "@/components/shared/TopBar";
 import { LinkPrimary } from "@/components/shared/Links";
-import { Add } from "iconsax-reactjs";
 import { Link } from "@/i18n/navigation";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { checkPermission } from "@/lib/role/permission";
@@ -40,10 +39,10 @@ export default async function EventPage() {
               {t("create")}
             </LinkPrimary>
             <Link
-              className="lg:hidden absolute bottom-43 right-10 w-24 h-24 bg-primary-500 rounded-full flex items-center justify-center"
+              className="lg:hidden fixed bottom-43 right-10 z-50 bg-primary-500 rounded-full px-10 py-5 flex items-center justify-center text-white text-[1.4rem] font-medium leading-8 shadow-lg"
               href="/events/create"
             >
-              <Add size="32" color="#ffffff" />
+              {t("create_short")}
             </Link>
           </>
         )}

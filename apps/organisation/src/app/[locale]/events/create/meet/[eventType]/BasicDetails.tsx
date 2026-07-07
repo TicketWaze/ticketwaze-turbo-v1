@@ -14,7 +14,8 @@ import type { CreateMeetFormValues } from "./types";
 import { useTranslations } from "next-intl";
 import { Input } from "@/components/shared/Inputs";
 import { KeyboardEvent, ChangeEvent } from "react";
-import { Warning2 } from "iconsax-reactjs";
+import { CloseCircle, TickCircle, Warning2 } from "iconsax-reactjs";
+import type { EventNameAvailability } from "@/hooks/useEventNameAvailability";
 import RichTextEditor from "@/components/shared/RichTextEditor";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import ToggleIcon from "@/components/shared/ToggleIcon";
@@ -29,6 +30,7 @@ type Props = {
   getValues: UseFormGetValues<CreateMeetFormValues>;
   isPrivate: boolean;
   setIsPrivate: React.Dispatch<React.SetStateAction<boolean>>;
+  nameStatus: EventNameAvailability;
 };
 
 export default function BasicDetails({
@@ -41,6 +43,7 @@ export default function BasicDetails({
   getValues,
   isPrivate,
   setIsPrivate,
+  nameStatus,
 }: Props) {
   const t = useTranslations("Events.create_event");
 
@@ -144,7 +147,21 @@ export default function BasicDetails({
           {...register("eventName")}
           type="text"
           maxLength={50}
-          error={errors.eventName?.message}
+          error={
+            errors.eventName?.message ??
+            (nameStatus === "taken"
+              ? t("errors.basicDetails.nameTaken")
+              : undefined)
+          }
+          trailing={
+            nameStatus === "checking" ? (
+              <div className="w-8 h-8 border-3 border-t-primary-500 border-neutral-300 rounded-full animate-spin" />
+            ) : nameStatus === "available" ? (
+              <TickCircle size="20" color="#349C2E" variant="Bulk" />
+            ) : nameStatus === "taken" ? (
+              <CloseCircle size="20" color="#DE0028" variant="Bulk" />
+            ) : null
+          }
         >
           {t("event_name")}
         </Input>

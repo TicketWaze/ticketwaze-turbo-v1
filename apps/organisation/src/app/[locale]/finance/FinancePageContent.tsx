@@ -162,7 +162,7 @@ export default function FinancePageContent({
             <TableRow>
               <TableHead
                 className={
-                  "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("transactions.table.id")}
@@ -176,7 +176,7 @@ export default function FinancePageContent({
               </TableHead>
               <TableHead
                 className={
-                  "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
                 }
               >
                 {t("transactions.table.amount")}
@@ -200,79 +200,77 @@ export default function FinancePageContent({
           <TableBody>
             {orders.slice(0, 5).map((order) => {
               return (
-                <TableRow key={order.orderId}>
-                  <TableCell
-                    className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {TruncateUrl(order.orderName, 15)}
-                        </span>
-                      </DrawerTrigger>
-                      <OrdersInformations
-                        tickets={order.tickets}
-                        order={order as Order}
-                      />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell
-                    className={"text-[1.5rem] leading-8 text-neutral-900"}
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {TruncateUrl(order.tickets[0].event.eventName, 20)}
-                        </span>
-                      </DrawerTrigger>
-                      <OrdersInformations
-                        tickets={order.tickets}
-                        order={order as Order}
-                      />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell
-                    className={
-                      "text-[1.5rem] hidden lg:table-cell font-medium leading-8 text-neutral-900"
-                    }
-                  >
-                    {order.tickets[0].event.currency === "USD"
-                      ? order.tickets.reduce((sum, t) => sum + Number(t.ticketUsdPrice), 0)
-                      : order.tickets.reduce((sum, t) => sum + Number(t.ticketPrice), 0)}{" "}
-                    {order.tickets[0].event.currency}
-                  </TableCell>
-                  <TableCell className={"hidden lg:table-cell"}>
-                    {order?.status === "SUCCESSFUL" && (
-                      <span
+                <Drawer direction={"right"} key={order.orderId}>
+                  <DrawerTrigger asChild>
+                    <TableRow className={"cursor-pointer"}>
+                      <TableCell
                         className={
-                          "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                          "text-[1.5rem] hidden lg:table-cell py-6 leading-8 text-neutral-900"
                         }
                       >
-                        {t("filters.successful")}
-                      </span>
-                    )}
-                    {order?.status === "RETURNED" && (
-                      <span
+                        {TruncateUrl(order.orderName, 15)}
+                      </TableCell>
+                      <TableCell
                         className={
-                          "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-failure  px-2 rounded-[30px] bg-failure/10"
+                          "text-[1.5rem] py-6 leading-8 text-neutral-900"
                         }
                       >
-                        {t("filters.returned")}
-                      </span>
-                    )}
-                  </TableCell>
-                  <TableCell
-                    className={
-                      "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-                    }
-                  >
-                    {FormatDate(
-                      order.createdAt,
-                      locale,
-                      order.tickets[0].event.eventDays[0].timezone,
-                    )}
-                  </TableCell>
-                </TableRow>
+                        {TruncateUrl(order.tickets[0].event.eventName, 20)}
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                        }
+                      >
+                        {order.tickets[0].event.currency === "USD"
+                          ? order.tickets.reduce(
+                              (sum, t) => sum + Number(t.ticketUsdPrice),
+                              0,
+                            )
+                          : order.tickets.reduce(
+                              (sum, t) => sum + Number(t.ticketPrice),
+                              0,
+                            )}{" "}
+                        {order.tickets[0].event.currency}
+                      </TableCell>
+                      <TableCell className={"hidden lg:table-cell"}>
+                        {order?.status === "SUCCESSFUL" && (
+                          <span
+                            className={
+                              "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
+                            }
+                          >
+                            {t("filters.successful")}
+                          </span>
+                        )}
+                        {order?.status === "RETURNED" && (
+                          <span
+                            className={
+                              "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-failure  px-2 rounded-[30px] bg-failure/10"
+                            }
+                          >
+                            {t("filters.returned")}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                        }
+                      >
+                        {FormatDate(
+                          order.createdAt,
+                          locale,
+                          order.tickets[0].event.eventDays[0].timezone,
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  </DrawerTrigger>
+                  <OrdersInformations
+                    tickets={order.tickets}
+                    order={order as Order}
+                  />
+                </Drawer>
               );
             })}
           </TableBody>
@@ -387,113 +385,78 @@ export default function FinancePageContent({
           <TableBody>
             {transactions.withdrawalRequests.slice(0, 5).map((request) => {
               return (
-                <TableRow key={request.withdrawalRequestId}>
-                  <TableCell
-                    className={
-                      "text-[1.5rem] hidden lg:table-cell py-6 leading-8 text-neutral-900"
-                    }
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {TruncateUrl(request.withdrawalRequestId, 14)}
-                        </span>
-                      </DrawerTrigger>
-                      <WithdrawalInformations request={request} />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell
-                    className={"text-[1.5rem] leading-8 text-neutral-900 py-6"}
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {TruncateUrl(request.bankName ?? "", 14)}
-                        </span>
-                      </DrawerTrigger>
-                      <WithdrawalInformations request={request} />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell
-                    className={"text-[1.5rem] leading-8 text-neutral-900"}
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {TruncateUrl(request.accountNumber ?? "", 14)}
-                        </span>
-                      </DrawerTrigger>
-                      <WithdrawalInformations request={request} />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell
-                    className={
-                      "text-[1.5rem] hidden lg:table-cell font-medium leading-8 text-neutral-900"
-                    }
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {currentOrganisation?.currency === "USD"
-                            ? request.usdAmount
-                            : request.amount}{" "}
-                          {currentOrganisation?.currency}
-                        </span>
-                      </DrawerTrigger>
-                      <WithdrawalInformations request={request} />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell>
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {request.status.toUpperCase() === "SUCCESSFUL" && (
-                            <span
-                              className={
-                                "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-4 rounded-[30px] bg-[#349C2E]/20"
-                              }
-                            >
-                              {t("filters.successful")}
-                            </span>
-                          )}
-                          {request.status.toUpperCase() === "PENDING" && (
-                            <span
-                              className={
-                                "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-4 rounded-[30px] bg-[#EA961C]/20"
-                              }
-                            >
-                              {t("filters.pending")}
-                            </span>
-                          )}
-                          {request.status.toUpperCase() === "FAILED" && (
-                            <span
-                              className={
-                                "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-failure px-4 rounded-[30px] bg-failure/20"
-                              }
-                            >
-                              {t("filters.failed")}
-                            </span>
-                          )}
-                        </span>
-                      </DrawerTrigger>
-                      <WithdrawalInformations request={request} />
-                    </Drawer>
-                  </TableCell>
-                  <TableCell
-                    className={
-                      "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-                    }
-                  >
-                    <Drawer direction={"right"}>
-                      <DrawerTrigger>
-                        <span className={"cursor-pointer"}>
-                          {FormatDate(request.createdAt, locale, "local")}
-                        </span>
-                      </DrawerTrigger>
-                      <WithdrawalInformations request={request} />
-                    </Drawer>
-                  </TableCell>
-                </TableRow>
+                <Drawer direction={"right"} key={request.withdrawalRequestId}>
+                  <DrawerTrigger asChild>
+                    <TableRow className={"cursor-pointer"}>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] hidden lg:table-cell py-6 leading-8 text-neutral-900"
+                        }
+                      >
+                        {TruncateUrl(request.withdrawalRequestId, 14)}
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] leading-8 text-neutral-900 py-6"
+                        }
+                      >
+                        {TruncateUrl(request.bankName ?? "", 14)}
+                      </TableCell>
+                      <TableCell
+                        className={"text-[1.5rem] leading-8 text-neutral-900"}
+                      >
+                        {TruncateUrl(request.accountNumber ?? "", 14)}
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] hidden lg:table-cell font-medium leading-8 text-neutral-900"
+                        }
+                      >
+                        {currentOrganisation?.currency === "USD"
+                          ? request.usdAmount
+                          : request.amount}{" "}
+                        {currentOrganisation?.currency}
+                      </TableCell>
+                      <TableCell>
+                        {request.status.toUpperCase() === "SUCCESSFUL" && (
+                          <span
+                            className={
+                              "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-4 rounded-[30px] bg-[#349C2E]/20"
+                            }
+                          >
+                            {t("filters.successful")}
+                          </span>
+                        )}
+                        {request.status.toUpperCase() === "PENDING" && (
+                          <span
+                            className={
+                              "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-4 rounded-[30px] bg-[#EA961C]/20"
+                            }
+                          >
+                            {t("filters.pending")}
+                          </span>
+                        )}
+                        {request.status.toUpperCase() === "FAILED" && (
+                          <span
+                            className={
+                              "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-failure px-4 rounded-[30px] bg-failure/20"
+                            }
+                          >
+                            {t("filters.failed")}
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell
+                        className={
+                          "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                        }
+                      >
+                        {FormatDate(request.createdAt, locale, "local")}
+                      </TableCell>
+                    </TableRow>
+                  </DrawerTrigger>
+                  <WithdrawalInformations request={request} />
+                </Drawer>
               );
             })}
           </TableBody>

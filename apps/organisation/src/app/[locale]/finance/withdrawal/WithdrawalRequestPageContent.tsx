@@ -125,113 +125,78 @@ export default function WithdrawalRequestPageContent({
         <TableBody>
           {requests.map((request) => {
             return (
-              <TableRow key={request.withdrawalRequestId}>
-                <TableCell
-                  className={
-                    "text-[1.5rem] hidden lg:table-cell py-6 leading-8 text-neutral-900"
-                  }
-                >
-                  <Drawer direction={"right"}>
-                    <DrawerTrigger>
-                      <span className={"cursor-pointer"}>
-                        {TruncateUrl(request.withdrawalRequestId, 14)}
-                      </span>
-                    </DrawerTrigger>
-                    <WithdrawalInformations request={request} />
-                  </Drawer>
-                </TableCell>
-                <TableCell
-                  className={"text-[1.5rem] leading-8 text-neutral-900 py-6"}
-                >
-                  <Drawer direction={"right"}>
-                    <DrawerTrigger>
-                      <span className={"cursor-pointer"}>
-                        {TruncateUrl(request.bankName ?? "", 14)}
-                      </span>
-                    </DrawerTrigger>
-                    <WithdrawalInformations request={request} />
-                  </Drawer>
-                </TableCell>
-                <TableCell
-                  className={"text-[1.5rem] leading-8 text-neutral-900"}
-                >
-                  <Drawer direction={"right"}>
-                    <DrawerTrigger>
-                      <span className={"cursor-pointer"}>
-                        {TruncateUrl(request.accountNumber ?? "", 14)}
-                      </span>
-                    </DrawerTrigger>
-                    <WithdrawalInformations request={request} />
-                  </Drawer>
-                </TableCell>
-                <TableCell
-                  className={
-                    "text-[1.5rem] hidden lg:table-cell font-medium leading-8 text-neutral-900"
-                  }
-                >
-                  <Drawer direction={"right"}>
-                    <DrawerTrigger>
-                      <span className={"cursor-pointer"}>
-                        {currentOrganisation?.currency === "USD"
-                          ? request.usdAmount
-                          : request.amount}{" "}
-                        {currentOrganisation?.currency}
-                      </span>
-                    </DrawerTrigger>
-                    <WithdrawalInformations request={request} />
-                  </Drawer>
-                </TableCell>
-                <TableCell>
-                  <Drawer direction={"right"}>
-                    <DrawerTrigger>
-                      <span className={"cursor-pointer"}>
-                        {request.status.toUpperCase() === "SUCCESSFUL" && (
-                          <span
-                            className={
-                              "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-4 rounded-[30px] bg-[#349C2E]/20"
-                            }
-                          >
-                            {t("filters.successful")}
-                          </span>
-                        )}
-                        {request.status.toUpperCase() === "PENDING" && (
-                          <span
-                            className={
-                              "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-4 rounded-[30px] bg-[#EA961C]/20"
-                            }
-                          >
-                            {t("filters.pending")}
-                          </span>
-                        )}
-                        {request.status.toUpperCase() === "FAILED" && (
-                          <span
-                            className={
-                              "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-failure px-4 rounded-[30px] bg-failure/20"
-                            }
-                          >
-                            {t("filters.failed")}
-                          </span>
-                        )}
-                      </span>
-                    </DrawerTrigger>
-                    <WithdrawalInformations request={request} />
-                  </Drawer>
-                </TableCell>
-                <TableCell
-                  className={
-                    "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-                  }
-                >
-                  <Drawer direction={"right"}>
-                    <DrawerTrigger>
-                      <span className={"cursor-pointer"}>
-                        {formatDate(request.createdAt, locale, "local")}
-                      </span>
-                    </DrawerTrigger>
-                    <WithdrawalInformations request={request} />
-                  </Drawer>
-                </TableCell>
-              </TableRow>
+              <Drawer direction={"right"} key={request.withdrawalRequestId}>
+                <DrawerTrigger asChild>
+                  <TableRow className={"cursor-pointer"}>
+                    <TableCell
+                      className={
+                        "text-[1.5rem] hidden lg:table-cell py-6 leading-8 text-neutral-900"
+                      }
+                    >
+                      {TruncateUrl(request.withdrawalRequestId, 14)}
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "text-[1.5rem] leading-8 text-neutral-900 py-6"
+                      }
+                    >
+                      {TruncateUrl(request.bankName ?? "", 14)}
+                    </TableCell>
+                    <TableCell
+                      className={"text-[1.5rem] leading-8 text-neutral-900"}
+                    >
+                      {TruncateUrl(request.accountNumber ?? "", 14)}
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "text-[1.5rem] hidden lg:table-cell font-medium leading-8 text-neutral-900"
+                      }
+                    >
+                      {currentOrganisation?.currency === "USD"
+                        ? request.usdAmount
+                        : request.amount}{" "}
+                      {currentOrganisation?.currency}
+                    </TableCell>
+                    <TableCell>
+                      {request.status.toUpperCase() === "SUCCESSFUL" && (
+                        <span
+                          className={
+                            "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-4 rounded-[30px] bg-[#349C2E]/20"
+                          }
+                        >
+                          {t("filters.successful")}
+                        </span>
+                      )}
+                      {request.status.toUpperCase() === "PENDING" && (
+                        <span
+                          className={
+                            "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-4 rounded-[30px] bg-[#EA961C]/20"
+                          }
+                        >
+                          {t("filters.pending")}
+                        </span>
+                      )}
+                      {request.status.toUpperCase() === "FAILED" && (
+                        <span
+                          className={
+                            "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-failure px-4 rounded-[30px] bg-failure/20"
+                          }
+                        >
+                          {t("filters.failed")}
+                        </span>
+                      )}
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                      }
+                    >
+                      {formatDate(request.createdAt, locale, "local")}
+                    </TableCell>
+                  </TableRow>
+                </DrawerTrigger>
+                <WithdrawalInformations request={request} />
+              </Drawer>
             );
           })}
         </TableBody>

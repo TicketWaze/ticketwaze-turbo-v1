@@ -61,21 +61,6 @@ export default function PaymentStep({
           </div>
         ) : (
           <>
-            {!isGuest && (
-              <button
-                className={optionClass("wallet")}
-                onClick={() => onSelectPayment("wallet")}
-              >
-                <div className="flex items-center gap-4">
-                  <MoneyRecive size="20" color="#0d0d0d" variant="Bulk" />
-                  <span className="font-semibold text-[1.6rem] leading-[22px] text-deep-100">
-                    {t("payment.wallet")}
-                  </span>
-                </div>
-                <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
-              </button>
-            )}
-
             <button
               className={optionClass("moncash")}
               onClick={() => onSelectPayment("moncash")}
@@ -101,6 +86,21 @@ export default function PaymentStep({
               </div>
               <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
             </button>
+
+            {!isGuest && (
+              <button
+                className={optionClass("wallet")}
+                onClick={() => onSelectPayment("wallet")}
+              >
+                <div className="flex items-center gap-4">
+                  <MoneyRecive size="20" color="#0d0d0d" variant="Bulk" />
+                  <span className="font-semibold text-[1.6rem] leading-[22px] text-deep-100">
+                    {t("payment.wallet")}
+                  </span>
+                </div>
+                <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+              </button>
+            )}
 
             <div className="flex flex-col items-start gap-4 p-[15px] rounded-[15px] border border-neutral-100 text-[1.2rem] leading-8 text-neutral-700">
               <ShieldSecurity size="20" color="#E45B00" />

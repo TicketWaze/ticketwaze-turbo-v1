@@ -242,10 +242,10 @@ export default function CheckoutFlow({
         },
       );
       const response = await request.json();
-      if (response.status === "success") {
+      if (response.status === "success" && response.paymentURL) {
         router.push(response.paymentURL);
       } else {
-        toast.error(response.message);
+        toast.error(response.message ?? "Something went wrong");
       }
       setIsLoading(false);
       return;
@@ -267,10 +267,10 @@ export default function CheckoutFlow({
       },
     );
     const response = await request.json();
-    if (response.status === "success") {
+    if (response.status === "success" && response.paymentURL) {
       router.push(response.paymentURL);
     } else {
-      toast.error(response.message);
+      toast.error(response.message ?? "Something went wrong");
     }
     setIsLoading(false);
   }

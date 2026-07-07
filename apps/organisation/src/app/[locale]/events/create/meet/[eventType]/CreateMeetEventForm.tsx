@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
@@ -8,10 +7,8 @@ import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import {
-  CreateGoogleMeetEvent,
-  ValidateBasicDetailsInPerson,
-} from "@/actions/EventActions";
+import { CreateGoogleMeetEvent } from "@/actions/EventActions";
+import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
@@ -67,8 +64,10 @@ export default function CreateMeetEventForm({
     register,
     handleSubmit,
     setValue,
+    setError,
     control,
     trigger,
+    watch,
     formState: { errors, isSubmitting },
     getValues,
   } = useForm<TForm>({
@@ -148,7 +147,8 @@ export default function CreateMeetEventForm({
 
   type FieldName = keyof TForm;
 
-  const [isLoading, setIsLoading] = useState(false);
+  // Name availability is checked live (per keystroke) instead of on step submit.
+  const nameStatus = useEventNameAvailability(watch("eventName"));
 
   const next = async () => {
     let fields: FieldName[];
@@ -172,31 +172,13 @@ export default function CreateMeetEventForm({
     }
     const output = await trigger(fields, { shouldFocus: true });
     if (!output) return;
-    if (currentStep === 0) {
-      // validate basic details
-      setIsLoading(true);
-      const formData = new FormData();
-      formData.append("eventName", getValues("eventName"));
-      formData.append("eventDescription", getValues("eventDescription"));
-      formData.append("eventImage", getValues("eventImage"));
-      formData.append("eventType", eventType);
-      formData.append(
-        "activityTags",
-        JSON.stringify(getValues("activityTags")),
+    if (currentStep === 0 && nameStatus === "taken") {
+      setError(
+        "eventName",
+        { type: "manual", message: t("errors.basicDetails.nameTaken") },
+        { shouldFocus: true },
       );
-      const result = await ValidateBasicDetailsInPerson(
-        organisation?.organisationId ?? "",
-        session?.user.accessToken ?? "",
-        formData,
-        locale,
-        "create",
-      );
-      if (result.status !== "success") {
-        setIsLoading(false);
-        toast.error(result.error);
-        return;
-      }
-      setIsLoading(false);
+      return;
     }
     if (currentStep === steps.length - 1) {
       await handleSubmit(processForm)();
@@ -244,9 +226,11 @@ export default function CreateMeetEventForm({
         <ButtonPrimary
           onClick={next}
           className=" w-full max-w-212 mx-auto  "
-          disabled={isSubmitting || isLoading}
+          disabled={
+            isSubmitting || (currentStep === 0 && nameStatus === "checking")
+          }
         >
-          {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
+          {isSubmitting ? <LoadingCircleSmall /> : t("proceed")}
         </ButtonPrimary>
       </div>
 
@@ -255,8 +239,13 @@ export default function CreateMeetEventForm({
           <div className="text-[2.2rem] text-neutral-600">
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
-          <ButtonPrimary onClick={next} disabled={isSubmitting || isLoading}>
-            {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
+          <ButtonPrimary
+            onClick={next}
+            disabled={
+              isSubmitting || (currentStep === 0 && nameStatus === "checking")
+            }
+          >
+            {isSubmitting ? <LoadingCircleSmall /> : t("proceed")}
           </ButtonPrimary>
         </div>
       </div>
@@ -335,6 +324,7 @@ export default function CreateMeetEventForm({
               getValues={getValues}
               isPrivate={isPrivate}
               setIsPrivate={setIsPrivate}
+              nameStatus={nameStatus}
             />
           </motion.div>
         )}
