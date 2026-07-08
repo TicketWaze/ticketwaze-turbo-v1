@@ -78,7 +78,7 @@ export default function EventActions({
             onClick={RemoveToFavorite}
             className="p-[7.5px] group flex items-center justify-center rounded-[30px] cursor-pointer bg-primary-100"
           >
-            <Heart size="21" color="#E45B00" variant="Bulk" />
+            <Heart width={20} height={20} color="#E45B00" variant="Bulk" />
           </button>
         )}
         {session?.user && !isFavorite && (
