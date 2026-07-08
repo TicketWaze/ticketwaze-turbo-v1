@@ -9,7 +9,7 @@ export default function TopBar({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-[2.6rem] font-medium font-primary leading-12 text-black truncate">
+      <span className="text-[2.6rem] font-medium font-primary leading-12 text-black w-15`0 truncate">
         {title}
       </span>
       <div className="flex items-center gap-4">{children}</div>

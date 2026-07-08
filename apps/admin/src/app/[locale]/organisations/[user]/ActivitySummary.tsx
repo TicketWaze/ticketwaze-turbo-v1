@@ -55,7 +55,7 @@ export default function ActivitySummary({
         {showCreated && (
           <div>
             {activeEvents.length > 0 ? (
-              <ul className="flex flex-col gap-4 pt-4">
+              <ul className="grid px-2 lg:px-0 grid-cols-1 lg:grid-cols-2 gap-8  w-full overflow-y-scroll overflow-x-auto py-4">
                 {activeEvents.map((event) => (
                   <li key={event.eventId} className="w-full">
                     <EventCard event={event} aside />
@@ -112,6 +112,7 @@ export default function ActivitySummary({
         <span className="text-neutral-600">{t("joined_on")}</span>
         <span>{formatDate(createdAt, locale, "local")}</span>
       </div>
+      <div></div>
     </TabsContent>
   );
 }
