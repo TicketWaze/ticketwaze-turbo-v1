@@ -164,7 +164,7 @@ export default async function EventPage({
     url: eventUrl,
   });
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
-    { name: layoutT("links.explore"), path: `/${locale}/explore` },
+    { name: layoutT("sidebar.links.explore"), path: `/${locale}/explore` },
     { name: event.eventName },
   ]);
 
