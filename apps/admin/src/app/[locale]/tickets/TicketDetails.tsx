@@ -56,7 +56,7 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
     ? `${firstDay.startTime} - ${firstDay.endTime}`
     : "—";
   const address =
-    event?.eventType === "meet"
+    event?.eventCategory === "meet"
       ? "Google Meet"
       : [event?.address, event?.city, event?.state, event?.country]
           .filter(Boolean)

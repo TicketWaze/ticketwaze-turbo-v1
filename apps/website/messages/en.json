@@ -366,23 +366,27 @@
   "LiveChat": {
     "button": "Chat with us",
     "title": "Ticketwaze Support",
-    "subtitle": "Online · Replies in minutes",
+    "subtitle_online": "Online · Replies in minutes",
+    "subtitle_offline": "Away · Live support 9 AM–5 PM (Haiti time)",
     "connecting": "Connecting…",
-    "pick_hint": "Choose a topic above ↑",
+    "pick_hint": "Choose a topic above",
     "bot": {
-      "welcome": "👋 Hey there! Welcome to Ticketwaze Live Support — we're really glad you reached out!",
-      "ask_name": "To get you connected with our team, could I start with your name?",
-      "got_name": "Great to meet you, {name}! 😊 What's your email address so our team can follow up with you?",
-      "invalid_email": "That doesn't quite look like a valid email — mind double-checking it?",
+      "welcome": "Hi, welcome to Ticketwaze support.",
+      "away": "Our team answers live between 9 AM and 5 PM, Haiti time. You can still leave your message now and we'll get back to you as soon as we're back.",
+      "ask_name": "To get started, what's your name?",
+      "got_name": "Nice to meet you, {name}. What's your email address so our team can follow up with you?",
+      "invalid_email": "That doesn't look like a valid email — mind double-checking it?",
       "name_too_short": "Your name needs to be at least 2 characters — what should we call you?",
       "name_too_long": "That name is a bit long (100 characters max) — could you shorten it?",
       "message_too_short": "Could you give us a bit more detail? We need at least 10 characters to help you.",
       "message_too_long": "Your message is too long (2000 characters max) — could you trim it a little?",
       "ask_subject": "Thanks! What's bringing you here today?",
-      "ask_message": "Tell me what's going on and our team will jump right on it 💬",
-      "connecting": "Perfect, {name}! Hang tight — I'm connecting you to a live agent right now 🔌",
-      "connected": "You're all set! Opening your live chat now ✨",
-      "error": "Something went wrong on our end. Please try again — we're sorry for the trouble!"
+      "ask_message": "Tell us what's going on and our team will take it from there.",
+      "connecting": "Perfect, {name}. One moment — putting you through to our team.",
+      "connecting_offline": "Thanks, {name}. Saving your message for the team.",
+      "connected": "You're all set. Opening your chat now.",
+      "connected_offline": "Done — your chat is open. We'll reply there as soon as we're back online.",
+      "error": "Something went wrong on our end. Please try again — sorry for the trouble."
     },
     "subjects": {
       "account": "Account issues",
@@ -421,6 +425,8 @@
     "team_note": "Our support team will reply as soon as possible. You'll also receive replies by email.",
     "waiting_title": "Connecting you to an agent…",
     "waiting_description": "Your request has been received. A member of our support team will accept your chat shortly. Please stay on this page.",
+    "waiting_title_offline": "Message received",
+    "waiting_description_offline": "Our team is away right now — live support is available from 9 AM to 5 PM, Haiti time. We'll reply here and by email as soon as we're back; no need to stay on this page.",
     "waiting_badge": "In Queue"
   },
   "ContactPage": {

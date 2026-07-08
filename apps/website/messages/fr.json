@@ -366,23 +366,27 @@
   "LiveChat": {
     "button": "Discuter avec nous",
     "title": "Support Ticketwaze",
-    "subtitle": "En ligne · Répond en quelques minutes",
+    "subtitle_online": "En ligne · Répond en quelques minutes",
+    "subtitle_offline": "Absent · Support en direct de 9h à 17h (heure d'Haïti)",
     "connecting": "Connexion en cours…",
-    "pick_hint": "Choisissez un sujet ci-dessus ↑",
+    "pick_hint": "Choisissez un sujet ci-dessus",
     "bot": {
-      "welcome": "👋 Bonjour ! Bienvenue sur le support en direct de Ticketwaze — nous sommes ravis de vous avoir !",
-      "ask_name": "Pour vous mettre en relation avec notre équipe, puis-je commencer par votre prénom ?",
-      "got_name": "Ravi de vous rencontrer, {name} ! 😊 Quelle est votre adresse e-mail pour que notre équipe puisse vous recontacter ?",
+      "welcome": "Bonjour, bienvenue sur le support Ticketwaze.",
+      "away": "Notre équipe répond en direct de 9h à 17h, heure d'Haïti. Vous pouvez tout de même laisser votre message maintenant et nous vous répondrons dès notre retour.",
+      "ask_name": "Pour commencer, quel est votre prénom ?",
+      "got_name": "Enchanté, {name}. Quelle est votre adresse e-mail pour que notre équipe puisse vous recontacter ?",
       "invalid_email": "Cet e-mail ne semble pas valide — pourriez-vous le vérifier ?",
       "name_too_short": "Votre prénom doit contenir au moins 2 caractères — comment vous appelez-vous ?",
       "name_too_long": "Ce prénom est un peu trop long (100 caractères max) — pourriez-vous le raccourcir ?",
       "message_too_short": "Pourriez-vous nous en dire un peu plus ? Il nous faut au moins 10 caractères pour vous aider.",
       "message_too_long": "Votre message est trop long (2000 caractères max) — pourriez-vous le raccourcir ?",
       "ask_subject": "Merci ! Pourquoi nous contactez-vous aujourd'hui ?",
-      "ask_message": "Décrivez ce qui se passe et notre équipe s'en occupe immédiatement 💬",
-      "connecting": "Parfait, {name} ! Un instant — je vous connecte à un agent en direct 🔌",
-      "connected": "Vous êtes prêt ! Ouverture de votre chat en direct maintenant ✨",
-      "error": "Une erreur s'est produite de notre côté. Veuillez réessayer — nous nous en excusons !"
+      "ask_message": "Décrivez ce qui se passe et notre équipe prendra le relais.",
+      "connecting": "Parfait, {name}. Un instant — je vous mets en relation avec notre équipe.",
+      "connecting_offline": "Merci, {name}. J'enregistre votre message pour l'équipe.",
+      "connected": "C'est prêt. Ouverture de votre chat maintenant.",
+      "connected_offline": "C'est fait — votre chat est ouvert. Nous vous y répondrons dès notre retour en ligne.",
+      "error": "Une erreur s'est produite de notre côté. Veuillez réessayer — nous nous en excusons."
     },
     "subjects": {
       "account": "Problème de compte",
@@ -421,6 +425,8 @@
     "team_note": "Notre équipe support vous répondra dès que possible. Vous recevrez également les réponses par e-mail.",
     "waiting_title": "Connexion à un agent en cours…",
     "waiting_description": "Votre demande a été reçue. Un membre de notre équipe acceptera votre chat dans un instant. Veuillez rester sur cette page.",
+    "waiting_title_offline": "Message bien reçu",
+    "waiting_description_offline": "Notre équipe est absente pour le moment — le support en direct est disponible de 9h à 17h, heure d'Haïti. Nous vous répondrons ici et par e-mail dès notre retour ; inutile de rester sur cette page.",
     "waiting_badge": "En attente"
   },
   "ContactPage": {

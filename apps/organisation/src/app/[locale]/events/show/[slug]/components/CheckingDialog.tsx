@@ -124,6 +124,13 @@ export default function CheckingDialog({ event }: { event: Event }) {
       });
       return;
     }
+    if (win.status === "closed") {
+      setScanResult({
+        status: "failed",
+        message: t("scanner.closed"),
+      });
+      return;
+    }
     await scan(id);
     setTicketIdInput("");
   }

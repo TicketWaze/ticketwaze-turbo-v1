@@ -40,14 +40,6 @@ function getStatusStyle(status: Ticket["status"]) {
   }
 }
 
-function formatPurchaseDate(dateInput: unknown) {
-  return new Date(dateInput as string).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
-
 export function ActivityAttendances({ event }: { event: Event }) {
   const t = useTranslations("Activities");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -130,23 +122,19 @@ export function ActivityAttendances({ event }: { event: Event }) {
           </Select>
         </div>
       </div>
-      <Table>
+      {/* table-fixed + explicit column widths: the name column absorbs the
+          remaining space and truncates, so the table never overflows-x */}
+      <Table className="table-fixed">
         <TableHeader>
           <TableRow>
             <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("activity.resume.attendance.table.name")}
             </TableHead>
-            <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+            <TableHead className="font-bold hidden lg:table-cell w-[13rem] text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("activity.resume.attendance.table.class")}
             </TableHead>
-            <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("activity.resume.attendance.table.amount")}
-            </TableHead>
-            <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+            <TableHead className="font-bold w-[11rem] lg:w-[15rem] text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("activity.resume.attendance.table.status")}
-            </TableHead>
-            <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("activity.resume.attendance.table.purchase")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -154,7 +142,7 @@ export function ActivityAttendances({ event }: { event: Event }) {
           {filteredTickets.length === 0 && (
             <TableRow>
               <TableCell
-                colSpan={5}
+                colSpan={3}
                 className="text-center text-[1.4rem] text-neutral-500 py-12"
               >
                 No attendees found.
@@ -168,22 +156,16 @@ export function ActivityAttendances({ event }: { event: Event }) {
               <Drawer key={ticket.ticketId} direction="right">
                 <DrawerTrigger asChild>
                   <TableRow className="cursor-pointer">
-                    <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900">
+                    <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900 truncate pr-4">
                       {ticket.fullName}
                     </TableCell>
                     <TableCell className="py-6 hidden lg:table-cell">
                       <span
                         style={{ color: ticketColor }}
-                        className="py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-[#f5f5f5]"
+                        className="inline-block max-w-full truncate py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-[#f5f5f5]"
                       >
                         {ticket.ticketType}
                       </span>
-                    </TableCell>
-                    <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900">
-                      {event.currency === "HTG"
-                        ? ticket.ticketPrice.toLocaleString()
-                        : ticket.ticketUsdPrice.toLocaleString()}{" "}
-                      {event.currency}
                     </TableCell>
                     <TableCell className="py-6">
                       <span
@@ -192,9 +174,6 @@ export function ActivityAttendances({ event }: { event: Event }) {
                       >
                         {statusStyle.label}
                       </span>
-                    </TableCell>
-                    <TableCell className="text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900">
-                      {formatPurchaseDate(ticket.createdAt)}
                     </TableCell>
                   </TableRow>
                 </DrawerTrigger>

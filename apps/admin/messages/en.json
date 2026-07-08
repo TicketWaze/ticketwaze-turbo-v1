@@ -391,6 +391,10 @@
       "cta": {
         "close": "Close",
         "resend": "Resend ticket"
+      },
+      "resend": {
+        "success": "Ticket sent to {email}",
+        "error": "Failed to resend the ticket"
       }
     }
   },
@@ -733,11 +737,18 @@
       "grant_subscription": {
         "trigger": "Give subscription",
         "title": "Give a complimentary subscription",
-        "description": "Grant this organisation a free Pro subscription for the selected period. They won't be charged. Any existing complimentary subscription will be replaced.",
+        "description": "Grant this organisation a free Pro or Premium subscription for the selected period. They won't be charged. Any existing complimentary subscription will be replaced.",
+        "tierLabel": "Plan",
+        "tiers": {
+          "pro": "Pro",
+          "premium": "Premium"
+        },
+        "durationLabel": "Duration",
         "days": "days",
+        "year": "year",
         "cancel": "Cancel",
         "confirm": "Grant subscription",
-        "success": "Granted a {days}-day complimentary subscription",
+        "success": "Granted a {days}-day complimentary {plan} subscription",
         "error": "Failed to grant the subscription"
       },
       "subscription": {

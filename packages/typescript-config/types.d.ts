@@ -194,6 +194,7 @@ export interface Organisation {
   googleRefreshToken: string;
   events: Event[];
   followers: User[];
+  followersCount?: number;
   membershipTier: MembershipTier;
   createdAt: DateTime;
   updatedAt: DateTime;

@@ -50,6 +50,9 @@ export default async function Page() {
   const waitlistMembers: WaitlistMember[] = response.waitlistMembers;
   const availablePermissions: string[] = permissionsData?.permissions ?? [];
   const totalMembers = members.length + waitlistMembers.length;
+  // Effective limit from the API: orgs on a free trial keep the free plan's
+  // team size (3) — the tier on the session says "pro" during a trial.
+  const teamLimit: number | undefined = response.teamLimit;
 
   return (
     <OrganizerLayout title={t("title")}>
@@ -58,6 +61,7 @@ export default async function Page() {
         <TopBar title={t("title")}>
           <AddMember
             totalMembers={totalMembers}
+            teamLimit={teamLimit}
             availablePermissions={availablePermissions}
           />
         </TopBar>

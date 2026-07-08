@@ -346,6 +346,10 @@
       "cta": {
         "close": "Fermer",
         "resend": "Renvoyer le billet"
+      },
+      "resend": {
+        "success": "Billet envoyé à {email}",
+        "error": "Échec du renvoi du billet"
       }
     }
   },
@@ -722,11 +726,18 @@
       "grant_subscription": {
         "trigger": "Offrir un abonnement",
         "title": "Offrir un abonnement gratuit",
-        "description": "Accordez à cette organisation un abonnement Pro gratuit pour la période sélectionnée. Elle ne sera pas facturée. Tout abonnement gratuit existant sera remplacé.",
+        "description": "Accordez à cette organisation un abonnement Pro ou Premium gratuit pour la période sélectionnée. Elle ne sera pas facturée. Tout abonnement gratuit existant sera remplacé.",
+        "tierLabel": "Forfait",
+        "tiers": {
+          "pro": "Pro",
+          "premium": "Premium"
+        },
+        "durationLabel": "Durée",
         "days": "jours",
+        "year": "an",
         "cancel": "Annuler",
         "confirm": "Accorder l'abonnement",
-        "success": "Abonnement gratuit de {days} jours accordé",
+        "success": "Abonnement {plan} gratuit de {days} jours accordé",
         "error": "Échec de l'attribution de l'abonnement"
       },
       "subscription": {

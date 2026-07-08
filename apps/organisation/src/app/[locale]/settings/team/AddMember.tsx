@@ -23,9 +23,11 @@ import { usePermission } from "@/hooks/usePermission";
 
 export default function AddMember({
   totalMembers,
+  teamLimit,
   availablePermissions,
 }: {
   totalMembers: number;
+  teamLimit?: number;
   availablePermissions: string[];
 }) {
   const t = useTranslations("Settings.team");
@@ -59,7 +61,11 @@ export default function AddMember({
       toast.error("Session not ready, please try again.");
       return;
     }
-    if (totalMembers === session.activeOrganisation.membershipTier?.teamMember) {
+    // Prefer the API's effective limit: trial orgs are capped at the free
+    // plan's team size even though their session tier says "pro".
+    const memberLimit =
+      teamLimit ?? session.activeOrganisation.membershipTier?.teamMember;
+    if (memberLimit !== undefined && totalMembers >= memberLimit) {
       toast.info(t("teamLimit"));
       return;
     }

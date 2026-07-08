@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { isSupportOnline } from "@/lib/supportHours";
 
 type Step = "name" | "email" | "subject" | "message" | "connecting" | "done";
 
@@ -28,6 +29,7 @@ export default function LiveChatWidget() {
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
+  const [online, setOnline] = useState(isSupportOnline);
   const [messages, setMessages] = useState<ChatMsg[]>([]);
   const [step, setStep] = useState<Step>("name");
   const [inputValue, setInputValue] = useState("");
@@ -59,6 +61,12 @@ export default function LiveChatWidget() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
+  // Keep the online/away status current while the page stays open
+  useEffect(() => {
+    const id = setInterval(() => setOnline(isSupportOnline()), 60_000);
+    return () => clearInterval(id);
+  }, []);
+
   // Start conversation once on first open
   useEffect(() => {
     if (!open) return;
@@ -70,6 +78,9 @@ export default function LiveChatWidget() {
 
     (async () => {
       await addBot(t("bot.welcome"), undefined, 700);
+      if (!isSupportOnline()) {
+        await addBot(t("bot.away"), undefined, 900);
+      }
       await addBot(t("bot.ask_name"), undefined, 1000);
       setTimeout(() => inputRef.current?.focus(), 100);
     })();
@@ -145,7 +156,14 @@ export default function LiveChatWidget() {
   }
 
   async function connect(data: typeof userData) {
-    await addBot(t("bot.connecting", { name: data.name }), undefined, 600);
+    const liveNow = isSupportOnline();
+    await addBot(
+      liveNow
+        ? t("bot.connecting", { name: data.name })
+        : t("bot.connecting_offline", { name: data.name }),
+      undefined,
+      600,
+    );
 
     try {
       const res = await fetch(
@@ -168,7 +186,11 @@ export default function LiveChatWidget() {
       const json = await res.json();
 
       if (json.status === "success" && json.accessToken) {
-        await addBot(t("bot.connected"), undefined, 400);
+        await addBot(
+          liveNow ? t("bot.connected") : t("bot.connected_offline"),
+          undefined,
+          400,
+        );
         setStep("done");
         await pause(1400);
         setOpen(false);
@@ -188,9 +210,6 @@ export default function LiveChatWidget() {
     <>
       {/* ── Floating button ──────────────────────────────────────────────────── */}
       <div className="fixed bottom-10 right-10 z-50 flex items-center justify-center">
-        {!open && (
-          <span className="absolute h-full w-full rounded-full bg-primary-500/35 animate-ping pointer-events-none" />
-        )}
         <motion.button
           onClick={() => setOpen((o) => !o)}
           whileHover={{ scale: 1.08 }}
@@ -259,17 +278,21 @@ export default function LiveChatWidget() {
                   {t("title")}
                 </span>
                 <div className="flex items-center gap-[6px]">
-                  <motion.span
-                    className="w-[0.75rem] h-[0.75rem] bg-green-400 rounded-full inline-block"
-                    animate={{ opacity: [1, 0.5, 1] }}
-                    transition={{
-                      repeat: Infinity,
-                      duration: 2.2,
-                      ease: "easeInOut",
-                    }}
-                  />
+                  {online ? (
+                    <motion.span
+                      className="w-[0.75rem] h-[0.75rem] bg-green-400 rounded-full inline-block"
+                      animate={{ opacity: [1, 0.5, 1] }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2.2,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  ) : (
+                    <span className="w-[0.75rem] h-[0.75rem] bg-white/40 rounded-full inline-block" />
+                  )}
                   <span className="text-white/75 text-[1.2rem] leading-5 font-sans">
-                    {t("subtitle")}
+                    {online ? t("subtitle_online") : t("subtitle_offline")}
                   </span>
                 </div>
               </div>
@@ -286,9 +309,8 @@ export default function LiveChatWidget() {
             </div>
 
             {/* Notice banner */}
-            <div className="shrink-0 mx-4 mt-3 mb-1 flex items-start gap-[0.6rem] bg-amber-50 border border-amber-200 rounded-[1rem] px-4 py-[0.7rem]">
-              <span className="text-amber-500 text-[1.3rem] mt-[1px] shrink-0">⚠️</span>
-              <p className="text-[1.15rem] leading-[1.55] text-amber-700 font-sans">
+            <div className="shrink-0 mx-4 mt-3 mb-1 bg-primary-500/10 border border-primary-500/20 rounded-[1rem] px-4 py-[0.7rem]">
+              <p className="text-[1.15rem] leading-[1.55] text-neutral-600 font-sans">
                 {t("notice")}
               </p>
             </div>
