@@ -80,174 +80,177 @@ export default function UserPageContent({
 
         <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] lg:grid-rows-1 gap-8 lg:gap-16 lg:flex-1 lg:min-h-0">
           <div className="w-full flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
-            <form className="flex flex-col gap-12 w-full pb-4 overflow-x-hidden">
-              <div className="flex flex-col gap-6">
-                <div className="w-full bg-primary-500 p-6 rounded-[20px] flex gap-10 items-center">
-                  <div className="w-40 h-40 rounded-[25px] bg-neutral-300 overflow-hidden shrink-0">
-                    {organisation.profileImageUrl && (
-                      <Image
-                        src={organisation.profileImageUrl}
-                        alt={organisation.organisationName}
-                        className="w-full h-full object-cover"
-                        width={100}
-                        height={100}
-                      />
-                    )}
-                  </div>
-                  <span className="text-[2.2rem] text-white font-medium leading-10 capitalize">
-                    {organisation.organisationName}
-                  </span>
-                </div>
-
-                <h3 className="text-deep-100 font-primary font-medium text-[1.8rem] leading-10">
-                  {t("profile")}
-                </h3>
-
-                <div className="flex gap-6">
-                  <Select
-                    defaultValue={organisation.state ?? "unknown"}
-                    disabled
-                  >
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full text-[1.4rem] text-neutral-700 leading-8">
-                      <SelectValue placeholder={organisation.state ?? "—"} />
-                    </SelectTrigger>
-                    <SelectContent className="bg-neutral-100 text-[1.4rem]">
-                      <SelectGroup>
-                        <SelectItem
-                          className="text-[1.4rem] text-deep-100"
-                          value={organisation.state ?? "unknown"}
-                        >
-                          {organisation.state ?? "—"}
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    defaultValue={organisation.city ?? "unknown"}
-                    disabled
-                  >
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full text-[1.4rem] text-neutral-700 leading-8">
-                      <SelectValue placeholder={organisation.city ?? "—"} />
-                    </SelectTrigger>
-                    <SelectContent className="bg-neutral-100 text-[1.4rem]">
-                      <SelectGroup>
-                        <SelectItem
-                          className="text-[1.4rem] text-deep-100"
-                          value={organisation.city ?? "unknown"}
-                        >
-                          {organisation.city ?? "—"}
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <TextArea
-                  className="w-full h-60"
-                  disabled
-                  readOnly
-                  value={organisation.organisationDescription}
-                >
-                  {" "}
-                </TextArea>
-
-                <Input type="email" disabled readOnly>
-                  {organisation.organisationEmail}
-                </Input>
-
-                <Input type="tel" disabled readOnly>
-                  {organisation.organisationPhoneNumber}
-                </Input>
-
-                {organisation.organisationWebsite && (
-                  <Input type="url" disabled readOnly>
-                    {organisation.organisationWebsite}
-                  </Input>
-                )}
-              </div>
-            </form>
-
-            {/* Subscription */}
-            <div className="flex flex-col gap-6 w-full pb-4">
-              <h3 className="text-deep-100 font-primary font-medium text-[1.8rem] leading-10">
-                {t("subscription.title")}
-              </h3>
-              <div className="flex flex-col gap-6 border border-neutral-100 rounded-[20px] p-6">
-                <div className="flex items-center justify-between gap-4">
-                  <span className="text-[1.6rem] text-neutral-600 leading-8">
-                    {t("subscription.plan")}
-                  </span>
-                  <span className="flex items-center gap-3">
-                    <span className="text-[1.6rem] font-medium text-deep-100 capitalize leading-8">
-                      {subActive ? sub!.membershipTier : t("subscription.free")}
+            <div className="flex flex-col gap-12 w-full pb-4">
+              <form className="flex flex-col gap-12 w-full pb-4 overflow-x-hidden">
+                <div className="flex flex-col gap-6">
+                  <div className="w-full bg-primary-500 p-6 rounded-[20px] flex gap-10 items-center">
+                    <div className="w-40 h-40 rounded-[25px] bg-neutral-300 overflow-hidden shrink-0">
+                      {organisation.profileImageUrl && (
+                        <Image
+                          src={organisation.profileImageUrl}
+                          alt={organisation.organisationName}
+                          className="w-full h-full object-cover"
+                          width={100}
+                          height={100}
+                        />
+                      )}
+                    </div>
+                    <span className="text-[2.2rem] text-white font-medium leading-10 capitalize">
+                      {organisation.organisationName}
                     </span>
-                    {subActive &&
-                      (sub!.paymentMethod === "complimentary" ? (
-                        <span className="text-[1.1rem] font-bold uppercase leading-6 text-primary-500 bg-primary-50 px-2 py-[0.3rem] rounded-[30px]">
-                          {t("subscription.complimentary")}
-                        </span>
-                      ) : sub!.isTrial ? (
-                        <span className="text-[1.1rem] font-bold uppercase leading-6 text-[#EA961C] bg-[#FEF3E2] px-2 py-[0.3rem] rounded-[30px]">
-                          {t("subscription.trial")}
-                        </span>
-                      ) : (
-                        <span className="text-[1.1rem] font-bold uppercase leading-6 text-emerald-600 bg-emerald-50 px-2 py-[0.3rem] rounded-[30px]">
-                          {t("subscription.active")}
-                        </span>
-                      ))}
-                  </span>
-                </div>
+                  </div>
 
-                {subActive ? (
-                  <>
-                    {!sub!.isTrial && (
+                  <h3 className="text-deep-100 font-primary font-medium text-[1.8rem] leading-10">
+                    {t("profile")}
+                  </h3>
+
+                  <div className="flex gap-6">
+                    <Select
+                      defaultValue={organisation.state ?? "unknown"}
+                      disabled
+                    >
+                      <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full text-[1.4rem] text-neutral-700 leading-8">
+                        <SelectValue placeholder={organisation.state ?? "—"} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-neutral-100 text-[1.4rem]">
+                        <SelectGroup>
+                          <SelectItem
+                            className="text-[1.4rem] text-deep-100"
+                            value={organisation.state ?? "unknown"}
+                          >
+                            {organisation.state ?? "—"}
+                          </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      defaultValue={organisation.city ?? "unknown"}
+                      disabled
+                    >
+                      <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full text-[1.4rem] text-neutral-700 leading-8">
+                        <SelectValue placeholder={organisation.city ?? "—"} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-neutral-100 text-[1.4rem]">
+                        <SelectGroup>
+                          <SelectItem
+                            className="text-[1.4rem] text-deep-100"
+                            value={organisation.city ?? "unknown"}
+                          >
+                            {organisation.city ?? "—"}
+                          </SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <TextArea
+                    className="w-full h-60"
+                    disabled
+                    readOnly
+                    value={organisation.organisationDescription}
+                  >
+                    {" "}
+                  </TextArea>
+
+                  <Input type="email" disabled readOnly>
+                    {organisation.organisationEmail}
+                  </Input>
+
+                  <Input type="tel" disabled readOnly>
+                    {organisation.organisationPhoneNumber}
+                  </Input>
+
+                  {organisation.organisationWebsite && (
+                    <Input type="url" disabled readOnly>
+                      {organisation.organisationWebsite}
+                    </Input>
+                  )}
+                </div>
+              </form>
+              {/* Subscription */}
+              <div className="flex flex-col gap-6 w-full pb-4">
+                <h3 className="text-deep-100 font-primary font-medium text-[1.8rem] leading-10">
+                  {t("subscription.title")}
+                </h3>
+                <div className="flex flex-col gap-6 border border-neutral-100 rounded-[20px] p-6">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-[1.6rem] text-neutral-600 leading-8">
+                      {t("subscription.plan")}
+                    </span>
+                    <span className="flex items-center gap-3">
+                      <span className="text-[1.6rem] font-medium text-deep-100 capitalize leading-8">
+                        {subActive
+                          ? sub!.membershipTier
+                          : t("subscription.free")}
+                      </span>
+                      {subActive &&
+                        (sub!.paymentMethod === "complimentary" ? (
+                          <span className="text-[1.1rem] font-bold uppercase leading-6 text-primary-500 bg-primary-50 px-2 py-[0.3rem] rounded-[30px]">
+                            {t("subscription.complimentary")}
+                          </span>
+                        ) : sub!.isTrial ? (
+                          <span className="text-[1.1rem] font-bold uppercase leading-6 text-[#EA961C] bg-[#FEF3E2] px-2 py-[0.3rem] rounded-[30px]">
+                            {t("subscription.trial")}
+                          </span>
+                        ) : (
+                          <span className="text-[1.1rem] font-bold uppercase leading-6 text-emerald-600 bg-emerald-50 px-2 py-[0.3rem] rounded-[30px]">
+                            {t("subscription.active")}
+                          </span>
+                        ))}
+                    </span>
+                  </div>
+
+                  {subActive ? (
+                    <>
+                      {!sub!.isTrial && (
+                        <div className="flex items-center justify-between gap-4">
+                          <span className="text-[1.6rem] text-neutral-600 leading-8">
+                            {t("subscription.billing")}
+                          </span>
+                          <span className="text-[1.6rem] text-deep-100 leading-8">
+                            {t(`subscription.${sub!.billingCycle}`)}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-center justify-between gap-4">
                         <span className="text-[1.6rem] text-neutral-600 leading-8">
-                          {t("subscription.billing")}
+                          {t("subscription.started")}
                         </span>
                         <span className="text-[1.6rem] text-deep-100 leading-8">
-                          {t(`subscription.${sub!.billingCycle}`)}
+                          {formatDate(
+                            sub!.createdAt as unknown as string,
+                            locale,
+                            "local",
+                          )}
                         </span>
                       </div>
-                    )}
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[1.6rem] text-neutral-600 leading-8">
-                        {t("subscription.started")}
-                      </span>
-                      <span className="text-[1.6rem] text-deep-100 leading-8">
-                        {formatDate(
-                          sub!.createdAt as unknown as string,
-                          locale,
-                          "local",
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[1.6rem] text-neutral-600 leading-8">
-                        {t("subscription.expires")}
-                      </span>
-                      <span className="text-[1.6rem] text-deep-100 leading-8">
-                        {formatDate(
-                          sub!.endsAt as unknown as string,
-                          locale,
-                          "local",
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between gap-4">
-                      <span className="text-[1.6rem] text-neutral-600 leading-8">
-                        {t("subscription.method")}
-                      </span>
-                      <span className="text-[1.6rem] text-deep-100 leading-8 capitalize">
-                        {sub!.paymentMethod}
-                      </span>
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-[1.4rem] text-neutral-500 leading-7">
-                    {t("subscription.none")}
-                  </p>
-                )}
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-[1.6rem] text-neutral-600 leading-8">
+                          {t("subscription.expires")}
+                        </span>
+                        <span className="text-[1.6rem] text-deep-100 leading-8">
+                          {formatDate(
+                            sub!.endsAt as unknown as string,
+                            locale,
+                            "local",
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between gap-4">
+                        <span className="text-[1.6rem] text-neutral-600 leading-8">
+                          {t("subscription.method")}
+                        </span>
+                        <span className="text-[1.6rem] text-deep-100 leading-8 capitalize">
+                          {sub!.paymentMethod}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="text-[1.4rem] text-neutral-500 leading-7">
+                      {t("subscription.none")}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
