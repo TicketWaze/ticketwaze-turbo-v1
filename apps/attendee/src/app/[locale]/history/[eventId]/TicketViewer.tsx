@@ -223,9 +223,12 @@ export default function TicketViewer({
             </button>
           </div>
           <div className="cursor-pointer px-12 py-[7.5px] bg-neutral-300  rounded-[100px] flex gap-4 items-center justify-center disabled:cursor-not-allowed text-deep-100 ">
-            <TicketExpired size="20" variant="Bulk"/>
-            <span className="text-[1.5rem] ">
+            <TicketExpired size="20" variant="Bulk" className="hidden lg:flex"/>
+            <span className="hidden lg:flex text-[1.5rem] ">
               {t("not_used")}
+            </span>
+            <span className=" lg:hidden text-[1.5rem] ">
+              {t("not_used_m")}
             </span>
           </div>
         </div>

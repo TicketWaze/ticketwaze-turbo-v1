@@ -23,7 +23,7 @@ export default function HTicket({
       <Image src={ticketBG} alt={"ticket bg"} className="h-full w-full" />
       <div
         className={
-          "px-16 absolute top-0 w-full lg:px-4 left-[50%] -translate-x-[50%] flex flex-col items-center gap-8"
+          "px-6 absolute top-0 w-full lg:px-4 left-[50%] -translate-x-[50%] flex flex-col items-center gap-8"
         }
       >
         <span

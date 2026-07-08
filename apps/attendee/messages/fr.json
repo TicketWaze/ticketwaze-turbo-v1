@@ -749,6 +749,7 @@
     "send": "Envoyer le commentaire",
     "use": "Billet utilisé",
     "not_used": "Billet non utilisé",
+    "not_used_m": "Non utilisé",
     "ticket": "Billet",
     "ticketId": "ID du billet",
     "name": "Nom complet",
