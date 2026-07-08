@@ -86,7 +86,7 @@ function EventCard({
         <div className="flex flex-col w-full gap-1">
           <h1
             className={
-              "font-bold font-primary text-[1.2rem] text-deep-100 leading-6"
+              "font-bold w-92 truncate font-primary text-[1.2rem] text-deep-100 leading-6"
             }
           >
             {event.eventName}
