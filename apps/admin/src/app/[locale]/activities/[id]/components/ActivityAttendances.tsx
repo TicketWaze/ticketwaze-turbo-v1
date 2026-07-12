@@ -130,10 +130,10 @@ export function ActivityAttendances({ event }: { event: Event }) {
             <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("activity.resume.attendance.table.name")}
             </TableHead>
-            <TableHead className="font-bold hidden lg:table-cell w-[13rem] text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+            <TableHead className="font-bold hidden lg:table-cell w-52 text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("activity.resume.attendance.table.class")}
             </TableHead>
-            <TableHead className="font-bold w-[11rem] lg:w-[15rem] text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+            <TableHead className="font-bold w-44 lg:w-60 text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("activity.resume.attendance.table.status")}
             </TableHead>
           </TableRow>

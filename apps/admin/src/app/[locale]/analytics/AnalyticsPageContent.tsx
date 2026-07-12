@@ -524,7 +524,7 @@ export default function AnalyticsPageContent({
             >
               <div className={"flex flex-col gap-4 pr-10"}>
                 <div className="flex items-center gap-3">
-                  <span className="w-[8px] h-[8px] rounded-full bg-green-500 flex-shrink-0" />
+                  <span className="w-[0.8rem] h-[0.8rem] rounded-full bg-green-500 shrink-0" />
                   <span className={"text-[14px] text-neutral-600 font-sans leading-tight"}>
                     {t("activity_status.approved")}
                   </span>
@@ -535,7 +535,7 @@ export default function AnalyticsPageContent({
               </div>
               <div className={"flex flex-col gap-4 px-10"}>
                 <div className="flex items-center gap-3">
-                  <span className="w-[8px] h-[8px] rounded-full bg-amber-400 flex-shrink-0" />
+                  <span className="w-[0.8rem] h-[0.8rem] rounded-full bg-amber-400 shrink-0" />
                   <span className={"text-[14px] text-neutral-600 font-sans leading-tight"}>
                     {t("activity_status.in_review")}
                   </span>
@@ -546,7 +546,7 @@ export default function AnalyticsPageContent({
               </div>
               <div className={"flex flex-col gap-4 pl-10"}>
                 <div className="flex items-center gap-3">
-                  <span className="w-[8px] h-[8px] rounded-full bg-red-400 flex-shrink-0" />
+                  <span className="w-[0.8rem] h-[0.8rem] rounded-full bg-red-400 shrink-0" />
                   <span className={"text-[14px] text-neutral-600 font-sans leading-tight"}>
                     {t("activity_status.rejected")}
                   </span>

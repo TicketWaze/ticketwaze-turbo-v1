@@ -7,7 +7,7 @@ export default function Loading() {
       title=""
       className="h-full flex items-center justify-center"
     >
-      <div className="relative w-[280px] h-[280px] flex items-center justify-center">
+      <div className="relative w-md h-112 flex items-center justify-center">
         <svg
           className="absolute inset-0 w-full h-full overflow-visible"
           viewBox="0 0 280 280"
@@ -31,10 +31,10 @@ export default function Loading() {
           </g>
         </svg>
         <div
-          className="absolute w-[130px] h-[130px] rounded-full flex items-center justify-center"
+          className="absolute w-52 h-52 rounded-full flex items-center justify-center"
           style={{ background: "radial-gradient(circle, #fff7f0 0%, #ffe8d6 100%)" }}
         >
-          <div className="w-[96px] h-[96px] rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
+          <div className="w-[9.6rem] h-[9.6rem] rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
             <Image src="/logo-simple-orange.svg" alt="Ticketwaze" width={52} height={52} className="object-contain" priority />
           </div>
         </div>

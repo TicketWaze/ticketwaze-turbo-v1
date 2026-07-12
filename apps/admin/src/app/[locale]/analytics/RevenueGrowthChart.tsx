@@ -17,7 +17,7 @@ export default function RevenueGrowthChart({ data }: { data: ChartPoint[] }) {
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
 
-    const labels = data.map((d, i) => (i === data.length - 1 ? "Now" : d.label));
+    const labels = data.map((d, i) => (i === data.length - 1 ? "Today" : d.label));
     const values = data.map((d) => d.value);
 
     if (chartRef.current) {
@@ -57,7 +57,7 @@ export default function RevenueGrowthChart({ data }: { data: ChartPoint[] }) {
             ticks: {
               maxTicksLimit: 31,
               color: (context) =>
-                context.tick.label === "Now" ? "#eb6819" : "#b5b5b5",
+                context.tick.label === "Today" ? "#eb6819" : "#b5b5b5",
               font: { size: 11 },
             },
           },

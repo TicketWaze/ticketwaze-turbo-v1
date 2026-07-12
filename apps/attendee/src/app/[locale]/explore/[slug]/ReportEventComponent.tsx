@@ -146,7 +146,7 @@ export default function ReportEventComponent({ event }: { event: Event }) {
                 >
                   <label
                     htmlFor="inappropriateContent"
-                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center px-4 py-[1.5rem] gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-[:checked]:bg-white has-[:checked]:ring-primary-500 has-checked:shadow-lg has-[:checked]:ring-1 select-none"
+                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center px-4 py-6 gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-checked:bg-white has-checked:ring-primary-500 has-checked:shadow-lg has-checked:ring-1 select-none"
                   >
                     {t("inappropriateContent")}
                     <input
@@ -159,7 +159,7 @@ export default function ReportEventComponent({ event }: { event: Event }) {
                   </label>
                   <label
                     htmlFor="misleadingInformation"
-                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center px-4 py-[1.5rem] gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-[:checked]:bg-white has-[:checked]:ring-primary-500 has-checked:shadow-lg has-[:checked]:ring-1 select-none"
+                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center px-4 py-6 gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-checked:bg-white has-checked:ring-primary-500 has-checked:shadow-lg has-checked:ring-1 select-none"
                   >
                     {t("misleadingInformation")}
                     <input
@@ -172,7 +172,7 @@ export default function ReportEventComponent({ event }: { event: Event }) {
                   </label>
                   <label
                     htmlFor="fraud"
-                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center px-4 py-[1.5rem] gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-[:checked]:bg-white has-[:checked]:ring-primary-500 has-checked:shadow-lg has-[:checked]:ring-1 select-none"
+                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center px-4 py-6 gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-checked:bg-white has-checked:ring-primary-500 has-checked:shadow-lg has-checked:ring-1 select-none"
                   >
                     {t("fraud")}
                     <input
@@ -185,7 +185,7 @@ export default function ReportEventComponent({ event }: { event: Event }) {
                   </label>
                   <label
                     htmlFor="venue"
-                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center px-4 py-[1.5rem] gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-[:checked]:bg-white has-[:checked]:ring-primary-500 has-checked:shadow-lg has-[:checked]:ring-1 select-none"
+                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center px-4 py-6 gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-checked:bg-white has-checked:ring-primary-500 has-checked:shadow-lg has-checked:ring-1 select-none"
                   >
                     {t("venue")}
                     <input
@@ -198,7 +198,7 @@ export default function ReportEventComponent({ event }: { event: Event }) {
                   </label>
                   <button
                     onClick={next}
-                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center justify-between px-4 py-[1.5rem] gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-[:checked]:bg-white has-[:checked]:ring-primary-500 has-checked:shadow-lg has-[:checked]:ring-1 select-none"
+                    className="font-medium cursor-pointer  relative bg-neutral-100 hover:bg-zinc-100 flex items-center justify-between px-4 py-6 gap-3 rounded-[10px] text-[1.6rem] leading-8 text-deep-100 has-checked:bg-white has-checked:ring-primary-500 has-checked:shadow-lg has-checked:ring-1 select-none"
                   >
                     {t("other")}
                     <ArrowRight2 size={20} color="#2E3237" variant="Bulk" />
@@ -215,7 +215,7 @@ export default function ReportEventComponent({ event }: { event: Event }) {
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ duration: 0.3, ease: "easeInOut" }}
                   layout={false}
-                  className="flex flex-col gap-8 h-full overflow-y-scroll border border-neutral-100 rounded-[15px] p-[15px]"
+                  className="flex flex-col gap-8 h-full overflow-y-scroll border border-neutral-100 rounded-[15px] p-6"
                 >
                   <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
                     {t("question")}
@@ -223,7 +223,7 @@ export default function ReportEventComponent({ event }: { event: Event }) {
                   <div>
                     <textarea
                       className={
-                        "bg-neutral-100 w-full rounded-[2rem] h-[150px] resize-none p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
+                        "bg-neutral-100 w-full rounded-[20px] h-60 resize-none p-8 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border disabled:text-neutral-600 disabled:cursor-not-allowed border-transparent focus:border-primary-500"
                       }
                       placeholder={t("message")}
                       minLength={10}
