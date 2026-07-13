@@ -14,6 +14,7 @@ import TicketClassesChart from "./TicketClassesChart";
 import RevenueTicketsChart from "./RevenueTicketsChart";
 import DonutChart from "./DonutChart";
 import StarRatingChart from "./StarRatingChart";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 
 export default async function AnalyticsPage() {
   const session = await auth();
@@ -28,22 +29,41 @@ export default async function AnalyticsPage() {
 
   const t = await getTranslations("Analytics");
   const locale = await getLocale();
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${currentOrganisationId}/analytics`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept-Language": locale,
-        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-        Authorization: `Bearer ${session.user.accessToken}`,
+
+  let request: Response;
+  try {
+    request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${currentOrganisationId}/analytics`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          Authorization: `Bearer ${session.user.accessToken}`,
+        },
       },
-    },
-  );
+    );
+  } catch {
+    return (
+      <OrganizerLayout title="Analytics">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
-  const analytics = await request.json();
+  const analytics = await request.json().catch(() => null);
+  // On error/404 the API returns an error object without the analytics keys.
+  // Guard the shape so the server render doesn't crash on undefined access.
+  if (!request.ok || !analytics?.membershipTier) {
+    return (
+      <OrganizerLayout title="Analytics">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
 
   /* ── Derived data for new sections ── */
   const isFree = analytics.membershipTier?.membershipName === "free";
