@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft2 } from "iconsax-reactjs";
 import { motion } from "motion/react";
@@ -166,6 +166,23 @@ export default function CreateInPersonEventForm({
   // Name availability is checked live (per keystroke) instead of on step submit.
   const nameStatus = useEventNameAvailability(watch("eventName"));
 
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // After a failed validation, bring the first field in error into view. RHF's
+  // shouldFocus only scrolls focusable native inputs, so custom fields (map,
+  // tags, image) are missed — scroll to the first rendered error message
+  // instead, which every field type shares (.text-failure).
+  const scrollToFirstError = () => {
+    requestAnimationFrame(() => {
+      const container = formRef.current;
+      if (!container) return;
+      const firstError = Array.from(
+        container.querySelectorAll<HTMLElement>(".text-failure"),
+      ).find((el) => (el.textContent ?? "").trim().length > 0);
+      firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
+
   const next = async () => {
     let fields: FieldName[];
     if (currentStep === 1) {
@@ -187,13 +204,17 @@ export default function CreateInPersonEventForm({
       fields = steps[currentStep]?.fields as FieldName[];
     }
     const output = await trigger(fields, { shouldFocus: true });
-    if (!output) return;
+    if (!output) {
+      scrollToFirstError();
+      return;
+    }
     if (currentStep === 0 && nameStatus === "taken") {
       setError(
         "eventName",
         { type: "manual", message: t("errors.basicDetails.nameTaken") },
         { shouldFocus: true },
       );
+      scrollToFirstError();
       return;
     }
     if (currentStep === steps.length - 1) {
@@ -318,6 +339,7 @@ export default function CreateInPersonEventForm({
       )}
 
       <form
+        ref={formRef}
         className=" flex flex-col gap-12 h-full overflow-y-scroll overflow-x-hidden"
         onSubmit={handleSubmit(processForm)}
       >

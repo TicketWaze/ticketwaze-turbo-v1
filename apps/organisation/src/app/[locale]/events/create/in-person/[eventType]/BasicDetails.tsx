@@ -397,6 +397,7 @@ export default function BasicDetails({
               value={input}
               onChange={handleChange}
               onKeyDown={handleKeyDown}
+              onBlur={addTag}
               placeholder={t("tagPlaceholder")}
               className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
             />
