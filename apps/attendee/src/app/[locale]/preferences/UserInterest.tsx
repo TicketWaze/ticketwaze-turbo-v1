@@ -25,6 +25,14 @@ export default function UserInterest({
   const [data, setData] = useState<OnboardingData>({
     interests: userPreferences.interests,
   });
+  // Baseline of the last persisted selection — used to know whether the user
+  // actually changed anything, so the update button stays disabled otherwise.
+  const [savedInterests, setSavedInterests] = useState<string[]>(
+    userPreferences.interests,
+  );
+  const hasChanges =
+    data.interests.length !== savedInterests.length ||
+    data.interests.some((i) => !savedInterests.includes(i));
   const interestList = [
     { title: t("interests.second.musics"), value: "musics" },
     { title: t("interests.second.theater"), value: "theater" },
@@ -64,6 +72,8 @@ export default function UserInterest({
     );
     if (response.status === "failed") {
       toast.error(response.message);
+    } else {
+      setSavedInterests(data.interests);
     }
     setIsLoading(false);
   }
@@ -90,7 +100,7 @@ export default function UserInterest({
           </li>
         ))}
       </ul>
-      <ButtonPrimary onClick={submitHandler}>
+      <ButtonPrimary onClick={submitHandler} disabled={!hasChanges || isLoading}>
         {t("interests.update")}
       </ButtonPrimary>
     </div>
