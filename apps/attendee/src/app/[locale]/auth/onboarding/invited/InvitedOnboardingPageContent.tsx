@@ -151,6 +151,7 @@ export default function InvitedOnboardingPageContent() {
           ...session,
           user: {
             ...session?.user,
+            isOnboarded: true,
             userPreference: response.userPreference,
           },
         });

@@ -156,6 +156,39 @@ export async function CreateInPersonEvent(
   }
 }
 
+export async function CreateRaffle(
+  organisationId: string,
+  accessToken: string,
+  body: FormData,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: body,
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { status: "success" };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
 export async function UpdateInPersonEvent(
   organisationId: string,
   accessToken: string,

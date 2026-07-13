@@ -294,6 +294,37 @@ export interface Event {
   ticketReturns: TicketReturn[];
 }
 
+export interface RafflePrize {
+  rafflePrizeId: string;
+  raffleId: string;
+  rank: number;
+  title: string;
+  description: string | null;
+}
+
+export interface Raffle {
+  raffleId: string;
+  organisationId: string;
+  title: string;
+  description: string;
+  coverImageUrl: string | null;
+  ticketPrice: number;
+  currency: string;
+  usdPrice: number;
+  totalTicketsLimit: number | null;
+  activityTags: string[];
+  salesStartAt: string;
+  salesEndAt: string;
+  drawAt: string;
+  drawMode: 'automatic' | 'manual';
+  adminStatus: 'review' | 'approved' | 'rejected' | 'requested';
+  rejectionReason: string | null;
+  status: 'on_sale' | 'closed' | 'drawn' | 'completed' | 'cancelled';
+  prizes: RafflePrize[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface User {
   accessToken: string;
   refreshToken: string;

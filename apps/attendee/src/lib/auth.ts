@@ -21,6 +21,11 @@ async function refreshAccessToken(token: Record<string, unknown>) {
       accessToken: data.accessToken,
       refreshToken: data.refreshToken,
       accessTokenExpires: data.accessTokenExpires,
+      // Self-heal stale sessions: tokens seeded before the user completed
+      // onboarding carry isOnboarded=false for up to 30 days otherwise.
+      ...(typeof data.isOnboarded === "boolean"
+        ? { isOnboarded: data.isOnboarded }
+        : {}),
       error: undefined,
     };
   } catch {

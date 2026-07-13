@@ -372,12 +372,28 @@
       "description": "Please enter you account details to continue",
       "back": "Back",
       "errors": {
-        "email": "Enter a valid email address"
+        "email": "Enter a valid email address",
+        "generic": "Something went wrong. Please try again."
       },
       "placeholders": {
         "email": "Email Address"
       },
-      "cta": "Reset"
+      "cta": "Reset",
+      "otp": {
+        "title": "Check your inbox",
+        "description": "We sent a 6-digit code to",
+        "submit": "Verify",
+        "resend": "Resend code",
+        "resending": "Sending...",
+        "wrong": "Wrong email?",
+        "sent": "A new code has been sent to your email.",
+        "errors": {
+          "invalid": "Incorrect code. Please try again.",
+          "expired": "This code has expired. Request a new one below.",
+          "notFound": "No code found. Request a new one below."
+        }
+      },
+      "success": "Your password has been reset. You can now sign in."
     },
     "email_sent": {
       "title": "Reset Password",
@@ -474,7 +490,8 @@
           "title": "Date"
         }
       }
-    }
+    },
+    "raffles": "Raffles"
   },
   "Wallet": {
     "title": "Wallet",
@@ -704,7 +721,7 @@
     "feedback": "Write feedback",
     "send": "Send feedback",
     "use": "Ticket used",
-    "not_used":"Ticket not used",
+    "not_used": "Ticket not used",
     "not_used_m": "Not used",
     "ticket": "Ticket",
     "ticketId": "Ticket ID",
@@ -730,6 +747,13 @@
       "guest_description": "Quick checkout without creating an account.",
       "private_note": "This is a private activity. Please sign in with the email you were invited with to purchase tickets.",
       "back": "Back"
+    },
+    "raffleCard": {
+      "tag": "Raffle",
+      "draw": "Draw:",
+      "entries": "entries",
+      "unlimited": "Unlimited entries",
+      "entry": "entry"
     }
   },
   "Checkout": {
@@ -795,7 +819,9 @@
       "via": "Payment method",
       "confirm": "Confirm & Pay",
       "confirm_free": "Get Tickets",
-      "secured": "Secured by Ticketwaze"
+      "secured": "Secured by Ticketwaze",
+      "fees_waived_banner": "Waitlist perk applied — this first purchase is on us. No Ticketwaze fees and no transaction fees, because you waited.",
+      "waived": "Waived"
     },
     "footer": {
       "ticket": "Ticket",

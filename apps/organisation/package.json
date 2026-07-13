@@ -19,6 +19,7 @@
     "@react-oauth/google": "^0.13.5",
     "@stripe/react-stripe-js": "^6.2.0",
     "@stripe/stripe-js": "^9.3.1",
+    "@ticketwaze/currency": "*",
     "@ticketwaze/typescript-config": "*",
     "@ticketwaze/ui": "*",
     "@tiptap/extension-character-count": "^3.23.6",

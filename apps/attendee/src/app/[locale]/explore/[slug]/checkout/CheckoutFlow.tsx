@@ -46,10 +46,14 @@ export default function CheckoutFlow({
   event,
   ticketTypes,
   user,
+  feeWaiverEligible = false,
+  htgExchangeRate = 0,
 }: {
   event: Event;
   ticketTypes: EventTicketType[];
   user?: User;
+  feeWaiverEligible?: boolean;
+  htgExchangeRate?: number;
 }) {
   const t = useTranslations("Checkout");
   const locale = useLocale();
@@ -184,11 +188,15 @@ export default function CheckoutFlow({
     .map((t, i) => ({ ...t, __index: i }))
     .filter((t) => t.quantity > 0);
 
+  // The fee waiver only applies to paid events (free tickets carry no fees).
+  const feeWaived = feeWaiverEligible && !isFree;
   const feeBreakdown = calculateFeeBreakdown(
     selectedWithIndex,
     ticketTypes,
     event.currency,
     paymentType,
+    feeWaived,
+    htgExchangeRate,
   );
 
   // --- Payment actions ---

@@ -1,6 +1,7 @@
 "use client";
 import NoAuthDialog from "@/components/Layouts/NoAuthDialog";
 import EventCard from "@/components/shared/EventCard";
+import RaffleCard from "@/components/shared/RaffleCard";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import {
   Tooltip,
@@ -8,7 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Link } from "@/i18n/navigation";
-import { Event } from "@ticketwaze/typescript-config";
+import { Event, Raffle } from "@ticketwaze/typescript-config";
 import {
   CloseCircle,
   Heart,
@@ -24,9 +25,11 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function ExplorePageContent({
   events,
   pastEvents = [],
+  raffles = [],
 }: {
   events: Event[];
   pastEvents?: Event[];
+  raffles?: Raffle[];
   wallet: null;
 }) {
   const t = useTranslations("Explore");
@@ -35,9 +38,15 @@ export default function ExplorePageContent({
     event.eventName.toLowerCase().includes(query.toLowerCase());
   const filteredEvents = events.filter(matchesQuery);
   const filteredPastEvents = pastEvents.filter(matchesQuery);
-  const hasAnyEvents = events.length > 0 || pastEvents.length > 0;
+  const filteredRaffles = raffles.filter((raffle) =>
+    raffle.title.toLowerCase().includes(query.toLowerCase()),
+  );
+  const hasAnyEvents =
+    events.length > 0 || pastEvents.length > 0 || raffles.length > 0;
   const noSearchResults =
-    filteredEvents.length === 0 && filteredPastEvents.length === 0;
+    filteredEvents.length === 0 &&
+    filteredPastEvents.length === 0 &&
+    filteredRaffles.length === 0;
   const { data: session } = useSession();
 
   const [mobileSearch, setMobileSearch] = useState(false);
@@ -181,6 +190,29 @@ export default function ExplorePageContent({
                 </motion.li>
               ))}
             </ul>
+          )}
+          {filteredRaffles.length > 0 && (
+            <section className="flex flex-col gap-6">
+              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black">
+                {t("raffles")}
+              </span>
+              <ul className="list">
+                {filteredRaffles.map((raffle, index) => (
+                  <motion.li
+                    key={raffle.raffleId}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.35,
+                      ease: "easeOut",
+                      delay: Math.min(index * 0.06, 0.3),
+                    }}
+                  >
+                    <RaffleCard raffle={raffle} />
+                  </motion.li>
+                ))}
+              </ul>
+            </section>
           )}
           {filteredPastEvents.length > 0 && (
             <section className="flex flex-col gap-6">

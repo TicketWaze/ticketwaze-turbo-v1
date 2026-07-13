@@ -415,12 +415,28 @@
       "description": "Veuillez entrer les informations de votre compte pour continuer",
       "back": "Retour",
       "errors": {
-        "email": "Entrez une adresse e-mail valide"
+        "email": "Entrez une adresse e-mail valide",
+        "generic": "Une erreur est survenue. Veuillez réessayer."
       },
       "placeholders": {
         "email": "Adresse e-mail"
       },
-      "cta": "Réinitialiser"
+      "cta": "Réinitialiser",
+      "otp": {
+        "title": "Vérifiez vos emails",
+        "description": "Nous avons envoyé un code à 6 chiffres à",
+        "submit": "Vérifier",
+        "resend": "Renvoyer le code",
+        "resending": "Envoi en cours...",
+        "wrong": "Mauvais email ?",
+        "sent": "Un nouveau code a été envoyé à votre adresse e-mail.",
+        "errors": {
+          "invalid": "Code incorrect. Veuillez réessayer.",
+          "expired": "Ce code a expiré. Demandez-en un nouveau ci-dessous.",
+          "notFound": "Aucun code trouvé. Demandez-en un nouveau ci-dessous."
+        }
+      },
+      "success": "Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter."
     },
     "email_sent": {
       "title": "Réinitialiser le mot de passe",
@@ -518,7 +534,8 @@
           "title": "Date"
         }
       }
-    }
+    },
+    "raffles": "Tirages"
   },
   "Wallet": {
     "title": "Portefeuille",
@@ -774,6 +791,13 @@
       "guest_description": "Paiement rapide sans créer de compte.",
       "private_note": "Ceci est une activité privée. Veuillez vous connecter avec l’adresse e-mail avec laquelle vous avez été invité pour acheter des billets.",
       "back": "Retour"
+    },
+    "raffleCard": {
+      "tag": "Tirage",
+      "draw": "Tirage :",
+      "entries": "billets",
+      "unlimited": "Billets illimités",
+      "entry": "billet"
     }
   },
   "Checkout": {
@@ -839,7 +863,9 @@
       "via": "Méthode de paiement",
       "confirm": "Confirmer & Payer",
       "confirm_free": "Obtenir les billets",
-      "secured": "Sécurisé par Ticketwaze"
+      "secured": "Sécurisé par Ticketwaze",
+      "fees_waived_banner": "Avantage liste d’attente appliqué — ce premier achat est offert. Aucun frais Ticketwaze ni frais de transaction, parce que vous avez patienté.",
+      "waived": "Offert"
     },
     "footer": {
       "ticket": "Billet",

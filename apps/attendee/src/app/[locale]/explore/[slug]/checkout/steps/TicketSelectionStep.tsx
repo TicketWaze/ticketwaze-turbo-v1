@@ -67,7 +67,7 @@ export default function TicketSelectionStep({
       initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0"
+      className="flex flex-col gap-8 lg:h-full lg:min-h-0 lg:overflow-y-auto"
     >
       <ul className="flex flex-col gap-8">
         {[...fields.map((field, index) => ({ field, index, ticketType: ticketTypes[index] }))]

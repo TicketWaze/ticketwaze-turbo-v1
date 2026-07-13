@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import { Card, MoneyRecive, ShieldSecurity, Warning2 } from "iconsax-reactjs";
+import { Card, Gift, MoneyRecive, ShieldSecurity, Warning2 } from "iconsax-reactjs";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Event, EventTicketType } from "@ticketwaze/typescript-config";
@@ -8,6 +8,7 @@ import moncash from "../moncash.svg";
 import Capitalize from "@/lib/Capitalize";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "../checkout.types";
 import { SERVICE_FEE_RATE } from "../checkoutUtils";
+import { formatAmount } from "@ticketwaze/currency";
 
 interface Props {
   delta: number;
@@ -50,7 +51,8 @@ export default function SummaryStep({
   feeBreakdown,
 }: Props) {
   const t = useTranslations("Checkout");
-  const { subtotal, serviceFee, platformFee, transactionFee, total } = feeBreakdown;
+  const { subtotal, serviceFee, platformFee, transactionFee, total, feeWaived } =
+    feeBreakdown;
   const ticketwazeFee = serviceFee + platformFee;
   const serviceFeeLabel = `${(SERVICE_FEE_RATE * 100).toFixed(0)}%`;
 
@@ -68,7 +70,7 @@ export default function SummaryStep({
       initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0"
+      className="flex flex-col gap-8 lg:h-full lg:min-h-0 lg:overflow-y-auto"
     >
       <div className="bg-white rounded-[20px] border border-neutral-100 shadow-[0_4px_24px_rgba(0,0,0,0.06)] overflow-hidden">
         {/* Header */}
@@ -80,6 +82,16 @@ export default function SummaryStep({
             {event.eventName}
           </h3>
         </div>
+
+        {/* Waitlist first-purchase perk banner */}
+        {!isFree && feeWaived && (
+          <div className="mx-[2rem] mt-[1.6rem] flex items-start gap-3 rounded-[12px] bg-[#EAF7EE] border border-[#BFE6CB] px-[1.5rem] py-[1.2rem]">
+            <Gift size="20" color="#1F9D55" variant="Bulk" className="shrink-0 mt-[2px]" />
+            <p className="text-[1.3rem] leading-7 text-[#1a7a43]">
+              {t("summary.fees_waived_banner")}
+            </p>
+          </div>
+        )}
 
         {/* Ticket items */}
         <div className="px-[2rem] py-[1.8rem] flex flex-col gap-[1.4rem] border-b border-dashed border-neutral-200">
@@ -117,7 +129,7 @@ export default function SummaryStep({
                     </span>
                   ) : (
                     <span className="text-[1.5rem] font-medium text-deep-100">
-                      {(unitPrice * ticket.quantity).toFixed(2)}{" "}
+                      {formatAmount(unitPrice * ticket.quantity)}{" "}
                       {event.currency}
                     </span>
                   )}
@@ -137,25 +149,47 @@ export default function SummaryStep({
             <div className="flex items-center justify-between text-[1.4rem]">
               <span className="text-neutral-500">{t("summary.subtotal")}</span>
               <span className="text-deep-100 font-medium">
-                {subtotal.toFixed(2)} {event.currency}
+                {formatAmount(subtotal)} {event.currency}
               </span>
             </div>
             <div className="flex items-center justify-between text-[1.4rem]">
               <span className="text-neutral-500">
                 Ticketwaze fee ({serviceFeeLabel} + {t("summary.tax_label")})
               </span>
-              <span className="text-deep-100 font-medium">
-                {ticketwazeFee.toFixed(2)} {event.currency}
-              </span>
+              {feeWaived ? (
+                <span className="flex items-center gap-2">
+                  <span className="text-neutral-400 line-through">
+                    {formatAmount(ticketwazeFee)} {event.currency}
+                  </span>
+                  <span className="text-[1.1rem] font-semibold uppercase tracking-[0.04em] text-[#1F9D55] bg-[#EAF7EE] px-[0.6rem] py-[0.2rem] rounded-full">
+                    {t("summary.waived")}
+                  </span>
+                </span>
+              ) : (
+                <span className="text-deep-100 font-medium">
+                  {formatAmount(ticketwazeFee)} {event.currency}
+                </span>
+              )}
             </div>
             {transactionFee > 0 && (
               <div className="flex items-center justify-between text-[1.4rem]">
                 <span className="text-neutral-500">
                   {t("summary.transaction_fee")}
                 </span>
-                <span className="text-deep-100 font-medium">
-                  {transactionFee.toFixed(2)} {event.currency}
-                </span>
+                {feeWaived ? (
+                  <span className="flex items-center gap-2">
+                    <span className="text-neutral-400 line-through">
+                      {formatAmount(transactionFee)} {event.currency}
+                    </span>
+                    <span className="text-[1.1rem] font-semibold uppercase tracking-[0.04em] text-[#1F9D55] bg-[#EAF7EE] px-[0.6rem] py-[0.2rem] rounded-full">
+                      {t("summary.waived")}
+                    </span>
+                  </span>
+                ) : (
+                  <span className="text-deep-100 font-medium">
+                    {formatAmount(transactionFee)} {event.currency}
+                  </span>
+                )}
               </div>
             )}
           </div>
@@ -173,7 +207,7 @@ export default function SummaryStep({
           ) : (
             <div className="flex flex-col items-end gap-[0.2rem]">
               <span className="font-primary font-bold text-[3rem] leading-none text-primary-500">
-                {total.toFixed(2)} {event.currency}
+                {formatAmount(total)} {event.currency}
               </span>
               <span className="text-[1.1rem] text-neutral-400 font-normal">
                 {t("summary.tca")}

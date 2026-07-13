@@ -28,6 +28,28 @@ export default async function EventPage() {
     return <UnauthorizedView />;
   }
   const events = await request.json();
+
+  // Raffles live in their own table but share the activities list with events.
+  let raffles = [];
+  try {
+    const rafflesRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${session?.activeOrganisation.organisationId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          Authorization: `Bearer ${session?.user.accessToken}`,
+        },
+        cache: "no-store",
+      },
+    );
+    const rafflesResponse = await rafflesRequest.json();
+    raffles = rafflesResponse.raffles ?? [];
+  } catch {
+    raffles = [];
+  }
   const perms = session?.activeOrganisation?.myPermissions ?? [];
   const canCreate = checkPermission(perms, "events.create");
   return (
@@ -47,7 +69,7 @@ export default async function EventPage() {
           </>
         )}
       </TopBar>
-      <EventPageContent events={events.events} />
+      <EventPageContent events={events.events} raffles={raffles} />
     </OrganizerLayout>
   );
 }
