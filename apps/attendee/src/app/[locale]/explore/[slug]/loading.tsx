@@ -8,7 +8,7 @@ export default function Loading() {
       className="h-full flex items-center justify-center"
     >
       {/* ── Animated logo ── */}
-      <div className="relative w-[280px] h-[280px] flex items-center justify-center">
+      <div className="relative w-md h-112 flex items-center justify-center">
         {/*
          * Three concentric SVG rings — each group rotates independently.
          * Each ring has a small solid "leading dot" at its tip so the motion
@@ -101,12 +101,12 @@ export default function Loading() {
 
         {/* ── Center: nested circles + pulsing logo ── */}
         <div
-          className="absolute w-[130px] h-[130px] rounded-full flex items-center justify-center"
+          className="absolute w-52 h-52 rounded-full flex items-center justify-center"
           style={{
             background: "radial-gradient(circle, #fff7f0 0%, #ffe8d6 100%)",
           }}
         >
-          <div className="w-[96px] h-[96px] rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
+          <div className="w-[9.6rem] h-[9.6rem] rounded-full bg-orange-100 flex items-center justify-center animate-pulse">
             <Image
               src="/logo-simple-orange.svg"
               alt="Ticketwaze"

@@ -132,10 +132,10 @@ export default function BuyTicketAuthDialog({
             <div className="flex flex-col gap-4">
               <button
                 onClick={() => setView("login")}
-                className="flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left group"
+                className="flex items-center justify-between gap-4 p-6 rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left group"
               >
                 <div className="flex items-center gap-4">
-                  <div className="w-[44px] h-[44px] rounded-full bg-primary-100 flex items-center justify-center shrink-0">
+                  <div className="w-[4.4rem] h-[4.4rem] rounded-full bg-primary-100 flex items-center justify-center shrink-0">
                     <LoginCurve size={20} color="#E45B00" variant="Bulk" />
                   </div>
                   <div className="flex flex-col gap-1">
@@ -155,10 +155,10 @@ export default function BuyTicketAuthDialog({
               {!isPrivate && (
                 <button
                   onClick={() => router.push(checkoutUrl)}
-                  className="flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left group"
+                  className="flex items-center justify-between gap-4 p-6 rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left group"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-[44px] h-[44px] rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
+                    <div className="w-[4.4rem] h-[4.4rem] rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
                       <UserOctagon size={20} color="#737C8A" variant="Bulk" />
                     </div>
                     <div className="flex flex-col gap-1">

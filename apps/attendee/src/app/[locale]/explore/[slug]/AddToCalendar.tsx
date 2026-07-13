@@ -41,7 +41,7 @@ export default function AddToCalendar({ event }: { event: Event }) {
       href={addLink}
       target="_blank"
       rel="noopener noreferrer"
-      className="w-[35px] h-[35px] flex items-center justify-center bg-neutral-100 rounded-full"
+      className="w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
     >
       <Google size="20" color="#E45B00" variant="Bulk" />
     </a>

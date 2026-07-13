@@ -55,7 +55,7 @@ export default function PaymentStep({
     >
       <div className="flex flex-col gap-4">
         {isFree ? (
-          <div className="flex flex-col items-start gap-4 p-[15px] rounded-[15px] border border-neutral-100 text-[1.5rem] leading-12 text-neutral-700">
+          <div className="flex flex-col items-start gap-4 p-6 rounded-[15px] border border-neutral-100 text-[1.5rem] leading-12 text-neutral-700">
             <InfoCircle size="20" color="#E45B00" />
             {t("payment.nopayment")}
           </div>
@@ -67,7 +67,7 @@ export default function PaymentStep({
             >
               <div className="flex items-center gap-4">
                 <Image src={moncash} alt="Logo of moncash" />
-                <span className="font-semibold text-[1.6rem] leading-[22px] text-deep-100">
+                <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
                   {t("payment.moncash")}
                 </span>
               </div>
@@ -80,7 +80,7 @@ export default function PaymentStep({
             >
               <div className="flex items-center gap-4">
                 <Card size="20" color="#0d0d0d" variant="Bulk" />
-                <span className="font-semibold text-[1.6rem] leading-[22px] text-deep-100">
+                <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
                   {t("payment.card")}
                 </span>
               </div>
@@ -94,7 +94,7 @@ export default function PaymentStep({
               >
                 <div className="flex items-center gap-4">
                   <MoneyRecive size="20" color="#0d0d0d" variant="Bulk" />
-                  <span className="font-semibold text-[1.6rem] leading-[22px] text-deep-100">
+                  <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
                     {t("payment.wallet")}
                   </span>
                 </div>
@@ -102,7 +102,7 @@ export default function PaymentStep({
               </button>
             )}
 
-            <div className="flex flex-col items-start gap-4 p-[15px] rounded-[15px] border border-neutral-100 text-[1.2rem] leading-8 text-neutral-700">
+            <div className="flex flex-col items-start gap-4 p-6 rounded-[15px] border border-neutral-100 text-[1.2rem] leading-8 text-neutral-700">
               <ShieldSecurity size="20" color="#E45B00" />
               {t("payment.secured")}
             </div>

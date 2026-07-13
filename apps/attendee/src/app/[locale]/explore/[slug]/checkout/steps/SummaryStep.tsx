@@ -28,12 +28,12 @@ function PaymentMethodDisplay({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-3 bg-neutral-50 rounded-[12px] px-[1.5rem] py-[1.2rem]">
+    <div className="flex items-center gap-3 bg-neutral-50 rounded-[12px] px-6 py-[1.2rem]">
       {type === "wallet" && (
         <MoneyRecive size="18" color="#0d0d0d" variant="Bulk" />
       )}
       {type === "moncash" && (
-        <Image src={moncash} alt="MonCash" className="h-[18px] w-auto" />
+        <Image src={moncash} alt="MonCash" className="h-[1.8rem] w-auto" />
       )}
       {type === "card" && <Card size="18" color="#0d0d0d" variant="Bulk" />}
       <span className="text-[1.5rem] font-medium text-deep-100">{label}</span>
@@ -72,13 +72,13 @@ export default function SummaryStep({
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="flex flex-col gap-8 lg:h-full lg:min-h-0 lg:overflow-y-auto"
     >
-      <div className="bg-white rounded-[20px] border border-neutral-100 shadow-[0_4px_24px_rgba(0,0,0,0.06)] overflow-hidden">
+      <div className="bg-white rounded-[20px] border border-neutral-100 shadow-[0_4px_24px_rgba(0,0,0,0.06)] overflow-y-auto">
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary-500/5 to-transparent border-b border-neutral-100 px-[2rem] py-[2rem]">
+        <div className="bg-linear-to-r from-primary-500/5 to-transparent border-b border-neutral-100 px-8 py-8">
           <p className="text-[1.2rem] font-medium text-neutral-400 uppercase tracking-[0.08em]">
             {t("summary.title")}
           </p>
-          <h3 className="font-primary font-semibold text-[2rem] text-deep-100 mt-[0.4rem] leading-snug">
+          <h3 className="font-primary font-semibold text-8 text-deep-100 mt-[0.4rem] leading-snug">
             {event.eventName}
           </h3>
         </div>
@@ -94,7 +94,7 @@ export default function SummaryStep({
         )}
 
         {/* Ticket items */}
-        <div className="px-[2rem] py-[1.8rem] flex flex-col gap-[1.4rem] border-b border-dashed border-neutral-200">
+        <div className="px-8 py-[1.8rem] flex flex-col gap-[1.4rem] border-b border-dashed border-neutral-200">
           {selectedWithIndex.length > 0 ? (
             selectedWithIndex.map((ticket) => {
               const ticketType = ticketTypes.find(
@@ -114,7 +114,7 @@ export default function SummaryStep({
                   className="flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="inline-flex items-center justify-center w-[28px] h-[28px] rounded-full bg-primary-50 text-primary-500 text-[1.2rem] font-semibold shrink-0">
+                    <span className="inline-flex items-center justify-center w-[2.8rem] h-[2.8rem] rounded-full bg-primary-50 text-primary-500 text-[1.2rem] font-semibold shrink-0">
                       {ticket.quantity}
                     </span>
                     <span className="text-[1.5rem] font-medium text-deep-100">
@@ -145,7 +145,7 @@ export default function SummaryStep({
 
         {/* Fee breakdown — only for paid events */}
         {!isFree && selectedWithIndex.length > 0 && (
-          <div className="px-[2rem] py-[1.8rem] flex flex-col gap-[1rem] border-b border-dashed border-neutral-200">
+          <div className="px-8 py-[1.8rem] flex flex-col gap-4 border-b border-dashed border-neutral-200">
             <div className="flex items-center justify-between text-[1.4rem]">
               <span className="text-neutral-500">{t("summary.subtotal")}</span>
               <span className="text-deep-100 font-medium">
@@ -196,7 +196,7 @@ export default function SummaryStep({
         )}
 
         {/* Total */}
-        <div className="px-[2rem] py-[2rem] flex items-center justify-between border-b border-neutral-100">
+        <div className="px-8 py-8 flex items-center justify-between border-b border-neutral-100">
           <span className="font-primary font-semibold text-[1.8rem] text-deep-100">
             {t("summary.total")}
           </span>
@@ -218,7 +218,7 @@ export default function SummaryStep({
 
         {/* Payment method */}
         {!isFree && paymentType && (
-          <div className="px-[2rem] py-[1.5rem] border-b border-neutral-100">
+          <div className="px-8 py-6 border-b border-neutral-100">
             <p className="text-[1.2rem] text-neutral-400 mb-[0.8rem] uppercase tracking-[0.06em]">
               {t("summary.via")}
             </p>
@@ -228,7 +228,7 @@ export default function SummaryStep({
 
         {/* Non-refundable warning */}
         {ticketTypes[0] && !ticketTypes[0].isRefundable && (
-          <div className="px-[2rem] py-[1.5rem] border-b border-neutral-100">
+          <div className="px-8 py-6 border-b border-neutral-100">
             <div className="flex items-start gap-3 text-[1.3rem] text-warning leading-7">
               <Warning2
                 size="16"
@@ -242,7 +242,7 @@ export default function SummaryStep({
         )}
 
         {/* Security */}
-        <div className="px-[2rem] py-[1.5rem] flex items-center gap-[0.8rem]">
+        <div className="px-8 py-6 flex items-center gap-[0.8rem]">
           <ShieldSecurity size="15" color="#9ca3af" />
           <span className="text-[1.2rem] text-neutral-400">
             {t("summary.secured")}
