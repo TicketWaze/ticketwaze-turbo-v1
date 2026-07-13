@@ -7,6 +7,7 @@ import { auth } from "@/lib/auth";
 import { Organisation } from "@ticketwaze/typescript-config";
 import PinHandler from "./PinHandler";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 
 export default async function Page() {
   const t = await getTranslations("Settings.payment");
@@ -27,7 +28,14 @@ export default async function Page() {
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.organisation) {
+    return (
+      <OrganizerLayout title={t("title")}>
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const organisation: Organisation = response.organisation;
   return (
     <OrganizerLayout title={t("title")}>

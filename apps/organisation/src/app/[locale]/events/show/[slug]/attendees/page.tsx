@@ -5,6 +5,7 @@ import { getTranslations, getLocale } from "next-intl/server";
 import BackButton from "@/components/shared/BackButton";
 import { auth } from "@/lib/auth";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import { extractIdFromSlug } from "@/lib/Slugify";
 
 export default async function Attendees({
@@ -32,7 +33,14 @@ export default async function Attendees({
   if (eventRequest.status === 403) {
     return <UnauthorizedView />;
   }
-  const eventResponse = await eventRequest.json();
+  const eventResponse = await eventRequest.json().catch(() => null);
+  if (!eventRequest.ok || !eventResponse?.event) {
+    return (
+      <OrganizerLayout title="">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const event: Event = eventResponse.event;
 
   return (

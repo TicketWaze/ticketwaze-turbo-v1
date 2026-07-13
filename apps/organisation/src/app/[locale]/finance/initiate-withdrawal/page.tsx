@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { Organisation } from "@ticketwaze/typescript-config";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 
 export default async function InitiateWithdrawalPage() {
   const locale = await getLocale();
@@ -23,7 +24,14 @@ export default async function InitiateWithdrawalPage() {
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.organisation) {
+    return (
+      <OrganizerLayout title="">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const organisation: Organisation = response.organisation;
   return (
     <OrganizerLayout title="">

@@ -5,6 +5,7 @@ import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import { extractIdFromSlug } from "@/lib/Slugify";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import { auth } from "@/lib/auth";
 
 export default async function DiscountCode({
@@ -32,7 +33,14 @@ export default async function DiscountCode({
   if (eventRequest.status === 403) {
     return <UnauthorizedView />;
   }
-  const eventResponse = await eventRequest.json();
+  const eventResponse = await eventRequest.json().catch(() => null);
+  if (!eventRequest.ok || !eventResponse?.event) {
+    return (
+      <OrganizerLayout title="Discount codes">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const event: Event = eventResponse.event;
   return (
     <OrganizerLayout title="Discount codes">

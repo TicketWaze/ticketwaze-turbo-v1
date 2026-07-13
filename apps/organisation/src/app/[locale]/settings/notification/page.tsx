@@ -5,6 +5,7 @@ import { auth } from "@/lib/auth";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 
 export default async function Page() {
   const t = await getTranslations("Settings.notification");
@@ -26,7 +27,14 @@ export default async function Page() {
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
-  const notificationPreferences = await request.json();
+  const notificationPreferences = await request.json().catch(() => null);
+  if (!request.ok || !notificationPreferences?.preferences) {
+    return (
+      <OrganizerLayout title={t("title")}>
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   return (
     <OrganizerLayout title={t("title")}>
       <div className="flex flex-col gap-8">
