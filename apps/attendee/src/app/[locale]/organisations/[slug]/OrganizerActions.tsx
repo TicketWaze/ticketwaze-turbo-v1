@@ -27,19 +27,19 @@ export default function OrganizerActions({
       <div className="flex items-center justify-between">
         <div className="flex  gap-8">
           <div className="flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">
-            <div className="h-[35px] w-[35px] bg-neutral-100 flex items-center justify-center rounded-full">
+            <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
               <Star variant="Bulk" size={20} color="#E45B00" />
             </div>
             {organisation.averageRating} {t("profile.rating")}
           </div>
           <div className="hidden lg:flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">
-            <div className="h-[35px] w-[35px] bg-neutral-100 flex items-center justify-center rounded-full">
+            <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
               <UserIcon variant="Bulk" size={20} color="#2E3237" />
             </div>
             {organisation.followers.length} {t("profile.followers")}
           </div>
           <div className="hidden lg:flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">
-            <div className="h-[35px] w-[35px] bg-neutral-100 flex items-center justify-center rounded-full">
+            <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
               <Layer variant="Bulk" size={20} color="#2E3237" />
             </div>
             {events.length} {t("event")}
@@ -52,13 +52,13 @@ export default function OrganizerActions({
       </div>
       <div className="flex lg:hidden gap-8 items-center">
         <div className="flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">
-          <div className="h-[35px] w-[35px] bg-neutral-100 flex items-center justify-center rounded-full">
+          <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
             <UserIcon variant="Bulk" size={20} color="#2E3237" />
           </div>
           {organisation.followers.length} {t("profile.followers")}
         </div>
         <div className="flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">
-          <div className="h-[35px] w-[35px] bg-neutral-100 flex items-center justify-center rounded-full">
+          <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
             <Layer variant="Bulk" size={20} color="#2E3237" />
           </div>
           {events.length} {t("event")}

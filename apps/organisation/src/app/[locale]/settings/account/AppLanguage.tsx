@@ -40,7 +40,7 @@ export default function AppLanguage({
   return (
     <div className="flex flex-col gap-6">
       <PageLoader isLoading={isLoading} />
-      <span className="font-medium text-[1.8rem] mb-4 leading-[25px] text-deep-100">
+      <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
         {t("language.title")}
       </span>
       <RadioGroup className="flex flex-col gap-6" defaultValue={locale}>

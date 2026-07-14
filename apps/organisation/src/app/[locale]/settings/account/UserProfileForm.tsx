@@ -52,14 +52,14 @@ export default function UserProfileForm({
       {isSubmitting && <PageLoader isLoading={isSubmitting} />}
       <span
         className={
-          "pb-4 font-medium text-[1.8rem] leading-[25px] text-deep-100"
+          "pb-4 font-medium text-[1.8rem] leading-10 text-deep-100"
         }
       >
         {t("personal")}
       </span>
       <div
         className={
-          "flex flex-col w-full lg:flex-row lg:justify-between gap-[1.5rem]"
+          "flex flex-col w-full lg:flex-row lg:justify-between gap-6"
         }
       >
         <Input

@@ -37,7 +37,7 @@ type Step = "plans" | "payment" | "checkout";
 function Feature({ children }: { children: ReactNode }) {
   return (
     <li className="flex items-start gap-3">
-      <div className="mt-[3px] shrink-0">
+      <div className="mt-[0.3rem] shrink-0">
         <TickCircle size="15" color="#E45B00" variant="Bulk" />
       </div>
       <span className="text-[1.3rem] leading-[1.6] text-neutral-600 flex items-center gap-2">
@@ -266,7 +266,7 @@ export default function SubscriptionUpgradePageContent({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
-                  className={`flex-1 flex flex-col rounded-[24px] overflow-hidden ${currentPlan === "pro" && !isOnTrial ? "opacity-60 pointer-events-none" : ""}`}
+                  className={`flex-1 flex flex-col rounded-[25px] overflow-hidden ${currentPlan === "pro" && !isOnTrial ? "opacity-60 pointer-events-none" : ""}`}
                 >
                   <div className="bg-primary-900 px-8 pt-8 pb-12 flex flex-col gap-3">
                     <div className="flex items-start justify-between gap-3">
@@ -281,7 +281,7 @@ export default function SubscriptionUpgradePageContent({
                         {currentPlan === "pro" && !isOnTrial ? t("pro.tag") : t("pro.most")}
                       </span>
                     </div>
-                    <h2 className="text-white font-primary font-medium text-[4.5rem] leading-[1]">
+                    <h2 className="text-white font-primary font-medium text-[4.5rem] leading-none">
                       {t("pro.title")}
                     </h2>
                     <div className="flex items-baseline gap-2 mt-1 flex-wrap">
@@ -298,7 +298,7 @@ export default function SubscriptionUpgradePageContent({
                   </div>
 
                   <div className="bg-white flex flex-col gap-8 p-8 flex-1 justify-between -mt-5 rounded-t-[20px]">
-                    <ul className="flex flex-col gap-[10px]">
+                    <ul className="flex flex-col gap-4">
                       <Feature>{t("pro.list.1")}</Feature>
                       <Feature>{t("pro.list.2")}</Feature>
                       <Feature>{t("pro.list.3")}</Feature>
@@ -316,7 +316,7 @@ export default function SubscriptionUpgradePageContent({
                       <div className="flex flex-col gap-3">
                         <button
                           onClick={() => selectPlan(proTier)}
-                          className="w-full py-[14px] rounded-full bg-primary-900 text-white font-medium text-[1.4rem] cursor-pointer hover:bg-primary-900/85 transition-colors flex items-center justify-center gap-3"
+                          className="w-full py-[1.4rem] rounded-full bg-primary-900 text-white font-medium text-[1.4rem] cursor-pointer hover:bg-primary-900/85 transition-colors flex items-center justify-center gap-3"
                         >
                           <Crown size="18" color="#fff" variant="Bulk" />
                           {t("pro.cta")}
@@ -325,7 +325,7 @@ export default function SubscriptionUpgradePageContent({
                           <button
                             onClick={startTrial}
                             disabled={isStartingTrial}
-                            className="w-full py-[14px] rounded-full border border-primary-900/25 text-primary-900 font-medium text-[1.4rem] cursor-pointer hover:bg-primary-900/5 transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="w-full py-[1.4rem] rounded-full border border-primary-900/25 text-primary-900 font-medium text-[1.4rem] cursor-pointer hover:bg-primary-900/5 transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
                           >
                             {isStartingTrial ? (
                               <LoadingCircleSmall />
@@ -346,10 +346,10 @@ export default function SubscriptionUpgradePageContent({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
-                  className={`flex-1 flex flex-col rounded-[24px] overflow-hidden ${currentPlan === "premium" ? "opacity-60 pointer-events-none" : ""}`}
+                  className={`flex-1 flex flex-col rounded-[25px] overflow-hidden ${currentPlan === "premium" ? "opacity-60 pointer-events-none" : ""}`}
                 >
-                  <div className="p-[2px] bg-gradient-to-b from-primary-500 via-[#E752AE] to-[#DD068B] flex flex-col flex-1 rounded-[24px]">
-                    <div className="bg-gradient-to-br from-primary-500 via-[#E752AE] to-[#DD068B] px-8 pt-8 pb-12 flex flex-col gap-3 rounded-t-[22px]">
+                  <div className="p-[0.2rem] bg-linear-to-b from-primary-500 via-[#E752AE] to-[#DD068B] flex flex-col flex-1 rounded-[25px]">
+                    <div className="bg-linear-to-br from-primary-500 via-[#E752AE] to-[#DD068B] px-8 pt-8 pb-12 flex flex-col gap-3 rounded-t-[22px]">
                       <div className="flex items-start justify-between gap-3">
                         <span className="text-white/70 text-[1.1rem] font-medium uppercase tracking-widest">
                           {billingCycle === "monthly"
@@ -362,7 +362,7 @@ export default function SubscriptionUpgradePageContent({
                           </span>
                         )}
                       </div>
-                      <h2 className="text-white font-primary font-medium text-[4.5rem] leading-[1]">
+                      <h2 className="text-white font-primary font-medium text-[4.5rem] leading-none">
                         {t("premium.title")}
                       </h2>
                       <div className="flex items-baseline gap-2 mt-1 flex-wrap">
@@ -379,7 +379,7 @@ export default function SubscriptionUpgradePageContent({
                     </div>
 
                     <div className="bg-white flex flex-col gap-8 p-8 flex-1 justify-between -mt-5 rounded-t-[20px] rounded-b-[22px]">
-                      <ul className="flex flex-col gap-[10px]">
+                      <ul className="flex flex-col gap-4">
                         <Feature>{t("premium.list.1")}</Feature>
                         <Feature>{t("premium.list.2")}</Feature>
                         <Feature>{t("premium.list.3")}</Feature>
@@ -397,13 +397,13 @@ export default function SubscriptionUpgradePageContent({
                           {t("pro.tag")} ✓
                         </p>
                       ) : (
-                        <div className="p-[2px] rounded-full bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+                        <div className="p-[0.2rem] rounded-full bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
                           <button
                             onClick={() => selectPlan(premiumTier)}
-                            className="w-full py-[14px] rounded-full bg-white font-medium text-[1.4rem] cursor-pointer hover:bg-neutral-50 transition-colors flex items-center justify-center gap-3"
+                            className="w-full py-[1.4rem] rounded-full bg-white font-medium text-[1.4rem] cursor-pointer hover:bg-neutral-50 transition-colors flex items-center justify-center gap-3"
                           >
                             <Crown size="18" color="#E45B00" variant="Bulk" />
-                            <span className="bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B] bg-clip-text text-transparent">
+                            <span className="bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B] bg-clip-text text-transparent">
                               {t("premium.cta")}
                             </span>
                           </button>
@@ -439,15 +439,15 @@ export default function SubscriptionUpgradePageContent({
             <div
               className={`rounded-[20px] p-5 flex items-center justify-between gap-4 ${
                 selectedPlan.membershipName === "premium"
-                  ? "bg-gradient-to-r from-primary-500/[0.07] via-[#E752AE]/[0.07] to-[#DD068B]/[0.07] border border-[#E752AE]/20"
-                  : "bg-primary-900/[0.05] border border-primary-900/15"
+                  ? "bg-linear-to-r from-primary-500/[0.07] via-[#E752AE]/[0.07] to-[#DD068B]/[0.07] border border-[#E752AE]/20"
+                  : "bg-primary-900/5 border border-primary-900/15"
               }`}
             >
               <div className="flex items-center gap-4">
                 <div
                   className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
                     selectedPlan.membershipName === "premium"
-                      ? "bg-gradient-to-br from-primary-500 via-[#E752AE] to-[#DD068B]"
+                      ? "bg-linear-to-br from-primary-500 via-[#E752AE] to-[#DD068B]"
                       : "bg-primary-900"
                   }`}
                 >
