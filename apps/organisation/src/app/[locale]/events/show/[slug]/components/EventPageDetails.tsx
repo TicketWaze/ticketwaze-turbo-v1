@@ -113,6 +113,7 @@ export default function EventPageDetails({
             deletionStatus !== "deleted" && <ShareEvent event={event} />}
           {event.adminStatus === "approved" &&
             event.eventCategory !== "meet" &&
+            !isPast &&
             !isPendingDeletion &&
             deletionStatus !== "deleted" && <CheckingDialog event={event} />}
           <MoreComponent
@@ -253,6 +254,7 @@ export default function EventPageDetails({
       </div>
       {event.eventCategory !== "meet" &&
         event.adminStatus === "approved" &&
+        !isPast &&
         !isPendingDeletion &&
         deletionStatus !== "deleted" && (
           <div className="flex lg:hidden items-center w-full gap-4 justify-between">

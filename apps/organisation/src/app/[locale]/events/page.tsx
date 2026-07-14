@@ -4,7 +4,6 @@ import EventPageContent from "./EventPageContent";
 import { auth } from "@/lib/auth";
 import TopBar from "@/components/shared/TopBar";
 import { LinkPrimary } from "@/components/shared/Links";
-import { Add } from "iconsax-reactjs";
 import { Link } from "@/i18n/navigation";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { checkPermission } from "@/lib/role/permission";
@@ -29,6 +28,28 @@ export default async function EventPage() {
     return <UnauthorizedView />;
   }
   const events = await request.json();
+
+  // Raffles live in their own table but share the activities list with events.
+  let raffles = [];
+  try {
+    const rafflesRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${session?.activeOrganisation.organisationId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          Authorization: `Bearer ${session?.user.accessToken}`,
+        },
+        cache: "no-store",
+      },
+    );
+    const rafflesResponse = await rafflesRequest.json();
+    raffles = rafflesResponse.raffles ?? [];
+  } catch {
+    raffles = [];
+  }
   const perms = session?.activeOrganisation?.myPermissions ?? [];
   const canCreate = checkPermission(perms, "events.create");
   return (
@@ -40,15 +61,15 @@ export default async function EventPage() {
               {t("create")}
             </LinkPrimary>
             <Link
-              className="lg:hidden absolute bottom-43 right-10 w-24 h-24 bg-primary-500 rounded-full flex items-center justify-center"
+              className="lg:hidden fixed bottom-43 right-10 z-50 bg-primary-500 rounded-full px-10 py-5 flex items-center justify-center text-white text-[1.4rem] font-medium leading-8 shadow-lg"
               href="/events/create"
             >
-              <Add size="32" color="#ffffff" />
+              {t("create_short")}
             </Link>
           </>
         )}
       </TopBar>
-      <EventPageContent events={events.events} />
+      <EventPageContent events={events.events} raffles={raffles} />
     </OrganizerLayout>
   );
 }

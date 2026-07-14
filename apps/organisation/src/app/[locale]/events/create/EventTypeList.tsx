@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import InPerson from "@/assets/images/in-person.jpg";
+import Draw from "@/assets/images/draw.jpg";
 import GoogleMeet from "@/assets/images/meet.jpg";
 // import Private from "@/assets/images/private.jpeg";
 // import Reservations from "@/assets/images/reservations.jpg";
@@ -49,6 +50,12 @@ export default function EventTypeList({
       description: t("list.inPerson.description"),
       image: InPerson,
       value: "in-person",
+    },
+    {
+      title: t("list.raffle.title"),
+      description: t("list.raffle.description"),
+      image: Draw,
+      value: "raffle",
     },
     {
       title: t("list.meet.title"),
@@ -287,7 +294,8 @@ export default function EventTypeList({
             return (
               <li key={index}>
                 {membershipTier.membershipName === "free" &&
-                category.value === "private" ? (
+                (category.value === "private" ||
+                  category.value === "raffle") ? (
                   <Dialog>
                     <DialogTrigger asChild>
                       <div
@@ -341,7 +349,9 @@ export default function EventTypeList({
                         <p
                           className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
                         >
-                          {t("proFeature")}
+                          {category.value === "raffle"
+                            ? t("raffle.pro_feature")
+                            : t("proFeature")}
                         </p>
                       </div>
                       <DialogFooter>

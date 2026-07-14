@@ -20,6 +20,7 @@ import { Event } from "@ticketwaze/typescript-config";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft2 } from "iconsax-reactjs";
 import { cn } from "@/lib/utils";
+import { DateTime } from "luxon";
 
 type AdminStatus = Event["adminStatus"];
 
@@ -124,6 +125,37 @@ export function EventStatusDialog({
   }
 
   const currentConfig = STATUS_CONFIG[event.adminStatus];
+
+  // A passed activity's status is frozen (the API rejects it too). Passed =
+  // every day's local end time, interpreted in the day's own timezone, is over.
+  const isPastEvent =
+    event.eventDays.length > 0 &&
+    event.eventDays.every((day) => {
+      const end = DateTime.fromISO(
+        `${day.eventDate.slice(0, 10)}T${day.endTime}`,
+        { zone: day.timezone },
+      );
+      return end.isValid && end < DateTime.now();
+    });
+
+  if (isPastEvent) {
+    return (
+      <ButtonNeutral
+        disabled
+        title="This activity has already ended — its status can no longer be changed."
+        className={cn(
+          "py-[7.5px] flex items-center gap-3 opacity-50 cursor-not-allowed",
+          className,
+        )}
+      >
+        <span
+          className="w-[0.8rem] h-[0.8rem] rounded-full shrink-0"
+          style={{ backgroundColor: currentConfig.color }}
+        />
+        Change Status
+      </ButtonNeutral>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>

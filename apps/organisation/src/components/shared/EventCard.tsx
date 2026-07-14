@@ -7,7 +7,15 @@ import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 import FormatDate from "@/lib/FormatDate";
 
-function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
+function EventCard({
+  event,
+  aside,
+  ongoing,
+}: {
+  event: Event;
+  aside?: boolean;
+  ongoing?: boolean;
+}) {
   const date = event.eventDays.filter(
     (eventDay) => eventDay.dayNumber === 1,
   )[0];
@@ -50,7 +58,13 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         )}
         {event.deletionStatus === "deleted" && (
           <div className="bg-neutral-500 block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
-            DELETED
+            {t("deleted").toUpperCase()}
+          </div>
+        )}
+        {ongoing && (
+          <div className="bg-success absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit flex items-center gap-2">
+            <span className="w-[6px] h-[6px] rounded-full bg-white animate-pulse shrink-0" />
+            {t("ongoing").toUpperCase()}
           </div>
         )}
         {event.adminStatus === "rejected" && (
@@ -63,7 +77,11 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         </div>
       </div>
 
-      <div className={"px-4 flex flex-1 lg:flex-auto flex-col gap-6 lg:gap-4"}>
+      <div
+        className={
+          "px-4 flex flex-1 lg:flex-auto min-w-0 flex-col gap-6 lg:gap-4"
+        }
+      >
         <ul className="hidden lg:flex gap-2 text-primary-500 font-medium">
           {event.activityTags.map((tag, key) => {
             return <li key={key}>#{tag}</li>;
@@ -72,7 +90,7 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         <div className="flex flex-col w-full gap-1">
           <h1
             className={
-              "font-bold font-primary text-[1.2rem] text-deep-100 leading-6"
+              "font-bold w-full truncate font-primary text-[1.2rem] text-deep-100 leading-6"
             }
           >
             {event.eventName}

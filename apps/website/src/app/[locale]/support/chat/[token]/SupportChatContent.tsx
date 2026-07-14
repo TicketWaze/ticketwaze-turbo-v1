@@ -8,6 +8,7 @@ import { Link } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { getSocket } from "@/hooks/useSocket";
 import { Send2 } from "iconsax-reactjs";
+import { isSupportOnline } from "@/lib/supportHours";
 
 export type SupportMessage = {
   messageId: string;
@@ -239,6 +240,7 @@ export default function SupportChatContent({
 
   // ── Waiting room ─────────────────────────────────────────────────────────────
   if (!accepted) {
+    const online = isSupportOnline();
     return (
       <section className="bg-white py-[2.5rem] px-4 lg:px-0 rounded-[3rem] flex flex-col gap-[6rem]">
         <Navbar />
@@ -272,10 +274,10 @@ export default function SupportChatContent({
               {t("waiting_badge")}
             </span>
             <h1 className="font-primary font-bold text-[2.8rem] lg:text-[3.6rem] leading-tight text-neutral-900">
-              {t("waiting_title")}
+              {online ? t("waiting_title") : t("waiting_title_offline")}
             </h1>
             <p className="text-[1.5rem] leading-8 text-neutral-500 font-sans">
-              {t("waiting_description")}
+              {online ? t("waiting_description") : t("waiting_description_offline")}
             </p>
           </div>
 

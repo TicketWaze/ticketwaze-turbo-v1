@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft2 } from "iconsax-reactjs";
 import { motion } from "motion/react";
@@ -8,10 +7,8 @@ import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import {
-  CreateInPersonEvent,
-  ValidateBasicDetailsInPerson,
-} from "@/actions/EventActions";
+import { CreateInPersonEvent } from "@/actions/EventActions";
+import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
@@ -74,8 +71,10 @@ export default function CreateInPersonEventForm({
     register,
     handleSubmit,
     setValue,
+    setError,
     control,
     trigger,
+    watch,
     formState: { errors, isSubmitting },
     getValues,
   } = useForm<TForm>({
@@ -164,7 +163,25 @@ export default function CreateInPersonEventForm({
 
   type FieldName = keyof TForm;
 
-  const [isLoading, setIsLoading] = useState(false);
+  // Name availability is checked live (per keystroke) instead of on step submit.
+  const nameStatus = useEventNameAvailability(watch("eventName"));
+
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // After a failed validation, bring the first field in error into view. RHF's
+  // shouldFocus only scrolls focusable native inputs, so custom fields (map,
+  // tags, image) are missed — scroll to the first rendered error message
+  // instead, which every field type shares (.text-failure).
+  const scrollToFirstError = () => {
+    requestAnimationFrame(() => {
+      const container = formRef.current;
+      if (!container) return;
+      const firstError = Array.from(
+        container.querySelectorAll<HTMLElement>(".text-failure"),
+      ).find((el) => (el.textContent ?? "").trim().length > 0);
+      firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
 
   const next = async () => {
     let fields: FieldName[];
@@ -187,37 +204,18 @@ export default function CreateInPersonEventForm({
       fields = steps[currentStep]?.fields as FieldName[];
     }
     const output = await trigger(fields, { shouldFocus: true });
-    if (!output) return;
-    if (currentStep === 0) {
-      // validate basic details
-      setIsLoading(true);
-      const formData = new FormData();
-      formData.append("eventName", getValues("eventName"));
-      formData.append("eventDescription", getValues("eventDescription"));
-      formData.append("address", getValues("address"));
-      formData.append("state", getValues("state"));
-      formData.append("city", getValues("city"));
-      formData.append("country", getValues("country"));
-      formData.append("location", JSON.stringify(getValues("location")));
-      formData.append("eventImage", getValues("eventImage"));
-      formData.append("eventType", eventType);
-      formData.append(
-        "activityTags",
-        JSON.stringify(getValues("activityTags")),
+    if (!output) {
+      scrollToFirstError();
+      return;
+    }
+    if (currentStep === 0 && nameStatus === "taken") {
+      setError(
+        "eventName",
+        { type: "manual", message: t("errors.basicDetails.nameTaken") },
+        { shouldFocus: true },
       );
-      const result = await ValidateBasicDetailsInPerson(
-        organisation?.organisationId ?? "",
-        session?.user.accessToken ?? "",
-        formData,
-        locale,
-        "create",
-      );
-      if (result.status !== "success") {
-        setIsLoading(false);
-        toast.error(result.error);
-        return;
-      }
-      setIsLoading(false);
+      scrollToFirstError();
+      return;
     }
     if (currentStep === steps.length - 1) {
       await handleSubmit(processForm)();
@@ -265,9 +263,11 @@ export default function CreateInPersonEventForm({
         <ButtonPrimary
           onClick={next}
           className=" w-full max-w-212 mx-auto  "
-          disabled={isSubmitting || isLoading}
+          disabled={
+            isSubmitting || (currentStep === 0 && nameStatus === "checking")
+          }
         >
-          {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
+          {isSubmitting ? <LoadingCircleSmall /> : t("proceed")}
         </ButtonPrimary>
       </div>
 
@@ -276,8 +276,13 @@ export default function CreateInPersonEventForm({
           <div className="text-[2.2rem] text-neutral-600">
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
-          <ButtonPrimary onClick={next} disabled={isSubmitting || isLoading}>
-            {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
+          <ButtonPrimary
+            onClick={next}
+            disabled={
+              isSubmitting || (currentStep === 0 && nameStatus === "checking")
+            }
+          >
+            {isSubmitting ? <LoadingCircleSmall /> : t("proceed")}
           </ButtonPrimary>
         </div>
       </div>
@@ -334,6 +339,7 @@ export default function CreateInPersonEventForm({
       )}
 
       <form
+        ref={formRef}
         className=" flex flex-col gap-12 h-full overflow-y-scroll overflow-x-hidden"
         onSubmit={handleSubmit(processForm)}
       >
@@ -356,6 +362,7 @@ export default function CreateInPersonEventForm({
               getValues={getValues}
               isPrivate={isPrivate}
               setIsPrivate={setIsPrivate}
+              nameStatus={nameStatus}
             />
           </motion.div>
         )}

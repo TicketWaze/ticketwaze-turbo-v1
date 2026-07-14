@@ -151,6 +151,7 @@ export default function AttendeeOnboardingPageComponent() {
           ...session,
           user: {
             ...session?.user,
+            isOnboarded: true,
             userPreference: response.userPreference,
           },
         });

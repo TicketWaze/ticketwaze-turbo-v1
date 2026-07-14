@@ -72,7 +72,8 @@ export async function VerifyOrganisationAction(
 
 export async function GrantSubscriptionAction(
   organisationId: string,
-  durationDays: 14 | 30 | 90,
+  durationDays: 14 | 30 | 90 | 365,
+  tier: "pro" | "premium",
   accessToken: string,
   locale: string,
 ) {
@@ -87,7 +88,7 @@ export async function GrantSubscriptionAction(
           "Accept-Language": locale,
           origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
         },
-        body: JSON.stringify({ durationDays }),
+        body: JSON.stringify({ durationDays, tier }),
       },
     );
     const data = await request.json();

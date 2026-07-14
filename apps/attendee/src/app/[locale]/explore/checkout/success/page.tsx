@@ -6,14 +6,14 @@ import { User } from "@ticketwaze/typescript-config";
 export default async function SuccessMoncash({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined };
+  searchParams: Promise<{ transactionId?: string }>;
 }) {
-  const transactionId = searchParams?.transactionId;
+  const { transactionId } = await searchParams;
   const session = await auth();
   return (
     <AttendeeLayout className="items-center justify-center" title="">
       <RedirectContent
-        transactionId={transactionId as string}
+        transactionId={transactionId ?? ""}
         user={session?.user as User | undefined}
       />
       {/* <div className='flex flex-col gap-16 items-center max-w-[530px]'>

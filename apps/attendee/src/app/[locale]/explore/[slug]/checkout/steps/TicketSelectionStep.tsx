@@ -67,7 +67,7 @@ export default function TicketSelectionStep({
       initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0"
+      className="flex flex-col gap-8 lg:h-full lg:min-h-0 lg:overflow-y-auto"
     >
       <ul className="flex flex-col gap-8">
         {[...fields.map((field, index) => ({ field, index, ticketType: ticketTypes[index] }))]
@@ -84,7 +84,7 @@ export default function TicketSelectionStep({
           return (
             <li
               key={field.id}
-              className="border border-neutral-100 rounded-[15px] p-[15px] flex flex-col gap-4"
+              className="border border-neutral-100 rounded-[15px] p-6 flex flex-col gap-4"
             >
               <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
@@ -118,7 +118,7 @@ export default function TicketSelectionStep({
                   {event.currency}
                 </span>
               )}
-              <div className="flex bg-neutral-100 items-center justify-between py-4 px-[1.5rem] rounded-[10px]">
+              <div className="flex bg-neutral-100 items-center justify-between py-4 px-6 rounded-[10px]">
                 <span className="text-[1.5rem] text-neutral-900">
                   {t("ticket.quantity")}
                 </span>
@@ -131,7 +131,7 @@ export default function TicketSelectionStep({
                     <button
                       type="button"
                       disabled={event.eventType === "meet" || quantity === 0}
-                      className="w-[35px] h-[35px] disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
+                      className="w-14 h-14 disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
                       onClick={() => decrement(index)}
                     >
                       <MinusCirlce size="20" color="#FFFFFF" variant="Bulk" />
@@ -144,7 +144,7 @@ export default function TicketSelectionStep({
                       disabled={
                         event.eventType === "meet" || quantity === ticketLeft
                       }
-                      className="w-[35px] h-[35px] disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
+                      className="w-14 h-14 disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
                       onClick={() => increment(index, ticketLeft)}
                     >
                       <AddCircle size="20" color="#FFFFFF" variant="Bulk" />

@@ -116,6 +116,12 @@
           },
           "5": "By proceeding, you confirm that you have read and agree to our Terms of Use, Seller Agreement, and Privacy Policy. These documents outline your responsibilities as an organiser, including refund policies, payout terms, and platform fees. If you have any questions or concerns, please reach out to our seller support team via the Help Center or email us at organisations@ticketwaze.com."
         }
+      },
+      "userOnboarding": {
+        "title": "Finish setting up your account",
+        "description": "Your organisation dashboard is almost ready. First, complete your Ticketwaze profile on the attendee platform. It only takes a minute.",
+        "action": "Complete my profile",
+        "back": "Sign out"
       }
     },
     "register": {
@@ -276,12 +282,28 @@
       "back": "Back",
       "errors": {
         "email": "Enter a valid email address",
-        "notFound": "User not found. Please register"
+        "notFound": "User not found. Please register",
+        "generic": "Something went wrong. Please try again."
       },
       "placeholders": {
         "email": "Email Address"
       },
-      "cta": "Reset"
+      "cta": "Reset",
+      "otp": {
+        "title": "Check your inbox",
+        "description": "We sent a 6-digit code to",
+        "submit": "Verify",
+        "resend": "Resend code",
+        "resending": "Sending...",
+        "wrong": "Wrong email?",
+        "sent": "A new code has been sent to your email.",
+        "errors": {
+          "invalid": "Incorrect code. Please try again.",
+          "expired": "This code has expired. Request a new one below.",
+          "notFound": "No code found. Request a new one below."
+        }
+      },
+      "success": "Your password has been reset. You can now sign in."
     },
     "email_sent": {
       "title": "Reset Password",
@@ -301,7 +323,8 @@
       },
       "errors": {
         "password_length": "Password should be at least 8 Characters",
-        "password_match": "Password doesn't match"
+        "password_match": "Password doesn't match",
+        "sameError": "You used this password in the past. You cannot reuse past passwords."
       },
       "cta": "Create"
     },
@@ -577,6 +600,7 @@
     "title": "Activity Overview",
     "search": "Search for activity",
     "create": "Create activity",
+    "create_short": "Create",
     "description": "Your activities will show up here once you start creating.",
     "nothing": "Nothing to see here",
     "upcoming": "Upcoming",
@@ -900,6 +924,10 @@
             }
           }
         },
+        "raffle": {
+          "title": "Raffle",
+          "description": "Sell numbered tickets and draw winners for one or more prizes."
+        },
         "meet": {
           "title": "Google Meet",
           "description": "Attend virtually with Google Meet — distance doesn’t matter.",
@@ -930,6 +958,65 @@
       "tagPlaceholder": "Type a hashtag and press enter or spacebar",
       "date_time": "Date & Time",
       "coming": "Coming soon!",
+      "raffle": {
+        "back": "Back",
+        "title": "Create Raffle",
+        "coming_soon": "Raffle publishing is coming soon.",
+        "success": "Raffle submitted for review.",
+        "no_org": "Session not ready, please try again.",
+        "pro_feature": "Raffles are part of our Pro and Premium plans. Upgrade to create numbered-ticket raffles with prizes and an automated draw.",
+        "details": "Raffle details",
+        "cover": "Cover image",
+        "cover_text": "Drag & drop or",
+        "browse": "browse",
+        "name": "Raffle title",
+        "description": "Description",
+        "description_placeholder": "Describe the raffle, the prizes and how the draw works.",
+        "pricing": "Ticket price",
+        "ticket_price": "Price per ticket",
+        "currency": "Currency",
+        "supply": "Ticket supply",
+        "total_tickets": "Total tickets",
+        "unlimited": "Unlimited tickets",
+        "unlimited_tip": "Leave unlimited, or cap how many tickets can be sold.",
+        "schedule": "Sales & draw schedule",
+        "sales_start": "Sales start",
+        "sales_end": "Sales end",
+        "draw_date": "Draw date & time",
+        "draw_mode": "Draw mode",
+        "draw_mode_auto": "Automatic",
+        "draw_mode_auto_desc": "Winners are drawn automatically at the draw date.",
+        "draw_mode_manual": "Manual",
+        "draw_mode_manual_desc": "You trigger the draw yourself once sales close.",
+        "prizes": "Prizes",
+        "prizes_tip": "Add one prize per winning rank. Rank 1 is drawn first.",
+        "prize_rank": "Rank {rank}",
+        "prize_title": "Prize title",
+        "prize_description": "Prize description",
+        "prize_image": "Prize image (optional)",
+        "add_prize": "Add prize",
+        "fairness_note": "The draw uses a secure random generator and is recorded so winners can be independently verified.",
+        "lock_note": "Once the first ticket is sold, the price, prizes and draw date are locked.",
+        "age_note": "Buyers confirm they meet the age requirement and accept the raffle rules before purchase.",
+        "submit": "Save raffle",
+        "errors": {
+          "name": "The raffle title must be at least 10 characters",
+          "description": "The description must be at least 20 characters",
+          "cover": "A cover image is required",
+          "price": "Ticket price must be greater than 0",
+          "sales_start": "A sales start date is required",
+          "sales_end": "A sales end date is required",
+          "sales_window": "Sales must end on or before the draw date",
+          "draw_date": "A draw date is required",
+          "total_tickets": "Total tickets must be at least the number of prizes",
+          "prize_min": "Add at least one prize",
+          "prize_title": "Prize title is required",
+          "prize_description": "Prize description is required"
+        },
+        "tags": "Tags",
+        "tags_tip": "Add a few tags to describe your raffle. Press Enter, comma or space to add each one. Click a tag to remove it.",
+        "tags_placeholder": "Add a tag"
+      },
       "ticket": "Ticket",
       "event_type": "Activity Type",
       "select_type": "Select activity type",
@@ -994,6 +1081,7 @@
       "errors": {
         "basicDetails": {
           "name": "Activity name should be at leat 10 characters",
+          "nameTaken": "This activity name is already taken",
           "no_special": "This field doesn't allow special characters",
           "description": {
             "min": "Activity description cannot be less than 150 characters",
@@ -1051,6 +1139,20 @@
         "date": "Date",
         "popularity": "Popularity"
       }
+    },
+    "raffleCard": {
+      "tag": "Raffle",
+      "draw": "Draw:",
+      "entries": "entries",
+      "unlimited": "Unlimited entries",
+      "entry": "entry"
+    },
+    "filter": {
+      "all": "All",
+      "events": "Events",
+      "raffles": "Raffles",
+      "empty_events": "No events yet. Create your first event to get started.",
+      "empty_raffles": "No raffles yet. Create your first raffle to get started."
     }
   },
   "WelcomeModal": {

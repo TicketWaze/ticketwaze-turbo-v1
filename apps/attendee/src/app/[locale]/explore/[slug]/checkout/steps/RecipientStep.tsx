@@ -48,23 +48,23 @@ function AttendeeCard({
   }) as unknown as boolean;
 
   return (
-    <div className="border border-neutral-100 rounded-[15px] flex flex-col gap-[1.5rem] p-[15px]">
+    <div className="border border-neutral-100 rounded-[15px] flex flex-col gap-6 p-6">
       <div className="flex items-center w-full justify-between font-semibold text-[1.6rem] leading-8 text-deep-100">
         <span>#{sameTypeCount + 1}</span>
         <span>{ticketTypeName}</span>
       </div>
 
       {isGuest ? (
-        <div className="flex items-start gap-4 text-[1.2rem] leading-8 text-neutral-600 bg-neutral-100 rounded-[10px] py-4 px-[1.5rem]">
+        <div className="flex items-start gap-4 text-[1.2rem] leading-8 text-neutral-600 bg-neutral-100 rounded-[10px] py-4 px-6">
           {t("recipient.guest_ticket_note")}
         </div>
       ) : (
         <>
-          <div className="flex items-center justify-between py-4 px-[1.5rem] bg-neutral-100 rounded-[10px]">
+          <div className="flex items-center justify-between py-4 px-6 bg-neutral-100 rounded-[10px]">
             <span className="text-[1.5rem] leading-12 text-neutral-900">
               {t("recipient.someone")}
             </span>
-            <label className="relative inline-block h-[30px] w-[50px] cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:_transparent] has-[:checked]:bg-primary-500">
+            <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
               <input
                 {...register(`attendees.${attendeeIndex}.isForSomeoneElse`)}
                 className="peer sr-only"
@@ -148,14 +148,14 @@ export default function RecipientStep({
       initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0"
+      className="flex flex-col gap-8 lg:h-full lg:min-h-0 lg:overflow-y-auto"
     >
-      <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-[12px] p-[15px]">
+      <div className="flex items-start gap-3 bg-blue-50 border border-blue-200 rounded-[12px] p-6">
         <Sms
           size="20"
           color="#1d4ed8"
           variant="Bulk"
-          className="shrink-0 mt-[2px]"
+          className="shrink-0 mt-[0.2rem]"
         />
         <p className="text-[1.35rem] leading-7 text-blue-800">
           {t("recipient.email_info")}
@@ -163,7 +163,7 @@ export default function RecipientStep({
       </div>
 
       {isGuest && (
-        <div className="border border-neutral-100 rounded-[15px] flex flex-col gap-[1.5rem] p-[15px]">
+        <div className="border border-neutral-100 rounded-[15px] flex flex-col gap-6 p-6">
           <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
             {t("recipient.your_info")}
           </span>

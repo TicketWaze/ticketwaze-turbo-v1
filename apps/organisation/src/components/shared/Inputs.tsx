@@ -11,6 +11,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   isLoading?: boolean;
   disabled?: boolean;
   validate?: boolean;
+  trailing?: React.ReactNode;
   t?: any;
 }
 
@@ -20,6 +21,7 @@ export function Input({
   isLoading,
   className,
   error,
+  trailing,
   ...props
 }: InputProps) {
   return (
@@ -33,6 +35,11 @@ export function Input({
       <label className="absolute left-8 top-8 text-[1.5rem] text-neutral-600 transition-all duration-200 ease-in-out peer-placeholder-shown:top-8 peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-[1.2rem] peer-focus:text-neutral-600 cursor-text pointer-events-none ">
         {children}
       </label>
+      {trailing && (
+        <div className="absolute right-6 top-[50%] -translate-y-[50%]">
+          {trailing}
+        </div>
+      )}
       <span className={"text-[1.2rem] px-8 py-2 text-failure"}>{error}</span>
     </div>
   );

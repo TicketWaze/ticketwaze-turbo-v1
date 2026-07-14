@@ -6,9 +6,14 @@ import {
   DrawerFooter,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import Separator from "@/components/shared/Separator";
 import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
+import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { ResendTicketAction } from "@/actions/Activity";
 import { Event, Ticket } from "@ticketwaze/typescript-config";
 
 function formatDate(d: unknown) {
@@ -52,6 +57,25 @@ export default function Informations({
   event: Event;
 }) {
   const t = useTranslations("Activities");
+  const locale = useLocale();
+  const { data: session } = useSession();
+  const [isResending, setIsResending] = useState(false);
+
+  async function handleResend() {
+    if (isResending) return;
+    setIsResending(true);
+    const result = await ResendTicketAction(
+      ticket.ticketId,
+      session?.user.accessToken ?? "",
+      locale,
+    );
+    if (result.status === "success") {
+      toast.success(t("Ticket.resend.success", { email: ticket.email }));
+    } else {
+      toast.error(result.error ?? t("Ticket.resend.error"));
+    }
+    setIsResending(false);
+  }
 
   const order = event.orders.find((o) => o.orderId === ticket.orderId);
   const firstDay = event.eventDays[0];
@@ -61,9 +85,11 @@ export default function Informations({
     ? `${firstDay.startTime} - ${firstDay.endTime}`
     : "-";
   const address =
-    event.eventType === "meet"
+    event.eventCategory === "meet"
       ? "Google Meet"
-      : `${event.address}, ${event.city}, ${event.state}, ${event.country}`;
+      : [event.address, event.city, event.state, event.country]
+          .filter(Boolean)
+          .join(", ");
 
   const ticketTypeColor = getTicketTypeColor(ticket.ticketType);
   const txStatusStyle = order
@@ -218,14 +244,18 @@ export default function Informations({
       </div>
 
       <DrawerFooter>
-        <div className="flex gap-8">
-          <DrawerClose asChild className="flex-1 cursor-pointer">
+        <div className="flex flex-col lg:flex-row gap-4 lg:gap-8">
+          <DrawerClose asChild className="lg:flex-1 cursor-pointer">
             <ButtonAccent className="w-full">
               {t("Ticket.cta.close")}
             </ButtonAccent>
           </DrawerClose>
-          <ButtonPrimary className="flex-1">
-            {t("Ticket.cta.resend")}
+          <ButtonPrimary
+            className="w-full lg:flex-1"
+            disabled={isResending || ticket.status === "RETURNED"}
+            onClick={handleResend}
+          >
+            {isResending ? <LoadingCircleSmall /> : t("Ticket.cta.resend")}
           </ButtonPrimary>
         </div>
       </DrawerFooter>

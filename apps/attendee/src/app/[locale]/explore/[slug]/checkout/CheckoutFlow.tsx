@@ -46,10 +46,14 @@ export default function CheckoutFlow({
   event,
   ticketTypes,
   user,
+  feeWaiverEligible = false,
+  htgExchangeRate = 0,
 }: {
   event: Event;
   ticketTypes: EventTicketType[];
   user?: User;
+  feeWaiverEligible?: boolean;
+  htgExchangeRate?: number;
 }) {
   const t = useTranslations("Checkout");
   const locale = useLocale();
@@ -184,11 +188,15 @@ export default function CheckoutFlow({
     .map((t, i) => ({ ...t, __index: i }))
     .filter((t) => t.quantity > 0);
 
+  // The fee waiver only applies to paid events (free tickets carry no fees).
+  const feeWaived = feeWaiverEligible && !isFree;
   const feeBreakdown = calculateFeeBreakdown(
     selectedWithIndex,
     ticketTypes,
     event.currency,
     paymentType,
+    feeWaived,
+    htgExchangeRate,
   );
 
   // --- Payment actions ---
@@ -242,10 +250,10 @@ export default function CheckoutFlow({
         },
       );
       const response = await request.json();
-      if (response.status === "success") {
+      if (response.status === "success" && response.paymentURL) {
         router.push(response.paymentURL);
       } else {
-        toast.error(response.message);
+        toast.error(response.message ?? "Something went wrong");
       }
       setIsLoading(false);
       return;
@@ -267,10 +275,10 @@ export default function CheckoutFlow({
       },
     );
     const response = await request.json();
-    if (response.status === "success") {
+    if (response.status === "success" && response.paymentURL) {
       router.push(response.paymentURL);
     } else {
-      toast.error(response.message);
+      toast.error(response.message ?? "Something went wrong");
     }
     setIsLoading(false);
   }
@@ -484,9 +492,9 @@ export default function CheckoutFlow({
           <div className="shrink-0 flex flex-col gap-4">
             <button
               onClick={prev}
-              className="flex max-w-[80px] cursor-pointer items-center gap-4"
+              className="flex max-w-32 cursor-pointer items-center gap-4"
             >
-              <div className="w-[35px] h-[35px] rounded-full bg-neutral-100 flex items-center justify-center">
+              <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center">
                 <ArrowLeft2 size="20" color="#0d0d0d" variant="Bulk" />
               </div>
               <span className="text-neutral-700 font-normal text-[1.4rem] leading-8">
@@ -577,7 +585,7 @@ export default function CheckoutFlow({
         </main>
 
         {/* Footer */}
-        <div className="shrink-0 mt-3 py-4 px-[1.5rem] border border-neutral-100 bg-white rounded-[40px] flex items-center w-full justify-between">
+        <div className="shrink-0 mt-3 py-4 px-6 border border-neutral-100 bg-white rounded-[40px] flex items-center w-full justify-between mb-4">
           {/* Desktop step progress */}
           <div className="hidden lg:flex gap-3 items-center">
             {stepLabels.map((label, i) => (
@@ -593,7 +601,7 @@ export default function CheckoutFlow({
                 </span>
                 {i < stepLabels.length - 1 && (
                   <div
-                    className={`w-[120px] h-[5px] rounded-[100px] ${
+                    className={`w-48 h-2 rounded-[100px] ${
                       currentStep > i ? "bg-primary-500" : "bg-neutral-100"
                     }`}
                   />
@@ -614,7 +622,7 @@ export default function CheckoutFlow({
       </div>
 
       <Dialog open={stripeDialogOpen} onOpenChange={setStripeDialogOpen}>
-        <DialogContent className="max-w-[600px] max-h-[90dvh] overflow-y-auto">
+        <DialogContent className="max-w-240 max-h-[90dvh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t("payment.card")}</DialogTitle>
           </DialogHeader>

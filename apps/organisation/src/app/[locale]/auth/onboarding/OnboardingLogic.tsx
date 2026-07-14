@@ -20,13 +20,18 @@ export default function OnboardingLogic({ response }: { response: any }) {
     Organisation[] | undefined
   >();
   const [createOrganisation, setCreateOrganisation] = useState(false);
+  const [needsUserOnboarding, setNeedsUserOnboarding] = useState(false);
   const { data: session, update } = useSession();
   const locale = useLocale();
   const [isLoading, setIsloading] = useState(false);
   const router = useRouter();
   useEffect(() => {
     const handleOnboarding = async () => {
-      if (response.type === "invite") {
+      if (response.type === "user_onboarding_required") {
+        // The user has a Ticketwaze account but never completed the attendee
+        // onboarding. They must finish it before the dashboard opens up.
+        setNeedsUserOnboarding(true);
+      } else if (response.type === "invite") {
         setInvitedOrganisation(response.organisations);
       } else if (response.type === "create") {
         setCreateOrganisation(true);
@@ -111,6 +116,58 @@ export default function OnboardingLogic({ response }: { response: any }) {
       className={`h-full flex flex-col items-center ${!invitedOrganisations && !createOrganisation && "justify-center"} w-full `}
     >
       <PageLoader isLoading={isLoading} />
+      {needsUserOnboarding && (
+        <div className="flex flex-col items-center justify-between h-full pb-12">
+          <div className="flex flex-col justify-between h-full gap-15 pt-16 w-full">
+            <div className="flex flex-col gap-8 items-center">
+              <motion.h3
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="font-medium font-primary text-center text-[3.2rem] leading-14 text-black"
+              >
+                {t("userOnboarding.title")}
+              </motion.h3>
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="text-[1.8rem] text-center leading-10 text-neutral-700"
+              >
+                {t("userOnboarding.description")}
+              </motion.p>
+            </div>
+            <div className="flex flex-col gap-8">
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="w-full"
+              >
+                <LinkPrimary
+                  href={`${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/auth/onboarding`}
+                  className="w-full flex justify-center items-center"
+                >
+                  {t("userOnboarding.action")}
+                </LinkPrimary>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                className="w-full pb-4"
+              >
+                <LinkSecondary
+                  href="/auth/logout"
+                  className="w-full flex justify-center items-center"
+                >
+                  {t("userOnboarding.back")}
+                </LinkSecondary>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      )}
       {invitedOrganisations && (
         <div className=" flex flex-col gap-12 pt-16 w-full">
           <div className="flex flex-col gap-8 items-center">
@@ -289,7 +346,9 @@ export default function OnboardingLogic({ response }: { response: any }) {
         </div>
       )}
 
-      {!createOrganisation && !invitedOrganisations && <LoadingCircleSmall />}
+      {!createOrganisation && !invitedOrganisations && !needsUserOnboarding && (
+        <LoadingCircleSmall />
+      )}
     </div>
   );
 }

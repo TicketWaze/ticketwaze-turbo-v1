@@ -59,7 +59,7 @@ export default function TransactionDetails({ order }: { order: Order }) {
     ? `${firstDay.startTime} - ${firstDay.endTime}`
     : "—";
   const address =
-    event?.eventType === "meet"
+    event?.eventCategory === "meet"
       ? "Google Meet"
       : [event?.address, event?.city, event?.state, event?.country]
           .filter(Boolean)
