@@ -4,6 +4,7 @@ import EventTypeList from "./EventTypeList";
 import { auth } from "@/lib/auth";
 import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 
 export default async function CreatePage() {
   const t = await getTranslations("Events.create_event");
@@ -24,7 +25,14 @@ export default async function CreatePage() {
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.organisation) {
+    return (
+      <OrganizerLayout title={t("title")}>
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const organisation: Organisation = response.organisation;
   const membershipTier: MembershipTier = response.membershipTier;
   return (

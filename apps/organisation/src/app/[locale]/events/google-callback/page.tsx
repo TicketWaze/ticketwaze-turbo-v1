@@ -26,7 +26,10 @@ export default async function CallbackPage({
       },
     },
   );
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.authorizationUrl) {
+    redirect({ href: "/events", locale });
+  }
   redirect({ href: response.authorizationUrl, locale });
   return (
     <OrganizerLayout title="">

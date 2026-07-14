@@ -28,6 +28,28 @@ const middleware = auth(async (req) => {
     return Response.redirect(newUrl);
   }
 
+  // Authenticated users who never completed onboarding are sent there before
+  // anything else (covers Google sign-ups mid-browse and abandoned flows).
+  // Auth pages stay reachable so the onboarding flow itself is not blocked.
+  // `isOnboarded === false` is checked strictly: sessions created before this
+  // field existed are left untouched. Long-lived sessions seeded before the
+  // user onboarded can carry a stale root flag, but their userPreference
+  // (written when onboarding completed) tells the truth — trust either.
+  const isAuthPath = req.nextUrl.pathname.startsWith(`/${locale}/auth/`);
+  const sessionUser = req.auth?.user as
+    | { isOnboarded?: boolean; userPreference?: { isOnboarded?: boolean } }
+    | undefined;
+  const isOnboarded =
+    sessionUser?.isOnboarded === true ||
+    sessionUser?.userPreference?.isOnboarded === true;
+  if (sessionUser && sessionUser.isOnboarded === false && !isOnboarded && !isAuthPath) {
+    const onboardingUrl = new URL(
+      `/${locale}/auth/onboarding`,
+      req.nextUrl.origin,
+    );
+    return Response.redirect(onboardingUrl);
+  }
+
   // Get the response from next-intl middleware
   const response = createMiddleware(routing)(req);
 

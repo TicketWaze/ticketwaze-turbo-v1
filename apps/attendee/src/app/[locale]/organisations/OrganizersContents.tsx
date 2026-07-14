@@ -108,7 +108,7 @@ export default function OrganizersContents({
           {session?.user.organisations &&
           session?.user.organisations?.length > 0 ? (
             <Link
-              className="lg:hidden absolute bottom-43 right-10 w-24 h-24 bg-primary-500 rounded-full flex items-center justify-center"
+              className="lg:hidden fixed bottom-43 right-10 z-40 w-[60px] h-[60px] bg-primary-500 rounded-full flex items-center justify-center"
               target="_blank"
               rel="noopener noreferrer"
               href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/analytics`}
@@ -119,7 +119,7 @@ export default function OrganizersContents({
           ) : (
             <Dialog>
               <DialogTrigger asChild>
-                <button className="lg:hidden absolute bottom-43 right-10 w-24 h-24 bg-primary-500 rounded-full flex items-center justify-center">
+                <button className="lg:hidden fixed bottom-43 right-10 z-40 w-[60px] h-[60px] bg-primary-500 rounded-full flex items-center justify-center">
                   <Add size="32" color="#ffffff" />
                 </button>
               </DialogTrigger>

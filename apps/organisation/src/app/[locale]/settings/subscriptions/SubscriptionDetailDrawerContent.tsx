@@ -1,4 +1,5 @@
 "use client";
+import { formatMoney } from "@ticketwaze/currency";
 import {
   DrawerClose,
   DrawerContent,
@@ -93,7 +94,7 @@ export default function SubscriptionDetailDrawerContent({
               <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
                 {t("drawer.amount_usd")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  ${Number(sub.usdAmountPaid).toFixed(2)}
+                  {formatMoney(sub.usdAmountPaid, "USD")}
                 </span>
               </p>
               <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>

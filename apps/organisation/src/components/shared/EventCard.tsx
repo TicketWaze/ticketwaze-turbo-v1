@@ -77,7 +77,11 @@ function EventCard({
         </div>
       </div>
 
-      <div className={"px-4 flex flex-1 lg:flex-auto flex-col gap-6 lg:gap-4"}>
+      <div
+        className={
+          "px-4 flex flex-1 lg:flex-auto min-w-0 flex-col gap-6 lg:gap-4"
+        }
+      >
         <ul className="hidden lg:flex gap-2 text-primary-500 font-medium">
           {event.activityTags.map((tag, key) => {
             return <li key={key}>#{tag}</li>;
@@ -86,7 +90,7 @@ function EventCard({
         <div className="flex flex-col w-full gap-1">
           <h1
             className={
-              "font-bold w-92 truncate font-primary text-[1.2rem] text-deep-100 leading-6"
+              "font-bold w-full truncate font-primary text-[1.2rem] text-deep-100 leading-6"
             }
           >
             {event.eventName}

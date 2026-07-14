@@ -8,6 +8,7 @@ import {
   MembershipTier,
 } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 
 export default async function SubscriptionPage() {
   const t = await getTranslations("Settings.subscriptions");
@@ -28,7 +29,14 @@ export default async function SubscriptionPage() {
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.membershipTier) {
+    return (
+      <OrganizerLayout title="">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const organisationSubscriptions: OrganisationSubscription[] =
     response.organisationSubscriptions;
   const membershipTier: MembershipTier = response.membershipTier;

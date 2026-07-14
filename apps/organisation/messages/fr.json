@@ -115,6 +115,12 @@
             "6": "support@ticketwaze.com"
           }
         }
+      },
+      "userOnboarding": {
+        "title": "Terminez la configuration de votre compte",
+        "description": "Votre tableau de bord organisation est presque prêt. Complétez d'abord votre profil Ticketwaze sur la plateforme participant. Cela ne prend qu'une minute.",
+        "action": "Compléter mon profil",
+        "back": "Se déconnecter"
       }
     },
     "register": {
@@ -275,12 +281,28 @@
       "back": "Retour",
       "errors": {
         "email": "Saisissez une adresse e-mail valide",
-        "notFound": "Utilisateur introuvable. Veuillez créer un compte"
+        "notFound": "Utilisateur introuvable. Veuillez créer un compte",
+        "generic": "Une erreur est survenue. Veuillez réessayer."
       },
       "placeholders": {
         "email": "Adresse e-mail"
       },
-      "cta": "Réinitialiser"
+      "cta": "Réinitialiser",
+      "otp": {
+        "title": "Vérifiez vos emails",
+        "description": "Nous avons envoyé un code à 6 chiffres à",
+        "submit": "Vérifier",
+        "resend": "Renvoyer le code",
+        "resending": "Envoi en cours...",
+        "wrong": "Mauvais email ?",
+        "sent": "Un nouveau code a été envoyé à votre adresse e-mail.",
+        "errors": {
+          "invalid": "Code incorrect. Veuillez réessayer.",
+          "expired": "Ce code a expiré. Demandez-en un nouveau ci-dessous.",
+          "notFound": "Aucun code trouvé. Demandez-en un nouveau ci-dessous."
+        }
+      },
+      "success": "Votre mot de passe a été réinitialisé. Vous pouvez maintenant vous connecter."
     },
     "email_sent": {
       "title": "Réinitialiser le mot de passe",
@@ -300,7 +322,8 @@
       },
       "errors": {
         "password_length": "Le mot de passe doit contenir au moins 8 caractères",
-        "password_match": "Le mot de passe ne correspond pas"
+        "password_match": "Le mot de passe ne correspond pas",
+        "sameError": "Vous avez déjà utilisé ce mot de passe. Vous ne pouvez pas réutiliser un ancien mot de passe."
       },
       "cta": "Créer"
     },
@@ -362,18 +385,18 @@
       "classes": "Distribution des classes de billets",
       "daily": "Ventes de billets quotidiennes",
       "daily_chart": {
-      "today": "Aujourd'hui",
-      "mon": "Lun",
-      "tue": "Mar",
-      "wed": "Mer",
-      "thu": "Jeu",
-      "fri": "Ven",
-      "sat": "Sam",
-      "sun": "Dim",
-      "tickets": "ticket",
-      "ticketsPlural": "tickets",
-      "forecast": "Prévisions",
-      "ticketsSold": "Billets vendus"
+        "today": "Aujourd'hui",
+        "mon": "Lun",
+        "tue": "Mar",
+        "wed": "Mer",
+        "thu": "Jeu",
+        "fri": "Ven",
+        "sat": "Sam",
+        "sun": "Dim",
+        "tickets": "ticket",
+        "ticketsPlural": "tickets",
+        "forecast": "Prévisions",
+        "ticketsSold": "Billets vendus"
       }
     },
     "event": {
@@ -900,6 +923,10 @@
             }
           }
         },
+        "raffle": {
+          "title": "Tirage",
+          "description": "Vendez des billets numérotés et tirez au sort des gagnants pour un ou plusieurs prix."
+        },
         "meet": {
           "title": "Google Meet",
           "description": "Participez virtuellement avec Google Meet — la distance n’a pas d’importance.",
@@ -930,6 +957,65 @@
       "tagPlaceholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d’espace",
       "date_time": "Date & heure",
       "coming": "Bientôt disponible !",
+      "raffle": {
+        "back": "Retour",
+        "title": "Créer un tirage",
+        "coming_soon": "La publication des tirages arrive bientôt.",
+        "success": "Tirage soumis pour révision.",
+        "no_org": "Session non prête, veuillez réessayer.",
+        "pro_feature": "Les tirages font partie de nos forfaits Pro et Premium. Passez à un forfait supérieur pour créer des tirages à billets numérotés avec des prix et un tirage au sort automatisé.",
+        "details": "Détails du tirage",
+        "cover": "Image de couverture",
+        "cover_text": "Glissez-déposez ou",
+        "browse": "parcourir",
+        "name": "Titre du tirage",
+        "description": "Description",
+        "description_placeholder": "Décrivez le tirage, les prix et le déroulement du tirage au sort.",
+        "pricing": "Prix du billet",
+        "ticket_price": "Prix par billet",
+        "currency": "Devise",
+        "supply": "Nombre de billets",
+        "total_tickets": "Total de billets",
+        "unlimited": "Billets illimités",
+        "unlimited_tip": "Laissez illimité, ou limitez le nombre de billets pouvant être vendus.",
+        "schedule": "Calendrier des ventes et du tirage",
+        "sales_start": "Début des ventes",
+        "sales_end": "Fin des ventes",
+        "draw_date": "Date et heure du tirage",
+        "draw_mode": "Mode de tirage",
+        "draw_mode_auto": "Automatique",
+        "draw_mode_auto_desc": "Les gagnants sont tirés automatiquement à la date du tirage.",
+        "draw_mode_manual": "Manuel",
+        "draw_mode_manual_desc": "Vous déclenchez le tirage vous-même une fois les ventes closes.",
+        "prizes": "Prix",
+        "prizes_tip": "Ajoutez un prix par rang gagnant. Le rang 1 est tiré en premier.",
+        "prize_rank": "Rang {rank}",
+        "prize_title": "Titre du prix",
+        "prize_description": "Description du prix",
+        "prize_image": "Image du prix (optionnel)",
+        "add_prize": "Ajouter un prix",
+        "fairness_note": "Le tirage utilise un générateur aléatoire sécurisé et est enregistré afin que les gagnants puissent être vérifiés de manière indépendante.",
+        "lock_note": "Dès le premier billet vendu, le prix, les prix et la date du tirage sont verrouillés.",
+        "age_note": "Les acheteurs confirment qu'ils remplissent la condition d'âge et acceptent le règlement du tirage avant l'achat.",
+        "submit": "Enregistrer le tirage",
+        "errors": {
+          "name": "Le titre du tirage doit comporter au moins 10 caractères",
+          "description": "La description doit comporter au moins 20 caractères",
+          "cover": "Une image de couverture est requise",
+          "price": "Le prix du billet doit être supérieur à 0",
+          "sales_start": "Une date de début des ventes est requise",
+          "sales_end": "Une date de fin des ventes est requise",
+          "sales_window": "Les ventes doivent se terminer au plus tard à la date du tirage",
+          "draw_date": "Une date de tirage est requise",
+          "total_tickets": "Le total de billets doit être au moins égal au nombre de prix",
+          "prize_min": "Ajoutez au moins un prix",
+          "prize_title": "Le titre du prix est requis",
+          "prize_description": "La description du prix est requise"
+        },
+        "tags": "Étiquettes",
+        "tags_tip": "Ajoutez quelques étiquettes pour décrire votre tirage. Appuyez sur Entrée, virgule ou espace pour en ajouter une. Cliquez sur une étiquette pour la retirer.",
+        "tags_placeholder": "Ajouter une étiquette"
+      },
       "ticket": "Billet",
       "event_type": "Type d’activité",
       "select_type": "Sélectionnez le type d’activité",
@@ -1048,6 +1134,20 @@
         "date": "Date",
         "popularity": "Popularité"
       }
+    },
+    "raffleCard": {
+      "tag": "Tirage",
+      "draw": "Tirage :",
+      "entries": "billets",
+      "unlimited": "Billets illimités",
+      "entry": "billet"
+    },
+    "filter": {
+      "all": "Tout",
+      "events": "Événements",
+      "raffles": "Tirages",
+      "empty_events": "Aucun événement pour le moment. Créez votre premier événement pour commencer.",
+      "empty_raffles": "Aucun tirage pour le moment. Créez votre premier tirage pour commencer."
     }
   },
   "WelcomeModal": {

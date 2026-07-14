@@ -1,4 +1,5 @@
 "use client";
+import { formatMoney } from "@ticketwaze/currency";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -214,10 +215,10 @@ export default function SubscriptionUpgradePageContent({
     const price = billingCycle === "yearly"
       ? basePrice(tier) * (1 - YEARLY_DISCOUNT)
       : basePrice(tier);
-    return `$${price.toFixed(2)}`;
+    return formatMoney(price, "USD");
   };
   const originalPrice = (tier: MembershipTier) =>
-    `$${basePrice(tier).toFixed(2)}`;
+    formatMoney(basePrice(tier), "USD");
 
   return (
     <div className="overflow-y-auto pb-16">

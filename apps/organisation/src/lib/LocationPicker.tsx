@@ -48,7 +48,10 @@ function MapLayer({
     }
   }, [value, map]);
 
-  // Handle external pan requests
+  // Handle external pan requests (e.g. centering on the user's current
+  // location when the map opens). This only recenters the view — it does NOT
+  // drop a pin or select the spot, so opening "on the user's location" just
+  // frames the map near them and they still click to choose the actual venue.
   useEffect(() => {
     if (!map || !panTarget) return;
     if (panTarget === prevPanTarget.current) return;
@@ -56,12 +59,10 @@ function MapLayer({
     prevPanTarget.current = panTarget;
 
     map.panTo(panTarget);
-    map.setZoom(20);
-    setMarkerPos(panTarget);
+    map.setZoom(16);
 
-    onLocationSelect?.(panTarget);
     onPanDone();
-  }, [map, panTarget, onLocationSelect, onPanDone]);
+  }, [map, panTarget, onPanDone]);
 
   const handleMapClick = useCallback(
     (e: MapMouseEvent) => {

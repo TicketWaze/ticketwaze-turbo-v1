@@ -30,4 +30,7 @@ export interface FeeBreakdown {
   platformFee: number;
   transactionFee: number;
   total: number;
+  // True when the waitlist first-purchase perk zeroes out all fees. The fee
+  // amounts above stay populated (shown struck-through) but `total` == subtotal.
+  feeWaived: boolean;
 }

@@ -1,4 +1,5 @@
 "use client";
+import { formatMoney } from "@ticketwaze/currency";
 import { LinkPrimary } from "@/components/shared/Links";
 import { ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -167,7 +168,7 @@ export default function SubscriptionPageContent({
                         ? t("billed_trial")
                         : t("billed_via_moncash")}
                     {/* {activeSub.usdAmountPaid > 0 && (
-                      <> · ${activeSub.usdAmountPaid.toFixed(2)}</>
+                      <> · {formatMoney(activeSub.usdAmountPaid, "USD")}</>
                     )} */}
                   </p>
                 </div>
@@ -411,7 +412,7 @@ export default function SubscriptionPageContent({
                         {sub.membershipTier}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-600 py-5">
-                        ${Number(sub.usdAmountPaid).toFixed(2)}
+                        {formatMoney(sub.usdAmountPaid, "USD")}
                       </TableCell>
                       <TableCell className="hidden lg:table-cell py-5">
                         <StatusBadge status={sub.status} />

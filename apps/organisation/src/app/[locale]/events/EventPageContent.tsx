@@ -1,11 +1,14 @@
 "use client";
+import { useState } from "react";
 import { DateTime } from "luxon";
 import { Money3 } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
-import { Event } from "@ticketwaze/typescript-config";
+import { Event, Raffle } from "@ticketwaze/typescript-config";
 import EventCard from "@/components/shared/EventCard";
+import RaffleCard from "@/components/shared/RaffleCard";
 
 type Category = "upcoming" | "ongoing" | "past";
+type ActivityFilter = "all" | "events" | "raffles";
 
 function categorizeEvent(event: Event): Category {
   const now = DateTime.now();
@@ -37,33 +40,98 @@ function categorizeEvent(event: Event): Category {
   return "ongoing";
 }
 
-export default function EventPageContent({ events }: { events: Event[] }) {
+export default function EventPageContent({
+  events,
+  raffles = [],
+}: {
+  events: Event[];
+  raffles?: Raffle[];
+}) {
   const t = useTranslations("Events");
+  const [filter, setFilter] = useState<ActivityFilter>("all");
+
+  // Events and raffles share one grid, newest first.
+  const items = [
+    ...events.map((event) => ({
+      kind: "event" as const,
+      createdAt: event.createdAt,
+      event,
+    })),
+    ...raffles.map((raffle) => ({
+      kind: "raffle" as const,
+      createdAt: raffle.createdAt,
+      raffle,
+    })),
+  ].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+
+  const filteredItems = items.filter((item) => {
+    if (filter === "events") return item.kind === "event";
+    if (filter === "raffles") return item.kind === "raffle";
+    return true;
+  });
+
+  const filters: { value: ActivityFilter; label: string }[] = [
+    { value: "all", label: t("filter.all") },
+    { value: "events", label: t("filter.events") },
+    { value: "raffles", label: t("filter.raffles") },
+  ];
+
   return (
-    <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
-      {events.length > 0 ? (
-        <ul className="list pt-4">
-          {[...events]
-            .sort(
-              (a, b) =>
-                new Date(b.createdAt).getTime() -
-                new Date(a.createdAt).getTime(),
-            )
-            .map((event) => {
-              const category = categorizeEvent(event);
+    <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
+      <div className="flex items-center gap-2 bg-neutral-100 rounded-[30px] p-[.4rem] w-fit mt-4 mb-2 ml-2">
+        {filters.map((f) => (
+          <button
+            key={f.value}
+            onClick={() => setFilter(f.value)}
+            className={`px-8 py-3 rounded-[30px] text-[1.4rem] leading-8 font-medium transition-colors cursor-pointer ${
+              filter === f.value
+                ? "bg-primary-500 text-white"
+                : "text-neutral-600 hover:text-deep-100"
+            }`}
+          >
+            {f.label}
+          </button>
+        ))}
+      </div>
+      <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
+        {filteredItems.length > 0 ? (
+          <ul className="list pt-4">
+            {filteredItems.map((item) => {
+              if (item.kind === "raffle") {
+                return (
+                  <li key={item.raffle.raffleId}>
+                    <RaffleCard raffle={item.raffle} />
+                  </li>
+                );
+              }
+              const category = categorizeEvent(item.event);
               return (
                 <li
-                  key={event.eventId}
+                  key={item.event.eventId}
                   className={category === "past" ? "opacity-70" : undefined}
                 >
-                  <EventCard event={event} ongoing={category === "ongoing"} />
+                  <EventCard
+                    event={item.event}
+                    ongoing={category === "ongoing"}
+                  />
                 </li>
               );
             })}
-        </ul>
-      ) : (
-        <EmptyState message={t("description")} />
-      )}
+          </ul>
+        ) : (
+          <EmptyState
+            message={
+              filter === "raffles"
+                ? t("filter.empty_raffles")
+                : filter === "events"
+                  ? t("filter.empty_events")
+                  : t("description")
+            }
+          />
+        )}
+      </div>
     </div>
   );
 }
