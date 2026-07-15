@@ -48,7 +48,7 @@
       },
       "description": "Achetez, vendez et gérez vos billets pour activités, expériences et événements, en ligne ou en personne, sur une plateforme sécurisée et unique.",
       "cta": {
-        "get": "Obtenir un billet",
+        "get": "Explorez nos activités",
         "create": "Créer une activité",
         "waitlist": "Rejoindre la liste d’attente"
       },
@@ -226,7 +226,7 @@
       "title": "Vendez plus de billets avec moins d’efforts",
       "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances — en ligne comme hors ligne.",
       "cta": {
-        "create": "Créez votre première activité",
+        "create": "Accéder à votre espace",
         "waitlist": "Rejoindre la liste d’attente"
       }
     },

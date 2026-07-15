@@ -1,6 +1,4 @@
 "use client";
-import { Link } from "@/i18n/navigation";
-import { Timer1 } from "iconsax-reactjs";
 import Image from "next/image";
 import Hero1 from "@/assets/images/hero-1.png";
 import Hero2 from "@/assets/images/hero-2.png";
@@ -8,13 +6,14 @@ import HeroMobile2 from "@/assets/images/hero-mobile-2.png";
 import HeroMobile1 from "@/assets/images/hero-mobile-1.png";
 import ScrollBg from "@/assets/images/scroll-bg.png";
 import { useEffect, useRef, useState } from "react";
-import { animate, useMotionValue, motion, AnimatePresence } from "motion/react";
+import { animate, useMotionValue, motion } from "motion/react";
 import calendarEdit from "@/assets/icons/calendarEdit.svg";
 import headphones from "@/assets/icons/headphones.svg";
 import map from "@/assets/icons/map.svg";
 import ticket from "@/assets/icons/ticket.svg";
 import { useTranslations } from "next-intl";
 import Navbar from "@/components/Navbar";
+import AppCta from "@/components/AppCta";
 
 export default function HeroSection() {
   // Separate state for desktop
@@ -139,15 +138,7 @@ export default function HeroSection() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="flex items-center justify-center"
         >
-          <Link
-            href={"/waitlist"}
-            className="px-[3rem] py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center gap-4"
-          >
-            <Timer1 size="20" color="#E45B00" variant="Bulk" />
-            <span className="font-medium font-sans text-[1.5rem] text-primary-500">
-              {t("cta.waitlist")}
-            </span>
-          </Link>
+          <AppCta />
         </motion.div>
       </div>
 

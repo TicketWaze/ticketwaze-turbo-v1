@@ -1,11 +1,10 @@
 "use client";
 import Navbar from "@/components/Navbar";
-import { Link } from "@/i18n/navigation";
-import { Timer1 } from "iconsax-reactjs";
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import HeroPersonal from "@/assets/images/hero-personal.png";
 import Image from "next/image";
+import AppCta from "@/components/AppCta";
 
 export default function Hero() {
   const t = useTranslations("PersonalPage.hero");
@@ -38,15 +37,7 @@ export default function Hero() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="flex items-center justify-center"
         >
-          <Link
-            href={"/waitlist"}
-            className="px-[3rem] py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center gap-4"
-          >
-            <Timer1 size="20" color="#E45B00" variant="Bulk" />
-            <span className="font-medium font-sans text-[1.5rem] text-primary-500">
-              {t("cta.waitlist")}
-            </span>
-          </Link>
+          <AppCta />
         </motion.div>
       </div>
       <motion.div

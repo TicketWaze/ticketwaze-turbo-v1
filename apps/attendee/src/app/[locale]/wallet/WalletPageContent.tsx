@@ -11,7 +11,11 @@ import Image from "next/image";
 import Whatsapp from "@/assets/icons/whatsApp.svg";
 import Twitter from "@/assets/icons/twitter.svg";
 import Linkedin from "@/assets/icons/linkedIn.svg";
-import { UserOrdersRequest, UserWallet, UserWithdrawalRequest } from "@ticketwaze/typescript-config";
+import {
+  UserOrdersRequest,
+  UserWallet,
+  UserWithdrawalRequest,
+} from "@ticketwaze/typescript-config";
 import WithdrawalRequestDialog from "./WithdrawalRequestDialog";
 import {
   Dialog,
@@ -45,6 +49,7 @@ export default function WalletPageContent({
   const { data: session } = useSession();
   const orders = ordersRequest.data;
   const referralLink = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/auth/register?referral=${session?.user.referralCode}`;
+  const withdrawalActive = false;
   return (
     <div className="flex flex-col gap-10 overflow-hidden">
       <header className="w-full flex items-center justify-between">
@@ -478,154 +483,171 @@ export default function WalletPageContent({
           </div>
 
           {/* Withdrawal Requests */}
-          <div className={"flex flex-col gap-8"}>
-            <div
-              className={
-                "flex flex-col gap-8 lg:gap-0 lg:flex-row w-full items-center justify-between"
-              }
-            >
-              <span
-                className={
-                  "font-primary w-full font-medium text-[18px] leading-[25px] text-black"
-                }
-              >
-                {t("withdrawal.title")}
-              </span>
-              <WithdrawalRequestDialog 
-                htgAvailableBalance={wallet.htgAvailableBalance}
-                usdAvailableBalance={wallet.usdAvailableBalance}
-              />
-            </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead
-                    className={
-                      "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
-                    }
-                  >
-                    {t("withdrawal.table.reference")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
-                    }
-                  >
-                    {t("withdrawal.table.method")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
-                    }
-                  >
-                    {t("withdrawal.table.amount")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
-                    }
-                  >
-                    {t("withdrawal.table.status")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
-                    }
-                  >
-                    {t("withdrawal.table.date")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              {withdrawalRequests.length > 0 ? (
-                <TableBody>
-                  {withdrawalRequests.map((req) => (
-                    <TableRow key={req.userWithdrawalRequestId}>
-                      <TableCell
-                        className={"text-[1.5rem] py-[15px] leading-8 text-neutral-900"}
-                      >
-                        {TruncateUrl(req.reference ?? req.userWithdrawalRequestId, 14)}
-                      </TableCell>
-                      <TableCell
-                        className={"text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900 capitalize"}
-                      >
-                        {req.accountType === "bank" ? t("withdrawal.method_bank") : t("withdrawal.method_moncash")}
-                      </TableCell>
-                      <TableCell
-                        className={"text-[1.5rem] font-medium leading-8 text-neutral-900"}
-                      >
-                        {req.amount.toLocaleString()} {req.currency ?? "HTG"}
-                      </TableCell>
-                      <TableCell className={"hidden lg:table-cell"}>
-                        {req.status === "ACCEPTED" && (
-                          <span
-                            className={
-                              "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E] px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                            }
-                          >
-                            {t("withdrawal.status_accepted")}
-                          </span>
-                        )}
-                        {req.status === "PENDING" && (
-                          <span
-                            className={
-                              "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C] px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                            }
-                          >
-                            {t("withdrawal.status_pending")}
-                          </span>
-                        )}
-                        {req.status === "REJECTED" && (
-                          <span
-                            className={
-                              "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#E53935] px-[5px] rounded-[30px] bg-[#f5f5f5]"
-                            }
-                          >
-                            {t("withdrawal.status_rejected")}
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell
-                        className={"text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"}
-                      >
-                        {FormatDate(req.createdAt, locale, "local")}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              ) : null}
-            </Table>
-            {withdrawalRequests.length === 0 && (
+          {withdrawalActive && (
+            <div className={"flex flex-col gap-8"}>
               <div
                 className={
-                  "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
+                  "flex flex-col gap-8 lg:gap-0 lg:flex-row w-full items-center justify-between"
                 }
               >
+                <span
+                  className={
+                    "font-primary w-full font-medium text-[18px] leading-[25px] text-black"
+                  }
+                >
+                  {t("withdrawal.title")}
+                </span>
+                <WithdrawalRequestDialog
+                  htgAvailableBalance={wallet.htgAvailableBalance}
+                  usdAvailableBalance={wallet.usdAvailableBalance}
+                />
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead
+                      className={
+                        "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                      }
+                    >
+                      {t("withdrawal.table.reference")}
+                    </TableHead>
+                    <TableHead
+                      className={
+                        "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                      }
+                    >
+                      {t("withdrawal.table.method")}
+                    </TableHead>
+                    <TableHead
+                      className={
+                        "font-bold text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                      }
+                    >
+                      {t("withdrawal.table.amount")}
+                    </TableHead>
+                    <TableHead
+                      className={
+                        "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                      }
+                    >
+                      {t("withdrawal.table.status")}
+                    </TableHead>
+                    <TableHead
+                      className={
+                        "font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] leading-[15px] text-deep-100 uppercase"
+                      }
+                    >
+                      {t("withdrawal.table.date")}
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                {withdrawalRequests.length > 0 ? (
+                  <TableBody>
+                    {withdrawalRequests.map((req) => (
+                      <TableRow key={req.userWithdrawalRequestId}>
+                        <TableCell
+                          className={
+                            "text-[1.5rem] py-[15px] leading-8 text-neutral-900"
+                          }
+                        >
+                          {TruncateUrl(
+                            req.reference ?? req.userWithdrawalRequestId,
+                            14,
+                          )}
+                        </TableCell>
+                        <TableCell
+                          className={
+                            "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900 capitalize"
+                          }
+                        >
+                          {req.accountType === "bank"
+                            ? t("withdrawal.method_bank")
+                            : t("withdrawal.method_moncash")}
+                        </TableCell>
+                        <TableCell
+                          className={
+                            "text-[1.5rem] font-medium leading-8 text-neutral-900"
+                          }
+                        >
+                          {req.amount.toLocaleString()} {req.currency ?? "HTG"}
+                        </TableCell>
+                        <TableCell className={"hidden lg:table-cell"}>
+                          {req.status === "ACCEPTED" && (
+                            <span
+                              className={
+                                "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#349C2E] px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                              }
+                            >
+                              {t("withdrawal.status_accepted")}
+                            </span>
+                          )}
+                          {req.status === "PENDING" && (
+                            <span
+                              className={
+                                "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#EA961C] px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                              }
+                            >
+                              {t("withdrawal.status_pending")}
+                            </span>
+                          )}
+                          {req.status === "REJECTED" && (
+                            <span
+                              className={
+                                "py-[3px] text-[1.1rem] font-bold leading-[15px] text-center uppercase text-[#E53935] px-[5px] rounded-[30px] bg-[#f5f5f5]"
+                              }
+                            >
+                              {t("withdrawal.status_rejected")}
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell
+                          className={
+                            "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                          }
+                        >
+                          {FormatDate(req.createdAt, locale, "local")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                ) : null}
+              </Table>
+              {withdrawalRequests.length === 0 && (
                 <div
                   className={
-                    "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
+                    "w-[330px] lg:w-[460px] mx-auto flex flex-col items-center gap-[5rem]"
                   }
                 >
                   <div
                     className={
-                      "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                      "w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100"
                     }
                   >
-                    <Money3 size="50" color="#0d0d0d" variant="Bulk" />
+                    <div
+                      className={
+                        "w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200"
+                      }
+                    >
+                      <Money3 size="50" color="#0d0d0d" variant="Bulk" />
+                    </div>
+                  </div>
+                  <div
+                    className={"flex flex-col gap-12 items-center text-center"}
+                  >
+                    <p
+                      className={
+                        "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
+                      }
+                    >
+                      {t("withdrawal.description")}
+                    </p>
                   </div>
                 </div>
-                <div className={"flex flex-col gap-12 items-center text-center"}>
-                  <p
-                    className={
-                      "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
-                    }
-                  >
-                    {t("withdrawal.description")}
-                  </p>
-                </div>
-              </div>
-            )}
-            <div></div>
-          </div>
+              )}
+              <div></div>
+            </div>
+          )}
         </div>
       </div>
     </div>

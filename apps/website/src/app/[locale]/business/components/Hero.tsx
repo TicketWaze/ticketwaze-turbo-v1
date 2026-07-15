@@ -1,14 +1,15 @@
 "use client";
 import Navbar from "@/components/Navbar";
 import { Link } from "@/i18n/navigation";
-import { Timer1 } from "iconsax-reactjs";
+import { Ticket } from "iconsax-reactjs";
 import { motion } from "motion/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import HeroBusiness from "@/assets/images/hero-business.png";
 import Image from "next/image";
 
 export default function Hero() {
   const t = useTranslations("BusinessPage.hero");
+  const locale = useLocale();
   return (
     <section className="bg-white py-[2.5rem] px-4 rounded-[3rem] flex flex-col gap-[6.5rem] items-center">
       <Navbar />
@@ -39,12 +40,14 @@ export default function Hero() {
           className="flex items-center justify-center"
         >
           <Link
-            href={"/waitlist"}
-            className="px-[3rem] py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center gap-4"
+            target="_blank"
+            rel="noopener noreferrer"
+            href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/login`}
+            className="px-12 py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center gap-4"
           >
-            <Timer1 size="20" color="#E45B00" variant="Bulk" />
+            <Ticket size="20" color="#E45B00" variant="Bulk" />
             <span className="font-medium font-sans text-[1.5rem] text-primary-500">
-              {t("cta.waitlist")}
+              {t("cta.create")}
             </span>
           </Link>
         </motion.div>

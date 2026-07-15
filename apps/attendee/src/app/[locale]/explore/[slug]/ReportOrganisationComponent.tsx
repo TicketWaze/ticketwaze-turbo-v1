@@ -12,7 +12,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AddReportOrganisation } from "@/actions/eventActions";
 import { toast } from "sonner";
 import { usePathname } from "@/i18n/navigation";
-import { Event } from "@ticketwaze/typescript-config";
 import {
   Dialog,
   DialogClose,
@@ -27,9 +26,9 @@ import { ButtonNeutral, ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 export default function ReportOrganisationComponent({
-  event,
+  organisationId,
 }: {
-  event: Event;
+  organisationId: string;
 }) {
   const { data: session } = useSession();
   const t = useTranslations("Event");
@@ -86,7 +85,7 @@ export default function ReportOrganisationComponent({
     const message = data.status === t("other") ? data.otherReason : data.status;
     const result = await AddReportOrganisation(
       session?.user.accessToken ?? "",
-      event.organisationId,
+      organisationId,
       pathname,
       { message: message },
       locale,

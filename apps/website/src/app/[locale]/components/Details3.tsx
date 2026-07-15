@@ -1,9 +1,9 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { Link } from "@/i18n/navigation";
-import { ArrowLeft2, ArrowRight2, Timer1 } from "iconsax-reactjs";
+import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
+import AppCta from "@/components/AppCta";
 
 const COLLAPSED_WIDTH_PX = 150;
 const GAP_PX = 25;
@@ -61,24 +61,24 @@ export default function Details3() {
   }, [items.length]);
 
   return (
-    <section className="bg-white py-[3rem] lg:py-[7.5rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col gap-[3.5rem] lg:gap-[10rem]">
+    <section className="bg-white py-12 lg:py-30 px-6 lg:px-40 rounded-[3rem] flex flex-col gap-14 lg:gap-40">
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-4">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="font-primary font-bold text-[3.2rem] lg:text-[4.5rem] leading-[32px] lg:leading-[50px] text-deep-200 max-w-[480px]"
+          className="font-primary font-bold text-[3.2rem] lg:text-[4.5rem] leading-[3.2rem] lg:leading-20 text-deep-200 max-w-3xl"
         >
           {t("title")}
         </motion.h2>
-        <div className="flex flex-col items-start gap-8 lg:gap-[3.5rem]">
+        <div className="flex flex-col items-start gap-8 lg:gap-14">
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="font-sans  text-[2.6rem] leading-[3.5rem] text-neutral-700"
+            className="font-sans  text-[2.6rem] leading-14 text-neutral-700"
           >
             {t("description1")}{" "}
             <span className="text-deep-100">{t("description2")}</span>{" "}
@@ -90,24 +90,7 @@ export default function Details3() {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            {/* <Link
-              href={process.env.NEXT_PUBLIC_ATTENDEE_URL!}
-              className="px-[1.5rem] w-[175px] py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center justify-between "
-            >
-              <span className="font-medium font-sans text-[1.5rem] text-primary-500">
-                {t("cta.started")}
-              </span>
-              <ArrowRight2 size="20" color="#E45B00" variant="Bulk" />
-            </Link> */}
-            <Link
-              href={"/waitlist"}
-              className="px-[3rem] py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center gap-4"
-            >
-              <Timer1 size="20" color="#E45B00" variant="Bulk" />
-              <span className="font-medium font-sans text-[1.5rem] text-primary-500">
-                {t("cta.waitlist")}
-              </span>
-            </Link>
+            <AppCta />
           </motion.div>
         </div>
       </div>
@@ -117,7 +100,7 @@ export default function Details3() {
           className="overflow-x-auto scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
-          <div className="flex gap-[25px]" style={{ width: "fit-content" }}>
+          <div className="flex gap-10" style={{ width: "fit-content" }}>
             {items.map(({ description, id, number, title }, i) => (
               <motion.button
                 key={id}

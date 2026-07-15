@@ -5,6 +5,7 @@ import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import confetti from "@/assets/images/confetti.png";
 import Image from "next/image";
+import AppCta from "@/components/AppCta";
 export default function Discount() {
   const t = useTranslations("PersonalPage.discount");
   return (
@@ -68,15 +69,7 @@ export default function Discount() {
         transition={{ duration: 0.5, delay: 0.4 }}
         className="flex items-center"
       >
-        <Link
-          href={"/waitlist"}
-          className="px-[3rem] py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center gap-4"
-        >
-          <span className="font-medium font-sans text-[1.5rem] text-primary-500">
-            {t("cta.waitlist")}
-          </span>
-          <Timer1 size="20" color="#E45B00" variant="Bulk" />
-        </Link>
+        <AppCta />
       </motion.div>
     </section>
   );

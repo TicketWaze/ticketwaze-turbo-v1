@@ -4,6 +4,7 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
+import { DateTime } from "luxon";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -16,7 +17,7 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { AddCircle, InfoCircle, Trash, Warning2 } from "iconsax-reactjs";
 import { useRouter } from "@/i18n/navigation";
-import { CreateRaffle } from "@/actions/EventActions";
+import { UpdateRaffle } from "@/actions/EventActions";
 import BackButton from "@/components/shared/BackButton";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -24,6 +25,8 @@ import RichTextEditor from "@/components/shared/RichTextEditor";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
+import { Raffle } from "@ticketwaze/typescript-config";
+import { slugify } from "@/lib/Slugify";
 
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
@@ -31,14 +34,11 @@ const cardClass =
   "max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100";
 const sectionTitle = "font-semibold text-[1.6rem] leading-8 text-deep-100";
 
-// Matches next-intl's translator, widened so schema keys are plain strings.
 type TranslateFn = (
   key: string,
   values?: Record<string, string | number>,
 ) => string;
 
-// The raffle draw's fairness and the post-sale edit-lock are enforced in the
-// backend (Phase 2). This form only collects the configuration for them.
 function makeRaffleSchema(t: TranslateFn) {
   return z
     .object({
@@ -112,8 +112,16 @@ function Note({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function CreateRaffleForm() {
+// ISO timestamp -> value for <input type="datetime-local">, shown in the
+// raffle's own timezone (falls back to the browser zone for legacy raffles).
+function toLocalInput(iso: string, zone?: string | null) {
+  const dt = DateTime.fromISO(iso).setZone(zone || DateTime.local().zoneName);
+  return dt.isValid ? dt.toFormat("yyyy-MM-dd'T'HH:mm") : "";
+}
+
+export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
   const t = useTranslations("Events.create_event.raffle");
+  const tr = useTranslations("Raffles.single_raffle");
   const locale = useLocale();
   const router = useRouter();
   const { data: session } = useSession();
@@ -134,27 +142,32 @@ export default function CreateRaffleForm() {
   } = useForm<TFormIn, any, TFormOut>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: "",
-      description: "",
-      ticketPrice: undefined as unknown as number,
-      currency: "HTG",
-      unlimited: true,
-      totalTickets: undefined,
-      activityTags: [],
-      location: undefined,
-      salesStart: "",
-      salesEnd: "",
-      drawDate: "",
-      drawMode: "automatic",
-      prizes: [{ title: "", description: "" }],
+      name: raffle.title,
+      description: raffle.description,
+      ticketPrice:
+        raffle.currency === "USD" ? raffle.usdPrice : raffle.ticketPrice,
+      currency: raffle.currency as "HTG" | "USD",
+      unlimited: raffle.totalTicketsLimit === null,
+      totalTickets: raffle.totalTicketsLimit ?? undefined,
+      activityTags: raffle.activityTags ?? [],
+      location: raffle.location ?? undefined,
+      salesStart: toLocalInput(raffle.salesStartAt, raffle.timezone),
+      salesEnd: toLocalInput(raffle.salesEndAt, raffle.timezone),
+      drawDate: toLocalInput(raffle.drawAt, raffle.timezone),
+      drawMode: raffle.drawMode as "automatic" | "manual",
+      prizes:
+        raffle.prizes.length > 0
+          ? [...raffle.prizes]
+              .sort((a, b) => a.rank - b.rank)
+              .map((p) => ({ title: p.title, description: p.description ?? "" }))
+          : [{ title: "", description: "" }],
     },
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: "prizes" });
   const unlimited = watch("unlimited");
 
-  // Free-form tags, same UX as the event form.
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(raffle.activityTags ?? []);
   const [tagInput, setTagInput] = useState("");
   const tagInputRef = useRef<HTMLInputElement>(null);
 
@@ -191,23 +204,19 @@ export default function CreateRaffleForm() {
     setValue("activityTags", next);
   }
 
-  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(
+    raffle.coverImageUrl ?? null,
+  );
   const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [coverError, setCoverError] = useState("");
 
   function handleCover(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     setCoverFile(file);
     setCoverPreview(URL.createObjectURL(file));
-    setCoverError("");
   }
 
   const onSubmit: SubmitHandler<TFormOut> = async (data) => {
-    if (!coverFile) {
-      setCoverError(t("errors.cover"));
-      return;
-    }
     if (!organisation?.organisationId) {
       toast.error(t("no_org"));
       return;
@@ -215,7 +224,8 @@ export default function CreateRaffleForm() {
 
     setSubmitting(true);
     const fd = new FormData();
-    fd.append("cover", coverFile);
+    // Cover is optional on edit — only sent when the organiser picked a new one.
+    if (coverFile) fd.append("cover", coverFile);
     fd.append("title", data.name);
     fd.append("description", data.description);
     fd.append("ticketPrice", String(data.ticketPrice));
@@ -227,11 +237,13 @@ export default function CreateRaffleForm() {
     fd.append("salesStartAt", data.salesStart);
     fd.append("salesEndAt", data.salesEnd);
     fd.append("drawAt", data.drawDate);
-    // The naive datetime-local values are entered in the organiser's zone.
-    fd.append("timezone", Intl.DateTimeFormat().resolvedOptions().timeZone);
+    // Keep the raffle's original zone so the datetimes round-trip consistently.
+    fd.append(
+      "timezone",
+      raffle.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
+    );
     fd.append("drawMode", data.drawMode);
     fd.append("activityTags", JSON.stringify(data.activityTags));
-    // Location is optional — only sent when the organiser picked a spot.
     if (data.location) {
       fd.append("location", JSON.stringify(data.location));
     }
@@ -242,15 +254,16 @@ export default function CreateRaffleForm() {
       ),
     );
 
-    const result = await CreateRaffle(
+    const result = await UpdateRaffle(
       organisation.organisationId,
+      raffle.raffleId,
       session?.user.accessToken ?? "",
       fd,
       locale,
     );
     if (result.status === "success") {
-      toast.success(t("success"));
-      router.push("/events");
+      toast.success(tr("updateSuccess"));
+      router.push(`/events/raffle/${slugify(data.name, raffle.raffleId)}`);
     } else {
       toast.error(result.error);
     }
@@ -262,7 +275,7 @@ export default function CreateRaffleForm() {
       <BackButton text={t("back")} />
 
       <h1 className="max-w-216 w-full mx-auto font-primary font-medium text-[2.6rem] leading-12 text-black">
-        {t("title")}
+        {tr("editTitle")}
       </h1>
 
       <form
@@ -305,9 +318,6 @@ export default function CreateRaffleForm() {
                 />
               </div>
             </div>
-          )}
-          {coverError && (
-            <span className="text-[1.2rem] text-failure">{coverError}</span>
           )}
         </div>
 
@@ -371,6 +381,7 @@ export default function CreateRaffleForm() {
               value={tagInput}
               onChange={(e) => setTagInput(e.target.value)}
               onKeyDown={handleTagKeyDown}
+              onBlur={addTag}
               placeholder={t("tags_placeholder")}
               className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
             />
@@ -625,7 +636,7 @@ export default function CreateRaffleForm() {
 
         <div className="max-w-216 w-full mx-auto">
           <ButtonPrimary type="submit" className="w-full" disabled={submitting}>
-            {submitting ? <LoadingCircleSmall /> : t("submit")}
+            {submitting ? <LoadingCircleSmall /> : tr("save")}
           </ButtonPrimary>
         </div>
       </form>

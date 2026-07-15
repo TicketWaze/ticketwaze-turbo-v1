@@ -4,7 +4,10 @@ import {
   RemoveEventToFavorite,
 } from "@/actions/eventActions";
 import NoAuthDialog from "@/components/Layouts/NoAuthDialog";
-import BuyTicketAuthDialog from "./BuyTicketAuthDialog";
+import BuyTicketAuthDialog from "../../[slug]/BuyTicketAuthDialog";
+import ReportEventComponent from "../../[slug]/ReportEventComponent";
+import ReportOrganisationComponent from "../../[slug]/ReportOrganisationComponent";
+import ShareEvent from "@/components/shared/ShareEvent";
 import { usePathname } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
 import { Heart, MoreCircle } from "iconsax-reactjs";
@@ -12,9 +15,7 @@ import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
-import ReportEventComponent from "./ReportEventComponent";
-import ReportOrganisationComponent from "./ReportOrganisationComponent";
-import { Event } from "@ticketwaze/typescript-config";
+import { Raffle } from "@ticketwaze/typescript-config";
 import PageLoader from "@/components/PageLoader";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import {
@@ -23,74 +24,78 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { LinkPrimary } from "@/components/shared/Links";
-import ShareEvent from "@/components/shared/ShareEvent";
 
-export default function EventActions({
-  event,
+export default function RaffleActions({
+  raffle,
+  soldOut,
   isFavorite,
-  isPast = false,
 }: {
-  event: Event;
+  raffle: Raffle;
+  soldOut: boolean;
   isFavorite: boolean;
-  isPast?: boolean;
 }) {
   const t = useTranslations("Event");
+  const rt = useTranslations("Raffle");
   const locale = useLocale();
   const { data: session } = useSession();
-
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(false);
-  async function AddToFavorite() {
+  const [fav, setFav] = useState(isFavorite);
+
+  const slug = slugify(raffle.title, raffle.raffleId);
+  const raffleUrl = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/explore/raffle/${slug}`;
+  const checkoutUrl = `/explore/raffle/${slug}/checkout`;
+
+  async function addFavorite() {
     setIsLoading(true);
     const result = await AddEventToFavorite(
       session?.user?.accessToken as string,
-      event.eventId,
-      event.organisationId,
+      raffle.raffleId,
+      raffle.organisationId,
       pathname,
       locale,
     );
-    if (result.error) {
-      toast.error(result.message);
-    }
+    if (result.error) toast.error(result.message);
+    else setFav(true);
     setIsLoading(false);
   }
-  async function RemoveToFavorite() {
+  async function removeFavorite() {
     setIsLoading(true);
     const result = await RemoveEventToFavorite(
       session?.user?.accessToken as string,
-      event.eventId,
+      raffle.raffleId,
       pathname,
       locale,
     );
-    if (result.error) {
-      toast.error(result.message);
-    }
+    if (result.error) toast.error(result.message);
+    else setFav(false);
     setIsLoading(false);
   }
+
   return (
     <div className="flex items-center justify-between">
       <PageLoader isLoading={isLoading} />
-      <div className="flex  gap-8">
-        <ShareEvent event={event} />
-        {session?.user && isFavorite && (
+      <div className="flex gap-8">
+        <ShareEvent url={raffleUrl} />
+        {session?.user && fav && (
           <button
             disabled={isLoading}
-            onClick={RemoveToFavorite}
+            onClick={removeFavorite}
             className="p-[7.5px] group flex items-center justify-center rounded-[30px] cursor-pointer bg-primary-100"
           >
             <Heart width={20} height={20} color="#E45B00" variant="Bulk" />
           </button>
         )}
-        {session?.user && !isFavorite && (
+        {session?.user && !fav && (
           <button
             disabled={isLoading}
-            onClick={AddToFavorite}
-            className="w-fit h-fit p-[7.5px] group flex items-center justify-center  bg-neutral-100 rounded-full cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500"
+            onClick={addFavorite}
+            className="w-fit h-fit p-[7.5px] group flex items-center justify-center bg-neutral-100 rounded-full cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500"
           >
             <Heart
               width={20}
               height={20}
-              className=" stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500 transition-all ease-in-out duration-500"
+              className="stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500 transition-all ease-in-out duration-500"
               variant="Bulk"
             />
           </button>
@@ -102,7 +107,7 @@ export default function EventActions({
                 <Heart
                   width={20}
                   height={20}
-                  className='"stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500 transition-all ease-in-out duration-500'
+                  className="stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500 transition-all ease-in-out duration-500"
                   variant="Bulk"
                 />
               </span>
@@ -134,40 +139,35 @@ export default function EventActions({
               {t("more")}
             </span>
             <ReportEventComponent
-              activityId={event.eventId}
-              organisationId={event.organisationId}
+              activityId={raffle.raffleId}
+              organisationId={raffle.organisationId}
             />
             <div className="h-px bg-neutral-200 w-full"></div>
             <ReportOrganisationComponent
-              organisationId={event.organisationId}
+              organisationId={raffle.organisationId}
             />
           </PopoverContent>
         </Popover>
       </div>
-      {/* The activity is over: tickets can no longer be bought, so show an
-          "ended" note in place of the buy button. */}
-      {isPast ? (
+      {soldOut ? (
         <span className="px-12 py-6 rounded-[100px] text-center text-neutral-600 font-medium text-[1.5rem] leading-8 flex items-center justify-center bg-neutral-100">
-          {t("ended")}
+          {rt("soldOut")}
         </span>
       ) : session?.user ? (
         <LinkPrimary
-          href={`/explore/${slugify(event.eventName, event.eventId)}/checkout`}
+          href={checkoutUrl}
           className="py-[7.5px] px-12 text-[1.5rem] font-semibold tracking-[-0.50px] normal font-sans"
         >
-          {t("buy")}
+          {rt("buyEntries")}
         </LinkPrimary>
       ) : (
         <Dialog>
           <DialogTrigger>
             <span className="px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 hover:border-primary-600">
-              {t("buy")}
+              {rt("buyEntries")}
             </span>
           </DialogTrigger>
-          <BuyTicketAuthDialog
-            checkoutUrl={`/explore/${slugify(event.eventName, event.eventId)}/checkout`}
-            isPrivate={event.isPrivate}
-          />
+          <BuyTicketAuthDialog checkoutUrl={checkoutUrl} isPrivate={false} />
         </Dialog>
       )}
     </div>
