@@ -97,8 +97,8 @@ export default function EditMemberDialogContent({
   }
 
   return (
-    <DialogContent className="w-[360px] lg:w-[580px] h-[90dvh] flex flex-col gap-0 p-0 lg:p-0 overflow-hidden">
-      <div className="flex-1 min-h-0 overflow-y-auto px-[20px] pt-[20px] lg:px-[30px] lg:pt-[45px] pb-4 flex flex-col gap-6">
+    <DialogContent className="w-xl lg:w-232 h-[90dvh] flex flex-col gap-0 p-0 lg:p-0 overflow-hidden">
+      <div className="flex-1 min-h-0 overflow-y-auto px-8 pt-8 lg:px-12 lg:pt-18 pb-4 flex flex-col gap-6">
         <DialogHeader>
           <DialogTitle className="font-medium border-b border-neutral-100 pb-8 text-[2.6rem] leading-12 text-black font-primary">
             {t("edit")}
@@ -154,7 +154,7 @@ export default function EditMemberDialogContent({
         </div>
       </div>
 
-      <div className="px-[20px] pb-[20px] lg:px-[30px] lg:pb-[45px] pt-4">
+      <div className="px-8 pb-8 lg:px-12 lg:pb-18 pt-4">
         <DialogClose ref={CloseDialogRef} className="sr-only" />
         <button
           onClick={savePermissions}

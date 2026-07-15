@@ -127,11 +127,11 @@ export default function PinHandler({
           <DialogTrigger asChild>
             <ButtonAccent className="w-full">{t("change_pin")}</ButtonAccent>
           </DialogTrigger>
-          <DialogContent className={"w-[360px] lg:w-[520px] "}>
+          <DialogContent className={"w-xl lg:w-208 "}>
             <DialogHeader>
               <DialogTitle
                 className={
-                  "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                  "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
                 }
               >
                 {t("change_pin")}
@@ -143,19 +143,19 @@ export default function PinHandler({
             <div className="py-8 flex flex-col gap-8 items-center">
               <div
                 className={
-                  "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+                  "w-40 h-40 rounded-full flex items-center justify-center bg-neutral-100"
                 }
               >
                 <div
                   className={
-                    "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+                    "w-28 h-28 rounded-full flex items-center justify-center bg-neutral-200"
                   }
                 >
                   <InfoCircle size="30" color="#0d0d0d" variant="Bulk" />
                 </div>
               </div>
               <p
-                className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
+                className={`font-sans text-[1.4rem] leading-10 text-deep-100 text-center w-[320px] lg:w-full`}
               >
                 {t("changePinAlert")}
               </p>
@@ -179,11 +179,11 @@ export default function PinHandler({
             {t("create_pin")}
           </ButtonAccent>
           {/* </DialogTrigger> */}
-          <DialogContent className={"w-[360px] lg:w-[377px] "}>
+          <DialogContent className={"w-xl lg:w-[37.7rem] "}>
             <DialogHeader>
               <DialogTitle
                 className={
-                  "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                  "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
                 }
               >
                 {t("create_pin")}

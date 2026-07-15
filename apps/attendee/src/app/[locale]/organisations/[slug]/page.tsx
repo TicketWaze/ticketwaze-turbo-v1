@@ -128,20 +128,33 @@ export default async function OrganizerProfile({
             <Separator />
           </div>
           <div className="lg:hidden flex flex-col gap-8">
-            <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-              {t("profile.upcoming")}
-            </span>
-            <ul className="flex flex-col gap-8">
-              {upcomingEvents.map((event) => {
-                return (
-                  <li key={event.eventId} className="lg:pr-4">
-                    <EventCard aside={true} event={event} />
-                  </li>
-                );
-              })}
-            </ul>
-            {events.length === 0 && (
-              <div className="flex flex-col items-center gap-20">
+            {upcomingEvents.length > 0 && (
+              <div className="flex flex-col gap-8">
+                <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
+                  {t("profile.upcoming")}
+                </span>
+                <ul className="flex flex-col gap-8">
+                  {upcomingEvents.map((event) => {
+                    return (
+                      <li key={event.eventId} className="lg:pr-4">
+                        <EventCard aside={true} event={event} />
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
+            {/* no upcoming */}
+            {/* {upcomingEvents.length === 0 && (
+              <div
+                className="flex flex-col items-center"
+                style={{
+                  gap:
+                    upcomingEvents.length > 0 && pastEvents.length > 0
+                      ? "5rem"
+                      : "0",
+                }}
+              >
                 <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
                   <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
                     <Ticket size="50" color="#0D0D0D" variant="Bulk" />
@@ -151,7 +164,7 @@ export default async function OrganizerProfile({
                   {t("profile.noUpcoming")}
                 </span>
               </div>
-            )}
+            )} */}
           </div>
           {pastEvents.length > 0 && (
             <div className="lg:hidden flex flex-col gap-8">
@@ -171,33 +184,44 @@ export default async function OrganizerProfile({
           )}
           <div></div>
         </div>
-        <div className="hidden lg:flex lg:flex-col lg:overflow-y-auto min-h-0 flex-col gap-20 p-4 pt-0">
-          <div className="flex flex-col gap-4">
-            <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-              {t("profile.upcoming")}
-            </span>
-            <ul className="flex flex-col gap-8">
-              {upcomingEvents.map((event) => {
-                return (
-                  <li key={event.eventId} className="lg:pr-4">
-                    <EventCard aside={true} event={event} />
-                  </li>
-                );
-              })}
-            </ul>
-            {events.length === 0 && (
-              <div className="flex flex-col items-center gap-20">
-                <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
-                  <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
-                    <Ticket size="50" color="#0D0D0D" variant="Bulk" />
+        <div
+          className="hidden lg:flex lg:flex-col lg:overflow-y-auto min-h-0 pt-0"
+          style={{
+            gap:
+              upcomingEvents.length > 0 && pastEvents.length > 0 ? "5rem" : "0",
+          }}
+        >
+          {upcomingEvents.length > 0 && (
+            <div className="flex flex-col gap-4">
+              <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
+                {t("profile.upcoming")}
+              </span>
+
+              <ul className="flex flex-col gap-8">
+                {upcomingEvents.map((event) => {
+                  return (
+                    <li key={event.eventId} className="lg:pr-4">
+                      <EventCard aside={true} event={event} />
+                    </li>
+                  );
+                })}
+              </ul>
+
+                {/* no upcoming */}
+              {/* {upcomingEvents.length === 0 && (
+                <div className="flex flex-col items-center gap-20">
+                  <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
+                    <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
+                      <Ticket size="50" color="#0D0D0D" variant="Bulk" />
+                    </div>
                   </div>
+                  <span className="font-primary text-[1.8rem] leading-8 text-neutral-600">
+                    {t("profile.noUpcoming")}
+                  </span>
                 </div>
-                <span className="font-primary text-[1.8rem] leading-8 text-neutral-600">
-                  {t("profile.noUpcoming")}
-                </span>
-              </div>
-            )}
-          </div>
+              )} */}
+            </div>
+          )}
           {pastEvents.length > 0 && (
             <div className="flex flex-col gap-4">
               <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
