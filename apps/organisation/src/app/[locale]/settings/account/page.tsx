@@ -38,7 +38,7 @@ export default async function AccountPage() {
 
       <div
         className={
-          "flex flex-col justify-between gap-[40px] w-full lg:w-[530px] mx-auto overflow-y-scroll overflow-x-hidden h-full"
+          "flex flex-col justify-between gap-16 w-full lg:w-212 mx-auto overflow-y-scroll overflow-x-hidden h-full"
         }
       >
         {/* <ProfileImage user={user} /> */}

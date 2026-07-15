@@ -99,13 +99,13 @@ export default function AddMember({
   return (
     <Dialog>
       <DialogTrigger className="w-full lg:w-auto">
-        <span className="px-12 w-full py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center bg-primary-500 hover:bg-primary-500/80 hover:border-primary-600">
+        <span className="px-12 w-full py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center bg-primary-500 hover:bg-primary-500/80 hover:border-primary-600 text-nowrap">
           {t("add")}
         </span>
       </DialogTrigger>
 
-      <DialogContent className="w-[360px] lg:w-[580px] h-[90dvh] flex flex-col gap-0 p-0 lg:p-0 overflow-hidden">
-        <div className="flex-1 min-h-0 overflow-y-auto px-[20px] pt-[20px] lg:px-[30px] lg:pt-[45px] pb-4 flex flex-col gap-6">
+      <DialogContent className="w-xl lg:w-232 h-[90dvh] flex flex-col gap-0 p-0 lg:p-0 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-y-auto px-8 pt-8 lg:px-12 lg:pt-18 pb-4 flex flex-col gap-6">
           <DialogHeader>
             <DialogTitle className="font-medium border-b border-neutral-100 pb-8 text-[2.6rem] leading-12 text-black font-primary">
               {t("add")}
@@ -161,7 +161,7 @@ export default function AddMember({
           </div>
         </div>
 
-        <div className="px-[20px] pb-[20px] lg:px-[30px] lg:pb-[45px] pt-4">
+        <div className="px-8 pb-8 lg:px-12 lg:pb-18 pt-4">
           <DialogClose ref={CloseDialogRef} className="sr-only" />
           <button
             onClick={handleSubmit(submitHandler)}
