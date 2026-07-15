@@ -1,6 +1,6 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import CreateInPersonEventForm from "./CreateInPersonEventForm";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
+import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { auth } from "@/lib/auth";
 import { getLocale } from "next-intl/server";
@@ -13,10 +13,11 @@ export default async function InPersonPage({
   const { eventType } = await params;
   const session = await auth();
   const locale = await getLocale();
-  const authorized = await organisationPolicy.createEvent(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
+  // Authorize against the member's effective permissions (role default OR
+  // custom grant), matching the API and the rest of the dashboard.
+  const authorized = OrganisationPolicy.fromSession(
+    session?.activeOrganisation?.myPermissions ?? [],
+  ).createEvent();
   if (!authorized) {
     return <UnauthorizedView />;
   }

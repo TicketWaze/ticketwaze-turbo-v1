@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
+import { DateTime } from "luxon";
 import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -55,6 +56,17 @@ export default function EditInPersonEventForm({
     event.eventTicketTypes[0]?.isRefundable ?? false,
   );
   const [isPrivate, setIsPrivate] = useState(event.isPrivate ?? false);
+
+  // The cutoff is stored as UTC; the datetime-local input needs a naive value in
+  // the event's own timezone so the organiser sees the instant they picked.
+  const eventTimezone =
+    event.eventDays[0]?.timezone ??
+    Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const ticketSalesEndAtDefault = event.ticketSalesEndAt
+    ? DateTime.fromISO(event.ticketSalesEndAt)
+        .setZone(eventTimezone)
+        .toFormat("yyyy-MM-dd'T'HH:mm")
+    : "";
 
   // create schema using factory (depends on isFree)
   const FormDataSchema = makeEditInPersonSchema(
@@ -128,6 +140,7 @@ export default function EditInPersonEventForm({
       })),
       eventCurrency: event.currency,
       isFree: event.isFree,
+      ticketSalesEndAt: ticketSalesEndAtDefault,
     },
   });
 
@@ -148,6 +161,8 @@ export default function EditInPersonEventForm({
     formData.append("isRefundable", JSON.stringify(isRefundable));
     formData.append("isFree", JSON.stringify(isFree));
     formData.append("isPrivate", JSON.stringify(isPrivate));
+    // Always sent (even empty) so clearing the field removes the cutoff.
+    formData.append("ticketSalesEndAt", data.ticketSalesEndAt ?? "");
     if (isFree) {
       formData.append(
         "ticketTypes",

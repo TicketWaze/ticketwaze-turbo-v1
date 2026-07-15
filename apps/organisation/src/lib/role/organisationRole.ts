@@ -51,8 +51,6 @@ export const Permission = {
   "webhooks.manage": iota(),
   "settings.manage": iota(),
   "branding.manage": iota(),
-  "discounts.view": iota(),
-  "discounts.manage": iota(),
 } as const;
 
 export type TPermission = (typeof Permission)[keyof typeof Permission];
@@ -80,9 +78,7 @@ const FinanceManagerPermission =
   P["tickets.view"] |
   P["tickets.refund"] |
   P["tickets.cancel"] |
-  P["attendees.view"] |
-  P["discounts.view"] |
-  P["discounts.manage"];
+  P["attendees.view"];
 
 const EventManagerPermission =
   P["staff.view"] |
@@ -105,7 +101,8 @@ const AdminPermission =
   P["organisation.view"] |
   P["staff.view"] |
   P["staff.manage"] |
-  P["roles.manage"] |
+  // roles.manage is intentionally Owner-only (mirrors the API): only the Owner
+  // may assign roles or edit member permissions.
   P["events.view"] |
   P["events.create"] |
   P["events.edit"] |
@@ -130,9 +127,7 @@ const AdminPermission =
   P["scanner.use"] |
   P["integrations.manage"] |
   P["settings.manage"] |
-  P["branding.manage"] |
-  P["discounts.view"] |
-  P["discounts.manage"];
+  P["branding.manage"];
 
 const OwnerPermission =
   P["organisation.view"] |
@@ -172,9 +167,7 @@ const OwnerPermission =
   P["api_keys.manage"] |
   P["webhooks.manage"] |
   P["settings.manage"] |
-  P["branding.manage"] |
-  P["discounts.view"] |
-  P["discounts.manage"];
+  P["branding.manage"];
 
 export const OrganisationPermissions: Record<TRole, bigint> = {
   [Role.Owner]: OwnerPermission,

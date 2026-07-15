@@ -26,7 +26,6 @@ export const PERMISSION_GROUPS: Record<string, string[]> = {
   attendees: ["attendees.view", "attendees.export"],
   finance: ["finance.view", "finance.export", "finance.payouts.view"],
   reports: ["reports.view", "reports.export"],
-  discounts: ["discounts.view", "discounts.manage"],
   other: [
     "memberships.manage",
     "reservations.manage",
@@ -70,8 +69,6 @@ export const PERMISSION_LABELS: Record<string, string> = {
   "finance.payouts.view": "View payouts",
   "reports.view": "View reports",
   "reports.export": "Export reports",
-  "discounts.view": "View discounts",
-  "discounts.manage": "Manage discounts",
   "memberships.manage": "Manage memberships",
   "reservations.manage": "Manage reservations",
   "checkin.perform": "Perform check-in",
@@ -111,8 +108,6 @@ export const PRESET_PERMISSIONS: Record<string, string[]> = {
     "tickets.refund",
     "tickets.cancel",
     "attendees.view",
-    "discounts.view",
-    "discounts.manage",
   ],
   EventManager: [
     "staff.view",
@@ -135,7 +130,8 @@ export const PRESET_PERMISSIONS: Record<string, string[]> = {
     "organisation.view",
     "staff.view",
     "staff.manage",
-    "roles.manage",
+    // roles.manage stays Owner-only (mirrors the API and role defaults); it can
+    // still be granted à la carte from the staff group if truly intended.
     "events.view",
     "events.create",
     "events.edit",
@@ -161,7 +157,5 @@ export const PRESET_PERMISSIONS: Record<string, string[]> = {
     "integrations.manage",
     "settings.manage",
     "branding.manage",
-    "discounts.view",
-    "discounts.manage",
   ],
 };

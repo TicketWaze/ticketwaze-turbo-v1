@@ -13,6 +13,7 @@ import {
   TicketFormData,
 } from "../checkout.types";
 import TicketSummaryCard from "../TicketSummaryCard";
+import TicketSalesCountdown from "@/components/shared/TicketSalesCountdown";
 
 interface Props {
   delta: number;
@@ -69,6 +70,7 @@ export default function TicketSelectionStep({
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="flex flex-col gap-8 lg:h-full lg:min-h-0 lg:overflow-y-auto"
     >
+      <TicketSalesCountdown endsAt={event.ticketSalesEndAt} variant="full" />
       <ul className="flex flex-col gap-8">
         {[...fields.map((field, index) => ({ field, index, ticketType: ticketTypes[index] }))]
           .sort((a, b) => {

@@ -4,7 +4,7 @@ import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/lib/auth";
-import { organisationPolicy } from "@/lib/role/organisationPolicy";
+import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import { ArrowRight2, Icon, Microphone2, People } from "iconsax-reactjs";
 import {
   Building2,
@@ -27,10 +27,13 @@ import { getTranslations } from "next-intl/server";
 
 export default async function InPersonEventTypePage() {
   const session = await auth();
-  const authorized = await organisationPolicy.createEvent(
-    session?.user.userId ?? "",
-    session?.activeOrganisation.organisationId ?? "",
-  );
+  // Authorize against the member's effective permissions (role default OR the
+  // custom permissions granted to them), matching the API and the rest of the
+  // dashboard. The old role-only check ignored custom grants and wrongly locked
+  // out members who were given event access on top of a base Staff role.
+  const authorized = OrganisationPolicy.fromSession(
+    session?.activeOrganisation?.myPermissions ?? [],
+  ).createEvent();
   if (!authorized) return <UnauthorizedView />;
   const t = await getTranslations("Events.create_event.list.inPerson");
   const links = [

@@ -724,6 +724,14 @@
     "copy": "Copy",
     "buy": "Buy ticket",
     "ended": "Activity ended",
+    "salesEnded": "Sales ended",
+    "salesEndsIn": "Sales end in {time}",
+    "countdownUnits": {
+      "d": "d",
+      "h": "h",
+      "m": "m",
+      "s": "s"
+    },
     "buy_more": "Buy more ticket",
     "about": "About activity",
     "contact": "Contact Information",

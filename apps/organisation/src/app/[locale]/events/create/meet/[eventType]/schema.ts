@@ -104,6 +104,9 @@ export function makeMeetPersonSchema(
       ),
       eventCurrency: z.string(),
       isFree: z.boolean(),
+      // Optional cutoff after which tickets can no longer be bought. The event
+      // stays listed; it is simply shown as "sales ended". Empty = no cutoff.
+      ticketSalesEndAt: z.string().optional(),
     })
     .superRefine((data, ctx) => {
       if (data.isFree) {

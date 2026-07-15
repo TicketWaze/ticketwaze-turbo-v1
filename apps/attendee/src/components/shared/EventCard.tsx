@@ -6,6 +6,7 @@ import Image from "next/image";
 import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 import formatDate from "@/lib/FormatDate";
+import TicketSalesCountdown from "@/components/shared/TicketSalesCountdown";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
   const now = new Date();
@@ -125,18 +126,21 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
             </div>
           )}
         </div>
-        <p className="font-bold text-[1.2rem] leading-6 text-primary-500">
-          {price > 0 ? (
-            <>
-              {t("from")} {price}{" "}
-              <span className="font-normal text-neutral-700">
-                {event.currency}
-              </span>
-            </>
-          ) : (
-            t("free")
-          )}
-        </p>
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+          <p className="font-bold text-[1.2rem] leading-6 text-primary-500">
+            {price > 0 ? (
+              <>
+                {t("from")} {price}{" "}
+                <span className="font-normal text-neutral-700">
+                  {event.currency}
+                </span>
+              </>
+            ) : (
+              t("free")
+            )}
+          </p>
+          <TicketSalesCountdown endsAt={event.ticketSalesEndAt} />
+        </div>
       </div>
     </Link>
   );

@@ -36,8 +36,6 @@ export function sessionChecker(permissions: string[]) {
     viewPayouts: () => has("finance.payouts.view"),
     viewReports: () => has("reports.view"),
     exportReports: () => has("reports.export"),
-    viewDiscounts: () => has("discounts.view"),
-    manageDiscounts: () => has("discounts.manage"),
     manageMemberships: () => has("memberships.manage"),
     manageReservations: () => has("reservations.manage"),
     performCheckin: () => has("checkin.perform"),
@@ -207,13 +205,6 @@ export class OrganisationPolicy {
   manageBranding(u: string, o: string) {
     return this.check(u, o, Permission["branding.manage"]);
   }
-
-  // ── Discounts ────────────────────────────────────────────────
-  viewDiscounts(u: string, o: string) { return this.check(u, o, Permission["discounts.view"]); }
-  manageDiscounts(u: string, o: string) { return this.check(u, o, Permission["discounts.manage"]); }
-  createDiscount(u: string, o: string) { return this.manageDiscounts(u, o); }
-  editDiscount(u: string, o: string) { return this.manageDiscounts(u, o); }
-  deleteDiscount(u: string, o: string) { return this.manageDiscounts(u, o); }
 
   // ── Backward-compatible aliases ───────────────────────────────
   addMember(u: string, o: string) {

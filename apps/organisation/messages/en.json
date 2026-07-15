@@ -1064,6 +1064,8 @@
       "mark_as_refundable": "Mark tickets as refundable",
       "mark_as_private": "Make this a private activity",
       "private_tip": "Private activities stay listed with a Private tag, but only the guests you add to the attendee list can buy tickets.",
+      "sales_end_at": "Ticket sales end at",
+      "sales_end_at_hint": "Optional. After this date and time, tickets can no longer be bought and the event is marked as sales ended. It stays listed and viewable. Leave empty to keep sales open until the event ends.",
       "currency": "Currency",
       "general_default": "Enjoy full access without any cost! Join us for an unforgettable experience. Secure your spot today!",
       "meet_default": "Join our Meet session with full access! Connect, and enjoy anywhere. Reserve your place today!",

@@ -29,10 +29,12 @@ export default function EventActions({
   event,
   isFavorite,
   isPast = false,
+  salesEnded = false,
 }: {
   event: Event;
   isFavorite: boolean;
   isPast?: boolean;
+  salesEnded?: boolean;
 }) {
   const t = useTranslations("Event");
   const locale = useLocale();
@@ -144,11 +146,16 @@ export default function EventActions({
           </PopoverContent>
         </Popover>
       </div>
-      {/* The activity is over: tickets can no longer be bought, so show an
-          "ended" note in place of the buy button. */}
+      {/* The activity is over, or the organiser's sales cutoff has passed:
+          tickets can no longer be bought, so show a note in place of the buy
+          button. The event otherwise stays listed and viewable. */}
       {isPast ? (
         <span className="px-12 py-6 rounded-[100px] text-center text-neutral-600 font-medium text-[1.5rem] leading-8 flex items-center justify-center bg-neutral-100">
           {t("ended")}
+        </span>
+      ) : salesEnded ? (
+        <span className="px-12 py-6 rounded-[100px] text-center text-neutral-600 font-medium text-[1.5rem] leading-8 flex items-center justify-center bg-neutral-100">
+          {t("salesEnded")}
         </span>
       ) : session?.user ? (
         <LinkPrimary

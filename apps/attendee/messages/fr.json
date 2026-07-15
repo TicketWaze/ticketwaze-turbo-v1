@@ -768,6 +768,14 @@
     "copy": "Copier",
     "buy": "Acheter",
     "ended": "Activité terminée",
+    "salesEnded": "Ventes terminées",
+    "salesEndsIn": "Fin des ventes dans {time}",
+    "countdownUnits": {
+      "d": "j",
+      "h": "h",
+      "m": "m",
+      "s": "s"
+    },
     "buy_more": "Acheter plus",
     "about": "À propos de l'activité",
     "contact": "Informations de contact",

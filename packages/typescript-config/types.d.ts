@@ -274,6 +274,7 @@ export interface Event {
   isPrivate: boolean;
   currency: string;
   activityTags: string[];
+  ticketSalesEndAt: string | null;
   eventDays: EventDay[];
   eventTicketTypes: EventTicketType[];
   eventTagId: string;

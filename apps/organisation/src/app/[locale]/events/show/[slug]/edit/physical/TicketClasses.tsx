@@ -326,6 +326,23 @@ export default function StepTicket({
           )}
         </>
       )}
+
+      {/* Optional ticket-sales cutoff */}
+      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-4 border border-neutral-100">
+        <span className="font-semibold text-[16px] leading-8 text-deep-100">
+          {t("sales_end_at")}{" "}
+          <span className="text-neutral-600 font-normal">({t("optional")})</span>
+        </span>
+        <input
+          type="datetime-local"
+          className="bg-neutral-100 text-[1.5rem] w-full rounded-[5rem] p-8 outline-none"
+          {...register("ticketSalesEndAt" as const)}
+        />
+        <p className="text-[1.2rem] leading-6 text-neutral-600">
+          {t("sales_end_at_hint")}
+        </p>
+      </div>
+
       <div></div>
       <div></div>
       <div></div>
