@@ -10,7 +10,11 @@ import {
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // Report-only: violations are logged to the API, never blocked. Tune, then enforce.
-const csp = mergeCsp(CSP_SOURCES.turnstile, CSP_SOURCES.vercelAnalytics, {
+const csp = mergeCsp(
+  CSP_SOURCES.turnstile,
+  CSP_SOURCES.vercelAnalytics,
+  CSP_SOURCES.googleAnalytics,
+  {
   connectSrc: connectForApi(apiUrl),
   reportUri: apiUrl ? `${apiUrl}/csp-report` : undefined,
   reportOnly: true,

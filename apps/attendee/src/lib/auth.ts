@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { cookies } from "next/headers";
 
 async function refreshAccessToken(token: Record<string, unknown>) {
   try {
@@ -121,12 +122,22 @@ const nextAuthResult = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
+        // Mobile redirect flow stashes the referral in a cookie (the popup path
+        // passes it inline instead). Best-effort: attribution is non-critical.
+        let referralCode: string | undefined;
+        try {
+          referralCode = (await cookies()).get("referral_code")?.value;
+        } catch {}
+
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idToken: account.id_token }),
+            body: JSON.stringify({
+              idToken: account.id_token,
+              ...(referralCode ? { referralCode } : {}),
+            }),
           },
         );
 

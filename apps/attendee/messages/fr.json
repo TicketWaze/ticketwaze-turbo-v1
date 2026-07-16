@@ -1,4 +1,10 @@
 {
+  "Consent": {
+    "aria": "Consentement aux cookies",
+    "message": "Nous utilisons des cookies d'analyse pour comprendre comment Ticketwaze est utilisé. Ils restent désactivés jusqu'à ce que vous acceptiez.",
+    "accept": "Accepter",
+    "reject": "Refuser"
+  },
   "Auth": {
     "layout": {
       "title": "Chaque billet, Chaque activité, Une seule plateforme",

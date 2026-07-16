@@ -14,6 +14,7 @@ const cdn = process.env.NEXT_PUBLIC_CLOUDFRONT_HOSTNAME;
 const csp = mergeCsp(
   CSP_SOURCES.stripe,
   CSP_SOURCES.googleAuth,
+  CSP_SOURCES.googleAnalytics,
   CSP_SOURCES.vercelAnalytics,
   {
     imgSrc: cdn ? [`https://${cdn}`] : [],

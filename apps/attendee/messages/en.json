@@ -1,4 +1,10 @@
 {
+  "Consent": {
+    "aria": "Cookie consent",
+    "message": "We use analytics cookies to understand how Ticketwaze is used. They stay off until you accept.",
+    "accept": "Accept",
+    "reject": "Reject"
+  },
   "Auth": {
     "layout": {
       "title": "Ticketing Made Simple. Experiences Made Unforgettable.",

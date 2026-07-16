@@ -130,6 +130,22 @@ export const CSP_SOURCES: Record<string, CspOptions> = {
     frameSrc: ["https://accounts.google.com"],
     imgSrc: ["https://*.googleusercontent.com"],
   },
+  googleAnalytics: {
+    // GA4 via @next/third-parties: gtag.js is served from googletagmanager.com,
+    // collection endpoints live on google-analytics.com (regional *.google-analytics.com).
+    scriptSrc: ["https://www.googletagmanager.com"],
+    connectSrc: [
+      "https://www.google-analytics.com",
+      "https://*.google-analytics.com",
+      "https://www.googletagmanager.com",
+      "https://analytics.google.com",
+    ],
+    imgSrc: [
+      "https://www.google-analytics.com",
+      "https://*.google-analytics.com",
+      "https://www.googletagmanager.com",
+    ],
+  },
   googleMaps: {
     scriptSrc: ["https://maps.googleapis.com"],
     connectSrc: ["https://maps.googleapis.com"],

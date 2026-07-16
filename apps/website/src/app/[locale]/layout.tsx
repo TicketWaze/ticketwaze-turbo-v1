@@ -7,6 +7,11 @@ import { getTranslations } from "next-intl/server";
 import TopLoader from "@/components/TopLoader";
 import LiveChatWidgetMount from "@/components/LiveChatWidgetMount";
 import { Analytics } from "@vercel/analytics/next";
+import { ConsentProvider } from "@/components/analytics/ConsentProvider";
+import ConsentModeScript from "@/components/analytics/ConsentModeScript";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
+import { WebVitals } from "@/components/analytics/WebVitals";
+import { CookieConsentBanner } from "@/components/analytics/CookieConsentBanner";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -128,11 +133,19 @@ export default async function RootLayout({
       <body
         className={`${bricolageGrotesque.variable} ${dmMono.variable} ${dmSans.className} bg-neutral-100 px-4 lg:px-10 p-10 flex flex-col gap-10 font-sans`}
       >
+        {/* Consent Mode defaults — Next hoists beforeInteractive to <head> */}
+        <ConsentModeScript />
         <NextIntlClientProvider>
-          <Toaster richColors position="top-right" />
-          {children}
-          <LiveChatWidgetMount />
-          <TopLoader />
+          <ConsentProvider>
+            <Toaster richColors position="top-right" />
+            {children}
+            <LiveChatWidgetMount />
+            <TopLoader />
+            {/* Analytics loads after hydration and only once consent is granted */}
+            <GoogleAnalytics />
+            <WebVitals />
+            <CookieConsentBanner />
+          </ConsentProvider>
         </NextIntlClientProvider>
         <Analytics />
       </body>

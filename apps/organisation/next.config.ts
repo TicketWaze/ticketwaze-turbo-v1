@@ -15,6 +15,7 @@ const csp = mergeCsp(
   CSP_SOURCES.stripe,
   CSP_SOURCES.googleAuth,
   CSP_SOURCES.googleMaps,
+  CSP_SOURCES.googleAnalytics,
   {
     imgSrc: cdn ? [`https://${cdn}`] : [],
     connectSrc: connectForApi(apiUrl),
