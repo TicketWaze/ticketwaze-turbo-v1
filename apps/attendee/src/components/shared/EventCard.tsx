@@ -6,7 +6,6 @@ import Image from "next/image";
 import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 import formatDate from "@/lib/FormatDate";
-import TicketSalesCountdown from "@/components/shared/TicketSalesCountdown";
 
 function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
   const now = new Date();
@@ -38,7 +37,7 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         <Image
           src={event.eventImageUrl}
           className={
-            "h-62 lg:max-h-[19.1rem] flex-1 lg:flex-auto w-62 lg:w-full object-cover object-top-left rounded-[10px] "
+            "h-62 lg:max-h-[19.1rem] flex-1 lg:flex-auto w-full object-cover object-top-left rounded-[10px] "
           }
           alt={event.eventName}
           height={191}
@@ -126,21 +125,18 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
             </div>
           )}
         </div>
-        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
-          <p className="font-bold text-[1.2rem] leading-6 text-primary-500">
-            {price > 0 ? (
-              <>
-                {t("from")} {price}{" "}
-                <span className="font-normal text-neutral-700">
-                  {event.currency}
-                </span>
-              </>
-            ) : (
-              t("free")
-            )}
-          </p>
-          <TicketSalesCountdown endsAt={event.ticketSalesEndAt} />
-        </div>
+        <p className="font-bold text-[1.2rem] leading-6 text-primary-500">
+          {price > 0 ? (
+            <>
+              {t("from")} {price}{" "}
+              <span className="font-normal text-neutral-700">
+                {event.currency}
+              </span>
+            </>
+          ) : (
+            t("free")
+          )}
+        </p>
       </div>
     </Link>
   );
