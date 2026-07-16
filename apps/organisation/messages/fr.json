@@ -1,4 +1,10 @@
 {
+  "Consent": {
+    "aria": "Consentement aux cookies",
+    "message": "Nous utilisons des cookies d'analyse pour comprendre comment Ticketwaze est utilisé. Ils restent désactivés jusqu'à ce que vous acceptiez.",
+    "accept": "Accepter",
+    "reject": "Refuser"
+  },
   "Metadata": {
     "title": "Vendez plus de billets avec moins d’efforts | Ticketwaze",
     "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances — en ligne comme hors ligne."

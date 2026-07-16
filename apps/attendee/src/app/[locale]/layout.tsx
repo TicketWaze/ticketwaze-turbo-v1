@@ -9,6 +9,11 @@ import { Toaster } from "sonner";
 import TopLoader from "@/components/shared/TopLoader";
 import { Analytics } from "@vercel/analytics/next";
 import { JsonLd, buildSiteJsonLd } from "@/lib/structuredData";
+import { ConsentProvider } from "@/components/analytics/ConsentProvider";
+import ConsentModeScript from "@/components/analytics/ConsentModeScript";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
+import { WebVitals } from "@/components/analytics/WebVitals";
+import { CookieConsentBanner } from "@/components/analytics/CookieConsentBanner";
 
 const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -57,14 +62,22 @@ export default async function RootLayout({
       <body
         className={`${bricolageGrotesque.variable} ${dmMono.variable} ${dmSans.className} `}
       >
+        {/* Consent Mode defaults — Next hoists beforeInteractive to <head> */}
+        <ConsentModeScript />
         <JsonLd data={buildSiteJsonLd(locale)} />
         <NextIntlClientProvider>
-          <AuthProvider>
-            {/* <OrganisationProvider/> */}
-            {children}
-          </AuthProvider>
-          <Toaster richColors position="top-right" />
-          <TopLoader />
+          <ConsentProvider>
+            <AuthProvider>
+              {/* <OrganisationProvider/> */}
+              {children}
+            </AuthProvider>
+            <Toaster richColors position="top-right" />
+            <TopLoader />
+            {/* Analytics loads after hydration and only once consent is granted */}
+            <GoogleAnalytics />
+            <WebVitals />
+            <CookieConsentBanner />
+          </ConsentProvider>
         </NextIntlClientProvider>
         <Analytics />
       </body>
