@@ -43,6 +43,47 @@ export async function UpdateEventStatusAction(
   }
 }
 
+export async function UpdateRaffleStatusAction(
+  raffleId: string,
+  adminStatus: string,
+  accessToken: string,
+  locale: string,
+  rejectionReason?: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/raffle/${raffleId}/status`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({
+          status: adminStatus,
+          ...(adminStatus === "rejected" && rejectionReason
+            ? { rejectionReason }
+            : {}),
+        }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath(`/activities/raffle/${raffleId}`);
+      return { status: "success" };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function ResendTicketAction(
   ticketId: string,
   accessToken: string,

@@ -389,7 +389,13 @@ export default function ActivitiesPageContent({
             <TableBody>
               {filteredRaffles.map((raffle) => {
                 return (
-                  <TableRow key={raffle.raffleId}>
+                  <TableRow
+                    key={raffle.raffleId}
+                    className="cursor-pointer"
+                    onClick={() =>
+                      router.push(`/activities/raffle/${raffle.raffleId}`)
+                    }
+                  >
                     <TableCell
                       className={
                         "text-[1.5rem] py-6 leading-8 text-neutral-900"

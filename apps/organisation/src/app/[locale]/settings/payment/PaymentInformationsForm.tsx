@@ -179,11 +179,11 @@ export default function PaymentInformationsForm({
             {t("clearBanking")}
           </ButtonRed>
         </DialogTrigger>
-        <DialogContent className={"w-[360px] lg:w-[520px] "}>
+        <DialogContent className={"w-xl lg:w-208 "}>
           <DialogHeader>
             <DialogTitle
               className={
-                "font-medium border-b border-neutral-100 pb-[2rem]  text-[2.6rem] leading-[30px] text-black font-primary"
+                "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
               }
             >
               {t("clearBanking")}
@@ -194,12 +194,12 @@ export default function PaymentInformationsForm({
           </DialogHeader>
           <div
             className={
-              "flex flex-col w-auto justify-center items-center gap-[30px]"
+              "flex flex-col w-auto justify-center items-center gap-12"
             }
           >
             <p
               className={
-                "font-sans text-[1.8rem] leading-[25px] text-[#cdcdcd] text-center w-[320px] lg:w-full"
+                "font-sans text-[1.8rem] leading-10 text-[#cdcdcd] text-center w-[320px] lg:w-full"
               }
             >
               {t("deleteBankinfWarning")}

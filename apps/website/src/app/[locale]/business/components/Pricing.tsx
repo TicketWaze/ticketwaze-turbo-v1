@@ -1,11 +1,13 @@
 "use client";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import { Link } from "@/i18n/navigation";
+import { Ticket } from "iconsax-reactjs";
 
 function Pricing() {
   const t = useTranslations("BusinessPage.pricing");
+  const locale = useLocale();
   return (
     <section
       id={"pricing"}
@@ -91,12 +93,12 @@ function Pricing() {
               </li>
             </ul>
           </div>
-          <Link
+          {/* <Link
             className="px-12 py-5 bg-black rounded-[10rem] text-white font-medium  text-[1.4rem] leading-8 text-center"
             href={"/waitlist"}
           >
             {t("free.waitlist")}
-          </Link>
+          </Link> */}
         </motion.div>
 
         {/*  PRO*/}
@@ -174,12 +176,12 @@ function Pricing() {
               </li>
             </ul>
           </div>
-          <Link
+          {/* <Link
             className="px-12 py-5 bg-primary-500 rounded-[10rem] text-white font-medium  text-[1.4rem] leading-8 text-center"
             href={"/waitlist"}
           >
             {t("pro.waitlist")}
-          </Link>
+          </Link> */}
         </motion.div>
 
         {/*  PREMIUM*/}
@@ -250,15 +252,34 @@ function Pricing() {
                 </li>
               </ul>
             </div>
-            <Link
+            {/* <Link
               className="px-12 py-5 bg-black rounded-[10rem] text-white font-medium  text-[1.4rem] leading-8 text-center"
               href={"/waitlist"}
             >
               {t("premium.waitlist")}
-            </Link>
+            </Link> */}
           </div>
         </motion.div>
       </div>
+      <motion.div
+        className="self-center"
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+      >
+        <Link
+          target="_blank"
+          rel="noopener noreferrer"
+          href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/login`}
+          className="px-12 py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center gap-4"
+        >
+          <Ticket size="20" color="#E45B00" variant="Bulk" />
+          <span className="font-medium font-sans text-[1.5rem] text-primary-500">
+            {t("free.cta")}
+          </span>
+        </Link>
+      </motion.div>
     </section>
   );
 }

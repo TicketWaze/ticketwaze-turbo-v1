@@ -508,6 +508,44 @@
       "proceed": "Continuer"
     }
   },
+  "Raffle": {
+    "back": "Retour",
+    "tag": "Tirage",
+    "entryPrice": "Prix d'entrée",
+    "perEntry": "par entrée",
+    "drawDate": "Date du tirage",
+    "entriesLeft": "Entrées restantes",
+    "unlimited": "Illimité",
+    "soldOut": "Épuisé",
+    "about": "À propos de ce tirage",
+    "prizes": "Prix",
+    "followers": "Abonnés",
+    "direction": "Itinéraire",
+    "openMaps": "Ouvrir dans Maps",
+    "noDescription": "Aucune description",
+    "buyEntries": "Acheter des entrées",
+    "checkout": {
+      "title": "Acheter des entrées",
+      "quantity": "Quantité",
+      "subtotal": "Sous-total",
+      "fees": "Frais",
+      "total": "Total",
+      "walletBalance": "Solde du portefeuille",
+      "payWithWallet": "Payer avec le portefeuille",
+      "insufficient": "Solde du portefeuille insuffisant",
+      "loginRequired": "Veuillez vous connecter pour acheter des entrées.",
+      "login": "Se connecter",
+      "success": "Entrées achetées",
+      "max": "Seulement {count} entrées restantes",
+      "guest": {
+        "title": "Vos informations",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "Courriel",
+        "required": "Veuillez saisir votre nom et votre courriel."
+      }
+    }
+  },
   "Explore": {
     "title": "Explorer les activités",
     "subtitle": "Bon retour ",
@@ -730,6 +768,14 @@
     "copy": "Copier",
     "buy": "Acheter",
     "ended": "Activité terminée",
+    "salesEnded": "Ventes terminées",
+    "salesEndsIn": "Fin des ventes dans {time}",
+    "countdownUnits": {
+      "d": "j",
+      "h": "h",
+      "m": "m",
+      "s": "s"
+    },
     "buy_more": "Acheter plus",
     "about": "À propos de l'activité",
     "contact": "Informations de contact",

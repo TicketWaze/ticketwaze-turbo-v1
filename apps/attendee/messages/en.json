@@ -464,6 +464,44 @@
       "proceed": "Proceed"
     }
   },
+  "Raffle": {
+    "back": "Back",
+    "tag": "Raffle",
+    "entryPrice": "Entry price",
+    "perEntry": "per entry",
+    "drawDate": "Draw date",
+    "entriesLeft": "Entries left",
+    "unlimited": "Unlimited",
+    "soldOut": "Sold out",
+    "about": "About this raffle",
+    "prizes": "Prizes",
+    "followers": "Followers",
+    "direction": "Direction",
+    "openMaps": "Open in Maps",
+    "noDescription": "No description",
+    "buyEntries": "Buy entries",
+    "checkout": {
+      "title": "Buy entries",
+      "quantity": "Quantity",
+      "subtotal": "Subtotal",
+      "fees": "Fees",
+      "total": "Total",
+      "walletBalance": "Wallet balance",
+      "payWithWallet": "Pay with wallet",
+      "insufficient": "Insufficient wallet balance",
+      "loginRequired": "Please log in to buy entries.",
+      "login": "Log in",
+      "success": "Entries purchased",
+      "max": "Only {count} entries left",
+      "guest": {
+        "title": "Your details",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "required": "Please enter your name and email."
+      }
+    }
+  },
   "Explore": {
     "title": "Explore Activities",
     "subtitle": "Welcome Back ",
@@ -686,6 +724,14 @@
     "copy": "Copy",
     "buy": "Buy ticket",
     "ended": "Activity ended",
+    "salesEnded": "Sales ended",
+    "salesEndsIn": "Sales end in {time}",
+    "countdownUnits": {
+      "d": "d",
+      "h": "h",
+      "m": "m",
+      "s": "s"
+    },
     "buy_more": "Buy more ticket",
     "about": "About activity",
     "contact": "Contact Information",

@@ -113,6 +113,9 @@ export default function CreateMeetEventForm({
     formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("isRefundable", JSON.stringify(isRefundable));
     formData.append("isPrivate", JSON.stringify(isPrivate));
+    if (data.ticketSalesEndAt) {
+      formData.append("ticketSalesEndAt", data.ticketSalesEndAt);
+    }
     if (isFree) {
       formData.append(
         "ticketTypes",

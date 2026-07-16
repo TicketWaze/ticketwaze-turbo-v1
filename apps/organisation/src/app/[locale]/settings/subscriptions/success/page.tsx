@@ -74,7 +74,7 @@ export default function SubscriptionSuccessPage() {
               <h1 className="text-[2.8rem] font-primary font-medium text-black">
                 {t("payment.success_title")}
               </h1>
-              <p className="text-[1.5rem] text-neutral-500 max-w-[400px]">
+              <p className="text-[1.5rem] text-neutral-500 max-w-160">
                 {t("payment.success_desc")}
               </p>
             </div>
@@ -99,7 +99,7 @@ export default function SubscriptionSuccessPage() {
               <h1 className="text-[2.8rem] font-primary font-medium text-black">
                 {t("payment.pending_title")}
               </h1>
-              <p className="text-[1.5rem] text-neutral-500 max-w-[400px]">
+              <p className="text-[1.5rem] text-neutral-500 max-w-160">
                 {t("payment.pending_desc")}
               </p>
             </div>
@@ -121,7 +121,7 @@ export default function SubscriptionSuccessPage() {
               <h1 className="text-[2.8rem] font-primary font-medium text-black">
                 {t("payment.error_title")}
               </h1>
-              <p className="text-[1.5rem] text-neutral-500 max-w-[400px]">
+              <p className="text-[1.5rem] text-neutral-500 max-w-160">
                 {t("payment.error_desc")}
               </p>
             </div>

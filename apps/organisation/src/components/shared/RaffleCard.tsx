@@ -3,8 +3,10 @@ import { Calendar2, Ticket } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { Raffle } from "@ticketwaze/typescript-config";
-import FormatDate from "@/lib/FormatDate";
+import formatRaffleDate from "@/lib/formatRaffleDate";
 import { formatMoney } from "@ticketwaze/currency";
+import { Link } from "@/i18n/navigation";
+import { slugify } from "@/lib/Slugify";
 
 function RaffleCard({ raffle }: { raffle: Raffle }) {
   const locale = useLocale();
@@ -14,7 +16,9 @@ function RaffleCard({ raffle }: { raffle: Raffle }) {
     raffle.currency === "USD" ? raffle.usdPrice : raffle.ticketPrice;
 
   return (
-    <div className="flex flex-row items-center lg:items-stretch lg:mb-8 lg:ml-4 lg:flex-col gap-4 w-full lg:max-w-140 bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0">
+    <Link
+      href={`/events/raffle/${slugify(raffle.title, raffle.raffleId)}`}
+      className="flex flex-row items-center lg:items-stretch lg:mb-8 lg:ml-4 lg:flex-col gap-4 w-full lg:max-w-140 bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0">
       <div className="relative">
         {raffle.coverImageUrl && (
           <Image
@@ -74,7 +78,8 @@ function RaffleCard({ raffle }: { raffle: Raffle }) {
           <div className="flex items-center gap-2">
             <Calendar2 size="15" color="#2e3237" variant="Bulk" />
             <span className="font-medium text-[1rem] text-deep-100 leading-6">
-              {t("raffleCard.draw")} {FormatDate(raffle.drawAt, locale, "local")}
+              {t("raffleCard.draw")}{" "}
+              {formatRaffleDate(raffle.drawAt, locale, raffle.timezone)}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -93,7 +98,7 @@ function RaffleCard({ raffle }: { raffle: Raffle }) {
           </span>
         </p>
       </div>
-    </div>
+    </Link>
   );
 }
 

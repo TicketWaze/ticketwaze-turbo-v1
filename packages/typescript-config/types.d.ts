@@ -274,6 +274,7 @@ export interface Event {
   isPrivate: boolean;
   currency: string;
   activityTags: string[];
+  ticketSalesEndAt: string | null;
   eventDays: EventDay[];
   eventTicketTypes: EventTicketType[];
   eventTagId: string;
@@ -313,13 +314,19 @@ export interface Raffle {
   usdPrice: number;
   totalTicketsLimit: number | null;
   activityTags: string[];
+  location: { lat: number; lng: number } | null;
   salesStartAt: string;
   salesEndAt: string;
   drawAt: string;
+  timezone: string | null;
   drawMode: 'automatic' | 'manual';
   adminStatus: 'review' | 'approved' | 'rejected' | 'requested';
   rejectionReason: string | null;
   status: 'on_sale' | 'closed' | 'drawn' | 'completed' | 'cancelled';
+  deletionStatus: 'pending_deletion' | 'deleted' | null;
+  deletionReason: string | null;
+  deletionRequestedAt: string | null;
+  scheduledDeletionAt: string | null;
   prizes: RafflePrize[];
   createdAt: string;
   updatedAt: string;

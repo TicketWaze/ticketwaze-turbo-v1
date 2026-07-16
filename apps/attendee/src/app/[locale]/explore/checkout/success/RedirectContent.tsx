@@ -26,6 +26,20 @@ export default function RedirectContent({
     )
       .then((res) => res.json())
       .then((res) => {
+        // Raffle orders come back with a `raffle` payload instead of `event`.
+        if (res.raffle) {
+          const raffleSlug = slugify(res.raffle.title, res.raffle.raffleId);
+          if (res.status === "success") {
+            toast.success(
+              "Your entries have been confirmed. Good luck in the draw!",
+            );
+            router.push(`/explore/raffle/${raffleSlug}?from=checkout`);
+          } else {
+            toast.error("Failed to retrieve payment");
+            router.push(`/explore/raffle/${raffleSlug}`);
+          }
+          return;
+        }
         const eventSlug = slugify(res.event.eventName, res.event.eventId);
         if (res.status === "success") {
           toast.success(

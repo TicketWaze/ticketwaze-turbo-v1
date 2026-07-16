@@ -1015,7 +1015,9 @@
         },
         "tags": "Tags",
         "tags_tip": "Add a few tags to describe your raffle. Press Enter, comma or space to add each one. Click a tag to remove it.",
-        "tags_placeholder": "Add a tag"
+        "tags_placeholder": "Add a tag",
+        "location": "Location (optional)",
+        "location_tip": "Add a pickup or draw location. If you set one, attendees see it on a map; leave it empty to hide the map."
       },
       "ticket": "Ticket",
       "event_type": "Activity Type",
@@ -1062,6 +1064,8 @@
       "mark_as_refundable": "Mark tickets as refundable",
       "mark_as_private": "Make this a private activity",
       "private_tip": "Private activities stay listed with a Private tag, but only the guests you add to the attendee list can buy tickets.",
+      "sales_end_at": "Ticket sales end at",
+      "sales_end_at_hint": "Optional. After this date and time, tickets can no longer be bought and the event is marked as sales ended. It stays listed and viewable. Leave empty to keep sales open until the event ends.",
       "currency": "Currency",
       "general_default": "Enjoy full access without any cost! Join us for an unforgettable experience. Secure your spot today!",
       "meet_default": "Join our Meet session with full access! Connect, and enjoy anywhere. Reserve your place today!",
@@ -1153,6 +1157,94 @@
       "raffles": "Raffles",
       "empty_events": "No events yet. Create your first event to get started.",
       "empty_raffles": "No raffles yet. Create your first raffle to get started."
+    }
+  },
+  "Raffles": {
+    "single_raffle": {
+      "back": "Back",
+      "edit": "Edit",
+      "delete": "Delete",
+      "more": "More",
+      "details": "Details",
+      "countDown": "Draw in",
+      "day": "days",
+      "table": {
+        "id": "ID",
+        "name": "Name",
+        "email": "Email",
+        "date": "Purchased on",
+        "noEntries": "No entries have been purchased yet."
+      },
+      "editTitle": "Edit raffle",
+      "save": "Save changes",
+      "updateSuccess": "Raffle updated",
+      "deleted": "Raffle deleted",
+      "deleteConfirmTitle": "Delete raffle",
+      "deleteConfirmText": "This will permanently remove the raffle. This cannot be undone.",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete",
+      "deletion": {
+        "schedule_title": "Delete raffle",
+        "warning": "This schedules the raffle for deletion. During the grace period, entries stay valid; once it lapses, all entries are refunded to buyers' wallets and the raffle is removed.",
+        "reason_label": "Reason for deletion",
+        "reason_placeholder": "Tell buyers why this raffle is being cancelled...",
+        "chars": "characters (min. 10)",
+        "grace_days": "Buyers keep their entries for {days} more day(s); the raffle is removed and refunds issued after that.",
+        "grace_immediate": "The draw window has passed — the raffle will be removed and refunds issued shortly.",
+        "schedule_cta": "Schedule deletion",
+        "banner_title": "Deletion scheduled",
+        "banner_date": "This raffle will be removed on",
+        "banner_reason_label": "Reason",
+        "banner_refund": "All purchased entries will be refunded to buyers' wallets.",
+        "cancel_success": "Deletion cancelled",
+        "cancel_cta": "Cancel deletion",
+        "pending_notice": "This raffle is pending deletion and cannot be edited."
+      },
+      "pendingReview": "This raffle is under review. It will be visible to attendees once approved.",
+      "rejected": "This raffle was rejected.",
+      "status": {
+        "requested": "Requested",
+        "review": "In review",
+        "approved": "Approved",
+        "rejected": "Rejected",
+        "on_sale": "On sale",
+        "closed": "Closed",
+        "drawn": "Drawn",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "stats": {
+        "price": "Entry price",
+        "sold": "Entries sold",
+        "remaining": "Entries left",
+        "unlimited": "Unlimited",
+        "prizes": "Prizes",
+        "revenue": "Revenue"
+      },
+      "countdown": {
+        "title": "Draw in",
+        "day": "day",
+        "days": "days",
+        "today": "Draw is today",
+        "past": "Draw date passed"
+      },
+      "info": {
+        "title": "Details",
+        "description": "Description",
+        "salesStart": "Sales start",
+        "salesEnd": "Sales end",
+        "drawDate": "Draw date",
+        "drawMode": "Draw mode",
+        "automatic": "Automatic",
+        "manual": "Manual",
+        "tags": "Tags"
+      },
+      "prizes": {
+        "title": "Prizes",
+        "noDescription": "No description",
+        "winner": "Winner",
+        "notDrawn": "Not drawn yet"
+      }
     }
   },
   "WelcomeModal": {

@@ -196,9 +196,14 @@ export default function EventActions({
                 {t("more")}
               </span>
 
-              <ReportEventComponent event={event} />
+              <ReportEventComponent
+                activityId={event.eventId}
+                organisationId={event.organisationId}
+              />
               <div className="h-px bg-neutral-200 w-full"></div>
-              <ReportOrganisationComponent event={event} />
+              <ReportOrganisationComponent
+                organisationId={event.organisationId}
+              />
             </PopoverContent>
           </Popover>
         </div>

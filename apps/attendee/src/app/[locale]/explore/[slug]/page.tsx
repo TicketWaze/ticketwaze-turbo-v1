@@ -28,6 +28,7 @@ import formatTime from "@/lib/formatTime";
 import AnimatedEventPage from "./AnimatedEventPage";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import isEventPast from "@/lib/isEventPast";
+import isEventSalesEnded from "@/lib/isEventSalesEnded";
 import {
   JsonLd,
   buildEventJsonLd,
@@ -189,6 +190,7 @@ export default async function EventPage({
               event={event}
               isFavorite={favoriteResponse.isFavorite}
               isPast={isEventPast(event)}
+              salesEnded={isEventSalesEnded(event)}
             />
             <Separator />
             <div className="flex flex-col gap-4">

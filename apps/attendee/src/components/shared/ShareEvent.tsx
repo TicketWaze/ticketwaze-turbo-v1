@@ -19,9 +19,19 @@ import {
 import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 
-export default function ShareEvent({ event }: { event: Event }) {
+export default function ShareEvent({
+  event,
+  url,
+}: {
+  event?: Event;
+  url?: string;
+}) {
   const t = useTranslations("Event");
-  const currentUrl = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/explore/${slugify(event.eventName, event.eventId)}`;
+  const currentUrl =
+    url ??
+    (event
+      ? `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/explore/${slugify(event.eventName, event.eventId)}`
+      : "");
   return (
     <Dialog>
       <DialogTrigger>

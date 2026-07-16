@@ -22,6 +22,7 @@ export type CreateMeetFormValues = {
   ticketTypes: TicketType[];
   eventCurrency: string;
   isFree: boolean;
+  ticketSalesEndAt?: string;
 };
 
 // Small helper to allow passing translation function

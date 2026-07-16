@@ -23,6 +23,7 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import RichTextEditor from "@/components/shared/RichTextEditor";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
+import LocationPicker from "@/lib/LocationPicker";
 
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
@@ -48,6 +49,9 @@ function makeRaffleSchema(t: TranslateFn) {
       unlimited: z.boolean(),
       totalTickets: z.coerce.number().optional(),
       activityTags: z.array(z.string()),
+      location: z
+        .object({ lat: z.number(), lng: z.number() })
+        .optional(),
       salesStart: z.string().min(1, t("errors.sales_start")),
       salesEnd: z.string().min(1, t("errors.sales_end")),
       drawDate: z.string().min(1, t("errors.draw_date")),
@@ -137,6 +141,7 @@ export default function CreateRaffleForm() {
       unlimited: true,
       totalTickets: undefined,
       activityTags: [],
+      location: undefined,
       salesStart: "",
       salesEnd: "",
       drawDate: "",
@@ -222,8 +227,14 @@ export default function CreateRaffleForm() {
     fd.append("salesStartAt", data.salesStart);
     fd.append("salesEndAt", data.salesEnd);
     fd.append("drawAt", data.drawDate);
+    // The naive datetime-local values are entered in the organiser's zone.
+    fd.append("timezone", Intl.DateTimeFormat().resolvedOptions().timeZone);
     fd.append("drawMode", data.drawMode);
     fd.append("activityTags", JSON.stringify(data.activityTags));
+    // Location is optional — only sent when the organiser picked a spot.
+    if (data.location) {
+      fd.append("location", JSON.stringify(data.location));
+    }
     fd.append(
       "prizes",
       JSON.stringify(
@@ -364,6 +375,24 @@ export default function CreateRaffleForm() {
               className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
             />
           </div>
+        </div>
+
+        {/* Location (optional) */}
+        <div className={cardClass}>
+          <span className={sectionTitle}>{t("location")}</span>
+          <p className="text-[1.2rem] leading-7 text-neutral-600">
+            {t("location_tip")}
+          </p>
+          <Controller
+            control={control}
+            name="location"
+            render={({ field }) => (
+              <LocationPicker
+                value={field.value ?? null}
+                onLocationSelect={(loc) => field.onChange(loc ?? undefined)}
+              />
+            )}
+          />
         </div>
 
         {/* Pricing */}

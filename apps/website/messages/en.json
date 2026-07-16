@@ -48,7 +48,7 @@
       },
       "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
       "cta": {
-        "get": "Get ticket",
+        "get": "Explore activities",
         "create": "Create activity",
         "waitlist": "Join the waitlist"
       },
@@ -226,7 +226,7 @@
       "title": "Sell more tickets with less effort",
       "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance — online and offline.",
       "cta": {
-        "create": "Create your first activity",
+        "create": "Go to your workspace",
         "waitlist": "Join the waitlist"
       }
     },

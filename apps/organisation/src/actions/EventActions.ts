@@ -189,6 +189,110 @@ export async function CreateRaffle(
   }
 }
 
+export async function UpdateRaffle(
+  organisationId: string,
+  raffleId: string,
+  accessToken: string,
+  body: FormData,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: body,
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { status: "success" };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+export async function RequestRaffleDeletion(
+  organisationId: string,
+  raffleId: string,
+  accessToken: string,
+  locale: string,
+  reason: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify({ reason }),
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return {
+        scheduledDeletionAt: response.scheduledDeletionAt as string,
+        delayDays: response.delayDays as number,
+      };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+export async function CancelRaffleDeletion(
+  organisationId: string,
+  raffleId: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}/deletion`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { status: "success" };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
 export async function UpdateInPersonEvent(
   organisationId: string,
   accessToken: string,
