@@ -892,6 +892,11 @@
 
   "Waitlist": {
     "title": "Liste d'attente",
+    "tabs": {
+      "all": "Tous",
+      "pending": "Non invités",
+      "invited": "Invités"
+    },
     "stats": {
       "total": "Total utilisateurs",
       "pending": "En attente",

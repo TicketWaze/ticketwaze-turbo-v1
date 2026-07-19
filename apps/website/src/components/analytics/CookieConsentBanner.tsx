@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { isAnalyticsEnabled } from "@/lib/analytics";
 import { useConsent } from "./ConsentProvider";
@@ -13,8 +14,15 @@ export function CookieConsentBanner() {
   const t = useTranslations("Consent");
   const { consent, setConsent } = useConsent();
 
+  // Decide whether to show the banner only after the client has mounted and read
+  // the saved choice. The server/hydration render always sees consent "unknown",
+  // so without this gate the banner flashes for a frame even for visitors who
+  // already accepted or rejected.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // Nothing to consent to when analytics is disabled (dev / no real ID).
-  if (!isAnalyticsEnabled() || consent !== "unknown") return null;
+  if (!mounted || !isAnalyticsEnabled() || consent !== "unknown") return null;
 
   return (
     <div

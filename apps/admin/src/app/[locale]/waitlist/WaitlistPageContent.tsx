@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import {
@@ -18,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Drawer,
   DrawerClose,
@@ -54,6 +56,8 @@ type Props = {
   accessToken: string;
 };
 
+type Tab = "all" | "pending" | "invited";
+
 export default function WaitlistPageContent({
   users,
   stats,
@@ -61,7 +65,9 @@ export default function WaitlistPageContent({
 }: Props) {
   const t = useTranslations("Waitlist");
   const locale = useLocale();
+  const router = useRouter();
 
+  const [tab, setTab] = useState<Tab>("all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [entityFilter, setEntityFilter] = useState<
     "all" | "attendee" | "business" | "both"
@@ -69,20 +75,35 @@ export default function WaitlistPageContent({
   const [isInvitingSelected, setIsInvitingSelected] = useState(false);
   const [invitingOneId, setInvitingOneId] = useState<string | null>(null);
 
-  const filteredUsers =
+  // "All" shows everyone; "Not invited" only those still pending; "Invited"
+  // only those already invited. The entity Select filters within the active tab.
+  const tabUsers =
+    tab === "invited"
+      ? users.filter((u) => u.invitedAt)
+      : tab === "pending"
+        ? users.filter((u) => !u.invitedAt)
+        : users;
+  const displayedUsers =
     entityFilter === "all"
-      ? users
-      : users.filter((u) => u.entity === entityFilter);
+      ? tabUsers
+      : tabUsers.filter((u) => u.entity === entityFilter);
 
-  const pendingUsers = filteredUsers.filter((u) => !u.invitedAt);
+  // Selection applies everywhere except the "Invited" tab (nothing to re-invite).
+  const showSelection = tab !== "invited";
+  const pendingUsers = displayedUsers.filter((u) => !u.invitedAt);
 
   const allChecked =
     pendingUsers.length > 0 &&
     pendingUsers.every((u) => selectedIds.has(u.waitlistUserId));
 
-  const someChecked = filteredUsers.some((u) =>
+  const someChecked = displayedUsers.some((u) =>
     selectedIds.has(u.waitlistUserId),
   );
+
+  function handleTabChange(value: string) {
+    setTab(value as Tab);
+    setSelectedIds(new Set());
+  }
 
   function toggleSelectAll() {
     if (allChecked) {
@@ -113,6 +134,8 @@ export default function WaitlistPageContent({
       if ("status" in result) {
         toast.success(t("invite.success"));
         setSelectedIds(new Set());
+        // Pull fresh data so newly-invited rows move to the Invited tab.
+        router.refresh();
       } else {
         toast.error(result.error);
       }
@@ -133,6 +156,7 @@ export default function WaitlistPageContent({
       });
       if ("status" in result) {
         toast.success(t("invite.success"));
+        router.refresh();
       } else {
         toast.error(result.error);
       }
@@ -150,7 +174,7 @@ export default function WaitlistPageContent({
         <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
           {t("title")}
         </h3>
-        {selectedIds.size > 0 && (
+        {showSelection && selectedIds.size > 0 && (
           <button
             onClick={handleInviteSelected}
             disabled={isInvitingSelected}
@@ -209,65 +233,77 @@ export default function WaitlistPageContent({
         </div>
       </div>
 
-      {/* Table header */}
-      <div className="flex justify-between items-center">
-        <h4 className="font-medium hidden lg:inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
-          {t("list.title")}
-          {someChecked && (
-            <span className="text-[1.4rem] text-neutral-500 font-normal">
-              ({selectedIds.size} {t("list.selected")})
+      {/* Tabs + entity filter */}
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <Tabs value={tab} onValueChange={handleTabChange}>
+          <TabsList className="w-full lg:w-fit">
+            <TabsTrigger value="all">
+              {t("tabs.all")} ({stats.total})
+            </TabsTrigger>
+            <TabsTrigger value="pending">
+              {t("tabs.pending")} ({stats.pending})
+            </TabsTrigger>
+            <TabsTrigger value="invited">
+              {t("tabs.invited")} ({stats.invited})
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        <div className="flex items-center gap-4">
+          {showSelection && someChecked && (
+            <span className="text-[1.4rem] text-neutral-500 font-normal hidden lg:inline">
+              {selectedIds.size} {t("list.selected")}
             </span>
           )}
-        </h4>
-        <Select
-          defaultValue="all"
-          onValueChange={(v) =>
-            setEntityFilter(v as "all" | "attendee" | "business" | "both")
-          }
-        >
-          <SelectTrigger className="bg-neutral-100 w-full cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none lg:w-fit text-[1.4rem] text-neutral-700 leading-8">
-            <SelectValue placeholder="" />
-          </SelectTrigger>
-          <SelectContent className="bg-neutral-100 text-[1.4rem]">
-            <SelectGroup>
-              <SelectItem className="text-[1.4rem] text-deep-100" value="all">
-                {t("filters.all")}
-              </SelectItem>
-              <SelectItem
-                className="text-[1.4rem] text-deep-100"
-                value="attendee"
-              >
-                {t("filters.attendee")}
-              </SelectItem>
-              <SelectItem
-                className="text-[1.4rem] text-deep-100"
-                value="business"
-              >
-                {t("filters.business")}
-              </SelectItem>
-              <SelectItem
-                className="text-[1.4rem] text-deep-100"
-                value="both"
-              >
-                {t("filters.both")}
-              </SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+          <Select
+            defaultValue="all"
+            onValueChange={(v) =>
+              setEntityFilter(v as "all" | "attendee" | "business" | "both")
+            }
+          >
+            <SelectTrigger className="bg-neutral-100 w-full cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none lg:w-fit text-[1.4rem] text-neutral-700 leading-8">
+              <SelectValue placeholder="" />
+            </SelectTrigger>
+            <SelectContent className="bg-neutral-100 text-[1.4rem]">
+              <SelectGroup>
+                <SelectItem className="text-[1.4rem] text-deep-100" value="all">
+                  {t("filters.all")}
+                </SelectItem>
+                <SelectItem
+                  className="text-[1.4rem] text-deep-100"
+                  value="attendee"
+                >
+                  {t("filters.attendee")}
+                </SelectItem>
+                <SelectItem
+                  className="text-[1.4rem] text-deep-100"
+                  value="business"
+                >
+                  {t("filters.business")}
+                </SelectItem>
+                <SelectItem className="text-[1.4rem] text-deep-100" value="both">
+                  {t("filters.both")}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Table */}
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-10 pb-6">
-              <input
-                type="checkbox"
-                checked={allChecked}
-                onChange={toggleSelectAll}
-                className="w-5 h-5 accent-primary-500 cursor-pointer"
-              />
-            </TableHead>
+            {showSelection && (
+              <TableHead className="w-10 pb-6">
+                <input
+                  type="checkbox"
+                  checked={allChecked}
+                  onChange={toggleSelectAll}
+                  className="w-5 h-5 accent-primary-500 cursor-pointer"
+                />
+              </TableHead>
+            )}
             <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("list.table.email")}
             </TableHead>
@@ -283,21 +319,23 @@ export default function WaitlistPageContent({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredUsers.map((user) => (
+          {displayedUsers.map((user) => (
             <TableRow key={user.waitlistUserId}>
-              <TableCell
-                onClick={(e) =>
-                  !user.invitedAt && toggleSelect(user.waitlistUserId, e)
-                }
-              >
-                <input
-                  type="checkbox"
-                  checked={selectedIds.has(user.waitlistUserId)}
-                  disabled={!!user.invitedAt}
-                  onChange={() => {}}
-                  className="w-5 h-5 accent-primary-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
-                />
-              </TableCell>
+              {showSelection && (
+                <TableCell
+                  onClick={(e) =>
+                    !user.invitedAt && toggleSelect(user.waitlistUserId, e)
+                  }
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(user.waitlistUserId)}
+                    disabled={!!user.invitedAt}
+                    onChange={() => {}}
+                    className="w-5 h-5 accent-primary-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                  />
+                </TableCell>
+              )}
               <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900 max-w-56 lg:max-w-none">
                 <Drawer direction="right">
                   <DrawerTrigger>
@@ -402,9 +440,7 @@ export default function WaitlistPageContent({
                     <DrawerFooter>
                       <div className={"flex gap-8 w-full items-center"}>
                         <button
-                          onClick={() =>
-                            handleInviteOne(user.waitlistUserId)
-                          }
+                          onClick={() => handleInviteOne(user.waitlistUserId)}
                           disabled={
                             invitingOneId === user.waitlistUserId ||
                             !!user.invitedAt
@@ -467,7 +503,7 @@ export default function WaitlistPageContent({
         </TableBody>
       </Table>
 
-      {filteredUsers.length === 0 && (
+      {displayedUsers.length === 0 && (
         <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">
           <div className="rounded-full bg-neutral-100 p-6 w-fit">
             <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">

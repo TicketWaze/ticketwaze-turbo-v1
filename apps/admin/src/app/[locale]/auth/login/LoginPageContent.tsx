@@ -2,11 +2,22 @@
 import { motion } from "motion/react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-orange.svg";
 import GoogleSignInButton from "@/components/shared/GoogleSignInButton";
 
 export default function LoginPageContent() {
   const t = useTranslations("Auth.login");
+
+  // The google redirect flow surfaces auth failures (e.g. a non-@ticketwaze.com
+  // account) as a ?error= param on this page rather than an inline toast.
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (error) toast.error(decodeURIComponent(error));
+  }, [searchParams]);
 
   return (
     <div className="flex flex-col items-center justify-center gap-12 h-full">

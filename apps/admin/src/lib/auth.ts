@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 
 function nextMidnightUnix(): number {
   const midnight = new Date();
@@ -18,6 +19,15 @@ const nextAuthResult = NextAuth({
   },
 
   providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+      authorization: {
+        params: {
+          redirect_uri: `${process.env.NEXT_PUBLIC_ADMIN_URL}/api/auth/callback/google`,
+        },
+      },
+    }),
     Credentials({
       credentials: {
         googleIdToken: {},
@@ -49,6 +59,32 @@ const nextAuthResult = NextAuth({
   },
 
   callbacks: {
+    /**
+     * SIGN-IN CALLBACK
+     * Full-page google redirect flow: exchange the id_token from Google for an
+     * admin session against the admin-only endpoint (enforces @ticketwaze.com).
+     */
+    async signIn({ user, account }) {
+      if (account?.provider === "google") {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/login/google`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idToken: account.id_token }),
+          },
+        );
+        const data = await res.json();
+        if (data.status !== "success") {
+          throw new Error(
+            encodeURIComponent(data.message || "Google authentication failed"),
+          );
+        }
+        Object.assign(user, { ...data.admin, id: data.admin.adminId });
+      }
+      return true;
+    },
+
     /**
      * JWT CALLBACK
      */

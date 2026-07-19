@@ -19,10 +19,10 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 import { useState } from "react";
-import GoogleSignInButton from "../shared/GoogleSignInButton";
+import { useGoogleSignIn } from "@/lib/useGoogleSignIn";
 import { ArrowLeft2, ArrowRight2, LoginCurve } from "iconsax-reactjs";
 
-type View = "choice" | "credentials" | "google";
+type View = "choice" | "credentials";
 
 export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
   const t = useTranslations("Auth.login");
@@ -49,6 +49,9 @@ export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
   const [isLoading, setIsloading] = useState(false);
   const { update } = useSession();
   const router = useRouter();
+  const { trigger: triggerGoogle, isLoading: googleLoading } = useGoogleSignIn({
+    callbackUrl,
+  });
 
   async function submitHandler(data: TLoginSchema) {
     setIsloading(true);
@@ -136,8 +139,12 @@ export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
 
             <div className="flex flex-col gap-4">
               <button
-                onClick={() => setView("google")}
-                className="flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left"
+                onClick={triggerGoogle}
+                disabled={googleLoading}
+                aria-busy={googleLoading}
+                className={`flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left disabled:cursor-not-allowed ${
+                  googleLoading ? "opacity-60 pointer-events-none" : ""
+                }`}
               >
                 <div className="flex items-center gap-4">
                   <div className="w-[44px] h-[44px] rounded-full bg-[#F3F4F6] flex items-center justify-center shrink-0">
@@ -169,12 +176,16 @@ export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
                     </span>
                   </div>
                 </div>
-                <ArrowRight2
-                  size={20}
-                  color="#737C8A"
-                  variant="Bulk"
-                  className="shrink-0"
-                />
+                {googleLoading ? (
+                  <LoadingCircleSmall />
+                ) : (
+                  <ArrowRight2
+                    size={20}
+                    color="#737C8A"
+                    variant="Bulk"
+                    className="shrink-0"
+                  />
+                )}
               </button>
 
               <button
@@ -203,65 +214,9 @@ export default function NoAuthDialog({ callbackUrl }: { callbackUrl: string }) {
               </button>
             </div>
 
+            {terms}
+
             {footer}
-          </motion.div>
-        )}
-
-        {view === "google" && (
-          <motion.div
-            key="google"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 30 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="flex flex-col gap-10 py-4"
-          >
-            <button
-              onClick={() => setView("choice")}
-              className="flex items-center gap-3 w-fit text-neutral-600 hover:text-primary-500 transition-colors"
-            >
-              <ArrowLeft2 size={18} color="#737C8A" variant="Bulk" />
-              <span className="text-[1.5rem] leading-8">
-                {t("method.back")}
-              </span>
-            </button>
-
-            <div className="flex flex-col gap-4 items-center text-center">
-              <motion.h3
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-                className="font-medium font-primary text-[3.2rem] leading-14 text-black"
-              >
-                {t("cta.google")}
-              </motion.h3>
-              {/* <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.15 }}
-                className="text-[1.8rem] leading-10 text-neutral-700"
-              >
-                {t("description")}
-              </motion.p> */}
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              className="w-full flex flex-col gap-6"
-            >
-              <GoogleSignInButton callbackUrl={callbackUrl} />
-              {terms}
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.28 }}
-            >
-              {footer}
-            </motion.div>
           </motion.div>
         )}
 

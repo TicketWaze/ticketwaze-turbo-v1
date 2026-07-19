@@ -903,6 +903,11 @@
 
   "Waitlist": {
     "title": "Waitlist",
+    "tabs": {
+      "all": "All",
+      "pending": "Not invited",
+      "invited": "Invited"
+    },
     "stats": {
       "total": "Total Users",
       "pending": "Pending",

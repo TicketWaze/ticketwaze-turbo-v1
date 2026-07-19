@@ -24,7 +24,8 @@ export async function InviteUsersAction({
   );
   const response = await request.json();
   if (response.status === "success") {
-    revalidatePath("/waitlist");
+    // Route is /[locale]/waitlist — revalidate the dynamic page for every locale.
+    revalidatePath("/[locale]/waitlist", "page");
     return { status: "success" as const };
   }
   return { error: response.message ?? "Failed to invite users" };
@@ -50,7 +51,8 @@ export async function InviteAllUsersAction({
   );
   const response = await request.json();
   if (response.status === "success") {
-    revalidatePath("/waitlist");
+    // Route is /[locale]/waitlist — revalidate the dynamic page for every locale.
+    revalidatePath("/[locale]/waitlist", "page");
     return { status: "success" as const };
   }
   return { error: response.message ?? "Failed to invite all users" };
