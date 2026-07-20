@@ -37,7 +37,7 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         <Image
           src={event.eventImageUrl}
           className={
-            "h-62 lg:max-h-[19.1rem] flex-1 lg:flex-auto w-full object-cover object-top-left rounded-[10px] "
+            "h-62 w-62 min-w-62 lg:max-h-[19.1rem] flex-1 lg:flex-auto lg:w-full object-cover object-top-left rounded-[10px] "
           }
           alt={event.eventName}
           height={191}
