@@ -35,7 +35,10 @@ export default async function RafflePage({
 
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/explore/raffles/${raffleId}`,
-    { cache: "no-store" },
+    // Cached: public and identical for every visitor. `remaining` can be up to
+    // a minute stale, which is harmless — the entry purchase re-checks the
+    // offering server-side and refuses to oversell.
+    { next: { revalidate: 60 } },
   ).catch(() => null);
   if (!request || !request.ok) notFound();
   const response = await request.json().catch(() => null);

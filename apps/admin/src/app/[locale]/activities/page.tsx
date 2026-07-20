@@ -1,6 +1,11 @@
 import { auth } from "@/lib/auth";
 import ActivitiesPageContent from "./ActivitiesPageContent";
-import { AdminEventsRequest, Event, Raffle } from "@ticketwaze/typescript-config";
+import {
+  AdminEventsRequest,
+  Event,
+  Raffle,
+  Restaurant,
+} from "@ticketwaze/typescript-config";
 import AdminLayout from "@/components/Layouts/AdminLayout";
 
 const EVENT_STATUSES = ["requested", "review", "approved", "rejected"] as const;
@@ -39,6 +44,22 @@ async function fetchRaffles(
   return request.json();
 }
 
+async function fetchRestaurants(
+  accessToken: string | undefined,
+): Promise<{ restaurants?: Restaurant[] }> {
+  const request = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/restaurants`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  return request.json();
+}
+
 export default async function ActivitiesPage({
   searchParams,
 }: {
@@ -53,6 +74,7 @@ export default async function ActivitiesPage({
   let allEvents: Event[] = [];
 
   const rafflesPromise = fetchRaffles(accessToken);
+  const restaurantsPromise = fetchRestaurants(accessToken);
 
   if (activeStatus === "all") {
     // The API filters by a single status, so "all" aggregates every status.
@@ -72,6 +94,7 @@ export default async function ActivitiesPage({
   }
 
   const raffles = (await rafflesPromise).raffles ?? [];
+  const restaurants = (await restaurantsPromise).restaurants ?? [];
 
   return (
     <AdminLayout>
@@ -80,6 +103,7 @@ export default async function ActivitiesPage({
         allEvents={allEvents}
         status={activeStatus}
         raffles={raffles}
+        restaurants={restaurants}
       />
     </AdminLayout>
   );

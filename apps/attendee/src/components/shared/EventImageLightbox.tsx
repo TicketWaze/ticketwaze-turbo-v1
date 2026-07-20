@@ -10,9 +10,24 @@ interface Props {
   alt: string;
   width: number;
   height: number;
+  /**
+   * Overrides the trigger's size/shape. Defaults to the full-width cover
+   * treatment the event and raffle pages use, so existing callers are
+   * unaffected; galleries and menu thumbnails pass their own box.
+   */
+  triggerClassName?: string;
 }
 
-export default function EventImageLightbox({ src, alt, width, height }: Props) {
+const DEFAULT_TRIGGER =
+  "w-full max-h-[298px] overflow-hidden rounded-[10px] flex-shrink-0 cursor-zoom-in block";
+
+export default function EventImageLightbox({
+  src,
+  alt,
+  width,
+  height,
+  triggerClassName,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -33,7 +48,7 @@ export default function EventImageLightbox({ src, alt, width, height }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full max-h-[298px] overflow-hidden rounded-[10px] flex-shrink-0 cursor-zoom-in block"
+        className={triggerClassName ?? DEFAULT_TRIGGER}
       >
         <Image
           src={src}

@@ -1208,3 +1208,170 @@ export async function RemoveArtist(
     };
   }
 }
+
+export async function CreateRestaurant(
+  organisationId: string,
+  accessToken: string,
+  body: FormData,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${organisationId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: body,
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { status: "success" };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+export async function UpdateRestaurant(
+  organisationId: string,
+  restaurantId: string,
+  accessToken: string,
+  body: FormData,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${organisationId}/${restaurantId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: body,
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { status: "success" };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+export async function DeleteRestaurant(
+  organisationId: string,
+  restaurantId: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${organisationId}/${restaurantId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { status: "success" };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Create a "coming soon" teaser: name, image, description, optional venue.
+ *
+ * No dates, no ticket types — it becomes the real event later on this same row,
+ * so the name it takes here is the name it keeps.
+ */
+export async function CreateComingSoonEvent(
+  organisationId: string,
+  accessToken: string,
+  body: FormData,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/coming-soon/${organisationId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: body,
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { status: "success" as const };
+    }
+    throw new Error(response.message);
+  } catch (error: any) {
+    return { error: error?.message ?? "An unknown error occurred" };
+  }
+}
+
+export async function UpdateComingSoonEvent(
+  organisationId: string,
+  eventId: string,
+  accessToken: string,
+  body: FormData,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/coming-soon/${organisationId}/${eventId}`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: body,
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { status: "success" as const };
+    }
+    throw new Error(response.message);
+  } catch (error: any) {
+    return { error: error?.message ?? "An unknown error occurred" };
+  }
+}

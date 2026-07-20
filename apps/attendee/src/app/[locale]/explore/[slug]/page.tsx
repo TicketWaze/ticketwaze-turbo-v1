@@ -44,6 +44,11 @@ export async function generateMetadata({
   const eventId = extractIdFromSlug(slug);
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
+    // Cached: this view is public and identical for every visitor, so an
+    // uncached fetch bills a Vercel function AND a Railway request per page
+    // view. Checkout re-checks availability server-side, so a minute-stale
+    // sold-out badge cannot oversell anything.
+    { next: { revalidate: 60 } },
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
@@ -89,6 +94,11 @@ export default async function EventPage({
   const locale = await getLocale();
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
+    // Cached: this view is public and identical for every visitor, so an
+    // uncached fetch bills a Vercel function AND a Railway request per page
+    // view. Checkout re-checks availability server-side, so a minute-stale
+    // sold-out badge cannot oversell anything.
+    { next: { revalidate: 60 } },
   );
   const eventResponse = await eventRequest.json();
   const event: Event = eventResponse.event;
@@ -145,6 +155,10 @@ export default async function EventPage({
         Authorization: `Bearer ${session?.user.accessToken}`,
         "Content-Type": "application/json",
       },
+      // Explicit, not merely Next's default: this response is per-user, and the
+      // public fetches on this page ARE cached. Anything that caches it would
+      // serve one visitor's favourite state to everyone.
+      cache: "no-store",
     },
   );
   const favoriteResponse = await favoriteRequest.json();

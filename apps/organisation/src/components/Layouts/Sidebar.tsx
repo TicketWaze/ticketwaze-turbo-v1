@@ -9,6 +9,8 @@ import {
   Logout,
   Moneys,
   Setting2,
+  SidebarLeft,
+  SidebarRight,
   Ticket,
 } from "iconsax-reactjs";
 import { Link, useRouter } from "@/i18n/navigation";
@@ -34,7 +36,15 @@ import { ButtonPrimary } from "../shared/buttons";
 import LoadingCircleSmall from "../shared/LoadingCircleSmall";
 import CreateOrganisationDialog from "./CreateOrganisationDialog";
 
-function Sidebar({ className }: { className: string }) {
+function Sidebar({
+  className,
+  collapsed = false,
+  onToggle,
+}: {
+  className: string;
+  collapsed?: boolean;
+  onToggle?: () => void;
+}) {
   const t = useTranslations("Layout.sidebar");
   const pathname = usePathname();
   useAuthInterceptor();
@@ -145,7 +155,41 @@ function Sidebar({ className }: { className: string }) {
   return (
     <aside className={cn("flex-col hidden lg:flex", className)}>
       <div className={"flex-1 pt-12 flex flex-col gap-16"}>
-        <Image src={Logo} alt={"Ticket Waze Logo"} width={250} height={40} />
+        {/* Collapsed, the wordmark has nowhere to go — the toggle takes the
+            whole row instead of squeezing a logo nobody can read. */}
+        <div
+          className={cn(
+            "flex items-center gap-4",
+            collapsed ? "justify-center" : "justify-between",
+          )}
+        >
+          {!collapsed && (
+            <Image
+              src={Logo}
+              alt={"Ticket Waze Logo"}
+              width={250}
+              height={40}
+              className="min-w-0"
+            />
+          )}
+          {onToggle && (
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-label={collapsed ? t("expand") : t("collapse")}
+              aria-expanded={!collapsed}
+              title={collapsed ? t("expand") : t("collapse")}
+              className="w-12 h-12 shrink-0 cursor-pointer rounded-full flex items-center justify-center hover:bg-neutral-300 transition-colors"
+            >
+              {collapsed ? (
+                <SidebarRight size="20" color="#737c8a" variant="Bulk" />
+              ) : (
+                <SidebarLeft size="20" color="#737c8a" variant="Bulk" />
+              )}
+            </button>
+          )}
+        </div>
+
         <nav>
           <ul className="flex flex-col gap-4">
             {links.map(({ path, Icon, label }) => {
@@ -153,15 +197,23 @@ function Sidebar({ className }: { className: string }) {
                 <li key={label}>
                   <Link
                     href={path}
-                    className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
+                    // The label is the only affordance a nav item has; collapsed
+                    // it becomes the tooltip rather than disappearing outright.
+                    title={collapsed ? label : undefined}
+                    className={cn(
+                      "group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8",
+                      collapsed && "justify-center",
+                      isActive(path)
+                        ? "font-semibold text-primary-500 is-active"
+                        : "text-neutral-700 hover:text-primary-500",
+                    )}
                   >
                     <Icon
                       size="20"
-                      className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                      // className={`${isActive(path) ? "fill-icon-active" : "fill-icon"} group-hover:fill-icon-active`}
+                      className={`shrink-0 transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
                       variant="Bulk"
                     />
-                    <span>{label}</span>
+                    {!collapsed && <span className="truncate">{label}</span>}
                     <div
                       className={
                         "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[.2rem] h-full"
@@ -182,12 +234,18 @@ function Sidebar({ className }: { className: string }) {
               href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/contact`}
               target={"_blank"}
               rel={"noreferrer"}
-              className={"flex gap-4 items-center p-4"}
+              title={collapsed ? t("help") : undefined}
+              className={cn(
+                "flex gap-4 items-center p-4",
+                collapsed && "justify-center",
+              )}
             >
               <I24Support size="20" color="#737c8a" variant="Bulk" />
-              <span className={"text-neutral-700 text-[1.5rem] leading-8"}>
-                {t("help")}
-              </span>
+              {!collapsed && (
+                <span className={"text-neutral-700 text-[1.5rem] leading-8"}>
+                  {t("help")}
+                </span>
+              )}
             </Link>
           </li>
           {/* switch organisation */}
@@ -199,18 +257,26 @@ function Sidebar({ className }: { className: string }) {
                   <Dialog>
                     <DialogTrigger>
                       <div
-                        className={"flex gap-4 items-center p-4 cursor-pointer"}
+                        title={collapsed ? t("switching") : undefined}
+                        className={cn(
+                          "flex gap-4 items-center p-4 cursor-pointer",
+                          collapsed && "justify-center",
+                        )}
                       >
                         <ArrowSwapHorizontal
                           size="20"
                           color="#737c8a"
                           variant="Bulk"
                         />
-                        <span
-                          className={"text-neutral-700 text-[1.5rem] leading-8"}
-                        >
-                          {t("switching")}
-                        </span>
+                        {!collapsed && (
+                          <span
+                            className={
+                              "text-neutral-700 text-[1.5rem] leading-8"
+                            }
+                          >
+                            {t("switching")}
+                          </span>
+                        )}
                       </div>
                     </DialogTrigger>
                     <DialogContent
@@ -289,7 +355,7 @@ function Sidebar({ className }: { className: string }) {
                 </li>
               )}
           {!isLoading && hasOrganisation.length === 0 && (
-            <CreateOrganisationDialog />
+            <CreateOrganisationDialog collapsed={collapsed} />
           )}
 
           {/* logout */}
@@ -301,12 +367,18 @@ function Sidebar({ className }: { className: string }) {
                   redirectTo: `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/login`,
                 })
               }
-              className={"flex gap-4 items-center cursor-pointer p-4"}
+              title={collapsed ? t("logout") : undefined}
+              className={cn(
+                "flex gap-4 items-center cursor-pointer p-4",
+                collapsed && "justify-center w-full",
+              )}
             >
               <Logout size="20" color="#737c8a" variant="Bulk" />
-              <span className={"text-neutral-700 text-[1.5rem] leading-8"}>
-                {t("logout")}
-              </span>
+              {!collapsed && (
+                <span className={"text-neutral-700 text-[1.5rem] leading-8"}>
+                  {t("logout")}
+                </span>
+              )}
             </button>
           </li>
           {/* Premium + Organisation */}
@@ -317,7 +389,11 @@ function Sidebar({ className }: { className: string }) {
               <div className="mx-2 mb-2 rounded-[1.2rem] p-[.2rem] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
                 <Link
                   href="/settings/profile"
-                  className="flex items-center gap-4 bg-neutral-100 p-4 rounded-[10px]"
+                  title={collapsed ? organisation?.organisationName : undefined}
+                  className={cn(
+                    "flex items-center gap-4 bg-neutral-100 p-4 rounded-[10px]",
+                    collapsed && "justify-center",
+                  )}
                 >
                   {organisation?.profileImageUrl ? (
                     <Image
@@ -325,19 +401,61 @@ function Sidebar({ className }: { className: string }) {
                       width={35}
                       height={35}
                       alt={organisation.organisationName}
-                      className="rounded-full"
+                      className="rounded-full shrink-0"
                     />
                   ) : (
-                    <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
+                    <span className="w-14 h-14 shrink-0 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
                       {organisation?.organisationName
                         ?.slice()[0]
                         ?.toUpperCase()}
                     </span>
                   )}
 
+                  {!collapsed && (
+                    <div
+                      className={
+                        "text-neutral-700 text-[1.5rem] flex-1 leading-8 min-w-0"
+                      }
+                    >
+                      <span>
+                        {organisation?.organisationName}{" "}
+                        {organisation?.isVerified ? (
+                          <VerifierOrganisationCheckMark />
+                        ) : null}
+                      </span>
+                    </div>
+                  )}
+                </Link>
+              </div>
+            </li>
+          ) : (
+            <li>
+              <Link
+                href={"/settings/profile"}
+                title={collapsed ? organisation?.organisationName : undefined}
+                className={cn(
+                  "flex items-center gap-4 bg-neutral-100 p-4 mx-2 mb-2 rounded-[10px]",
+                  collapsed && "justify-center",
+                )}
+              >
+                {organisation?.profileImageUrl ? (
+                  <Image
+                    src={organisation.profileImageUrl}
+                    width={35}
+                    height={35}
+                    alt={organisation.organisationName}
+                    className="rounded-full shrink-0"
+                  />
+                ) : (
+                  <span className="w-14 h-14 shrink-0 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
+                    {organisation?.organisationName?.slice()[0]?.toUpperCase()}
+                  </span>
+                )}
+
+                {!collapsed && (
                   <div
                     className={
-                      "text-neutral-700 text-[1.5rem] flex-1 leading-8"
+                      "text-neutral-700 text-[1.5rem] flex-1 leading-8 min-w-0"
                     }
                   >
                     <span>
@@ -347,41 +465,7 @@ function Sidebar({ className }: { className: string }) {
                       ) : null}
                     </span>
                   </div>
-                </Link>
-              </div>
-            </li>
-          ) : (
-            <li>
-              <Link
-                href={"/settings/profile"}
-                className={
-                  "flex items-center gap-4 bg-neutral-100 p-4 mx-2 mb-2 rounded-[10px]"
-                }
-              >
-                {organisation?.profileImageUrl ? (
-                  <Image
-                    src={organisation.profileImageUrl}
-                    width={35}
-                    height={35}
-                    alt={organisation.organisationName}
-                    className="rounded-full"
-                  />
-                ) : (
-                  <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
-                    {organisation?.organisationName?.slice()[0]?.toUpperCase()}
-                  </span>
                 )}
-
-                <div
-                  className={"text-neutral-700 text-[1.5rem] flex-1 leading-8"}
-                >
-                  <span>
-                    {organisation?.organisationName}{" "}
-                    {organisation?.isVerified ? (
-                      <VerifierOrganisationCheckMark />
-                    ) : null}
-                  </span>
-                </div>
               </Link>
             </li>
           )}

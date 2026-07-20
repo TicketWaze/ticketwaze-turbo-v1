@@ -6,7 +6,9 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import InPerson from "@/assets/images/in-person.jpg";
 import Draw from "@/assets/images/draw.jpg";
+import RestaurantCover from "@/assets/images/restaurant.jpg";
 import GoogleMeet from "@/assets/images/meet.jpg";
+import ComingSoonCover from "@/assets/images/online.jpg";
 // import Private from "@/assets/images/private.jpeg";
 // import Reservations from "@/assets/images/reservations.jpg";
 // import Transportations from "@/assets/images/transportations.jpg";
@@ -45,6 +47,15 @@ export default function EventTypeList({
   const [isLoading, setIsLoading] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
   const eventTypes = [
+    // A teaser, not an activity type of its own: it becomes a real event on the
+    // same row once the organiser has dates and tickets. Listed first because
+    // it is the cheapest thing an organiser can post.
+    {
+      title: t("list.comingSoon.title"),
+      description: t("list.comingSoon.description"),
+      image: ComingSoonCover,
+      value: "coming-soon",
+    },
     {
       title: t("list.inPerson.title"),
       description: t("list.inPerson.description"),
@@ -56,6 +67,12 @@ export default function EventTypeList({
       description: t("list.raffle.description"),
       image: Draw,
       value: "raffle",
+    },
+    {
+      title: t("list.restaurant.title"),
+      description: t("list.restaurant.description"),
+      image: RestaurantCover,
+      value: "restaurant",
     },
     {
       title: t("list.meet.title"),

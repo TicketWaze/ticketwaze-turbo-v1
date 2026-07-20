@@ -8,7 +8,7 @@
   "Auth": {
     "layout": {
       "title": "Ticketing Made Simple. Experiences Made Unforgettable.",
-      "description": "Your time, your passion and  your adventures made more accessible than ever. Connects to activities you care about, with a seamless experience from start to finish."
+      "description": "Your time, your passion and your adventures, made more accessible than ever. Connects you to the activities you care about, from start to finish."
     },
     "choice": {
       "title": "Welcome to Ticketwaze",
@@ -20,7 +20,7 @@
       },
       "organisation": {
         "title": "Organisation",
-        "description": "Create and manage activities effortlessly. Track ticket sales & monitor attendee data."
+        "description": "Create and manage activities. Track ticket sales and monitor attendee data."
       }
     },
     "login": {
@@ -80,7 +80,7 @@
         },
         "second": {
           "title": "Organizer",
-          "description": "Create and manage activities effortlessly. Track ticket sales & monitor attendee data."
+          "description": "Create and manage activities. Track ticket sales and monitor attendee data."
         },
         "cta": "Continue",
         "footer": {
@@ -238,7 +238,7 @@
         "description": "I've been invited to join an organisation on Ticketwaze. I need to set up my individual account and connect to my team with the appropriate permissions."
       },
       "first": {
-        "1": "Thank you for choosing Ticketwaze. You're joining a platform built to streamline the way organisations sell tickets, manage bookings, and connect with their audience—while giving attendees a seamless way to discover and access experiences.",
+        "1": "Thank you for choosing Ticketwaze. You're joining a platform built to streamline the way organisations sell tickets, manage bookings, and connect with their audience, while giving attendees a simple way to discover and access experiences.",
         "2": "Before you proceed, we'll ask you a few brief questions to understand how you intend to use Ticketwaze. Your answers will help us configure your dashboard, tailor your permissions, and ensure you're directed to the correct environment, whether you're here to manage activities as an organisation or to discover and book experiences as an attendee.",
         "3": "This setup should take no more than two minutes. You can always adjust these preferences later from your account settings."
       },
@@ -252,7 +252,7 @@
         "statePlaceholder": "e.g. New York"
       },
       "fourth": {
-        "question": "Pick 3–5 categories you love",
+        "question": "Pick 3 to 5 categories you love",
         "hint": "selected",
         "musics": "Music",
         "theater": "Theater",
@@ -349,7 +349,7 @@
         "fourth": {
           "question": "How large is your organisation?",
           "solo": "Just me (1 person)",
-          "small": "Small team (2–10 people)",
+          "small": "Small team (2 to 10 people)",
           "large": "Large team (10+ people)"
         },
         "fifth": {
@@ -465,7 +465,7 @@
     },
     "noAuth": {
       "title": "You are not Logged in",
-      "description": "Access your account to securely manage tickets, complete actions, and enjoy a seamless experience.",
+      "description": "Access your account to securely manage tickets and complete actions.",
       "cancel": "Cancel",
       "proceed": "Proceed"
     }
@@ -535,7 +535,8 @@
         }
       }
     },
-    "raffles": "Raffles"
+    "raffles": "Raffles",
+    "restaurants": "Bar & Restaurant"
   },
   "Wallet": {
     "title": "Wallet",
@@ -679,7 +680,7 @@
     "description": "You haven’t attended any activities yet. Once you join an activity, it will appear here for you to revisit your past experiences.",
     "unavailable": {
       "title": "History is on its way",
-      "description": "We’re connecting this section to our API. Your full activity history will be available here very soon — hang tight!"
+      "description": "We are connecting this section to our API. Your full activity history will be available here soon."
     },
     "activity": {
       "card": {
@@ -779,7 +780,7 @@
     "ticketId": "Ticket ID",
     "name": "Full Name",
     "email": "Email",
-    "ticketWarning1": "Your ticket is personal—don’t share it.",
+    "ticketWarning1": "Your ticket is personal. Do not share it.",
     "ticketWarning2": "This ticket is non-refundable",
     "liked": "Liked activities",
     "return": "Return Tickets",
@@ -806,6 +807,97 @@
       "entries": "entries",
       "unlimited": "Unlimited entries",
       "entry": "entry"
+    },
+    "restaurantCard": {
+      "tag": "Bar & Restaurant",
+      "open": "Open",
+      "always_open": "Open 24/7",
+      "closed_today": "Closed today"
+    },
+    "restaurantDetail": {
+      "open": "Open now",
+      "closed": "Closed",
+      "today": "Today",
+      "closed_today": "Closed today",
+      "always_open": "Open 24/7",
+      "call": "Call",
+      "directions": "Directions",
+      "menu": "Menu",
+      "unavailable": "Sold out",
+      "hours": "Opening hours",
+      "days": {
+        "0": "Sunday",
+        "1": "Monday",
+        "2": "Tuesday",
+        "3": "Wednesday",
+        "4": "Thursday",
+        "5": "Friday",
+        "6": "Saturday"
+      },
+      "details": "Details",
+      "about": "About",
+      "delivery_available": "Delivery available",
+      "back": "Back",
+      "reserve": "Reserve a table",
+      "no_location": "This venue has not added a map location yet."
+    },
+    "reserve": {
+      "page_title": "Reserve a table",
+      "checkout_title": "Confirm your reservation",
+      "confirmation_title": "Your reservation",
+      "back": "Back",
+      "title": "Reserve a table at {name}",
+      "fee_notice": "A non-refundable booking fee of {fee} confirms your table. You have {minutes} minutes to pay once you pick a time.",
+      "no_fee_notice": "Pick a time to reserve your table.",
+      "party_size": "How many of you?",
+      "guests": "{count, plural, one {# guest} other {# guests}}",
+      "date": "Which day?",
+      "time": "What time?",
+      "no_slots": "No tables available that day. Try another date or a smaller party.",
+      "slot_full": "Fully booked",
+      "your_details": "Your details",
+      "details_hint": "The restaurant uses these to hold your table and reach you if anything changes.",
+      "name": "Full name",
+      "email": "Email",
+      "phone": "Phone number",
+      "note": "Anything they should know? (optional)",
+      "continue": "Continue to payment",
+      "pay_now": "Pay and confirm",
+      "hold_countdown": "Table held for",
+      "hold_expired": "Your hold has expired. The table was released.",
+      "pick_again": "Pick another time",
+      "non_refundable": "This booking fee is not refunded if you cancel or do not show up.",
+      "insufficient": "Your wallet balance does not cover this.",
+      "already_confirmed": "This reservation is already confirmed.",
+      "code_is": "Your code is {code}.",
+      "confirmed_heading": "Your table is booked",
+      "code_label": "Code",
+      "restaurant_label": "Restaurant",
+      "when_label": "When",
+      "party_label": "Party",
+      "name_label": "Booked for",
+      "fee_label": "Booking fee",
+      "status_label": "Status",
+      "show_code_hint": "Show this code when you arrive. Keep this page or take a screenshot.",
+      "status": {
+        "pending": "Awaiting payment",
+        "confirmed": "Confirmed",
+        "seated": "Seated",
+        "cancelled": "Cancelled",
+        "no_show": "No show"
+      },
+      "errors": {
+        "slot": "Pick a time.",
+        "name": "Enter your name.",
+        "email": "Enter your email.",
+        "generic": "Could not hold that table. Please try again."
+      },
+      "closed_day": "The restaurant is closed this day",
+      "step_time": "Date and time",
+      "step_details": "Your details",
+      "step_summary": "Summary",
+      "max_party": "{count, plural, one {This restaurant seats one guest per time slot} other {This restaurant seats up to # guests per time slot}}.",
+      "all_slots_full": "{count, plural, one {No table for one is free on this day} other {No table for # is free on this day}}. Try another date or a smaller party."
     }
   },
   "Checkout": {
@@ -842,7 +934,7 @@
       "guest_info_required": "Please fill in your first name, last name, and email to continue",
       "account_exists": "An account with this email already exists. Please log in to continue.",
       "guest_ticket_note": "This ticket will be issued using your information above.",
-      "email_info": "Please enter your correct information. Your tickets will be sent to the email address you provide — if the address is wrong, you won't receive your tickets."
+      "email_info": "Please enter your correct information. Your tickets will be sent to the email address you provide. If the address is wrong, you will not receive your tickets."
     },
     "payment": {
       "title": "Payment",
@@ -872,7 +964,7 @@
       "confirm": "Confirm & Pay",
       "confirm_free": "Get Tickets",
       "secured": "Secured by Ticketwaze",
-      "fees_waived_banner": "Waitlist perk applied — this first purchase is on us. No Ticketwaze fees and no transaction fees, because you waited.",
+      "fees_waived_banner": "Waitlist perk applied. This first purchase carries no Ticketwaze fees and no transaction fees.",
       "waived": "Waived"
     },
     "footer": {
@@ -895,7 +987,7 @@
   "Liked": {
     "title": "Like activities",
     "back": "Back",
-    "noEvent": "You haven’t liked any activities yet. Browse upcoming activities and tap the ❤️ to save your favorites!",
+    "noEvent": "You have not liked any activities yet. Browse upcoming activities and tap the heart to save your favourites.",
     "filters": {
       "saved": "Saved",
       "liked": "Liked"
@@ -1109,11 +1201,11 @@
     "steps": {
       "welcome": {
         "title": "Welcome to Ticketwaze!",
-        "description": "Concerts, workshops, sports events and more — every ticket for every category, all in one place. Your seamless experience starts right here."
+        "description": "Concerts, workshops, sports events and more. Every ticket for every category, all in one place."
       },
       "tickets": {
         "title": "All your tickets, one place",
-        "description": "Every ticket you purchase is safely stored in your account. Just open the Upcoming section to instantly access your next experience — no inbox digging needed."
+        "description": "Every ticket you purchase is safely stored in your account. Open the Upcoming section to access your next experience."
       },
       "history": {
         "title": "Your full ticket history",
@@ -1125,7 +1217,7 @@
       },
       "transactions": {
         "title": "Track every payment",
-        "description": "View your complete transaction history, see exactly what you paid and when, and keep a clear record of all your purchases — all in the Wallet section."
+        "description": "View your complete transaction history, see exactly what you paid and when, and keep a clear record of all your purchases in the Wallet section."
       },
       "profile": {
         "title": "Your profile, your identity",
@@ -1133,7 +1225,7 @@
       },
       "invite": {
         "title": "Invite friends & earn rewards",
-        "description": "Share your referral link with friends. When they sign up and buy their first ticket, you both earn rewards — check your Wallet to see your balance grow."
+        "description": "Share your referral link with friends. When they sign up and buy their first ticket, you both earn rewards. Check your Wallet to see your balance."
       }
     }
   }

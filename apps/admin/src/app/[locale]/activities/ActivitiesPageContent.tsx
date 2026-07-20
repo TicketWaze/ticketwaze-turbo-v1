@@ -20,7 +20,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Event, Raffle } from "@ticketwaze/typescript-config";
+import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 import { useEffect, useState } from "react";
@@ -108,11 +108,13 @@ export default function ActivitiesPageContent({
   allEvents,
   status,
   raffles = [],
+  restaurants = [],
 }: {
   eventData: Event[];
   allEvents: Event[];
   status: string;
   raffles?: Raffle[];
+  restaurants?: Restaurant[];
 }) {
   const t = useTranslations("Activities");
   const locale = useLocale();
@@ -121,6 +123,7 @@ export default function ActivitiesPageContent({
   const [isLoading, setIsLoading] = useState(false);
   const [tab, setTab] = useState("events");
   const [raffleStatus, setRaffleStatus] = useState<StatusFilter>("all");
+  const [restaurantStatus, setRestaurantStatus] = useState<StatusFilter>("all");
 
   useEffect(() => {
     setIsLoading(false);
@@ -137,6 +140,11 @@ export default function ActivitiesPageContent({
     raffleStatus === "all"
       ? raffles
       : raffles.filter((raffle) => raffle.adminStatus === raffleStatus);
+
+  const filteredRestaurants =
+    restaurantStatus === "all"
+      ? restaurants
+      : restaurants.filter((r) => r.adminStatus === restaurantStatus);
 
   return (
     <div className="overflow-y-scroll flex flex-col gap-8">
@@ -212,11 +220,17 @@ export default function ActivitiesPageContent({
             <TabsList>
               <TabsTrigger value="events">Events</TabsTrigger>
               <TabsTrigger value="raffles">Raffles</TabsTrigger>
+              <TabsTrigger value="restaurants">Bar & Restaurant</TabsTrigger>
             </TabsList>
             {tab === "events" ? (
               <StatusFilterSelect
                 value={(status as StatusFilter) ?? "all"}
                 onChange={handleEventStatusChange}
+              />
+            ) : tab === "restaurants" ? (
+              <StatusFilterSelect
+                value={restaurantStatus}
+                onChange={setRestaurantStatus}
               />
             ) : (
               <StatusFilterSelect
@@ -433,6 +447,109 @@ export default function ActivitiesPageContent({
             </TableBody>
           </Table>
           {filteredRaffles.length === 0 && (
+            <EmptyState message={t("list.noActivities")} />
+          )}
+        </TabsContent>
+
+        {/* Bar & Restaurant tab. A venue never ends, so instead of dates the
+            useful columns are where it is and whether it is actually live —
+            which needs suspension, not just review status. */}
+        <TabsContent value="restaurants" className="flex flex-col gap-8">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead
+                  className={
+                    "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  {t("list.table.name")}
+                </TableHead>
+                <TableHead
+                  className={
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  City
+                </TableHead>
+                <TableHead
+                  className={
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  Type
+                </TableHead>
+                <TableHead
+                  className={
+                    "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  {t("list.table.status")}
+                </TableHead>
+                <TableHead
+                  className={
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  {t("list.table.created")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {filteredRestaurants.map((restaurant) => {
+                return (
+                  <TableRow
+                    key={restaurant.restaurantId}
+                    className="cursor-pointer"
+                    onClick={() =>
+                      router.push(
+                        `/activities/restaurant/${restaurant.restaurantId}`,
+                      )
+                    }
+                  >
+                    <TableCell
+                      className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
+                    >
+                      <span className={"truncate"}>{restaurant.name}</span>
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                      }
+                    >
+                      {restaurant.city}
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900 capitalize"
+                      }
+                    >
+                      {restaurant.establishmentType.replace("_", " ")}
+                    </TableCell>
+                    <TableCell className="py-6">
+                      <div className="flex items-center gap-3">
+                        <StatusBadge status={restaurant.adminStatus} />
+                        {restaurant.suspendedAt && (
+                          <span className="text-failure text-[1.1rem] font-bold uppercase">
+                            Suspended
+                          </span>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell
+                      className={
+                        "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                      }
+                    >
+                      {formatDate(restaurant.createdAt, locale, "local")}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+          {filteredRestaurants.length === 0 && (
             <EmptyState message={t("list.noActivities")} />
           )}
         </TabsContent>

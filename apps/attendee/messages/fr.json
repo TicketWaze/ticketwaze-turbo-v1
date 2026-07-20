@@ -244,7 +244,7 @@
         "description": "J’ai été invité à rejoindre une organisation sur Ticketwaze. Je dois configurer mon compte individuel et me connecter à mon équipe avec les autorisations appropriées."
       },
       "first": {
-        "1": "Merci d’avoir choisi Ticketwaze. Vous rejoignez une plateforme conçue pour simplifier la vente de billets, la gestion des réservations et la connexion avec le public — tout en offrant aux participants un moyen fluide de découvrir et d’accéder aux expériences.",
+        "1": "Merci d’avoir choisi Ticketwaze. Vous rejoignez une plateforme conçue pour simplifier la vente de billets, la gestion des réservations et la relation avec le public, tout en offrant aux participants un moyen simple de découvrir et d’accéder aux expériences.",
         "2": "Avant de continuer, nous vous poserons quelques brèves questions afin de comprendre comment vous souhaitez utiliser Ticketwaze. Vos réponses nous aideront à configurer votre tableau de bord, adapter vos autorisations et vous orienter vers l’environnement approprié, que vous soyez ici pour gérer des activités en tant qu’organisation ou pour découvrir et réserver des expériences en tant que participant.",
         "3": "Cette configuration ne devrait pas prendre plus de deux minutes. Vous pourrez toujours ajuster ces préférences ultérieurement depuis vos paramètres de compte."
       },
@@ -355,7 +355,7 @@
         "fourth": {
           "question": "Quelle est la taille de votre organisation ?",
           "solo": "Juste moi (1 personne)",
-          "small": "Petite équipe (2–10 personnes)",
+          "small": "Petite équipe (2 à 10 personnes)",
           "large": "Grande équipe (10+ personnes)"
         },
         "fifth": {
@@ -579,7 +579,8 @@
         }
       }
     },
-    "raffles": "Tirages"
+    "raffles": "Tirages",
+    "restaurants": "Bar & Restaurant"
   },
   "Wallet": {
     "title": "Portefeuille",
@@ -723,7 +724,7 @@
     "description": "Vous n'avez encore participé à aucune activité. Une fois que vous rejoignez une activité, elle apparaîtra ici pour retrouver vos expériences passées.",
     "unavailable": {
       "title": "L'historique arrive bientôt",
-      "description": "Nous connectons cette section à notre API. Votre historique d'activités complet sera disponible ici très prochainement — restez connecté !"
+      "description": "Nous connectons cette section à notre API. Votre historique d’activités complet sera disponible ici prochainement."
     },
     "activity": {
       "card": {
@@ -823,7 +824,7 @@
     "ticketId": "ID du billet",
     "name": "Nom complet",
     "email": "E-mail",
-    "ticketWarning1": "Votre billet est personnel — ne le partagez pas.",
+    "ticketWarning1": "Votre billet est personnel. Ne le partagez pas.",
     "ticketWarning2": "Ce billet est non remboursable",
     "liked": "Activités aimées",
     "return": "Rendre les billets",
@@ -850,6 +851,97 @@
       "entries": "billets",
       "unlimited": "Billets illimités",
       "entry": "billet"
+    },
+    "restaurantCard": {
+      "tag": "Bar & Restaurant",
+      "open": "Ouvert",
+      "always_open": "Ouvert 24h/24",
+      "closed_today": "Fermé aujourd'hui"
+    },
+    "restaurantDetail": {
+      "open": "Ouvert",
+      "closed": "Fermé",
+      "today": "Aujourd'hui",
+      "closed_today": "Fermé aujourd'hui",
+      "always_open": "Ouvert 24h/24",
+      "call": "Appeler",
+      "directions": "Itinéraire",
+      "menu": "Menu",
+      "unavailable": "Épuisé",
+      "hours": "Heures d'ouverture",
+      "days": {
+        "0": "Dimanche",
+        "1": "Lundi",
+        "2": "Mardi",
+        "3": "Mercredi",
+        "4": "Jeudi",
+        "5": "Vendredi",
+        "6": "Samedi"
+      },
+      "details": "Détails",
+      "about": "À propos",
+      "delivery_available": "Livraison disponible",
+      "back": "Retour",
+      "reserve": "Réserver",
+      "no_location": "Cet établissement n'a pas encore ajouté sa position sur la carte."
+    },
+    "reserve": {
+      "page_title": "Réserver une table",
+      "checkout_title": "Confirmez votre réservation",
+      "confirmation_title": "Votre réservation",
+      "back": "Retour",
+      "title": "Réserver une table chez {name}",
+      "fee_notice": "Des frais de réservation non remboursables de {fee} confirment votre table. Vous avez {minutes} minutes pour payer après avoir choisi une heure.",
+      "no_fee_notice": "Choisissez une heure pour réserver votre table.",
+      "party_size": "Combien êtes-vous ?",
+      "guests": "{count, plural, one {# personne} other {# personnes}}",
+      "date": "Quel jour ?",
+      "time": "À quelle heure ?",
+      "no_slots": "Aucune table disponible ce jour-là. Essayez une autre date ou un plus petit groupe.",
+      "slot_full": "Complet",
+      "your_details": "Vos coordonnées",
+      "details_hint": "Le restaurant les utilise pour garder votre table et vous joindre en cas de changement.",
+      "name": "Nom complet",
+      "email": "E-mail",
+      "phone": "Numéro de téléphone",
+      "note": "Quelque chose à signaler ? (facultatif)",
+      "continue": "Continuer vers le paiement",
+      "pay_now": "Payer et confirmer",
+      "hold_countdown": "Table gardée pendant",
+      "hold_expired": "Votre réservation temporaire a expiré. La table a été libérée.",
+      "pick_again": "Choisir une autre heure",
+      "non_refundable": "Ces frais de réservation ne sont pas remboursés en cas d’annulation ou d’absence.",
+      "insufficient": "Le solde de votre portefeuille ne couvre pas ce montant.",
+      "already_confirmed": "Cette réservation est déjà confirmée.",
+      "code_is": "Votre code est {code}.",
+      "confirmed_heading": "Votre table est réservée",
+      "code_label": "Code",
+      "restaurant_label": "Restaurant",
+      "when_label": "Quand",
+      "party_label": "Groupe",
+      "name_label": "Au nom de",
+      "fee_label": "Frais de réservation",
+      "status_label": "Statut",
+      "show_code_hint": "Présentez ce code à votre arrivée. Conservez cette page ou faites une capture d’écran.",
+      "status": {
+        "pending": "En attente de paiement",
+        "confirmed": "Confirmée",
+        "seated": "Installée",
+        "cancelled": "Annulée",
+        "no_show": "Absence"
+      },
+      "errors": {
+        "slot": "Choisissez une heure.",
+        "name": "Entrez votre nom.",
+        "email": "Entrez votre e-mail.",
+        "generic": "Impossible de garder cette table. Réessayez."
+      },
+      "closed_day": "Le restaurant est fermé ce jour-là",
+      "step_time": "Date et heure",
+      "step_details": "Vos coordonnées",
+      "step_summary": "Récapitulatif",
+      "max_party": "{count, plural, one {Ce restaurant accueille une personne par créneau} other {Ce restaurant accueille jusqu’à # personnes par créneau}}.",
+      "all_slots_full": "{count, plural, one {Aucune table pour une personne ce jour-là} other {Aucune table pour # personnes ce jour-là}}. Essayez une autre date ou un plus petit groupe."
     }
   },
   "Checkout": {
@@ -886,7 +978,7 @@
       "guest_info_required": "Veuillez renseigner votre prénom, nom de famille et adresse e-mail pour continuer",
       "account_exists": "Un compte avec cet e-mail existe déjà. Veuillez vous connecter pour continuer.",
       "guest_ticket_note": "Ce billet sera émis avec vos informations ci-dessus.",
-      "email_info": "Veuillez entrer vos informations correctes. Vos billets seront envoyés à l'adresse e-mail que vous fournissez — si l'adresse est incorrecte, vous ne recevrez pas vos billets."
+      "email_info": "Veuillez saisir des informations exactes. Vos billets seront envoyés à l’adresse e-mail que vous indiquez. Si l’adresse est incorrecte, vous ne recevrez pas vos billets."
     },
     "payment": {
       "title": "Paiement",
@@ -916,7 +1008,7 @@
       "confirm": "Confirmer & Payer",
       "confirm_free": "Obtenir les billets",
       "secured": "Sécurisé par Ticketwaze",
-      "fees_waived_banner": "Avantage liste d’attente appliqué — ce premier achat est offert. Aucun frais Ticketwaze ni frais de transaction, parce que vous avez patienté.",
+      "fees_waived_banner": "Avantage liste d’attente appliqué. Ce premier achat ne comporte aucun frais Ticketwaze ni frais de transaction.",
       "waived": "Offert"
     },
     "footer": {
@@ -939,7 +1031,7 @@
   "Liked": {
     "title": "Activités aimées",
     "back": "Retour",
-    "noEvent": "Vous n'avez aimée aucune activité. Parcourez les activités à venir et appuyez sur ❤️ pour enregistrer vos favoris !",
+    "noEvent": "Vous n’avez encore aimé aucune activité. Parcourez les activités à venir et appuyez sur le cœur pour enregistrer vos favoris.",
     "filters": {
       "saved": "Sauvegardées",
       "liked": "Aimée"
@@ -1153,7 +1245,7 @@
     "steps": {
       "welcome": {
         "title": "Bienvenue sur Ticketwaze !",
-        "description": "Concerts, ateliers, événements sportifs et bien plus encore — tous vos billets, toutes les catégories, dans une seule application. Votre expérience sans friction commence maintenant."
+        "description": "Concerts, ateliers, événements sportifs et bien plus encore. Tous vos billets, toutes les catégories, dans une seule application."
       },
       "tickets": {
         "title": "Tous vos billets au même endroit",
@@ -1177,7 +1269,7 @@
       },
       "invite": {
         "title": "Invitez des amis, gagnez des récompenses",
-        "description": "Partagez votre lien de parrainage avec vos amis. Lorsqu'ils s'inscrivent et achètent leur premier billet, vous gagnez tous les deux des récompenses — consultez votre Wallet pour voir votre solde."
+        "description": "Partagez votre lien de parrainage avec vos amis. Lorsqu’ils s’inscrivent et achètent leur premier billet, vous gagnez tous les deux des récompenses. Consultez votre Wallet pour voir votre solde."
       }
     }
   }

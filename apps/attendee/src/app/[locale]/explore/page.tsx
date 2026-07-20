@@ -1,13 +1,16 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import ExplorePageContent from "./ExplorePageContent";
-import { Event, Raffle } from "@ticketwaze/typescript-config";
+import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
 
 export default async function Explore() {
-  const [request, rafflesRequest] = await Promise.all([
+  const [request, rafflesRequest, restaurantsRequest] = await Promise.all([
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
       next: { revalidate: 60 },
     }),
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/raffles`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/restaurants`, {
       next: { revalidate: 60 },
     }),
   ]);
@@ -23,12 +26,21 @@ export default async function Explore() {
     raffles = [];
   }
 
+  let restaurants: Restaurant[] = [];
+  try {
+    const restaurantsResponse = await restaurantsRequest.json();
+    restaurants = restaurantsResponse.restaurants ?? [];
+  } catch {
+    restaurants = [];
+  }
+
   return (
     <AttendeeLayout title="Explore" className="overflow-x-hidden">
       <ExplorePageContent
         events={events}
         pastEvents={pastEvents}
         raffles={raffles}
+        restaurants={restaurants}
         wallet={null}
       />
     </AttendeeLayout>

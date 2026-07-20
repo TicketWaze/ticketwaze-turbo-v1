@@ -3,16 +3,24 @@ import { useState } from "react";
 import { DateTime } from "luxon";
 import { Money3 } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
-import { Event, Raffle } from "@ticketwaze/typescript-config";
+import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
 import EventCard from "@/components/shared/EventCard";
 import RaffleCard from "@/components/shared/RaffleCard";
+import RestaurantCard from "@/components/shared/RestaurantCard";
 
 type Category = "upcoming" | "ongoing" | "past";
-type ActivityFilter = "all" | "events" | "raffles";
+type ActivityFilter = "all" | "events" | "raffles" | "restaurants";
 
 function categorizeEvent(event: Event): Category {
   const now = DateTime.now();
-  const sorted = [...event.eventDays].sort((a, b) => a.dayNumber - b.dayNumber);
+  // A teaser has no days at all. Without this it falls through to the
+  // "no first/last day" branch below and is filed as *past*, which buries a
+  // brand new announcement under finished events.
+  if (event.isComingSoon) return "upcoming";
+
+  const sorted = [...(event.eventDays ?? [])].sort(
+    (a, b) => a.dayNumber - b.dayNumber,
+  );
   const first = sorted[0];
   const last = sorted[sorted.length - 1];
   if (!first || !last) return "past";
@@ -43,14 +51,16 @@ function categorizeEvent(event: Event): Category {
 export default function EventPageContent({
   events,
   raffles = [],
+  restaurants = [],
 }: {
   events: Event[];
   raffles?: Raffle[];
+  restaurants?: Restaurant[];
 }) {
   const t = useTranslations("Events");
   const [filter, setFilter] = useState<ActivityFilter>("all");
 
-  // Events and raffles share one grid, newest first.
+  // Events, raffles and restaurants share one grid, newest first.
   const items = [
     ...events.map((event) => ({
       kind: "event" as const,
@@ -62,6 +72,11 @@ export default function EventPageContent({
       createdAt: raffle.createdAt,
       raffle,
     })),
+    ...restaurants.map((restaurant) => ({
+      kind: "restaurant" as const,
+      createdAt: restaurant.createdAt,
+      restaurant,
+    })),
   ].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
@@ -69,6 +84,7 @@ export default function EventPageContent({
   const filteredItems = items.filter((item) => {
     if (filter === "events") return item.kind === "event";
     if (filter === "raffles") return item.kind === "raffle";
+    if (filter === "restaurants") return item.kind === "restaurant";
     return true;
   });
 
@@ -76,6 +92,7 @@ export default function EventPageContent({
     { value: "all", label: t("filter.all") },
     { value: "events", label: t("filter.events") },
     { value: "raffles", label: t("filter.raffles") },
+    { value: "restaurants", label: t("filter.restaurants") },
   ];
 
   return (
@@ -106,6 +123,13 @@ export default function EventPageContent({
                   </li>
                 );
               }
+              if (item.kind === "restaurant") {
+                return (
+                  <li key={item.restaurant.restaurantId}>
+                    <RestaurantCard restaurant={item.restaurant} />
+                  </li>
+                );
+              }
               const category = categorizeEvent(item.event);
               return (
                 <li
@@ -125,9 +149,11 @@ export default function EventPageContent({
             message={
               filter === "raffles"
                 ? t("filter.empty_raffles")
-                : filter === "events"
-                  ? t("filter.empty_events")
-                  : t("description")
+                : filter === "restaurants"
+                  ? t("filter.empty_restaurants")
+                  : filter === "events"
+                    ? t("filter.empty_events")
+                    : t("description")
             }
           />
         )}
