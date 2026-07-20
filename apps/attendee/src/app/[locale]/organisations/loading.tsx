@@ -19,22 +19,22 @@ export default function Loading() {
                 <div className="w-14 h-14 bg-neutral-100 rounded-full animate-pulse lg:hidden" />
               </div>
             </div>
-            <div className="h-20 w-full lg:w-56 bg-neutral-100 rounded-full animate-pulse mt-12" />
+            <div className="h-20 hidden lg:flex lg:w-56 bg-neutral-100 rounded-full animate-pulse mt-8" />
           </div>
         </header>
 
         <ul className="pt-4 list  w-full flex flex-col gap-4 pb-8 h-screen overflow-hidden">
           {Array.from({ length: 6 }).map((_, index) => (
             <li key={index}>
-              <div className="w-full rounded-2xl bg-neutral-100 animate-pulse p-3 lg:p-4 flex flex-col gap-3 lg:gap-4">
+              <div className="w-full rounded-2xl bg-neutral-100 animate-pulse flex flex-col gap-3 lg:gap-4">
                 {/* Image */}
-                <div className="w-full h-60 lg:h-[19.1rem] rounded-xl bg-neutral-200 shrink-0 mb-8" />
+                <div className="w-full h-62  rounded-t-xl bg-neutral-200 shrink-0 mb-4" />
 
-                <div className="flex flex-col gap-4 flex-1 justify-center">
+                <div className="flex flex-col gap-4 flex-1 justify-center p-3 lg:p-4 pt-0">
                   <div className="h-[1.9rem] w-3/4 bg-neutral-200 rounded-full" />
                   <div className="flex justify-between items-center">
-                    <div className="h-[1.7rem] w-[6.2rem] bg-neutral-200 rounded-full" />
-                    <div className="h-14 w-[7.1rem] bg-neutral-200 rounded-full" />
+                    <div className="h-[1.7rem] w-full bg-neutral-200 rounded-full" />
+                    <div className="hidden h-14 w-[7.1rem] bg-neutral-200 rounded-full" />
                   </div>
                 </div>
               </div>
