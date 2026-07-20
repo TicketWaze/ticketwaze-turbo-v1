@@ -71,12 +71,11 @@ export default function TransactionDetails({ order }: { order: Order }) {
       ? order.amount.toLocaleString()
       : order.usdPrice.toLocaleString();
 
-  const ticketPrice =
-    firstTicket
-      ? (currency === "HTG"
-          ? firstTicket.ticketPrice.toLocaleString()
-          : firstTicket.ticketUsdPrice.toLocaleString())
-      : "—";
+  const ticketPrice = firstTicket
+    ? currency === "HTG"
+      ? firstTicket.ticketPrice.toLocaleString()
+      : firstTicket.ticketUsdPrice.toLocaleString()
+    : "—";
 
   const ticketTypeColor = getTicketTypeColor(firstTicket?.ticketType ?? "");
   const txStatusStyle = getTransactionStatusStyle(order.status);
@@ -216,7 +215,7 @@ export default function TransactionDetails({ order }: { order: Order }) {
               >
                 {t("ticket_id")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {firstTicket ? `#${firstTicket.ticketId}` : "—"}
+                  {firstTicket?.ticketName ?? "—"}
                 </span>
               </p>
               <p
@@ -240,7 +239,7 @@ export default function TransactionDetails({ order }: { order: Order }) {
               >
                 {t("transaction_id")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  #{order.orderId}
+                  {order.orderName}
                 </span>
               </p>
               <p

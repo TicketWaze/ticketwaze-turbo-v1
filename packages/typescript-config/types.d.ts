@@ -210,6 +210,11 @@ export interface Order {
   orderName: string;
   provider: string;
   status: "PENDING" | "SUCCESSFUL" | "FAILED" | "RETURNED";
+  /** Set on guest checkouts, where there is no user record to read the name from. */
+  isGuest: boolean;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
   tickets: Ticket[];
   createdAt: DateTime;
   updatedAt: DateTime;
@@ -332,11 +337,11 @@ export interface Raffle {
   salesEndAt: string;
   drawAt: string;
   timezone: string | null;
-  drawMode: 'automatic' | 'manual';
-  adminStatus: 'review' | 'approved' | 'rejected' | 'requested';
+  drawMode: "automatic" | "manual";
+  adminStatus: "review" | "approved" | "rejected" | "requested";
   rejectionReason: string | null;
-  status: 'on_sale' | 'closed' | 'drawn' | 'completed' | 'cancelled';
-  deletionStatus: 'pending_deletion' | 'deleted' | null;
+  status: "on_sale" | "closed" | "drawn" | "completed" | "cancelled";
+  deletionStatus: "pending_deletion" | "deleted" | null;
   deletionReason: string | null;
   deletionRequestedAt: string | null;
   scheduledDeletionAt: string | null;
@@ -377,13 +382,13 @@ export interface Restaurant {
   slug: string;
   description: string;
   establishmentType:
-    | 'restaurant'
-    | 'bar'
-    | 'cafe'
-    | 'lounge'
-    | 'club'
-    | 'bakery'
-    | 'food_truck';
+    | "restaurant"
+    | "bar"
+    | "cafe"
+    | "lounge"
+    | "club"
+    | "bakery"
+    | "food_truck";
   cuisineTypes: string[];
   priceRange: number;
   address: string;
@@ -428,7 +433,7 @@ export interface Restaurant {
   seatingCapacity: number | null;
   // Visibility is four independent switches; public visibility is derived from
   // all of them. Ticketwaze owns adminStatus/suspendedAt, the org owns the rest.
-  adminStatus: 'review' | 'approved' | 'rejected' | 'requested';
+  adminStatus: "review" | "approved" | "rejected" | "requested";
   rejectionReason: string | null;
   suspendedAt: string | null;
   suspensionReason: string | null;
@@ -456,7 +461,7 @@ export interface RestaurantTransaction {
   createdAt: string;
   items: {
     itemName: string;
-    itemType: 'restaurant_payment' | 'reservation_fee';
+    itemType: "restaurant_payment" | "reservation_fee";
     quantity: number;
     unitPrice: number;
   }[];
@@ -750,13 +755,13 @@ export interface AdminOrganisationStats {
 export interface UserWithdrawalRequest {
   userWithdrawalRequestId: string;
   userId: string;
-  accountType: 'bank' | 'moncash';
-  currency: 'HTG' | 'USD';
+  accountType: "bank" | "moncash";
+  currency: "HTG" | "USD";
   bankName: string | null;
   accountName: string;
   accountNumber: string;
   amount: number;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  status: "PENDING" | "ACCEPTED" | "REJECTED";
   reason: string | null;
   reference: string | null;
   user?: {

@@ -764,6 +764,7 @@
   "Event": {
     "from": "À partir de",
     "free": "Gratuit",
+    "coming_soon_label": "Bientôt disponible",
     "private": "Privé",
     "soldOut": "Complet",
     "back": "Retour",

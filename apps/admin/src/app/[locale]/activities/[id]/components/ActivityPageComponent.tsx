@@ -25,52 +25,73 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
     event.organisation.followers?.length ??
     0;
   const locale = useLocale();
-  const firstDay = event.eventDays.find((day) => day.dayNumber === 1)!;
-  const formattedDate = formatDate(
-    firstDay.eventDate,
-    locale,
-    firstDay.timezone,
-  );
-  const formattedTime = `${formatTime(
-    firstDay.startTime,
-    firstDay.timezone,
-    locale,
-  )} - ${formatTime(firstDay.endTime, firstDay.timezone, locale)}`;
+
+  // A teaser has no eventDays and no ticket types, so nothing here may assume
+  // a first day exists. Its date, when it has one, is the plain "YYYY-MM-DD"
+  // comingSoonDate — parsed with an explicit T00:00:00 so it is not read as UTC
+  // and rendered as the previous day west of Greenwich.
+  const firstDay = event.eventDays?.find((day) => day.dayNumber === 1);
+  const teaserDate = event.comingSoonDate
+    ? new Date(`${event.comingSoonDate}T00:00:00`)
+    : null;
+
+  const formattedDate = firstDay
+    ? formatDate(firstDay.eventDate, locale, firstDay.timezone)
+    : teaserDate
+      ? teaserDate
+          .toLocaleDateString(locale, {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
+          })
+          .toUpperCase()
+      : (event.comingSoonHint ?? "-");
+  const formattedTime = firstDay
+    ? `${formatTime(
+        firstDay.startTime,
+        firstDay.timezone,
+        locale,
+      )} - ${formatTime(firstDay.endTime, firstDay.timezone, locale)}`
+    : "-";
 
   // Online events are flagged by eventCategory ("meet"), not eventType
   // (which holds public/private); they have no address fields.
   const isMeetEvent = event.eventCategory === "meet";
+  // A teaser may have no venue at all, and joining nulls prints a bare comma.
   const address = isMeetEvent
     ? "Google Meet"
     : [event.address, event.city, event.state, event.country]
         .filter(Boolean)
-        .join(", ");
+        .join(", ") || "-";
 
+  const soldTickets = (event.tickets ?? []).filter(
+    (o) => o.status !== "RETURNED",
+  );
   const totalRevenue =
     event.currency === "HTG"
-      ? event.tickets
-          .filter((o) => o.status !== "RETURNED")
-          .reduce((sum, o) => sum + o.ticketPrice, 0)
-      : event.tickets
-          .filter((o) => o.status !== "RETURNED")
-          .reduce((sum, o) => sum + o.ticketUsdPrice, 0);
+      ? soldTickets.reduce((sum, o) => sum + o.ticketPrice, 0)
+      : soldTickets.reduce((sum, o) => sum + o.ticketUsdPrice, 0);
 
-  const totalSold = event.eventTicketTypes.reduce(
+  const ticketTypes = event.eventTicketTypes ?? [];
+  const totalSold = ticketTypes.reduce(
     (sum, t) => sum + t.ticketTypeQuantitySold,
     0,
   );
-  const totalCapacity = event.eventTicketTypes.reduce(
+  const totalCapacity = ticketTypes.reduce(
     (sum, t) => sum + t.ticketTypeQuantity,
     0,
   );
   const ticketsLeft = totalCapacity - totalSold;
 
   const today = DateTime.now();
-  const eventStart = DateTime.fromISO(
-    event.eventDays.filter((event) => event.dayNumber === 1)[0].eventDate,
-  );
-  const daysLefts = eventStart ? eventStart.diff(today, "days").days : null;
-  const daysLeft = Math.ceil(daysLefts && daysLefts > 0 ? daysLefts : 0);
+  const eventStart = firstDay
+    ? DateTime.fromISO(firstDay.eventDate)
+    : teaserDate
+      ? DateTime.fromJSDate(teaserDate)
+      : null;
+  const daysLeft = eventStart
+    ? Math.ceil(Math.max(eventStart.diff(today, "days").days, 0))
+    : null;
   const countdownText =
     daysLeft === null
       ? "-"
@@ -162,7 +183,12 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
               <div className="flex items-center gap-2">
                 <div className="w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full">
                   {isMeetEvent ? (
-                    <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 48 48"
+                      aria-hidden="true"
+                    >
                       <path
                         fill="#EA4335"
                         d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"
