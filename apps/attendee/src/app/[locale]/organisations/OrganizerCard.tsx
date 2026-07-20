@@ -4,6 +4,7 @@ import { Layer, Location } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
+import { slugify } from "@/lib/Slugify";
 
 function OrganizerCard({
   image,
@@ -25,7 +26,7 @@ function OrganizerCard({
   const t = useTranslations("Organizers");
   return (
     <Link
-      href={`organisations/${id}`}
+      href={`/organisations/${slugify(title, id)}`}
       className={
         "flex items-stretch flex-col gap-4 w-full lg:max-w-[350px] bg-white shadow-lg rounded-[1rem] overflow-hidden pb-4"
       }

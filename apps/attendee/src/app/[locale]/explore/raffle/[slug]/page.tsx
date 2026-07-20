@@ -10,7 +10,7 @@ import { auth } from "@/lib/auth";
 import { Link } from "@/i18n/navigation";
 import { Raffle } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
-import { extractIdFromSlug } from "@/lib/Slugify";
+import { extractIdFromSlug, slugify } from "@/lib/Slugify";
 import formatRaffleDate from "@/lib/formatRaffleDate";
 import { formatMoney } from "@ticketwaze/currency";
 import { notFound } from "next/navigation";
@@ -47,7 +47,8 @@ export default async function RafflePage({
   const raffle: Raffle = response.raffle;
   const organisation = response.organisation;
   const remaining: number | null = response.remaining ?? null;
-  const price = raffle.currency === "USD" ? raffle.usdPrice : raffle.ticketPrice;
+  const price =
+    raffle.currency === "USD" ? raffle.usdPrice : raffle.ticketPrice;
   const soldOut = remaining !== null && remaining <= 0;
   const isFollowing = (organisation?.followers ?? []).filter(
     (follower: any) => follower.userId === session?.user.userId,
@@ -192,7 +193,7 @@ function RaffleDetails({
       {organisation && (
         <div className={"flex items-center justify-between w-full"}>
           <Link
-            href={`/organisations/${organisation.organisationId}`}
+            href={`/organisations/${slugify(organisation.organisationName, organisation.organisationId)}`}
             className={"flex items-center gap-4"}
           >
             {organisation?.profileImageUrl ? (
@@ -240,9 +241,7 @@ function RaffleDetails({
           >
             <Ticket size="20" color="#737c8a" variant="Bulk" />
           </div>
-          <span
-            className={"font-normal text-[1.4rem] leading-8 text-deep-200"}
-          >
+          <span className={"font-normal text-[1.4rem] leading-8 text-deep-200"}>
             {formatMoney(price, raffle.currency, locale)} {t("perEntry")}
           </span>
         </li>
@@ -254,9 +253,7 @@ function RaffleDetails({
           >
             <Timer1 size="20" color="#737c8a" variant="Bulk" />
           </div>
-          <span
-            className={"font-normal text-[1.4rem] leading-8 text-deep-200"}
-          >
+          <span className={"font-normal text-[1.4rem] leading-8 text-deep-200"}>
             {t("drawDate")}:{" "}
             {formatRaffleDate(raffle.drawAt, locale, raffle.timezone)}
           </span>
@@ -269,9 +266,7 @@ function RaffleDetails({
           >
             <Calendar2 size="20" color="#737c8a" variant="Bulk" />
           </div>
-          <span
-            className={"font-normal text-[1.4rem] leading-8 text-deep-200"}
-          >
+          <span className={"font-normal text-[1.4rem] leading-8 text-deep-200"}>
             {t("entriesLeft")}:{" "}
             {remaining === null ? t("unlimited") : remaining}
           </span>

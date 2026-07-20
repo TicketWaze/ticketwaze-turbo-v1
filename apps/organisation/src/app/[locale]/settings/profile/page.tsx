@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
+import ShareOrganisation from "./ShareOrganisation";
 
 export default async function ProfilePage() {
   const t = await getTranslations("Settings.profile");
@@ -43,7 +44,9 @@ export default async function ProfilePage() {
     <OrganizerLayout title={t("title")}>
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
-        <TopBar title={t("title")} />
+        <TopBar title={t("title")}>
+          <ShareOrganisation organisation={organisation} />
+        </TopBar>
       </div>
       <div
         className={

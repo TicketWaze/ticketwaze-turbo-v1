@@ -1673,6 +1673,15 @@
       "setProfile": "Set profile image",
       "subtitle": "Organisation Profile",
       "resize": "Resize your image",
+      "share_profile": {
+        "title": "Share Profile",
+        "description": "Share your organisation page so people can discover your activities and follow you.",
+        "message": "Follow {name} on Ticketwaze to keep up with our upcoming activities.",
+        "copy": "Copy",
+        "copied": "Url copied to clipboard",
+        "copy_failed": "Failed to copy url",
+        "qr": "Download QR Code"
+      },
       "placeholders": {
         "name": "Organisation Name",
         "description": "Organisation Description",
