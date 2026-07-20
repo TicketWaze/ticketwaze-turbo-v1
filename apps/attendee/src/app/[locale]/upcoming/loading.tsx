@@ -28,9 +28,9 @@ export default function Loading() {
         <ul className="w-full list pt-4 flex flex-col gap-4 h-screen overflow-hidden">
           {Array.from({ length: 5 }).map((_, i) => (
             <li key={i}>
-              <div className="w-full h-fit rounded-2xl bg-neutral-100 animate-pulse p-3 lg:p-4 flex lg:flex-col gap-3 lg:gap-4 lg:h-auto">
+              <div className="w-full h-fit rounded-2xl bg-neutral-100 animate-pulse p-3 lg:p-4 flex flex-col gap-3 lg:gap-4 lg:h-auto">
                 {/* Image */}
-                <div className="w-62 lg:w-full h-62 lg:h-[19.1rem] rounded-xl bg-neutral-200 shrink-0 lg:mb-8" />
+                <div className="lg:w-full h-62 lg:h-[19.1rem] rounded-xl bg-neutral-200 shrink-0 mb-8" />
 
                 <div className="flex flex-col gap-4 flex-1 lg:justify-center">
                   <div className="h-[1.9rem] w-3/4 bg-neutral-200 rounded-full" />
