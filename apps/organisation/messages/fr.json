@@ -1668,6 +1668,15 @@
       "setProfile": "Définir l'image de profil",
       "subtitle": "Profil de l'organisation",
       "resize": "Redimensionner votre image",
+      "share_profile": {
+        "title": "Partager le profil",
+        "description": "Partagez la page de votre organisation pour que les gens découvrent vos activités et vous suivent.",
+        "message": "Suivez {name} sur Ticketwaze pour ne rien manquer de nos prochaines activités.",
+        "copy": "Copier",
+        "copied": "Lien copié dans le presse-papiers",
+        "copy_failed": "Échec de la copie du lien",
+        "qr": "Télécharger le QR Code"
+      },
       "placeholders": {
         "name": "Nom de l'organisation",
         "description": "Description de l'organisation",

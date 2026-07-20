@@ -42,11 +42,11 @@ function Sidebar({ className }: { className: string }) {
       path: `/history`,
       Icon: Clock,
     },
-    {
-      label: t("links.organizers"),
-      path: `/organisations`,
-      Icon: Building,
-    },
+    // {
+    //   label: t("links.organizers"),
+    //   path: `/organisations`,
+    //   Icon: Building,
+    // },
   ];
   const userLinks = [
     {
@@ -178,6 +178,25 @@ function Sidebar({ className }: { className: string }) {
                 </li>
               );
             })}
+            <li>
+              <Link
+                href={"/organisations"}
+                className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive("/organisations") ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
+              >
+                <Building
+                  size="20"
+                  className={`transition-all duration-500 ${isActive("/organisations") ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
+                  // className={`${isActive(path) ? "fill-icon-active" : "fill-icon"} group-hover:fill-icon-active`}
+                  variant="Bulk"
+                />
+                <span>{t("links.organizers")}</span>
+                <div
+                  className={
+                    "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[2px] h-full"
+                  }
+                ></div>
+              </Link>
+            </li>
           </ul>
         </nav>
         {session?.user && (

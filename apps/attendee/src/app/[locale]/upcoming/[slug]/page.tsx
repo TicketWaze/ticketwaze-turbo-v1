@@ -12,7 +12,7 @@ import { Event, Ticket } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
 import ReturnFreeTicketView from "./ReturnFreeTicketView";
-import { extractIdFromSlug } from "@/lib/Slugify";
+import { extractIdFromSlug, slugify } from "@/lib/Slugify";
 import { notFound } from "next/navigation";
 import ReturnPaidTicketView from "./ReturnPaidTicketView";
 import CheckoutEmailAlert from "./CheckoutEmailAlert";
@@ -143,7 +143,7 @@ export default async function UpcomingEventPage({
             </div>
           </div>
           <Link
-            href={`/organisations/${organisation.organisationId}`}
+            href={`/organisations/${slugify(organisation.organisationName, organisation.organisationId)}`}
             className="border-2 py-[7.5px] px-6 lg:px-12 rounded-[100px] border-black font-semibold text-[1.5rem] "
           >
             {t("viewProfile")}

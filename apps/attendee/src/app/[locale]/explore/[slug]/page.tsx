@@ -22,7 +22,7 @@ import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Capitalize from "@/lib/Capitalize";
 import StripHtml from "@/lib/StripHtml";
-import { extractIdFromSlug } from "@/lib/Slugify";
+import { extractIdFromSlug, slugify } from "@/lib/Slugify";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 import AnimatedEventPage from "./AnimatedEventPage";
@@ -292,7 +292,7 @@ export default async function EventPage({
                 {/*  organizer*/}
                 <div className={"flex items-center justify-between w-full"}>
                   <Link
-                    href={`/organisations/${organisation.organisationId}`}
+                    href={`/organisations/${slugify(organisation.organisationName, organisation.organisationId)}`}
                     className={"flex items-center gap-4"}
                   >
                     {organisation?.profileImageUrl ? (
@@ -338,7 +338,10 @@ export default async function EventPage({
                 <ul className="flex flex-col w-full">
                   {event.eventDays.map((eventDate) => {
                     return (
-                      <li key={eventDate.eventDayId} className="flex flex-col gap-6">
+                      <li
+                        key={eventDate.eventDayId}
+                        className="flex flex-col gap-6"
+                      >
                         {/*  date*/}
                         <div className={"flex items-center gap-2"}>
                           <div
@@ -481,7 +484,7 @@ export default async function EventPage({
               {/*  organizer*/}
               <div className={"flex items-center justify-between w-full"}>
                 <Link
-                  href={`/organisations/${organisation.organisationId}`}
+                  href={`/organisations/${slugify(organisation.organisationName, organisation.organisationId)}`}
                   className={"flex items-center gap-4"}
                 >
                   {organisation?.profileImageUrl ? (

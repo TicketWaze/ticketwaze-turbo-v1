@@ -1,8 +1,6 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import OrganizersContents from "./OrganizersContents";
 import { auth } from "@/lib/auth";
-import { getLocale } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
 import { Organisation } from "@ticketwaze/typescript-config";
 
 export default async function OrganizersPage() {
@@ -10,31 +8,36 @@ export default async function OrganizersPage() {
   const organisationRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations`,
   );
-  const organisationResponse = await organisationRequest.json();
+  // The API omits its data keys on error, so guard before reading.
+  const organisationResponse = await organisationRequest
+    .json()
+    .catch(() => null);
 
-  const userRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/users/me/followed-organisations`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session?.user.accessToken}`,
-        "Content-Type": "application/json",
+  /**
+   * Only a signed-in user has follows. The request is skipped entirely for
+   * guests rather than sent with an undefined token: it would be a guaranteed
+   * 401, and the page has to render without it either way.
+   */
+  let followedOrganisations: Organisation[] = [];
+  if (session?.user?.accessToken) {
+    const userRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/users/me/followed-organisations`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${session.user.accessToken}`,
+          "Content-Type": "application/json",
+        },
       },
-    },
-  );
-  const userResponse = await userRequest.json();
-  const followedOrganisations: Organisation[] =
-    userResponse.followedOrganisations;
-
-  const locale = await getLocale();
-  if (!session) {
-    redirect({ href: "/auth/login", locale });
+    );
+    const userResponse = await userRequest.json().catch(() => null);
+    followedOrganisations = userResponse?.followedOrganisations ?? [];
   }
 
   return (
     <AttendeeLayout title="OrganizersPage">
       <OrganizersContents
-        organisations={organisationResponse.organisations}
+        organisations={organisationResponse?.organisations ?? []}
         followedOrganisations={followedOrganisations}
       />
     </AttendeeLayout>

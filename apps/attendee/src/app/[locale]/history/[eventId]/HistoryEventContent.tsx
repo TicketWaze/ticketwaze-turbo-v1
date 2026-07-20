@@ -3,6 +3,7 @@ import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
+import { slugify } from "@/lib/Slugify";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Event, Organisation, Ticket } from "@ticketwaze/typescript-config";
 import More from "@ticketwaze/ui/assets/icons/more-circle.svg";
@@ -129,7 +130,7 @@ export default function HistoryEventContent({
             </div>
           </div>
           <Link
-            href={`/organisations/${organisationId}`}
+            href={`/organisations/${slugify(organisationName, organisationId ?? "")}`}
             className="border-2 py-[7.5px] px-6 lg:px-12 rounded-[100px] border-black font-semibold text-[1.5rem] whitespace-nowrap"
           >
             {t("viewProfile")}

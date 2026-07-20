@@ -52,26 +52,21 @@ export default function OrganizerActions({
             {events.length} {t("event")}
           </div>
         </div>
-        {/**
-         * Mobile only, and a direct child of the row rather than grouped with
-         * Follow: `justify-between` spreads free space equally between adjacent
-         * children, so three siblings give an even rating / share / Follow
-         * rhythm. Wrapped together with Follow they counted as one child and
-         * the whole pair was pushed to the far edge.
-         *
-         * Desktop is unaffected — `lg:hidden` removes this from layout entirely,
-         * leaving the original two children. Sharing happens from the title row
-         * there.
-         */}
-        <div className="lg:hidden">
-          {/* `p-6` + the 20px icon + the 2px border makes this exactly as tall
-              as the Follow button's `py-6`. */}
-          <ShareEvent url={shareUrl} triggerClassName="p-3 rounded-full" />
+        {/* Mobile only: sits between the rating and Follow. Desktop shares from
+            the title row instead, so this would be a second button there. */}
+        <div className="flex items-center gap-4">
+          <div className="lg:hidden">
+            {/* `p-6` + the 20px icon + the 2px border makes this exactly as tall
+                as the Follow button's `py-6`, so the two actions line up as a
+                pair. The default trigger is shorter and left the icon floating
+                against a taller neighbour. */}
+            <ShareEvent url={shareUrl} triggerClassName="p-6 rounded-full" />
+          </div>
+          <FollowButton
+            organisationId={organisation.organisationId}
+            initialIsFollowing={isFollowing}
+          />
         </div>
-        <FollowButton
-          organisationId={organisation.organisationId}
-          initialIsFollowing={isFollowing}
-        />
       </div>
       <div className="flex lg:hidden gap-8 items-center">
         <div className="flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">

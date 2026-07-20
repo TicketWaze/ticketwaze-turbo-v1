@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { Restaurant } from "@ticketwaze/typescript-config";
+import { slugify } from "@/lib/Slugify";
 import { formatMoney } from "@ticketwaze/currency";
 import { Clock, Location, Shop } from "iconsax-reactjs";
 import { Link } from "@/i18n/navigation";
@@ -95,7 +96,8 @@ export default function RestaurantDetail({
   // first — someone browsing at 21:00 wants dinner, not breakfast.
   const initialMenu = menus.find((m) => m.isServedNow) ?? menus[0];
   const [activeMenuId, setActiveMenuId] = useState(initialMenu?.menuId);
-  const activeMenu = menus.find((m) => m.menuId === activeMenuId) ?? initialMenu;
+  const activeMenu =
+    menus.find((m) => m.menuId === activeMenuId) ?? initialMenu;
 
   const open = restaurant.openState;
   const isOpen = restaurant.alwaysOpen || open?.isOpen;
@@ -113,7 +115,7 @@ export default function RestaurantDetail({
       {organisation && (
         <div className={"flex items-center justify-between w-full"}>
           <Link
-            href={`/organisations/${organisation.organisationId}`}
+            href={`/organisations/${slugify(organisation.organisationName, organisation.organisationId)}`}
             className={"flex items-center gap-4"}
           >
             {organisation.profileImageUrl ? (

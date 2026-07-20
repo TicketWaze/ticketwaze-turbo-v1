@@ -17,14 +17,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { slugify } from "@/lib/Slugify";
+import { cn } from "@/lib/utils";
 import { Event } from "@ticketwaze/typescript-config";
 
 export default function ShareEvent({
   event,
   url,
+  triggerClassName,
 }: {
   event?: Event;
   url?: string;
+  /**
+   * Overrides on the trigger, merged through `cn` so they beat the defaults.
+   * Lets a caller size the button to whatever it sits beside — the default pill
+   * is tuned for the event action bar and does not match every row.
+   */
+  triggerClassName?: string;
 }) {
   const t = useTranslations("Event");
   const currentUrl =
@@ -35,7 +43,12 @@ export default function ShareEvent({
   return (
     <Dialog>
       <DialogTrigger>
-        <span className="p-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.4rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
+        <span
+          className={cn(
+            "p-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.4rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700",
+            triggerClassName,
+          )}
+        >
           <Send2 variant={"Bulk"} color={"#737C8A"} size={20} />
           <span className="hidden lg:inline">{t("share")}</span>
         </span>

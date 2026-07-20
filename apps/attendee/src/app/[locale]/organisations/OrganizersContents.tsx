@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { LinkPrimary } from "@/components/shared/Links";
 import { Link } from "@/i18n/navigation";
+import NoAuthDialog from "@/components/Layouts/NoAuthDialog";
 
 export default function OrganizersContents({
   organisations,
@@ -40,6 +41,27 @@ export default function OrganizersContents({
       })
     : [];
   const [mobileSearch, setMobileSearch] = useState(false);
+
+  /**
+   * The page is public, but "Following" is inherently per-user. The tab stays
+   * visible for guests so the feature is discoverable; selecting it opens the
+   * sign-in dialog and leaves the active tab on "all", rather than switching to
+   * a panel that could only ever be empty.
+   *
+   * This is why Tabs is controlled: an uncontrolled Tabs would commit the
+   * change before we could refuse it.
+   */
+  const [tab, setTab] = useState("all");
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+
+  const handleTabChange = (value: string) => {
+    if (value === "following" && !session?.user) {
+      setAuthDialogOpen(true);
+      return;
+    }
+    setTab(value);
+  };
+
   return (
     <>
       <header className="w-full flex items-center justify-between">
@@ -235,14 +257,19 @@ export default function OrganizersContents({
           )}
         </div>
       </header>
-      <Tabs defaultValue="all" className="w-full h-full min-h-0">
+      {/* Controlled so a guest selecting "Following" gets the sign-in dialog
+          instead of the tab change. */}
+      <Dialog open={authDialogOpen} onOpenChange={setAuthDialogOpen}>
+        <NoAuthDialog callbackUrl="/organisations" />
+      </Dialog>
+      <Tabs
+        value={tab}
+        onValueChange={handleTabChange}
+        className="w-full h-full min-h-0"
+      >
         <TabsList className={"w-full lg:w-fit mx-auto lg:mx-0"}>
           <TabsTrigger value="all">{t("filters.all")}</TabsTrigger>
-          {session?.user && (
-            <TabsTrigger value="following">
-              {t("filters.following")}
-            </TabsTrigger>
-          )}
+          <TabsTrigger value="following">{t("filters.following")}</TabsTrigger>
           {/* <TabsTrigger value="popular">{t('filters.popular')}</TabsTrigger> */}
         </TabsList>
         <TabsContent value="all" className="min-h-0 overflow-y-scroll">
