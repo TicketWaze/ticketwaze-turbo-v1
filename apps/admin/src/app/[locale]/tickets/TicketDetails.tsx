@@ -204,7 +204,7 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
               >
                 {t("ticket_details.ticket_id")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  #{ticket.ticketId}
+                  {ticket.ticketName}
                 </span>
               </p>
               <p

@@ -583,22 +583,25 @@
       "period": {
         "actual": "This month"
       },
-      "status": "All status"
+      "status": "All status",
+      "time": "All time",
+      "search": "Search name or transaction ID"
     },
 
     "transactions": {
       "title": "Transactions",
       "table": {
         "transaction_id": "Transaction id",
+        "attendee": "Attendee",
         "activity_name": "Activity Name",
-        "ticket_class": "Ticket class",
         "amount_paid": "Amount paid",
         "transaction_status": {
           "title": "Transaction Status",
           "succesful": "Succesful"
         }
       },
-      "no_history": "Once you start receiving payments, you’ll see them all here."
+      "no_history": "Once you start receiving payments, you’ll see them all here.",
+      "no_results": "No transactions match “{term}”."
     },
     "transaction_details": {
       "title": "Transaction Details",
@@ -633,7 +636,8 @@
       },
       "status": "All status",
       "time": "All time",
-      "ticket_class": "All classes"
+      "ticket_class": "All classes",
+      "search": "Search name or ticket ID"
     },
     "tickets_list": {
       "title": "Tickets list",
@@ -645,7 +649,8 @@
         "check-in": "Check-in status",
         "purchase": "Date Purchased"
       },
-      "no_history": "You’ll see all attendee ticket records here once events begin selling."
+      "no_history": "You’ll see all attendee ticket records here once events begin selling.",
+      "no_results": "No tickets match “{term}”."
     },
     "ticket_details": {
       "title": "Ticket Details",
@@ -796,14 +801,14 @@
       "status": "All status",
       "status_active": "Active",
       "status_suspended": "Suspended",
-      "time": "All time"
+      "time": "All time",
+      "search": "Search name or email"
     },
     "attendees_list": {
       "title": "Attendees list",
       "table": {
         "name": "Name",
         "email": "Email",
-        "phone": "Phone",
         "activity_count": "Activity Count",
         "status": "Status",
         "joined": "Date Joined"
@@ -813,7 +818,8 @@
         "pending": "PENDING",
         "suspended": "SUSPENDED"
       },
-      "no_history": "Once attendees start signing up, buying tickets and joining activities, they’ll appear here."
+      "no_history": "Once attendees start signing up, buying tickets and joining activities, they’ll appear here.",
+      "no_results": "No attendees match “{term}”."
     },
     "profile": {
       "title": "User Profile",

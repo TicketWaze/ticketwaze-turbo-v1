@@ -6,10 +6,22 @@ import Image from "next/image";
 import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 import formatDate from "@/lib/FormatDate";
+import { getActivityCardPrice } from "@/lib/activityCardPrice";
 
-function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
+function EventCard({
+  event,
+  aside,
+  htgExchangeRate,
+}: {
+  event: Event;
+  aside?: boolean;
+  htgExchangeRate?: number;
+}) {
   const now = new Date();
-  const sortedDays = [...event.eventDays].sort(
+  // A teaser has no eventDays and no ticket types, so `date` is undefined here
+  // and every read below has to tolerate that.
+  const isTeaser = event.isComingSoon === true;
+  const sortedDays = [...(event.eventDays ?? [])].sort(
     (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime(),
   );
   const date =
@@ -18,14 +30,13 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
   const slug = slugify(event.eventName, event.eventId);
   const locale = useLocale();
   const t = useTranslations("Event");
-  const priceField = event.currency === "USD" ? "usdPrice" : "ticketTypePrice";
-  const price = event.eventTicketTypes.reduce((min, tt) => {
-    const p = tt[priceField] ?? 0;
-    return p < min ? p : min;
-  }, event.eventTicketTypes[0]?.[priceField] ?? 0);
+  const ticketTypes = event.eventTicketTypes ?? [];
+  // The all-in price the buyer actually pays, fees included — MonCash for HTG
+  // activities, Stripe for USD ones.
+  const cardPrice = getActivityCardPrice(event, htgExchangeRate);
   const isSoldOut =
-    event.eventTicketTypes.length > 0 &&
-    event.eventTicketTypes.every(
+    ticketTypes.length > 0 &&
+    ticketTypes.every(
       (tt) => tt.ticketTypeQuantity - tt.ticketTypeQuantitySold <= 0,
     );
   return (
@@ -63,11 +74,7 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         </div>
       </div>
 
-      <div
-        className={
-          "px-4 flex flex-1 lg:flex-auto flex-col gap-6 lg:gap-4"
-        }
-      >
+      <div className={"px-4 flex flex-1 lg:flex-auto flex-col gap-6 lg:gap-4"}>
         <ul className="hidden lg:flex gap-2 text-primary-500 font-medium">
           {event.activityTags.map((tag, key) => {
             return <li key={key}>#{tag}</li>;
@@ -94,31 +101,37 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
         >
           <div className={"flex items-center gap-2"}>
             <Calendar2 size="15" color="#2e3237" variant="Bulk" />
-            <span
-              className={"font-medium text-[1rem] text-deep-100 leading-6"}
-            >
-              {formatDate(date.eventDate, locale, date.timezone)}
+            <span className={"font-medium text-[1rem] text-deep-100 leading-6"}>
+              {/* Date, then hint, then the bare label. The teaser date is a
+                  plain "YYYY-MM-DD"; appending T00:00:00 forces local parsing,
+                  since a bare date string is read as UTC and can render as the
+                  previous day west of Greenwich. */}
+              {date
+                ? formatDate(date.eventDate, locale, date.timezone)
+                : event.comingSoonDate
+                  ? new Date(
+                      `${event.comingSoonDate}T00:00:00`,
+                    ).toLocaleDateString(locale, {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
+                  : (event.comingSoonHint ?? t("coming_soon_label"))}
             </span>
           </div>
-          {event.eventCategory === "meet" ? (
+          {/* A teaser may have no venue at all; rendering "city, country" from
+              two nulls prints a bare comma. */}
+          {isTeaser && !event.city ? null : event.eventCategory === "meet" ? (
             <div className={"flex items-center gap-2"}>
               <Google size="15" color="#2e3237" variant="Bulk" />
-              <p
-                className={
-                  "font-medium text-[1rem] text-deep-100 leading-6"
-                }
-              >
+              <p className={"font-medium text-[1rem] text-deep-100 leading-6"}>
                 Meet, <span className={"text-neutral-700"}>Google</span>
               </p>
             </div>
           ) : (
             <div className={"flex items-center gap-2"}>
               <Location size="15" color="#2e3237" variant="Bulk" />
-              <p
-                className={
-                  "font-medium text-[1rem] text-deep-100 leading-6"
-                }
-              >
+              <p className={"font-medium text-[1rem] text-deep-100 leading-6"}>
                 {event.city},{" "}
                 <span className={"text-neutral-700"}>{event.country}</span>
               </p>
@@ -126,11 +139,16 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
           )}
         </div>
         <p className="font-bold text-[1.2rem] leading-6 text-primary-500">
-          {price > 0 ? (
+          {/* A teaser has no ticket types at all, so there is no price to
+              quote. Showing "Free" would advertise something that is not on
+              sale. */}
+          {cardPrice.kind === "teaser" ? (
+            t("coming_soon_label")
+          ) : cardPrice.kind === "priced" ? (
             <>
-              {t("from")} {price}{" "}
+              {t("from")} {cardPrice.amount.toLocaleString()}{" "}
               <span className="font-normal text-neutral-700">
-                {event.currency}
+                {cardPrice.currency}
               </span>
             </>
           ) : (

@@ -28,12 +28,16 @@ export default function ExplorePageContent({
   pastEvents = [],
   raffles = [],
   restaurants = [],
+  htgExchangeRate,
 }: {
   events: Event[];
   pastEvents?: Event[];
   raffles?: Raffle[];
   restaurants?: Restaurant[];
   wallet: null;
+  // The rate the cards price HTG activities with. Fetched once on the server
+  // rather than per card.
+  htgExchangeRate?: number;
 }) {
   const t = useTranslations("Explore");
   const [query, setQuery] = useState("");
@@ -194,9 +198,13 @@ export default function ExplorePageContent({
                   key={event.eventId}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, ease: "easeOut", delay: Math.min(index * 0.06, 0.3) }}
+                  transition={{
+                    duration: 0.35,
+                    ease: "easeOut",
+                    delay: Math.min(index * 0.06, 0.3),
+                  }}
                 >
-                  <EventCard event={event} />
+                  <EventCard event={event} htgExchangeRate={htgExchangeRate} />
                 </motion.li>
               ))}
             </ul>
@@ -258,9 +266,16 @@ export default function ExplorePageContent({
                     key={event.eventId}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, ease: "easeOut", delay: Math.min(index * 0.06, 0.3) }}
+                    transition={{
+                      duration: 0.35,
+                      ease: "easeOut",
+                      delay: Math.min(index * 0.06, 0.3),
+                    }}
                   >
-                    <EventCard event={event} />
+                    <EventCard
+                      event={event}
+                      htgExchangeRate={htgExchangeRate}
+                    />
                   </motion.li>
                 ))}
               </ul>

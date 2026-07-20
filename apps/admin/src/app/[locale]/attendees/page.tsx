@@ -12,15 +12,17 @@ export default async function AttendeesPage({
     status?: string;
     page?: string;
     period?: string;
+    search?: string;
   }>;
 }) {
   const session = await auth();
-  const { status, page, period } = await searchParams;
+  const { status, page, period, search } = await searchParams;
 
   const params = new URLSearchParams();
   if (status) params.set("status", status);
   if (page) params.set("page", page);
   if (period) params.set("period", period);
+  if (search) params.set("search", search);
   params.set("limit", "10");
 
   const request = await fetch(
@@ -62,6 +64,7 @@ export default async function AttendeesPage({
       stats={stats}
       status={status}
       period={period}
+      search={search}
     />
   );
 }

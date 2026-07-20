@@ -720,6 +720,7 @@
   "Event": {
     "from": "From",
     "free": "Free",
+    "coming_soon_label": "Coming soon",
     "private": "Private",
     "soldOut": "Sold out",
     "back": "Back",
