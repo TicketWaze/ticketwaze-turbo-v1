@@ -2,6 +2,7 @@
 import NoAuthDialog from "@/components/Layouts/NoAuthDialog";
 import EventCard from "@/components/shared/EventCard";
 import RaffleCard from "@/components/shared/RaffleCard";
+import RestaurantCard from "@/components/shared/RestaurantCard";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import {
   Tooltip,
@@ -9,7 +10,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Link } from "@/i18n/navigation";
-import { Event, Raffle } from "@ticketwaze/typescript-config";
+import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
 import {
   CloseCircle,
   Heart,
@@ -26,11 +27,17 @@ export default function ExplorePageContent({
   events,
   pastEvents = [],
   raffles = [],
+  restaurants = [],
+  htgExchangeRate,
 }: {
   events: Event[];
   pastEvents?: Event[];
   raffles?: Raffle[];
+  restaurants?: Restaurant[];
   wallet: null;
+  // The rate the cards price HTG activities with. Fetched once on the server
+  // rather than per card.
+  htgExchangeRate?: number;
 }) {
   const t = useTranslations("Explore");
   const [query, setQuery] = useState("");
@@ -41,12 +48,19 @@ export default function ExplorePageContent({
   const filteredRaffles = raffles.filter((raffle) =>
     raffle.title.toLowerCase().includes(query.toLowerCase()),
   );
+  const filteredRestaurants = restaurants.filter((restaurant) =>
+    restaurant.name.toLowerCase().includes(query.toLowerCase()),
+  );
   const hasAnyEvents =
-    events.length > 0 || pastEvents.length > 0 || raffles.length > 0;
+    events.length > 0 ||
+    pastEvents.length > 0 ||
+    raffles.length > 0 ||
+    restaurants.length > 0;
   const noSearchResults =
     filteredEvents.length === 0 &&
     filteredPastEvents.length === 0 &&
-    filteredRaffles.length === 0;
+    filteredRaffles.length === 0 &&
+    filteredRestaurants.length === 0;
   const { data: session } = useSession();
 
   const [mobileSearch, setMobileSearch] = useState(false);
@@ -184,9 +198,13 @@ export default function ExplorePageContent({
                   key={event.eventId}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, ease: "easeOut", delay: Math.min(index * 0.06, 0.3) }}
+                  transition={{
+                    duration: 0.35,
+                    ease: "easeOut",
+                    delay: Math.min(index * 0.06, 0.3),
+                  }}
                 >
-                  <EventCard event={event} />
+                  <EventCard event={event} htgExchangeRate={htgExchangeRate} />
                 </motion.li>
               ))}
             </ul>
@@ -214,6 +232,29 @@ export default function ExplorePageContent({
               </ul>
             </section>
           )}
+          {filteredRestaurants.length > 0 && (
+            <section className="flex flex-col gap-6">
+              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black">
+                {t("restaurants")}
+              </span>
+              <ul className="list">
+                {filteredRestaurants.map((restaurant, index) => (
+                  <motion.li
+                    key={restaurant.restaurantId}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.35,
+                      ease: "easeOut",
+                      delay: Math.min(index * 0.06, 0.3),
+                    }}
+                  >
+                    <RestaurantCard restaurant={restaurant} />
+                  </motion.li>
+                ))}
+              </ul>
+            </section>
+          )}
           {filteredPastEvents.length > 0 && (
             <section className="flex flex-col gap-6">
               <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black">
@@ -225,9 +266,16 @@ export default function ExplorePageContent({
                     key={event.eventId}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, ease: "easeOut", delay: Math.min(index * 0.06, 0.3) }}
+                    transition={{
+                      duration: 0.35,
+                      ease: "easeOut",
+                      delay: Math.min(index * 0.06, 0.3),
+                    }}
                   >
-                    <EventCard event={event} />
+                    <EventCard
+                      event={event}
+                      htgExchangeRate={htgExchangeRate}
+                    />
                   </motion.li>
                 ))}
               </ul>

@@ -13,7 +13,10 @@ export default async function WaitlistPage() {
 
   try {
     const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/admin/waitlist`,
+      // Pull the whole waitlist in one shot — the UI splits it into
+      // All / Invited tabs and filters client-side, so it needs every row
+      // rather than the backend's default first page of 20.
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/waitlist?limit=100000&page=1`,
       {
         method: "GET",
         headers: {

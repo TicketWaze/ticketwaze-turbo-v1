@@ -24,6 +24,7 @@ import RichTextEditor from "@/components/shared/RichTextEditor";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
+import { compressImage } from "@/lib/compressImage";
 
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
@@ -195,11 +196,14 @@ export default function CreateRaffleForm() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverError, setCoverError] = useState("");
 
-  function handleCover(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleCover(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setCoverFile(file);
-    setCoverPreview(URL.createObjectURL(file));
+    // A phone photo exceeds the server action's body limit on its own, so this
+    // has to be downscaled before it ever reaches the action.
+    const compressed = await compressImage(file);
+    setCoverFile(compressed);
+    setCoverPreview(URL.createObjectURL(compressed));
     setCoverError("");
   }
 

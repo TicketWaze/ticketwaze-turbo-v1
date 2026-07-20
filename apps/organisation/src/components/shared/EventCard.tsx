@@ -16,7 +16,10 @@ function EventCard({
   aside?: boolean;
   ongoing?: boolean;
 }) {
-  const date = event.eventDays.filter(
+  // A coming-soon teaser has no days, no ticket types and often no city, so
+  // every one of those reads below has to be guarded rather than assumed.
+  const isTeaser = event.isComingSoon === true;
+  const date = event.eventDays?.filter(
     (eventDay) => eventDay.dayNumber === 1,
   )[0];
   const slug = slugify(event.eventName, event.eventId);
@@ -24,11 +27,14 @@ function EventCard({
   const t = useTranslations("Events");
   const price =
     event.currency === "USD"
-      ? (event.eventTicketTypes[0]?.usdPrice ?? 0)
-      : (event.eventTicketTypes[0]?.ticketTypePrice ?? 0);
+      ? (event.eventTicketTypes?.[0]?.usdPrice ?? 0)
+      : (event.eventTicketTypes?.[0]?.ticketTypePrice ?? 0);
   return (
     <Link
-      href={`/events/show/${slug}`}
+      // The management page is built entirely around tickets, attendees and
+      // check-ins, none of which a teaser has — it reads eventDays[0] in
+      // several places and would crash. Teasers go to their own edit view.
+      href={isTeaser ? `/events/coming-soon/${slug}` : `/events/show/${slug}`}
       className={`flex flex-row items-center lg:items-stretch lg:mb-8 lg:ml-4 lg:flex-col gap-4 w-full ${!aside && "lg:max-w-140"} bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0`}
     >
       <div className="relative">
@@ -109,10 +115,23 @@ function EventCard({
           <div className={"flex items-center gap-2"}>
             <Calendar2 size="15" color="#2e3237" variant="Bulk" />
             <span className={"font-medium text-[1rem] text-deep-100 leading-6"}>
-              {FormatDate(date.eventDate, locale, date.timezone)}
+              {/* Date, then hint, then the bare label. The teaser date is a
+                  plain "YYYY-MM-DD"; appending T00:00:00 forces local parsing,
+                  since a bare date string is read as UTC and can render as the
+                  previous day west of Greenwich. */}
+              {date
+                ? FormatDate(date.eventDate, locale, date.timezone)
+                : event.comingSoonDate
+                  ? new Date(`${event.comingSoonDate}T00:00:00`).toLocaleDateString(
+                      locale,
+                      { day: "numeric", month: "short", year: "numeric" },
+                    )
+                  : (event.comingSoonHint ?? t("coming_soon_label"))}
             </span>
           </div>
-          {event.eventCategory === "meet" ? (
+          {/* A teaser may have no venue at all; rendering "city, country" from
+              two nulls prints a bare comma. */}
+          {isTeaser && !event.city ? null : event.eventCategory === "meet" ? (
             <div className={"flex items-center gap-2"}>
               <Google size="15" color="#2e3237" variant="Bulk" />
               <p className={"font-medium text-[1rem] text-deep-100 leading-6"}>
@@ -130,7 +149,11 @@ function EventCard({
           )}
         </div>
         <p className="font-bold text-[1.2rem] leading-6 text-primary-500">
-          {price > 0 ? (
+          {/* A teaser has no ticket types, so its price computes to 0. Showing
+              "Free" would advertise something that is not on sale at all. */}
+          {isTeaser ? (
+            t("coming_soon_label")
+          ) : price > 0 ? (
             <>
               {t("from")} {price}{" "}
               <span className="font-normal text-neutral-700">

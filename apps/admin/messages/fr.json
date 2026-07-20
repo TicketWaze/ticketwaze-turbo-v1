@@ -572,22 +572,25 @@
       "period": {
         "actual": "Ce mois-ci"
       },
-      "status": "Tous les statuts"
+      "status": "Tous les statuts",
+      "time": "Toute la période",
+      "search": "Rechercher un nom ou un ID"
     },
 
     "transactions": {
       "title": "Transactions",
       "table": {
         "transaction_id": "ID de transaction",
+        "attendee": "Participant",
         "activity_name": "Nom de l'activité",
-        "ticket_class": "Classe de billet",
         "amount_paid": "Montant payé",
         "transaction_status": {
           "title": "Statut de la transaction",
           "succesful": "Réussi"
         }
       },
-      "no_history": "Une fois que vous commencez à recevoir des paiements, vous les verrez tous ici."
+      "no_history": "Une fois que vous commencez à recevoir des paiements, vous les verrez tous ici.",
+      "no_results": "Aucune transaction ne correspond à « {term} »."
     },
     "transaction_details": {
       "title": "Détails de la transaction",
@@ -622,7 +625,8 @@
       },
       "status": "Tous les statuts",
       "time": "Toute la période",
-      "ticket_class": "Tous les classes"
+      "ticket_class": "Tous les classes",
+      "search": "Rechercher un nom ou un ID"
     },
     "tickets_list": {
       "title": "Liste des billets",
@@ -634,7 +638,8 @@
         "check-in": "Statut",
         "purchase": "Date d'achat"
       },
-      "no_history": "Vous verrez ici tous les billets des participants une fois que les événements commenceront à être vendus."
+      "no_history": "Vous verrez ici tous les billets des participants une fois que les événements commenceront à être vendus.",
+      "no_results": "Aucun billet ne correspond à « {term} »."
     },
     "ticket_details": {
       "title": "Détails du billet",
@@ -785,14 +790,14 @@
       "status": "Tous les statuts",
       "status_active": "Actif",
       "status_suspended": "Suspendu",
-      "time": "Toute la période"
+      "time": "Toute la période",
+      "search": "Rechercher un nom ou un email"
     },
     "attendees_list": {
       "title": "Liste des participants",
       "table": {
         "name": "Nom",
         "email": "Email",
-        "phone": "Téléphone",
         "activity_count": "Nombre d'activités",
         "status": "Statut",
         "joined": "Date d'inscription"
@@ -802,7 +807,8 @@
         "pending": "EN ATTENTE",
         "suspended": "SUSPENDU"
       },
-      "no_history": "Une fois que les participants commencent à s'inscrire, acheter des billets et rejoindre des activités, ils apparaîtront ici."
+      "no_history": "Une fois que les participants commencent à s'inscrire, acheter des billets et rejoindre des activités, ils apparaîtront ici.",
+      "no_results": "Aucun participant ne correspond à « {term} »."
     },
     "profile": {
       "title": "Profil utilisateur",
@@ -892,6 +898,11 @@
 
   "Waitlist": {
     "title": "Liste d'attente",
+    "tabs": {
+      "all": "Tous",
+      "pending": "Non invités",
+      "invited": "Invités"
+    },
     "stats": {
       "total": "Total utilisateurs",
       "pending": "En attente",

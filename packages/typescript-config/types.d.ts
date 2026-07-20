@@ -210,6 +210,11 @@ export interface Order {
   orderName: string;
   provider: string;
   status: "PENDING" | "SUCCESSFUL" | "FAILED" | "RETURNED";
+  /** Set on guest checkouts, where there is no user record to read the name from. */
+  isGuest: boolean;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
   tickets: Ticket[];
   createdAt: DateTime;
   updatedAt: DateTime;
@@ -268,6 +273,19 @@ export interface Event {
   eventImageUrl: string;
   eventType: string;
   eventCategory: string;
+  /**
+   * A teaser: no eventDays, no eventTicketTypes, and city/country may be null.
+   * Anything reading a date, a price or a location off an event must branch on
+   * this first.
+   */
+  isComingSoon?: boolean;
+  /** Free text like "Summer 2027". Null when the organiser gave no hint. */
+  comingSoonHint?: string | null;
+  /**
+   * Optional teaser day ("2027-06-14"). A date, not a timestamp, and not an
+   * event day: it schedules nothing and drives no reminders.
+   */
+  comingSoonDate?: string | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
   isActive: boolean;
   isFree: boolean;
@@ -319,17 +337,142 @@ export interface Raffle {
   salesEndAt: string;
   drawAt: string;
   timezone: string | null;
-  drawMode: 'automatic' | 'manual';
-  adminStatus: 'review' | 'approved' | 'rejected' | 'requested';
+  drawMode: "automatic" | "manual";
+  adminStatus: "review" | "approved" | "rejected" | "requested";
   rejectionReason: string | null;
-  status: 'on_sale' | 'closed' | 'drawn' | 'completed' | 'cancelled';
-  deletionStatus: 'pending_deletion' | 'deleted' | null;
+  status: "on_sale" | "closed" | "drawn" | "completed" | "cancelled";
+  deletionStatus: "pending_deletion" | "deleted" | null;
   deletionReason: string | null;
   deletionRequestedAt: string | null;
   scheduledDeletionAt: string | null;
   prizes: RafflePrize[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface RestaurantHour {
+  hourId: string;
+  restaurantId: string;
+  /** 0 = Sunday .. 6 = Saturday. A day with no row is closed. */
+  dayOfWeek: number;
+  opensAt: string;
+  closesAt: string;
+}
+
+export interface RestaurantImage {
+  imageId: string;
+  restaurantId: string;
+  imageUrl: string;
+  caption: string | null;
+  sortOrder: number;
+}
+
+/** Derived server-side; never stored. */
+export interface RestaurantOpenState {
+  isOpen: boolean;
+  today: { opensAt: string; closesAt: string } | null;
+  crossesMidnight: boolean;
+}
+
+export interface Restaurant {
+  restaurantId: string;
+  organisationId: string;
+  name: string;
+  /** Immutable once approved — printed QR codes encode it. */
+  slug: string;
+  description: string;
+  establishmentType:
+    | "restaurant"
+    | "bar"
+    | "cafe"
+    | "lounge"
+    | "club"
+    | "bakery"
+    | "food_truck";
+  cuisineTypes: string[];
+  priceRange: number;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  location: { lat: number; lng: number } | null;
+  locationNotes: string | null;
+  timezone: string;
+  phone: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  website: string | null;
+  coverImageUrl: string | null;
+  acceptsReservations: boolean;
+  acceptsOnlinePayment: boolean;
+  offersDelivery: boolean;
+  offersTakeout: boolean;
+  deliveryPhone: string | null;
+  deliveryZones: string[] | null;
+  deliveryFee: number | null;
+  minimumOrder: number | null;
+  deliveryEstimatedMinutes: number | null;
+  /** 24/7 — when true the hours rows are ignored. */
+  alwaysOpen: boolean;
+  reservationFee: number;
+  reservationFeeCurrency: string;
+  minPartySize: number;
+  maxPartySize: number;
+  slotIntervalMinutes: number;
+  defaultDurationMinutes: number;
+  leadTimeMinutes: number;
+  maxAdvanceDays: number;
+  maxCoversPerSlot: number;
+  holdMinutes: number;
+  amenities: string[];
+  dietaryOptions: string[];
+  languagesSpoken: string[];
+  inPersonPaymentMethods: string[];
+  servesAlcohol: boolean;
+  dressCode: string | null;
+  seatingCapacity: number | null;
+  // Visibility is four independent switches; public visibility is derived from
+  // all of them. Ticketwaze owns adminStatus/suspendedAt, the org owns the rest.
+  adminStatus: "review" | "approved" | "rejected" | "requested";
+  rejectionReason: string | null;
+  suspendedAt: string | null;
+  suspensionReason: string | null;
+  isListed: boolean;
+  isPermanentlyClosed: boolean;
+  hours: RestaurantHour[];
+  images?: RestaurantImage[];
+  openState?: RestaurantOpenState;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** A settled sale against a restaurant. Counter payment or reservation fee. */
+export interface RestaurantTransaction {
+  orderId: string;
+  orderName: string;
+  /** What the organisation earns — the base, not the fee-inclusive total. */
+  amount: number;
+  currency: string;
+  provider: string;
+  firstName: string | null;
+  lastName: string | null;
+  email: string | null;
+  isGuest: boolean;
+  createdAt: string;
+  items: {
+    itemName: string;
+    itemType: "restaurant_payment" | "reservation_fee";
+    quantity: number;
+    unitPrice: number;
+  }[];
+}
+
+export interface RestaurantStats {
+  currency: string;
+  revenue: number;
+  monthRevenue: number;
+  transactionCount: number;
+  averageSale: number;
 }
 
 export interface User {
@@ -612,13 +755,13 @@ export interface AdminOrganisationStats {
 export interface UserWithdrawalRequest {
   userWithdrawalRequestId: string;
   userId: string;
-  accountType: 'bank' | 'moncash';
-  currency: 'HTG' | 'USD';
+  accountType: "bank" | "moncash";
+  currency: "HTG" | "USD";
   bankName: string | null;
   accountName: string;
   accountNumber: string;
   amount: number;
-  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  status: "PENDING" | "ACCEPTED" | "REJECTED";
   reason: string | null;
   reference: string | null;
   user?: {

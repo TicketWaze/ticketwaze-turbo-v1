@@ -114,7 +114,7 @@
       },
       "third": {
         "title": "Tout gérer depuis votre compte",
-        "description": "Suivez vos billets, téléchargements, paiements, ventes, virements et notifications—vous gardez la maîtrise avant, pendant et après chaque activité."
+        "description": "Suivez vos billets, téléchargements, paiements, ventes, virements et notifications, et gardez la maîtrise avant, pendant et après chaque activité."
       }
     },
     "faq": {
@@ -123,7 +123,7 @@
       "question-1": "Ticketwaze est-il gratuit ?",
       "answer-1": "La création d’un compte et la navigation dans les activités sont gratuites. Les prix des billets et éventuels frais sont affichés clairement avant le paiement.",
       "question-2": "Ai-je besoin d’un compte pour acheter des billets ?",
-      "answer-2": "Non — vous pouvez acheter en mode invité sans créer de compte. Cependant, les achats en mode invité ne sont pas éligibles aux remboursements et vous n’aurez pas accès à la gestion de vos billets ni à l’historique de vos commandes. Créer un compte Ticketwaze gratuit vous donne accès à l’expérience complète : remboursements, gestion des billets, et bien plus.",
+      "answer-2": "Non. Vous pouvez acheter en mode invité sans créer de compte. Cependant, les achats en mode invité ne sont pas éligibles aux remboursements et vous n’aurez pas accès à la gestion de vos billets ni à l’historique de vos commandes. Créer un compte Ticketwaze gratuit vous donne accès à l’expérience complète : remboursements, gestion des billets, et bien plus.",
       "question-3": "Puis-je acheter plusieurs billets en une seule fois ?",
       "answer-3": "Oui, vous pouvez acheter plusieurs billets dans une même commande, selon les limites fixées par l’organisateur.",
       "question-4": "Puis-je obtenir un remboursement ?",
@@ -194,26 +194,26 @@
     "details1": {
       "title": "Là où billets, paiements et accès se réunissent",
       "first": {
-        "title": "Acheter & Payer",
         "1": "Paiement par carte ou MonCash",
         "2": "Achetez pour vous ou pour un proche",
         "3": "Confirmation instantanée",
         "4": "Billets téléchargeables",
         "5": "Validation par QR code",
-        "6": "Suivi du statut des billets"
+        "6": "Suivi du statut des billets",
+        "title": "Acheter & Payer"
       },
       "second": {
-        "title": "Découvrir & Participer",
         "1": "Recherchez des activités près de chez vous",
         "2": "Suivez des organisations",
         "3": "Aimez et partagez des activités",
-        "4": "Signalez des activités ou des organisateurs"
+        "4": "Signalez des activités ou des organisateurs",
+        "title": "Découvrir & Participer"
       },
       "third": {
-        "title": "Restez connecté",
         "1": "Ajoutez des activités à Google Agenda",
         "2": "Notifications WhatsApp",
-        "3": "Alertes par e-mail"
+        "3": "Alertes par e-mail",
+        "title": "Restez connecté"
       }
     },
     "discount": {
@@ -230,7 +230,7 @@
   "BusinessPage": {
     "hero": {
       "title": "Vendez plus de billets avec moins d’efforts",
-      "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances — en ligne comme hors ligne.",
+      "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances, en ligne comme hors ligne.",
       "cta": {
         "create": "Accéder à votre espace",
         "waitlist": "Rejoindre la liste d’attente"
@@ -239,28 +239,28 @@
     "details1": {
       "title": "Ce que les entreprises peuvent faire avec Ticketwaze",
       "first": {
-        "title": "Création d’activités",
         "1": "Activités physiques et en ligne",
         "2": "Support Google Meet",
-        "3": "Types de billets multiples"
+        "3": "Types de billets multiples",
+        "title": "Création d’activités"
       },
       "second": {
-        "title": "Monétisation & Outils financiers",
         "1": "Coupons & codes promo",
         "2": "Sponsors",
-        "3": "Gestion des artistes et intervenants"
+        "3": "Gestion des artistes et intervenants",
+        "title": "Monétisation & Outils financiers"
       },
       "third": {
-        "title": "Gestion d’équipe",
         "1": "Contrôle d’accès par rôle",
         "2": "Scan sécurisé des billets par le staff",
-        "3": "Contrôle des accès au niveau de l’activité"
+        "3": "Contrôle des accès au niveau de l’activité",
+        "title": "Gestion d’équipe"
       },
       "fourth": {
-        "title": "Outils propulsés par l’IA",
         "1": "Analyse des tendances de vente",
         "2": "Prévision de la demande",
-        "3": "Analyse du comportement des audiences"
+        "3": "Analyse du comportement des audiences",
+        "title": "Outils propulsés par l’IA"
       }
     },
     "pricing": {
@@ -329,7 +329,7 @@
       "description": "Ces valeurs façonnent la manière dont la plateforme est conçue, développée et inspirent la confiance.",
       "first": {
         "title": "La confiance avant tout",
-        "description": "Sécurité, vérification et prévention de la fraude sont intégrées dès la conception — jamais en option."
+        "description": "Sécurité, vérification et prévention de la fraude sont intégrées dès la conception, jamais en option."
       },
       "second": {
         "title": "Clarté utilisateur avant complexité",
@@ -337,7 +337,7 @@
       },
       "third": {
         "title": "Inclusion culturelle et linguistique",
-        "description": "La plateforme fonctionne à travers régions, langues et comportements de paiement — sans imposer un modèle unique."
+        "description": "La plateforme fonctionne à travers les régions, les langues et les habitudes de paiement, sans imposer un modèle unique."
       },
       "fourth": {
         "title": "Transparence financière",
@@ -348,12 +348,12 @@
       "title": "Adoptée à travers régions, langues et moyens de paiement",
       "region": "régions activement prises en charge sur les marchés locaux",
       "languages": "langues disponibles pour utilisateurs et organisations",
-      "payments": "moyens de paiement activés pour des transactions fluides"
+      "payments": "moyens de paiement pris en charge"
     },
     "testimonials": {
       "title": "Plébiscité par particuliers et entreprises",
       "first": {
-        "description": "Acheter des billets sur Ticketwaze est un jeu d’enfant. Je paie rapidement, j’enregistre mes billets et je peux même les partager avec mes amis sans stress.",
+        "description": "Acheter des billets sur Ticketwaze est simple. Je paie rapidement, j’enregistre mes billets et je peux même les partager avec mes amis sans difficulté.",
         "name": "Mike Jane",
         "role": "Utilisateur particulier"
       },
@@ -363,7 +363,7 @@
         "role": "Entreprise"
       },
       "third": {
-        "description": "Ce qui nous a convaincus, c’est la flexibilité. Nous ne sommes pas limités aux activités — nous vendons aussi des sessions, des pass et des expériences en toute fluidité.",
+        "description": "Ce qui nous a convaincus, c’est la flexibilité. Nous ne sommes pas limités aux activités : nous vendons aussi des sessions, des pass et des expériences.",
         "name": "Bandana",
         "role": "Organisation expérimentée"
       }
@@ -381,18 +381,18 @@
       "away": "Notre équipe répond en direct de 9h à 17h, heure d'Haïti. Vous pouvez tout de même laisser votre message maintenant et nous vous répondrons dès notre retour.",
       "ask_name": "Pour commencer, quel est votre prénom ?",
       "got_name": "Enchanté, {name}. Quelle est votre adresse e-mail pour que notre équipe puisse vous recontacter ?",
-      "invalid_email": "Cet e-mail ne semble pas valide — pourriez-vous le vérifier ?",
-      "name_too_short": "Votre prénom doit contenir au moins 2 caractères — comment vous appelez-vous ?",
-      "name_too_long": "Ce prénom est un peu trop long (100 caractères max) — pourriez-vous le raccourcir ?",
+      "invalid_email": "Cet e-mail ne semble pas valide. Pourriez-vous le vérifier ?",
+      "name_too_short": "Votre prénom doit contenir au moins 2 caractères. Comment vous appelez-vous ?",
+      "name_too_long": "Ce prénom est un peu trop long (100 caractères max). Pourriez-vous le raccourcir ?",
       "message_too_short": "Pourriez-vous nous en dire un peu plus ? Il nous faut au moins 10 caractères pour vous aider.",
-      "message_too_long": "Votre message est trop long (2000 caractères max) — pourriez-vous le raccourcir ?",
+      "message_too_long": "Votre message est trop long (2000 caractères max). Pourriez-vous le raccourcir ?",
       "ask_subject": "Merci ! Pourquoi nous contactez-vous aujourd'hui ?",
       "ask_message": "Décrivez ce qui se passe et notre équipe prendra le relais.",
-      "connecting": "Parfait, {name}. Un instant — je vous mets en relation avec notre équipe.",
+      "connecting": "Parfait, {name}. Un instant, je vous mets en relation avec notre équipe.",
       "connecting_offline": "Merci, {name}. J'enregistre votre message pour l'équipe.",
       "connected": "C'est prêt. Ouverture de votre chat maintenant.",
-      "connected_offline": "C'est fait — votre chat est ouvert. Nous vous y répondrons dès notre retour en ligne.",
-      "error": "Une erreur s'est produite de notre côté. Veuillez réessayer — nous nous en excusons."
+      "connected_offline": "Votre chat est ouvert. Nous vous répondrons dès notre retour en ligne.",
+      "error": "Une erreur s’est produite de notre côté. Veuillez réessayer, et veuillez nous excuser."
     },
     "subjects": {
       "account": "Problème de compte",
@@ -405,7 +405,7 @@
       "business": "Collaborations commerciales",
       "non_urgent": "Préoccupations non urgentes"
     },
-    "notice": "Ce chat est réservé aux demandes d'assistance légitimes. Les agents peuvent ne pas répondre aux messages hors sujet, incomplets ou abusifs — et les abus répétés seront marqués comme spam.",
+    "notice": "Ce chat est réservé aux demandes d’assistance légitimes. Les agents peuvent ne pas répondre aux messages hors sujet, incomplets ou abusifs, et les abus répétés seront marqués comme spam.",
     "placeholder": {
       "name": "Votre prénom…",
       "email": "Votre e-mail…",
@@ -432,12 +432,12 @@
     "waiting_title": "Connexion à un agent en cours…",
     "waiting_description": "Votre demande a été reçue. Un membre de notre équipe acceptera votre chat dans un instant. Veuillez rester sur cette page.",
     "waiting_title_offline": "Message bien reçu",
-    "waiting_description_offline": "Notre équipe est absente pour le moment — le support en direct est disponible de 9h à 17h, heure d'Haïti. Nous vous répondrons ici et par e-mail dès notre retour ; inutile de rester sur cette page.",
+    "waiting_description_offline": "Notre équipe est absente pour le moment. Le support en direct est disponible de 9h à 17h, heure d’Haïti. Nous vous répondrons ici et par e-mail dès notre retour, inutile de rester sur cette page.",
     "waiting_badge": "En attente"
   },
   "ContactPage": {
     "hero": {
-      "title-1": "Nous sommes là pour vous accompagner — que vous soyez",
+      "title-1": "Nous sommes là pour vous accompagner, que vous soyez",
       "title-2": "Explorateur",
       "title-3": " ou",
       "title-4": "Professionnel.",
@@ -494,8 +494,6 @@
     },
     "terms": {
       "terms": {
-        "title": "Conditions d’utilisation",
-        "description": "Ces Conditions d’utilisation (« Conditions ») régissent votre accès et votre utilisation du site web, des applications et des services associés de Ticketwaze (collectivement, le « Service »). Ticketwaze (« nous », « notre ») fournit une plateforme en ligne permettant aux utilisateurs de découvrir des activités, d’acheter des billets, et aux organisateurs de créer, gérer et vendre des billets. En accédant ou en utilisant le Service, vous acceptez d’être lié par ces Conditions. Si vous n’êtes pas d’accord, vous ne devez pas utiliser le Service.",
         "1": {
           "title": "Éligibilité et création de compte",
           "description": "Vous devez avoir au moins 16 ans pour utiliser Ticketwaze. En créant un compte, vous garantissez que les informations fournies sont exactes, complètes et à jour, et que vous avez la capacité légale de conclure ces Conditions. Vous êtes responsable de la confidentialité de vos identifiants et de toutes les activités effectuées via votre compte. Ticketwaze n’est pas responsable des pertes ou dommages résultant d’un accès non autorisé."
@@ -555,11 +553,11 @@
         "15": {
           "title": "Informations de contact",
           "description": "Vous avez des questions concernant ces Conditions d’utilisation ? Contactez notre équipe dédiée à la confidentialité via les canaux officiels disponibles sur la plateforme."
-        }
+        },
+        "title": "Conditions d’utilisation",
+        "description": "Ces Conditions d’utilisation (« Conditions ») régissent votre accès et votre utilisation du site web, des applications et des services associés de Ticketwaze (collectivement, le « Service »). Ticketwaze (« nous », « notre ») fournit une plateforme en ligne permettant aux utilisateurs de découvrir des activités, d’acheter des billets, et aux organisateurs de créer, gérer et vendre des billets. En accédant ou en utilisant le Service, vous acceptez d’être lié par ces Conditions. Si vous n’êtes pas d’accord, vous ne devez pas utiliser le Service."
       },
       "privacy": {
-        "title": "Politique de confidentialité",
-        "description": "Ticketwaze (« Ticketwaze », « nous », « notre ») accorde une grande importance à votre confidentialité et s’engage à protéger vos données personnelles. Cette Politique de confidentialité explique comment nous collectons, utilisons, stockons et partageons vos informations lorsque vous accédez ou utilisez notre site web, nos applications et nos services (collectivement, le « Service »). En utilisant Ticketwaze, vous acceptez les pratiques décrites dans cette Politique.",
         "1": {
           "title": "Informations que nous collectons",
           "description": "Lorsque vous utilisez Ticketwaze, nous pouvons recueillir des informations personnelles que vous fournissez volontairement, telles que votre nom, adresse e-mail, numéro de téléphone, coordonnées de facturation, ainsi que toute donnée transmise lors de la création d’un compte, de l’achat de billets, de l’organisation d’activités ou du contact avec notre support. Si vous êtes organisateur, nous pouvons également collecter des informations relatives à votre organisation, vos activités et vos détails de paiement. En plus des données fournies directement, nous collectons automatiquement certaines informations techniques et d’usage, comme votre adresse IP, type d’appareil, navigateur, système d’exploitation, pages visitées et interactions avec la plateforme. Ces données nous aident à comprendre l’utilisation du Service et à améliorer ses performances et sa sécurité. Nous pouvons aussi recueillir des informations de localisation approximative à partir de votre adresse IP afin d’afficher des activités pertinentes et d’améliorer l’expérience utilisateur. Les données de localisation précises ne sont collectées que si vous donnez explicitement votre accord."
@@ -607,8 +605,34 @@
         "12": {
           "title": "Nous contacter",
           "description": "Vous avez des questions concernant cette politique ou la gestion de vos données ? Contactez notre équipe dédiée à la confidentialité via les canaux officiels disponibles sur la plateforme."
-        }
+        },
+        "title": "Politique de confidentialité",
+        "description": "Ticketwaze (« Ticketwaze », « nous », « notre ») accorde une grande importance à votre confidentialité et s’engage à protéger vos données personnelles. Cette Politique de confidentialité explique comment nous collectons, utilisons, stockons et partageons vos informations lorsque vous accédez ou utilisez notre site web, nos applications et nos services (collectivement, le « Service »). En utilisant Ticketwaze, vous acceptez les pratiques décrites dans cette Politique."
       }
+    }
+  },
+  "PublicMenu": {
+    "open": "Ouvert",
+    "closed": "Fermé",
+    "today": "Aujourd'hui",
+    "closed_today": "Fermé aujourd'hui",
+    "always_open": "Ouvert 24h/24",
+    "call": "Appeler",
+    "directions": "Itinéraire",
+    "delivery_available": "Livraison disponible",
+    "no_menu": "Cet établissement n'a pas encore publié de menu.",
+    "now": "Maintenant",
+    "unavailable": "Épuisé",
+    "hours": "Heures d'ouverture",
+    "permanently_closed": "Cet établissement est définitivement fermé.",
+    "days": {
+      "0": "Dimanche",
+      "1": "Lundi",
+      "2": "Mardi",
+      "3": "Mercredi",
+      "4": "Jeudi",
+      "5": "Vendredi",
+      "6": "Samedi"
     }
   }
 }

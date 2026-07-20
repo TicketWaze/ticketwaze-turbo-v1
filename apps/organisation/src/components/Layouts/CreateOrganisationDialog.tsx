@@ -18,7 +18,12 @@ import { toast } from "sonner";
 import LoadingCircleSmall from "../shared/LoadingCircleSmall";
 import PageLoader from "../PageLoader";
 
-export default function CreateOrganisationDialog() {
+export default function CreateOrganisationDialog({
+  collapsed = false,
+}: {
+  /** Desktop sidebar collapsed — hide the label, keep the icon. */
+  collapsed?: boolean;
+} = {}) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const t = useTranslations("Layout.sidebar");
   const locale = useLocale();
@@ -58,7 +63,12 @@ export default function CreateOrganisationDialog() {
       <PageLoader isLoading={isLoading} />
       <Dialog>
         <DialogTrigger asChild>
-          <button className={"flex gap-4 items-center lg:p-4 cursor-pointer"}>
+          <button
+            title={collapsed ? t("new") : undefined}
+            className={`flex gap-4 items-center lg:p-4 cursor-pointer ${
+              collapsed ? "lg:justify-center lg:w-full" : ""
+            }`}
+          >
             <div className="hidden lg:block">
               <Add size="20" color="#737c8a" variant="Bulk" />
             </div>
@@ -69,10 +79,12 @@ export default function CreateOrganisationDialog() {
                 variant="Bulk"
               />
             </div>
+            {/* Hidden only on desktop when collapsed — the mobile nav renders
+                this same trigger and never collapses. */}
             <span
-              className={
-                "text-neutral-900 font-medium lg:font-normal lg:text-neutral-700 text-[2.2rem] lg:text-[1.5rem] leading-8"
-              }
+              className={`text-neutral-900 font-medium lg:font-normal lg:text-neutral-700 text-[2.2rem] lg:text-[1.5rem] leading-8 ${
+                collapsed ? "lg:hidden" : ""
+              }`}
             >
               {t("new")}
             </span>

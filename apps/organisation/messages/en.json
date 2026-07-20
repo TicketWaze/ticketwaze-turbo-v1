@@ -7,7 +7,7 @@
   },
   "Metadata": {
     "title": "Sell more tickets with less effort | Ticketwaze",
-    "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance — online and offline."
+    "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance, online and offline."
   },
   "Auth": {
     "layout": {
@@ -16,10 +16,10 @@
     },
     "onboarding": {
       "title": "Your Invitations",
-      "description": "Here you can find all your invitations to join organizations on Ticketwaze — choose which ones you’d like to accept or decline with ease.",
+      "description": "Here you can find all your invitations to join organisations on Ticketwaze. Choose which ones you would like to accept or decline.",
       "join": "Join",
       "title2": "Get ready to sell tickets",
-      "description2": "Create activities, manage attendees, and track sales — everything starts here",
+      "description2": "Create activities, manage attendees, and track sales. Everything starts here",
       "alert": "We’ve noticed that you are not currently part of any organisation. By continuing, you agree to create a new organisation under your name, where you will be assigned as the administrator. This will allow you to start selling tickets, managing activities, and collaborating with your team.",
       "alert2": "Before you can access your organisation dashboard, you'll need to complete a quick setup to configure your individual Ticketwaze account. You'll be asked a few questions to personalize your experience and establish your organisation's preferences.",
       "alert3": "By proceeding, you acknowledge that you have read and agree to our Terms of Use, Seller Agreement, and Privacy Policy. These documents outline your responsibilities as an organisation, including refund policies, payout terms, and platform fees.",
@@ -99,7 +99,7 @@
         "fourth": {
           "question": "How large is your organisation?",
           "solo": "Just me (1 person)",
-          "small": "Small team (2–10 people)",
+          "small": "Small team (2 to 10 people)",
           "large": "Large team (10+ people)"
         },
         "fifth": {
@@ -145,7 +145,7 @@
         },
         "second": {
           "title": "Organizer",
-          "description": "Create and manage activities effortlessly. Track ticket sales & monitor attendee data."
+          "description": "Create and manage activities. Track ticket sales and monitor attendee data."
         },
         "cta": "Continue",
         "footer": {
@@ -353,7 +353,9 @@
       "events": "Activities",
       "finance": "Finance",
       "verified": "Verified organisation",
-      "upgrade": "Upgrade membership"
+      "upgrade": "Upgrade membership",
+      "collapse": "Collapse menu",
+      "expand": "Expand menu"
     },
     "topbar": {
       "welcome": "Welcome Back",
@@ -372,7 +374,7 @@
     "title": "Activity Overview",
     "description": "Track your success with detailed analytics and trends",
     "upgrade": "Upgrade membership",
-    "upgradeAlert": "You’re currently on the Free plan, which includes only basic analytics. To unlock advanced insights and see more detailed analytics, please upgrade your membership.",
+    "upgradeAlert": "You are currently on the Free plan, which includes only basic analytics. To see more detailed analytics, please upgrade your membership.",
     "noActivity": "No Activity",
     "revenue": "Total Revenue",
     "sold": "Tickets Sold",
@@ -498,7 +500,7 @@
     "saveMoncashInfo_hint": "Keep this number saved for your next withdrawal",
     "amount": "Withdrawal",
     "amount_hint": "Your full available balance will be withdrawn. For a bank transfer, choose the currency you'd like to receive.",
-    "withdraw_all_note": "Partial withdrawals aren't supported — the entire available balance is withdrawn at once.",
+    "withdraw_all_note": "Partial withdrawals are not supported. The entire available balance is withdrawn at once.",
     "bank_details_hint": "Enter your bank account details for the transfer",
     "incorrectInfoWarning": "Please double-check your account details. If the information entered is incorrect, the transfer will fail and your withdrawal may be delayed.",
     "bank_name": "Bank Name",
@@ -848,7 +850,7 @@
       "basic": "Basic Details",
       "category_search": "Search for category",
       "no_result": "They is no result for the keyword ",
-      "proFeature": "Private activity creation is part of our Pro+ membership. With Pro+, you unlock the ability to keep your activities fully private, giving you greater control and peace of mind over how you manage and share your activities. Upgrading not only grants access to private activity creation, but also ensures you enjoy the full suite of advanced features designed to make your experience smoother, more secure, and more personalized. If privacy and exclusivity matter to you, Pro+ is the membership tier that delivers.",
+      "proFeature": "Private activity creation is part of our Pro+ membership. With Pro+ you can keep your activities fully private, giving you greater control over how you manage and share them. Upgrading also gives you access to the full set of advanced features, including more detailed analytics and higher limits.",
       "upgrade": "Upgrade membership",
       "tagTip": {
         "title": "Tip",
@@ -936,7 +938,7 @@
         },
         "meet": {
           "title": "Google Meet",
-          "description": "Attend virtually with Google Meet — distance doesn’t matter.",
+          "description": "Attend virtually with Google Meet, wherever your audience is.",
           "warning": "To create a Google Meet event, we’ll use your Google account and request access to your calendar. If you proceed, you agree to grant us permission to access and manage your calendar events through your Google account. Please note that if you remove this access, users will no longer be able to purchase tickets for your Meet events.",
           "fetchFailedError": "We couldn’t retrieve the requested data at the moment. Please check your internet connection and try again. If the error persit, reach out support."
         },
@@ -959,6 +961,14 @@
         "sports": {
           "title": "Sports",
           "description": "Live sports events and thrilling matches. Allow fans to buy tickets for sporting competitions and games"
+        },
+        "restaurant": {
+          "title": "Bar & Restaurant",
+          "description": "Publish your venue, share your menu by QR code and take reservations."
+        },
+        "comingSoon": {
+          "title": "Coming soon",
+          "description": "Tease something before you have dates or tickets"
         }
       },
       "tagPlaceholder": "Type a hashtag and press enter or spacebar",
@@ -1135,6 +1145,102 @@
             "exceedsLimit": "Quantity cannot exceed your plan limit of {limit} free tickets"
           }
         }
+      },
+      "restaurant": {
+        "title": "Add a bar or restaurant",
+        "back": "Back",
+        "cover": "Cover photo",
+        "cover_text": "Drag your photo here or",
+        "browse": "browse",
+        "details": "Venue details",
+        "name": "Venue name",
+        "description": "Description",
+        "type": "Type of venue",
+        "cuisine": "Cuisine",
+        "cuisine_placeholder": "Add a cuisine and press Enter",
+        "location": "Location",
+        "address": "Address",
+        "city": "City",
+        "state": "State",
+        "country": "Country",
+        "location_notes": "Location details",
+        "location_notes_placeholder": "2nd floor, above the pharmacy",
+        "contact": "Contact",
+        "phone": "Phone",
+        "whatsapp": "WhatsApp",
+        "email": "Email",
+        "website": "Website",
+        "hours": "Opening hours",
+        "hours_hint": "Set one opening range per day. Turn a day off to mark it closed.",
+        "always_open": "Open 24/7",
+        "always_open_hint": "Your venue never closes. Daily hours are ignored.",
+        "opens_at": "Opens",
+        "closes_at": "Closes",
+        "overnight_note": "Closes after midnight, the next day.",
+        "services": "Services",
+        "accepts_reservations": "Accept table reservations",
+        "reservations_hint": "Guests pay a booking fee to confirm a table. The fee is not refunded if they cancel or do not show up.",
+        "reservation_fee": "Booking fee",
+        "currency": "Currency",
+        "covers_per_slot": "Seats available per time slot",
+        "party_size": "Party size",
+        "min_party": "Minimum",
+        "max_party": "Maximum",
+        "accepts_online_payment": "Accept payment by QR code",
+        "online_payment_hint": "Your cashier shows a QR code, the guest scans it and pays from their phone.",
+        "offers_delivery": "We deliver",
+        "delivery_hint": "Shown on your public page with your contact details. Ordering in the app is not available yet.",
+        "offers_takeout": "Takeout available",
+        "delivery_phone": "Delivery phone",
+        "delivery_fee": "Delivery fee",
+        "minimum_order": "Minimum order",
+        "delivery_time": "Estimated time (minutes)",
+        "delivery_zones": "Areas served",
+        "delivery_zones_placeholder": "Add an area and press Enter",
+        "submit": "Add venue",
+        "success": "Venue submitted for review.",
+        "no_org": "No active organisation found.",
+        "review_note": "Your venue is reviewed by Ticketwaze before it appears publicly.",
+        "days": {
+          "0": "Sunday",
+          "1": "Monday",
+          "2": "Tuesday",
+          "3": "Wednesday",
+          "4": "Thursday",
+          "5": "Friday",
+          "6": "Saturday"
+        },
+        "types": {
+          "restaurant": "Restaurant",
+          "bar": "Bar",
+          "cafe": "Café",
+          "lounge": "Lounge",
+          "club": "Club",
+          "bakery": "Bakery",
+          "food_truck": "Food truck"
+        },
+        "errors": {
+          "cover": "Add a cover photo.",
+          "name": "Enter at least 2 characters.",
+          "description": "Write at least 20 characters.",
+          "address": "Enter the address.",
+          "city": "Enter the city.",
+          "state": "Enter the state.",
+          "country": "Enter the country.",
+          "hours": "Set an opening and closing time for every day you are open.",
+          "fee": "Set a booking fee above 0 to accept reservations.",
+          "party": "The minimum party size cannot be larger than the maximum.",
+          "covers": "Set how many seats are available per time slot.",
+          "gallery": "Add between 3 and 5 photos."
+        },
+        "description_placeholder": "Tell guests what makes your place worth the trip.",
+        "location_tip": "Pick your exact spot so guests can find you.",
+        "closed": "Closed",
+        "gallery": "Photo gallery",
+        "gallery_hint": "Add 3 to 5 photos of your venue. These appear on your public page and help guests decide.",
+        "gallery_add": "Add photos",
+        "gallery_count": "{count} of 5 selected",
+        "gallery_remove": "Remove"
       }
     },
     "filters": {
@@ -1162,8 +1268,228 @@
       "events": "Events",
       "raffles": "Raffles",
       "empty_events": "No events yet. Create your first event to get started.",
-      "empty_raffles": "No raffles yet. Create your first raffle to get started."
-    }
+      "empty_raffles": "No raffles yet. Create your first raffle to get started.",
+      "restaurants": "Bar & Restaurant",
+      "empty_restaurants": "No venue yet. Add your bar or restaurant to get started."
+    },
+    "restaurantCard": {
+      "tag": "Bar & Restaurant",
+      "open": "Open now",
+      "closed": "Closed",
+      "always_open": "Open 24/7",
+      "reservations": "Reservations",
+      "delivery": "Delivery",
+      "takeout": "Takeout",
+      "unlisted": "Unlisted",
+      "suspended": "Suspended",
+      "closed_permanently": "Permanently closed",
+      "no_hours": "No opening hours set"
+    },
+    "restaurantDetail": {
+      "overview": "Overview",
+      "hours": "Opening hours",
+      "services": "Services",
+      "contact": "Contact",
+      "status": "Status",
+      "visible": "Visible to the public",
+      "hidden": "Hidden from search",
+      "hide": "Hide from the platform",
+      "hide_hint": "Your venue disappears from search and browsing. Printed QR codes keep working.",
+      "suspended_hint": "Ticketwaze has suspended this venue. Contact support.",
+      "pending_hint": "Waiting for review by Ticketwaze.",
+      "rejected_hint": "This venue was rejected.",
+      "reservations_on": "Reservations open",
+      "reservations_off": "Reservations closed",
+      "payment_on": "QR payment on",
+      "payment_off": "QR payment off",
+      "fee": "Booking fee",
+      "seats_per_slot": "Seats per slot",
+      "closed": "Closed",
+      "always_open": "Open 24/7",
+      "edit": "Edit venue",
+      "not_found": "Venue not found",
+      "revenue": "Total Revenue",
+      "month_revenue": "This month",
+      "transactions": "Transactions",
+      "average_sale": "Average sale",
+      "records": "Sales",
+      "search": "Search a transaction",
+      "table": {
+        "reference": "Reference",
+        "customer": "Customer",
+        "type": "Type",
+        "amount": "Amount",
+        "method": "Method",
+        "date": "Date",
+        "empty": "Once you start taking payments at the counter, every sale will appear here."
+      },
+      "types": {
+        "restaurant_payment": "Counter",
+        "reservation_fee": "Reservation"
+      },
+      "guest": "Guest",
+      "more": "More",
+      "details": "Details",
+      "share": "Share",
+      "share_text": "Share your menu. Anyone who scans this opens your public page.",
+      "menu_link": "Menu link",
+      "copy": "Copy link",
+      "copied": "Link copied",
+      "download_qr": "Download QR code",
+      "qr_hint": "Print this for your tables.",
+      "delete": "Delete venue",
+      "delete_warning": "This venue has no sales yet and will be permanently removed. This cannot be undone.",
+      "delete_blocked": "This venue has sales history and cannot be deleted. Mark it permanently closed instead.",
+      "delete_cta": "Delete permanently",
+      "deleted": "Venue deleted",
+      "info_title": "Venue information",
+      "description": "Description",
+      "edit_title": "Edit venue",
+      "save": "Save changes",
+      "save_success": "Venue updated.",
+      "keep_images": "Leave empty to keep your current photos.",
+      "replace_gallery": "Replace gallery",
+      "workplace": "Workplace"
+    },
+    "workplace": {
+      "title": "Workplace",
+      "back": "Back",
+      "add_item": "Add item",
+      "add_choice_hint": "What are you adding? You can add the other one right after.",
+      "food": "Food",
+      "food_hint": "A dish, a plate, anything from the kitchen.",
+      "drink": "Drink",
+      "drink_hint": "Anything from the bar, hot or cold.",
+      "add_food": "Add food",
+      "add_drink": "Add a drink",
+      "yours_food": "Your food",
+      "yours_drink": "Your drinks",
+      "no_items_food": "You have not added any food yet. Add your first dish and it will show up on the tabs.",
+      "no_items_drink": "You have not added any drinks yet. Add your first one and it will show up on the tabs.",
+      "open_tab": "Open a tab",
+      "edit_tab": "Edit tab",
+      "close_tab": "Close tab",
+      "reopen_tab": "Reopen",
+      "delete_tab": "Delete tab",
+      "delete_tab_warning": "This tab and everything on it will be permanently deleted.",
+      "tab_label": "Name or table",
+      "tab_label_placeholder": "Table 4, Marie, Bar 2...",
+      "note": "Note",
+      "note_placeholder": "Anything the team should know",
+      "items_count": "{count, plural, =0 {Nothing yet} one {# item} other {# items}}",
+      "add_to_tab": "Add to tab",
+      "search_catalog": "Search your dishes and drinks",
+      "no_results": "Nothing matches that.",
+      "no_catalog_yet": "Add a dish or a drink first, then you can put it on a tab.",
+      "unavailable": "Not available today",
+      "add": "Add",
+      "status": {
+        "open": "Open",
+        "closed": "Closed"
+      },
+      "filter": {
+        "open": "Open",
+        "closed": "Closed",
+        "all": "All",
+        "food": "Food",
+        "drink": "Drinks"
+      },
+      "empty": {
+        "open": "No tab is open. Open one when a guest sits down and add what they order.",
+        "closed": "No closed tab yet.",
+        "all": "No tab yet. Open one when a guest sits down and add what they order."
+      },
+      "description": "Description",
+      "item_name": "Name",
+      "item_name_placeholder_food": "Griot, Diri kole, Legim...",
+      "item_name_placeholder_drink": "Rum punch, Prestige, Coffee...",
+      "price": "Price",
+      "currency": "Currency",
+      "available": "Available today",
+      "edit_item": "Edit",
+      "delete_item": "Delete",
+      "delete_item_warning": "This will be permanently deleted. Tabs that already list it keep their line.",
+      "edit": "Edit",
+      "delete": "Delete",
+      "save": "Save",
+      "saved": "Saved",
+      "errors": {
+        "name": "Enter a name.",
+        "description": "Enter a description.",
+        "price": "Enter a valid price.",
+        "label": "Enter a name or a table.",
+        "items": "Add at least one item.",
+        "tendered": "Enter an amount that covers the total."
+      },
+      "open_tab_hint": "A tab needs a name and at least one item. You can add more later.",
+      "open_tab_order": "What are they having?",
+      "on_this_tab": "On this tab",
+      "draft_total": "Total",
+      "last_item": "A tab cannot be empty. Delete the tab instead.",
+      "settle_title": "Payment for {label}",
+      "total_due": "Total due",
+      "payment_method": "How are they paying?",
+      "cash": "Cash",
+      "online": "Online",
+      "online_soon": "Online payment is coming soon.",
+      "amount_received": "Amount received",
+      "change_due": "Change to give back",
+      "still_owed": "Still owed",
+      "paid_cash": "Paid in cash",
+      "paid_online": "Paid online",
+      "received": "Received",
+      "sales_history": "Daily sales",
+      "no_day_open": "No day is open. Start the day to take orders. Everything you record will be counted under it.",
+      "start_day": "Start the day",
+      "close_day": "Close the day",
+      "close_day_warning": "This freezes the day. Its totals stop changing and new orders will need a new day.",
+      "close_day_blocked": "{count, plural, one {# tab is still open} other {# tabs are still open}}. Settle them before closing the day.",
+      "day_in_progress": "Day in progress",
+      "day_sales": "Sales",
+      "day_cash": "Cash",
+      "day_tabs": "Tabs",
+      "day_note": "Note",
+      "day_note_placeholder": "Anything worth recording about this day",
+      "no_closed_days": "No day has been closed yet. Your first closed day will show up here.",
+      "period_total": "Total",
+      "days_recorded": "Days",
+      "tabs_count": "{count, plural, =0 {no tabs} one {# tab} other {# tabs}}"
+    },
+    "coming_soon": {
+      "title": "Coming soon",
+      "back": "Back",
+      "explainer": "A teaser for something you have not finalised yet. Choose the name carefully. This is the same event you will publish later, so it keeps this name and every follower it gathers.",
+      "name": "Event name",
+      "name_hint": "You cannot reuse this name on another event later.",
+      "name_placeholder": "Summer Fest 2027",
+      "description": "What are you teasing?",
+      "description_hint": "At least {min} characters. A sentence or two is plenty.",
+      "description_placeholder": "Something big is coming to Port-au-Prince this summer...",
+      "hint_label": "When, roughly? (optional)",
+      "hint_hint": "Free text, not a date. Used only when no date is set above.",
+      "hint_placeholder": "Summer 2027",
+      "location": "Location (optional)",
+      "location_hint": "Leave empty if the venue is not confirmed.",
+      "location_placeholder": "Petion-Ville, Haiti",
+      "image": "Cover image",
+      "add_image": "Add a cover image",
+      "submit": "Create teaser",
+      "created": "Your teaser was sent for review.",
+      "review_notice": "Like any event, this goes through review before it appears publicly.",
+      "errors": {
+        "name": "Enter a name of at least 3 characters.",
+        "description": "Write at least {min} characters.",
+        "image": "Add a cover image.",
+        "generic": "Could not create the teaser. Please try again."
+      },
+      "edit_title": "Edit teaser",
+      "updated": "Your teaser was updated.",
+      "save": "Save changes",
+      "date_label": "Date (optional)",
+      "date_hint": "Set this only if the date is confirmed. Leave it empty and use the hint below instead.",
+      "clear_date": "Clear"
+    },
+    "coming_soon_label": "Coming soon"
   },
   "Raffles": {
     "single_raffle": {
@@ -1196,7 +1522,7 @@
         "reason_placeholder": "Tell buyers why this raffle is being cancelled...",
         "chars": "characters (min. 10)",
         "grace_days": "Buyers keep their entries for {days} more day(s); the raffle is removed and refunds issued after that.",
-        "grace_immediate": "The draw window has passed — the raffle will be removed and refunds issued shortly.",
+        "grace_immediate": "The draw window has passed. The raffle will be removed and refunds issued shortly.",
         "schedule_cta": "Schedule deletion",
         "banner_title": "Deletion scheduled",
         "banner_date": "This raffle will be removed on",
@@ -1261,7 +1587,7 @@
     "steps": {
       "welcome": {
         "title": "Welcome to Ticketwaze!",
-        "description": "We're excited to have you here. Ticketwaze is built to help you grow your organisation, sell tickets effortlessly, and connect with your audience — all in one place."
+        "description": "We are glad to have you here. Ticketwaze is built to help you grow your organisation, sell tickets, and connect with your audience, all in one place."
       },
       "activities": {
         "title": "Create & manage activities",
@@ -1273,16 +1599,16 @@
       },
       "team": {
         "title": "Build and manage your team",
-        "description": "Invite collaborators, assign roles, and manage access permissions. Whether it's a co-organiser or a ticket checker, your whole team can work together seamlessly."
+        "description": "Invite collaborators, assign roles, and manage access permissions. Whether it is a co-organiser or a ticket checker, your whole team can work together."
       },
       "profile": {
         "title": "Set up your organisation profile",
-        "description": "Head to Organisation Settings to customise your profile — add your logo, a description, your website, and social links. A great profile builds trust with your attendees."
+        "description": "Head to Organisation Settings to customise your profile. Add your logo, a description, your website, and social links. A complete profile builds trust with your attendees."
       },
       "trial": {
         "title": "Your 14-day Pro trial is active!",
         "description": "To help you get the most out of Ticketwaze, we've unlocked a free 14-day Pro trial for your organisation. No credit card needed.",
-        "feature1": "14 days of full Pro access — completely free",
+        "feature1": "14 days of full Pro access, completely free",
         "feature2": "Advanced analytics to track sales & audience",
         "feature3": "Up to 300 free tickets per activity & custom types"
       }
@@ -1540,7 +1866,7 @@
       "cancel_back": "Keep my subscription",
       "cancel_success": "Your subscription has been canceled.",
       "cancel_error": "Failed to cancel. Please try again.",
-      "free_plan_desc": "Upgrade to unlock advanced features for your organisation.",
+      "free_plan_desc": "Upgrade to get advanced features for your organisation.",
       "description": "You haven’t subscribed to any membership plan yet. Once you activate a subscription, your history will appear here.",
       "table": {
         "id": "Transaction ID",

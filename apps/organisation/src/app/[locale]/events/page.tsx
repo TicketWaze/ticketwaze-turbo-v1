@@ -50,6 +50,28 @@ export default async function EventPage() {
   } catch {
     raffles = [];
   }
+  // Restaurants are the third activity type and share the activities list.
+  let restaurants = [];
+  try {
+    const restaurantsRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${session?.activeOrganisation.organisationId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          Authorization: `Bearer ${session?.user.accessToken}`,
+        },
+        cache: "no-store",
+      },
+    );
+    const restaurantsResponse = await restaurantsRequest.json();
+    restaurants = restaurantsResponse.restaurants ?? [];
+  } catch {
+    restaurants = [];
+  }
+
   const perms = session?.activeOrganisation?.myPermissions ?? [];
   const canCreate = checkPermission(perms, "events.create");
   return (
@@ -69,7 +91,11 @@ export default async function EventPage() {
           </>
         )}
       </TopBar>
-      <EventPageContent events={events.events} raffles={raffles} />
+      <EventPageContent
+        events={events.events}
+        raffles={raffles}
+        restaurants={restaurants}
+      />
     </OrganizerLayout>
   );
 }

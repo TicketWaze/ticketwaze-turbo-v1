@@ -51,6 +51,16 @@ export const Permission = {
   "webhooks.manage": iota(),
   "settings.manage": iota(),
   "branding.manage": iota(),
+  // Restaurant module. APPEND ONLY, and keep in the same order as the API's
+  // app/roles/organisation_roles.ts — these are bit positions, so any divergence
+  // between the two files silently re-maps every permission.
+  "restaurants.view": iota(),
+  "restaurants.create": iota(),
+  "restaurants.edit": iota(),
+  "restaurants.delete": iota(),
+  "menu.manage": iota(),
+  "pos.charge": iota(),
+  "pos.refund": iota(),
 } as const;
 
 export type TPermission = (typeof Permission)[keyof typeof Permission];
@@ -66,7 +76,11 @@ const StaffPermission =
   P["tickets.view"] |
   P["attendees.view"] |
   P["checkin.perform"] |
-  P["scanner.use"];
+  P["scanner.use"] |
+  // A restaurant cashier is Staff, so taking counter payments is a default.
+  // Refunding is not — pos.refund stays with finance/admin.
+  P["restaurants.view"] |
+  P["pos.charge"];
 
 const FinanceManagerPermission =
   P["billing.view"] |
@@ -78,7 +92,9 @@ const FinanceManagerPermission =
   P["tickets.view"] |
   P["tickets.refund"] |
   P["tickets.cancel"] |
-  P["attendees.view"];
+  P["attendees.view"] |
+  P["restaurants.view"] |
+  P["pos.refund"];
 
 const EventManagerPermission =
   P["staff.view"] |
@@ -95,7 +111,14 @@ const EventManagerPermission =
   P["reports.view"] |
   P["reservations.manage"] |
   P["checkin.perform"] |
-  P["scanner.use"];
+  P["scanner.use"] |
+  // The activity-manager role: runs restaurants day to day, but cannot delete
+  // one or move money back out.
+  P["restaurants.view"] |
+  P["restaurants.create"] |
+  P["restaurants.edit"] |
+  P["menu.manage"] |
+  P["pos.charge"];
 
 const AdminPermission =
   P["organisation.view"] |
@@ -127,7 +150,14 @@ const AdminPermission =
   P["scanner.use"] |
   P["integrations.manage"] |
   P["settings.manage"] |
-  P["branding.manage"];
+  P["branding.manage"] |
+  P["restaurants.view"] |
+  P["restaurants.create"] |
+  P["restaurants.edit"] |
+  P["restaurants.delete"] |
+  P["menu.manage"] |
+  P["pos.charge"] |
+  P["pos.refund"];
 
 const OwnerPermission =
   P["organisation.view"] |
@@ -167,7 +197,14 @@ const OwnerPermission =
   P["api_keys.manage"] |
   P["webhooks.manage"] |
   P["settings.manage"] |
-  P["branding.manage"];
+  P["branding.manage"] |
+  P["restaurants.view"] |
+  P["restaurants.create"] |
+  P["restaurants.edit"] |
+  P["restaurants.delete"] |
+  P["menu.manage"] |
+  P["pos.charge"] |
+  P["pos.refund"];
 
 export const OrganisationPermissions: Record<TRole, bigint> = {
   [Role.Owner]: OwnerPermission,

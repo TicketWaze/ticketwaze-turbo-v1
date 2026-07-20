@@ -1,33 +1,26 @@
 import { EventTicketType } from "@ticketwaze/typescript-config";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "./checkout.types";
 
-export const SERVICE_FEE_RATE = 0.03;           // 3% Ticketwaze service fee
-export const STRIPE_TX_FEE_RATE = 0.03;          // 3% Stripe transaction fee
-export const MONCASH_TX_FEE_RATE = 0.025;        // 2.5% MonCash transaction fee
-export const PER_TICKET_FEE_USD = 1.49;           // flat fee per ticket in USD
-export const PER_TICKET_FEE_HTG_LOW = 100;        // flat fee for HTG tickets priced <= 500 HTG
-export const HTG_LOW_PRICE_THRESHOLD = 500;
-// Last-resort fallback only. The real HTG/USD rate MUST come from the API
-// (GET /currencies) — it is the same value the backend charges with, and any
-// difference makes the displayed total diverge from the charged amount.
-export const FALLBACK_HTG_EXCHANGE_RATE = 135;
+// The fee constants and the per-ticket fee rule live in one place now, shared
+// with the activity cards. Re-exported so existing importers keep working.
+export {
+  SERVICE_FEE_RATE,
+  STRIPE_TX_FEE_RATE,
+  MONCASH_TX_FEE_RATE,
+  PER_TICKET_FEE_USD,
+  PER_TICKET_FEE_HTG_LOW,
+  HTG_LOW_PRICE_THRESHOLD,
+  FALLBACK_HTG_EXCHANGE_RATE,
+  getPerTicketFee,
+} from "@/lib/pricing";
 
-/**
- * Per-ticket platform fee for a single ticket, using the live exchange rate.
- * Edge case: HTG event with price <= 500 HTG → 100 HTG flat fee.
- */
-export function getPerTicketFee(
-  currency: string,
-  ticketPrice: number,
-  htgExchangeRate: number,
-): number {
-  if (currency === "HTG") {
-    return ticketPrice <= HTG_LOW_PRICE_THRESHOLD
-      ? PER_TICKET_FEE_HTG_LOW
-      : PER_TICKET_FEE_USD * htgExchangeRate;
-  }
-  return PER_TICKET_FEE_USD;
-}
+import {
+  SERVICE_FEE_RATE,
+  STRIPE_TX_FEE_RATE,
+  MONCASH_TX_FEE_RATE,
+  FALLBACK_HTG_EXCHANGE_RATE,
+  getPerTicketFee,
+} from "@/lib/pricing";
 
 /**
  * Payment-processor transaction fee rate for a given payment type.
@@ -84,5 +77,12 @@ export function calculateFeeBreakdown(
     ? subtotal
     : subtotal + serviceFee + platformFee + transactionFee;
 
-  return { subtotal, serviceFee, platformFee, transactionFee, total, feeWaived };
+  return {
+    subtotal,
+    serviceFee,
+    platformFee,
+    transactionFee,
+    total,
+    feeWaived,
+  };
 }

@@ -25,6 +25,7 @@ import RichTextEditor from "@/components/shared/RichTextEditor";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
+import { compressImage } from "@/lib/compressImage";
 import { Raffle } from "@ticketwaze/typescript-config";
 import { slugify } from "@/lib/Slugify";
 
@@ -209,11 +210,14 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
   );
   const [coverFile, setCoverFile] = useState<File | null>(null);
 
-  function handleCover(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleCover(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    setCoverFile(file);
-    setCoverPreview(URL.createObjectURL(file));
+    // A phone photo exceeds the server action's body limit on its own, so this
+    // has to be downscaled before it ever reaches the action.
+    const compressed = await compressImage(file);
+    setCoverFile(compressed);
+    setCoverPreview(URL.createObjectURL(compressed));
   }
 
   const onSubmit: SubmitHandler<TFormOut> = async (data) => {

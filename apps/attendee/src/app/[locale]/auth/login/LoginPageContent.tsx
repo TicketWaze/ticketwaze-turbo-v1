@@ -14,10 +14,10 @@ import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { LinkAccent } from "@/components/shared/Links";
-import GoogleSignInButton from "@/components/shared/GoogleSignInButton";
+import { useGoogleSignIn } from "@/lib/useGoogleSignIn";
 import { ArrowLeft2, ArrowRight2, LoginCurve } from "iconsax-reactjs";
 
-type View = "choice" | "credentials" | "google";
+type View = "choice" | "credentials";
 
 export default function LoginPageContent({
   email,
@@ -50,6 +50,9 @@ export default function LoginPageContent({
   const [isLoading, setIsloading] = useState(false);
   const { update } = useSession();
   const router = useRouter();
+  const { trigger: triggerGoogle, isLoading: googleLoading } = useGoogleSignIn({
+    referralCode,
+  });
 
   async function submitHandler(data: TLoginSchema) {
     setIsloading(true);
@@ -91,6 +94,29 @@ export default function LoginPageContent({
       </span>
       <LinkAccent href="/auth/register">{t("footer.cta")}</LinkAccent>
     </div>
+  );
+
+  const terms = (
+    <p className="text-[1.3rem] leading-6 text-neutral-500 text-center">
+      {t("terms.before")}
+      <a
+        href="https://ticketwaze.com/legals"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary-500 hover:underline"
+      >
+        {t("terms.terms")}
+      </a>
+      {t("terms.and")}
+      <a
+        href="https://ticketwaze.com/legals"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-primary-500 hover:underline"
+      >
+        {t("terms.privacy")}
+      </a>
+    </p>
   );
 
   const googleIcon = (
@@ -139,8 +165,12 @@ export default function LoginPageContent({
 
                 <div className="flex flex-col gap-4 w-full">
                   <button
-                    onClick={() => setView("google")}
-                    className="flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left"
+                    onClick={triggerGoogle}
+                    disabled={googleLoading}
+                    aria-busy={googleLoading}
+                    className={`flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left disabled:cursor-not-allowed ${
+                      googleLoading ? "opacity-60 pointer-events-none" : ""
+                    }`}
                   >
                     <div className="flex items-center gap-4">
                       <div className="w-[44px] h-[44px] rounded-full bg-[#F3F4F6] flex items-center justify-center shrink-0">
@@ -155,12 +185,16 @@ export default function LoginPageContent({
                         </span>
                       </div>
                     </div>
-                    <ArrowRight2
-                      size={20}
-                      color="#737C8A"
-                      variant="Bulk"
-                      className="shrink-0"
-                    />
+                    {googleLoading ? (
+                      <LoadingCircleSmall />
+                    ) : (
+                      <ArrowRight2
+                        size={20}
+                        color="#737C8A"
+                        variant="Bulk"
+                        className="shrink-0"
+                      />
+                    )}
                   </button>
 
                   <button
@@ -190,67 +224,10 @@ export default function LoginPageContent({
                 </div>
               </div>
             </div>
-            <div className="flex flex-col gap-6 w-full">{footer}</div>
-          </motion.div>
-        )}
-
-        {view === "google" && (
-          <motion.div
-            key="google"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 30 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="flex flex-col justify-between w-full h-full"
-          >
-            <div className="flex-1 flex justify-center flex-col w-full">
-              <div className="flex flex-col gap-16 items-center">
-                <button
-                  onClick={() => setView("choice")}
-                  className="flex items-center gap-3 w-fit text-neutral-600 hover:text-primary-500 transition-colors self-start"
-                >
-                  <ArrowLeft2 size={18} color="#737C8A" variant="Bulk" />
-                  <span className="text-[1.5rem] leading-8">
-                    {t("method.back")}
-                  </span>
-                </button>
-
-                <div className="flex flex-col gap-8 items-center text-center">
-                  <motion.h3
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                    className="font-medium font-primary text-[3.2rem] leading-14 text-black"
-                  >
-                    {t("cta.google")}
-                  </motion.h3>
-                  {/* <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.15 }}
-                    className="text-[1.8rem] leading-10 text-neutral-700"
-                  >
-                    {t("description")}
-                  </motion.p> */}
-                </div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
-                  className="w-full flex flex-col gap-6"
-                >
-                  <GoogleSignInButton referralCode={referralCode} />
-                  <p className="text-[1.3rem] leading-6 text-neutral-500 text-center">
-                    {t("terms.before")}
-                    <a href="https://ticketwaze.com/legals" target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline">{t("terms.terms")}</a>
-                    {t("terms.and")}
-                    <a href="https://ticketwaze.com/legals" target="_blank" rel="noopener noreferrer" className="text-primary-500 hover:underline">{t("terms.privacy")}</a>
-                  </p>
-                </motion.div>
-              </div>
+            <div className="flex flex-col gap-6 w-full">
+              {terms}
+              {footer}
             </div>
-            <div className="flex flex-col gap-6 w-full">{footer}</div>
           </motion.div>
         )}
 

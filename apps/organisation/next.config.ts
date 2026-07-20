@@ -26,6 +26,16 @@ const csp = mergeCsp(
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  experimental: {
+    // Create forms post images through server actions, whose default body limit
+    // is 1MB — less than a single phone photo. Images are downscaled in the
+    // browser first (see lib/compressImage.ts), so this ceiling is headroom for
+    // a 5-photo restaurant gallery rather than an invitation to send raw files.
+    // Keep in step with the API's multipart limit in config/bodyparser.ts.
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders({ csp }) }];
   },

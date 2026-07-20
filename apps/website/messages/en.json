@@ -11,7 +11,7 @@
     "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
     "about": {
       "title": "About Us",
-      "description": "Learn how Ticketwaze is reimagining ticketing and access — bringing payments, tickets, and management into one simple, secure platform."
+      "description": "Learn how Ticketwaze is reimagining ticketing and access, bringing payments, tickets, and management into one simple, secure platform."
     },
     "attendee": {
       "title": "Buy Tickets Your Way",
@@ -19,7 +19,7 @@
     },
     "business": {
       "title": "Sell Tickets Online for Your Business",
-      "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance — all in one platform."
+      "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance, all in one platform."
     },
     "contact": {
       "title": "Contact Us",
@@ -99,14 +99,14 @@
       "title": "From Discovery to Access All in One Flow",
       "description1": "Whether you’re joining an activity or offering one,",
       "description2": "Ticketwaze",
-      "description3": "keeps the entire journey secure, and seamless.",
+      "description3": "keeps the entire journey secure.",
       "cta": {
         "started": "Get started",
         "waitlist": "Join the waitlist"
       },
       "first": {
         "title": "Find or create an activity",
-        "description": "Browse activities happening around you, search by location or interest, or set up your own in minutes by adding details, pricing, and access type—all from one place."
+        "description": "Browse activities happening around you, search by location or interest, or set up your own in minutes by adding details, pricing, and access type, all from one place."
       },
       "second": {
         "title": "Buy or sell tickets securely",
@@ -114,7 +114,7 @@
       },
       "third": {
         "title": "Manage everything from your account",
-        "description": "Keep track of tickets, downloads, payments, sales, payouts, and notifications—so you always know what's happening before, during, and after each activity."
+        "description": "Keep track of tickets, downloads, payments, sales, payouts, and notifications, so you always know what is happening before, during, and after each activity."
       }
     },
     "faq": {
@@ -123,7 +123,7 @@
       "question-1": "Is Ticketwaze free to use?",
       "answer-1": "Creating an account and browsing activities is free. Ticket prices and any applicable fees are shown clearly before checkout.",
       "question-2": "Do I need an account to buy tickets?",
-      "answer-2": "No — you can check out as a guest without creating an account. However, guest purchases are not eligible for refunds and you won't have access to ticket management or order history. Creating a free Ticketwaze account unlocks the full experience, including refunds, ticket access, and more.",
+      "answer-2": "No. You can check out as a guest without creating an account. However, guest purchases are not eligible for refunds and you will not have access to ticket management or order history. Creating a free Ticketwaze account gives you the full experience, including refunds, ticket access, and more.",
       "question-3": "Can I buy multiple tickets at once?",
       "answer-3": "Yes, you can purchase multiple tickets in a single order, depending on the activity's limits.",
       "question-4": "Can I get a refund?",
@@ -194,26 +194,26 @@
     "details1": {
       "title": "Where tickets, payments, and access come together",
       "first": {
-        "title": "Buy & Pay",
         "1": "Card and MonCash payments",
         "2": "Buy for yourself or someone else",
         "3": "Instant confirmation",
         "4": "Downloadable tickets",
         "5": "QR-based validation",
-        "6": "Ticket status tracking"
+        "6": "Ticket status tracking",
+        "title": "Buy & Pay"
       },
       "second": {
-        "title": "Discover & Engage",
         "1": "Search activities near you",
         "2": "Follow organisations",
         "3": "Like and share activities",
-        "4": "Report activities or organisations"
+        "4": "Report activities or organisations",
+        "title": "Discover & Engage"
       },
       "third": {
-        "title": "Stay Connected",
         "1": "Save activities to Google Calendar",
         "2": "WhatsApp notifications",
-        "3": "Email alerts"
+        "3": "Email alerts",
+        "title": "Stay Connected"
       }
     },
     "discount": {
@@ -230,7 +230,7 @@
   "BusinessPage": {
     "hero": {
       "title": "Sell more tickets with less effort",
-      "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance — online and offline.",
+      "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance, online and offline.",
       "cta": {
         "create": "Go to your workspace",
         "waitlist": "Join the waitlist"
@@ -239,28 +239,28 @@
     "details1": {
       "title": "What businesses can do with Ticketwaze",
       "first": {
-        "title": "Activity Creation",
         "1": "Physical & online activities",
         "2": "Google Meet support",
-        "3": "Multiple ticket types"
+        "3": "Multiple ticket types",
+        "title": "Activity Creation"
       },
       "second": {
-        "title": "Monetization & Financial Tools",
         "1": "Coupons & discount codes",
         "2": "Sponsors",
-        "3": "Performer & artist management"
+        "3": "Performer & artist management",
+        "title": "Monetization & Financial Tools"
       },
       "third": {
-        "title": "Team Management",
         "1": "Role-based access control",
         "2": "Secure ticket scanning for staff",
-        "3": "Control access at activity level"
+        "3": "Control access at activity level",
+        "title": "Team Management"
       },
       "fourth": {
-        "title": "AI-Powered Tools",
         "1": "Sales trend insights",
         "2": "Demand prediction",
-        "3": "Audience behavior analysis"
+        "3": "Audience behavior analysis",
+        "title": "AI-Powered Tools"
       }
     },
     "pricing": {
@@ -329,7 +329,7 @@
       "description": "These values shape how the platform is designed, built, and trusted.",
       "first": {
         "title": "Trust first",
-        "description": "Security, verification, and fraud prevention are built into the system — not added as an afterthought."
+        "description": "Security, verification, and fraud prevention are built into the system, not added as an afterthought."
       },
       "second": {
         "title": "User clarity over complexity",
@@ -337,7 +337,7 @@
       },
       "third": {
         "title": "Cultural and language inclusion",
-        "description": "The platform is built to work across regions, languages, and payment behaviors — without forcing one global pattern."
+        "description": "The platform is built to work across regions, languages, and payment behaviours, without forcing one global pattern."
       },
       "fourth": {
         "title": "Financial transparency",
@@ -348,12 +348,12 @@
       "title": "Adopted across regions, languages, and payments",
       "region": "regions actively supported across local markets",
       "languages": "languages available for users and organisations",
-      "payments": "payments methods enabled for seamless transactions"
+      "payments": "payment methods supported"
     },
     "testimonials": {
       "title": "Trusted by people and businesses",
       "first": {
-        "description": "Buying tickets on Ticketwaze feels effortless. I can pay quickly, save my tickets, and even share them with friends without stress.",
+        "description": "Buying tickets on Ticketwaze is straightforward. I can pay quickly, save my tickets, and share them with friends without any hassle.",
         "name": "Mike Jane",
         "role": "Individual User"
       },
@@ -363,7 +363,7 @@
         "role": "Business"
       },
       "third": {
-        "description": "What sold us was the flexibility. We’re not limited to  activities — we sell sessions, passes, and experiences seamlessly.",
+        "description": "What sold us was the flexibility. We are not limited to activities. We sell sessions, passes, and experiences too.",
         "name": "Bandana",
         "role": "Experienced Organization"
       }
@@ -373,7 +373,7 @@
     "button": "Chat with us",
     "title": "Ticketwaze Support",
     "subtitle_online": "Online · Replies in minutes",
-    "subtitle_offline": "Away · Live support 9 AM–5 PM (Haiti time)",
+    "subtitle_offline": "Away · Live support 9 AM to 5 PM (Haiti time)",
     "connecting": "Connecting…",
     "pick_hint": "Choose a topic above",
     "bot": {
@@ -381,18 +381,18 @@
       "away": "Our team answers live between 9 AM and 5 PM, Haiti time. You can still leave your message now and we'll get back to you as soon as we're back.",
       "ask_name": "To get started, what's your name?",
       "got_name": "Nice to meet you, {name}. What's your email address so our team can follow up with you?",
-      "invalid_email": "That doesn't look like a valid email — mind double-checking it?",
-      "name_too_short": "Your name needs to be at least 2 characters — what should we call you?",
-      "name_too_long": "That name is a bit long (100 characters max) — could you shorten it?",
+      "invalid_email": "That does not look like a valid email. Could you double-check it?",
+      "name_too_short": "Your name needs to be at least 2 characters. What should we call you?",
+      "name_too_long": "That name is a bit long (100 characters max). Could you shorten it?",
       "message_too_short": "Could you give us a bit more detail? We need at least 10 characters to help you.",
-      "message_too_long": "Your message is too long (2000 characters max) — could you trim it a little?",
+      "message_too_long": "Your message is too long (2000 characters max). Could you trim it a little?",
       "ask_subject": "Thanks! What's bringing you here today?",
       "ask_message": "Tell us what's going on and our team will take it from there.",
-      "connecting": "Perfect, {name}. One moment — putting you through to our team.",
+      "connecting": "Perfect, {name}. One moment while we connect you to our team.",
       "connecting_offline": "Thanks, {name}. Saving your message for the team.",
       "connected": "You're all set. Opening your chat now.",
-      "connected_offline": "Done — your chat is open. We'll reply there as soon as we're back online.",
-      "error": "Something went wrong on our end. Please try again — sorry for the trouble."
+      "connected_offline": "Your chat is open. We will reply there as soon as we are back online.",
+      "error": "Something went wrong on our end. Please try again, and sorry for the trouble."
     },
     "subjects": {
       "account": "Account issues",
@@ -405,7 +405,7 @@
       "business": "Business collaborations",
       "non_urgent": "Non-urgent concerns"
     },
-    "notice": "This chat is for genuine support requests only. Agents may not respond to off-topic, incomplete, or abusive messages — and repeated misuse will be marked as spam.",
+    "notice": "This chat is for genuine support requests only. Agents may not respond to off-topic, incomplete, or abusive messages, and repeated misuse will be marked as spam.",
     "placeholder": {
       "name": "Your name…",
       "email": "Your email…",
@@ -432,12 +432,12 @@
     "waiting_title": "Connecting you to an agent…",
     "waiting_description": "Your request has been received. A member of our support team will accept your chat shortly. Please stay on this page.",
     "waiting_title_offline": "Message received",
-    "waiting_description_offline": "Our team is away right now — live support is available from 9 AM to 5 PM, Haiti time. We'll reply here and by email as soon as we're back; no need to stay on this page.",
+    "waiting_description_offline": "Our team is away right now. Live support is available from 9 AM to 5 PM, Haiti time. We will reply here and by email as soon as we are back, so there is no need to stay on this page.",
     "waiting_badge": "In Queue"
   },
   "ContactPage": {
     "hero": {
-      "title-1": "We're here to support you — whether you’re an",
+      "title-1": "We are here to support you, whether you are an",
       "title-2": "Explorer",
       "title-3": ", or",
       "title-4": "Business.",
@@ -494,8 +494,6 @@
     },
     "terms": {
       "terms": {
-        "title": "Terms of use",
-        "description": "These Terms of Use (“Terms”) govern your access to and use of the Ticketwaze website, applications, and related services (collectively, the “Service”). Ticketwaze (“we”, “us”, or “our”) provides an online platform that enables users to discover activities, purchase tickets, and enables organizers to create, manage, and sell tickets for activities. By accessing or using the Service, you agree to be bound by these Terms. If you do not agree, you must not use the Service.",
         "1": {
           "title": "Eligibility and Account Registration",
           "description": "You must be at least 16 years old to use Ticketwaze. By creating an account, you represent that the information you provide is accurate, complete, and up to date, and that you have the legal capacity to enter into these Terms. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. Ticketwaze is not responsible for any loss or damage resulting from unauthorized access to your account."
@@ -555,11 +553,11 @@
         "15": {
           "title": "Contact Information",
           "description": "Have questions about this Terms of Use ?  Reach out to our privacy team through the official contact channels available on the platform or at "
-        }
+        },
+        "title": "Terms of use",
+        "description": "These Terms of Use (“Terms”) govern your access to and use of the Ticketwaze website, applications, and related services (collectively, the “Service”). Ticketwaze (“we”, “us”, or “our”) provides an online platform that enables users to discover activities, purchase tickets, and enables organizers to create, manage, and sell tickets for activities. By accessing or using the Service, you agree to be bound by these Terms. If you do not agree, you must not use the Service."
       },
       "privacy": {
-        "title": "Privacy Policy",
-        "description": "Ticketwaze (“Ticketwaze”, “we”, “us”, or “our”) values your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, store, and share information when you access or use our website, applications, and services (collectively, the “Service”). By using Ticketwaze, you agree to the practices described in this Privacy Policy.",
         "1": {
           "title": "Information We Collect",
           "description": "When you use Ticketwaze, we may collect personal information that you voluntarily provide, such as your name, email address, phone number, billing details, and any information you submit when creating an account, purchasing tickets, organizing activities, or contacting support. If you are an organizer, we may also collect information related to your organization, activities, and payout details. In addition to information you provide directly, we automatically collect certain technical and usage information when you access the Service. This may include your IP address, device type, browser information, operating system, pages visited, and interactions with the platform. This data helps us understand how the Service is used and improve performance and security. We may also collect approximate location information derived from your IP address in order to display relevant activities and improve user experience. Precise location data is only collected when you explicitly grant permission."
@@ -574,7 +572,7 @@
         },
         "4": {
           "title": "Data Security",
-          "description": "We implement appropriate technical and organizational measures to protect personal information against unauthorized access, loss, misuse, or alteration. While we strive to use commercially acceptable means to protect your data, no method of transmission or storage is completely secure, and we cannot guarantee absolute security. While we do our best, no method is 100% secure—so please use strong passwords and protect your devices."
+          "description": "We implement appropriate technical and organisational measures to protect personal information against unauthorised access, loss, misuse, or alteration. While we strive to use commercially acceptable means to protect your data, no method of transmission or storage is completely secure, and we cannot guarantee absolute security. Please use strong passwords and protect your devices."
         },
         "5": {
           "title": "Your Rights and Choices",
@@ -607,8 +605,34 @@
         "12": {
           "title": "Contact Us",
           "description": "Have questions about this policy or how your data is handled?  Reach out to our privacy team through the official contact channels available on the platform or at "
-        }
+        },
+        "title": "Privacy Policy",
+        "description": "Ticketwaze (“Ticketwaze”, “we”, “us”, or “our”) values your privacy and is committed to protecting your personal data. This Privacy Policy explains how we collect, use, store, and share information when you access or use our website, applications, and services (collectively, the “Service”). By using Ticketwaze, you agree to the practices described in this Privacy Policy."
       }
+    }
+  },
+  "PublicMenu": {
+    "open": "Open now",
+    "closed": "Closed",
+    "today": "Today",
+    "closed_today": "Closed today",
+    "always_open": "Open 24/7",
+    "call": "Call",
+    "directions": "Directions",
+    "delivery_available": "Delivery available",
+    "no_menu": "This venue has not published a menu yet.",
+    "now": "Now",
+    "unavailable": "Sold out",
+    "hours": "Opening hours",
+    "permanently_closed": "This venue is permanently closed.",
+    "days": {
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
     }
   }
 }
