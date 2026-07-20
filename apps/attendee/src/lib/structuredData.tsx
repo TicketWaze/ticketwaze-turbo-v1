@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { Event, Organisation } from "@ticketwaze/typescript-config";
 import StripHtml from "./StripHtml";
+import { slugify } from "./Slugify";
 import Capitalize from "./Capitalize";
 
 const BASE_URL = process.env.NEXT_PUBLIC_ATTENDEE_URL ?? "";
@@ -35,7 +36,9 @@ function toIsoWithOffset(
   }).toISODate();
   if (!datePart) return undefined;
   const dt = DateTime.fromISO(`${datePart}T${time}`, { zone: timezone });
-  return dt.isValid ? (dt.toISO({ suppressMilliseconds: true }) ?? undefined) : undefined;
+  return dt.isValid
+    ? (dt.toISO({ suppressMilliseconds: true }) ?? undefined)
+    : undefined;
 }
 
 /** Google Event rich result — for public event detail pages. */
@@ -113,7 +116,9 @@ export function buildEventJsonLd({
     organizer: {
       "@type": "Organization",
       name: organisation.organisationName,
-      url: `${BASE_URL}/organisations/${organisation.organisationId}`,
+      // The slug form is the canonical, shareable URL — this is what search
+      // engines index, so it must match what the app links to.
+      url: `${BASE_URL}/organisations/${slugify(organisation.organisationName, organisation.organisationId)}`,
     },
     offers: event.eventTicketTypes.map((ticketType) => ({
       "@type": "Offer",
@@ -129,6 +134,68 @@ export function buildEventJsonLd({
           : "https://schema.org/InStock",
       url,
     })),
+  };
+}
+
+/**
+ * Google Organization markup for a public organiser page.
+ *
+ * `sameAs` is where Google reconciles this page with the organiser's social
+ * profiles, so the stored links are passed through — filtered to real absolute
+ * URLs, since socialLinks is free-form jsonb and a bare handle there would
+ * emit invalid markup.
+ */
+export function buildOrganisationJsonLd({
+  organisation,
+  url,
+}: {
+  organisation: Organisation;
+  url: string;
+}) {
+  const sameAs = Object.values(organisation.socialLinks ?? {}).filter(
+    (link): link is string =>
+      typeof link === "string" && /^https?:\/\//i.test(link),
+  );
+
+  const address = [
+    organisation.city,
+    organisation.state,
+    organisation.country,
+  ].filter(Boolean).length
+    ? {
+        "@type": "PostalAddress",
+        ...(organisation.city && { addressLocality: organisation.city }),
+        ...(organisation.state && {
+          addressRegion: Capitalize(organisation.state),
+        }),
+        ...(organisation.country && { addressCountry: organisation.country }),
+      }
+    : undefined;
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": url,
+    name: organisation.organisationName,
+    url,
+    ...(organisation.organisationDescription && {
+      description: StripHtml(organisation.organisationDescription).slice(
+        0,
+        500,
+      ),
+    }),
+    ...(organisation.profileImageUrl && {
+      logo: organisation.profileImageUrl,
+      image: organisation.profileImageUrl,
+    }),
+    ...(organisation.organisationEmail && {
+      email: organisation.organisationEmail,
+    }),
+    ...(address && { address }),
+    ...(sameAs.length > 0 && { sameAs }),
+    // Deliberately no aggregateRating: Google requires a ratingCount alongside
+    // it, and emitting a rating without one is invalid markup that can cost the
+    // whole rich result.
   };
 }
 

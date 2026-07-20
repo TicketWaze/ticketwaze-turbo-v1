@@ -42,13 +42,18 @@ export default function MobileNavigation({
       Icon: Star,
     },
     {
-      label: t("links.profile"),
-      path: `/profile`,
-      Icon: User,
+      label: t("links.organizers"),
+      path: `/organisations`,
+      Icon: Building,
     },
   ];
   const moreLinks = session?.user
     ? [
+        {
+          label: t("links.profile"),
+          path: `/profile`,
+          Icon: User,
+        },
         {
           label: t("links.wallet"),
           path: `/wallet`,
@@ -59,11 +64,11 @@ export default function MobileNavigation({
           path: `/history`,
           Icon: Clock,
         },
-        {
-          label: t("links.organizers"),
-          path: `/organisations`,
-          Icon: Building,
-        },
+        // {
+        //   label: t("links.organizers"),
+        //   path: `/organisations`,
+        //   Icon: Building,
+        // },
         {
           label: t("links.preferences"),
           path: `/preferences`,
@@ -90,7 +95,12 @@ export default function MobileNavigation({
     return pathname.startsWith(path);
   }
   return (
-    <nav className={cn("fixed bottom-0 inset-x-0 z-50 lg:hidden rounded-t-3xl px-6 pt-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] bg-neutral-200", className)}>
+    <nav
+      className={cn(
+        "fixed bottom-0 inset-x-0 z-50 lg:hidden rounded-t-3xl px-6 pt-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] bg-neutral-200",
+        className,
+      )}
+    >
       <ul className={" flex gap-4 justify-between w-full"}>
         <li>
           <Link
