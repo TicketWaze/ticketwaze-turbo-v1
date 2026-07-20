@@ -274,7 +274,7 @@ export default function CreateInPersonEventForm({
         </ButtonPrimary>
       </div>
 
-      <div className="fixed lg:hidden bottom-36 w-full px-8 z-50 left-0">
+      <div className="fixed  lg:hidden bottom-36 w-full px-8 z-50 left-0 mb-4">
         <div className=" lg:hidden bg-white mx-auto border border-neutral-100 px-4 py-2 flex justify-between items-center rounded-[100px]">
           <div className="text-[2.2rem] text-neutral-600">
             <span className="text-primary-500">{currentStep + 1}</span>/3
