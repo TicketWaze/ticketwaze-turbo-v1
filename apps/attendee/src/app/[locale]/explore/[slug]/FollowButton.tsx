@@ -39,7 +39,12 @@ export default function FollowButton({
     setIsLoading(true);
     const response = next
       ? await FollowOrganisationAction(token, organisationId, pathname, locale)
-      : await UnfollowOrganisationAction(token, organisationId, pathname, locale);
+      : await UnfollowOrganisationAction(
+          token,
+          organisationId,
+          pathname,
+          locale,
+        );
     setIsLoading(false);
 
     const ok = "status" in response && response.status === "success";
@@ -57,7 +62,7 @@ export default function FollowButton({
     return (
       <Dialog>
         <DialogTrigger asChild>
-          <ButtonBlack >{t("follow")}</ButtonBlack>
+          <ButtonBlack>{t("follow")}</ButtonBlack>
         </DialogTrigger>
         <NoAuthDialog callbackUrl={pathname} />
       </Dialog>

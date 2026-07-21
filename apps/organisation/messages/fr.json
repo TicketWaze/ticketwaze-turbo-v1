@@ -1236,7 +1236,9 @@
         "gallery_add": "Ajouter des photos",
         "gallery_count": "{count} sur 5 sélectionnées",
         "gallery_remove": "Retirer"
-      }
+      },
+      "publish_name_locked": "Vous avez annoncé cette activité sous ce nom, il reste donc inchangé. Toutes les personnes qui la suivent gardent leur place.",
+      "publish_success": "Votre événement a été envoyé pour révision."
     },
     "filters": {
       "first": {
@@ -1453,12 +1455,22 @@
     "coming_soon": {
       "title": "Bientôt disponible",
       "back": "Retour",
+      "reservations": {
+        "title": "Places réservées",
+        "count": "{count} réservées",
+        "empty": "Personne n'a encore réservé de place. Dès que ce sera le cas, vous les verrez ici et elles recevront un email à la mise en ligne de cette activité.",
+        "table": {
+          "name": "Nom",
+          "email": "Email",
+          "date": "Réservée le"
+        }
+      },
       "explainer": "Une annonce pour quelque chose que vous n’avez pas encore finalisé. Choisissez bien le nom : c’est le même événement que vous publierez plus tard, il gardera ce nom et tous ses abonnés.",
       "name": "Nom de l’événement",
       "name_hint": "Vous ne pourrez pas réutiliser ce nom sur un autre événement.",
       "name_placeholder": "Summer Fest 2027",
       "description": "Que voulez-vous annoncer ?",
-      "description_hint": "Au moins {min} caractères. Une ou deux phrases suffisent.",
+      "description_hint": "Au moins {min} caractères. C’est la description que votre événement gardera après publication, alors rédigez-la correctement dès maintenant.",
       "description_placeholder": "Quelque chose de grand arrive à Port-au-Prince cet été...",
       "hint_label": "Quand, approximativement ? (facultatif)",
       "hint_hint": "Texte libre, pas une date. Utilisé uniquement si aucune date n’est renseignée ci-dessus.",
@@ -1482,7 +1494,35 @@
       "save": "Enregistrer les modifications",
       "date_label": "Date (facultatif)",
       "date_hint": "À renseigner uniquement si la date est confirmée. Laissez vide et utilisez plutôt l’indication ci-dessous.",
-      "clear_date": "Effacer"
+      "clear_date": "Effacer",
+      "details": {
+        "title": "Détails de l’annonce",
+        "about": "À propos",
+        "edit": "Modifier l’annonce",
+        "no_venue": "Lieu non défini",
+        "pending_deletion": "Cette annonce est en attente de suppression et ne peut pas être modifiée."
+      },
+      "stats": {
+        "reservations": "Réservations",
+        "expected": "Prévu",
+        "status": "Statut",
+        "date_unset": "Non défini",
+        "status_requested": "En révision",
+        "status_review": "En révision",
+        "status_approved": "Approuvé",
+        "status_rejected": "Refusé"
+      },
+      "publish": {
+        "cta": "Créer l’événement",
+        "title": "Publier l’annonce",
+        "category_title": "Quel type d’événement est-ce ?",
+        "category_hint": "Choisissez la catégorie qui convient. Ensuite, vous ajouterez les dates, le lieu et vos types de billets.",
+        "explainer": "Ceci est encore une annonce. Les gens peuvent réserver une place, mais rien n’est en vente. Ajoutez les dates et les types de billets pour en faire un vrai événement, en gardant cette page, son nom et toutes les personnes qui ont réservé."
+      },
+      "deletion": {
+        "warning": "Supprimer cette annonce la retire du site et annule toutes les réservations qui s’y rattachent. Cette action est irréversible.",
+        "deleted_notice": "Cette annonce a été supprimée."
+      }
     },
     "coming_soon_label": "Bientôt disponible"
   },

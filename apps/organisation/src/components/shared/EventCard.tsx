@@ -31,9 +31,10 @@ function EventCard({
       : (event.eventTicketTypes?.[0]?.ticketTypePrice ?? 0);
   return (
     <Link
-      // The management page is built entirely around tickets, attendees and
+      // The show page is built entirely around tickets, attendees and
       // check-ins, none of which a teaser has — it reads eventDays[0] in
-      // several places and would crash. Teasers go to their own edit view.
+      // several places and would crash. Teasers get their own management page,
+      // which mirrors it minus everything that needs a sold ticket.
       href={isTeaser ? `/events/coming-soon/${slug}` : `/events/show/${slug}`}
       className={`flex flex-row items-center lg:items-stretch lg:mb-8 lg:ml-4 lg:flex-col gap-4 w-full ${!aside && "lg:max-w-140"} bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0`}
     >

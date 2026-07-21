@@ -1,7 +1,12 @@
 "use client";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft2, ArrowRight2, LoginCurve, UserOctagon } from "iconsax-reactjs";
+import {
+  ArrowLeft2,
+  ArrowRight2,
+  LoginCurve,
+  UserOctagon,
+} from "iconsax-reactjs";
 import { Link, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
@@ -147,7 +152,12 @@ export default function BuyTicketAuthDialog({
                     </span>
                   </div>
                 </div>
-                <ArrowRight2 size={20} color="#737C8A" variant="Bulk" className="shrink-0" />
+                <ArrowRight2
+                  size={20}
+                  color="#737C8A"
+                  variant="Bulk"
+                  className="shrink-0"
+                />
               </button>
 
               {/* Guest checkout is not available for private activities — buyers must
@@ -170,7 +180,12 @@ export default function BuyTicketAuthDialog({
                       </span>
                     </div>
                   </div>
-                  <ArrowRight2 size={20} color="#737C8A" variant="Bulk" className="shrink-0" />
+                  <ArrowRight2
+                    size={20}
+                    color="#737C8A"
+                    variant="Bulk"
+                    className="shrink-0"
+                  />
                 </button>
               )}
             </div>
@@ -193,7 +208,9 @@ export default function BuyTicketAuthDialog({
               <span className="text-[1.6rem] leading-8 text-neutral-700">
                 {tAuth("footer.text")}
               </span>
-              <LinkAccent href="/auth/register">{tAuth("footer.cta")}</LinkAccent>
+              <LinkAccent href="/auth/register">
+                {tAuth("footer.cta")}
+              </LinkAccent>
             </div>
           </motion.div>
         )}
@@ -288,7 +305,11 @@ export default function BuyTicketAuthDialog({
                     transition={{ duration: 0.35, delay: 0.35 }}
                     className="w-full flex flex-col gap-6"
                   >
-                    <ButtonPrimary type="submit" disabled={isLoading} className="w-full">
+                    <ButtonPrimary
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full"
+                    >
                       {isLoading ? <LoadingCircleSmall /> : tAuth("cta.submit")}
                     </ButtonPrimary>
                     <span className="text-neutral-700 text-center text-[1.6rem] leading-8">
@@ -309,7 +330,9 @@ export default function BuyTicketAuthDialog({
                 <span className="text-[1.8rem] leading-10 text-neutral-700">
                   {tAuth("footer.text")}
                 </span>
-                <LinkAccent href="/auth/register">{tAuth("footer.cta")}</LinkAccent>
+                <LinkAccent href="/auth/register">
+                  {tAuth("footer.cta")}
+                </LinkAccent>
               </motion.div>
             </form>
           </motion.div>

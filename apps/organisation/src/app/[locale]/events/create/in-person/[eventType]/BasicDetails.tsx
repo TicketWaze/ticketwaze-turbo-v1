@@ -41,6 +41,13 @@ type Props = {
   isPrivate: boolean;
   setIsPrivate: React.Dispatch<React.SetStateAction<boolean>>;
   nameStatus: EventNameAvailability;
+  /**
+   * Set when publishing a teaser. The teaser was announced under this name and
+   * may already have followers and reservations attached to it, so it is shown
+   * but not editable — and there is nothing to check availability against,
+   * since the name is this row's own.
+   */
+  nameLocked?: boolean;
 };
 
 export default function BasicDetails({
@@ -55,6 +62,7 @@ export default function BasicDetails({
   isPrivate,
   setIsPrivate,
   nameStatus,
+  nameLocked = false,
 }: Props) {
   const t = useTranslations("Events.create_event");
   const availableCountries = countries.map((country) => country.name);
@@ -170,14 +178,16 @@ export default function BasicDetails({
           {...register("eventName")}
           type="text"
           maxLength={50}
+          readOnly={nameLocked}
+          className={nameLocked ? "opacity-60 cursor-not-allowed" : undefined}
           error={
             errors.eventName?.message ??
-            (nameStatus === "taken"
+            (!nameLocked && nameStatus === "taken"
               ? t("errors.basicDetails.nameTaken")
               : undefined)
           }
           trailing={
-            nameStatus === "checking" ? (
+            nameLocked ? null : nameStatus === "checking" ? (
               <div className="w-8 h-8 border-3 border-t-primary-500 border-neutral-300 rounded-full animate-spin" />
             ) : nameStatus === "available" ? (
               <TickCircle size="20" color="#349C2E" variant="Bulk" />
@@ -188,6 +198,11 @@ export default function BasicDetails({
         >
           {t("event_name")}
         </Input>
+        {nameLocked && (
+          <span className="text-[1.2rem] px-8 leading-7 text-neutral-600">
+            {t("publish_name_locked")}
+          </span>
+        )}
         <Controller
           control={control}
           name="eventDescription"

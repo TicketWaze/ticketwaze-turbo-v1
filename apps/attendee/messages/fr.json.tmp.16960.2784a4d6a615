@@ -765,8 +765,8 @@
     "from": "À partir de",
     "free": "Gratuit",
     "coming_soon_label": "Bientôt disponible",
-    "reserve_place": {
-      "cta": "Réserver",
+    "reserve": {
+      "cta": "Réserver ma place",
       "reserved": "Place réservée",
       "count": "{count} réservées",
       "reserved_toast": "Votre place est réservée. Nous vous préviendrons par email dès la mise en vente.",

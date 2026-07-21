@@ -7,12 +7,25 @@ import type { TranslateFn } from "./types";
  * Schema factory function.
  * - Accepts `isFree` so ticket price requirement can change.
  * - Accepts `t` translation function (same style as useTranslations).
+ * - Accepts `imageOptional` for publishing a teaser, which already has a cover
+ *   image on the server; uploading again is then a replacement, not a
+ *   requirement.
  */
 export function makeCreateInPersonSchema(
   isFree: boolean,
   t: TranslateFn,
   freeTicketLimit: number,
+  imageOptional = false,
 ) {
+  const imageSchema = z
+    .file({
+      error: (issue) =>
+        issue.input === undefined
+          ? t("errors.basicDetails.image.required")
+          : t("errors.basicDetails.image.required"),
+    })
+    .mime(["image/jpeg", "image/jpg", "image/png", "image/webp"]);
+
   return z.object({
     eventName: z.string().min(10, t("errors.basicDetails.name")).max(150),
     eventDescription: z
@@ -48,14 +61,11 @@ export function makeCreateInPersonSchema(
         message: t("errors.basicDetails.longitude"),
       }),
     activityTags: z.array(z.string()).min(1, t("errors.basicDetails.tags")),
-    eventImage: z
-      .file({
-        error: (issue) =>
-          issue.input === undefined
-            ? t("errors.basicDetails.image.required")
-            : t("errors.basicDetails.image.required"),
-      })
-      .mime(["image/jpeg", "image/jpg", "image/png", "image/webp"]),
+    // Always optional at the field level so the factory infers one stable
+    // type; when an image is actually required, `superRefine` below enforces
+    // it. Branching the field itself would make `z.infer` a union and every
+    // consumer of it handle both halves.
+    eventImage: imageSchema.optional(),
     eventDays: z.array(
       z
         .object({
@@ -128,6 +138,15 @@ export function makeCreateInPersonSchema(
     // stays listed; it is simply shown as "sales ended". Empty = no cutoff.
     ticketSalesEndAt: z.string().optional(),
   }).superRefine((data, ctx) => {
+    // Creating an event needs a cover image. Publishing a teaser does not: it
+    // already has one, and leaving the field alone keeps it.
+    if (!imageOptional && !data.eventImage) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: t("errors.basicDetails.image.required"),
+        path: ["eventImage"],
+      });
+    }
     if (data.isFree) {
       data.ticketTypes.forEach((ticket, index) => {
         const quantity = parseInt(ticket.ticketTypeQuantity, 10);

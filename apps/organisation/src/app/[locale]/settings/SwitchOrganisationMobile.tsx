@@ -70,12 +70,14 @@ export default function SwitchOrganisationMobile() {
         },
       );
       const data = await res.json();
+      // Same nesting as the desktop switcher: the membership context lives on
+      // `data.organisation`, not at the top level.
       const enriched: Organisation =
         data.status === "success"
           ? {
               ...organisation,
-              myRole: data.myRole,
-              myPermissions: data.myPermissions,
+              myRole: data.organisation?.myRole ?? null,
+              myPermissions: data.organisation?.myPermissions ?? [],
             }
           : organisation;
       await update({ activeOrganisation: enriched });
