@@ -261,7 +261,9 @@
       "errors": {
         "email": "Saisissez un e-mail valide",
         "password": "Le champ mot de passe ne peut pas être vide",
-        "wrong": "Adresse email ou mot de passe incorrect"
+        "wrong": "Adresse email ou mot de passe incorrect",
+        "no_account": "Aucun compte Ticketwaze n'est associé à ce compte Google. Créez d'abord un compte, puis revenez pour accéder à votre tableau de bord.",
+        "google_failed": "La connexion avec Google a échoué. Veuillez réessayer."
       },
       "forgot": "Mot de passe oublié",
       "method": {
@@ -1235,7 +1237,8 @@
         "gallery_hint": "Ajoutez 3 à 5 photos de votre établissement. Elles apparaissent sur votre page publique et aident les clients à choisir.",
         "gallery_add": "Ajouter des photos",
         "gallery_count": "{count} sur 5 sélectionnées",
-        "gallery_remove": "Retirer"
+        "gallery_remove": "Retirer",
+        "pro_feature": "Les restaurants font partie de nos formules payantes Pro et Premium. Passez à une formule supérieure pour publier votre établissement, partager votre menu par code QR et accepter les réservations. Les périodes d'essai n'incluent pas les restaurants."
       },
       "publish_name_locked": "Vous avez annoncé cette activité sous ce nom, il reste donc inchangé. Toutes les personnes qui la suivent gardent leur place.",
       "publish_success": "Votre événement a été envoyé pour révision."

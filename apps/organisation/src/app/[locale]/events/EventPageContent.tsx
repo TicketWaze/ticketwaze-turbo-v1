@@ -7,6 +7,14 @@ import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
 import EventCard from "@/components/shared/EventCard";
 import RaffleCard from "@/components/shared/RaffleCard";
 import RestaurantCard from "@/components/shared/RestaurantCard";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Category = "upcoming" | "ongoing" | "past";
 type ActivityFilter = "all" | "events" | "raffles" | "restaurants";
@@ -97,7 +105,33 @@ export default function EventPageContent({
 
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-      <div className="flex items-center gap-2 bg-neutral-100 rounded-[30px] p-[.4rem] w-fit mt-4 mb-2 ml-2">
+      {/* Mobile: the four pills overflow a phone width, so the same filters
+          collapse into a dropdown. Desktop keeps the segmented row. */}
+      <div className="lg:hidden mt-4 mb-2 ml-2 mr-2">
+        <Select
+          value={filter}
+          onValueChange={(v) => setFilter(v as ActivityFilter)}
+        >
+          <SelectTrigger className="w-full bg-neutral-100 rounded-[3rem] px-6 py-4 border-none text-[1.4rem] text-neutral-700 leading-8">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="bg-neutral-100 text-[1.4rem]">
+            <SelectGroup>
+              {filters.map((f) => (
+                <SelectItem
+                  key={f.value}
+                  className="text-[1.4rem] text-deep-100"
+                  value={f.value}
+                >
+                  {f.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="hidden lg:flex items-center gap-2 bg-neutral-100 rounded-[30px] p-[.4rem] w-fit mt-4 mb-2 ml-2">
         {filters.map((f) => (
           <button
             key={f.value}

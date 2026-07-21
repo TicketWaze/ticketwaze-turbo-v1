@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { formatMoney } from "@ticketwaze/currency";
-import { TickCircle } from "iconsax-reactjs";
+import { DocumentDownload, TickCircle } from "iconsax-reactjs";
 import type { HeldReservation } from "../../restaurant/[slug]/reserve/[code]/ReservationCheckout";
 
 /**
@@ -52,7 +52,7 @@ export default async function ReservationPage({
 
   return (
     <AttendeeLayout title={t("confirmation_title")}>
-      <div className="flex flex-col gap-10 py-8 max-w-[520px]">
+      <div className="flex flex-col gap-10 py-8 w-full max-w-[520px] mx-auto">
         {confirmed && (
           <div className="flex flex-col items-center gap-6 py-8">
             <TickCircle size="64" color="#12B76A" variant="Bulk" />
@@ -89,6 +89,18 @@ export default async function ReservationPage({
             value={t(`status.${reservation.status}`)}
           />
         </div>
+
+        {/* Plain anchor, not next-intl Link: this points at the API, and the
+            response is an attachment rather than a route. */}
+        {confirmed && (
+          <a
+            href={`${process.env.NEXT_PUBLIC_API_URL}/reservations/code/${reservation.reservationCode}/ticket?locale=${locale}`}
+            className="px-12 py-[1.2rem] bg-primary-500 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] leading-8 cursor-pointer hover:border-primary-600 transition-all duration-400 flex items-center justify-center gap-3"
+          >
+            <DocumentDownload size="20" color="#ffffff" variant="Bulk" />
+            {t("download_ticket")}
+          </a>
+        )}
 
         <p className="text-[1.4rem] leading-8 text-neutral-600">
           {t("show_code_hint")}

@@ -132,7 +132,7 @@ export default function TicketSelectionStep({
                   <div className="flex items-center gap-4">
                     <button
                       type="button"
-                      disabled={event.eventType === "meet" || quantity === 0}
+                      disabled={event.eventCategory === "meet" || quantity === 0}
                       className="w-14 h-14 disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
                       onClick={() => decrement(index)}
                     >
@@ -144,7 +144,7 @@ export default function TicketSelectionStep({
                     <button
                       type="button"
                       disabled={
-                        event.eventType === "meet" || quantity === ticketLeft
+                        event.eventCategory === "meet" || quantity === ticketLeft
                       }
                       className="w-14 h-14 disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
                       onClick={() => increment(index, ticketLeft)}

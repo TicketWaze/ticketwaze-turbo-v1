@@ -37,9 +37,12 @@ import { LinkPrimary } from "@/components/shared/Links";
 export default function EventTypeList({
   organisation,
   membershipTier,
+  paidTierName,
 }: {
   organisation: Organisation;
   membershipTier: MembershipTier;
+  /** Plan name ignoring trials — 'free' while an org is only trialling. */
+  paidTierName: string;
 }) {
   const t = useTranslations("Events.create_event");
   const { data: session } = useSession();
@@ -112,6 +115,19 @@ export default function EventTypeList({
     // },
   ];
   const router = useRouter();
+
+  /**
+   * Raffles and private events are Pro+ and a trial counts, so they unlock on
+   * the effective tier. Restaurants require a plan that has actually been paid
+   * for, which a trial has not — hence the separate `paidTierName`.
+   */
+  function isLocked(value: string): boolean {
+    if (value === "restaurant") return paidTierName === "free";
+    if (value === "private" || value === "raffle") {
+      return membershipTier.membershipName === "free";
+    }
+    return false;
+  }
 
   const filteredCategories = eventTypes.filter((category) => {
     const search = query.toLowerCase();
@@ -273,7 +289,6 @@ export default function EventTypeList({
           //     </li>
           //   );
           if (
-            category.value === "meet" ||
             category.value === "reservations" ||
             category.value === "transportations" ||
             category.value === "tours" ||
@@ -310,9 +325,7 @@ export default function EventTypeList({
           } else {
             return (
               <li key={index}>
-                {membershipTier.membershipName === "free" &&
-                (category.value === "private" ||
-                  category.value === "raffle") ? (
+                {isLocked(category.value) ? (
                   <Dialog>
                     <DialogTrigger asChild>
                       <div
@@ -368,7 +381,9 @@ export default function EventTypeList({
                         >
                           {category.value === "raffle"
                             ? t("raffle.pro_feature")
-                            : t("proFeature")}
+                            : category.value === "restaurant"
+                              ? t("restaurant.pro_feature")
+                              : t("proFeature")}
                         </p>
                       </div>
                       <DialogFooter>
