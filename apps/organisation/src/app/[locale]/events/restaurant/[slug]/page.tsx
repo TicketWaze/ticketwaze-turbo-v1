@@ -56,10 +56,40 @@ export default async function RestaurantDetailPage({
   }
 
   const restaurant: Restaurant = response.restaurant;
+
+  /**
+   * The venue's own branding for the printable QR card. Non-fatal: a card
+   * without a logo is still a working QR code, so a failure here must not take
+   * the page down with it.
+   */
+  let organisationName = "";
+  let organisationLogoUrl: string | null = null;
+  try {
+    const orgRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation.organisationId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          Authorization: `Bearer ${session?.user.accessToken}`,
+        },
+      },
+    );
+    const orgResponse = await orgRequest.json().catch(() => null);
+    organisationName = orgResponse?.organisation?.organisationName ?? "";
+    organisationLogoUrl = orgResponse?.organisation?.profileImageUrl ?? null;
+  } catch {
+    // Card falls back to the venue name alone.
+  }
+
   return (
     <OrganizerLayout title={restaurant.name}>
       <RestaurantOverview
         restaurant={restaurant}
+        organisationName={organisationName}
+        organisationLogoUrl={organisationLogoUrl}
         transactions={response.transactions ?? []}
         stats={
           response.stats ?? {

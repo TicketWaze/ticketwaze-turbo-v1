@@ -1,7 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
+import ImageLightbox from "@/components/ImageLightbox";
 import type { PublicMenuData, PublicRestaurant } from "./page";
 
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
@@ -52,13 +52,14 @@ export default function PublicMenu({
     <main className="min-h-screen bg-white pb-24">
       {/* Cover */}
       {restaurant.coverImageUrl && (
-        <div className="w-full h-[22rem] lg:h-[32rem] relative">
-          <img
-            src={restaurant.coverImageUrl}
-            alt={restaurant.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
+        <ImageLightbox
+          src={restaurant.coverImageUrl}
+          alt={restaurant.name}
+          triggerClassName="w-full h-[22rem] lg:h-[32rem] block overflow-hidden cursor-zoom-in"
+          /* No hover scale on the cover: it is full-bleed, so a transform
+             makes the whole banner twitch rather than lift a thumbnail. */
+          imageClassName="w-full h-full object-cover"
+        />
       )}
 
       <div className="max-w-[72rem] mx-auto px-6 lg:px-8">
@@ -208,11 +209,10 @@ export default function PublicMenu({
                       }`}
                     >
                       {item.imageUrl && (
-                        <img
+                        <ImageLightbox
                           src={item.imageUrl}
                           alt={item.name}
-                          className="w-24 h-24 rounded-2xl object-cover shrink-0"
-                          loading="lazy"
+                          triggerClassName="w-24 h-24 rounded-2xl overflow-hidden shrink-0 cursor-zoom-in block"
                         />
                       )}
                       <div className="flex-1 min-w-0 flex flex-col gap-1">
@@ -293,12 +293,11 @@ export default function PublicMenu({
           <section className="pt-12">
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
               {restaurant.images.map((image) => (
-                <img
+                <ImageLightbox
                   key={image.imageId}
                   src={image.imageUrl}
                   alt={image.caption ?? restaurant.name}
-                  className="w-full h-40 object-cover rounded-2xl"
-                  loading="lazy"
+                  triggerClassName="w-full h-40 rounded-2xl overflow-hidden cursor-zoom-in block"
                 />
               ))}
             </div>

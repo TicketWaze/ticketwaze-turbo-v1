@@ -1346,7 +1346,10 @@
       "save_success": "Établissement mis à jour.",
       "keep_images": "Laissez vide pour conserver vos photos actuelles.",
       "replace_gallery": "Remplacer la galerie",
-      "workplace": "Espace de travail"
+      "workplace": "Espace de travail",
+      "qr_card_cta": "Scannez pour notre menu",
+      "qr_card_hint": "Dirigez votre caméra vers le code",
+      "qr_download_failed": "Impossible de générer la carte QR. Veuillez réessayer."
     },
     "workplace": {
       "title": "Espace de travail",
@@ -1416,7 +1419,8 @@
         "price": "Entrez un prix valide.",
         "label": "Entrez un nom ou une table.",
         "items": "Ajoutez au moins un article.",
-        "tendered": "Entrez un montant qui couvre le total."
+        "tendered": "Entrez un montant qui couvre le total.",
+        "credit_name": "Entrez le nom du client pour ce solde."
       },
       "open_tab_hint": "Une addition a besoin d’un nom et d’au moins un article. Vous pourrez en ajouter d’autres ensuite.",
       "open_tab_order": "Que prennent-ils ?",
@@ -1450,7 +1454,26 @@
       "no_closed_days": "Aucune journée clôturée pour le moment. Votre première journée clôturée apparaîtra ici.",
       "period_total": "Total",
       "days_recorded": "Journées",
-      "tabs_count": "{count, plural, =0 {aucune addition} one {# addition} other {# additions}}"
+      "tabs_count": "{count, plural, =0 {aucune addition} one {# addition} other {# additions}}",
+      "day_operations": "Opérations",
+      "day_items": "Articles",
+      "day_hours": "Horaires",
+      "no_tabs_on_day": "Aucune addition n’a été ouverte ce jour-là.",
+      "order_empty": "Touchez un plat ou une boisson pour commencer la commande.",
+      "add_one": "Ajouter un {name}",
+      "remove_one": "Retirer un {name}",
+      "customer_credit": "Solde client",
+      "balance": "Solde",
+      "search_customer": "Rechercher un client par nom",
+      "searching": "Recherche...",
+      "no_customer_found": "Aucun client avec un solde à ce nom.",
+      "apply": "Appliquer",
+      "remove_credit": "Retirer",
+      "credit_applied": "Solde appliqué",
+      "keep_change_as_credit": "Garder la monnaie comme solde client",
+      "customer_name": "Nom du client",
+      "customer_name_placeholder": "À qui appartient ce solde ?",
+      "cash_to_give": "Espèces à rendre"
     },
     "coming_soon": {
       "title": "Bientôt disponible",

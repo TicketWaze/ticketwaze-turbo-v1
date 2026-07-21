@@ -27,10 +27,15 @@ export default function RestaurantOverview({
   restaurant,
   transactions = [],
   stats,
+  organisationName,
+  organisationLogoUrl,
 }: {
   restaurant: Restaurant;
   transactions?: RestaurantTransaction[];
   stats: RestaurantStats;
+  /** Branding for the printable QR card. */
+  organisationName?: string;
+  organisationLogoUrl?: string | null;
 }) {
   const t = useTranslations("Events.restaurantDetail");
   const tc = useTranslations("Events.restaurantCard");
@@ -71,7 +76,11 @@ export default function RestaurantOverview({
             {t("workplace")}
           </LinkSecondary>
           {restaurant.adminStatus === "approved" && !suspended && (
-            <ShareRestaurant restaurant={restaurant} />
+            <ShareRestaurant
+              restaurant={restaurant}
+              organisationName={organisationName}
+              organisationLogoUrl={organisationLogoUrl}
+            />
           )}
           <RestaurantMoreComponent
             restaurant={restaurant}
@@ -148,6 +157,39 @@ export default function RestaurantOverview({
           </p>
         </li>
       </ul>
+
+      {/* Mobile actions — the TopBar row is desktop-only, same as the event
+          page. They sit directly under the summary rather than at the foot of
+          the screen: these are the things an owner opens on a phone, and on a
+          busy venue the sales table below can run for pages. */}
+      <div className="flex lg:hidden flex-col gap-4">
+        <div className="flex items-center gap-4">
+          {restaurant.adminStatus === "approved" && !suspended && (
+            <ShareRestaurant
+              restaurant={restaurant}
+              className="flex-1"
+              organisationName={organisationName}
+              organisationLogoUrl={organisationLogoUrl}
+            />
+          )}
+          {/* Fixed-size circle, so it must not absorb any of the row. */}
+          <div className="shrink-0">
+            <RestaurantMoreComponent
+              restaurant={restaurant}
+              hasSales={stats.transactionCount > 0}
+            />
+          </div>
+        </div>
+        {/* Its own full-width row: the workplace is the one destination staff
+            open constantly, so it gets the whole tap target. */}
+        <LinkSecondary
+          href={`/events/restaurant/${slug}/workplace`}
+          className="w-full py-[7.5px] flex items-center justify-center gap-3"
+        >
+          <Shop size="20" color="#E45B00" variant="Bulk" />
+          {t("workplace")}
+        </LinkSecondary>
+      </div>
 
       {/* Sales */}
       <div className="flex flex-col gap-8">
@@ -243,16 +285,6 @@ export default function RestaurantOverview({
         )}
       </div>
 
-      {/* Mobile actions — the TopBar row is desktop-only, same as the event page. */}
-      <div className="flex lg:hidden items-center gap-4">
-        {restaurant.adminStatus === "approved" && !suspended && (
-          <ShareRestaurant restaurant={restaurant} />
-        )}
-        <RestaurantMoreComponent
-          restaurant={restaurant}
-          hasSales={stats.transactionCount > 0}
-        />
-      </div>
     </div>
   );
 }

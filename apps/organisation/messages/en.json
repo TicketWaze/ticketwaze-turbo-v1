@@ -1351,7 +1351,10 @@
       "save_success": "Venue updated.",
       "keep_images": "Leave empty to keep your current photos.",
       "replace_gallery": "Replace gallery",
-      "workplace": "Workplace"
+      "workplace": "Workplace",
+      "qr_card_cta": "Scan for our menu",
+      "qr_card_hint": "Point your camera at the code",
+      "qr_download_failed": "Could not generate the QR card. Please try again."
     },
     "workplace": {
       "title": "Workplace",
@@ -1421,7 +1424,8 @@
         "price": "Enter a valid price.",
         "label": "Enter a name or a table.",
         "items": "Add at least one item.",
-        "tendered": "Enter an amount that covers the total."
+        "tendered": "Enter an amount that covers the total.",
+        "credit_name": "Enter the customer name for this balance."
       },
       "open_tab_hint": "A tab needs a name and at least one item. You can add more later.",
       "open_tab_order": "What are they having?",
@@ -1455,7 +1459,26 @@
       "no_closed_days": "No day has been closed yet. Your first closed day will show up here.",
       "period_total": "Total",
       "days_recorded": "Days",
-      "tabs_count": "{count, plural, =0 {no tabs} one {# tab} other {# tabs}}"
+      "tabs_count": "{count, plural, =0 {no tabs} one {# tab} other {# tabs}}",
+      "day_operations": "Operations",
+      "day_items": "Items",
+      "day_hours": "Hours",
+      "no_tabs_on_day": "No tab was opened on this day.",
+      "order_empty": "Tap a dish or drink to start the order.",
+      "add_one": "Add one {name}",
+      "remove_one": "Remove one {name}",
+      "customer_credit": "Customer balance",
+      "balance": "Balance",
+      "search_customer": "Search a customer by name",
+      "searching": "Searching...",
+      "no_customer_found": "No customer with a balance under that name.",
+      "apply": "Apply",
+      "remove_credit": "Remove",
+      "credit_applied": "Balance applied",
+      "keep_change_as_credit": "Keep the change as customer balance",
+      "customer_name": "Customer name",
+      "customer_name_placeholder": "Who is this balance for?",
+      "cash_to_give": "Cash to hand back"
     },
     "coming_soon": {
       "title": "Coming soon",

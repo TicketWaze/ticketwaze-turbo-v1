@@ -5,20 +5,21 @@ import { Restaurant } from "@ticketwaze/typescript-config";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import { extractIdFromSlug } from "@/lib/Slugify";
-import SalesHistory from "./SalesHistory";
-import type { ServiceDay } from "../types";
+import ServiceDayDetailView from "./ServiceDayDetailView";
+import type { ServiceDayDetail } from "../../types";
 
 /**
- * Daily sales. Every row is a day the venue closed by hand, with the figures
- * frozen at that moment — a closed day reports the same numbers next year, even
- * after the menu has been repriced.
+ * One day's operations, opened from a row in the daily sales list.
+ *
+ * The API returns the day with its tabs and their lines already preloaded, so
+ * this is a single read — there is no separate "tabs for day" call to make.
  */
-export default async function SalesPage({
+export default async function ServiceDayPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; serviceDayId: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, serviceDayId } = await params;
   const t = await getTranslations("Events.workplace");
   const td = await getTranslations("Events.restaurantDetail");
   const locale = await getLocale();
@@ -45,9 +46,9 @@ export default async function SalesPage({
 
   const restaurantBase = `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${organisationId}/${restaurantId}`;
 
-  const [restaurantRequest, daysRequest] = await Promise.all([
+  const [restaurantRequest, dayRequest] = await Promise.all([
     fetch(restaurantBase, { method: "GET", headers, cache: "no-store" }),
-    fetch(`${restaurantBase}/service-days`, {
+    fetch(`${restaurantBase}/service-days/${serviceDayId}`, {
       method: "GET",
       headers,
       cache: "no-store",
@@ -60,21 +61,24 @@ export default async function SalesPage({
 
   // The API omits `data` keys on error, so an unguarded read crashes the page.
   const restaurantResponse = await restaurantRequest.json().catch(() => null);
-  if (!restaurantRequest.ok || !restaurantResponse?.restaurant) {
+  const dayResponse = await dayRequest.json().catch(() => null);
+  const restaurant: Restaurant | undefined = restaurantResponse?.restaurant;
+  const day: ServiceDayDetail | undefined = dayResponse?.day;
+
+  if (!restaurantRequest.ok || !restaurant || !dayRequest.ok || !day) {
     return (
-      <OrganizerLayout title={td("not_found")}>
+      <OrganizerLayout title={t("sales_history")}>
         <FetchFailedErrorView />
       </OrganizerLayout>
     );
   }
 
-  const daysResponse = await daysRequest.json().catch(() => null);
-  const days: ServiceDay[] = daysResponse?.days ?? [];
-  const restaurant: Restaurant = restaurantResponse.restaurant;
-
   return (
     <OrganizerLayout title={t("sales_history")}>
-      <SalesHistory restaurant={restaurant} days={days} slug={slug} />
+      <ServiceDayDetailView
+        day={{ ...day, tabs: day.tabs ?? [] }}
+        timezone={restaurant.timezone || "UTC"}
+      />
     </OrganizerLayout>
   );
 }

@@ -2,7 +2,8 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Restaurant } from "@ticketwaze/typescript-config";
 import { formatMoney } from "@ticketwaze/currency";
-import { Calendar } from "iconsax-reactjs";
+import { ArrowRight2, Calendar } from "iconsax-reactjs";
+import { Link } from "@/i18n/navigation";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import type { ServiceDay } from "../types";
@@ -15,19 +16,15 @@ import type { ServiceDay } from "../types";
 export default function SalesHistory({
   restaurant,
   days,
+  slug,
 }: {
   restaurant: Restaurant;
   days: ServiceDay[];
+  slug: string;
 }) {
   const t = useTranslations("Events.workplace");
   const locale = useLocale();
   const usd = restaurant.reservationFeeCurrency === "USD";
-  const currency = restaurant.reservationFeeCurrency;
-
-  const period = days.reduce(
-    (sum, day) => sum + (usd ? day.usdTotalSales : day.totalSales),
-    0,
-  );
 
   return (
     <div className="flex flex-col gap-8 overflow-y-scroll pb-12">
@@ -37,28 +34,24 @@ export default function SalesHistory({
       {days.length === 0 ? (
         <EmptyState message={t("no_closed_days")} />
       ) : (
-        <>
-          <div className="w-full p-6 rounded-[15px] border border-neutral-100 flex flex-wrap items-center gap-8">
-            <Stat
-              label={t("period_total")}
-              value={formatMoney(period, currency, locale)}
-            />
-            <Stat label={t("days_recorded")} value={String(days.length)} />
-          </div>
+        <ul className="flex flex-col divide-y divide-neutral-100 border border-neutral-100 rounded-[15px] px-6">
+          {days.map((day) => {
+            const sales = usd ? day.usdTotalSales : day.totalSales;
+            const cash = usd ? day.usdCashSales : day.cashSales;
+            const date = new Date(day.businessDate).toLocaleDateString(locale, {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            });
 
-          <ul className="flex flex-col divide-y divide-neutral-100 border border-neutral-100 rounded-[15px] px-6">
-            {days.map((day) => {
-              const sales = usd ? day.usdTotalSales : day.totalSales;
-              const cash = usd ? day.usdCashSales : day.cashSales;
-              const date = new Date(day.businessDate).toLocaleDateString(
-                locale,
-                { weekday: "long", day: "numeric", month: "long", year: "numeric" },
-              );
-
-              return (
-                <li
-                  key={day.serviceDayId}
-                  className="flex flex-col lg:flex-row lg:items-center gap-4 justify-between py-6"
+            return (
+              <li key={day.serviceDayId}>
+                {/* The whole row is the target: on a phone this is read with
+                    a thumb, and a small chevron would be a poor one. */}
+                <Link
+                  href={`/events/restaurant/${slug}/workplace/sales/${day.serviceDayId}`}
+                  className="flex flex-col lg:flex-row lg:items-center gap-4 justify-between py-6 -mx-6 px-6 rounded-[10px] hover:bg-neutral-50 transition-colors"
                 >
                   <div className="flex flex-col gap-1 min-w-0">
                     <span className="text-[1.5rem] font-medium leading-8 text-deep-100 capitalize">
@@ -80,12 +73,18 @@ export default function SalesHistory({
                     <span className="text-[1.8rem] font-medium leading-8 text-primary-500">
                       {formatMoney(sales, day.currency, locale)}
                     </span>
+                    <ArrowRight2
+                      size="20"
+                      color="#737c8a"
+                      variant="Bulk"
+                      className="shrink-0"
+                    />
                   </div>
-                </li>
-              );
-            })}
-          </ul>
-        </>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       )}
     </div>
   );
