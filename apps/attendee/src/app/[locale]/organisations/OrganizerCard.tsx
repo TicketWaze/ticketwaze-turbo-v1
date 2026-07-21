@@ -28,43 +28,43 @@ function OrganizerCard({
     <Link
       href={`/organisations/${slugify(title, id)}`}
       className={
-        "flex items-stretch flex-col gap-4 w-full lg:max-w-[350px] bg-white shadow-lg rounded-[1rem] overflow-hidden pb-4"
+        "flex items-stretch flex-col gap-4 w-full lg:max-w-140 bg-white shadow-lg rounded-[10px] overflow-hidden pb-4"
       }
     >
       {image ? (
         <Image
           src={image}
-          className={"h-[150px] w-full object-cover"}
+          className={"h-60 w-full object-cover"}
           alt={title}
           height={150}
           width={255}
         />
       ) : (
-        <div className="h-[150px] w-full flex items-center justify-center bg-black text-white text-9xl font-primary">
+        <div className="h-60 w-full flex items-center justify-center bg-black text-white text-9xl font-primary">
           {title.slice()[0]?.toUpperCase()}
         </div>
       )}
-      <div className={"px-4 flex flex-col gap-[1.5rem] lg:gap-4"}>
+      <div className={"px-4 flex flex-col gap-6 lg:gap-4"}>
         <span
-          className={"font-semibold text-[1.2rem] text-deep-100 leading-[17px]"}
+          className={"font-semibold text-[1.2rem] text-deep-100 leading-[1.7rem]"}
         >
           {title} {isVerified && <VerifiedOrganisationCheckMark />}
         </span>
         <div className={"flex items-center justify-between"}>
-          <div className={"flex items-center gap-[5px]"}>
+          <div className={"flex items-center gap-2"}>
             <Layer size="15" color="#2e3237" variant="Bulk" />
             <p
               className={
-                "font-normal text-[1rem] leading-[15px] text-neutral-700"
+                "font-normal text-[1rem] leading-6 text-neutral-700"
               }
             >
               <span className={"text-deep-100"}>{number}</span> {t("event")}
             </p>
           </div>
-          <div className={"flex items-center gap-[5px]"}>
+          <div className={"flex items-center gap-2"}>
             <Location size="15" color="#2e3237" variant="Bulk" />
             <p
-              className={"font-medium text-[1rem] text-deep-100 leading-[15px]"}
+              className={"font-medium text-[1rem] text-deep-100 leading-6"}
             >
               {city}, <span className={"text-neutral-700"}>{country}</span>
             </p>

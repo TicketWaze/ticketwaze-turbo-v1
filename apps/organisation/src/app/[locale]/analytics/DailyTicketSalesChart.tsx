@@ -28,7 +28,7 @@ function processTicketsDataByDay(
   for (let i = 7; i >= 0; i--) {
     const d = new Date(today);
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10); // "YYYY-MM-DD"
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
     counts[key] = 0;
   }
 

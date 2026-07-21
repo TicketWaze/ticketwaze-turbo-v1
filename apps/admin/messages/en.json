@@ -1004,6 +1004,7 @@
     "user": {
       "title": "User Growth",
       "chart": {
+        "today": "Today",
         "sugn_ups": "User Signups",
         "attendee": "Attendee",
         "organizer": "Organizer"

@@ -509,7 +509,7 @@ export default function PaymentsPageContent({
                   {t("transactions.no_results", { term: term.trim() })}
                 </p>
               ) : (
-                <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">
+                <div className="flex flex-col gap-12 items-center mt-8 self-center w-full">
                   <div className="rounded-full bg-neutral-100 p-6 w-fit">
                     <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
                       <Image
