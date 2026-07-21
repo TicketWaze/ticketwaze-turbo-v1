@@ -25,10 +25,16 @@ export default function Loading() {
             >
               <UserCirlceAdd size={120} color={"#e3e5e8"} variant={"Bulk"} />
             </div>
-            <div className={"p-4 w-fit lg:hidden rounded-[15px] bg-neutral-100"}>
-              <UserCirlceAdd size={35} color={"#e3e5e8"} variant={"Bulk"} />
+            <div
+              className={"p-4 w-fit lg:hidden rounded-[15px] bg-neutral-100"}
+            >
+              <UserCirlceAdd size={50} color={"#e3e5e8"} variant={"Bulk"} />
             </div>
-            <div className={"flex flex-1 flex-col gap-8 lg:gap-[2.8rem] justify-center"}>
+            <div
+              className={
+                "flex flex-1 flex-col gap-8 lg:gap-[2.8rem] justify-center"
+              }
+            >
               <div
                 className={
                   "h-[2.6rem] lg:h-18 w-60 bg-neutral-100 rounded-full animate-pulse"
@@ -43,24 +49,31 @@ export default function Loading() {
           </div>
           {/* Infos personnelles + form */}
           <div className="flex flex-col gap-8">
-            <div className="h-[1.9rem] w-56 bg-neutral-200 rounded-full animate-pulse mb-4" />
-            {/* firstName + lastName */}
-            <div className="flex flex-col lg:flex-row items-center gap-8 w-full">
-              <div className="w-full flex-1 h-[5.2rem] bg-neutral-100 rounded-full animate-pulse" />
-              <div className="w-full flex-1 h-[5.2rem] bg-neutral-100 rounded-full animate-pulse" />
+            <div className="flex flex-col lg:gap-8">
+              <div className="h-[1.9rem] w-56 bg-neutral-200 rounded-full animate-pulse lg:mb-4" />
+              {/* firstName + lastName */}
+              <div className="flex flex-col lg:flex-row items-center gap-8 w-full">
+                <div className="w-full flex-1 h-[5.2rem] bg-neutral-100 rounded-full animate-pulse" />
+                <div className="w-full flex-1 h-[5.2rem] bg-neutral-100 rounded-full animate-pulse" />
+              </div>
             </div>
             {/* email */}
-            <div className="w-full h-[5.2rem] bg-neutral-100 rounded-full animate-pulse" />
+            <div className="w-full h-[5.2rem] bg-neutral-200 rounded-full animate-pulse" />
             {/* bouton save */}
             <div className="w-full h-[4.8rem] bg-neutral-200 rounded-full animate-pulse" />
+            <div className="lg:hidden w-full h-[4.8rem] bg-neutral-200 rounded-full animate-pulse" />
           </div>
 
           {/* ChangePassword */}
           <div className="flex flex-col gap-8">
             <div className="h-[1.9rem] w-[16rem] bg-neutral-200 rounded-full animate-pulse mb-4" />
-            <div className="w-full h-[5.2rem] bg-neutral-100 rounded-full animate-pulse" />
-            <div className="w-full h-[5.2rem] bg-neutral-100 rounded-full animate-pulse" />
+            <div className="w-full h-[5.2rem] bg-neutral-200 rounded-full animate-pulse" />
+            <div className="w-full h-[5.2rem] bg-neutral-200 rounded-full animate-pulse" />
             <div className="w-full h-[4.8rem] bg-neutral-200 rounded-full animate-pulse" />
+            <div className="lg:hidden w-full h-[4.8rem] bg-neutral-200 rounded-full animate-pulse" />
+            <div className="lg:hidden w-full h-[4.8rem] bg-neutral-200 rounded-full animate-pulse" />
+            <div className="lg:hidden w-full h-[4.8rem] bg-neutral-200 rounded-full animate-pulse" />
+            <div className="lg:hidden w-full h-[4.8rem] bg-neutral-200 rounded-full animate-pulse" />
           </div>
         </div>
       </>

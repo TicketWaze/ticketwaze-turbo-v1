@@ -24,14 +24,13 @@ export default function Loading() {
           </div>
         </header>
 
-        {/* UpcomingCard list */}
+        {/* HistoryCard list */}
         <ul className="w-full list pt-4 flex flex-col gap-4 h-screen overflow-hidden">
           {Array.from({ length: 5 }).map((_, i) => (
             <li key={i}>
               <div className="w-full rounded-2xl bg-neutral-100 animate-pulse p-3 lg:p-4 flex flex-col gap-3 lg:gap-4">
                 {/* Image */}
                 <div className="w-full h-60 lg:h-[19.1rem] rounded-xl bg-neutral-200 shrink-0 mb-8" />
-
                 <div className="flex flex-col gap-4 flex-1 justify-center">
                   <div className="h-[1.9rem] w-3/4 bg-neutral-200 rounded-full" />
 
