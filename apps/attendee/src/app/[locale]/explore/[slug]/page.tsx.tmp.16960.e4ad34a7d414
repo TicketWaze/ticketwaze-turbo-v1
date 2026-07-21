@@ -190,33 +190,6 @@ export default async function EventPage({
   );
   const favoriteResponse = await favoriteRequest.json();
 
-  /**
-   * Reservation state for a teaser. The count rides along on the cached public
-   * payload because it is identical for everyone; whether *this* viewer holds a
-   * place is per-user, so it is fetched separately and never cached — the same
-   * split the favourite state uses just above.
-   */
-  const reservationCount: number = eventResponse.reservationCount ?? 0;
-  let hasReserved = false;
-  if (event.isComingSoon && session?.user?.accessToken) {
-    try {
-      const reservationRequest = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/reservation`,
-        {
-          headers: {
-            Authorization: `Bearer ${session.user.accessToken}`,
-            "Content-Type": "application/json",
-          },
-          cache: "no-store",
-        },
-      );
-      const reservationResponse = await reservationRequest.json();
-      hasReserved = reservationResponse?.hasReserved === true;
-    } catch {
-      hasReserved = false;
-    }
-  }
-
   if (favoriteResponse.status === "failed") {
     redirect({ href: "/explore", locale });
   }

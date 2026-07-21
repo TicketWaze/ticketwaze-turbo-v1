@@ -21,7 +21,9 @@ export type CreateInPersonFormValues = {
   city: string;
   country: string;
   location: { lat: number; lng: number };
-  eventImage: File;
+  // Absent while the form is being filled, and absent for good when publishing
+  // a teaser that keeps the cover image it already has.
+  eventImage?: File;
   eventDays: EventDay[];
   activityTags: string[];
   ticketTypes: TicketType[];

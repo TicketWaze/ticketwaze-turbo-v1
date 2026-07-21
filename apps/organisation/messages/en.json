@@ -1241,7 +1241,9 @@
         "gallery_add": "Add photos",
         "gallery_count": "{count} of 5 selected",
         "gallery_remove": "Remove"
-      }
+      },
+      "publish_name_locked": "You announced this activity under this name, so it stays. Everyone following it keeps their place.",
+      "publish_success": "Your event was sent for review."
     },
     "filters": {
       "first": {
@@ -1349,7 +1351,10 @@
       "save_success": "Venue updated.",
       "keep_images": "Leave empty to keep your current photos.",
       "replace_gallery": "Replace gallery",
-      "workplace": "Workplace"
+      "workplace": "Workplace",
+      "qr_card_cta": "Scan for our menu",
+      "qr_card_hint": "Point your camera at the code",
+      "qr_download_failed": "Could not generate the QR card. Please try again."
     },
     "workplace": {
       "title": "Workplace",
@@ -1419,7 +1424,8 @@
         "price": "Enter a valid price.",
         "label": "Enter a name or a table.",
         "items": "Add at least one item.",
-        "tendered": "Enter an amount that covers the total."
+        "tendered": "Enter an amount that covers the total.",
+        "credit_name": "Enter the customer name for this balance."
       },
       "open_tab_hint": "A tab needs a name and at least one item. You can add more later.",
       "open_tab_order": "What are they having?",
@@ -1453,17 +1459,46 @@
       "no_closed_days": "No day has been closed yet. Your first closed day will show up here.",
       "period_total": "Total",
       "days_recorded": "Days",
-      "tabs_count": "{count, plural, =0 {no tabs} one {# tab} other {# tabs}}"
+      "tabs_count": "{count, plural, =0 {no tabs} one {# tab} other {# tabs}}",
+      "day_operations": "Operations",
+      "day_items": "Items",
+      "day_hours": "Hours",
+      "no_tabs_on_day": "No tab was opened on this day.",
+      "order_empty": "Tap a dish or drink to start the order.",
+      "add_one": "Add one {name}",
+      "remove_one": "Remove one {name}",
+      "customer_credit": "Customer balance",
+      "balance": "Balance",
+      "search_customer": "Search a customer by name",
+      "searching": "Searching...",
+      "no_customer_found": "No customer with a balance under that name.",
+      "apply": "Apply",
+      "remove_credit": "Remove",
+      "credit_applied": "Balance applied",
+      "keep_change_as_credit": "Keep the change as customer balance",
+      "customer_name": "Customer name",
+      "customer_name_placeholder": "Who is this balance for?",
+      "cash_to_give": "Cash to hand back"
     },
     "coming_soon": {
       "title": "Coming soon",
       "back": "Back",
+      "reservations": {
+        "title": "Reserved places",
+        "count": "{count} reserved",
+        "empty": "Nobody has reserved a place yet. Once people do, you'll see them here and they'll be emailed when this activity goes live.",
+        "table": {
+          "name": "Name",
+          "email": "Email",
+          "date": "Reserved on"
+        }
+      },
       "explainer": "A teaser for something you have not finalised yet. Choose the name carefully. This is the same event you will publish later, so it keeps this name and every follower it gathers.",
       "name": "Event name",
       "name_hint": "You cannot reuse this name on another event later.",
       "name_placeholder": "Summer Fest 2027",
       "description": "What are you teasing?",
-      "description_hint": "At least {min} characters. A sentence or two is plenty.",
+      "description_hint": "At least {min} characters. This is the description your event keeps once you publish it, so write it properly now.",
       "description_placeholder": "Something big is coming to Port-au-Prince this summer...",
       "hint_label": "When, roughly? (optional)",
       "hint_hint": "Free text, not a date. Used only when no date is set above.",
@@ -1487,7 +1522,35 @@
       "save": "Save changes",
       "date_label": "Date (optional)",
       "date_hint": "Set this only if the date is confirmed. Leave it empty and use the hint below instead.",
-      "clear_date": "Clear"
+      "clear_date": "Clear",
+      "details": {
+        "title": "Teaser details",
+        "about": "About",
+        "edit": "Edit teaser",
+        "no_venue": "Venue not decided yet",
+        "pending_deletion": "This teaser is pending deletion and cannot be edited."
+      },
+      "stats": {
+        "reservations": "Reservations",
+        "expected": "Expected",
+        "status": "Status",
+        "date_unset": "Not set",
+        "status_requested": "In review",
+        "status_review": "In review",
+        "status_approved": "Approved",
+        "status_rejected": "Rejected"
+      },
+      "publish": {
+        "cta": "Create the event",
+        "title": "Publish teaser",
+        "category_title": "What kind of event is it?",
+        "category_hint": "Pick the category that fits. Next you will add the dates, the venue and your ticket types.",
+        "explainer": "This is still a teaser. People can reserve a place, but nothing is on sale yet. Add the dates and ticket types to turn it into a real event, keeping this page, its name and everyone who reserved."
+      },
+      "deletion": {
+        "warning": "Deleting this teaser removes it from the site and cancels every reservation on it. This cannot be undone.",
+        "deleted_notice": "This teaser has been deleted."
+      }
     },
     "coming_soon_label": "Coming soon"
   },

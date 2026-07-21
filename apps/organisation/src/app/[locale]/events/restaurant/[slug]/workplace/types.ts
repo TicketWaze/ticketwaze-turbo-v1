@@ -50,6 +50,14 @@ export interface ServiceDay {
   note: string | null;
 }
 
+/**
+ * A single day with everything that happened on it. What `GET
+ * /service-days/:id` returns, as opposed to the summary rows in the list.
+ */
+export interface ServiceDayDetail extends ServiceDay {
+  tabs: CustomerTab[];
+}
+
 /** Live figures for the day in progress. Only settled tabs count as sales. */
 export interface DayTotals {
   totalSales: number;
@@ -59,6 +67,20 @@ export interface DayTotals {
   tabCount: number;
   itemCount: number;
   openTabs: number;
+}
+
+/**
+ * Money the venue is holding for a named guest — change it could not give, or a
+ * float left on purpose. Keyed on a name the venue types, never on a tab label:
+ * a tab is usually a table, and two guests at "Table 4" are not one customer.
+ */
+export interface CustomerCredit {
+  customerCreditId: string;
+  restaurantId: string;
+  customerName: string;
+  balance: number;
+  currency: string;
+  note: string | null;
 }
 
 export interface CustomerTab {
@@ -74,7 +96,14 @@ export interface CustomerTab {
   /** Settlement is a record of what happened at the counter — cash books no fee. */
   paymentMethod: "cash" | "online" | null;
   amountTendered: number | null;
+  /** Cash actually handed back — change kept as credit is not counted here. */
   changeGiven: number | null;
+  /** Who this check belongs to, when a balance was involved. Not the label. */
+  customerName: string | null;
+  /** Balance spent on this check. */
+  creditApplied: number;
+  /** Change the venue could not give, left on the guest's balance instead. */
+  creditKept: number;
   closedAt: string | null;
   settledAt: string | null;
   createdAt: string;

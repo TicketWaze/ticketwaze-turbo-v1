@@ -1,7 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
 
-export default function AnimatedEventPage({ children }: { children: React.ReactNode }) {
+export default function AnimatedEventPage({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <motion.div
       className="flex flex-col gap-8 h-full min-h-0"

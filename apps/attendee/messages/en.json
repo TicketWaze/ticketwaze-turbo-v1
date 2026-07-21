@@ -721,6 +721,13 @@
     "from": "From",
     "free": "Free",
     "coming_soon_label": "Coming soon",
+    "reserve_place": {
+      "cta": "Reserve my place",
+      "reserved": "Place reserved",
+      "count": "{count} reserved",
+      "reserved_toast": "Your place is reserved. We'll email you when tickets go on sale.",
+      "cancelled_toast": "Your reservation has been cancelled."
+    },
     "private": "Private",
     "soldOut": "Sold out",
     "back": "Back",

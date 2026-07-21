@@ -24,17 +24,23 @@ import {
 } from "@/components/ui/popover";
 import { LinkPrimary } from "@/components/shared/Links";
 import ShareEvent from "@/components/shared/ShareEvent";
+import ReserveButton from "./ReserveButton";
 
 export default function EventActions({
   event,
   isFavorite,
   isPast = false,
   salesEnded = false,
+  hasReserved = false,
+  reservationCount = 0,
 }: {
   event: Event;
   isFavorite: boolean;
   isPast?: boolean;
   salesEnded?: boolean;
+  /** Coming-soon activities only — whether this viewer holds a place. */
+  hasReserved?: boolean;
+  reservationCount?: number;
 }) {
   const t = useTranslations("Event");
   const locale = useLocale();
@@ -149,7 +155,15 @@ export default function EventActions({
       {/* The activity is over, or the organiser's sales cutoff has passed:
           tickets can no longer be bought, so show a note in place of the buy
           button. The event otherwise stays listed and viewable. */}
-      {isPast ? (
+      {/* A teaser sells nothing yet, so the buy CTA would lead to a checkout
+          with no ticket types. Reserving a place stands in until it goes live. */}
+      {event.isComingSoon ? (
+        <ReserveButton
+          eventId={event.eventId}
+          initialHasReserved={hasReserved}
+          initialCount={reservationCount}
+        />
+      ) : isPast ? (
         <span className="px-12 py-6 rounded-[100px] text-center text-neutral-600 font-medium text-[1.5rem] leading-8 flex items-center justify-center bg-neutral-100">
           {t("ended")}
         </span>

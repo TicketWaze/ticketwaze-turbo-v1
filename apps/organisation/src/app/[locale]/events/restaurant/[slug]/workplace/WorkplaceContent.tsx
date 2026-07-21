@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Restaurant } from "@ticketwaze/typescript-config";
-import { formatMoney } from "@ticketwaze/currency";
 import { AddCircle, Cake, Calendar, Coffee } from "iconsax-reactjs";
 import BackButton from "@/components/shared/BackButton";
 import {
@@ -18,7 +17,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ButtonPrimary, ButtonNeutral } from "@/components/shared/buttons";
+import {
+  ButtonPrimary,
+  ButtonNeutral,
+  ButtonRed,
+} from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import {
   OpenServiceDay,
@@ -73,45 +76,62 @@ export default function WorkplaceContent({
     return true;
   }
 
+  /**
+   * Only exists while a day is open — there is nothing to close otherwise.
+   * Built once and placed twice, because the desktop and mobile rows want it in
+   * different places but it is the same control with the same state.
+   */
+  const closeDay = day ? (
+    <CloseDayDialog
+      openTabs={totals?.openTabs ?? 0}
+      busy={busy}
+      onClose={(note) =>
+        run(() =>
+          CloseServiceDay(orgId, restId, day.serviceDayId, token, locale, {
+            note,
+          }),
+        )
+      }
+    />
+  ) : null;
+
   return (
     <div className="flex flex-col gap-8 overflow-y-scroll pb-12">
       {/* No title: you reached this page from the venue's own dashboard, so
           naming it back at you is a line that earns nothing. */}
-      <div className="flex items-center justify-between gap-4">
+      {/* Stacks on a phone. Kept as one row, these three overflowed the
+          viewport and clipped the last button clean off the screen. */}
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <BackButton text={t("back")} />
-        <div className="flex items-center gap-3">
-          <Link href={`/events/restaurant/${slug}/workplace/sales`}>
-            <ButtonNeutral className="py-[7.5px] flex items-center gap-3">
+        {/* Even halves on a phone rather than natural widths, which wrapped
+            one label to two lines and left the row ragged. */}
+        <div className="grid grid-cols-2 gap-3 lg:flex lg:items-center">
+          {/* Full width only on the phone grid. Left as `w-full` on desktop
+              these stretched to fill the row and squeezed the button beside
+              them until its label wrapped onto three lines. */}
+          <Link
+            href={`/events/restaurant/${slug}/workplace/sales`}
+            className="w-full lg:w-auto"
+          >
+            <ButtonNeutral className="w-full lg:w-auto py-[7.5px] flex items-center justify-center gap-3 whitespace-nowrap">
               <Calendar size="18" color="#737C8A" variant="Bulk" />
               {t("sales_history")}
             </ButtonNeutral>
           </Link>
+          {/* Desktop only — a fourth control does not fit a phone's top row.
+              `shrink-0` so it keeps its natural width instead of being
+              compressed by the buttons either side. */}
+          <div className="hidden lg:block shrink-0">{closeDay}</div>
           <AddChoiceDialog slug={slug} />
         </div>
       </div>
 
+      {/* Its own row on a phone, so ending the day stays reachable without
+          crowding the bar above. */}
+      {closeDay && <div className="flex lg:hidden">{closeDay}</div>}
+
       {day ? (
-        <>
-          <DayHeader
-            day={day}
-            totals={totals}
-            busy={busy}
-            locale={locale}
-            onClose={(note) =>
-              run(() =>
-                CloseServiceDay(
-                  orgId,
-                  restId,
-                  day.serviceDayId,
-                  token,
-                  locale,
-                  { note },
-                ),
-              )
-            }
-          />
-          <TabsBoard restaurant={restaurant} tabs={tabs} catalog={catalog} />
-        </>
+        <TabsBoard restaurant={restaurant} tabs={tabs} catalog={catalog} />
       ) : (
         <StartDay
           busy={busy}
@@ -156,67 +176,6 @@ function StartDay({
   );
 }
 
-/** The day in progress: what it has taken so far, and the way to end it. */
-function DayHeader({
-  day,
-  totals,
-  busy,
-  locale,
-  onClose,
-}: {
-  day: ServiceDay;
-  totals: DayTotals | null;
-  busy: boolean;
-  locale: string;
-  onClose: (note?: string) => Promise<boolean>;
-}) {
-  const t = useTranslations("Events.workplace");
-  const usd = day.currency === "USD";
-  const sales = usd ? (totals?.usdTotalSales ?? 0) : (totals?.totalSales ?? 0);
-  const cash = usd ? (totals?.usdCashSales ?? 0) : (totals?.cashSales ?? 0);
-
-  const date = new Date(day.businessDate).toLocaleDateString(locale, {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-  });
-
-  return (
-    <div className="w-full p-6 rounded-[15px] border border-neutral-100 flex flex-col lg:flex-row lg:items-center gap-6 justify-between">
-      <div className="flex flex-col gap-1">
-        <span className="font-medium font-primary text-[1.8rem] leading-10 text-black capitalize">
-          {date}
-        </span>
-        <span className="text-[1.3rem] leading-7 text-neutral-600">
-          {t("day_in_progress")}
-        </span>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-8">
-        <Stat label={t("day_sales")} value={formatMoney(sales, day.currency, locale)} />
-        <Stat label={t("day_cash")} value={formatMoney(cash, day.currency, locale)} />
-        <Stat label={t("day_tabs")} value={String(totals?.tabCount ?? 0)} />
-        <CloseDayDialog
-          openTabs={totals?.openTabs ?? 0}
-          busy={busy}
-          onClose={onClose}
-        />
-      </div>
-    </div>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-[1.2rem] text-neutral-600">{label}</span>
-      <span className="text-[1.8rem] font-medium leading-8 text-deep-100">
-        {value}
-      </span>
-    </div>
-  );
-}
-
 /**
  * Ending the day. Open tabs block it — the API refuses and so does this, with
  * the count, because "settle them first" is more useful than a rejected click.
@@ -246,7 +205,10 @@ function CloseDayDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <ButtonPrimary className="py-[7.5px]">{t("close_day")}</ButtonPrimary>
+        {/* Red: it is the one irreversible action on this screen. */}
+        <ButtonRed className="py-[7.5px] w-full lg:w-auto whitespace-nowrap">
+          {t("close_day")}
+        </ButtonRed>
       </DialogTrigger>
       <DialogContent className="w-xl lg:w-208">
         <DialogHeader>
@@ -278,13 +240,13 @@ function CloseDayDialog({
         </div>
 
         <DialogFooter>
-          <ButtonPrimary
+          <ButtonRed
             className="w-full"
             disabled={busy || blocked}
             onClick={confirm}
           >
             {busy ? <LoadingCircleSmall /> : t("close_day")}
-          </ButtonPrimary>
+          </ButtonRed>
           <DialogClose ref={closeRef} className="sr-only" />
         </DialogFooter>
       </DialogContent>
@@ -310,7 +272,7 @@ function AddChoiceDialog({ slug }: { slug: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <ButtonPrimary className="py-[7.5px] flex items-center gap-3">
+        <ButtonPrimary className="w-full lg:w-auto py-[7.5px] flex items-center justify-center gap-3 whitespace-nowrap">
           <AddCircle size="20" color="#fff" variant="Bulk" />
           {t("add_item")}
         </ButtonPrimary>
