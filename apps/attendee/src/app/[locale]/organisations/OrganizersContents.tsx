@@ -272,8 +272,8 @@ export default function OrganizersContents({
           <TabsTrigger value="following">{t("filters.following")}</TabsTrigger>
           {/* <TabsTrigger value="popular">{t('filters.popular')}</TabsTrigger> */}
         </TabsList>
-        <TabsContent value="all" className="min-h-0 overflow-y-scroll">
-          <ul className="list pt-4">
+        <TabsContent value="all" className="min-h-0 overflow-y-scroll -mx-4">
+          <ul className="list pt-4 px-4 pb-8 lg:pb-0">
             {filteredOrganisations.map((organisation) => {
               const events = organisation.events.length;
               return (
@@ -305,10 +305,10 @@ export default function OrganizersContents({
             </div>
           )}
         </TabsContent>
-        <TabsContent value="following">
+        <TabsContent value="following" className="min-h-0 overflow-y-scroll -mx-4">
           {followedOrganisations.length > 0 ? (
             <>
-              <ul className="list pt-4">
+              <ul className="list pt-4 px-4 pb-8 lg:pb-0">
                 {filteredFollowedOrganisations.map((organisation) => {
                   const events = organisation.events.length;
                   return (

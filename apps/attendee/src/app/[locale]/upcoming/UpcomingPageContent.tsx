@@ -92,31 +92,33 @@ export default function UpcomingPageContent({ events }: { events: any }) {
         </div>
       </motion.header>
       <>
-        <ul className="list pt-4 overflow-y-scroll">
-          {filteredEvents.map((event: any, index) => {
-            const slug = slugify(event.eventName, event.eventId);
-            return (
-              <motion.li
-                key={event.eventId}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.35,
-                  ease: "easeOut",
-                  delay: Math.min(index * 0.06, 0.3),
-                }}
-              >
-                <UpcomingCard
-                  href={`upcoming/${slug}`}
-                  image={event.eventImageUrl}
-                  name={event.eventName}
-                  eventDays={event.eventDays ?? []}
-                  tickets={event.tickets?.length ?? 0}
-                />
-              </motion.li>
-            );
-          })}
-        </ul>
+        <div className="pt-4 overflow-y-scroll flex flex-col gap-8 -mx-4">
+          <ul className="list px-4 pb-8">
+            {filteredEvents.map((event: any, index) => {
+              const slug = slugify(event.eventName, event.eventId);
+              return (
+                <motion.li
+                  key={event.eventId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.35,
+                    ease: "easeOut",
+                    delay: Math.min(index * 0.06, 0.3),
+                  }}
+                >
+                  <UpcomingCard
+                    href={`upcoming/${slug}`}
+                    image={event.eventImageUrl}
+                    name={event.eventName}
+                    eventDays={event.eventDays ?? []}
+                    tickets={event.tickets?.length ?? 0}
+                  />
+                </motion.li>
+              );
+            })}
+          </ul>
+        </div>
         <AnimatePresence>
           {list.length > 0 && filteredEvents.length === 0 && (
             <motion.div

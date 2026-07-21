@@ -82,8 +82,8 @@ export default async function HistoryPage() {
 
         {/* main */}
         {events.length > 0 ? (
-          <div className="pt-4 overflow-y-scroll flex flex-col gap-8">
-            <ul className="list">
+          <div className="pt-4 overflow-y-scroll flex flex-col gap-8 -mx-4">
+            <ul className="list px-4 pb-8 ">
               {events.map((event) => (
                 <li key={event.eventId}>
                   <HistoryCard
