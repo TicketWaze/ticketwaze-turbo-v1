@@ -9,17 +9,20 @@ function AttendeeLayout({
   title,
   children,
   className,
+  forceWelcomeModal = false,
 }: {
   title: string;
   children: React.ReactNode;
   className?: string;
+  /** Opens the welcome modal on first paint, skipping the status fetch. */
+  forceWelcomeModal?: boolean;
 }) {
   return (
     <>
       <Head>
         <title>{title} - Ticketwaze</title>
       </Head>
-      <WelcomeModal />
+      <WelcomeModal forceOpen={forceWelcomeModal} />
       <div
         className={
           "bg-neutral-200 p-6 pt-8 lg:p-8 min-h-dvh lg:h-dvh grid lg:grid-cols-12 lg:overflow-hidden"

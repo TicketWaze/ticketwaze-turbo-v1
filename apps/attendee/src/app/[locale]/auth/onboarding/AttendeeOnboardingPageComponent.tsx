@@ -172,7 +172,16 @@ export default function AttendeeOnboardingPageComponent() {
         },
       );
       const response = await request.json();
-      if (response.status === "success") {
+      if (response.status !== "success") {
+        toast.error(response.message);
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Onboarding is persisted from here on. Refreshing the session is what
+      // lets middleware through to /explore, but a failure here must not undo
+      // a completed signup — worst case the stale flag self-heals on refresh.
+      try {
         await update({
           ...session,
           user: {
@@ -181,13 +190,15 @@ export default function AttendeeOnboardingPageComponent() {
             userPreference: response.userPreference,
           },
         });
-        router.push("/explore");
-      } else {
-        toast.error(response.message);
-      }
+      } catch {}
+
+      // `welcome=1` makes the welcome modal part of the first paint of
+      // /explore instead of waiting on a client fetch — see WelcomeModal.
+      // isSubmitting stays true so the setup loader covers the navigation
+      // rather than flashing the last step back at the user.
+      router.push("/explore?welcome=1");
     } catch (err) {
       toast.error(`Failed to save onboarding data: ${err}`);
-    } finally {
       setIsSubmitting(false);
     }
   }

@@ -62,15 +62,24 @@ const STEPS: Step[] = [
   },
 ];
 
-export default function WelcomeModal() {
+export default function WelcomeModal({
+  forceOpen = false,
+}: {
+  forceOpen?: boolean;
+}) {
   const { data: session } = useSession();
   const t = useTranslations("WelcomeModal");
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  // Users arriving straight from onboarding are known to be first-timers, so
+  // the modal opens as part of the server render — on a slow connection the
+  // status fetch below can take seconds, and the page underneath must never be
+  // browsable before the modal has been seen.
+  const [open, setOpen] = useState(forceOpen);
   const [step, setStep] = useState(0);
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
+    if (forceOpen) return;
     const token = session?.user?.accessToken;
     if (!token) return;
 
@@ -85,7 +94,7 @@ export default function WelcomeModal() {
         if (data?.hasSeenWelcomeModal === false) setOpen(true);
       })
       .catch(() => {});
-  }, [session?.user?.accessToken]);
+  }, [forceOpen, session?.user?.accessToken]);
 
   async function markSeen() {
     const token = session?.user?.accessToken;
@@ -97,11 +106,6 @@ export default function WelcomeModal() {
         Origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
       },
     });
-  }
-
-  async function dismiss() {
-    setOpen(false);
-    await markSeen();
   }
 
   function slide(fn: () => void) {
@@ -118,20 +122,25 @@ export default function WelcomeModal() {
 
   async function explore() {
     setOpen(false);
+    // Drop `?welcome=1` so a refresh or back navigation does not reopen it.
+    router.replace("/explore");
     await markSeen();
-    router.push("/explore");
-  }
-
-  function handleOpenChange(value: boolean) {
-    if (!value) dismiss();
   }
 
   const current = STEPS[step];
   const isLast = step === STEPS.length - 1;
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="w-[360px] lg:w-[560px] flex flex-col overflow-hidden max-h-[90dvh] gap-0 p-0 lg:p-0">
+    // Walking the full tour is required: there is no close button, and the
+    // overlay and Escape are inert, so the final action is the only way out.
+    <Dialog open={open}>
+      <DialogContent
+        showCloseButton={false}
+        onPointerDownOutside={(e) => e.preventDefault()}
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+        className="w-[360px] lg:w-[560px] flex flex-col overflow-hidden max-h-[90dvh] gap-0 p-0 lg:p-0"
+      >
         {/* Animated content area */}
         <div className="flex-1 overflow-y-auto px-[20px] pt-[20px] lg:px-[30px] lg:pt-[45px] pb-4">
           <div
