@@ -18,7 +18,7 @@ function RaffleCard({ raffle }: { raffle: Raffle }) {
   return (
     <Link
       href={`/events/raffle/${slugify(raffle.title, raffle.raffleId)}`}
-      className="flex flex-row items-center lg:items-stretch lg:mb-8 lg:ml-4 lg:flex-col gap-4 w-full lg:max-w-140 bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0">
+      className="flex flex-row items-center lg:items-stretch lg:mb-8 lg:flex-col gap-4 w-full lg:max-w-140 bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0">
       <div className="relative">
         {raffle.coverImageUrl && (
           <Image
