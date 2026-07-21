@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { Chart, registerables } from "chart.js";
+import { useTranslations } from "next-intl";
 
 Chart.register(...registerables);
 
@@ -10,6 +11,7 @@ type ChartPoint = { label: string; value: number };
 export default function RevenueGrowthChart({ data }: { data: ChartPoint[] }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const chartRef = useRef<Chart | null>(null);
+  const intl = useTranslations("Analytics.user.chart");
 
   useEffect(() => {
     if (!canvasRef.current || data.length === 0) return;
@@ -17,8 +19,14 @@ export default function RevenueGrowthChart({ data }: { data: ChartPoint[] }) {
     const ctx = canvasRef.current.getContext("2d");
     if (!ctx) return;
 
-    const labels = data.map((d, i) => (i === data.length - 1 ? "Today" : d.label));
-    const values = data.map((d) => d.value);
+    const today = new Date().getDate();
+
+    const filteredData = data.filter((item) => Number(item.label) <= today);
+    const labels = filteredData.map((d, i) =>
+      i === filteredData.length - 1 ? intl("today") : d.label,
+    );
+
+    const values = filteredData.map((d) => d.value);
 
     if (chartRef.current) {
       chartRef.current.destroy();
@@ -57,7 +65,7 @@ export default function RevenueGrowthChart({ data }: { data: ChartPoint[] }) {
             ticks: {
               maxTicksLimit: 31,
               color: (context) =>
-                context.tick.label === "Today" ? "#eb6819" : "#b5b5b5",
+                context.tick.label === intl("today") ? "#eb6819" : "#b5b5b5",
               font: { size: 11 },
             },
           },

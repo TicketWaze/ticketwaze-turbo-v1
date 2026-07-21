@@ -22,7 +22,7 @@ function HistoryCard({
   return (
     <Link
       href={href}
-      className={`flex flex-col  lg:items-stretch  gap-4 w-full mb-8 lg:ml-4 bg-white shadow-lg rounded-[10px] overflow-hidden pb-4  hover:shadow-xl`}
+      className={`flex flex-col  lg:items-stretch  gap-4 w-full mb-8 bg-white shadow-lg rounded-[10px] overflow-hidden pb-4  hover:shadow-xl`}
     >
       <Image
         src={image}

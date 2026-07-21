@@ -282,3 +282,74 @@ export async function AddReportOrganisation(
     };
   }
 }
+
+/**
+ * Reserve a place on a coming-soon activity.
+ *
+ * There is no guest variant on purpose: the API route sits behind auth, so a
+ * signed-out caller is rejected server-side rather than merely hidden in the UI.
+ */
+export async function ReservePlaceAction(
+  accessToken: string,
+  eventId: string,
+  pathname: string,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/reservations`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
+        },
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath(pathname);
+      return { status: "success", reservationCount: data.reservationCount };
+    }
+    return { error: data.message ?? "Something went wrong" };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "An unknown error occurred",
+    };
+  }
+}
+
+/** Give up a reserved place. */
+export async function CancelReservationAction(
+  accessToken: string,
+  eventId: string,
+  pathname: string,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/reservations`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
+        },
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      revalidatePath(pathname);
+      return { status: "success", reservationCount: data.reservationCount };
+    }
+    return { error: data.message ?? "Something went wrong" };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "An unknown error occurred",
+    };
+  }
+}

@@ -17,11 +17,50 @@ async function refreshAccessToken(token: Record<string, unknown>) {
       return null;
     }
 
+    /**
+     * Re-read the active organisation's membership context.
+     *
+     * myRole/myPermissions are seeded once at login and otherwise only change
+     * when the user switches organisation, so granting someone a permission had
+     * no effect on their session until they logged out — for up to the 30-day
+     * refresh-token lifetime. Refreshing here bounds that to one access-token
+     * period. The endpoint is Redis-cached server-side, and this runs only when
+     * the access token is close to expiry, so it is not a per-request cost.
+     *
+     * Failure is non-fatal: a refreshed access token is worth keeping even if
+     * the permission re-read fails, so the previous context carries over.
+     */
+    const activeOrganisation = token.activeOrganisation as
+      | (Record<string, unknown> & { organisationId?: string })
+      | null
+      | undefined;
+    let refreshedOrganisation: typeof activeOrganisation = activeOrganisation;
+
+    if (activeOrganisation?.organisationId) {
+      try {
+        const meRes = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/organisations/${activeOrganisation.organisationId}/me`,
+          { headers: { Authorization: `Bearer ${data.accessToken}` } },
+        );
+        const meData = await meRes.json();
+        if (meData?.status === "success" && meData.organisation) {
+          refreshedOrganisation = {
+            ...activeOrganisation,
+            myRole: meData.organisation.myRole ?? null,
+            myPermissions: meData.organisation.myPermissions ?? [],
+          };
+        }
+      } catch {
+        // Keep the context we already have.
+      }
+    }
+
     return {
       ...token,
       accessToken: data.accessToken,
       refreshToken: data.refreshToken,
       accessTokenExpires: data.accessTokenExpires,
+      activeOrganisation: refreshedOrganisation,
       // Self-heal stale sessions: tokens seeded before the user completed
       // onboarding carry isOnboarded=false for up to 30 days otherwise.
       ...(typeof data.isOnboarded === "boolean"

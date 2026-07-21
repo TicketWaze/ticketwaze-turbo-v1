@@ -7,7 +7,10 @@ import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { CreateInPersonEvent } from "@/actions/EventActions";
+import {
+  CreateInPersonEvent,
+  PublishComingSoonEvent,
+} from "@/actions/EventActions";
 import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -20,19 +23,28 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
 import { EventDay } from "./types";
-import { MembershipTier } from "@ticketwaze/typescript-config";
+import { Event, MembershipTier } from "@ticketwaze/typescript-config";
 
 export default function CreateInPersonEventForm({
   eventType,
   membershipTier,
+  teaser,
 }: {
   eventType: string;
   membershipTier: MembershipTier;
+  /**
+   * Set when this wizard is finishing a "coming soon" teaser rather than
+   * creating an event from nothing. Everything the teaser already answered is
+   * prefilled, and submitting publishes that row instead of inserting a new
+   * one — the teaser's id, followers and reservations all carry over.
+   */
+  teaser?: Event;
 }) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
   const { data: session } = useSession();
   const organisation = session?.activeOrganisation;
+  const isPublishing = Boolean(teaser);
   const [isFree, setIsfree] = useState(false);
   const [isRefundable, setIsRefundable] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
@@ -42,6 +54,8 @@ export default function CreateInPersonEventForm({
     isFree,
     (k, values) => t(k, values),
     membershipTier.freeTickets,
+    // The teaser's cover image already exists server-side.
+    isPublishing,
   );
   type TForm = z.infer<typeof FormDataSchema>;
 
@@ -80,12 +94,14 @@ export default function CreateInPersonEventForm({
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
     defaultValues: {
-      eventName: "",
-      eventDescription: "",
-      address: "",
-      state: "",
-      city: "",
-      country: "Haiti",
+      // A teaser answered the "what and where" questions already; the wizard
+      // exists to collect what it could not: dates, tickets and a precise venue.
+      eventName: teaser?.eventName ?? "",
+      eventDescription: teaser?.eventDescription ?? "",
+      address: teaser?.address ?? "",
+      state: teaser?.state ?? "",
+      city: teaser?.city ?? "",
+      country: teaser?.country || "Haiti",
       location: { lat: undefined, lng: undefined },
       eventImage: undefined as unknown as File,
       eventDays: [
@@ -97,7 +113,7 @@ export default function CreateInPersonEventForm({
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
       ],
-      activityTags: [],
+      activityTags: teaser?.activityTags ?? [],
       ticketTypes: [
         {
           ticketTypeName: membershipTier.customTicketTypes ? "" : "General",
@@ -122,7 +138,9 @@ export default function CreateInPersonEventForm({
     formData.append("city", data.city);
     formData.append("country", data.country);
     formData.append("location", JSON.stringify(data.location));
-    formData.append("eventImage", data.eventImage);
+    // Omitted when publishing a teaser that keeps its existing cover image;
+    // sending an empty part would fail the API's file validation.
+    if (data.eventImage) formData.append("eventImage", data.eventImage);
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
     formData.append("eventType", eventType);
@@ -151,14 +169,22 @@ export default function CreateInPersonEventForm({
       formData.append("ticketTypes", JSON.stringify(data.ticketTypes));
     }
 
-    const result = await CreateInPersonEvent(
-      organisation?.organisationId ?? "",
-      session?.user.accessToken ?? "",
-      formData,
-      locale,
-    );
+    const result = teaser
+      ? await PublishComingSoonEvent(
+          organisation?.organisationId ?? "",
+          teaser.eventId,
+          session?.user.accessToken ?? "",
+          formData,
+          locale,
+        )
+      : await CreateInPersonEvent(
+          organisation?.organisationId ?? "",
+          session?.user.accessToken ?? "",
+          formData,
+          locale,
+        );
     if (result.status === "success") {
-      toast.success("success");
+      toast.success(teaser ? t("publish_success") : "success");
       redirect("/events");
     }
     if (result.error) toast.error(result.error);
@@ -167,7 +193,12 @@ export default function CreateInPersonEventForm({
   type FieldName = keyof TForm;
 
   // Name availability is checked live (per keystroke) instead of on step submit.
-  const nameStatus = useEventNameAvailability(watch("eventName"));
+  // Skipped when publishing a teaser: the name is locked and the only row using
+  // it is this one, so the check would report the teaser's own name as taken.
+  const liveNameStatus = useEventNameAvailability(
+    isPublishing ? "" : watch("eventName"),
+  );
+  const nameStatus = isPublishing ? "idle" : liveNameStatus;
 
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -235,8 +266,11 @@ export default function CreateInPersonEventForm({
     }
   };
 
-  // Image handling
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // Image handling. A teaser opens showing the cover it was announced with;
+  // picking a new file replaces it, leaving it alone keeps it.
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    teaser?.eventImageUrl ?? null,
+  );
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target;
@@ -366,6 +400,7 @@ export default function CreateInPersonEventForm({
               isPrivate={isPrivate}
               setIsPrivate={setIsPrivate}
               nameStatus={nameStatus}
+              nameLocked={isPublishing}
             />
           </motion.div>
         )}

@@ -11,6 +11,7 @@ import TopBar from "@/components/shared/TopBar";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { compressImage } from "@/lib/compressImage";
+import { slugify } from "@/lib/Slugify";
 import {
   CreateComingSoonEvent,
   UpdateComingSoonEvent,
@@ -20,7 +21,10 @@ import { Event } from "@ticketwaze/typescript-config";
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
 
-const MIN_DESCRIPTION = 20;
+// Matches what a real event requires. A teaser becomes that event on the same
+// row, so writing to the lower bar only meant rewriting the description at
+// publish time.
+const MIN_DESCRIPTION = 150;
 
 function Field({
   label,
@@ -122,7 +126,15 @@ export default function CreateComingSoonForm({
 
     if (result.status === "success") {
       toast.success(isEdit ? t("updated") : t("created"));
-      router.push("/events");
+      // Editing is reached from the teaser's own page, so it returns there;
+      // creating has no page to return to yet and goes to the list. The slug is
+      // rebuilt from the name just submitted, not the one this form opened
+      // with, or a rename would land on a stale URL.
+      router.push(
+        isEdit
+          ? `/events/coming-soon/${slugify(name.trim(), event!.eventId)}`
+          : "/events",
+      );
       return;
     }
 

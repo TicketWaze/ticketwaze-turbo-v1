@@ -993,6 +993,7 @@
     "user": {
       "title": "Croissance des utilisateurs",
       "chart": {
+        "today": "Auj.",
         "sugn_ups": "Inscriptions",
         "attendee": "Participant",
         "organizer": "Organisateur"

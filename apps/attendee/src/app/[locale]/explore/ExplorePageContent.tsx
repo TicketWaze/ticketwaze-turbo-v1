@@ -190,9 +190,9 @@ export default function ExplorePageContent({
         </div>
       </motion.header>
       {hasAnyEvents ? (
-        <div className="pt-4 overflow-y-scroll flex flex-col gap-8">
+        <div className="pt-4 overflow-y-scroll flex flex-col gap-8 -mx-4">
           {filteredEvents.length > 0 && (
-            <ul className="list">
+            <ul className="list pt-4 px-4 pb-8 lg:pb-0">
               {filteredEvents.map((event, index) => (
                 <motion.li
                   key={event.eventId}
@@ -203,6 +203,7 @@ export default function ExplorePageContent({
                     ease: "easeOut",
                     delay: Math.min(index * 0.06, 0.3),
                   }}
+                  className="h-full flex"
                 >
                   <EventCard event={event} htgExchangeRate={htgExchangeRate} />
                 </motion.li>
@@ -211,33 +212,35 @@ export default function ExplorePageContent({
           )}
           {filteredRaffles.length > 0 && (
             <section className="flex flex-col gap-6">
-              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black">
+              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black lg:px-4">
                 {t("raffles")}
               </span>
-              <ul className="list">
-                {filteredRaffles.map((raffle, index) => (
-                  <motion.li
-                    key={raffle.raffleId}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.35,
-                      ease: "easeOut",
-                      delay: Math.min(index * 0.06, 0.3),
-                    }}
-                  >
-                    <RaffleCard raffle={raffle} />
-                  </motion.li>
-                ))}
-              </ul>
+              <div className="-mx-4">
+                <ul className="list pt-4 px-4 pb-8 lg:pb-0">
+                  {filteredRaffles.map((raffle, index) => (
+                    <motion.li
+                      key={raffle.raffleId}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: 0.35,
+                        ease: "easeOut",
+                        delay: Math.min(index * 0.06, 0.3),
+                      }}
+                    >
+                      <RaffleCard raffle={raffle} />
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
             </section>
           )}
           {filteredRestaurants.length > 0 && (
             <section className="flex flex-col gap-6">
-              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black">
+              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black px-4">
                 {t("restaurants")}
               </span>
-              <ul className="list">
+              <ul className="list pt-4 px-4 pb-8 lg:pb-0">
                 {filteredRestaurants.map((restaurant, index) => (
                   <motion.li
                     key={restaurant.restaurantId}
@@ -257,10 +260,10 @@ export default function ExplorePageContent({
           )}
           {filteredPastEvents.length > 0 && (
             <section className="flex flex-col gap-6">
-              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black">
+              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black px-4">
                 {t("pastActivities")}
               </span>
-              <ul className="list opacity-70">
+              <ul className="list opacity-70 pt-4 px-4 pb-8 lg:pb-0">
                 {filteredPastEvents.map((event, index) => (
                   <motion.li
                     key={event.eventId}

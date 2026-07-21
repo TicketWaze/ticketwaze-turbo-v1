@@ -95,10 +95,62 @@ export async function SettleTab(
   tabId: string,
   accessToken: string,
   locale: string,
-  payload: { paymentMethod: "cash"; amountTendered: number },
+  payload: {
+    paymentMethod: "cash";
+    amountTendered: number;
+    /** Required by the API whenever credit is taken or left. */
+    customerName?: string;
+    /** Balance to draw down. The API re-reads the real balance and caps it. */
+    creditApplied?: number;
+    /** Keep the change on the guest's balance instead of handing it over. */
+    keepChangeAsCredit?: boolean;
+  },
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${tabId}/settle`,
+    "POST",
+    accessToken,
+    locale,
+    payload,
+  );
+}
+
+/**
+ * Money the venue holds for named guests.
+ *
+ * Sits on its own path rather than under `/tabs`, because a balance outlives
+ * any one check — it is created on one visit and spent on another.
+ */
+function creditsBase(organisationId: string, restaurantId: string) {
+  return `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${organisationId}/${restaurantId}/credits`;
+}
+
+/** Find guests by name, to spend a balance against the check being settled. */
+export async function SearchCustomerCredits(
+  organisationId: string,
+  restaurantId: string,
+  accessToken: string,
+  locale: string,
+  search: string,
+) {
+  return send(
+    `${creditsBase(organisationId, restaurantId)}?search=${encodeURIComponent(search)}`,
+    "GET",
+    accessToken,
+    locale,
+  );
+}
+
+/** A float left deliberately, with no check involved. */
+export async function DepositCustomerCredit(
+  organisationId: string,
+  restaurantId: string,
+  accessToken: string,
+  locale: string,
+  payload: { customerName: string; amount: number; note?: string },
+) {
+  return send(
+    creditsBase(organisationId, restaurantId),
     "POST",
     accessToken,
     locale,

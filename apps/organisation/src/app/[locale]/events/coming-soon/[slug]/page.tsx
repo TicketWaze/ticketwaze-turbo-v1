@@ -1,18 +1,17 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import { getLocale, getTranslations } from "next-intl/server";
-import { auth } from "@/lib/auth";
-import { Event } from "@ticketwaze/typescript-config";
+import { getTranslations } from "next-intl/server";
 import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
-import { extractIdFromSlug } from "@/lib/Slugify";
-import CreateComingSoonForm from "../../create/coming-soon/CreateComingSoonForm";
+import BackButton from "@/components/shared/BackButton";
+import ComingSoonPageDetails from "./components/ComingSoonPageDetails";
+import { getTeaser } from "./getTeaser";
 
 /**
  * A teaser's management page.
  *
- * Separate from `/events/show/[slug]` on purpose: that page is built around
- * tickets, attendees, check-ins and revenue, and reads `eventDays[0]` in several
- * places. A teaser has none of those, so it gets the only screen that makes
- * sense for it — its own edit form.
+ * Structured like `/events/show/[slug]` on purpose — same top bar, stat grid
+ * and overflow menu — because to an organiser this is the same kind of screen.
+ * Editing lives behind the More menu rather than being the page itself, and
+ * publishing is the primary action at the top.
  */
 export default async function ComingSoonEventPage({
   params,
@@ -20,53 +19,27 @@ export default async function ComingSoonEventPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const locale = await getLocale();
-  const session = await auth();
   const t = await getTranslations("Events.coming_soon");
-  const organisationId = session?.activeOrganisation.organisationId ?? "";
+  const { event, reservations } = await getTeaser(slug, {
+    withReservations: true,
+  });
 
-  let eventId: string;
-  try {
-    eventId = extractIdFromSlug(slug);
-  } catch {
+  if (!event) {
     return (
-      <OrganizerLayout title={t("edit_title")}>
-        <FetchFailedErrorView />
-      </OrganizerLayout>
-    );
-  }
-
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/events`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept-Language": locale,
-        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-        Authorization: `Bearer ${session?.user.accessToken}`,
-      },
-      cache: "no-store",
-    },
-  );
-
-  // The API omits its data keys on error, so guard before reading.
-  const response = await request.json().catch(() => null);
-  const event: Event | undefined = (response?.events ?? []).find(
-    (item: Event) => item.eventId === eventId,
-  );
-
-  if (!request.ok || !event) {
-    return (
-      <OrganizerLayout title={t("edit_title")}>
+      <OrganizerLayout title={t("title")}>
         <FetchFailedErrorView />
       </OrganizerLayout>
     );
   }
 
   return (
-    <OrganizerLayout title={t("edit_title")}>
-      <CreateComingSoonForm organisationId={organisationId} event={event} />
+    <OrganizerLayout title="">
+      <BackButton text={t("back")} />
+      <ComingSoonPageDetails
+        event={event}
+        slug={slug}
+        reservations={reservations}
+      />
     </OrganizerLayout>
   );
 }

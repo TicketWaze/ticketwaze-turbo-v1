@@ -1375,3 +1375,47 @@ export async function UpdateComingSoonEvent(
     return { error: error?.message ?? "An unknown error occurred" };
   }
 }
+
+/**
+ * Publish a teaser: same row, now a real event with days and ticket types.
+ *
+ * The teaser's own page is revalidated alongside the list because the row stops
+ * being a teaser here — leaving it cached would keep serving a "coming soon"
+ * screen for an event that now sells tickets.
+ */
+export async function PublishComingSoonEvent(
+  organisationId: string,
+  eventId: string,
+  accessToken: string,
+  body: FormData,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/coming-soon/${organisationId}/${eventId}/publish`,
+      {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: body,
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { status: "success" as const };
+    }
+    throw new Error(
+      // The API returns VineJS's error array for a validation failure and a
+      // plain string for everything else.
+      Array.isArray(response.message)
+        ? response.message[0]?.message
+        : response.message,
+    );
+  } catch (error: any) {
+    return { error: error?.message ?? "An unknown error occurred" };
+  }
+}

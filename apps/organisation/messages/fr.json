@@ -393,7 +393,7 @@
       "classes": "Distribution des classes de billets",
       "daily": "Ventes de billets quotidiennes",
       "daily_chart": {
-        "today": "Aujourd'hui",
+        "today": "Auj.",
         "mon": "Lun",
         "tue": "Mar",
         "wed": "Mer",
@@ -1236,7 +1236,9 @@
         "gallery_add": "Ajouter des photos",
         "gallery_count": "{count} sur 5 sélectionnées",
         "gallery_remove": "Retirer"
-      }
+      },
+      "publish_name_locked": "Vous avez annoncé cette activité sous ce nom, il reste donc inchangé. Toutes les personnes qui la suivent gardent leur place.",
+      "publish_success": "Votre événement a été envoyé pour révision."
     },
     "filters": {
       "first": {
@@ -1344,7 +1346,10 @@
       "save_success": "Établissement mis à jour.",
       "keep_images": "Laissez vide pour conserver vos photos actuelles.",
       "replace_gallery": "Remplacer la galerie",
-      "workplace": "Espace de travail"
+      "workplace": "Espace de travail",
+      "qr_card_cta": "Scannez pour notre menu",
+      "qr_card_hint": "Dirigez votre caméra vers le code",
+      "qr_download_failed": "Impossible de générer la carte QR. Veuillez réessayer."
     },
     "workplace": {
       "title": "Espace de travail",
@@ -1414,7 +1419,8 @@
         "price": "Entrez un prix valide.",
         "label": "Entrez un nom ou une table.",
         "items": "Ajoutez au moins un article.",
-        "tendered": "Entrez un montant qui couvre le total."
+        "tendered": "Entrez un montant qui couvre le total.",
+        "credit_name": "Entrez le nom du client pour ce solde."
       },
       "open_tab_hint": "Une addition a besoin d’un nom et d’au moins un article. Vous pourrez en ajouter d’autres ensuite.",
       "open_tab_order": "Que prennent-ils ?",
@@ -1448,17 +1454,46 @@
       "no_closed_days": "Aucune journée clôturée pour le moment. Votre première journée clôturée apparaîtra ici.",
       "period_total": "Total",
       "days_recorded": "Journées",
-      "tabs_count": "{count, plural, =0 {aucune addition} one {# addition} other {# additions}}"
+      "tabs_count": "{count, plural, =0 {aucune addition} one {# addition} other {# additions}}",
+      "day_operations": "Opérations",
+      "day_items": "Articles",
+      "day_hours": "Horaires",
+      "no_tabs_on_day": "Aucune addition n’a été ouverte ce jour-là.",
+      "order_empty": "Touchez un plat ou une boisson pour commencer la commande.",
+      "add_one": "Ajouter un {name}",
+      "remove_one": "Retirer un {name}",
+      "customer_credit": "Solde client",
+      "balance": "Solde",
+      "search_customer": "Rechercher un client par nom",
+      "searching": "Recherche...",
+      "no_customer_found": "Aucun client avec un solde à ce nom.",
+      "apply": "Appliquer",
+      "remove_credit": "Retirer",
+      "credit_applied": "Solde appliqué",
+      "keep_change_as_credit": "Garder la monnaie comme solde client",
+      "customer_name": "Nom du client",
+      "customer_name_placeholder": "À qui appartient ce solde ?",
+      "cash_to_give": "Espèces à rendre"
     },
     "coming_soon": {
       "title": "Bientôt disponible",
       "back": "Retour",
+      "reservations": {
+        "title": "Places réservées",
+        "count": "{count} réservées",
+        "empty": "Personne n'a encore réservé de place. Dès que ce sera le cas, vous les verrez ici et elles recevront un email à la mise en ligne de cette activité.",
+        "table": {
+          "name": "Nom",
+          "email": "Email",
+          "date": "Réservée le"
+        }
+      },
       "explainer": "Une annonce pour quelque chose que vous n’avez pas encore finalisé. Choisissez bien le nom : c’est le même événement que vous publierez plus tard, il gardera ce nom et tous ses abonnés.",
       "name": "Nom de l’événement",
       "name_hint": "Vous ne pourrez pas réutiliser ce nom sur un autre événement.",
       "name_placeholder": "Summer Fest 2027",
       "description": "Que voulez-vous annoncer ?",
-      "description_hint": "Au moins {min} caractères. Une ou deux phrases suffisent.",
+      "description_hint": "Au moins {min} caractères. C’est la description que votre événement gardera après publication, alors rédigez-la correctement dès maintenant.",
       "description_placeholder": "Quelque chose de grand arrive à Port-au-Prince cet été...",
       "hint_label": "Quand, approximativement ? (facultatif)",
       "hint_hint": "Texte libre, pas une date. Utilisé uniquement si aucune date n’est renseignée ci-dessus.",
@@ -1482,7 +1517,35 @@
       "save": "Enregistrer les modifications",
       "date_label": "Date (facultatif)",
       "date_hint": "À renseigner uniquement si la date est confirmée. Laissez vide et utilisez plutôt l’indication ci-dessous.",
-      "clear_date": "Effacer"
+      "clear_date": "Effacer",
+      "details": {
+        "title": "Détails de l’annonce",
+        "about": "À propos",
+        "edit": "Modifier l’annonce",
+        "no_venue": "Lieu non défini",
+        "pending_deletion": "Cette annonce est en attente de suppression et ne peut pas être modifiée."
+      },
+      "stats": {
+        "reservations": "Réservations",
+        "expected": "Prévu",
+        "status": "Statut",
+        "date_unset": "Non défini",
+        "status_requested": "En révision",
+        "status_review": "En révision",
+        "status_approved": "Approuvé",
+        "status_rejected": "Refusé"
+      },
+      "publish": {
+        "cta": "Créer l’événement",
+        "title": "Publier l’annonce",
+        "category_title": "Quel type d’événement est-ce ?",
+        "category_hint": "Choisissez la catégorie qui convient. Ensuite, vous ajouterez les dates, le lieu et vos types de billets.",
+        "explainer": "Ceci est encore une annonce. Les gens peuvent réserver une place, mais rien n’est en vente. Ajoutez les dates et les types de billets pour en faire un vrai événement, en gardant cette page, son nom et toutes les personnes qui ont réservé."
+      },
+      "deletion": {
+        "warning": "Supprimer cette annonce la retire du site et annule toutes les réservations qui s’y rattachent. Cette action est irréversible.",
+        "deleted_notice": "Cette annonce a été supprimée."
+      }
     },
     "coming_soon_label": "Bientôt disponible"
   },

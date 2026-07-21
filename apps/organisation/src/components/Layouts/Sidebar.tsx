@@ -132,12 +132,18 @@ function Sidebar({
         },
       );
       const data = await res.json();
+      /**
+       * `me` nests the membership context inside `organisation`, not at the top
+       * level. Reading `data.myPermissions` yielded undefined, which the pages
+       * then coalesced to `[]` — every permission-gated control disappeared
+       * after switching organisation, Owners included.
+       */
       const enriched: Organisation =
         data.status === "success"
           ? {
               ...organisation,
-              myRole: data.myRole,
-              myPermissions: data.myPermissions,
+              myRole: data.organisation?.myRole ?? null,
+              myPermissions: data.organisation?.myPermissions ?? [],
             }
           : organisation;
       await update({ activeOrganisation: enriched });
