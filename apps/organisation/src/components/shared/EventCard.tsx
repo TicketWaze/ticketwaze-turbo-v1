@@ -36,7 +36,7 @@ function EventCard({
       // several places and would crash. Teasers get their own management page,
       // which mirrors it minus everything that needs a sold ticket.
       href={isTeaser ? `/events/coming-soon/${slug}` : `/events/show/${slug}`}
-      className={`flex flex-row items-center lg:items-stretch lg:mb-8 lg:ml-4 lg:flex-col gap-4 w-full ${!aside && "lg:max-w-140"} bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0`}
+      className={`flex flex-row items-center lg:items-stretch lg:mb-8 lg:flex-col gap-4 w-full ${!aside && "lg:max-w-140"} bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0`}
     >
       <div className="relative">
         <Image
@@ -70,7 +70,7 @@ function EventCard({
         )}
         {ongoing && (
           <div className="bg-success absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit flex items-center gap-2">
-            <span className="w-[6px] h-[6px] rounded-full bg-white animate-pulse shrink-0" />
+            <span className="w-[0.6rem] h-[0.6rem] rounded-full bg-white animate-pulse shrink-0" />
             {t("ongoing").toUpperCase()}
           </div>
         )}

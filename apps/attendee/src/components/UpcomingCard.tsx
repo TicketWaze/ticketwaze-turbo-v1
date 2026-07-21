@@ -122,14 +122,14 @@ function UpcomingCard({
             "flex flex-col lg:flex-row gap-6  lg:items-center justify-between"
           }
         >
-          <div className={"flex items-center gap-[5px]"}>
+          <div className={"flex items-center gap-2"}>
             <Calendar2
               size="15"
               color={isOngoing ? "#16A34A" : "#2e3237"}
               variant="Bulk"
             />
             <p
-              className={`font-medium text-[1rem] leading-[15px] ${
+              className={`font-medium text-[1rem] leading-6 ${
                 isOngoing ? "text-[#16A34A]" : "text-deep-100"
               }`}
             >
