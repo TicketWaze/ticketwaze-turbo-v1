@@ -39,7 +39,12 @@ export default function FinancePageContent({
   const t = useTranslations("Finance");
   const { data: session } = useSession();
   const currentOrganisation = transactions.organisation;
-  const { orders, allOrders } = transactions;
+  // The API returns only ticketed (event) orders, but guard here too: every
+  // cell below reads tickets[0].event, so a single order without a loaded event
+  // ticket would crash the whole page rather than just omit a row.
+  const hasEventTicket = (order: Order) => Boolean(order.tickets?.[0]?.event);
+  const orders = transactions.orders.filter(hasEventTicket);
+  const allOrders = transactions.allOrders.filter(hasEventTicket);
   const total = allOrders.reduce((sum, order) => {
     const orderTotal = order.tickets.reduce(
       (s, ticket) =>
