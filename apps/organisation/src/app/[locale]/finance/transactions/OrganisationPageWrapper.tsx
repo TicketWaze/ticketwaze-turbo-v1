@@ -1,5 +1,6 @@
 "use client";
 import { Order, OrganisationOrders } from "@ticketwaze/typescript-config";
+import type { OrderWithActivity } from "../FinancePageContent";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import {
   Table,
@@ -22,10 +23,11 @@ export default function OrganisationPageWrapper({
   organisationOrders: OrganisationOrders;
 }) {
   const t = useTranslations("Finance");
-  // The API returns only ticketed (event) orders; guard anyway, since every
-  // cell reads tickets[0].event and one bad row would crash the table.
-  const orders = organisationOrders.data.filter((order) =>
-    Boolean(order.tickets?.[0]?.event),
+  // The API attaches `activity` to every order it returns (events and raffles
+  // alike); guard anyway, since every cell reads it and one bad row would crash
+  // the table.
+  const orders = organisationOrders.data.filter(
+    (order): order is OrderWithActivity => Boolean(order.activity),
   );
   const locale = useLocale();
   const { meta } = organisationOrders;
@@ -102,14 +104,14 @@ export default function OrganisationPageWrapper({
                         "text-[1.5rem] py-6 leading-8 text-neutral-900"
                       }
                     >
-                      {TruncateUrl(order.tickets[0].event.eventName, 20)}
+                      {TruncateUrl(order.activity.name, 20)}
                     </TableCell>
                     <TableCell
                       className={
                         "text-[1.5rem] font-medium leading-8 text-neutral-900"
                       }
                     >
-                      {order.tickets[0].event.currency === "USD"
+                      {order.activity.currency === "USD"
                         ? order.tickets.reduce(
                             (sum, t) => sum + Number(t.ticketUsdPrice),
                             0,
@@ -118,7 +120,7 @@ export default function OrganisationPageWrapper({
                             (sum, t) => sum + Number(t.ticketPrice),
                             0,
                           )}{" "}
-                      {order.tickets[0].event.currency}
+                      {order.activity.currency}
                     </TableCell>
                     <TableCell className={"hidden lg:table-cell"}>
                       {order?.status === "SUCCESSFUL" && (
@@ -148,7 +150,7 @@ export default function OrganisationPageWrapper({
                       {formatDate(
                         order.createdAt,
                         locale,
-                        order.tickets[0].event.eventDays[0].timezone,
+                        order.activity.timezone ?? "local",
                       )}
                     </TableCell>
                   </TableRow>
@@ -156,6 +158,7 @@ export default function OrganisationPageWrapper({
                 <OrdersInformations
                   tickets={order.tickets}
                   order={order as Order}
+                  activity={order.activity}
                 />
               </Drawer>
             );

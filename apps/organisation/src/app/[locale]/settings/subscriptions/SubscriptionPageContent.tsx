@@ -27,7 +27,7 @@ import {
 } from "@ticketwaze/typescript-config";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import SubscriptionDetailDrawerContent from "./SubscriptionDetailDrawerContent";
-import { Calendar, Crown, Money3, Verify } from "iconsax-reactjs";
+import { Calendar, Crown, Money3 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRef, useState } from "react";
@@ -94,6 +94,12 @@ export default function SubscriptionPageContent({
     : 0;
 
   const isTrial = activeSub?.subscriptionName?.toLowerCase().includes("trial");
+  // "Cancelled" here means "will not renew" — the plan is still running until
+  // endDate. Both markers have to count: our own cancel writes CANCELED, while
+  // Stripe's customer.subscription.updated webhook reports the subscription as
+  // still active with cancel_at_period_end set, and either can land first.
+  const isCanceled =
+    activeSub?.status === "CANCELED" || activeSub?.cancelAtPeriodEnd === true;
   const isPremium =
     activeSub?.membershipTier === "premium" ||
     membershipTier.membershipName === "premium";
@@ -179,7 +185,7 @@ export default function SubscriptionPageContent({
             {/* Card body */}
             <div className="bg-white px-8 py-7 flex flex-col gap-6">
               {/* Canceled notice */}
-              {activeSub.status === "CANCELED" && endDate && (
+              {isCanceled && endDate && (
                 <div className="flex items-center gap-3 px-4 py-3 rounded-[12px] bg-[#FCE5EA] border border-failure/20">
                   <span className="text-[1.3rem] text-failure leading-6">
                     {t("canceled_notice", { date: formatDate(endDate, locale) })}
@@ -248,36 +254,7 @@ export default function SubscriptionPageContent({
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row items-center w-full gap-4 pt-2 border-t border-neutral-100">
-                {activeSub.stripeSubscriptionId && (
-                  <button
-                    // href="#"
-                    onClick={async (e) => {
-                      e.preventDefault();
-                      try {
-                        const res = await fetch(
-                          `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation?.organisationId}/billing-portal`,
-                          {
-                            method: "POST",
-                            headers: {
-                              Authorization: `Bearer ${session?.user.accessToken ?? ""}`,
-                              origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-                            },
-                          },
-                        );
-                        const data = await res.json();
-                        if (data.url) window.location.href = data.url;
-                      } catch {
-                        toast.error(t("cancel_error"));
-                      }
-                    }}
-                    className="flex-1 flex w-full items-center justify-center gap-2 px-6 py-4 rounded-full border border-neutral-200 text-[1.3rem] font-medium text-black hover:border-primary-500 hover:text-primary-500 transition-colors"
-                  >
-                    <Verify size="16" color="currentColor" variant="Bulk" />
-                    {t("manage_billing")}
-                  </button>
-                )}
-
-                {activeSub.status === "CANCELED" && (
+                {isCanceled && (
                   <LinkPrimary
                     href="/settings/subscriptions/upgrade"
                     className="flex-1 w-full gap-3 items-center justify-center whitespace-nowrap"
@@ -287,7 +264,7 @@ export default function SubscriptionPageContent({
                   </LinkPrimary>
                 )}
 
-                {activeSub.status !== "CANCELED" && (!activeSub.cancelAtPeriodEnd || isTrial) && (
+                {!isCanceled && (
                     <Dialog>
                       <DialogTrigger asChild>
                         <button className="flex-1 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full border border-failure/30 text-failure text-[1.3rem] font-medium hover:bg-[#FCE5EA] transition-colors cursor-pointer">
@@ -383,7 +360,10 @@ export default function SubscriptionPageContent({
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                {/* Narrow screens only have room for what identifies the row and
+                    what it is worth knowing at a glance: the plan and its status.
+                    The id is the first thing to go — the drawer carries it. */}
+                <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                   {t("table.id")}
                 </TableHead>
                 <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
@@ -392,7 +372,7 @@ export default function SubscriptionPageContent({
                 <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                   {t("table.amount")}
                 </TableHead>
-                <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
                   {t("table.status")}
                 </TableHead>
                 <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
@@ -405,7 +385,7 @@ export default function SubscriptionPageContent({
                 <Drawer key={sub.organisationSubscriptionId} direction="right">
                   <DrawerTrigger asChild>
                     <TableRow className="cursor-pointer hover:bg-neutral-50 transition-colors">
-                      <TableCell className="text-[1.3rem] text-neutral-600 py-5 font-mono">
+                      <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-600 py-5 font-mono">
                         {sub.organisationSubscriptionId.slice(0, 8)}…
                       </TableCell>
                       <TableCell className="text-[1.3rem] font-medium text-black py-5 capitalize">
@@ -414,7 +394,7 @@ export default function SubscriptionPageContent({
                       <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-600 py-5">
                         {formatMoney(sub.usdAmountPaid, "USD")}
                       </TableCell>
-                      <TableCell className="hidden lg:table-cell py-5">
+                      <TableCell className="py-5">
                         <StatusBadge status={sub.status} />
                       </TableCell>
                       <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-500 py-5">

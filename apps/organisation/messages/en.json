@@ -587,7 +587,8 @@
         "inside": "Inside",
         "checked_out": "Checked out",
         "close": "Close",
-        "resend": "Resend Ticket"
+        "resend": "Resend Ticket",
+        "draw_date": "Draw date"
       }
     },
     "withdrawal": {
@@ -1246,7 +1247,10 @@
         "pro_feature": "Restaurants are part of our paid Pro and Premium plans. Upgrade to publish your venue, share your menu by QR code and take reservations. Trials do not include restaurants."
       },
       "publish_name_locked": "You announced this activity under this name, so it stays. Everyone following it keeps their place.",
-      "publish_success": "Your event was sent for review."
+      "publish_success": "Your event was sent for review.",
+      "prize_image": "Prize picture",
+      "prize_image_tip": "Optional. Shown to buyers and during the draw.",
+      "prize_image_remove": "Remove prize picture"
     },
     "filters": {
       "first": {
@@ -1642,6 +1646,29 @@
         "noDescription": "No description",
         "winner": "Winner",
         "notDrawn": "Not drawn yet"
+      },
+      "draw": {
+        "cta": "Run the draw",
+        "confirm_title": "Run the draw",
+        "confirm_body": "Winners will be picked at random from every entry sold, and the result recorded so it can be verified.",
+        "confirm_warning": "This cannot be undone. Every participant is emailed the result immediately, and the raffle can no longer be edited or deleted.",
+        "confirm_cta": "Draw winners now",
+        "success": "The draw is complete. Participants have been notified.",
+        "noEntries": "No entries were sold, so the raffle was closed without a draw.",
+        "pending_notice": "This raffle has reached its draw date and is waiting for you to run the draw. If it is not drawn within 72 hours of the draw date, it is cancelled automatically and every participant is refunded."
+      },
+      "winners": {
+        "title": "Winners",
+        "rank": "Rank",
+        "prize": "Prize",
+        "winner": "Winner",
+        "entry": "Entry",
+        "claim": "Prize handover",
+        "status": {
+          "to_claim": "To hand over",
+          "claimed": "Handed over",
+          "unclaimed": "Never claimed"
+        }
       }
     }
   },
@@ -1931,7 +1958,6 @@
       "trial_cta": "Start {days}-day free trial",
       "trial_success": "Your {days}-day free trial is now active!",
       "trial_error": "Failed to start trial. Please try again.",
-      "manage_billing": "Manage billing",
       "resubscribe": "Get a new plan",
       "canceled_notice": "Your subscription is canceled. You still have access until {date}.",
       "cancel_sub": "Cancel subscription",
@@ -2018,6 +2044,11 @@
         "step_plan": "Choose a plan",
         "step_payment": "Payment",
         "step_checkout": "Checkout",
+        "proceed": "Proceed",
+        "upgrade": "Upgrade",
+        "pay_moncash": "Pay with MonCash",
+        "pay_card": "Pay with card",
+        "secured": "Your security matters to us. Every transaction is processed through encrypted channels and monitored in real time to prevent fraud and ensure your personal information remains protected. Our systems are supervised by trusted partners and comply with the highest industry standards for data and payment security.",
         "title": "Payment method",
         "subtitle": "Choose how you'd like to pay",
         "billed_monthly": "Monthly",

@@ -10,6 +10,7 @@ import { useTranslations, useLocale } from "next-intl";
 import Separator from "@/components/shared/Separator";
 import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
 import { Ticket } from "@ticketwaze/typescript-config";
+import { formatTicketPrice } from "./UserPageContent";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 
@@ -157,7 +158,7 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
               >
                 {t("Ticket.details.price")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {ticket.ticketPrice} {event?.currency ?? "HTG"}
+                  {formatTicketPrice(ticket, locale)}
                 </span>
               </p>
               <p
@@ -177,7 +178,7 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
               >
                 {t("Ticket.details.total")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {ticket.ticketPrice} {event?.currency ?? "HTG"}
+                  {formatTicketPrice(ticket, locale)}
                 </span>
               </p>
             </div>

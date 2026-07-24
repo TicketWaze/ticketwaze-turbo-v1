@@ -550,6 +550,44 @@
         "email": "Courriel",
         "required": "Veuillez saisir votre nom et votre courriel."
       }
+    },
+    "myEntries": {
+      "title": "Vos participations",
+      "count": "{count, plural, one {# numéro} other {# numéros}} dans ce tirage",
+      "awaitingDraw": "Les gagnants sont annoncés après le tirage. Si l'un de vos numéros est tiré au sort, nous vous contacterons par e-mail.",
+      "organiser": "Organisé par"
+    },
+    "drawComplete": "Tirage effectué",
+    "cancelled": "Annulé",
+    "results": {
+      "title": "Résultats",
+      "anonymous": "Gagnant",
+      "fairness": "Les gagnants ont été tirés avec un générateur aléatoire sécurisé et le tirage a été enregistré, afin que son résultat puisse être vérifié de manière indépendante.",
+      "watch": "Regarder le tirage"
+    },
+    "myEntriesDrawn": {
+      "won": "Vous avez gagné ! L'organisateur vous contactera pour la remise de votre lot.",
+      "lost": "Le tirage a eu lieu et vos numéros n'ont pas été tirés cette fois.",
+      "cancelled": "Ce tirage a été annulé et vos participations ont été remboursées sur votre portefeuille."
+    },
+    "draw": {
+      "eyebrow": "Le tirage",
+      "notYet": "Ce tirage n'a pas encore eu lieu",
+      "entriesSoFar": "{count, plural, one {# participation à ce jour} other {# participations à ce jour}}",
+      "cancelled": "Ce tirage a été annulé et n'a pas eu lieu. Toutes les participations vendues ont été remboursées.",
+      "entriesInDraw": "{count, plural, one {# participation dans ce tirage} other {# participations dans ce tirage}}",
+      "drawingRank": "Tirage du lot n°{rank}",
+      "anonymous": "Gagnant",
+      "replay": "Revoir le tirage",
+      "skip": "Passer aux résultats",
+      "noWinners": "Aucune participation vendue, aucun lot n'a été attribué.",
+      "verify": {
+        "title": "Vérifier ce tirage",
+        "explainer": "Les gagnants ont été tirés avec un générateur aléatoire sécurisé. La graine ci-dessous, combinée à la liste ordonnée des participations, reproduit exactement ce résultat : pour chaque rang, HMAC-SHA256 de la graine avec le message « rank:N », lu comme un entier 64 bits big-endian modulo la taille du tirage, donne la position gagnante.",
+        "algorithm": "Algorithme",
+        "seed": "Graine du tirage",
+        "entriesHash": "Empreinte de la liste (SHA-256)"
+      }
     }
   },
   "Explore": {
@@ -715,7 +753,8 @@
       "hours": "{count, plural, one {# heure} other {# heures}} <muted>restante(s)</muted>",
       "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>restante(s)</muted>",
       "soon": "<muted>Commence bientôt</muted>"
-    }
+    },
+    "entries": "participations"
   },
   "History": {
     "title": "Historique des activités",

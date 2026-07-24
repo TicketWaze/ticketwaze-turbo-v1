@@ -149,7 +149,17 @@ export default function RaffleActions({
           </PopoverContent>
         </Popover>
       </div>
-      {soldOut ? (
+      {/* A drawn or cancelled raffle can never be bought into again; the API
+          refuses either way, so this only keeps the page honest. */}
+      {raffle.drawnAt ? (
+        <span className="px-12 py-6 rounded-[100px] text-center text-neutral-600 font-medium text-[1.5rem] leading-8 flex items-center justify-center bg-neutral-100">
+          {rt("drawComplete")}
+        </span>
+      ) : raffle.status === "cancelled" ? (
+        <span className="px-12 py-6 rounded-[100px] text-center text-neutral-600 font-medium text-[1.5rem] leading-8 flex items-center justify-center bg-neutral-100">
+          {rt("cancelled")}
+        </span>
+      ) : soldOut ? (
         <span className="px-12 py-6 rounded-[100px] text-center text-neutral-600 font-medium text-[1.5rem] leading-8 flex items-center justify-center bg-neutral-100">
           {rt("soldOut")}
         </span>

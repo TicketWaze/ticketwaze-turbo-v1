@@ -23,6 +23,24 @@ function toDate(day: EventDay, time: string): Date {
   return new Date(`${dateStr}T${time}`);
 }
 
+// A raffle has no start/end window, just the instant it is drawn. Unlike event
+// days (naive wall-clock dates), `drawAt` is already a correct UTC instant.
+function computeCountdownTo(instant: string): Countdown {
+  const target = new Date(instant);
+  const diffMs = target.getTime() - Date.now();
+  // Past its moment but still listed: the draw is imminent or running.
+  if (Number.isNaN(diffMs) || diffMs <= 0) return { kind: "ongoing" };
+
+  const totalMinutes = Math.floor(diffMs / 60_000);
+  const totalHours = Math.floor(totalMinutes / 60);
+  const days = Math.floor(totalHours / 24);
+
+  if (days >= 1) return { kind: "days", count: days };
+  if (totalHours >= 1) return { kind: "hours", count: totalHours };
+  if (totalMinutes >= 1) return { kind: "minutes", count: totalMinutes };
+  return { kind: "soon" };
+}
+
 function computeCountdown(eventDays: EventDay[]): Countdown {
   const now = new Date();
 
@@ -61,23 +79,34 @@ function UpcomingCard({
   href,
   eventDays,
   tickets,
+  countdownTo,
+  unitLabel,
 }: {
   image: StaticImageData | string;
   name: string;
   href: string;
   eventDays: EventDay[];
   tickets: number;
+  /** ISO instant to count down to instead of `eventDays` (raffle draw date). */
+  countdownTo?: string;
+  /** Word after the count. Defaults to "tickets"; raffles pass "entries". */
+  unitLabel?: string;
 }) {
   const t = useTranslations("Upcoming.countdown");
 
   // Compute after mount (and tick) to avoid a server/client time mismatch.
   const [countdown, setCountdown] = useState<Countdown | null>(null);
   useEffect(() => {
-    const update = () => setCountdown(computeCountdown(eventDays));
+    const update = () =>
+      setCountdown(
+        countdownTo
+          ? computeCountdownTo(countdownTo)
+          : computeCountdown(eventDays),
+      );
     update();
     const interval = setInterval(update, 30_000);
     return () => clearInterval(interval);
-  }, [eventDays]);
+  }, [eventDays, countdownTo]);
 
   const muted = (chunks: React.ReactNode) => (
     <span className="text-neutral-600">{chunks}</span>
@@ -139,7 +168,8 @@ function UpcomingCard({
           <div className={"flex items-center gap-2"}>
             <Ticket size="15" color="#2e3237" variant="Bulk" />
             <p className={"font-medium text-[1rem] text-deep-100 leading-6"}>
-              {tickets} <span className={"text-neutral-700"}>tickets</span>
+              {tickets}{" "}
+              <span className={"text-neutral-700"}>{unitLabel ?? "tickets"}</span>
             </p>
           </div>
         </div>

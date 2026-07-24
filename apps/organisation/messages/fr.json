@@ -586,7 +586,8 @@
         "inside": "À l'intérieur",
         "checked_out": "Sorti",
         "close": "Fermer",
-        "resend": "Renvoyer le billet"
+        "resend": "Renvoyer le billet",
+        "draw_date": "Date du tirage"
       }
     },
     "withdrawal": {
@@ -1241,7 +1242,10 @@
         "pro_feature": "Les restaurants font partie de nos formules payantes Pro et Premium. Passez à une formule supérieure pour publier votre établissement, partager votre menu par code QR et accepter les réservations. Les périodes d'essai n'incluent pas les restaurants."
       },
       "publish_name_locked": "Vous avez annoncé cette activité sous ce nom, il reste donc inchangé. Toutes les personnes qui la suivent gardent leur place.",
-      "publish_success": "Votre événement a été envoyé pour révision."
+      "publish_success": "Votre événement a été envoyé pour révision.",
+      "prize_image": "Photo du lot",
+      "prize_image_tip": "Facultatif. Visible par les acheteurs et pendant le tirage.",
+      "prize_image_remove": "Retirer la photo du lot"
     },
     "filters": {
       "first": {
@@ -1637,6 +1641,29 @@
         "noDescription": "Aucune description",
         "winner": "Gagnant",
         "notDrawn": "Pas encore tiré"
+      },
+      "draw": {
+        "cta": "Lancer le tirage",
+        "confirm_title": "Lancer le tirage",
+        "confirm_body": "Les gagnants seront tirés au hasard parmi toutes les participations vendues, et le résultat enregistré afin de pouvoir être vérifié.",
+        "confirm_warning": "Cette action est irréversible. Chaque participant reçoit le résultat par e-mail immédiatement, et le tirage ne peut plus être modifié ni supprimé.",
+        "confirm_cta": "Tirer les gagnants",
+        "success": "Le tirage est terminé. Les participants ont été notifiés.",
+        "noEntries": "Aucune participation vendue, le tirage a été clôturé sans tirage au sort.",
+        "pending_notice": "Ce tirage a atteint sa date et attend que vous le lanciez. S'il n'est pas effectué dans les 72 heures suivant la date prévue, il est annulé automatiquement et tous les participants sont remboursés."
+      },
+      "winners": {
+        "title": "Gagnants",
+        "rank": "Rang",
+        "prize": "Lot",
+        "winner": "Gagnant",
+        "entry": "Numéro",
+        "claim": "Remise du lot",
+        "status": {
+          "to_claim": "À remettre",
+          "claimed": "Remis",
+          "unclaimed": "Jamais réclamé"
+        }
       }
     }
   },
@@ -1926,7 +1953,6 @@
       "trial_cta": "Commencer l'essai gratuit de {days} jours",
       "trial_success": "Votre essai gratuit de {days} jours est maintenant actif !",
       "trial_error": "Échec du démarrage de l'essai. Veuillez réessayer.",
-      "manage_billing": "Gérer la facturation",
       "resubscribe": "Choisir un nouveau plan",
       "canceled_notice": "Votre abonnement est annulé. Vous gardez l'accès jusqu'au {date}.",
       "cancel_sub": "Annuler l’abonnement",
@@ -2013,6 +2039,11 @@
         "step_plan": "Choisir un plan",
         "step_payment": "Paiement",
         "step_checkout": "Paiement sécurisé",
+        "proceed": "Continuer",
+        "upgrade": "Mettre à niveau",
+        "pay_moncash": "Payer avec MonCash",
+        "pay_card": "Payer par carte",
+        "secured": "Votre sécurité est notre priorité. Toutes les transactions sont effectuées via des canaux cryptés et sont surveillées en temps réel afin de prévenir toute fraude et de garantir la protection de vos informations personnelles. Nos systèmes sont supervisés par des partenaires de confiance et respectent les normes les plus strictes en matière de sécurité des paiements et des données.",
         "title": "Moyen de paiement",
         "subtitle": "Choisissez comment vous souhaitez payer",
         "billed_monthly": "Mensuel",

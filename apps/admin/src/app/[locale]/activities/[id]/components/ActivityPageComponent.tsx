@@ -10,6 +10,7 @@ import { useLocale, useTranslations } from "next-intl";
 import Link from "next/link";
 import { ActivityAttendances } from "./ActivityAttendances";
 import { Event } from "@ticketwaze/typescript-config";
+import { formatMoney } from "@ticketwaze/currency";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 import { DateTime } from "luxon";
@@ -236,11 +237,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
                     {t("activity.resume.performance.total")}
                   </span>
                   <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-                    {totalRevenue.toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    {event.currency}
+                    {formatMoney(totalRevenue, event.currency, locale)}
                   </span>
                 </li>
                 <li className="flex justify-between">

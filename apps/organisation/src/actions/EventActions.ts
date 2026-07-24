@@ -293,6 +293,75 @@ export async function CancelRaffleDeletion(
   }
 }
 
+/** Manual-mode draw. The API refuses if it is too early or already drawn. */
+export async function TriggerRaffleDraw(
+  organisationId: string,
+  raffleId: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}/draw`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { drawn: response.drawn as boolean, message: response.message };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+export async function UpdateRafflePrizeClaim(
+  organisationId: string,
+  raffleId: string,
+  prizeId: string,
+  claimStatus: "to_claim" | "claimed" | "unclaimed",
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}/prizes/${prizeId}/claim`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify({ claimStatus }),
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      return { status: "success" };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
 export async function UpdateInPersonEvent(
   organisationId: string,
   accessToken: string,

@@ -61,10 +61,13 @@ export default function AddMember({
       toast.error("Session not ready, please try again.");
       return;
     }
-    // Prefer the API's effective limit: trial orgs are capped at the free
-    // plan's team size even though their session tier says "pro".
-    const memberLimit =
-      teamLimit ?? session.activeOrganisation.membershipTier?.teamMember;
+    // Only the API's effective limit. The session carries a plan snapshot taken
+    // at login, so it says whatever was true when the user signed in — falling
+    // back to it gated the form on a plan the org may have left days ago (and it
+    // ignores that trial orgs are capped at the free plan's team size). The
+    // server enforces the real limit either way; this check is only here to fail
+    // fast with a friendlier message.
+    const memberLimit = teamLimit;
     if (memberLimit !== undefined && totalMembers >= memberLimit) {
       toast.info(t("teamLimit"));
       return;

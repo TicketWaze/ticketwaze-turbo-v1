@@ -7,8 +7,13 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import formatDate from "@/lib/FormatDate";
+import formatRaffleDate from "@/lib/formatRaffleDate";
 import formatTime from "@/lib/formatTime";
-import { Order, OrganisationTicket } from "@ticketwaze/typescript-config";
+import {
+  Order,
+  OrderActivitySummary,
+  Ticket,
+} from "@ticketwaze/typescript-config";
 import { useLocale, useTranslations } from "next-intl";
 import { Separator } from "../FinancePageContent";
 import { ButtonAccent } from "@/components/shared/buttons";
@@ -16,12 +21,16 @@ import { ButtonAccent } from "@/components/shared/buttons";
 export default function OrdersInformations({
   tickets,
   order,
+  activity,
 }: {
-  tickets: OrganisationTicket[];
+  tickets: Ticket[];
   order: Order;
+  /** Normalized by the API: an order may be against an event or a raffle. */
+  activity: OrderActivitySummary;
 }) {
   const t = useTranslations("Finance");
   const locale = useLocale();
+  const isRaffle = activity.activityType === "raffle";
   return (
     <DrawerContent className={"my-6 p-12 rounded-[30px] w-full"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
@@ -46,7 +55,7 @@ export default function OrdersInformations({
                 <span
                   className={"text-deep-100 truncate font-medium leading-8"}
                 >
-                  {tickets[0].event.eventName}
+                  {activity.name}
                 </span>
               </p>
               <p
@@ -54,49 +63,48 @@ export default function OrdersInformations({
                   "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                 }
               >
-                {t("transactions.details.date")}{" "}
+                {isRaffle
+                  ? t("transactions.details.draw_date")
+                  : t("transactions.details.date")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {formatDate(
-                    tickets[0].event.eventDays.filter(
-                      (day) => day.dayNumber === 1,
-                    )[0].eventDate,
-                    locale,
-                    tickets[0].event.eventDays.filter(
-                      (day) => day.dayNumber === 1,
-                    )[0].timezone,
-                  )}
+                  {/* A draw date is a correct UTC instant, an event day a naive
+                      wall-clock date — they need different formatters. */}
+                  {isRaffle
+                    ? activity.drawAt &&
+                      formatRaffleDate(activity.drawAt, locale, activity.timezone)
+                    : activity.eventDate &&
+                      formatDate(
+                        activity.eventDate,
+                        locale,
+                        activity.timezone ?? "local",
+                      )}
                 </span>
               </p>
-              <p
-                className={
-                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("transactions.details.time")}{" "}
-                <span
-                  className={"text-deep-100 truncate font-medium leading-8"}
+              {/* A raffle has a single draw moment, not a start/end window. */}
+              {!isRaffle && activity.startTime && activity.endTime && (
+                <p
+                  className={
+                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                  }
                 >
-                  {formatTime(
-                    tickets[0].event.eventDays.filter(
-                      (day) => day.dayNumber === 1,
-                    )[0].startTime,
-                    tickets[0].event.eventDays.filter(
-                      (day) => day.dayNumber === 1,
-                    )[0].timezone,
-                    locale,
-                  )}{" "}
-                  -{" "}
-                  {formatTime(
-                    tickets[0].event.eventDays.filter(
-                      (day) => day.dayNumber === 1,
-                    )[0].endTime,
-                    tickets[0].event.eventDays.filter(
-                      (day) => day.dayNumber === 1,
-                    )[0].timezone,
-                    locale,
-                  )}
-                </span>
-              </p>
+                  {t("transactions.details.time")}{" "}
+                  <span
+                    className={"text-deep-100 truncate font-medium leading-8"}
+                  >
+                    {formatTime(
+                      activity.startTime,
+                      activity.timezone ?? "local",
+                      locale,
+                    )}{" "}
+                    -{" "}
+                    {formatTime(
+                      activity.endTime,
+                      activity.timezone ?? "local",
+                      locale,
+                    )}
+                  </span>
+                </p>
+              )}
             </div>
             <Separator />
             <div className={"w-full flex flex-col gap-8"}>
@@ -107,10 +115,10 @@ export default function OrdersInformations({
               >
                 {t("transactions.details.price")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {tickets[0].event.currency === "USD"
+                  {activity.currency === "USD"
                     ? tickets.reduce((sum, t) => sum + Number(t.ticketUsdPrice), 0)
                     : tickets.reduce((sum, t) => sum + Number(t.ticketPrice), 0)}{" "}
-                  {tickets[0].event.currency}
+                  {activity.currency}
                 </span>
               </p>
               <p
@@ -188,10 +196,10 @@ export default function OrdersInformations({
                       <span className={"text-deep-100 font-medium leading-8"}>
                         1X - {ticket.ticketType}{" "}
                         <span className="text-neutral-500">|</span>{" "}
-                        {ticket.event.currency === "USD"
+                        {activity.currency === "USD"
                           ? ticket.ticketUsdPrice
                           : ticket.ticketPrice}{" "}
-                        {ticket.event.currency}
+                        {activity.currency}
                       </span>
                     </p>
                   </li>

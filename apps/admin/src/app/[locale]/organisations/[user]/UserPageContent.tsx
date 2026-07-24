@@ -16,6 +16,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { formatMoney } from "@ticketwaze/currency";
 import { useTranslations, useLocale } from "next-intl";
 import { Input, TextArea } from "@/components/shared/Inputs";
 import formatDate from "@/lib/FormatDate";
@@ -265,11 +266,22 @@ export default function UserPageContent({
                 events={organisation.events ?? []}
                 createdAt={organisation.createdAt}
               />
+              {/* Balances are stored in both currencies; show the pair that
+                  matches the organisation's own, never the HTG figures under a
+                  USD label. totalRevenue already arrives in that currency. */}
               <Finance
                 totalTicketsSold={totalTicketsSold}
                 totalRevenue={totalRevenue}
-                availableBalance={organisation.availableBalance}
-                pendingBalance={organisation.pendingBalance}
+                availableBalance={
+                  organisation.currency === "USD"
+                    ? organisation.usdAvailableBalance
+                    : organisation.availableBalance
+                }
+                pendingBalance={
+                  organisation.currency === "USD"
+                    ? organisation.usdPendingBalance
+                    : organisation.pendingBalance
+                }
                 currency={organisation.currency}
               />
             </Tabs>
@@ -309,6 +321,7 @@ function Finance({
   currency: string;
 }) {
   const t = useTranslations("Organisations.profile");
+  const locale = useLocale();
   return (
     <TabsContent value="finance">
       <ul className="flex flex-col pt-4 gap-8 overflow-y-scroll">
@@ -326,7 +339,7 @@ function Finance({
             {t("finance.total_revenue")}
           </span>
           <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {totalRevenue.toLocaleString()} {currency}
+            {formatMoney(totalRevenue, currency, locale)}
           </span>
         </li>
 
@@ -337,7 +350,7 @@ function Finance({
             {t("finance.pending_balance")}
           </span>
           <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {pendingBalance.toLocaleString()} {currency}
+            {formatMoney(pendingBalance, currency, locale)}
           </span>
         </li>
 
@@ -346,7 +359,7 @@ function Finance({
             {t("finance.balance")}
           </span>
           <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {availableBalance.toLocaleString()} {currency}
+            {formatMoney(availableBalance, currency, locale)}
           </span>
         </li>
       </ul>

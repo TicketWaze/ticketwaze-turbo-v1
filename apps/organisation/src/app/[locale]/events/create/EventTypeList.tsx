@@ -289,7 +289,7 @@ export default function EventTypeList({
           //     </li>
           //   );
           if (
-            category.value === "raffle" ||
+            // category.value === "raffle" ||
             category.value === "restaurant" ||
             category.value === "meet" ||
             category.value === "reservations" ||

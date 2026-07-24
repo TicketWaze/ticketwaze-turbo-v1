@@ -3,15 +3,27 @@ import { formatMoney } from "@ticketwaze/currency";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { Input } from "@/components/shared/Inputs";
-import { MembershipTier, OrganisationSubscription } from "@ticketwaze/typescript-config";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  MembershipTier,
+  OrganisationSubscription,
+} from "@ticketwaze/typescript-config";
 import {
   ArrowLeft2,
-  CardPos,
+  ArrowRight2,
+  Card,
   Crown,
-  Mobile,
+  ShieldSecurity,
   TickCircle,
 } from "iconsax-reactjs";
+import Image from "next/image";
+import moncash from "@/assets/icons/moncash.svg";
+import pinwheel from "@/assets/images/logo-simple-orange.svg";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckout,
@@ -19,12 +31,12 @@ import {
 } from "@stripe/react-stripe-js";
 import { motion, AnimatePresence } from "motion/react";
 import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
-import { ReactNode, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { Fragment, ReactNode, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "@/i18n/navigation";
+import ToggleIcon from "@/components/shared/ToggleIcon";
 
-const TRIAL_DAYS = 15; // change this to update the free trial duration
 const YEARLY_DISCOUNT = 0.1; // 10% off for annual billing
 
 const stripePromise = loadStripe(
@@ -33,70 +45,99 @@ const stripePromise = loadStripe(
 
 type BillingCycle = "monthly" | "yearly";
 type PaymentMethod = "stripe" | "moncash";
-type Step = "plans" | "payment" | "checkout";
+type Step = "plans" | "payment";
 
-function Feature({ children }: { children: ReactNode }) {
+// Base features render with a muted check; the tier's headline extras (below the
+// "+" divider) render with the brand check to draw the eye — mirrors the
+// reference pricing layout without leaning on a second accent colour.
+function Feature({
+  children,
+  accent = false,
+}: {
+  children: ReactNode;
+  accent?: boolean;
+}) {
   return (
-    <li className="flex items-start gap-3">
-      <div className="mt-[0.3rem] shrink-0">
-        <TickCircle size="15" color="#E45B00" variant="Bulk" />
+    <li className="flex items-start gap-4">
+      <div className="mt-[0.1rem] shrink-0">
+        <TickCircle
+          size="18"
+          color={accent ? "#E45B00" : "#737c8a"}
+          variant="Bulk"
+        />
       </div>
-      <span className="text-[1.3rem] leading-[1.6] text-neutral-600 flex items-center gap-2">
+      <span
+        className={`text-[1.5rem] leading-[1.5] flex items-center gap-2 ${accent ? "text-black font-medium" : "text-neutral-700"}`}
+      >
         {children}
       </span>
     </li>
   );
 }
 
+// The "everything above, plus these" separator from the reference layout.
+function PlusDivider() {
+  return (
+    <li className="relative flex items-center justify-center py-1">
+      <span className="absolute inset-x-0 h-px bg-neutral-200" />
+      <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-neutral-200 bg-neutral-100 text-[1.8rem] leading-none text-neutral-400">
+        +
+      </span>
+    </li>
+  );
+}
+
+const STEPS: Step[] = ["plans", "payment"];
+
 function StepIndicator({
   step,
+  onBack,
   t,
 }: {
   step: Step;
+  onBack: () => void;
   t: ReturnType<typeof useTranslations<"Settings.subscriptions">>;
 }) {
-  const isDone = (s: Step) => {
-    if (s === "plans") return step === "payment" || step === "checkout";
-    if (s === "payment") return step === "checkout";
-    return false;
-  };
-  const isActive = (s: Step) => step === s;
+  const stepLabel = (s: Step) =>
+    s === "plans" ? t("payment.step_plan") : t("payment.step_payment");
+  const currentIndex = STEPS.indexOf(step);
 
   return (
-    <div className="flex items-center  gap-3 mb-10">
-      {(["plans", "payment", "checkout"] as Step[]).map((s, i) => (
-        <div key={s} className="flex items-center gap-3 ">
-          {i > 0 && (
-            <div
-              className={`w-8 h-px transition-colors duration-400 ${isDone(["plans", "payment", "checkout"][i - 1] as Step) || isActive(s) ? "bg-primary-500" : "bg-neutral-200"}`}
-            />
-          )}
-          <div className="flex items-center gap-2">
-            <div
-              className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors duration-300 ${isDone(s) || isActive(s) ? "bg-primary-500" : "bg-neutral-200"}`}
-            >
-              {isDone(s) ? (
-                <TickCircle size="14" color="#fff" variant="Bulk" />
-              ) : (
-                <span
-                  className={`text-[1.1rem] font-bold leading-none ${isActive(s) ? "text-white" : "text-neutral-400"}`}
-                >
-                  {i + 1}
-                </span>
-              )}
-            </div>
-            <span
-              className={`text-[1.6rem] font-medium transition-colors duration-300 hidden sm:block ${isActive(s) || isDone(s) ? "text-black" : "text-neutral-400"}`}
-            >
-              {s === "plans"
-                ? t("payment.step_plan")
-                : s === "payment"
-                  ? t("payment.step_payment")
-                  : t("payment.step_checkout")}
-            </span>
-          </div>
+    <div className="flex items-center justify-between mb-10">
+      <button
+        onClick={onBack}
+        className="flex max-w-32 cursor-pointer items-center gap-4"
+      >
+        <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center">
+          <ArrowLeft2 size="20" color="#0d0d0d" variant="Bulk" />
         </div>
-      ))}
+        <span className="text-neutral-700 font-normal text-[1.4rem] leading-8">
+          {t("back")}
+        </span>
+      </button>
+
+      {/* Desktop: full labelled progress */}
+      <div className="hidden lg:flex items-center gap-4">
+        {STEPS.map((s, i) => (
+          <Fragment key={s}>
+            {i > 0 && (
+              <div
+                className={`w-[16.1rem] h-2 rounded-[100px] ${i <= currentIndex ? "bg-primary-500" : "bg-neutral-100"}`}
+              />
+            )}
+            <span
+              className={`${i <= currentIndex ? "text-primary-500" : "text-neutral-500"} font-medium text-[1.5rem] leading-12`}
+            >
+              {stepLabel(s)}
+            </span>
+          </Fragment>
+        ))}
+      </div>
+
+      {/* Mobile: just the active step label */}
+      <span className="lg:hidden text-primary-500 font-medium text-[1.5rem] leading-8">
+        {stepLabel(step)}
+      </span>
     </div>
   );
 }
@@ -111,6 +152,7 @@ export default function SubscriptionUpgradePageContent({
   organisationSubscriptions: OrganisationSubscription[];
 }) {
   const t = useTranslations("Settings.subscriptions");
+  const locale = useLocale();
   const { data: session } = useSession();
   const router = useRouter();
   const currentPlan = membershipTier.membershipName;
@@ -120,16 +162,22 @@ export default function SubscriptionUpgradePageContent({
     organisationSubscriptions.find((s) => s.status === "CANCELED");
   const isOnTrial = activeSub?.isTrial === true;
 
+  // Being on a plan is not the same as that plan renewing itself. A MonCash
+  // period never renews, and a cancelled card subscription stops at its end date
+  // — in both cases the organisation still has days left, still reads as "pro",
+  // and still needs a way to buy the next period. Only a card subscription that
+  // will actually charge again has nothing to offer here.
+  const isRenewing =
+    activeSub?.paymentMethod === "stripe" &&
+    activeSub.status !== "CANCELED" &&
+    !activeSub.cancelAtPeriodEnd;
+
   const [step, setStep] = useState<Step>("plans");
   const [selectedPlan, setSelectedPlan] = useState<MembershipTier | null>(null);
   const [billingCycle, setBillingCycle] = useState<BillingCycle>("monthly");
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | null>(
-    null,
-  );
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [isCreatingSession, setIsCreatingSession] = useState(false);
-  const [isStartingTrial, setIsStartingTrial] = useState(false);
-  const [phone, setPhone] = useState("");
+  const [stripeDialogOpen, setStripeDialogOpen] = useState(false);
+  const [processing, setProcessing] = useState<PaymentMethod | null>(null);
 
   const proTier = membershipTiers.find((m) => m.membershipName === "pro");
   const premiumTier = membershipTiers.find(
@@ -138,91 +186,98 @@ export default function SubscriptionUpgradePageContent({
 
   function selectPlan(tier: MembershipTier) {
     setSelectedPlan(tier);
-    setPaymentMethod(null);
     setStep("payment");
   }
 
-  async function startStripeCheckout() {
-    if (!selectedPlan) return;
-    setIsCreatingSession(true);
+  function goBack() {
+    if (step === "payment") {
+      setStep("plans");
+    } else {
+      router.push("/settings/subscriptions");
+    }
+  }
+
+  const subscribeHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${session?.user.accessToken ?? ""}`,
+    origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+  });
+  const subscribeBody = () =>
+    JSON.stringify({
+      organisationId: session?.activeOrganisation?.organisationId ?? "",
+      billingCycle,
+    });
+
+  // Card: opens Stripe's embedded checkout in a modal (like attendee checkout).
+  async function payWithCard() {
+    if (!selectedPlan || processing) return;
+    setProcessing("stripe");
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/memberships/${selectedPlan.membershipTierId}/subscribe`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.accessToken ?? ""}`,
-            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-          },
-          body: JSON.stringify({
-            organisationId: session?.activeOrganisation?.organisationId ?? "",
-            billingCycle,
-          }),
-        },
+        { method: "POST", headers: subscribeHeaders(), body: subscribeBody() },
       );
       const data = await res.json();
       if (data.status === "success" && data.clientSecret) {
         setClientSecret(data.clientSecret);
-        setStep("checkout");
+        setStripeDialogOpen(true);
       } else {
         toast.error(data.message ?? t("payment.error"));
       }
     } catch {
       toast.error(t("payment.error"));
     } finally {
-      setIsCreatingSession(false);
+      setProcessing(null);
     }
   }
 
-  async function startTrial() {
-    if (!proTier) return;
-    setIsStartingTrial(true);
+  // MonCash: buys one period up front and redirects to the MonCash gateway
+  // (like attendee checkout). The gateway sends the organiser back through the
+  // payment app, which settles the membership and returns them here.
+  async function payWithMoncash() {
+    if (!selectedPlan || processing) return;
+    setProcessing("moncash");
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/memberships/${proTier.membershipTierId}/trial`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.accessToken ?? ""}`,
-            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-          },
-          body: JSON.stringify({
-            organisationId: session?.activeOrganisation?.organisationId ?? "",
-          }),
-        },
+        `${process.env.NEXT_PUBLIC_API_URL}/memberships/${selectedPlan.membershipTierId}/moncash`,
+        { method: "POST", headers: subscribeHeaders(), body: subscribeBody() },
       );
       const data = await res.json();
-      if (data.status === "success") {
-        toast.success(t("trial_success", { days: TRIAL_DAYS }));
-        router.push("/settings/subscriptions");
-      } else {
-        toast.error(data.message ?? t("trial_error"));
+      if (data.status === "success" && data.paymentURL) {
+        // The gateway is external, so this must leave Next's router alone —
+        // router.push would prefix the locale and mangle the URL.
+        window.location.href = data.paymentURL;
+        return; // leave `processing` set — the page is navigating away
       }
+      toast.error(data.message ?? t("payment.error"));
     } catch {
-      toast.error(t("trial_error"));
-    } finally {
-      setIsStartingTrial(false);
+      toast.error(t("payment.error"));
     }
+    setProcessing(null);
   }
-
-  const planLabel = (tier: MembershipTier) =>
-    tier.membershipName === "pro" ? t("pro.title") : t("premium.title");
 
   const basePrice = (tier: MembershipTier) => Number(tier.membershipUsdPrice);
   const displayPrice = (tier: MembershipTier) => {
-    const price = billingCycle === "yearly"
-      ? basePrice(tier) * (1 - YEARLY_DISCOUNT)
-      : basePrice(tier);
+    const price =
+      billingCycle === "yearly"
+        ? basePrice(tier) * (1 - YEARLY_DISCOUNT)
+        : basePrice(tier);
     return formatMoney(price, "USD");
   };
   const originalPrice = (tier: MembershipTier) =>
     formatMoney(basePrice(tier), "USD");
 
+  // Mirrors the explore checkout payment rows so the flow stays consistent.
+  const optionClass = (type: PaymentMethod) =>
+    `flex items-center justify-between cursor-pointer p-[15px] rounded-[15px] border transition-all ease-in-out duration-300 disabled:cursor-default ${
+      processing === type
+        ? "border-2 border-primary-500 bg-primary-50"
+        : "border-neutral-100 hover:border-primary-500"
+    } ${processing && processing !== type ? "opacity-60" : ""}`;
+
   return (
     <div className="overflow-y-auto pb-16">
-      <StepIndicator step={step} t={t} />
+      <StepIndicator step={step} onBack={goBack} t={t} />
 
       <AnimatePresence mode="wait">
         {/* ─── STEP 1: PLAN SELECTION ─── */}
@@ -236,27 +291,33 @@ export default function SubscriptionUpgradePageContent({
             className="flex flex-col gap-8"
           >
             {/* Billing cycle toggle */}
-            <div className="flex items-center self-center bg-neutral-100 rounded-full p-1 gap-1">
-              {(["monthly", "yearly"] as BillingCycle[]).map((cycle) => (
-                <button
-                  key={cycle}
-                  onClick={() => setBillingCycle(cycle)}
-                  className={`px-6 py-2 rounded-full text-[1.3rem] font-medium transition-all duration-200 cursor-pointer ${
-                    billingCycle === cycle
-                      ? "bg-white text-black shadow-sm"
-                      : "text-neutral-500 hover:text-black"
-                  }`}
-                >
-                  {cycle === "monthly"
-                    ? t("payment.billing_monthly")
-                    : t("payment.billing_yearly")}
-                  {cycle === "yearly" && (
-                    <span className="ml-2 text-[1rem] font-bold text-primary-500">
-                      {t("payment.billing_save")}
-                    </span>
-                  )}
-                </button>
-              ))}
+            <div className="flex items-center self-end gap-4">
+              <span
+                className={`text-[1.4rem] font-medium transition-colors duration-200 ${billingCycle === "monthly" ? "text-black" : "text-neutral-400"}`}
+              >
+                {t("payment.billing_monthly")}
+              </span>
+              <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
+                <input
+                  className="peer sr-only"
+                  type="checkbox"
+                  checked={billingCycle === "yearly"}
+                  onChange={() =>
+                    setBillingCycle(
+                      billingCycle === "yearly" ? "monthly" : "yearly",
+                    )
+                  }
+                />
+                <ToggleIcon />
+              </label>
+              <span
+                className={`flex items-center gap-2 text-[1.4rem] font-medium transition-colors duration-200 ${billingCycle === "yearly" ? "text-black" : "text-neutral-400"}`}
+              >
+                {t("payment.billing_yearly")}
+                <span className="text-[1rem] font-bold text-primary-500">
+                  {t("payment.billing_save")}
+                </span>
+              </span>
             </div>
 
             {/* Plan cards */}
@@ -267,150 +328,140 @@ export default function SubscriptionUpgradePageContent({
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.1 }}
-                  className={`flex-1 flex flex-col rounded-[25px] overflow-hidden ${currentPlan === "pro" && !isOnTrial ? "opacity-60 pointer-events-none" : ""}`}
+                  className={`flex-1 flex flex-col gap-8 rounded-[30px] bg-neutral-100 p-4 ${currentPlan === "pro" && isRenewing ? "opacity-60" : ""}`}
                 >
-                  <div className="bg-primary-900 px-8 pt-8 pb-12 flex flex-col gap-3">
+                  {/* Header */}
+                  <div className="bg-white rounded-[20px] p-8 flex flex-col gap-[3.5rem]">
                     <div className="flex items-start justify-between gap-3">
-                      <span className="text-white/50 text-[1.1rem] font-medium uppercase tracking-widest">
-                        {billingCycle === "monthly"
-                          ? t("pro.subtitle")
-                          : t("payment.billed_yearly")}
-                      </span>
-                      <span
-                        className={`shrink-0 text-[1rem] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${currentPlan === "pro" && !isOnTrial ? "bg-primary-500 text-white" : "bg-white/10 text-white/70"}`}
-                      >
-                        {currentPlan === "pro" && !isOnTrial ? t("pro.tag") : t("pro.most")}
-                      </span>
-                    </div>
-                    <h2 className="text-white font-primary font-medium text-[4.5rem] leading-none">
-                      {t("pro.title")}
-                    </h2>
-                    <div className="flex items-baseline gap-2 mt-1 flex-wrap">
-                      {billingCycle === "yearly" && (
-                        <span className="text-white/40 text-[2rem] font-primary font-medium line-through">
-                          {originalPrice(proTier)}
-                        </span>
-                      )}
-                      <span className="text-white text-[2.8rem] font-primary font-medium">
-                        {displayPrice(proTier)}
-                      </span>
-                      <span className="text-white/50 text-[1.3rem]">/mo</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-white flex flex-col gap-8 p-8 flex-1 justify-between -mt-5 rounded-t-[20px]">
-                    <ul className="flex flex-col gap-4">
-                      <Feature>{t("pro.list.1")}</Feature>
-                      <Feature>{t("pro.list.2")}</Feature>
-                      <Feature>{t("pro.list.3")}</Feature>
-                      <Feature>{t("pro.list.4")}</Feature>
-                      <Feature>{t("pro.list.5")}</Feature>
-                      <Feature>{t("pro.list.6")}</Feature>
-                      <Feature>{t("pro.list.7")}</Feature>
-                    </ul>
-
-                    {currentPlan === "pro" && !isOnTrial ? (
-                      <p className="text-center text-[1.3rem] font-medium text-primary-500 py-2">
-                        {t("pro.tag")} ✓
-                      </p>
-                    ) : currentPlan === "free" || isOnTrial ? (
-                      <div className="flex flex-col gap-3">
-                        <button
-                          onClick={() => selectPlan(proTier)}
-                          className="w-full py-[1.4rem] rounded-full bg-primary-900 text-white font-medium text-[1.4rem] cursor-pointer hover:bg-primary-900/85 transition-colors flex items-center justify-center gap-3"
-                        >
-                          <Crown size="18" color="#fff" variant="Bulk" />
-                          {t("pro.cta")}
-                        </button>
-                        {!isOnTrial && (
-                          <button
-                            onClick={startTrial}
-                            disabled={isStartingTrial}
-                            className="w-full py-[1.4rem] rounded-full border border-primary-900/25 text-primary-900 font-medium text-[1.4rem] cursor-pointer hover:bg-primary-900/5 transition-colors flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
-                          >
-                            {isStartingTrial ? (
-                              <LoadingCircleSmall />
-                            ) : (
-                              t("trial_cta", { days: TRIAL_DAYS })
-                            )}
-                          </button>
+                      <div className="flex flex-col gap-1">
+                        {billingCycle === "yearly" && (
+                          <span className="text-neutral-400 text-[1.4rem] font-primary line-through leading-none">
+                            {originalPrice(proTier)}
+                          </span>
                         )}
+                        <span className="text-black font-medium text-[1.5rem] leading-8">
+                          {displayPrice(proTier)}
+                          <span className="text-neutral-400"> /mo</span>
+                        </span>
                       </div>
-                    ) : null}
+                      <span className="shrink-0 text-[1rem] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-primary-500/10 text-primary-500">
+                        {currentPlan === "pro" && !isOnTrial
+                          ? t("pro.tag")
+                          : t("pro.most")}
+                      </span>
+                    </div>
+                    <span className="text-black text-[3rem] lg:text-[4rem] leading-[100%] font-primary font-medium text-center">
+                      {t("pro.title")}
+                    </span>
                   </div>
+
+                  {/* CTA */}
+                  {currentPlan === "pro" && isRenewing ? (
+                    <p className="text-center text-[1.3rem] font-medium text-primary-500 py-2">
+                      {t("pro.tag")} ✓
+                    </p>
+                  ) : (
+                    <div className="px-2">
+                      <ButtonPrimary
+                        onClick={() => selectPlan(proTier)}
+                        className="w-full"
+                      >
+                        <Crown
+                          size="18"
+                          color="#fff"
+                          variant="Bulk"
+                          className="mr-3"
+                        />
+                        {t("payment.upgrade")}
+                      </ButtonPrimary>
+                    </div>
+                  )}
+
+                  {/* Features */}
+                  <ul className="flex flex-col gap-4 px-2">
+                    <Feature>{t("pro.list.2")}</Feature>
+                    <Feature>{t("pro.list.3")}</Feature>
+                    <Feature>{t("pro.list.4")}</Feature>
+                    <Feature>{t("pro.list.5")}</Feature>
+                    <Feature>{t("pro.list.6")}</Feature>
+                    <Feature>{t("pro.list.7")}</Feature>
+                  </ul>
                 </motion.div>
               )}
 
-              {/* PREMIUM */}
+              {/* PREMIUM — same card, distinguished by the gradient border */}
               {premiumTier && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
-                  className={`flex-1 flex flex-col rounded-[25px] overflow-hidden ${currentPlan === "premium" ? "opacity-60 pointer-events-none" : ""}`}
+                  className={`flex-1 p-[2px] rounded-[30px] bg-linear-to-b from-primary-500 via-[#E752AE] to-[#DD068B] ${currentPlan === "premium" ? "opacity-60" : ""}`}
                 >
-                  <div className="p-[0.2rem] bg-linear-to-b from-primary-500 via-[#E752AE] to-[#DD068B] flex flex-col flex-1 rounded-[25px]">
-                    <div className="bg-linear-to-br from-primary-500 via-[#E752AE] to-[#DD068B] px-8 pt-8 pb-12 flex flex-col gap-3 rounded-t-[22px]">
+                  <div className="h-full flex flex-col gap-8 rounded-[28px] bg-neutral-100 p-4">
+                    {/* Header */}
+                    <div className="bg-white rounded-[20px] p-8 flex flex-col gap-[3.5rem]">
                       <div className="flex items-start justify-between gap-3">
-                        <span className="text-white/70 text-[1.1rem] font-medium uppercase tracking-widest">
-                          {billingCycle === "monthly"
-                            ? t("premium.subtitle")
-                            : t("payment.billed_yearly")}
-                        </span>
+                        <div className="flex flex-col gap-1">
+                          {billingCycle === "yearly" && (
+                            <span className="text-neutral-400 text-[1.4rem] font-primary line-through leading-none">
+                              {originalPrice(premiumTier)}
+                            </span>
+                          )}
+                          <span className="text-black font-medium text-[1.5rem] leading-8">
+                            {displayPrice(premiumTier)}
+                            <span className="text-neutral-400"> /mo</span>
+                          </span>
+                        </div>
                         {currentPlan === "premium" && (
-                          <span className="shrink-0 text-[1rem] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/20 text-white">
+                          <span className="shrink-0 text-[1rem] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-primary-500/10 text-primary-500">
                             {t("pro.tag")}
                           </span>
                         )}
                       </div>
-                      <h2 className="text-white font-primary font-medium text-[4.5rem] leading-none">
+                      <span className="text-black text-[3rem] lg:text-[4rem] leading-[100%] font-primary font-medium text-center">
                         {t("premium.title")}
-                      </h2>
-                      <div className="flex items-baseline gap-2 mt-1 flex-wrap">
-                        {billingCycle === "yearly" && (
-                          <span className="text-white/40 text-[2rem] font-primary font-medium line-through">
-                            {originalPrice(premiumTier)}
-                          </span>
-                        )}
-                        <span className="text-white text-[2.8rem] font-primary font-medium">
-                          {displayPrice(premiumTier)}
-                        </span>
-                        <span className="text-white/60 text-[1.3rem]">/mo</span>
+                      </span>
+                    </div>
+
+                    {/* CTA */}
+                    {currentPlan === "premium" ? (
+                      <p className="text-center text-[1.3rem] font-medium text-primary-500 py-2">
+                        {t("pro.tag")} ✓
+                      </p>
+                    ) : (
+                      <div className="px-2">
+                        {/* Premium self-serve is disabled for now — route to sales. */}
+                        <ButtonPrimary
+                          onClick={() =>
+                            window.open(
+                              `${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/contact`,
+                              "_blank",
+                              "noopener,noreferrer",
+                            )
+                          }
+                          className="w-full"
+                        >
+                          {t("premium.cta")}
+                        </ButtonPrimary>
                       </div>
-                    </div>
+                    )}
 
-                    <div className="bg-white flex flex-col gap-8 p-8 flex-1 justify-between -mt-5 rounded-t-[20px] rounded-b-[22px]">
-                      <ul className="flex flex-col gap-4">
-                        <Feature>{t("premium.list.1")}</Feature>
-                        <Feature>{t("premium.list.2")}</Feature>
-                        <Feature>{t("premium.list.3")}</Feature>
-                        <Feature>{t("premium.list.4")}</Feature>
-                        <Feature>{t("premium.list.5")}</Feature>
-                        <Feature>{t("premium.list.6")}</Feature>
-                        <Feature>
-                          {t("premium.list.7")}
-                          <VerifiedOrganisationCheckMark />
-                        </Feature>
-                      </ul>
-
-                      {currentPlan === "premium" ? (
-                        <p className="text-center text-[1.3rem] font-medium text-primary-500 py-2">
-                          {t("pro.tag")} ✓
-                        </p>
-                      ) : (
-                        <div className="p-[0.2rem] rounded-full bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
-                          <button
-                            onClick={() => selectPlan(premiumTier)}
-                            className="w-full py-[1.4rem] rounded-full bg-white font-medium text-[1.4rem] cursor-pointer hover:bg-neutral-50 transition-colors flex items-center justify-center gap-3"
-                          >
-                            <Crown size="18" color="#E45B00" variant="Bulk" />
-                            <span className="bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B] bg-clip-text text-transparent">
-                              {t("premium.cta")}
-                            </span>
-                          </button>
-                        </div>
-                      )}
-                    </div>
+                    {/* Features: core set, then the "+" extras */}
+                    <ul className="flex flex-col gap-4 px-2">
+                      <Feature>{t("premium.list.2")}</Feature>
+                      <Feature>{t("premium.list.3")}</Feature>
+                      <Feature>{t("premium.list.4")}</Feature>
+                      <Feature>{t("pro.list.5")}</Feature>
+                      <Feature>{t("pro.list.6")}</Feature>
+                      <Feature>{t("pro.list.7")}</Feature>
+                      <PlusDivider />
+                      <Feature accent>{t("premium.list.5")}</Feature>
+                      <Feature accent>{t("premium.list.6")}</Feature>
+                      <Feature accent>
+                        {t("premium.list.7")}
+                        <VerifiedOrganisationCheckMark />
+                      </Feature>
+                    </ul>
                   </div>
                 </motion.div>
               )}
@@ -428,240 +479,91 @@ export default function SubscriptionUpgradePageContent({
             transition={{ duration: 0.25 }}
             className="flex flex-col gap-8"
           >
-            <button
-              onClick={() => setStep("plans")}
-              className="flex items-center gap-2 text-neutral-500 text-[1.3rem] hover:text-black transition-colors w-fit cursor-pointer"
-            >
-              <ArrowLeft2 size="16" color="currentColor" variant="Bulk" />
-              {t("payment.back_plan")}
-            </button>
+            <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-8 items-start">
+              {/* Method selection */}
+              <div className="flex flex-col gap-4">
+                <h3 className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-2">
+                  {t("payment.step_payment")}
+                </h3>
 
-            {/* Order summary */}
-            <div
-              className={`rounded-[20px] p-5 flex items-center justify-between gap-4 ${
-                selectedPlan.membershipName === "premium"
-                  ? "bg-linear-to-r from-primary-500/[0.07] via-[#E752AE]/[0.07] to-[#DD068B]/[0.07] border border-[#E752AE]/20"
-                  : "bg-primary-900/5 border border-primary-900/15"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div
-                  className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
-                    selectedPlan.membershipName === "premium"
-                      ? "bg-linear-to-br from-primary-500 via-[#E752AE] to-[#DD068B]"
-                      : "bg-primary-900"
-                  }`}
-                >
-                  <Crown size="18" color="#fff" variant="Bulk" />
-                </div>
-                <div>
-                  <p className="text-[1.5rem] font-medium text-black">
-                    {planLabel(selectedPlan)}
-                  </p>
-                  <p className="text-[1.2rem] text-neutral-400 capitalize">
-                    {billingCycle === "monthly"
-                      ? t("payment.billing_monthly")
-                      : t("payment.billing_yearly")}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right shrink-0">
-                {billingCycle === "yearly" && (
-                  <div className="text-[1.4rem] text-neutral-400 line-through font-primary leading-none mb-0.5">
-                    {originalPrice(selectedPlan)}
-                  </div>
-                )}
-                <span className="text-[2rem] font-primary font-medium text-black">
-                  {displayPrice(selectedPlan)}
-                </span>
-                <span className="text-[1.2rem] text-neutral-400 font-normal">
-                  /mo
-                </span>
-              </div>
-            </div>
-
-            {/* Payment method heading */}
-            <div>
-              <h3 className="text-[1.8rem] font-medium text-black">
-                {t("payment.title")}
-              </h3>
-              <p className="text-[1.3rem] text-neutral-500 mt-1">
-                {t("payment.subtitle")}
-              </p>
-            </div>
-
-            {/* Method cards */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {(
-                [
-                  {
-                    id: "stripe" as PaymentMethod,
-                    icon: CardPos,
-                    label: t("payment.card"),
-                    desc: t("payment.card_desc"),
-                  },
-                  {
-                    id: "moncash" as PaymentMethod,
-                    icon: Mobile,
-                    label: t("payment.moncash"),
-                    desc: t("payment.moncash_desc"),
-                  },
-                ] as const
-              ).map(({ id, icon: Icon, label, desc }) => (
                 <button
-                  key={id}
-                  onClick={() =>
-                    setPaymentMethod(paymentMethod === id ? null : id)
-                  }
-                  className={`p-6 rounded-[20px] border-2 text-left transition-all duration-200 cursor-pointer ${
-                    paymentMethod === id
-                      ? "border-primary-500 bg-primary-500/5"
-                      : "border-neutral-200 bg-white hover:border-primary-500/40"
-                  }`}
+                  className={optionClass("moncash")}
+                  onClick={payWithMoncash}
+                  disabled={processing !== null}
                 >
                   <div className="flex items-center gap-4">
-                    <div
-                      className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-colors duration-200 ${paymentMethod === id ? "bg-primary-500" : "bg-neutral-100"}`}
-                    >
-                      <Icon
-                        size="20"
-                        color={paymentMethod === id ? "#fff" : "#737c8a"}
-                        variant="Bulk"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <p
-                        className={`text-[1.4rem] font-medium ${paymentMethod === id ? "text-primary-500" : "text-black"}`}
-                      >
-                        {label}
-                      </p>
-                      <p className="text-[1.2rem] text-neutral-500 mt-0.5">
-                        {desc}
-                      </p>
-                    </div>
-                    <div
-                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-200 ${paymentMethod === id ? "border-primary-500 bg-primary-500" : "border-neutral-300"}`}
-                    >
-                      {paymentMethod === id && (
-                        <div className="w-2 h-2 bg-white rounded-full" />
-                      )}
-                    </div>
+                    <Image src={moncash} alt="MonCash" />
+                    <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
+                      {t("payment.pay_moncash")}
+                    </span>
                   </div>
+                  {processing === "moncash" ? (
+                    <LoadingCircleSmall />
+                  ) : (
+                    <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+                  )}
                 </button>
-              ))}
-            </div>
 
-            {/* CTA / Mon Cash inline form */}
-            <AnimatePresence mode="wait">
-              {paymentMethod === "stripe" && (
-                <motion.div
-                  key="stripe-cta"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.2 }}
+                <button
+                  className={optionClass("stripe")}
+                  onClick={payWithCard}
+                  disabled={processing !== null}
                 >
-                  <ButtonPrimary
-                    onClick={startStripeCheckout}
-                    disabled={isCreatingSession}
-                    className="w-full"
-                  >
-                    {isCreatingSession ? (
-                      <LoadingCircleSmall />
-                    ) : (
-                      <>
-                        <CardPos
-                          size="20"
-                          color="#fff"
-                          variant="Bulk"
-                          className="mr-3"
-                        />
-                        {t("payment.proceed_stripe")} —{" "}
-                        {displayPrice(selectedPlan)}/mo
-                      </>
-                    )}
-                  </ButtonPrimary>
-                </motion.div>
-              )}
+                  <div className="flex items-center gap-4">
+                    <Card size="20" color="#0d0d0d" variant="Bulk" />
+                    <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
+                      {t("payment.pay_card")}
+                    </span>
+                  </div>
+                  {processing === "stripe" ? (
+                    <LoadingCircleSmall />
+                  ) : (
+                    <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+                  )}
+                </button>
 
-              {paymentMethod === "moncash" && (
-                <motion.div
-                  key="moncash-form"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 8 }}
-                  transition={{ duration: 0.2 }}
-                  className="bg-neutral-100 rounded-[20px] p-8 flex flex-col gap-6"
-                >
-                  <p className="text-[1.4rem] font-medium text-black">
-                    {t("payment.moncash_enter")}
-                  </p>
-                  <Input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder=" "
-                  >
-                    {t("payment.phone")}
-                  </Input>
-                  <ButtonPrimary
-                    disabled={phone.trim().length < 8}
-                    onClick={() => toast.info(t("soon"))}
-                    className="w-full"
-                  >
-                    {t("payment.confirm")} — {displayPrice(selectedPlan)}/mo
-                  </ButtonPrimary>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-        )}
-
-        {/* ─── STEP 3: STRIPE EMBEDDED CHECKOUT ─── */}
-        {step === "checkout" && clientSecret && (
-          <motion.div
-            key="checkout"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="flex flex-col gap-6"
-          >
-            <button
-              onClick={() => {
-                setClientSecret(null);
-                setStep("payment");
-              }}
-              className="flex items-center gap-2 text-neutral-500 text-[1.3rem] hover:text-black transition-colors w-fit cursor-pointer"
-            >
-              <ArrowLeft2 size="16" color="currentColor" variant="Bulk" />
-              {t("payment.back_payment")}
-            </button>
-
-            {/* Plan reminder */}
-            {selectedPlan && (
-              <div className="flex items-center gap-3 px-5 py-3 rounded-[14px] bg-neutral-100 w-fit">
-                <Crown size="16" color="#E45B00" variant="Bulk" />
-                <span className="text-[1.3rem] font-medium text-black">
-                  {planLabel(selectedPlan)} · {displayPrice(selectedPlan)}/mo ·{" "}
-                  <span className="text-neutral-500 capitalize">
-                    {billingCycle}
-                  </span>
-                </span>
+                {/* Security notice */}
+                <div className="flex flex-col items-start gap-4 p-6 rounded-[15px] border border-neutral-100 text-[1.2rem] leading-8 text-neutral-700">
+                  <ShieldSecurity size="20" color="#E45B00" />
+                  {t("payment.secured")}
+                </div>
               </div>
-            )}
 
-            <div className="rounded-[20px] overflow-hidden border border-neutral-200">
-              <EmbeddedCheckoutProvider
-                stripe={stripePromise}
-                options={{ clientSecret }}
-              >
-                <EmbeddedCheckout />
-              </EmbeddedCheckoutProvider>
+              {/* Brand mark (desktop) */}
+              <div className="hidden lg:flex items-center justify-center">
+                <Image
+                  src={pinwheel}
+                  alt="Ticketwaze"
+                  className="w-full max-w-[42rem] h-auto"
+                />
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Stripe embedded checkout — opens in a modal, like attendee checkout */}
+      <Dialog
+        open={stripeDialogOpen}
+        onOpenChange={(open) => {
+          setStripeDialogOpen(open);
+          if (!open) setClientSecret(null);
+        }}
+      >
+        <DialogContent className="max-w-240 max-h-[90dvh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("payment.pay_card")}</DialogTitle>
+          </DialogHeader>
+          {clientSecret && (
+            <EmbeddedCheckoutProvider
+              stripe={stripePromise}
+              options={{ clientSecret }}
+            >
+              <EmbeddedCheckout className="w-full" />
+            </EmbeddedCheckoutProvider>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

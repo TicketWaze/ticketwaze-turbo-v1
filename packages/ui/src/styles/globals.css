@@ -52,6 +52,53 @@ input:not(:placeholder-shown) + label {
   animation: fadeInTop 0.6s ease-in-out;
 }
 
+/* Raffle draw stage: each reel tick snaps a new entry code into place. */
+@keyframes reelTick {
+  from {
+    opacity: 0.35;
+    transform: translateY(-0.6rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tw-reel-tick {
+  animation: reelTick 0.09s ease-out;
+}
+
+/* A winner landing: overshoots slightly, then settles. */
+@keyframes drawReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(1.2rem);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.03) translateY(0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.tw-reveal {
+  animation: drawReveal 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Never animate for someone who asked their system for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .tw-reel-tick,
+  .tw-reveal {
+    animation: none;
+  }
+}
+
 .list {
   display: grid;
   --grid-layout-gap: 2rem;

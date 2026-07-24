@@ -200,6 +200,25 @@ export interface Organisation {
   updatedAt: DateTime;
 }
 
+/**
+ * Normalized activity behind an order, built server-side. The finance tables
+ * read this instead of `order.tickets[0].event`, which only exists for events
+ * and left raffle sales invisible.
+ */
+export interface OrderActivitySummary {
+  activityId: string;
+  activityType: "event" | "raffle";
+  name: string;
+  currency: string;
+  timezone: string | null;
+  /** Events only: day 1, naive wall-clock (format with keepLocalTime). */
+  eventDate: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  /** Raffles only: the draw instant, correct UTC (format by converting). */
+  drawAt: string | null;
+}
+
 export interface Order {
   orderId: string;
   eventId: string;
@@ -216,6 +235,8 @@ export interface Order {
   lastName: string | null;
   email: string | null;
   tickets: Ticket[];
+  /** Present on the finance endpoints; absent wherever orders are returned raw. */
+  activity?: OrderActivitySummary;
   createdAt: DateTime;
   updatedAt: DateTime;
 }
@@ -319,6 +340,12 @@ export interface RafflePrize {
   rank: number;
   title: string;
   description: string | null;
+  /** Optional picture of the prize, shown to buyers and during the draw. */
+  imageUrl?: string | null;
+  imageKey?: string | null;
+  /** Set by the draw. Null means this rank went unawarded. */
+  winningRaffleTicketId?: string | null;
+  claimStatus?: "to_claim" | "claimed" | "unclaimed";
 }
 
 export interface Raffle {
@@ -338,6 +365,12 @@ export interface Raffle {
   drawAt: string;
   timezone: string | null;
   drawMode: "automatic" | "manual";
+  /** Set once the draw has run; the raffle is immutable from then on. */
+  drawnAt: string | null;
+  /** Published so participants can recompute the draw themselves. */
+  drawSeed?: string | null;
+  drawAlgorithm?: string | null;
+  drawRecord?: Record<string, unknown> | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
   rejectionReason: string | null;
   status: "on_sale" | "closed" | "drawn" | "completed" | "cancelled";
@@ -348,6 +381,31 @@ export interface Raffle {
   prizes: RafflePrize[];
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * One awarded prize, resolved to the person holding the winning entry. Ranks
+ * that went unawarded (fewer entries than prizes) have no row at all.
+ */
+export interface RaffleWinner {
+  rank: number;
+  rafflePrizeId: string;
+  prizeTitle: string;
+  claimStatus: "to_claim" | "claimed" | "unclaimed";
+  ticketId: string | null;
+  ticketName: string | null;
+  fullName: string | null;
+  email: string | null;
+}
+
+/**
+ * A raffle as returned by the attendee's own endpoints (`/me/raffles`), with
+ * the signed-in buyer's entry numbers attached. Never the full entry list of
+ * the raffle: only the caller's own.
+ */
+export interface MyRaffle extends Raffle {
+  entries: Ticket[];
+  organisation?: Organisation;
 }
 
 export interface RestaurantHour {

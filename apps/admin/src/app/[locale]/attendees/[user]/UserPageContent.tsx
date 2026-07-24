@@ -28,7 +28,22 @@ import {
 } from "@/components/ui/table";
 import { AdminUser, Ticket, UserAnalytic } from "@ticketwaze/typescript-config";
 import formatDate from "@/lib/FormatDate";
+import { formatMoney } from "@ticketwaze/currency";
 import { useState } from "react";
+
+/**
+ * A ticket's price in its own event's currency. Tickets carry both columns, so
+ * reading the HTG one and labelling it with the event's currency (what this used
+ * to do) misreported every ticket sold in USD.
+ */
+export function formatTicketPrice(ticket: Ticket, locale: string): string {
+  const currency = ticket.event?.currency ?? "HTG";
+  return formatMoney(
+    currency === "USD" ? ticket.ticketUsdPrice : ticket.ticketPrice,
+    currency,
+    locale,
+  );
+}
 
 export default function UserPageContent({
   user,
@@ -48,8 +63,6 @@ export default function UserPageContent({
       </AdminLayout>
     );
   }
-
-  const primaryCurrency = user.tickets?.[0]?.event?.currency ?? "HTG";
 
   return (
     <AdminLayout>
@@ -188,7 +201,6 @@ export default function UserPageContent({
               <ActivitySummary
                 userAnalytic={user.userAnalytic}
                 totalSpent={totalSpent}
-                currency={primaryCurrency}
                 createdAt={user.createdAt}
               />
             </Tabs>
@@ -210,12 +222,15 @@ export default function UserPageContent({
 function ActivitySummary({
   userAnalytic,
   totalSpent,
-  currency,
   createdAt,
 }: {
   userAnalytic: UserAnalytic | null;
+  /**
+   * USD. A buyer's tickets can span events priced in different currencies, so a
+   * single total has to settle on one — the same denominator the platform
+   * analytics report in.
+   */
   totalSpent: number;
-  currency: string;
   createdAt: string;
 }) {
   const t = useTranslations("Attendees.profile");
@@ -255,7 +270,7 @@ function ActivitySummary({
             {t("summary.total_spent")}
           </span>
           <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {totalSpent.toLocaleString()} {currency}
+            {formatMoney(totalSpent, "USD", locale)}
           </span>
         </li>
 
@@ -417,7 +432,7 @@ function TicketHistory({ tickets }: { tickets: Ticket[] }) {
                     </span>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900">
-                    {ticket.ticketPrice} {ticket.event?.currency ?? "HTG"}
+                    {formatTicketPrice(ticket, locale)}
                   </TableCell>
                   <TableCell className="py-6">
                     <span

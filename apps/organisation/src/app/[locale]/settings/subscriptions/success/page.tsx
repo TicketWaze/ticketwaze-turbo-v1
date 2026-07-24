@@ -1,12 +1,12 @@
 "use client";
 import { ButtonPrimary } from "@/components/shared/buttons";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import BrandedLoader from "@/components/shared/BrandedLoader";
 import { useRouter } from "@/i18n/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { TickCircle, CloseCircle, Crown } from "iconsax-reactjs";
+import { CloseCircle, Crown } from "iconsax-reactjs";
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 
 type Status = "loading" | "success" | "pending" | "error";
@@ -15,9 +15,20 @@ export default function SubscriptionSuccessPage() {
   const t = useTranslations("Settings.subscriptions");
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
+  const provider = searchParams.get("provider");
+  const payment = searchParams.get("payment");
   const { data: session } = useSession();
   const router = useRouter();
-  const [status, setStatus] = useState<Status>("loading");
+  const [stripeStatus, setStripeStatus] = useState<Status>("loading");
+
+  // MonCash settles server-side before redirecting here, so its outcome is
+  // already in the URL — there is no checkout session left to finalise.
+  const status: Status =
+    provider === "moncash"
+      ? payment === "success"
+        ? "success"
+        : "error"
+      : stripeStatus;
 
   useEffect(() => {
     if (!sessionId || !session) return;
@@ -37,58 +48,36 @@ export default function SubscriptionSuccessPage() {
         );
         const data = await res.json();
         if (data.status === "success" || data.status === "duplicate") {
-          setStatus("success");
+          setStripeStatus("success");
         } else if (data.status === "pending") {
-          setStatus("pending");
+          setStripeStatus("pending");
         } else {
-          setStatus("error");
+          setStripeStatus("error");
         }
       } catch {
-        setStatus("error");
+        setStripeStatus("error");
       }
     }
 
     finalize();
   }, [sessionId, session]);
 
+  // This page has nothing to say once the plan is active — send them straight to
+  // their subscriptions instead of parking them behind a confirmation button.
+  // refresh() is what makes the page show the new plan rather than the cached
+  // pre-purchase render.
+  useEffect(() => {
+    if (status !== "success") return;
+    router.replace("/settings/subscriptions");
+    router.refresh();
+  }, [status, router]);
+
   return (
     <OrganizerLayout title="">
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-10 px-4 text-center">
-        {status === "loading" && (
-          <>
-            <div className="w-20 h-20 rounded-full bg-neutral-100 flex items-center justify-center">
-              <LoadingCircleSmall />
-            </div>
-            <p className="text-[1.6rem] font-medium text-black">
-              {t("payment.finalizing")}
-            </p>
-          </>
-        )}
-
-        {status === "success" && (
-          <>
-            <div className="w-24 h-24 rounded-full bg-primary-500/10 flex items-center justify-center">
-              <TickCircle size="48" color="#E45B00" variant="Bulk" />
-            </div>
-            <div className="flex flex-col gap-3">
-              <h1 className="text-[2.8rem] font-primary font-medium text-black">
-                {t("payment.success_title")}
-              </h1>
-              <p className="text-[1.5rem] text-neutral-500 max-w-160">
-                {t("payment.success_desc")}
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <ButtonPrimary
-                onClick={() => router.push("/settings/subscriptions")}
-                className="gap-3"
-              >
-                <Crown size="18" color="#fff" variant="Bulk" />
-                {t("payment.success_back")}
-              </ButtonPrimary>
-            </div>
-          </>
-        )}
+        {/* The redirect above fires the moment we succeed, so the loader also
+            covers the hand-off — no success screen ever flashes. */}
+        {(status === "loading" || status === "success") && <BrandedLoader />}
 
         {status === "pending" && (
           <>

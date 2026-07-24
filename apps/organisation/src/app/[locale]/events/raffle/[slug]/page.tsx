@@ -62,6 +62,7 @@ export default async function Page({
         entriesSold={response.entriesSold ?? 0}
         revenue={response.revenue ?? 0}
         participants={response.participants ?? []}
+        winners={response.winners ?? []}
       />
     </OrganizerLayout>
   );

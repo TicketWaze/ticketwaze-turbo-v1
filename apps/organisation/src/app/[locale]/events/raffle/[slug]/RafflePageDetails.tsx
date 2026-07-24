@@ -8,14 +8,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
+import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { DateTime } from "luxon";
 import { Award } from "iconsax-reactjs";
-import { Raffle } from "@ticketwaze/typescript-config";
+import { Raffle, RaffleWinner } from "@ticketwaze/typescript-config";
 import FormatDate from "@/lib/FormatDate";
 import TopBar from "@/components/shared/TopBar";
 import RaffleMoreComponent from "./components/RaffleMoreComponent";
 import RaffleDeletionBanner from "./components/RaffleDeletionBanner";
+import RaffleDrawButton from "./components/RaffleDrawButton";
+import RaffleWinners from "./components/RaffleWinners";
 
 type Participant = {
   ticketName: string;
@@ -29,11 +32,13 @@ export default function RafflePageDetails({
   entriesSold,
   revenue,
   participants,
+  winners,
 }: {
   raffle: Raffle;
   entriesSold: number;
   revenue: number;
   participants: Participant[];
+  winners: RaffleWinner[];
 }) {
   const t = useTranslations("Raffles.single_raffle");
   const locale = useLocale();
@@ -43,6 +48,17 @@ export default function RafflePageDetails({
     0,
     Math.ceil(drawDate.diff(DateTime.now(), "days").days),
   );
+
+  const isDrawn = Boolean(raffle.drawnAt);
+  // Manual raffles are drawn by the organiser once the date has passed;
+  // automatic ones are drawn by the scheduler, so they never show a button.
+  const canDrawNow =
+    !isDrawn &&
+    raffle.drawMode === "manual" &&
+    raffle.adminStatus === "approved" &&
+    raffle.status !== "cancelled" &&
+    !raffle.deletionStatus &&
+    DateTime.now() >= drawDate;
 
   const [deletionStatus, setDeletionStatus] = useState(
     raffle.deletionStatus ?? null,
@@ -70,6 +86,12 @@ export default function RafflePageDetails({
     <div className={"flex flex-col gap-12 overflow-y-scroll"}>
       <TopBar title={raffle.title}>
         <div className="hidden lg:flex items-center gap-4">
+          {canDrawNow && (
+            <RaffleDrawButton
+              organisationId={raffle.organisationId}
+              raffleId={raffle.raffleId}
+            />
+          )}
           <RaffleMoreComponent {...moreProps} />
         </div>
       </TopBar>
@@ -174,10 +196,36 @@ export default function RafflePageDetails({
         </div>
       )}
 
+      {/* awaiting-draw notice: an organiser who misses the window loses the
+          raffle to an automatic cancellation, so say so plainly. */}
+      {canDrawNow && (
+        <div className="flex items-start gap-4 rounded-[15px] border border-amber-200 bg-amber-50 p-6">
+          <div className="w-[0.8rem] h-[0.8rem] rounded-full bg-amber-500 mt-[0.6rem] shrink-0" />
+          <p className="text-[1.5rem] leading-8 text-amber-700">
+            {t("draw.pending_notice")}
+          </p>
+        </div>
+      )}
+
       {/* mobile actions */}
       <div className="flex lg:hidden items-center w-full gap-8 justify-end">
+        {canDrawNow && (
+          <RaffleDrawButton
+            organisationId={raffle.organisationId}
+            raffleId={raffle.raffleId}
+          />
+        )}
         <RaffleMoreComponent {...moreProps} />
       </div>
+
+      {/* winners */}
+      {isDrawn && (
+        <RaffleWinners
+          organisationId={raffle.organisationId}
+          raffleId={raffle.raffleId}
+          winners={winners}
+        />
+      )}
 
       {/* prizes */}
       <div className="flex flex-col gap-4">
@@ -195,11 +243,22 @@ export default function RafflePageDetails({
                 key={prize.rafflePrizeId}
                 className="flex items-start gap-4 rounded-[15px] border border-neutral-100 p-6 min-w-[28rem] flex-shrink-0"
               >
-                <span className="shrink-0 w-12 h-12 rounded-full bg-primary-50 text-primary-500 font-bold flex items-center justify-center text-[1.4rem]">
-                  {prize.rank}
-                </span>
-                <div className="flex flex-col gap-1">
+                {prize.imageUrl ? (
+                  <Image
+                    src={prize.imageUrl}
+                    alt={prize.title}
+                    width={48}
+                    height={48}
+                    className="shrink-0 w-12 h-12 rounded-[0.8rem] object-cover"
+                  />
+                ) : (
+                  <span className="shrink-0 w-12 h-12 rounded-full bg-primary-50 text-primary-500 font-bold flex items-center justify-center text-[1.4rem]">
+                    {prize.rank}
+                  </span>
+                )}
+                <div className="flex flex-col gap-1 min-w-0">
                   <p className="text-[1.6rem] font-medium leading-8 text-deep-100">
+                    {prize.imageUrl ? `${prize.rank}. ` : ""}
                     {prize.title}
                   </p>
                   <p className="text-[1.3rem] leading-6 text-neutral-600">

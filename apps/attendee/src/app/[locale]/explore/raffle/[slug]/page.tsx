@@ -47,6 +47,13 @@ export default async function RafflePage({
   const raffle: Raffle = response.raffle;
   const organisation = response.organisation;
   const remaining: number | null = response.remaining ?? null;
+  const winners: {
+    rank: number;
+    prizeTitle: string;
+    prizeImageUrl?: string | null;
+    ticketName: string | null;
+    displayName: string | null;
+  }[] = response.winners ?? [];
   const price =
     raffle.currency === "USD" ? raffle.usdPrice : raffle.ticketPrice;
   const soldOut = remaining !== null && remaining <= 0;
@@ -105,6 +112,62 @@ export default async function RafflePage({
               />
             </div>
             <Separator />
+
+            {/* Results, once drawn. Placed above the prize list because after a
+                draw this is what everyone came to see. */}
+            {raffle.drawnAt && winners.length > 0 && (
+              <>
+                <div className="flex flex-col gap-6">
+                  <span className="font-semibold text-[1.6rem] leading-8 text-deep-100 inline-flex items-center gap-2">
+                    <Award size="20" color="#0d0d0d" variant="Bulk" />
+                    {t("results.title")}
+                  </span>
+                  <ul className="flex flex-col gap-4">
+                    {winners.map((winner) => (
+                      <li
+                        key={winner.rank}
+                        className="flex items-center gap-4 rounded-[15px] border border-neutral-100 p-6"
+                      >
+                        {winner.prizeImageUrl ? (
+                          <Image
+                            src={winner.prizeImageUrl}
+                            alt={winner.prizeTitle}
+                            width={56}
+                            height={56}
+                            className="shrink-0 w-14 h-14 rounded-[1rem] object-cover"
+                          />
+                        ) : (
+                          <span className="shrink-0 w-14 h-14 rounded-full bg-primary-50 text-primary-500 font-bold flex items-center justify-center text-[1.5rem]">
+                            {winner.rank}
+                          </span>
+                        )}
+                        <div className="flex flex-col gap-1 min-w-0">
+                          <p className="text-[1.6rem] font-medium leading-8 text-deep-100 truncate">
+                            {winner.prizeTitle}
+                          </p>
+                          <p className="text-[1.4rem] leading-8 text-neutral-600">
+                            {winner.displayName ?? t("results.anonymous")}
+                            {winner.ticketName ? ` · ${winner.ticketName}` : ""}
+                          </p>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    href={`/explore/raffle/${slug}/draw`}
+                    className="inline-flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
+                  >
+                    {t("results.watch")}
+                    <RouteSquare variant="Bulk" color="#E45B00" size={20} />
+                  </Link>
+                  <p className="text-[1.3rem] leading-7 text-neutral-500">
+                    {t("results.fairness")}
+                  </p>
+                </div>
+                <Separator />
+              </>
+            )}
+
             <div className="flex flex-col gap-6">
               <span className="font-semibold text-[1.6rem] leading-8 text-deep-100 inline-flex items-center gap-2">
                 <Award size="20" color="#0d0d0d" variant="Bulk" />
@@ -118,11 +181,22 @@ export default async function RafflePage({
                       key={prize.rafflePrizeId}
                       className="flex items-start gap-4 rounded-[15px] border border-neutral-100 p-6"
                     >
-                      <span className="shrink-0 w-14 h-14 rounded-full bg-primary-50 text-primary-500 font-bold flex items-center justify-center text-[1.5rem]">
-                        {prize.rank}
-                      </span>
-                      <div className="flex flex-col gap-1">
+                      {prize.imageUrl ? (
+                        <Image
+                          src={prize.imageUrl}
+                          alt={prize.title}
+                          width={72}
+                          height={72}
+                          className="shrink-0 w-[7.2rem] h-[7.2rem] rounded-[1rem] object-cover"
+                        />
+                      ) : (
+                        <span className="shrink-0 w-14 h-14 rounded-full bg-primary-50 text-primary-500 font-bold flex items-center justify-center text-[1.5rem]">
+                          {prize.rank}
+                        </span>
+                      )}
+                      <div className="flex flex-col gap-1 min-w-0">
                         <p className="text-[1.6rem] font-medium leading-8 text-deep-100">
+                          {prize.imageUrl ? `${prize.rank}. ` : ""}
                           {prize.title}
                         </p>
                         <p className="text-[1.4rem] leading-8 text-neutral-600">

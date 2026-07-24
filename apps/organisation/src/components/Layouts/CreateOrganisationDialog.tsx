@@ -51,10 +51,12 @@ export default function CreateOrganisationDialog({
         });
         window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/onboarding/organisation`;
       } else {
-        toast.error("Failed to Creare Organisation");
+        // The API refuses a second organisation per account, among other things —
+        // its message says which, so it beats a generic failure string.
+        toast.error(res.message ?? "Failed to create organisation");
       }
     } catch (error) {
-      toast.error("Failed to Creare Organisation : " + error);
+      toast.error("Failed to create organisation: " + error);
     }
     setIsLoading(false);
   }

@@ -26,6 +26,7 @@ import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
 import { compressImage } from "@/lib/compressImage";
+import PrizeImagePicker from "@/components/shared/PrizeImagePicker";
 import { Raffle } from "@ticketwaze/typescript-config";
 import { slugify } from "@/lib/Slugify";
 
@@ -62,6 +63,10 @@ function makeRaffleSchema(t: TranslateFn) {
           z.object({
             title: z.string().min(1, t("errors.prize_title")),
             description: z.string().min(1, t("errors.prize_description")),
+            // Carried through the form so an edit that does not touch a prize
+            // keeps its existing picture. Cleared when the organiser removes it.
+            imageKey: z.string().nullable().optional(),
+            imageUrl: z.string().nullable().optional(),
           }),
         )
         .min(1, t("errors.prize_min")),
@@ -160,8 +165,13 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
         raffle.prizes.length > 0
           ? [...raffle.prizes]
               .sort((a, b) => a.rank - b.rank)
-              .map((p) => ({ title: p.title, description: p.description ?? "" }))
-          : [{ title: "", description: "" }],
+              .map((p) => ({
+                title: p.title,
+                description: p.description ?? "",
+                imageKey: p.imageKey ?? null,
+                imageUrl: p.imageUrl ?? null,
+              }))
+          : [{ title: "", description: "", imageKey: null, imageUrl: null }],
     },
   });
 
@@ -220,6 +230,50 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
     setCoverPreview(URL.createObjectURL(compressed));
   }
 
+  // Prize images are tracked here rather than in form state: an existing image
+  // is not something the user types, and reading it back with `watch()` would
+  // drag the whole form through React Compiler's incompatible-library path.
+  // Both maps are keyed by the field-array id, so removing a prize cannot shift
+  // someone else's picture onto the wrong row.
+  const [prizeFiles, setPrizeFiles] = useState<
+    Record<string, { file: File; preview: string }>
+  >({});
+  // Prizes whose stored image the organiser explicitly removed.
+  const [clearedPrizeImages, setClearedPrizeImages] = useState<
+    Record<string, true>
+  >({});
+
+  function setPrizeImage(fieldId: string, file: File) {
+    setPrizeFiles((current) => ({
+      ...current,
+      [fieldId]: { file, preview: URL.createObjectURL(file) },
+    }));
+  }
+
+  function clearPrizeImage(fieldId: string) {
+    setPrizeFiles((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+    setClearedPrizeImages((current) => ({ ...current, [fieldId]: true }));
+  }
+
+  function removePrize(index: number, fieldId: string) {
+    setPrizeFiles((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+    remove(index);
+  }
+
+  /** The image a prize should keep, if any: a new upload wins, a clear removes. */
+  function keptImageKey(field: { id: string; imageKey?: string | null }) {
+    if (prizeFiles[field.id] || clearedPrizeImages[field.id]) return null;
+    return field.imageKey ?? null;
+  }
+
   const onSubmit: SubmitHandler<TFormOut> = async (data) => {
     if (!organisation?.organisationId) {
       toast.error(t("no_org"));
@@ -254,9 +308,24 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
     fd.append(
       "prizes",
       JSON.stringify(
-        data.prizes.map((p) => ({ title: p.title, description: p.description })),
+        data.prizes.map((p, index) => {
+          // Present only when this prize keeps the image it already had; the
+          // server ignores any key that is not already one of its own.
+          const keep = fields[index] ? keptImageKey(fields[index]) : null;
+          return {
+            title: p.title,
+            description: p.description,
+            ...(keep ? { imageKey: keep } : {}),
+          };
+        }),
       ),
     );
+    // Files cannot travel inside the prizes JSON, so each new one rides as an
+    // indexed field the server lines up with the array by position.
+    fields.forEach((field, index) => {
+      const image = prizeFiles[field.id];
+      if (image) fd.append(`prizeImage_${index}`, image.file);
+    });
 
     const result = await UpdateRaffle(
       organisation.organisationId,
@@ -590,10 +659,18 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
                     color="#DE0028"
                     size={20}
                     className="cursor-pointer"
-                    onClick={() => remove(index)}
+                    onClick={() => removePrize(index, field.id)}
                   />
                 )}
               </div>
+              <PrizeImagePicker
+                preview={
+                  prizeFiles[field.id]?.preview ??
+                  (clearedPrizeImages[field.id] ? null : (field.imageUrl ?? null))
+                }
+                onSelect={(file) => setPrizeImage(field.id, file)}
+                onClear={() => clearPrizeImage(field.id)}
+              />
               <Field
                 label={t("prize_title")}
                 error={errors.prizes?.[index]?.title?.message}
@@ -621,7 +698,14 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
 
           <button
             type="button"
-            onClick={() => append({ title: "", description: "" })}
+            onClick={() =>
+              append({
+                title: "",
+                description: "",
+                imageKey: null,
+                imageUrl: null,
+              })
+            }
             className="flex items-center gap-3 self-start cursor-pointer"
           >
             <AddCircle color="#E45B00" variant="Bulk" size={20} />

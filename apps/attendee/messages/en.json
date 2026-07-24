@@ -506,6 +506,44 @@
         "email": "Email",
         "required": "Please enter your name and email."
       }
+    },
+    "myEntries": {
+      "title": "Your entries",
+      "count": "{count, plural, one {# entry number} other {# entry numbers}} in this draw",
+      "awaitingDraw": "Winners are announced after the draw. If one of your numbers is drawn, we will contact you by email.",
+      "organiser": "Organised by"
+    },
+    "drawComplete": "Draw complete",
+    "cancelled": "Cancelled",
+    "results": {
+      "title": "Results",
+      "anonymous": "Winner",
+      "fairness": "Winners were picked with a secure random generator and the draw was recorded, so its result can be verified independently.",
+      "watch": "Watch the draw"
+    },
+    "myEntriesDrawn": {
+      "won": "You won! The organiser will contact you to arrange handover of your prize.",
+      "lost": "The draw has taken place and your numbers were not drawn this time.",
+      "cancelled": "This raffle was cancelled and your entries were refunded to your wallet."
+    },
+    "draw": {
+      "eyebrow": "The draw",
+      "notYet": "This draw has not taken place yet",
+      "entriesSoFar": "{count, plural, one {# entry so far} other {# entries so far}}",
+      "cancelled": "This raffle was cancelled and no draw took place. Any entries that were sold have been refunded.",
+      "entriesInDraw": "{count, plural, one {# entry in this draw} other {# entries in this draw}}",
+      "drawingRank": "Drawing prize #{rank}",
+      "anonymous": "Winner",
+      "replay": "Watch again",
+      "skip": "Skip to results",
+      "noWinners": "No entries were sold, so no prize was awarded.",
+      "verify": {
+        "title": "Verify this draw",
+        "explainer": "Winners were picked with a secure random generator. The seed below, combined with the ordered list of entries, reproduces exactly this result: for each prize rank, HMAC-SHA256 of the seed with the message \"rank:N\", read as a 64-bit big-endian integer modulo the pool size, gives the winning position.",
+        "algorithm": "Algorithm",
+        "seed": "Draw seed",
+        "entriesHash": "Entry list hash (SHA-256)"
+      }
     }
   },
   "Explore": {
@@ -671,7 +709,8 @@
       "hours": "{count, plural, one {# hour} other {# hours}} <muted>to go</muted>",
       "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>to go</muted>",
       "soon": "<muted>Starting soon</muted>"
-    }
+    },
+    "entries": "entries"
   },
   "History": {
     "title": "Activities history",

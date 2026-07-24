@@ -2,21 +2,38 @@
 "use client";
 import UpcomingCard from "@/components/UpcomingCard";
 import { slugify } from "@/lib/Slugify";
+import { MyRaffle } from "@ticketwaze/typescript-config";
 import { CloseCircle, Money3, SearchNormal, Star } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-export default function UpcomingPageContent({ events }: { events: any }) {
+export default function UpcomingPageContent({
+  events,
+  raffles,
+}: {
+  events: any;
+  raffles?: MyRaffle[];
+}) {
   const t = useTranslations("Upcoming");
   const { data: session } = useSession();
   const [query, setQuery] = useState("");
   const list: any[] = Array.isArray(events) ? events : [];
-  const filteredEvents = list.filter((event: any) => {
-    const search = query.toLowerCase();
-    return event?.eventName?.toLowerCase().includes(search);
-  });
+  const raffleList: MyRaffle[] = Array.isArray(raffles) ? raffles : [];
+  const search = query.toLowerCase();
+  const filteredEvents = list.filter((event: any) =>
+    event?.eventName?.toLowerCase().includes(search),
+  );
+  // Raffles trail the events rather than being date-sorted into them: an event
+  // day is a naive wall-clock date and a draw date is a UTC instant, so mixing
+  // them in one sort would compare two different things. The API already
+  // returns raffles soonest-draw-first.
+  const filteredRaffles = raffleList.filter((raffle) =>
+    raffle.title?.toLowerCase().includes(search),
+  );
+  const totalCount = list.length + raffleList.length;
+  const filteredCount = filteredEvents.length + filteredRaffles.length;
 
   const [mobileSearch, setMobileSearch] = useState(false);
   return (
@@ -117,10 +134,35 @@ export default function UpcomingPageContent({ events }: { events: any }) {
                 </motion.li>
               );
             })}
+            {filteredRaffles.map((raffle, index) => {
+              const slug = slugify(raffle.title, raffle.raffleId);
+              return (
+                <motion.li
+                  key={raffle.raffleId}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.35,
+                    ease: "easeOut",
+                    delay: Math.min((filteredEvents.length + index) * 0.06, 0.3),
+                  }}
+                >
+                  <UpcomingCard
+                    href={`upcoming/raffle/${slug}`}
+                    image={raffle.coverImageUrl ?? ""}
+                    name={raffle.title}
+                    eventDays={[]}
+                    countdownTo={raffle.drawAt}
+                    tickets={raffle.entries?.length ?? 0}
+                    unitLabel={t("entries")}
+                  />
+                </motion.li>
+              );
+            })}
           </ul>
         </div>
         <AnimatePresence>
-          {list.length > 0 && filteredEvents.length === 0 && (
+          {totalCount > 0 && filteredCount === 0 && (
             <motion.div
               className="flex flex-col h-full justify-center items-center gap-12"
               initial={{ opacity: 0, scale: 0.96 }}
@@ -140,7 +182,7 @@ export default function UpcomingPageContent({ events }: { events: any }) {
           )}
         </AnimatePresence>
       </>
-      {list.length === 0 && (
+      {totalCount === 0 && (
         <motion.div
           className={
             "w-132 lg:w-184 mx-auto h-full flex flex-col items-center justify-center gap-20"
