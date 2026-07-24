@@ -7,6 +7,14 @@ import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
 import EventCard from "@/components/shared/EventCard";
 import RaffleCard from "@/components/shared/RaffleCard";
 import RestaurantCard from "@/components/shared/RestaurantCard";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Category = "upcoming" | "ongoing" | "past";
 type ActivityFilter = "all" | "events" | "raffles" | "restaurants";
@@ -97,7 +105,33 @@ export default function EventPageContent({
 
   return (
     <div className="flex-1 min-h-0 flex flex-col overflow-hidden">
-      <div className="flex items-center gap-2 bg-neutral-100 rounded-[30px] p-[.4rem] w-fit mt-4 mb-2 ml-2">
+      {/* Mobile: the four pills overflow a phone width, so the same filters
+          collapse into a dropdown. Desktop keeps the segmented row. */}
+      <div className="lg:hidden mt-4 mb-2 ml-2 mr-2">
+        <Select
+          value={filter}
+          onValueChange={(v) => setFilter(v as ActivityFilter)}
+        >
+          <SelectTrigger className="w-full bg-neutral-100 rounded-[3rem] px-6 py-4 border-none text-[1.4rem] text-neutral-700 leading-8">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="bg-neutral-100 text-[1.4rem]">
+            <SelectGroup>
+              {filters.map((f) => (
+                <SelectItem
+                  key={f.value}
+                  className="text-[1.4rem] text-deep-100"
+                  value={f.value}
+                >
+                  {f.label}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="hidden lg:flex items-center gap-2 bg-neutral-100 rounded-[30px] p-[.4rem] w-fit mt-4 mb-2 ml-2">
         {filters.map((f) => (
           <button
             key={f.value}
@@ -114,7 +148,7 @@ export default function EventPageContent({
       </div>
       <div className="flex-1 min-h-0 overflow-y-scroll overflow-x-hidden">
         {filteredItems.length > 0 ? (
-          <ul className="list pt-4">
+          <ul className="list pt-4 px-4 pb-8">
             {filteredItems.map((item) => {
               if (item.kind === "raffle") {
                 return (
@@ -164,14 +198,14 @@ export default function EventPageContent({
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="w-[330px] lg:w-[460px] mx-auto flex flex-col items-center justify-center h-full gap-[5rem] pt-20">
-      <div className="w-[120px] h-[120px] rounded-full flex items-center justify-center bg-neutral-100">
-        <div className="w-[90px] h-[90px] rounded-full flex items-center justify-center bg-neutral-200">
+    <div className="w-132 lg:w-184 mx-auto flex flex-col items-center justify-center h-full gap-20 pt-20">
+      <div className="w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100">
+        <div className="w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200">
           <Money3 size="50" color="#0d0d0d" variant="Bulk" />
         </div>
       </div>
       <div className="flex flex-col gap-12 items-center text-center">
-        <p className="text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]">
+        <p className="text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]">
           {message}
         </p>
       </div>

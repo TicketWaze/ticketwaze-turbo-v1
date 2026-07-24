@@ -35,11 +35,15 @@ export default async function CreatePage() {
   }
   const organisation: Organisation = response.organisation;
   const membershipTier: MembershipTier = response.membershipTier;
+  // Trial-excluding plan name. Restaurants require a paid plan, so they cannot
+  // be gated on membershipTier, which counts trials as the tier they trial.
+  const paidTierName: string = response.paidTierName ?? "free";
   return (
     <OrganizerLayout title={t("title")}>
       <EventTypeList
         organisation={organisation}
         membershipTier={membershipTier}
+        paidTierName={paidTierName}
       />
     </OrganizerLayout>
   );

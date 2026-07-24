@@ -42,13 +42,18 @@ export default function LoginWrapper() {
     callbackUrl: `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`,
   });
 
-  // The google redirect flow surfaces auth failures (e.g. account not linked to
-  // an organisation) as a ?error= param on this page rather than an inline toast.
+  // The google redirect flow surfaces auth failures (e.g. signing in with a
+  // Google account that has no Ticketwaze account) as a ?error= param on this
+  // page rather than an inline toast. Our own codes are translated; anything
+  // else is an Auth.js code like `AccessDenied` or `Configuration`, which is
+  // meaningless to a user, so it degrades to the generic message.
   const searchParams = useSearchParams();
   useEffect(() => {
     const error = searchParams.get("error");
-    if (error) toast.error(decodeURIComponent(error));
-  }, [searchParams]);
+    if (!error) return;
+    const key = error === "no_account" ? "no_account" : "google_failed";
+    toast.error(t(`errors.${key}`), { duration: 8000 });
+  }, [searchParams, t]);
 
   async function submitHandler(data: TLoginSchema) {
     setIsloading(true);

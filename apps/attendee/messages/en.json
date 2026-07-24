@@ -905,7 +905,8 @@
       "step_details": "Your details",
       "step_summary": "Summary",
       "max_party": "{count, plural, one {This restaurant seats one guest per time slot} other {This restaurant seats up to # guests per time slot}}.",
-      "all_slots_full": "{count, plural, one {No table for one is free on this day} other {No table for # is free on this day}}. Try another date or a smaller party."
+      "all_slots_full": "{count, plural, one {No table for one is free on this day} other {No table for # is free on this day}}. Try another date or a smaller party.",
+      "download_ticket": "Download my reservation"
     }
   },
   "Checkout": {

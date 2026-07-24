@@ -22,7 +22,11 @@ export default function OrganisationPageWrapper({
   organisationOrders: OrganisationOrders;
 }) {
   const t = useTranslations("Finance");
-  const orders = organisationOrders.data;
+  // The API returns only ticketed (event) orders; guard anyway, since every
+  // cell reads tickets[0].event and one bad row would crash the table.
+  const orders = organisationOrders.data.filter((order) =>
+    Boolean(order.tickets?.[0]?.event),
+  );
   const locale = useLocale();
   const { meta } = organisationOrders;
   const currentPage = organisationOrders.meta.currentPage;

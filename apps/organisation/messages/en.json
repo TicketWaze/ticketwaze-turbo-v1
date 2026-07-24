@@ -262,7 +262,9 @@
       "errors": {
         "email": "Enter a valid email",
         "password": "Password Field cannot be blank",
-        "wrong": "Email address or password is incorrect"
+        "wrong": "Email address or password is incorrect",
+        "no_account": "No Ticketwaze account found for this Google account. Create an account first, then come back to access your dashboard.",
+        "google_failed": "Google sign-in failed. Please try again."
       },
       "forgot": "Forgot password",
       "method": {
@@ -1240,7 +1242,8 @@
         "gallery_hint": "Add 3 to 5 photos of your venue. These appear on your public page and help guests decide.",
         "gallery_add": "Add photos",
         "gallery_count": "{count} of 5 selected",
-        "gallery_remove": "Remove"
+        "gallery_remove": "Remove",
+        "pro_feature": "Restaurants are part of our paid Pro and Premium plans. Upgrade to publish your venue, share your menu by QR code and take reservations. Trials do not include restaurants."
       },
       "publish_name_locked": "You announced this activity under this name, so it stays. Everyone following it keeps their place.",
       "publish_success": "Your event was sent for review."

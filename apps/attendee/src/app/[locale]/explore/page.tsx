@@ -3,7 +3,15 @@ import ExplorePageContent from "./ExplorePageContent";
 import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
 import { getHtgExchangeRate } from "@/lib/getHtgExchangeRate";
 
-export default async function Explore() {
+export default async function Explore({
+  searchParams,
+}: {
+  searchParams: Promise<{ welcome?: string }>;
+}) {
+  // Onboarding hands off with `?welcome=1`: the modal is then server-rendered
+  // open, so it is on screen the moment /explore paints instead of after a
+  // client round trip the user could outrun on a slow connection.
+  const { welcome } = await searchParams;
   const htgExchangeRate = await getHtgExchangeRate();
   const [request, rafflesRequest, restaurantsRequest] = await Promise.all([
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
@@ -45,7 +53,11 @@ export default async function Explore() {
   }
 
   return (
-    <AttendeeLayout title="Explore" className="overflow-x-hidden">
+    <AttendeeLayout
+      title="Explore"
+      className="overflow-x-hidden"
+      forceWelcomeModal={welcome === "1"}
+    >
       <ExplorePageContent
         events={events}
         pastEvents={pastEvents}

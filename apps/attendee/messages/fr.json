@@ -949,7 +949,8 @@
       "step_details": "Vos coordonnées",
       "step_summary": "Récapitulatif",
       "max_party": "{count, plural, one {Ce restaurant accueille une personne par créneau} other {Ce restaurant accueille jusqu’à # personnes par créneau}}.",
-      "all_slots_full": "{count, plural, one {Aucune table pour une personne ce jour-là} other {Aucune table pour # personnes ce jour-là}}. Essayez une autre date ou un plus petit groupe."
+      "all_slots_full": "{count, plural, one {Aucune table pour une personne ce jour-là} other {Aucune table pour # personnes ce jour-là}}. Essayez une autre date ou un plus petit groupe.",
+      "download_ticket": "Télécharger ma réservation"
     }
   },
   "Checkout": {

@@ -159,19 +159,23 @@ const nextAuthResult = NextAuth({
           );
           const data = await res.json();
           if (data.status !== "success") {
-            throw new Error(
-              encodeURIComponent(
-                data.message || "Google authentication failed",
-              ),
-            );
+            // Returning a URL rather than throwing: Auth.js turns a thrown
+            // error into a bare `AccessDenied` code and discards the message,
+            // so the one thing the user needs to know — that this Google
+            // account has no Ticketwaze account yet — would be lost.
+            //
+            // A stable code travels instead of the API's English sentence, so
+            // the login page can render the notice in the user's language.
+            const code = res.status === 404 ? "no_account" : "google_failed";
+            return `/auth/login?error=${code}`;
           }
           Object.assign(user, {
             ...data.user,
             id: data.user.userId,
           });
           return true;
-        } catch (error) {
-          throw error;
+        } catch {
+          return `/auth/login?error=google_failed`;
         }
       }
       return true;

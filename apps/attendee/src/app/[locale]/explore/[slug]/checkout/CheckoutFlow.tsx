@@ -66,6 +66,17 @@ export default function CheckoutFlow({
   const accessToken = session?.user?.accessToken ?? "";
   const isFree = event.isFree;
   const isGuest = !user;
+  // Online activities are `eventCategory === "meet"`. This used to test
+  // `eventType`, which only ever holds public/private, so every check below was
+  // dead and online events were run through the full in-person checkout.
+  const isMeet = event.eventCategory === "meet";
+  /**
+   * A Google Meet seat is one seat, for the account that will receive the
+   * calendar invite — so the recipient step is skipped for online activities as
+   * well as free ones. The PAYMENT step is a separate question: an online
+   * activity can still be paid, and must not be routed to the free flow.
+   */
+  const skipsRecipientStep = isFree || isMeet;
 
   const [currentStep, setCurrentStep] = useState(0);
   const [previousStep, setPreviousStep] = useState(0);
@@ -109,16 +120,13 @@ export default function CheckoutFlow({
   const { fields } = useFieldArray({ control, name: "tickets" });
 
   useEffect(() => {
-    if (isFree || event.eventType === "meet") {
+    if (skipsRecipientStep) {
       setValue("tickets.0.quantity", 1, { shouldValidate: true });
       setValue("attendees", [
         {
           ticketTypeId: ticketTypes[0].eventTicketTypeId,
-          name:
-            event.eventType === "meet" && user
-              ? `${user.firstName} ${user.lastName}`
-              : "",
-          email: event.eventType === "meet" && user ? user.email : "",
+          name: isMeet && user ? `${user.firstName} ${user.lastName}` : "",
+          email: isMeet && user ? user.email : "",
           isForSomeoneElse: false,
         },
       ]);
@@ -363,7 +371,13 @@ export default function CheckoutFlow({
 
   const prev = () => {
     if (currentStep === 0) return;
-    if ((isFree || event.eventType === "meet") && currentStep === 3) {
+    // Free: 0 → 3, so back from the summary returns to ticket selection.
+    if (isFree && currentStep === 3) {
+      goToStep(0);
+      return;
+    }
+    // Paid online: 0 → 2 → 3, so back from payment skips the recipient step.
+    if (skipsRecipientStep && currentStep === 2) {
       goToStep(0);
       return;
     }
@@ -381,11 +395,14 @@ export default function CheckoutFlow({
         toast.error(t("ticket.error"));
         return;
       }
-      if (isGuest && (isFree || event.eventType === "meet")) {
+      if (isGuest && skipsRecipientStep) {
         router.push(`/auth/login`);
         return;
       }
-      goToStep(isFree || event.eventType === "meet" ? 3 : 1);
+      // Free has nothing to pay, so it goes straight to the summary. Paid
+      // online activities still need the payment step — they just skip the
+      // recipient step on the way there.
+      goToStep(isFree ? 3 : skipsRecipientStep ? 2 : 1);
       return;
     }
 
@@ -440,7 +457,9 @@ export default function CheckoutFlow({
     }
 
     if (currentStep === 3) {
-      if (isFree || event.eventType === "meet") {
+      // Keyed off price alone: a paid online activity must charge, not be
+      // handed out through the free endpoint.
+      if (isFree) {
         await BuyFreeTicket();
       } else if (paymentType === "moncash") {
         await MoncashPayment();
