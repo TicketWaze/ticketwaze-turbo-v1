@@ -991,6 +991,7 @@
       "card": "Pay with card",
       "paypal": "Pay with PayPal",
       "moncash": "Pay with MonCash",
+      "natcash": "Pay with NatCash",
       "nopayment": "This activity is completely free of charge. No payment is required to complete your registration. Just continue to confirm your ticket and you’re all set.",
       "secured": "Your security matters to us. Every transaction is processed through encrypted channels and monitored in real time to prevent fraud and ensure your personal information remains protected. Our systems are supervised by trusted partners and comply with the highest industry standards for data and payment security.",
       "paymentType": "Select a payment provider",

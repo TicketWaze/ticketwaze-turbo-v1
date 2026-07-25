@@ -11,6 +11,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Event, EventTicketType } from "@ticketwaze/typescript-config";
 import moncash from "../moncash.svg";
+import natcash from "@/assets/images/natcash.png";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "../checkout.types";
 import TicketSummaryCard from "../TicketSummaryCard";
 
@@ -69,6 +70,24 @@ export default function PaymentStep({
                 <Image src={moncash} alt="Logo of moncash" />
                 <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
                   {t("payment.moncash")}
+                </span>
+              </div>
+              <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+            </button>
+
+            <button
+              className={optionClass("natcash")}
+              onClick={() => onSelectPayment("natcash")}
+            >
+              <div className="flex items-center gap-4">
+                <Image
+                  src={natcash}
+                  alt="Logo of natcash"
+                  width={20}
+                  height={21}
+                />
+                <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
+                  {t("payment.natcash")}
                 </span>
               </div>
               <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />

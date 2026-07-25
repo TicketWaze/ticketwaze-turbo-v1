@@ -1954,6 +1954,7 @@
       "trial_badge": "Trial",
       "billed_via_stripe": "Billed via Stripe",
       "billed_via_moncash": "Billed via Mon Cash",
+      "billed_via_natcash": "Billed via NatCash",
       "billed_trial": "Free trial",
       "trial_cta": "Start {days}-day free trial",
       "trial_success": "Your {days}-day free trial is now active!",
@@ -1992,6 +1993,7 @@
         "yearly": "Annual",
         "stripe": "Credit / Debit Card",
         "moncash": "Mon Cash",
+        "natcash": "NatCash",
         "close": "Close"
       },
       "free": {
@@ -2047,6 +2049,7 @@
         "proceed": "Proceed",
         "upgrade": "Upgrade",
         "pay_moncash": "Pay with MonCash",
+        "pay_natcash": "Pay with NatCash",
         "pay_card": "Pay with card",
         "secured": "Your security matters to us. Every transaction is processed through encrypted channels and monitored in real time to prevent fraud and ensure your personal information remains protected. Our systems are supervised by trusted partners and comply with the highest industry standards for data and payment security.",
         "title": "Payment method",

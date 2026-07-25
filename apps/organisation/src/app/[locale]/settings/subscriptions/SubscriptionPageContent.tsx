@@ -172,7 +172,9 @@ export default function SubscriptionPageContent({
                       ? t("billed_via_stripe")
                       : activeSub.paymentMethod === "trial"
                         ? t("billed_trial")
-                        : t("billed_via_moncash")}
+                        : activeSub.paymentMethod === "natcash"
+                          ? t("billed_via_natcash")
+                          : t("billed_via_moncash")}
                     {/* {activeSub.usdAmountPaid > 0 && (
                       <> · {formatMoney(activeSub.usdAmountPaid, "USD")}</>
                     )} */}
@@ -188,7 +190,9 @@ export default function SubscriptionPageContent({
               {isCanceled && endDate && (
                 <div className="flex items-center gap-3 px-4 py-3 rounded-[12px] bg-[#FCE5EA] border border-failure/20">
                   <span className="text-[1.3rem] text-failure leading-6">
-                    {t("canceled_notice", { date: formatDate(endDate, locale) })}
+                    {t("canceled_notice", {
+                      date: formatDate(endDate, locale),
+                    })}
                   </span>
                 </div>
               )}
@@ -265,47 +269,47 @@ export default function SubscriptionPageContent({
                 )}
 
                 {!isCanceled && (
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <button className="flex-1 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full border border-failure/30 text-failure text-[1.3rem] font-medium hover:bg-[#FCE5EA] transition-colors cursor-pointer">
-                          {t("cancel_sub")}
-                        </button>
-                      </DialogTrigger>
-                      <DialogContent className="w-xl lg:w-3xl">
-                        <DialogHeader>
-                          <DialogTitle className="font-medium border-b border-neutral-100 pb-8 text-[2.2rem] leading-12 text-black font-primary">
-                            {t("cancel_title")}
-                          </DialogTitle>
-                          <DialogDescription className="sr-only">
-                            Cancel subscription
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="py-6">
-                          <p className="text-[1.5rem] leading-7 text-neutral-600">
-                            {t("cancel_warning")}
-                          </p>
-                        </div>
-                        <DialogFooter className="flex flex-col gap-3">
-                          <ButtonRed
-                            onClick={cancelSubscription}
-                            disabled={isCanceling}
-                            className="w-full"
-                          >
-                            {isCanceling ? (
-                              <LoadingCircleSmall />
-                            ) : (
-                              t("cancel_confirm")
-                            )}
-                          </ButtonRed>
-                          <DialogClose
-                            ref={closeRef}
-                            className="w-full px-12 py-5 rounded-[100px] text-[1.5rem] font-medium text-neutral-600 bg-neutral-100 hover:bg-neutral-200 transition-colors cursor-pointer"
-                          >
-                            {t("cancel_back")}
-                          </DialogClose>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="flex-1 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full border border-failure/30 text-failure text-[1.3rem] font-medium hover:bg-[#FCE5EA] transition-colors cursor-pointer">
+                        {t("cancel_sub")}
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent className="w-xl lg:w-3xl">
+                      <DialogHeader>
+                        <DialogTitle className="font-medium border-b border-neutral-100 pb-8 text-[2.2rem] leading-12 text-black font-primary">
+                          {t("cancel_title")}
+                        </DialogTitle>
+                        <DialogDescription className="sr-only">
+                          Cancel subscription
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-6">
+                        <p className="text-[1.5rem] leading-7 text-neutral-600">
+                          {t("cancel_warning")}
+                        </p>
+                      </div>
+                      <DialogFooter className="flex flex-col gap-3">
+                        <ButtonRed
+                          onClick={cancelSubscription}
+                          disabled={isCanceling}
+                          className="w-full"
+                        >
+                          {isCanceling ? (
+                            <LoadingCircleSmall />
+                          ) : (
+                            t("cancel_confirm")
+                          )}
+                        </ButtonRed>
+                        <DialogClose
+                          ref={closeRef}
+                          className="w-full px-12 py-5 rounded-[100px] text-[1.5rem] font-medium text-neutral-600 bg-neutral-100 hover:bg-neutral-200 transition-colors cursor-pointer"
+                        >
+                          {t("cancel_back")}
+                        </DialogClose>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
                 )}
               </div>
             </div>
@@ -398,7 +402,10 @@ export default function SubscriptionPageContent({
                         <StatusBadge status={sub.status} />
                       </TableCell>
                       <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-500 py-5">
-                        {formatDate(new Date(sub.createdAt as unknown as string), locale)}
+                        {formatDate(
+                          new Date(sub.createdAt as unknown as string),
+                          locale,
+                        )}
                       </TableCell>
                     </TableRow>
                   </DrawerTrigger>

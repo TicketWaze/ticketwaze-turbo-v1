@@ -167,6 +167,69 @@ export async function StartRaffleMoncash(
   }
 }
 
+export async function StartRaffleGuestNatcash(
+  raffleId: string,
+  quantity: number,
+  guest: Guest,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/guest/raffles/${raffleId}/entries/natcash`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
+        },
+        body: JSON.stringify({ quantity, guest }),
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      return { status: "success" as const, paymentURL: data.paymentURL };
+    }
+    return { status: "failed" as const, message: data.message };
+  } catch (err: unknown) {
+    return {
+      error: err instanceof Error ? err.message : "An unknown error occurred",
+    };
+  }
+}
+
+export async function StartRaffleNatcash(
+  accessToken: string,
+  raffleId: string,
+  quantity: number,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${raffleId}/entries/natcash`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
+        },
+        body: JSON.stringify({ quantity }),
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      return { status: "success" as const, paymentURL: data.paymentURL };
+    }
+    return { status: "failed" as const, message: data.message };
+  } catch (err: unknown) {
+    return {
+      error: err instanceof Error ? err.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function BuyRaffleEntriesWallet(
   accessToken: string,
   raffleId: string,

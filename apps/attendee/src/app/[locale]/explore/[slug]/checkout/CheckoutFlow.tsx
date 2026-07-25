@@ -240,14 +240,17 @@ export default function CheckoutFlow({
     }));
   }
 
-  async function MoncashPayment() {
+  // MonCash and NatCash are the same flow — create the order, then hand the payer
+  // to the wallet's own hosted page — so they share one function and differ only
+  // in the endpoint segment.
+  async function WalletGatewayPayment(provider: "moncash" | "natcash") {
     setIsLoading(true);
     const values = getValues();
 
     if (isGuest) {
       const tickets = buildGuestTickets(values.attendees);
       const request = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/guest/events/${event.eventId}/payments/moncash`,
+        `${process.env.NEXT_PUBLIC_API_URL}/guest/events/${event.eventId}/payments/${provider}`,
         {
           method: "POST",
           headers: {
@@ -271,7 +274,7 @@ export default function CheckoutFlow({
       (a: AttendeeFormData) => !a.isForSomeoneElse || (a.name && a.email),
     );
     const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/moncash`,
+      `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/${provider}`,
       {
         method: "POST",
         headers: {
@@ -461,8 +464,8 @@ export default function CheckoutFlow({
       // handed out through the free endpoint.
       if (isFree) {
         await BuyFreeTicket();
-      } else if (paymentType === "moncash") {
-        await MoncashPayment();
+      } else if (paymentType === "moncash" || paymentType === "natcash") {
+        await WalletGatewayPayment(paymentType);
       } else if (paymentType === "card") {
         await StripePayment();
       } else if (paymentType === "wallet") {

@@ -1949,6 +1949,7 @@
       "trial_badge": "Essai",
       "billed_via_stripe": "Facturé via Stripe",
       "billed_via_moncash": "Facturé via Mon Cash",
+      "billed_via_natcash": "Facturé via NatCash",
       "billed_trial": "Essai gratuit",
       "trial_cta": "Commencer l'essai gratuit de {days} jours",
       "trial_success": "Votre essai gratuit de {days} jours est maintenant actif !",
@@ -1987,6 +1988,7 @@
         "yearly": "Annuel",
         "stripe": "Carte bancaire",
         "moncash": "Mon Cash",
+        "natcash": "NatCash",
         "close": "Fermer"
       },
       "free": {
@@ -2042,6 +2044,7 @@
         "proceed": "Continuer",
         "upgrade": "Mettre à niveau",
         "pay_moncash": "Payer avec MonCash",
+        "pay_natcash": "Payer avec NatCash",
         "pay_card": "Payer par carte",
         "secured": "Votre sécurité est notre priorité. Toutes les transactions sont effectuées via des canaux cryptés et sont surveillées en temps réel afin de prévenir toute fraude et de garantir la protection de vos informations personnelles. Nos systèmes sont supervisés par des partenaires de confiance et respectent les normes les plus strictes en matière de sécurité des paiements et des données.",
         "title": "Moyen de paiement",

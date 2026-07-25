@@ -1,4 +1,4 @@
-export type PaymentType = "" | "moncash" | "card" | "wallet";
+export type PaymentType = "" | "moncash" | "natcash" | "card" | "wallet";
 
 export interface GuestInfo {
   firstName: string;

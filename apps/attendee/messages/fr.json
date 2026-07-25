@@ -1035,6 +1035,7 @@
       "card": "Payer par carte",
       "paypal": "Payer avec PayPal",
       "moncash": "Payer avec MonCash",
+      "natcash": "Payer avec NatCash",
       "nopayment": "Cette activité est entièrement gratuit. Aucun paiement n'est requis pour finaliser votre inscription. Continuez simplement pour confirmer votre billet et le tour est joué.",
       "secured": "Votre sécurité est notre priorité. Toutes les transactions sont effectuées via des canaux cryptés et sont surveillées en temps réel afin de prévenir toute fraude et de garantir la protection de vos informations personnelles. Nos systèmes sont supervisés par des partenaires de confiance et respectent les normes les plus strictes en matière de sécurité des paiements et des données.",
       "paymentType": "Sélétionner un moyen de paiement",

@@ -23,6 +23,7 @@ import {
 } from "iconsax-reactjs";
 import Image from "next/image";
 import moncash from "@/assets/icons/moncash.svg";
+import natcash from "@/assets/icons/natcash.png";
 import pinwheel from "@/assets/images/logo-simple-orange.svg";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -44,7 +45,7 @@ const stripePromise = loadStripe(
 );
 
 type BillingCycle = "monthly" | "yearly";
-type PaymentMethod = "stripe" | "moncash";
+type PaymentMethod = "stripe" | "moncash" | "natcash";
 type Step = "plans" | "payment";
 
 // Base features render with a muted check; the tier's headline extras (below the
@@ -231,15 +232,16 @@ export default function SubscriptionUpgradePageContent({
     }
   }
 
-  // MonCash: buys one period up front and redirects to the MonCash gateway
-  // (like attendee checkout). The gateway sends the organiser back through the
-  // payment app, which settles the membership and returns them here.
-  async function payWithMoncash() {
+  // Mobile wallets: buy one period up front and redirect to the gateway (like
+  // attendee checkout). The gateway sends the organiser back through the payment
+  // app, which settles the membership and returns them here. MonCash and NatCash
+  // differ only in the endpoint, so they share this.
+  async function payWithWallet(wallet: "moncash" | "natcash") {
     if (!selectedPlan || processing) return;
-    setProcessing("moncash");
+    setProcessing(wallet);
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/memberships/${selectedPlan.membershipTierId}/moncash`,
+        `${process.env.NEXT_PUBLIC_API_URL}/memberships/${selectedPlan.membershipTierId}/${wallet}`,
         { method: "POST", headers: subscribeHeaders(), body: subscribeBody() },
       );
       const data = await res.json();
@@ -488,7 +490,7 @@ export default function SubscriptionUpgradePageContent({
 
                 <button
                   className={optionClass("moncash")}
-                  onClick={payWithMoncash}
+                  onClick={() => payWithWallet("moncash")}
                   disabled={processing !== null}
                 >
                   <div className="flex items-center gap-4">
@@ -498,6 +500,24 @@ export default function SubscriptionUpgradePageContent({
                     </span>
                   </div>
                   {processing === "moncash" ? (
+                    <LoadingCircleSmall />
+                  ) : (
+                    <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+                  )}
+                </button>
+
+                <button
+                  className={optionClass("natcash")}
+                  onClick={() => payWithWallet("natcash")}
+                  disabled={processing !== null}
+                >
+                  <div className="flex items-center gap-4">
+                    <Image src={natcash} alt="NatCash" width={20} height={21} />
+                    <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
+                      {t("payment.pay_natcash")}
+                    </span>
+                  </div>
+                  {processing === "natcash" ? (
                     <LoadingCircleSmall />
                   ) : (
                     <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />

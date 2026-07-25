@@ -23,10 +23,13 @@ import {
   BuyRaffleEntriesWallet,
   StartRaffleStripe,
   StartRaffleMoncash,
+  StartRaffleNatcash,
   StartRaffleGuestStripe,
   StartRaffleGuestMoncash,
+  StartRaffleGuestNatcash,
 } from "@/actions/paymentActions";
 import moncashLogo from "../../../[slug]/checkout/moncash.svg";
+import natcashLogo from "@/assets/images/natcash.png";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import BackButton from "@/components/shared/BackButton";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -47,6 +50,7 @@ const PER_TICKET_FEE_HTG_LOW = 100;
 const HTG_LOW_THRESHOLD = 500;
 const STRIPE_TX_FEE_RATE = 0.03;
 const MONCASH_TX_FEE_RATE = 0.025;
+const NATCASH_TX_FEE_RATE = 0.025;
 const RAFFLE_LOW_THRESHOLD_HTG = 500;
 const RAFFLE_MID_THRESHOLD_HTG = 1000;
 const RAFFLE_FLAT_FEE_LOW_HTG = 25;
@@ -57,7 +61,7 @@ const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
-type Method = "" | "wallet" | "card" | "moncash";
+type Method = "" | "wallet" | "card" | "moncash" | "natcash";
 
 export default function RaffleCheckout({
   raffle,
@@ -125,7 +129,10 @@ export default function RaffleCheckout({
       walletPerEntry = isUsd
         ? round2(usdBase * (1 + SERVICE_FEE_RATE) + PER_TICKET_FEE_USD)
         : round2(htgBase * (1 + SERVICE_FEE_RATE) + perFeeHtg);
-    else walletPerEntry = isUsd ? round2(usdBase + flat / rate) : round2(htgBase + flat);
+    else
+      walletPerEntry = isUsd
+        ? round2(usdBase + flat / rate)
+        : round2(htgBase + flat);
 
     // Stripe — charged in USD.
     let stripePerEntryUsd: number;
@@ -149,7 +156,19 @@ export default function RaffleCheckout({
         (htgBase * (1 + SERVICE_FEE_RATE) + perFeeHtg) *
           (1 + MONCASH_TX_FEE_RATE),
       );
-    else moncashPerEntryHtg = round2((htgBase + flat) * (1 + MONCASH_TX_FEE_RATE));
+    else
+      moncashPerEntryHtg = round2((htgBase + flat) * (1 + MONCASH_TX_FEE_RATE));
+
+    // NatCash — charged in HTG. Same shape as MonCash, on its own rate.
+    let natcashPerEntryHtg: number;
+    if (feeWaived) natcashPerEntryHtg = htgBase;
+    else if (flat === null)
+      natcashPerEntryHtg = round2(
+        (htgBase * (1 + SERVICE_FEE_RATE) + perFeeHtg) *
+          (1 + NATCASH_TX_FEE_RATE),
+      );
+    else
+      natcashPerEntryHtg = round2((htgBase + flat) * (1 + NATCASH_TX_FEE_RATE));
 
     return {
       base,
@@ -159,21 +178,27 @@ export default function RaffleCheckout({
       walletPerEntry,
       stripePerEntryUsd,
       moncashPerEntryHtg,
+      natcashPerEntryHtg,
       walletBalance: isUsd ? walletUsd : walletHtg,
     };
   }, [raffle, htgExchangeRate, walletHtg, walletUsd, feeWaived]);
 
   const isCard = method === "card";
   const isMoncash = method === "moncash";
-  const displayCurrency = isCard ? "USD" : isMoncash ? "HTG" : pricing.currency;
+  const isNatcash = method === "natcash";
+  // Both wallets charge in HTG, so they share the display currency and base.
+  const isGateway = isMoncash || isNatcash;
+  const displayCurrency = isCard ? "USD" : isGateway ? "HTG" : pricing.currency;
   const perEntry = isCard
     ? pricing.stripePerEntryUsd
     : isMoncash
       ? pricing.moncashPerEntryHtg
-      : pricing.walletPerEntry;
+      : isNatcash
+        ? pricing.natcashPerEntryHtg
+        : pricing.walletPerEntry;
   const baseForDisplay = isCard
     ? pricing.usdBase
-    : isMoncash
+    : isGateway
       ? pricing.htgBase
       : pricing.base;
 
@@ -226,12 +251,12 @@ export default function RaffleCheckout({
         }
         setPaying(false);
       } else {
-        const result = await StartRaffleGuestMoncash(
-          raffle.raffleId,
-          quantity,
-          guest,
-          locale,
-        );
+        // The only other option open to a guest is a mobile wallet — both hand
+        // the payer off to their gateway the same way.
+        const start = isNatcash
+          ? StartRaffleGuestNatcash
+          : StartRaffleGuestMoncash;
+        const result = await start(raffle.raffleId, quantity, guest, locale);
         if (result.status === "success" && result.paymentURL) {
           window.location.href = result.paymentURL;
         } else {
@@ -267,8 +292,9 @@ export default function RaffleCheckout({
       setPaying(false);
       return;
     }
-    if (isMoncash) {
-      const result = await StartRaffleMoncash(
+    if (isGateway) {
+      const start = isNatcash ? StartRaffleNatcash : StartRaffleMoncash;
+      const result = await start(
         accessToken,
         raffle.raffleId,
         quantity,
@@ -397,6 +423,23 @@ export default function RaffleCheckout({
                 <Image src={moncashLogo} alt="MonCash" />
                 <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
                   {ct("payment.moncash")}
+                </span>
+              </div>
+              <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+            </button>
+            <button
+              className={optionClass("natcash")}
+              onClick={() => setMethod("natcash")}
+            >
+              <div className="flex items-center gap-4">
+                <Image
+                  src={natcashLogo}
+                  alt="Logo of natcash"
+                  width={20}
+                  height={21}
+                />
+                <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
+                  {ct("payment.natcash")}
                 </span>
               </div>
               <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />

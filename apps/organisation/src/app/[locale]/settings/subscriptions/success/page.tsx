@@ -21,14 +21,19 @@ export default function SubscriptionSuccessPage() {
   const router = useRouter();
   const [stripeStatus, setStripeStatus] = useState<Status>("loading");
 
-  // MonCash settles server-side before redirecting here, so its outcome is
-  // already in the URL — there is no checkout session left to finalise.
-  const status: Status =
-    provider === "moncash"
-      ? payment === "success"
-        ? "success"
+  // The mobile wallets settle server-side before redirecting here, so the
+  // outcome is already in the URL — there is no checkout session left to
+  // finalise. NatCash can also come back undecided: it reports '-3' while it
+  // makes up its mind, which leaves the payment PENDING rather than failed, so
+  // that must not be shown as an error.
+  const isWallet = provider === "moncash" || provider === "natcash";
+  const status: Status = isWallet
+    ? payment === "success"
+      ? "success"
+      : payment === "pending"
+        ? "pending"
         : "error"
-      : stripeStatus;
+    : stripeStatus;
 
   useEffect(() => {
     if (!sessionId || !session) return;
