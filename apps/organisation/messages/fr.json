@@ -1029,7 +1029,9 @@
           "total_tickets": "Le total de billets doit être au moins égal au nombre de prix",
           "prize_min": "Ajoutez au moins un prix",
           "prize_title": "Le titre du prix est requis",
-          "prize_description": "La description du prix est requise"
+          "prize_description": "La description du prix est requise",
+          "submit_failed": "Impossible de soumettre le tirage. Veuillez réessayer.",
+          "too_large": "Les images de ce tirage sont trop volumineuses pour être envoyées. Retirez ou remplacez les plus lourdes."
         },
         "tags": "Étiquettes",
         "tags_tip": "Ajoutez quelques étiquettes pour décrire votre tirage. Appuyez sur Entrée, virgule ou espace pour en ajouter une. Cliquez sur une étiquette pour la retirer.",

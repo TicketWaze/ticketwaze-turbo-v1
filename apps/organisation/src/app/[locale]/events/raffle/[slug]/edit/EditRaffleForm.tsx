@@ -26,6 +26,7 @@ import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
 import { compressImage } from "@/lib/compressImage";
+import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
 import PrizeImagePicker from "@/components/shared/PrizeImagePicker";
 import { Raffle } from "@ticketwaze/typescript-config";
 import { slugify } from "@/lib/Slugify";
@@ -327,20 +328,37 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
       if (image) fd.append(`prizeImage_${index}`, image.file);
     });
 
-    const result = await UpdateRaffle(
-      organisation.organisationId,
-      raffle.raffleId,
-      session?.user.accessToken ?? "",
-      fd,
-      locale,
-    );
-    if (result.status === "success") {
-      toast.success(tr("updateSuccess"));
-      router.push(`/events/raffle/${slugify(data.name, raffle.raffleId)}`);
-    } else {
-      toast.error(result.error);
+    if (formDataSize(fd) > MAX_UPLOAD_BYTES) {
+      toast.error(t("errors.too_large"));
+      setSubmitting(false);
+      return;
     }
-    setSubmitting(false);
+
+    try {
+      const result = await UpdateRaffle(
+        organisation.organisationId,
+        raffle.raffleId,
+        session?.user.accessToken ?? "",
+        fd,
+        locale,
+      );
+      if (result.status === "success") {
+        toast.success(tr("updateSuccess"));
+        router.push(`/events/raffle/${slugify(data.name, raffle.raffleId)}`);
+      } else {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      // See CreateRaffleForm: a rejected server action would otherwise leave the
+      // button spinning with nothing to show for it.
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("errors.submit_failed"),
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

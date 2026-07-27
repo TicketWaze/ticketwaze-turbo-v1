@@ -1030,7 +1030,9 @@
           "total_tickets": "Total tickets must be at least the number of prizes",
           "prize_min": "Add at least one prize",
           "prize_title": "Prize title is required",
-          "prize_description": "Prize description is required"
+          "prize_description": "Prize description is required",
+          "submit_failed": "Could not submit the raffle. Please try again.",
+          "too_large": "The pictures on this raffle are too large to upload. Please remove or replace the biggest ones."
         },
         "tags": "Tags",
         "tags_tip": "Add a few tags to describe your raffle. Press Enter, comma or space to add each one. Click a tag to remove it.",

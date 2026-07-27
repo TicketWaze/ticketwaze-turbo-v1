@@ -10,6 +10,16 @@ import UploadDocument from "@/assets/icons/document-upload.svg";
  * than a copy of the cover dropzone: a prize sits in a list next to its
  * siblings, and a full-width well per prize would bury the fields.
  */
+/**
+ * Prize pictures are thumbnails everywhere they appear — 112px in this picker,
+ * 72px on the public raffle page, 160px at their largest on the draw stage. The
+ * cover's 1920px default is ~100x the pixels any of those need, and unlike the
+ * cover a raffle sends one of these PER PRIZE, so the full-size default is what
+ * pushes a multi-prize submit past the request body limit. 640px keeps 4x
+ * headroom over the largest render.
+ */
+const PRIZE_MAX_DIMENSION = 640;
+
 export default function PrizeImagePicker({
   preview,
   onSelect,
@@ -25,7 +35,7 @@ export default function PrizeImagePicker({
     const file = e.target.files?.[0];
     if (!file) return;
     // Same reason as the cover: a phone photo blows the request limit on its own.
-    onSelect(await compressImage(file));
+    onSelect(await compressImage(file, PRIZE_MAX_DIMENSION));
     // Allow re-picking the same file after a clear.
     e.target.value = "";
   }

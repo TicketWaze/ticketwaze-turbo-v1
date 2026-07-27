@@ -25,6 +25,7 @@ import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
 import { compressImage } from "@/lib/compressImage";
+import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
 import PrizeImagePicker from "@/components/shared/PrizeImagePicker";
 
 const inputClass =
@@ -279,19 +280,37 @@ export default function CreateRaffleForm() {
       if (image) fd.append(`prizeImage_${index}`, image.file);
     });
 
-    const result = await CreateRaffle(
-      organisation.organisationId,
-      session?.user.accessToken ?? "",
-      fd,
-      locale,
-    );
-    if (result.status === "success") {
-      toast.success(t("success"));
-      router.push("/events");
-    } else {
-      toast.error(result.error);
+    if (formDataSize(fd) > MAX_UPLOAD_BYTES) {
+      toast.error(t("errors.too_large"));
+      setSubmitting(false);
+      return;
     }
-    setSubmitting(false);
+
+    try {
+      const result = await CreateRaffle(
+        organisation.organisationId,
+        session?.user.accessToken ?? "",
+        fd,
+        locale,
+      );
+      if (result.status === "success") {
+        toast.success(t("success"));
+        router.push("/events");
+      } else {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      // The action itself can reject rather than return — an oversized body, a
+      // gateway timeout, or a stale action id after a redeploy never reach the
+      // branch above. Without this the button spins forever with no message.
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("errors.submit_failed"),
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
