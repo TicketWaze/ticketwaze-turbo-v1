@@ -80,18 +80,23 @@ export default async function RaffleDrawPage({
   return (
     <AttendeeLayout title={raffle.title}>
       <BackButton text={t("back")} />
-      <div className="w-full max-w-[72rem] mx-auto flex flex-col gap-12 pb-20">
-        <header className="flex flex-col items-center gap-6 text-center">
+      {/* The layout card is a fixed-height, overflow-hidden box on desktop, so a
+          page that does not own its scrolling simply loses everything past the
+          fold — which is most of a draw. */}
+      <div className="w-full max-w-[72rem] mx-auto flex flex-col gap-8 pb-20 lg:flex-1 lg:min-h-0 lg:overflow-y-auto">
+        {/* Kept deliberately short: the reel is the reason anyone opened this
+            page, and every pixel here pushes it further down. */}
+        <header className="flex flex-col items-center gap-4 text-center">
           {raffle.coverImageUrl && (
             <Image
               src={raffle.coverImageUrl}
               alt={raffle.title}
-              width={140}
-              height={140}
-              className="w-36 h-36 rounded-[20px] object-cover"
+              width={96}
+              height={96}
+              className="w-24 h-24 rounded-[16px] object-cover"
             />
           )}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-1">
             <span className="text-[1.3rem] uppercase tracking-widest text-primary-500">
               {t("draw.eyebrow")}
             </span>
@@ -125,7 +130,9 @@ export default async function RaffleDrawPage({
             </p>
             <p className="text-[1.5rem] leading-8 text-neutral-600">
               {t("drawDate")}:{" "}
-              {formatRaffleDate(raffle.drawAt, locale, raffle.timezone)}
+              {formatRaffleDate(raffle.drawAt, locale, raffle.timezone, {
+                withTime: true,
+              })}
             </p>
             <p className="text-[1.4rem] leading-8 text-neutral-500">
               {t("draw.entriesSoFar", { count: entryCount })}

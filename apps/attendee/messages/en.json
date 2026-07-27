@@ -544,7 +544,9 @@
         "seed": "Draw seed",
         "entriesHash": "Entry list hash (SHA-256)"
       }
-    }
+    },
+    "salesEnd": "Entries close",
+    "salesClosed": "Entries closed"
   },
   "Explore": {
     "title": "Explore Activities",
@@ -708,7 +710,9 @@
       "days": "{count, plural, one {# day} other {# days}} <muted>to go</muted>",
       "hours": "{count, plural, one {# hour} other {# hours}} <muted>to go</muted>",
       "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>to go</muted>",
-      "soon": "<muted>Starting soon</muted>"
+      "soon": "<muted>Starting soon</muted>",
+      "awaitingDraw": "Awaiting draw",
+      "drawn": "Draw complete"
     },
     "entries": "entries"
   },

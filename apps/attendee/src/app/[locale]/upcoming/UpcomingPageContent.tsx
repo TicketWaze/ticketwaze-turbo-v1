@@ -153,6 +153,10 @@ export default function UpcomingPageContent({
                     name={raffle.title}
                     eventDays={[]}
                     countdownTo={raffle.drawAt}
+                    draw={{
+                      drawnAt: raffle.drawnAt,
+                      drawMode: raffle.drawMode,
+                    }}
                     tickets={raffle.entries?.length ?? 0}
                     unitLabel={t("entries")}
                   />

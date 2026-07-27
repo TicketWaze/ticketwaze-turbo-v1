@@ -2,7 +2,14 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
-import { Award, Calendar2, Timer1, Ticket, RouteSquare } from "iconsax-reactjs";
+import {
+  Award,
+  Calendar2,
+  CalendarRemove,
+  Timer1,
+  Ticket,
+  RouteSquare,
+} from "iconsax-reactjs";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import FollowButton from "../../[slug]/FollowButton";
 import Map from "../../[slug]/MapComponent";
@@ -57,6 +64,11 @@ export default async function RafflePage({
   const price =
     raffle.currency === "USD" ? raffle.usdPrice : raffle.ticketPrice;
   const soldOut = remaining !== null && remaining <= 0;
+  // Decided here rather than in the client component: the two clocks can differ,
+  // and a boolean that flips between the server render and hydration is a
+  // mismatch. The API refuses late entries regardless — this keeps the page from
+  // offering a button that would fail on click.
+  const salesClosed = new Date(raffle.salesEndAt).getTime() <= Date.now();
   const isFollowing = (organisation?.followers ?? []).filter(
     (follower: any) => follower.userId === session?.user.userId,
   );
@@ -99,6 +111,7 @@ export default async function RafflePage({
             <RaffleActions
               raffle={raffle}
               soldOut={soldOut}
+              salesClosed={salesClosed}
               isFavorite={isFavorite}
             />
             <Separator />
@@ -319,6 +332,23 @@ function RaffleDetails({
             {formatMoney(price, raffle.currency, locale)} {t("perEntry")}
           </span>
         </li>
+        {/* Sales close before the draw, so the deadline that actually binds a
+            buyer is this one — listed ahead of the draw date it leads to. */}
+        <li className={"flex items-center gap-2"}>
+          <div
+            className={
+              "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
+            }
+          >
+            <CalendarRemove size="20" color="#737c8a" variant="Bulk" />
+          </div>
+          <span className={"font-normal text-[1.4rem] leading-8 text-deep-200"}>
+            {t("salesEnd")}:{" "}
+            {formatRaffleDate(raffle.salesEndAt, locale, raffle.timezone, {
+              withTime: true,
+            })}
+          </span>
+        </li>
         <li className={"flex items-center gap-2"}>
           <div
             className={
@@ -329,7 +359,9 @@ function RaffleDetails({
           </div>
           <span className={"font-normal text-[1.4rem] leading-8 text-deep-200"}>
             {t("drawDate")}:{" "}
-            {formatRaffleDate(raffle.drawAt, locale, raffle.timezone)}
+            {formatRaffleDate(raffle.drawAt, locale, raffle.timezone, {
+              withTime: true,
+            })}
           </span>
         </li>
         <li className={"flex items-center gap-2"}>

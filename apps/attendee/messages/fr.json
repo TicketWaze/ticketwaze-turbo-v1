@@ -588,7 +588,9 @@
         "seed": "Graine du tirage",
         "entriesHash": "Empreinte de la liste (SHA-256)"
       }
-    }
+    },
+    "salesEnd": "Fin des entrées",
+    "salesClosed": "Entrées fermées"
   },
   "Explore": {
     "title": "Explorer les activités",
@@ -752,7 +754,9 @@
       "days": "{count, plural, one {# jour} other {# jours}} <muted>restant(s)</muted>",
       "hours": "{count, plural, one {# heure} other {# heures}} <muted>restante(s)</muted>",
       "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>restante(s)</muted>",
-      "soon": "<muted>Commence bientôt</muted>"
+      "soon": "<muted>Commence bientôt</muted>",
+      "awaitingDraw": "En attente du tirage",
+      "drawn": "Tirage effectué"
     },
     "entries": "participations"
   },

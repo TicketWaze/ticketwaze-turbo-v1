@@ -6,13 +6,16 @@
  * or error branch — the form is left with no result and no reason. Checking the
  * size before the call turns that silent failure into a message.
  *
- * The raffle forms are the only ones that send several images at once (a cover
- * plus one picture per prize), so they are the ones that can reach the limit.
- * Keep in step with serverActions.bodySizeLimit in next.config.ts and the API's
- * multipart limit in config/bodyparser.ts; the margin leaves room for the text
- * fields and the multipart framing that ride along with the files.
+ * Deliberately far below serverActions.bodySizeLimit (10mb). Something between
+ * the browser and the app rejects raffle submits well before that ceiling — the
+ * creates that succeed carry a few hundred KB of images, the ones that hung
+ * carried uncompressed photos. Since compressImage now holds every picture to a
+ * budget, a genuine raffle lands nowhere near this number; crossing it means an
+ * image did not compress at all (an undecodable format such as HEIC passes
+ * through untouched), which is exactly the case worth stopping here with a
+ * message instead of letting it hang.
  */
-export const MAX_UPLOAD_BYTES = 9 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 1.5 * 1024 * 1024;
 
 /** Approximate encoded size of a FormData payload: exact for files, close enough for text. */
 export function formDataSize(formData: FormData): number {

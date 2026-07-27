@@ -19,15 +19,23 @@ import UploadDocument from "@/assets/icons/document-upload.svg";
  * headroom over the largest render.
  */
 const PRIZE_MAX_DIMENSION = 640;
+/**
+ * A raffle sends one of these per prize on top of the cover, all in a single
+ * request, so each one gets a tight budget. At 640px this is visually lossless
+ * for a picture that never renders larger than 160px.
+ */
+const PRIZE_MAX_BYTES = 100 * 1024;
 
 export default function PrizeImagePicker({
   preview,
   onSelect,
   onClear,
+  error,
 }: {
   preview: string | null;
   onSelect: (file: File) => void;
   onClear: () => void;
+  error?: string;
 }) {
   const t = useTranslations("Events.create_event");
 
@@ -35,7 +43,7 @@ export default function PrizeImagePicker({
     const file = e.target.files?.[0];
     if (!file) return;
     // Same reason as the cover: a phone photo blows the request limit on its own.
-    onSelect(await compressImage(file, PRIZE_MAX_DIMENSION));
+    onSelect(await compressImage(file, PRIZE_MAX_DIMENSION, PRIZE_MAX_BYTES));
     // Allow re-picking the same file after a clear.
     e.target.value = "";
   }
@@ -66,7 +74,11 @@ export default function PrizeImagePicker({
           </button>
         </div>
       ) : (
-        <div className="relative w-28 h-28 shrink-0 rounded-[1rem] border border-dashed border-[#e5e5e5] bg-[#FBFBFB] flex items-center justify-center">
+        <div
+          className={`relative w-28 h-28 shrink-0 rounded-[1rem] border border-dashed bg-[#FBFBFB] flex items-center justify-center ${
+            error ? "border-failure" : "border-[#e5e5e5]"
+          }`}
+        >
           <Image src={UploadDocument} alt="" width={20} height={20} />
           <input
             type="file"
@@ -83,6 +95,9 @@ export default function PrizeImagePicker({
         <span className="text-[1.2rem] text-neutral-500 leading-6">
           {t("prize_image_tip")}
         </span>
+        {error && (
+          <span className="text-[1.2rem] text-failure leading-6">{error}</span>
+        )}
       </div>
     </div>
   );

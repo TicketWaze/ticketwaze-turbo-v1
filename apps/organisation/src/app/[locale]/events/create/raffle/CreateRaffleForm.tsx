@@ -204,11 +204,23 @@ export default function CreateRaffleForm() {
     Record<string, { file: File; preview: string }>
   >({});
 
+  // A prize picture is required, and it lives outside the zod schema (a File
+  // cannot travel in the prizes JSON), so it is validated on submit the same
+  // way the cover is. Keyed by field id for the same reason as the images.
+  const [missingPrizeImages, setMissingPrizeImages] = useState<
+    Record<string, true>
+  >({});
+
   function setPrizeImage(fieldId: string, file: File) {
     setPrizeImages((current) => ({
       ...current,
       [fieldId]: { file, preview: URL.createObjectURL(file) },
     }));
+    setMissingPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
   }
 
   function clearPrizeImage(fieldId: string) {
@@ -221,6 +233,11 @@ export default function CreateRaffleForm() {
 
   function removePrize(index: number, fieldId: string) {
     clearPrizeImage(fieldId);
+    setMissingPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
     remove(index);
   }
 
@@ -238,6 +255,13 @@ export default function CreateRaffleForm() {
   const onSubmit: SubmitHandler<TFormOut> = async (data) => {
     if (!coverFile) {
       setCoverError(t("errors.cover"));
+      return;
+    }
+    const missing = fields.filter((field) => !prizeImages[field.id]);
+    if (missing.length > 0) {
+      setMissingPrizeImages(
+        Object.fromEntries(missing.map((field) => [field.id, true as const])),
+      );
       return;
     }
     if (!organisation?.organisationId) {
@@ -639,6 +663,11 @@ export default function CreateRaffleForm() {
                 preview={prizeImages[field.id]?.preview ?? null}
                 onSelect={(file) => setPrizeImage(field.id, file)}
                 onClear={() => clearPrizeImage(field.id)}
+                error={
+                  missingPrizeImages[field.id]
+                    ? t("errors.prize_image")
+                    : undefined
+                }
               />
               <Field
                 label={t("prize_title")}

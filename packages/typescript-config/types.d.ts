@@ -125,7 +125,13 @@ export interface Ticket {
   ticketType: string;
   eventId: string;
   orderId: string;
+  /** Who paid for the ticket. */
   userId: string;
+  /**
+   * Who the ticket is for, when it was bought for someone else who has an
+   * account. Null when the buyer kept it or the recipient has no account.
+   */
+  recipientUserId?: string | null;
   fullName: string;
   email: string;
   ticketPrice: number;

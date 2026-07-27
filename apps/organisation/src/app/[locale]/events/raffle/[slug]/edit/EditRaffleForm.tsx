@@ -244,11 +244,27 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
     Record<string, true>
   >({});
 
+  // A prize picture is required. Validated on submit rather than in the zod
+  // schema, since a File cannot travel inside the prizes JSON.
+  const [missingPrizeImages, setMissingPrizeImages] = useState<
+    Record<string, true>
+  >({});
+
   function setPrizeImage(fieldId: string, file: File) {
     setPrizeFiles((current) => ({
       ...current,
       [fieldId]: { file, preview: URL.createObjectURL(file) },
     }));
+    setClearedPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+    setMissingPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
   }
 
   function clearPrizeImage(fieldId: string) {
@@ -266,7 +282,19 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
       delete next[fieldId];
       return next;
     });
+    setMissingPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
     remove(index);
+  }
+
+  /** A prize satisfies the picture requirement with a new upload or a kept one. */
+  function hasPrizeImage(field: { id: string; imageUrl?: string | null }) {
+    if (prizeFiles[field.id]) return true;
+    if (clearedPrizeImages[field.id]) return false;
+    return Boolean(field.imageUrl);
   }
 
   /** The image a prize should keep, if any: a new upload wins, a clear removes. */
@@ -276,6 +304,13 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
   }
 
   const onSubmit: SubmitHandler<TFormOut> = async (data) => {
+    const missing = fields.filter((field) => !hasPrizeImage(field));
+    if (missing.length > 0) {
+      setMissingPrizeImages(
+        Object.fromEntries(missing.map((field) => [field.id, true as const])),
+      );
+      return;
+    }
     if (!organisation?.organisationId) {
       toast.error(t("no_org"));
       return;
@@ -688,6 +723,11 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
                 }
                 onSelect={(file) => setPrizeImage(field.id, file)}
                 onClear={() => clearPrizeImage(field.id)}
+                error={
+                  missingPrizeImages[field.id]
+                    ? t("errors.prize_image")
+                    : undefined
+                }
               />
               <Field
                 label={t("prize_title")}

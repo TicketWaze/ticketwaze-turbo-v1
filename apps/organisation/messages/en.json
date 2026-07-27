@@ -1032,7 +1032,8 @@
           "prize_title": "Prize title is required",
           "prize_description": "Prize description is required",
           "submit_failed": "Could not submit the raffle. Please try again.",
-          "too_large": "The pictures on this raffle are too large to upload. Please remove or replace the biggest ones."
+          "too_large": "The pictures on this raffle are too large to upload. Please remove or replace the biggest ones.",
+          "prize_image": "A picture is required for this prize"
         },
         "tags": "Tags",
         "tags_tip": "Add a few tags to describe your raffle. Press Enter, comma or space to add each one. Click a tag to remove it.",
@@ -1251,7 +1252,7 @@
       "publish_name_locked": "You announced this activity under this name, so it stays. Everyone following it keeps their place.",
       "publish_success": "Your event was sent for review.",
       "prize_image": "Prize picture",
-      "prize_image_tip": "Optional. Shown to buyers and during the draw.",
+      "prize_image_tip": "Required. Shown to buyers and during the draw.",
       "prize_image_remove": "Remove prize picture"
     },
     "filters": {

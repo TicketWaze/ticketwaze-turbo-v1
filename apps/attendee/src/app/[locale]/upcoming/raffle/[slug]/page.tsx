@@ -247,7 +247,9 @@ function MyEntries({
           </div>
           <span className={"font-normal text-[1.4rem] leading-8 text-deep-200"}>
             {t("drawDate")}:{" "}
-            {formatRaffleDate(raffle.drawAt, locale, raffle.timezone)}
+            {formatRaffleDate(raffle.drawAt, locale, raffle.timezone, {
+              withTime: true,
+            })}
           </span>
         </li>
         <li className={"flex items-center gap-2"}>

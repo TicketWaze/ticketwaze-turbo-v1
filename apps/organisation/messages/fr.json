@@ -1031,7 +1031,8 @@
           "prize_title": "Le titre du prix est requis",
           "prize_description": "La description du prix est requise",
           "submit_failed": "Impossible de soumettre le tirage. Veuillez réessayer.",
-          "too_large": "Les images de ce tirage sont trop volumineuses pour être envoyées. Retirez ou remplacez les plus lourdes."
+          "too_large": "Les images de ce tirage sont trop volumineuses pour être envoyées. Retirez ou remplacez les plus lourdes.",
+          "prize_image": "Une photo est requise pour ce lot"
         },
         "tags": "Étiquettes",
         "tags_tip": "Ajoutez quelques étiquettes pour décrire votre tirage. Appuyez sur Entrée, virgule ou espace pour en ajouter une. Cliquez sur une étiquette pour la retirer.",
@@ -1246,7 +1247,7 @@
       "publish_name_locked": "Vous avez annoncé cette activité sous ce nom, il reste donc inchangé. Toutes les personnes qui la suivent gardent leur place.",
       "publish_success": "Votre événement a été envoyé pour révision.",
       "prize_image": "Photo du lot",
-      "prize_image_tip": "Facultatif. Visible par les acheteurs et pendant le tirage.",
+      "prize_image_tip": "Obligatoire. Visible par les acheteurs et pendant le tirage.",
       "prize_image_remove": "Retirer la photo du lot"
     },
     "filters": {
