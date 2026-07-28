@@ -139,7 +139,16 @@ export interface Ticket {
   organisationId: string;
   isRefundable: boolean;
   status: "PENDING" | "CHECKED" | "RETURNED";
-  event: Event;
+  /**
+   * Only ever populated for EVENT tickets — a raffle entry hangs off an activity
+   * with no `events` row. Prefer `activity` on any endpoint that sends it.
+   */
+  event?: Event;
+  /**
+   * Normalized activity behind the ticket, built server-side. Present on the
+   * admin tickets endpoint; absent wherever tickets are returned raw.
+   */
+  activity?: OrderActivitySummary | null;
   order?: Order;
   // Attendance (check-in/out) summary — present on the event records payload.
   checkIns?: TicketCheckIn[];
@@ -223,6 +232,12 @@ export interface OrderActivitySummary {
   endTime: string | null;
   /** Raffles only: the draw instant, correct UTC (format by converting). */
   drawAt: string | null;
+  /** Events only: venue, for the admin ticket drawer. Null on raffles. */
+  eventCategory?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
 }
 
 export interface Order {
@@ -746,6 +761,18 @@ export interface AdminUser {
   updatedAt: string;
   userAnalytic: UserAnalytic | null;
   tickets: Ticket[];
+  /**
+   * A pending account deletion, or null when none is in flight. Dates are
+   * resolved server-side: `requestedAt` is when the attendee asked, and
+   * `scheduledFor` is when the cron will actually anonymize them — the grace
+   * period between the two is backend policy, never recomputed here.
+   */
+  deletion?: {
+    requestedAt: string;
+    scheduledFor: string;
+    reason: string | null;
+    daysLeft: number;
+  } | null;
 }
 
 export interface AdminAttendeesRequest {

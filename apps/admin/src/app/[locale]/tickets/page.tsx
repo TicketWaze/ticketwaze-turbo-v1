@@ -5,10 +5,15 @@ import { auth } from "@/lib/auth";
 export default async function TicketPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; period?: string; search?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    period?: string;
+    search?: string;
+    activityType?: string;
+  }>;
 }) {
   const session = await auth();
-  const { status, period, search } = await searchParams;
+  const { status, period, search, activityType } = await searchParams;
   const activeStatus = status ?? "PENDING";
 
   const params = new URLSearchParams();
@@ -18,6 +23,7 @@ export default async function TicketPage({
   params.set("limit", "7");
   if (period) params.set("period", period);
   if (search) params.set("search", search);
+  if (activityType) params.set("activityType", activityType);
 
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/admin/tickets/requests?${params.toString()}`,
@@ -41,6 +47,7 @@ export default async function TicketPage({
         activeStatus={activeStatus}
         period={period}
         search={search}
+        activityType={activityType}
       />
     </AdminLayout>
   );

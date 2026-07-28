@@ -475,7 +475,6 @@
       "organisation": "Organisations",
       "user": "Utilisateurs"
     },
-
     "filters": {
       "period": {
         "actual": "Ce mois-ci"
@@ -561,13 +560,11 @@
       "close": "Fermer"
     }
   },
-
   "Payments": {
     "title": "Paiements",
     "total_revenue": "Revenu total",
     "total_transactions": "Total des transactions",
     "fees": "Frais de plateforme gagnés",
-
     "filters": {
       "period": {
         "actual": "Ce mois-ci"
@@ -576,7 +573,6 @@
       "time": "Toute la période",
       "search": "Rechercher un nom ou un ID"
     },
-
     "transactions": {
       "title": "Transactions",
       "table": {
@@ -610,10 +606,13 @@
       "transaction_status": "Statut de la transaction",
       "check_status": "Statut d'enregistrement",
       "check_time": "Heure d'enregistrement",
-      "close": "Fermer"
+      "close": "Fermer",
+      "draw_date": "Date du tirage",
+      "activity_type": "Type d’activité",
+      "type_event": "Événement",
+      "type_raffle": "Tirage"
     }
   },
-
   "Tickets": {
     "title": "Tickets",
     "total_sold": "Total  vendus",
@@ -626,7 +625,10 @@
       "status": "Tous les statuts",
       "time": "Toute la période",
       "ticket_class": "Tous les classes",
-      "search": "Rechercher un nom ou un ID"
+      "search": "Rechercher un nom ou un ID",
+      "activity_type": "Toutes les activités",
+      "activity_event": "Événements",
+      "activity_raffle": "Tirages"
     },
     "tickets_list": {
       "title": "Liste des billets",
@@ -639,7 +641,8 @@
         "purchase": "Date d'achat"
       },
       "no_history": "Vous verrez ici tous les billets des participants une fois que les événements commenceront à être vendus.",
-      "no_results": "Aucun billet ne correspond à « {term} »."
+      "no_results": "Aucun billet ne correspond à « {term} » avec les filtres actuels.",
+      "no_filtered": "Aucun billet ne correspond aux filtres sélectionnés."
     },
     "ticket_details": {
       "title": "Détails du billet",
@@ -660,7 +663,11 @@
       "check_status": "Statut d'enregistrement",
       "check_time": "Heure d'enregistrement",
       "close": "Fermer",
-      "resend": "Renvoyer le billet"
+      "resend": "Renvoyer le billet",
+      "draw_date": "Date du tirage",
+      "activity_type": "Type d’activité",
+      "type_event": "Événement",
+      "type_raffle": "Tirage"
     }
   },
   "Organisations": {
@@ -777,7 +784,6 @@
       }
     }
   },
-
   "Attendees": {
     "title": "Aperçu des participants",
     "total": "Total des participants",
@@ -886,16 +892,28 @@
           "payment_date": "Date de paiement",
           "transaction_status": "Statut de la transaction",
           "check_status": "Statut d'enregistrement",
-          "check_time": "Heure d'enregistrement"
+          "check_time": "Heure d'enregistrement",
+          "draw_date": "Date du tirage",
+          "activity_type": "Type d’activité",
+          "type_event": "Événement",
+          "type_raffle": "Tirage"
         },
         "cta": {
           "close": "Fermer",
           "resend": "Renvoyer le billet"
         }
+      },
+      "deletion": {
+        "title": "Suppression de compte demandée",
+        "body": "Ce compte sera définitivement anonymisé le {date}.",
+        "countdown": "{days, plural, =0 {Aujourd’hui} one {Demain} other {Dans # jours}}",
+        "requested_on": "Suppression demandée",
+        "scheduled_for": "Anonymisation le",
+        "reason": "Motif indiqué",
+        "no_reason": "Aucun motif indiqué"
       }
     }
   },
-
   "Waitlist": {
     "title": "Liste d'attente",
     "tabs": {
@@ -953,7 +971,6 @@
       "close": "Fermer"
     }
   },
-
   "Analytics": {
     "title": "Vue d'ensemble de la plateforme",
     "description": "Suivez les métriques de la plateforme en temps réel et comprenez les tendances clés.",
@@ -1015,12 +1032,10 @@
       "rejected": "Rejetées"
     }
   },
-
   "Event": {
     "from": "À partir de",
     "free": "Gratuit"
   },
-
   "Contact": {
     "title": "Messages de contact",
     "back": "Retour",
@@ -1050,7 +1065,6 @@
     },
     "empty": "Aucun message de contact pour l'instant. Les messages des clients apparaîtront ici."
   },
-
   "Support": {
     "title": "Chat en direct",
     "back": "Retour",

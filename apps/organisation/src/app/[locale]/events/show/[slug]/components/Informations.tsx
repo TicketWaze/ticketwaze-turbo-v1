@@ -3,7 +3,7 @@ import FormatDate from "@/lib/FormatDate";
 import {
   Event,
   Order,
-  OrganisationTicket,
+  Ticket,
 } from "@ticketwaze/typescript-config";
 import {
   DrawerClose,
@@ -21,7 +21,7 @@ export default function Informations({
   order,
   event,
 }: {
-  ticket: OrganisationTicket;
+  ticket: Ticket;
   order: Order;
   event: Event;
 }) {
@@ -63,7 +63,7 @@ export default function Informations({
               >
                 {t("transactions.details.event_name")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {ticket.event.eventName}
+                  {event.eventName}
                 </span>
               </p>
               <ul className="flex flex-col gap-6 w-full">
@@ -114,7 +114,7 @@ export default function Informations({
                     "text-deep-100 font-medium leading-8 max-w-[399px] text-right"
                   }
                 >
-                  {ticket.event.address}
+                  {event.address}
                 </span>
               </p>
             </div>
@@ -142,10 +142,10 @@ export default function Informations({
               >
                 {t("transactions.details.price")}{" "}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {ticket.event.currency === "USD"
+                  {event.currency === "USD"
                     ? ticket.ticketUsdPrice
                     : ticket.ticketPrice}{" "}
-                  {ticket.event.currency}
+                  {event.currency}
                 </span>
               </p>
               <p

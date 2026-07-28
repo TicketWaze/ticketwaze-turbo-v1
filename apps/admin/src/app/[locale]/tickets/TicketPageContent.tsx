@@ -29,6 +29,10 @@ import PageLoader from "@/components/PageLoader";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { Ticket } from "@ticketwaze/typescript-config";
 
+/** The filter pill. Shared by all three selects so they stay identical. */
+const pillTrigger =
+  "bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8";
+
 const statusColors: Record<"PENDING" | "CHECKED" | "RETURNED", string> = {
   PENDING: "text-[#EA961C]",
   CHECKED: "text-success",
@@ -62,12 +66,14 @@ export default function TicketPageContent({
   activeStatus,
   period,
   search,
+  activityType,
 }: {
   tickets: Ticket[];
   stats: { total: number; returned: number; checkedIn: number };
   activeStatus: string;
   period?: string;
   search?: string;
+  activityType?: string;
 }) {
   const t = useTranslations("Tickets");
   const router = useRouter();
@@ -95,11 +101,15 @@ export default function TicketPageContent({
     ? activeStatus
     : "all";
 
+  const selectedActivityType = ["event", "raffle"].includes(activityType ?? "")
+    ? activityType!
+    : "all_activities";
+
   // The server is the source of truth for what is on screen, so a completed
   // navigation is what clears the loader.
   useEffect(() => {
     setIsLoading(false);
-  }, [activeStatus, period, search]);
+  }, [activeStatus, period, search, activityType]);
 
   /**
    * One request per keystroke, with the previous one aborted as the next goes
@@ -110,6 +120,11 @@ export default function TicketPageContent({
    * The request goes straight to the API rather than through a navigation so it
    * is cancellable — the admin origin is CORS allow-listed, and the bearer token
    * is the same one the server components use.
+   *
+   * The filters are part of the request: a search runs INSIDE the current pills
+   * rather than against every record, and the effect re-runs when a pill changes
+   * so the results follow it. `selectedStatus` of "all" is a value the API
+   * ignores, which is how "no status narrowing" is expressed.
    */
   useEffect(() => {
     abortRef.current?.abort();
@@ -128,13 +143,15 @@ export default function TicketPageContent({
     abortRef.current = controller;
     setIsSearching(true);
 
-    // Searching deliberately ignores the status and period pills so it runs
-    // against every record.
     const params = new URLSearchParams({
-      status: "all",
+      status: selectedStatus,
       search: trimmed,
       limit: "50",
     });
+    if (period) params.set("period", period);
+    if (selectedActivityType !== "all_activities") {
+      params.set("activityType", selectedActivityType);
+    }
 
     fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/admin/tickets/requests?${params.toString()}`,
@@ -159,16 +176,23 @@ export default function TicketPageContent({
       });
 
     return () => controller.abort();
-  }, [term, session?.user.accessToken]);
+  }, [
+    term,
+    session?.user.accessToken,
+    selectedStatus,
+    period,
+    selectedActivityType,
+  ]);
 
-  // Picking a filter ends the search — the two are alternative ways of choosing
-  // rows, and leaving a stale term in the box would misdescribe what is listed.
+  /**
+   * Changing a pill KEEPS the search term. The two narrow the same list
+   * together, so the effect above simply re-runs against the new filters.
+   *
+   * The full-page loader is only for the server-rendered list; while a search is
+   * active the rows come from the fetch above, which has its own inline spinner.
+   */
   const navigate = (params: URLSearchParams) => {
-    abortRef.current?.abort();
-    setTerm("");
-    setSearchRows(null);
-    setIsSearching(false);
-    setIsLoading(true);
+    if (!isSearchActive) setIsLoading(true);
     router.push(`${pathname}?${params.toString()}`);
   };
 
@@ -179,6 +203,7 @@ export default function TicketPageContent({
     const params = new URLSearchParams();
     params.set("status", value);
     if (period) params.set("period", period);
+    if (activityType) params.set("activityType", activityType);
     navigate(params);
   };
 
@@ -186,6 +211,15 @@ export default function TicketPageContent({
     const params = new URLSearchParams();
     params.set("status", selectedStatus);
     if (value !== "all_period") params.set("period", value);
+    if (activityType) params.set("activityType", activityType);
+    navigate(params);
+  };
+
+  const handleActivityTypeChange = (value: string) => {
+    const params = new URLSearchParams();
+    params.set("status", selectedStatus);
+    if (period) params.set("period", period);
+    if (value !== "all_activities") params.set("activityType", value);
     navigate(params);
   };
 
@@ -243,85 +277,117 @@ export default function TicketPageContent({
           table. */}
       <div className="flex flex-col gap-8 overflow-scroll h-full">
         <div className="flex flex-col gap-8">
-          <div className="flex justify-between">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <h4 className="hidden font-medium lg:inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
               {t("tickets_list.title")}
             </h4>
-            <div className="flex flex-col lg:flex-row gap-4 w-full lg:w-auto">
+            <div className="flex flex-col gap-4 w-full lg:w-auto lg:flex-row lg:items-center">
               <SearchInput
                 value={term}
                 onChange={setTerm}
                 placeholder={t("filters.search")}
               />
-              {/* Controlled, not defaultValue: a search runs against every record,
-              so while one is active the pills have to show that no status or
-              period narrowing is in effect. */}
-              <Select
-                value={isSearchActive ? "all" : selectedStatus}
-                onValueChange={handleStatusChange}
-              >
-                <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
-                  <SelectValue placeholder="" />
-                </SelectTrigger>
-                <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                  <SelectGroup>
-                    <SelectItem
-                      className={"text-[1.4rem] text-deep-100"}
-                      value="all"
-                    >
-                      {t("filters.status")}
-                    </SelectItem>
-                    <SelectItem
-                      className={"text-[1.4rem] text-deep-100"}
-                      value="CHECKED"
-                    >
-                      Checked-In
-                    </SelectItem>
-                    <SelectItem
-                      className={"text-[1.4rem] text-deep-100"}
-                      value="PENDING"
-                    >
-                      Pending
-                    </SelectItem>
-                    <SelectItem
-                      className={"text-[1.4rem] text-deep-100"}
-                      value="RETURNED"
-                    >
-                      Returned
-                    </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-              <Select
-                value={isSearchActive ? "all_period" : (period ?? "all_period")}
-                onValueChange={handlePeriodChange}
-              >
-                <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
-                  <SelectValue placeholder="" />
-                </SelectTrigger>
-                <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                  <SelectGroup>
-                    <SelectItem
-                      className={"text-[1.4rem] text-deep-100"}
-                      value="all_period"
-                    >
-                      {t("filters.time")}
-                    </SelectItem>
-                    <SelectItem
-                      className={"text-[1.4rem] text-deep-100"}
-                      value="last_week"
-                    >
-                      Last week
-                    </SelectItem>
-                    <SelectItem
-                      className={"text-[1.4rem] text-deep-100"}
-                      value="last_month"
-                    >
-                      Last month
-                    </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              {/* On mobile the search owns its own full-width row and the pills
+                  wrap together underneath, rather than each control stacking
+                  onto a line of its own. `lg:contents` dissolves this wrapper at
+                  desktop so the pills sit inline exactly as before. */}
+              <div className="flex flex-wrap items-center gap-3 lg:contents">
+                {/* Controlled, not defaultValue: the pills describe what is on
+                screen, and they keep applying while a search is running. */}
+                <Select
+                  value={selectedActivityType}
+                  onValueChange={handleActivityTypeChange}
+                >
+                  <SelectTrigger className={pillTrigger}>
+                    <SelectValue placeholder="" />
+                  </SelectTrigger>
+                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
+                    <SelectGroup>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="all_activities"
+                      >
+                        {t("filters.activity_type")}
+                      </SelectItem>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="event"
+                      >
+                        {t("filters.activity_event")}
+                      </SelectItem>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="raffle"
+                      >
+                        {t("filters.activity_raffle")}
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Select value={selectedStatus} onValueChange={handleStatusChange}>
+                  <SelectTrigger className={pillTrigger}>
+                    <SelectValue placeholder="" />
+                  </SelectTrigger>
+                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
+                    <SelectGroup>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="all"
+                      >
+                        {t("filters.status")}
+                      </SelectItem>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="CHECKED"
+                      >
+                        Checked-In
+                      </SelectItem>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="PENDING"
+                      >
+                        Pending
+                      </SelectItem>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="RETURNED"
+                      >
+                        Returned
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Select
+                  value={period ?? "all_period"}
+                  onValueChange={handlePeriodChange}
+                >
+                  <SelectTrigger className={pillTrigger}>
+                    <SelectValue placeholder="" />
+                  </SelectTrigger>
+                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
+                    <SelectGroup>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="all_period"
+                      >
+                        {t("filters.time")}
+                      </SelectItem>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="last_week"
+                      >
+                        Last week
+                      </SelectItem>
+                      <SelectItem
+                        className={"text-[1.4rem] text-deep-100"}
+                        value="last_month"
+                      >
+                        Last month
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
           {/* The results area owns the search loader: the header, stats and filters
@@ -413,9 +479,9 @@ export default function TicketPageContent({
                           >
                             <span
                               className="block max-w-[24rem] truncate"
-                              title={ticket.event?.eventName ?? undefined}
+                              title={ticket.activity?.name ?? undefined}
                             >
-                              {ticket.event?.eventName ?? "—"}
+                              {ticket.activity?.name ?? "—"}
                             </span>
                           </TableCell>
                           <TableCell
@@ -463,6 +529,15 @@ export default function TicketPageContent({
               (isSearchActive ? (
                 <p className="text-[1.8rem] text-neutral-600 leading-10 text-center mt-16">
                   {t("tickets_list.no_results", { term: term.trim() })}
+                </p>
+              ) : /* The stat tiles count every ticket ever sold, ignoring the
+                     filters, so they say precisely which empty this is: nothing
+                     sold yet, or nothing matching the current pills. Guessing
+                     from the pills instead would be wrong, since the page opens
+                     on a status filter by default. */
+              stats.total > 0 ? (
+                <p className="text-[1.8rem] text-neutral-600 leading-10 text-center mt-16">
+                  {t("tickets_list.no_filtered")}
                 </p>
               ) : (
                 <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">

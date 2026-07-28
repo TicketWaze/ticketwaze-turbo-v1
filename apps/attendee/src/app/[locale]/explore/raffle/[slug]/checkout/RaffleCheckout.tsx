@@ -320,7 +320,10 @@ export default function RaffleCheckout({
     );
     if (result.status === "success") {
       toast.success(t("success"));
-      router.push(`/explore/raffle/${slug}`);
+      // The entries now belong to the buyer, so land them on their own raffle
+      // page under /upcoming — same as an event purchase — not back on the
+      // public sales page they just bought from.
+      router.push(`/upcoming/raffle/${slug}?from=checkout`);
     } else {
       toast.error(
         ("message" in result && result.message) ||

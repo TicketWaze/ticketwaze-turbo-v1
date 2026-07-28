@@ -210,7 +210,6 @@
       "signing": "Signing you in..."
     }
   },
-
   "Layout": {
     "sidebar": {
       "more": "More",
@@ -241,7 +240,6 @@
       "view": "View"
     }
   },
-
   "Admins": {
     "title": "Administrators",
     "back": "Back",
@@ -277,7 +275,6 @@
       "email": "Enter a valid email address"
     }
   },
-
   "Activities": {
     "title": "Activities Overview",
     "total": "Total Activities",
@@ -398,7 +395,6 @@
       }
     }
   },
-
   "Payouts": {
     "back": "Back",
     "cancel": "Mark as Failed",
@@ -486,7 +482,6 @@
       "organisation": "Organisations",
       "user": "Users"
     },
-
     "filters": {
       "period": {
         "actual": "This month"
@@ -572,13 +567,11 @@
       "close": "Close"
     }
   },
-
   "Payments": {
     "title": "Payments",
     "total_revenue": "Total Revenue",
     "total_transactions": "Total Transactions",
     "fees": "Platform Fees Earned",
-
     "filters": {
       "period": {
         "actual": "This month"
@@ -587,7 +580,6 @@
       "time": "All time",
       "search": "Search name or transaction ID"
     },
-
     "transactions": {
       "title": "Transactions",
       "table": {
@@ -621,10 +613,13 @@
       "transaction_status": "Transaction Status",
       "check_status": "Checked-In Status",
       "check_time": "Check-In Time",
-      "close": "Close"
+      "close": "Close",
+      "draw_date": "Draw Date",
+      "activity_type": "Activity Type",
+      "type_event": "Event",
+      "type_raffle": "Raffle"
     }
   },
-
   "Tickets": {
     "title": "Tickets",
     "total_sold": "Total Sold",
@@ -632,12 +627,15 @@
     "checked-in": "Checked-In Tickets",
     "filters": {
       "period": {
-        "actual": "Ce mois-ci"
+        "actual": "This month"
       },
       "status": "All status",
       "time": "All time",
       "ticket_class": "All classes",
-      "search": "Search name or ticket ID"
+      "search": "Search name or ticket ID",
+      "activity_type": "All activities",
+      "activity_event": "Events",
+      "activity_raffle": "Raffles"
     },
     "tickets_list": {
       "title": "Tickets list",
@@ -650,7 +648,8 @@
         "purchase": "Date Purchased"
       },
       "no_history": "You’ll see all attendee ticket records here once events begin selling.",
-      "no_results": "No tickets match “{term}”."
+      "no_results": "No tickets match “{term}” with the current filters.",
+      "no_filtered": "No tickets match the selected filters."
     },
     "ticket_details": {
       "title": "Ticket Details",
@@ -671,7 +670,11 @@
       "check_status": "Checked-In Status",
       "check_time": "Check-In Time",
       "close": "Close",
-      "resend": "Resend ticket"
+      "resend": "Resend ticket",
+      "draw_date": "Draw Date",
+      "activity_type": "Activity Type",
+      "type_event": "Event",
+      "type_raffle": "Raffle"
     }
   },
   "Organisations": {
@@ -788,7 +791,6 @@
       }
     }
   },
-
   "Attendees": {
     "title": "Attendees Overview",
     "total": "Total Attendees",
@@ -796,7 +798,7 @@
     "guest": "Guest Attendees",
     "filters": {
       "period": {
-        "actual": "Ce mois-ci"
+        "actual": "This month"
       },
       "status": "All status",
       "status_active": "Active",
@@ -897,16 +899,28 @@
           "payment_date": "Payment Date",
           "transaction_status": "Transaction Status",
           "check_status": "Checked-In Status",
-          "check_time": "Check-In Time"
+          "check_time": "Check-In Time",
+          "draw_date": "Draw Date",
+          "activity_type": "Activity Type",
+          "type_event": "Event",
+          "type_raffle": "Raffle"
         },
         "cta": {
           "close": "Close",
           "resend": "Resend ticket"
         }
+      },
+      "deletion": {
+        "title": "Account deletion requested",
+        "body": "This account will be permanently anonymized on {date}.",
+        "countdown": "{days, plural, =0 {Today} one {Tomorrow} other {In # days}}",
+        "requested_on": "Deletion requested",
+        "scheduled_for": "Anonymized on",
+        "reason": "Reason given",
+        "no_reason": "No reason given"
       }
     }
   },
-
   "Waitlist": {
     "title": "Waitlist",
     "tabs": {
@@ -964,7 +978,6 @@
       "close": "Close"
     }
   },
-
   "Analytics": {
     "title": "Platform Overview",
     "description": "Track platform-wide metrics in real time and understand key trends.",
@@ -1026,12 +1039,10 @@
       "rejected": "Rejected"
     }
   },
-
   "Event": {
     "from": "From",
     "free": "Free"
   },
-
   "Contact": {
     "title": "Contact Messages",
     "back": "Back",
@@ -1061,7 +1072,6 @@
     },
     "empty": "No contact messages yet. When customers reach out, their messages will appear here."
   },
-
   "Support": {
     "title": "Live Chat",
     "back": "Back",

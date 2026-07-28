@@ -18,10 +18,15 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
   const t = useTranslations("Attendees.profile");
   const locale = useLocale();
 
-  const event = ticket.event;
+  const activity = ticket.activity;
   const order = ticket.order;
-  const firstDay = event?.eventDays?.[0];
-  const location = [event?.address, event?.city, event?.country]
+  const isRaffle = activity?.activityType === "raffle";
+  // The normalized summary, not `ticket.event` — a raffle entry has no `events`
+  // row, so that path left this drawer blank.
+  const hasEventSchedule = Boolean(
+    !isRaffle && activity?.eventDate && activity?.startTime && activity?.endTime,
+  );
+  const location = [activity?.address, activity?.city, activity?.country]
     .filter(Boolean)
     .join(", ");
 
@@ -77,10 +82,45 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
               >
                 {t("Ticket.details.activity")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {event?.eventName ?? "—"}
+                  {activity?.name ?? "—"}
                 </span>
               </p>
-              {firstDay && (
+              {activity && (
+                <p
+                  className={
+                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                  }
+                >
+                  {t("Ticket.details.activity_type")}
+                  <span className={"text-deep-100 font-medium leading-8"}>
+                    {isRaffle
+                      ? t("Ticket.details.type_raffle")
+                      : t("Ticket.details.type_event")}
+                  </span>
+                </p>
+              )}
+              {/* A draw is a single moment in the raffle's own zone, so it gets
+                  one row instead of the event's date + start/end pair. */}
+              {isRaffle && activity?.drawAt && (
+                <p
+                  className={
+                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                  }
+                >
+                  {t("Ticket.details.draw_date")}
+                  <span className={"text-deep-100 font-medium leading-8"}>
+                    {new Date(activity.drawAt).toLocaleString(locale, {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                      hour: "numeric",
+                      minute: "2-digit",
+                      timeZone: activity.timezone ?? "UTC",
+                    })}
+                  </span>
+                </p>
+              )}
+              {hasEventSchedule && (
                 <ul className="flex flex-col gap-6 w-full">
                   <li>
                     <p
@@ -90,7 +130,7 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
                     >
                       {t("Ticket.details.date")}
                       <span className={"text-deep-100 font-medium leading-8"}>
-                        {formatDate(firstDay.eventDate, locale, "local")}
+                        {formatDate(activity!.eventDate!, locale, "local")}
                       </span>
                     </p>
                     <p
@@ -101,14 +141,14 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
                       {t("Ticket.details.time")}
                       <span className={"text-deep-100 font-medium leading-8"}>
                         {formatTime(
-                          firstDay.startTime,
-                          firstDay.timezone,
+                          activity!.startTime!,
+                          activity!.timezone ?? "UTC",
                           locale,
                         )}{" "}
                         -{" "}
                         {formatTime(
-                          firstDay.endTime,
-                          firstDay.timezone,
+                          activity!.endTime!,
+                          activity!.timezone ?? "UTC",
                           locale,
                         )}
                       </span>
@@ -116,20 +156,23 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
                   </li>
                 </ul>
               )}
-              <p
-                className={
-                  "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("Ticket.details.location")}
-                <span
+              {/* A raffle has no venue — its optional location is a map pin. */}
+              {!isRaffle && (
+                <p
                   className={
-                    "text-deep-100 font-medium leading-8 max-w-[39.9rem] text-right"
+                    "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
                   }
                 >
-                  {location || "—"}
-                </span>
-              </p>
+                  {t("Ticket.details.location")}
+                  <span
+                    className={
+                      "text-deep-100 font-medium leading-8 max-w-[39.9rem] text-right"
+                    }
+                  >
+                    {location || "—"}
+                  </span>
+                </p>
+              )}
             </div>
             <Separator />
             <div className={"w-full flex flex-col gap-8 py-6"}>
