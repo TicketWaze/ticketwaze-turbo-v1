@@ -263,7 +263,8 @@
         "password": "Le champ mot de passe ne peut pas être vide",
         "wrong": "Adresse email ou mot de passe incorrect",
         "no_account": "Aucun compte Ticketwaze n'est associé à ce compte Google. Créez d'abord un compte, puis revenez pour accéder à votre tableau de bord.",
-        "google_failed": "La connexion avec Google a échoué. Veuillez réessayer."
+        "google_failed": "La connexion avec Google a échoué. Veuillez réessayer.",
+      "organisation_suspended": "Cette organisation est suspendue, son tableau de bord n'est donc pas accessible. Consultez l'e-mail que nous vous avons envoyé pour en connaître la raison, ou contactez le support pour faire appel."
       },
       "forgot": "Mot de passe oublié",
       "method": {

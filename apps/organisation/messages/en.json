@@ -264,7 +264,8 @@
         "password": "Password Field cannot be blank",
         "wrong": "Email address or password is incorrect",
         "no_account": "No Ticketwaze account found for this Google account. Create an account first, then come back to access your dashboard.",
-        "google_failed": "Google sign-in failed. Please try again."
+        "google_failed": "Google sign-in failed. Please try again.",
+      "organisation_suspended": "This organisation is suspended, so its dashboard is unavailable. Check the email we sent for the reason, or contact support to appeal."
       },
       "forgot": "Forgot password",
       "method": {

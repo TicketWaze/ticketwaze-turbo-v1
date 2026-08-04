@@ -1281,5 +1281,13 @@
         "description": "Share your referral link with friends. When they sign up and buy their first ticket, you both earn rewards. Check your Wallet to see your balance."
       }
     }
+  },
+  "Suspension": {
+    "title": "Your account is suspended",
+    "description": "You can still sign in and use the tickets you already bought, but purchases, refunds and reviews are turned off while the suspension is in force.",
+    "reason_label": "Reason given",
+    "cta": "Contact support",
+    "blocked_action": "Your account is suspended, so this action is unavailable. Check the email we sent for the reason, or contact support to appeal.",
+    "generic_error": "Something went wrong"
   }
 }

@@ -1,5 +1,13 @@
 "use server";
 
+/**
+ * Failures carry the API's `code` alongside its `message`. The message is
+ * localized copy for ordinary errors, but a refusal for account suspension
+ * arrives as a developer-facing English sentence plus `code:
+ * "ACCOUNT_SUSPENDED"` — the caller matches on the code and renders its own
+ * translation, so the code has to survive this layer.
+ */
+
 export async function FreeEventTicket(
   accessToken: string,
   eventId: string,
@@ -30,6 +38,7 @@ export async function FreeEventTicket(
       return {
         status: "failed",
         message: data.message,
+        code: data.code,
       };
     }
   } catch (err: unknown) {
@@ -63,7 +72,7 @@ export async function StartRaffleStripe(
     if (data.status === "success") {
       return { status: "success" as const, clientSecret: data.clientSecret };
     }
-    return { status: "failed" as const, message: data.message };
+    return { status: "failed" as const, message: data.message, code: data.code };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -96,7 +105,7 @@ export async function StartRaffleGuestStripe(
     if (data.status === "success") {
       return { status: "success" as const, clientSecret: data.clientSecret };
     }
-    return { status: "failed" as const, message: data.message };
+    return { status: "failed" as const, message: data.message, code: data.code };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -127,7 +136,7 @@ export async function StartRaffleGuestMoncash(
     if (data.status === "success") {
       return { status: "success" as const, paymentURL: data.paymentURL };
     }
-    return { status: "failed" as const, message: data.message };
+    return { status: "failed" as const, message: data.message, code: data.code };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -159,7 +168,7 @@ export async function StartRaffleMoncash(
     if (data.status === "success") {
       return { status: "success" as const, paymentURL: data.paymentURL };
     }
-    return { status: "failed" as const, message: data.message };
+    return { status: "failed" as const, message: data.message, code: data.code };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -190,7 +199,7 @@ export async function StartRaffleGuestNatcash(
     if (data.status === "success") {
       return { status: "success" as const, paymentURL: data.paymentURL };
     }
-    return { status: "failed" as const, message: data.message };
+    return { status: "failed" as const, message: data.message, code: data.code };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -222,7 +231,7 @@ export async function StartRaffleNatcash(
     if (data.status === "success") {
       return { status: "success" as const, paymentURL: data.paymentURL };
     }
-    return { status: "failed" as const, message: data.message };
+    return { status: "failed" as const, message: data.message, code: data.code };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -255,7 +264,7 @@ export async function BuyRaffleEntriesWallet(
     if (data.status === "success") {
       return { status: "success" as const };
     } else {
-      return { status: "failed" as const, message: data.message };
+      return { status: "failed" as const, message: data.message, code: data.code };
     }
   } catch (err: unknown) {
     return {

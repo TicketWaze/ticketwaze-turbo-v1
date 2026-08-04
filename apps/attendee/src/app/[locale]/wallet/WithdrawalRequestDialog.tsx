@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { ArrowUp } from "iconsax-reactjs";
+import { isSuspendedResponse } from "@/lib/suspension";
 import {
   Dialog,
   DialogContent,
@@ -39,6 +40,7 @@ export default function WithdrawalRequestDialog({
   const { data: session } = useSession();
   const t = useTranslations("Wallet.withdrawal.dialog");
   const tw = useTranslations("Wallet.withdrawal");
+  const tSuspension = useTranslations("Suspension");
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [form, setForm] = useState<FormState>({
@@ -131,7 +133,12 @@ export default function WithdrawalRequestDialog({
       return;
     }
     if (result.status === "failed") {
-      if (result.message === "insufficient_balance") {
+      if (isSuspendedResponse(result)) {
+        // Distinguished from a generic failure on purpose: a suspended account
+        // is not going to succeed on retry, and the user deserves to know that
+        // rather than keep resubmitting the form.
+        toast.error(tSuspension("blocked_action"), { duration: 10000 });
+      } else if (result.message === "insufficient_balance") {
         toast.error(t("error_insufficient_balance"));
       } else {
         toast.error(t("error_failed"));

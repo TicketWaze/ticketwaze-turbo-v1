@@ -23,6 +23,7 @@ import { useSession } from "next-auth/react";
 import PageLoader from "@/components/PageLoader";
 import BackButton from "@/components/shared/BackButton";
 import { ButtonPrimary } from "@/components/shared/buttons";
+import { isSuspendedResponse } from "@/lib/suspension";
 
 import {
   AttendeeFormData,
@@ -56,6 +57,7 @@ export default function CheckoutFlow({
   htgExchangeRate?: number;
 }) {
   const t = useTranslations("Checkout");
+  const tSuspension = useTranslations("Suspension");
   const locale = useLocale();
   const router = useRouter();
   const { data: session } = useSession();
@@ -64,6 +66,22 @@ export default function CheckoutFlow({
   // access token, which would otherwise 401 mid-payment. `user` is still used
   // for guest detection and prefilling identity.
   const accessToken = session?.user?.accessToken ?? "";
+
+  /**
+   * Turns an API failure into something worth showing. A suspension arrives as
+   * a code with a developer-facing English message attached, so it has to be
+   * translated here rather than passed through — every other failure already
+   * carries copy the API localized.
+   */
+  function failureMessage(response: unknown, fallback?: string) {
+    if (isSuspendedResponse(response)) return tSuspension("blocked_action");
+    return (
+      (response as { message?: string })?.message ??
+      fallback ??
+      tSuspension("generic_error")
+    );
+  }
+
   const isFree = event.isFree;
   const isGuest = !user;
   // Online activities are `eventCategory === "meet"`. This used to test
@@ -224,7 +242,7 @@ export default function CheckoutFlow({
     if (result.status === "success") {
       router.push(`/upcoming/${slugify(event.eventName, event.eventId)}`);
     } else {
-      toast.error(result.message);
+      toast.error(failureMessage(result));
     }
     setIsLoading(false);
   }
@@ -264,7 +282,7 @@ export default function CheckoutFlow({
       if (response.status === "success" && response.paymentURL) {
         router.push(response.paymentURL);
       } else {
-        toast.error(response.message ?? "Something went wrong");
+        toast.error(failureMessage(response, "Something went wrong"));
       }
       setIsLoading(false);
       return;
@@ -289,7 +307,7 @@ export default function CheckoutFlow({
     if (response.status === "success" && response.paymentURL) {
       router.push(response.paymentURL);
     } else {
-      toast.error(response.message ?? "Something went wrong");
+      toast.error(failureMessage(response, "Something went wrong"));
     }
     setIsLoading(false);
   }
@@ -313,7 +331,7 @@ export default function CheckoutFlow({
         setStripeClientSecret(response.clientSecret);
         setStripeDialogOpen(true);
       } else {
-        toast.error(response.message);
+        toast.error(failureMessage(response));
       }
       setIsLoading(false);
       return;
@@ -338,7 +356,7 @@ export default function CheckoutFlow({
       setStripeClientSecret(response.clientSecret);
       setStripeDialogOpen(true);
     } else {
-      toast.error(response.message);
+      toast.error(failureMessage(response));
     }
     setIsLoading(false);
   }
@@ -365,7 +383,7 @@ export default function CheckoutFlow({
     if (response.status === "success") {
       router.push(`/upcoming/${slugify(event.eventName, event.eventId)}`);
     } else {
-      toast.error(response.message);
+      toast.error(failureMessage(response));
     }
     setIsLoading(false);
   }
@@ -430,6 +448,12 @@ export default function CheckoutFlow({
         );
         const checkData = await checkRes.json();
         setIsLoading(false);
+        // Order matters: a suspended account is also an existing account, and
+        // sending it to the login page would only produce a second refusal.
+        if (checkData.isSuspended) {
+          toast.error(tSuspension("blocked_action"), { duration: 10000 });
+          return;
+        }
         if (checkData.hasAccount) {
           toast.error(t("recipient.account_exists"));
           router.push(`/auth/login`);
@@ -460,6 +484,13 @@ export default function CheckoutFlow({
     }
 
     if (currentStep === 3) {
+      // Refused here rather than at the API, so a suspended buyer is told why
+      // before a payment sheet opens rather than after. The API refuses it too
+      // — this is the explanation, not the enforcement.
+      if (session?.user?.isSuspended) {
+        toast.error(tSuspension("blocked_action"), { duration: 10000 });
+        return;
+      }
       // Keyed off price alone: a paid online activity must charge, not be
       // handed out through the free endpoint.
       if (isFree) {

@@ -18,7 +18,9 @@ import {
 } from "@stripe/react-stripe-js";
 import { Raffle } from "@ticketwaze/typescript-config";
 import { formatMoney } from "@ticketwaze/currency";
+import { useSession } from "next-auth/react";
 import { useRouter, Link } from "@/i18n/navigation";
+import { isSuspendedResponse } from "@/lib/suspension";
 import {
   BuyRaffleEntriesWallet,
   StartRaffleStripe,
@@ -86,8 +88,26 @@ export default function RaffleCheckout({
 }) {
   const t = useTranslations("Raffle.checkout");
   const ct = useTranslations("Checkout");
+  const tSuspension = useTranslations("Suspension");
   const locale = useLocale();
   const router = useRouter();
+  const { data: session } = useSession();
+
+  /**
+   * A suspension is refused with a code and an English developer message, so it
+   * has to be translated here instead of shown as-is.
+   */
+  function failureMessage(result: unknown) {
+    if (isSuspendedResponse(result)) return tSuspension("blocked_action");
+    return (
+      (typeof result === "object" &&
+        result !== null &&
+        (("message" in result && (result.message as string)) ||
+          ("error" in result && (result.error as string)))) ||
+      ""
+    );
+  }
+
   const [quantity, setQuantity] = useState(1);
   const [method, setMethod] = useState<Method>("");
   const [paying, setPaying] = useState(false);
@@ -220,6 +240,13 @@ export default function RaffleCheckout({
       return;
     }
 
+    // Told before a payment sheet opens rather than after. The API refuses it
+    // as well — this is the explanation, not the enforcement.
+    if (session?.user?.isSuspended) {
+      toast.error(tSuspension("blocked_action"), { duration: 10000 });
+      return;
+    }
+
     // Guest checkout: capture the buyer details, then use the guest endpoints.
     if (!isLoggedIn) {
       const guest = {
@@ -243,11 +270,7 @@ export default function RaffleCheckout({
           setStripeClientSecret(result.clientSecret);
           setStripeOpen(true);
         } else {
-          toast.error(
-            ("message" in result && result.message) ||
-              ("error" in result && result.error) ||
-              "",
-          );
+          toast.error(failureMessage(result));
         }
         setPaying(false);
       } else {
@@ -260,11 +283,7 @@ export default function RaffleCheckout({
         if (result.status === "success" && result.paymentURL) {
           window.location.href = result.paymentURL;
         } else {
-          toast.error(
-            ("message" in result && result.message) ||
-              ("error" in result && result.error) ||
-              "",
-          );
+          toast.error(failureMessage(result));
           setPaying(false);
         }
       }
@@ -283,11 +302,7 @@ export default function RaffleCheckout({
         setStripeClientSecret(result.clientSecret);
         setStripeOpen(true);
       } else {
-        toast.error(
-          ("message" in result && result.message) ||
-            ("error" in result && result.error) ||
-            "",
-        );
+        toast.error(failureMessage(result));
       }
       setPaying(false);
       return;
@@ -303,11 +318,7 @@ export default function RaffleCheckout({
       if (result.status === "success" && result.paymentURL) {
         window.location.href = result.paymentURL;
       } else {
-        toast.error(
-          ("message" in result && result.message) ||
-            ("error" in result && result.error) ||
-            "",
-        );
+        toast.error(failureMessage(result));
         setPaying(false);
       }
       return;
@@ -325,11 +336,7 @@ export default function RaffleCheckout({
       // public sales page they just bought from.
       router.push(`/upcoming/raffle/${slug}?from=checkout`);
     } else {
-      toast.error(
-        ("message" in result && result.message) ||
-          ("error" in result && result.error) ||
-          "",
-      );
+      toast.error(failureMessage(result));
       setPaying(false);
     }
   }

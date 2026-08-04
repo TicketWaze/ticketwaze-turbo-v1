@@ -1177,5 +1177,13 @@
         "rejected": "Demande refusée et utilisateur notifié."
       }
     }
+  },
+  "Suspension": {
+    "notice": {
+      "title": "Compte suspendu",
+      "since": "Suspendu le",
+      "by": "Suspendu par",
+      "reason": "Motif"
+    }
   }
 }

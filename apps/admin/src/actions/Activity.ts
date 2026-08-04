@@ -200,3 +200,56 @@ export async function UpdateRestaurantSuspensionAction(
     };
   }
 }
+
+/**
+ * Refund every buyer of an upcoming activity and cancel it.
+ *
+ * Irreversible from the dashboard, so the API is the sole judge of whether it
+ * is allowed — the dialog's own guards only save a round trip. A refusal
+ * (already cancelled, already started, balance already released) comes back as
+ * a 422 with a message worth showing, so it is surfaced rather than replaced
+ * with a generic failure.
+ */
+export async function RefundActivityAction(
+  activityKind: "event" | "raffle",
+  activityId: string,
+  reason: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/${activityKind}/${activityId}/refund`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({ reason }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath(
+        activityKind === "raffle"
+          ? `/activities/raffle/${activityId}`
+          : `/activities/${activityId}`,
+      );
+      return {
+        status: "success" as const,
+        ticketsRefunded: data.ticketsRefunded as number,
+        walletsCredited: data.walletsCredited as number,
+        guestTicketsVoided: data.guestTicketsVoided as number,
+      };
+    }
+    throw new Error(data.message);
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}

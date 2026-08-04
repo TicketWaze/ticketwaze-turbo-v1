@@ -1184,5 +1184,13 @@
         "rejected": "Request rejected and user notified."
       }
     }
+  },
+  "Suspension": {
+    "notice": {
+      "title": "Account suspended",
+      "since": "Suspended on",
+      "by": "Suspended by",
+      "reason": "Reason"
+    }
   }
 }

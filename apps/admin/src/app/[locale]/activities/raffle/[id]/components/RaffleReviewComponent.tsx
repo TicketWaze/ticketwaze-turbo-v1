@@ -7,6 +7,21 @@ import formatRaffleDate from "@/lib/formatRaffleDate";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Award } from "iconsax-reactjs";
 import { RaffleStatusDialog, StatusBadge } from "./RaffleStatusDialog";
+import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
+
+/**
+ * Why the refund action is unavailable, or null when it is offered. Mirrors the
+ * API's guards in services/activity_refund.ts — the API decides, this only
+ * explains the answer without a round trip.
+ */
+function raffleRefundBlockedReason(raffle: Raffle): string | null {
+  if (raffle.drawnAt)
+    return "This raffle has already been drawn and cannot be refunded.";
+  if (raffle.status === "cancelled")
+    return "This raffle has already been cancelled.";
+  if (raffle.deletionStatus) return "This raffle is being deleted.";
+  return null;
+}
 
 export default function RaffleReviewComponent({
   raffle,
@@ -45,7 +60,16 @@ export default function RaffleReviewComponent({
           </h3>
           <StatusBadge status={raffle.adminStatus} />
         </div>
-        <RaffleStatusDialog raffle={raffle} />
+        <div className="flex flex-wrap items-center gap-4">
+          <RaffleStatusDialog raffle={raffle} />
+          <RefundActivityDialog
+            activityKind="raffle"
+            activityId={raffle.raffleId}
+            activityName={raffle.title}
+            ticketsSold={entriesSold}
+            disabledReason={raffleRefundBlockedReason(raffle)}
+          />
+        </div>
       </div>
 
       {raffle.adminStatus === "rejected" && raffle.rejectionReason && (

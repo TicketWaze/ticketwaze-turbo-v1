@@ -1,7 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+
+/**
+ * Every login request from this app announces which door it is knocking on.
+ * The API refuses an organisation-app sign-in whose organisations are all
+ * suspended, while leaving the same person's attendee account alone — it can
+ * only draw that line if it knows where the request came from.
+ */
+const LOGIN_CONTEXT = "organisation" as const;
+
+/**
+ * Auth.js discards the message of an error thrown inside `authorize` and
+ * reports a bare `CredentialsSignin` — which is how a suspended organisation
+ * would otherwise reach the login page as "wrong password". A subclass is the
+ * supported way through: its `code` survives to the client, so the page can
+ * render the real reason in the user's own language.
+ */
+class OrganisationSuspendedError extends CredentialsSignin {
+  code = "organisation_suspended";
+}
 
 async function refreshAccessToken(token: Record<string, unknown>) {
   try {
@@ -44,6 +63,12 @@ async function refreshAccessToken(token: Record<string, unknown>) {
         );
         const meData = await meRes.json();
         if (meData?.status === "success" && meData.organisation) {
+          // Suspension can land mid-session. Clearing the token drops the user
+          // at the login page, where the API explains the refusal — far better
+          // than leaving them in a dashboard whose every button now fails.
+          if (meData.organisation.isSuspended) {
+            return null;
+          }
           refreshedOrganisation = {
             ...activeOrganisation,
             myRole: meData.organisation.myRole ?? null,
@@ -108,10 +133,14 @@ const nextAuthResult = NextAuth({
               body: JSON.stringify({
                 idToken: credentials.googleIdToken as string,
                 noCreate: true,
+                context: LOGIN_CONTEXT,
               }),
             },
           );
           const data = await response.json();
+          if (data.code === "ORGANISATION_SUSPENDED") {
+            throw new OrganisationSuspendedError();
+          }
           if (data.status !== "success") {
             throw new Error(data.message || "Google sign-in failed");
           }
@@ -126,11 +155,15 @@ const nextAuthResult = NextAuth({
             body: JSON.stringify({
               email: credentials.email,
               password: credentials.password,
+              context: LOGIN_CONTEXT,
             }),
           },
         );
 
         const data = await response.json();
+        if (data.code === "ORGANISATION_SUSPENDED") {
+          throw new OrganisationSuspendedError();
+        }
         if (data.status !== "success") {
           throw new Error(data.message || "Invalid credentials");
         }
@@ -154,10 +187,14 @@ const nextAuthResult = NextAuth({
               body: JSON.stringify({
                 idToken: account.id_token,
                 noCreate: true,
+                context: LOGIN_CONTEXT,
               }),
             },
           );
           const data = await res.json();
+          if (data.code === "ORGANISATION_SUSPENDED") {
+            return `/auth/login?error=organisation_suspended`;
+          }
           if (data.status !== "success") {
             // Returning a URL rather than throwing: Auth.js turns a thrown
             // error into a bare `AccessDenied` code and discards the message,

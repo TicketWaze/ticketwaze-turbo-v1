@@ -27,6 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdminUser, Ticket, UserAnalytic } from "@ticketwaze/typescript-config";
+import SuspensionNotice from "@/components/shared/SuspensionNotice";
 import formatDate from "@/lib/FormatDate";
 import { formatMoney } from "@ticketwaze/currency";
 import { useState } from "react";
@@ -82,6 +83,10 @@ export default function UserPageContent({
             )}
           </div>
         </div>
+        {/* An active suspension is the first thing that explains everything
+            else on this page, so it sits above the record — and above the
+            deletion notice, since it is the stronger state. */}
+        {user.suspension && <SuspensionNotice suspension={user.suspension} />}
         {/* A pending deletion is time-boxed and irreversible once it runs, so it
             is called out above the record rather than only listed inside it. */}
         {user.deletion && <DeletionNotice deletion={user.deletion} />}

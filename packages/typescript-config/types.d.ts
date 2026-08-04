@@ -348,6 +348,13 @@ export interface Event {
   organisation: Organisation;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Cancellation is distinct from deletion: the event and its tickets stay on
+   * record, everything is marked RETURNED, and buyers keep a visible answer to
+   * what became of what they paid for. Set by the admin refund action.
+   */
+  cancelledAt: string | null;
+  cancellationReason: string | null;
   deletionStatus: "pending_deletion" | "deleted" | null;
   deletionReason: string | null;
   deletionRequestedAt: string | null;
@@ -575,6 +582,13 @@ export interface User {
   lastResendAt: DateTime;
   referralCode: string;
   isVerified: boolean;
+  /**
+   * Set at login and kept current by the token refresh. A suspended attendee
+   * keeps their session and their tickets but cannot transact — the interface
+   * reads this to say so rather than letting them find out at checkout.
+   */
+  isSuspended: boolean;
+  suspensionReason: string | null;
   mfaEnabled: boolean;
   createdAt: DateTime;
   updatedAt: DateTime;
@@ -773,6 +787,20 @@ export interface AdminUser {
     reason: string | null;
     daysLeft: number;
   } | null;
+  /**
+   * The suspension in force, or null when the account is in good standing.
+   * `suspendedAt` and `suspendedByEmail` are null for accounts suspended before
+   * those columns were added — the fact was recorded, its circumstances were
+   * not.
+   */
+  suspension?: AccountSuspension | null;
+}
+
+/** Shared by suspended attendees and suspended organisations alike. */
+export interface AccountSuspension {
+  reason: string | null;
+  suspendedAt: string | null;
+  suspendedByEmail: string | null;
 }
 
 export interface AdminAttendeesRequest {
@@ -816,6 +844,8 @@ export interface AdminOrganisation {
   isPublished: boolean;
   isSuspended: boolean;
   suspensionReason: string | null;
+  /** Populated by the admin detail endpoint; see AccountSuspension. */
+  suspension?: AccountSuspension | null;
   events: Event[];
   subscription: OrganisationSubscription | null;
   createdAt: string;

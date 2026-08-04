@@ -22,6 +22,7 @@ import { Input, TextArea } from "@/components/shared/Inputs";
 import formatDate from "@/lib/FormatDate";
 import ActivitySummary from "./ActivitySummary";
 import { AdminOrganisation } from "@ticketwaze/typescript-config";
+import SuspensionNotice from "@/components/shared/SuspensionNotice";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 
 export default function UserPageContent({
@@ -78,6 +79,12 @@ export default function UserPageContent({
             )}
           </div>
         </div>
+
+        {/* An active suspension explains everything else on this page — the
+            missing events, the frozen balance — so it is stated up front. */}
+        {organisation.suspension && (
+          <SuspensionNotice suspension={organisation.suspension} />
+        )}
 
         <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] lg:grid-rows-1 gap-8 lg:gap-16 lg:flex-1 lg:min-h-0">
           <div className="w-full flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">

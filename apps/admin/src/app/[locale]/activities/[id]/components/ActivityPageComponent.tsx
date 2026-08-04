@@ -3,6 +3,7 @@ import BackButton from "@/components/shared/BackButton";
 import { ButtonBlack } from "@/components/shared/buttons";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
+import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar2, Location, Clock } from "iconsax-reactjs";
 import Separator from "@/components/shared/Separator";
@@ -14,6 +15,27 @@ import { formatMoney } from "@ticketwaze/currency";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 import { DateTime } from "luxon";
+
+/**
+ * Why the refund action is unavailable, or null when it is offered. Mirrors the
+ * API's guards in services/activity_refund.ts — the API decides, this only
+ * explains the answer without a round trip.
+ *
+ * `eventStart` is the first day's date, which is all this component has; the
+ * API compares the day's start TIME in the event's own zone, so it can still
+ * refuse an event this check lets through. That asymmetry is deliberate — the
+ * looser of the two is the one that only draws a button.
+ */
+function eventRefundBlockedReason(
+  event: Event,
+  eventStart: DateTime | null,
+): string | null {
+  if (event.cancelledAt) return "This event has already been cancelled.";
+  if (event.deletionStatus) return "This event is being deleted.";
+  if (eventStart && eventStart < DateTime.now().startOf("day"))
+    return "This event has already started and cannot be refunded.";
+  return null;
+}
 
 export default function ActivityPageComponent({ event }: { event: Event }) {
   const t = useTranslations("Activities");
@@ -107,11 +129,29 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem]">
           {event.eventName}
         </h2>
-        <EventStatusDialog event={event} className="hidden lg:flex" />
+        <div className="hidden lg:flex flex-wrap items-center gap-4">
+          <EventStatusDialog event={event} />
+          <RefundActivityDialog
+            activityKind="event"
+            activityId={event.eventId}
+            activityName={event.eventName}
+            ticketsSold={soldTickets.length}
+            disabledReason={eventRefundBlockedReason(event, eventStart)}
+          />
+        </div>
       </div>
       <main className="w-full gap-16 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden flex flex-col lg:grid lg:grid-cols-[15fr_21fr]">
         <div className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
-          <EventStatusDialog event={event} className="lg:hidden" />
+          <div className="lg:hidden flex flex-col gap-4">
+            <EventStatusDialog event={event} />
+            <RefundActivityDialog
+              activityKind="event"
+              activityId={event.eventId}
+              activityName={event.eventName}
+              ticketsSold={soldTickets.length}
+              disabledReason={eventRefundBlockedReason(event, eventStart)}
+            />
+          </div>
           <EventImageLightbox
             src={event.eventImageUrl}
             width={400}

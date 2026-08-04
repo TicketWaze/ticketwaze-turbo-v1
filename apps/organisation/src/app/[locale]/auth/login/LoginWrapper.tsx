@@ -51,6 +51,12 @@ export default function LoginWrapper() {
   useEffect(() => {
     const error = searchParams.get("error");
     if (!error) return;
+    // A suspension is not a sign-in failure to be retried, so it gets a longer
+    // notice than the codes around it.
+    if (error === "organisation_suspended") {
+      toast.error(t("errors.organisation_suspended"), { duration: 15000 });
+      return;
+    }
     const key = error === "no_account" ? "no_account" : "google_failed";
     toast.error(t(`errors.${key}`), { duration: 8000 });
   }, [searchParams, t]);
@@ -64,7 +70,13 @@ export default function LoginWrapper() {
       callbackUrl: process.env.NEXT_PUBLIC_ORGANISATION_URL,
     });
     if (result?.error) {
-      toast.error(t("errors.wrong"));
+      // `code` carries our own reason out of `authorize`; `error` alone is the
+      // generic CredentialsSignin that every failure shares.
+      if (result.code === "organisation_suspended") {
+        toast.error(t("errors.organisation_suspended"), { duration: 15000 });
+      } else {
+        toast.error(t("errors.wrong"));
+      }
     } else {
       const session = await update();
       const lang = session?.user?.userPreference?.appLanguage ?? "en";

@@ -27,6 +27,16 @@ async function refreshAccessToken(token: Record<string, unknown>) {
       ...(typeof data.isOnboarded === "boolean"
         ? { isOnboarded: data.isOnboarded }
         : {}),
+      // Same self-healing for suspension. A session that began before the
+      // suspension would otherwise show a fully normal interface, and the user
+      // would learn they were sanctioned by having a purchase fail at checkout
+      // rather than by being told.
+      ...(typeof data.isSuspended === "boolean"
+        ? {
+            isSuspended: data.isSuspended,
+            suspensionReason: data.suspensionReason ?? null,
+          }
+        : {}),
       error: undefined,
     };
   } catch {

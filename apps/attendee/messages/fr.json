@@ -1325,5 +1325,13 @@
         "description": "Partagez votre lien de parrainage avec vos amis. Lorsqu’ils s’inscrivent et achètent leur premier billet, vous gagnez tous les deux des récompenses. Consultez votre Wallet pour voir votre solde."
       }
     }
+  },
+  "Suspension": {
+    "title": "Votre compte est suspendu",
+    "description": "Vous pouvez toujours vous connecter et utiliser les billets déjà achetés, mais les achats, les remboursements et les avis sont désactivés pendant la suspension.",
+    "reason_label": "Motif indiqué",
+    "cta": "Contacter le support",
+    "blocked_action": "Votre compte est suspendu, cette action n'est donc pas disponible. Consultez l'e-mail que nous vous avons envoyé pour en connaître la raison, ou contactez le support pour faire appel.",
+    "generic_error": "Une erreur est survenue"
   }
 }
