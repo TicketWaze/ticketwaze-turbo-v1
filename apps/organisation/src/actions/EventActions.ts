@@ -72,6 +72,11 @@ export async function UpdateGoogleMeetEvent(
       return {
         status: "success",
         event: response.event,
+        // Set when the event already has sales and the edit touched something
+        // that could misrepresent it: the change is held for an admin and the
+        // live event is unchanged. Still a success — just not applied yet.
+        pendingReview: response.pendingReview === true,
+        changedFields: (response.changedFields ?? []) as string[],
       };
     } else {
       throw new Error(response.message);
@@ -212,7 +217,13 @@ export async function UpdateRaffle(
     const response = await request.json();
     if (response.status === "success") {
       revalidatePath("/events");
-      return { status: "success" };
+      return {
+        status: "success",
+        // Set when the draw already has entries and the edit touched something
+        // that could misrepresent it: the change is held for an admin and the
+        // live raffle is unchanged. Still a success — just not applied yet.
+        pendingReview: response.pendingReview === true,
+      };
     } else {
       throw new Error(response.message);
     }
@@ -390,6 +401,11 @@ export async function UpdateInPersonEvent(
       return {
         status: "success",
         event: response.event,
+        // Set when the event already has sales and the edit touched something
+        // that could misrepresent it: the change is held for an admin and the
+        // live event is unchanged. Still a success — just not applied yet.
+        pendingReview: response.pendingReview === true,
+        changedFields: (response.changedFields ?? []) as string[],
       };
     } else {
       throw new Error(response.message);

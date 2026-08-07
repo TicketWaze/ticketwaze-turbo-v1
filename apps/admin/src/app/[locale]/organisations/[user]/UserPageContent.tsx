@@ -37,11 +37,18 @@ export default function UserPageContent({
   const t = useTranslations("Organisations.profile");
   const locale = useLocale();
 
+  /**
+   * The API returns only the subscription that actually entitles this
+   * organisation, resolved by SubscriptionHelper — the same rule the rest of
+   * the platform uses. Its presence IS the answer.
+   *
+   * This used to re-derive it here as `status === "ACTIVE" && endsAt > now`,
+   * which reported "Free" for an organisation that had cancelled but was still
+   * paid up through the end of its period — they keep every feature until then,
+   * so every other screen correctly showed them on Pro.
+   */
   const sub = organisation?.subscription ?? null;
-  const subActive =
-    !!sub &&
-    sub.status === "ACTIVE" &&
-    new Date(sub.endsAt as unknown as string).getTime() > Date.now();
+  const subActive = !!sub;
 
   if (!organisation) {
     return (

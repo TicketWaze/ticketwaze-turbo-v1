@@ -18,10 +18,7 @@ import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, SubmitHandler } from "react-hook-form";
-import {
-  UpdateGoogleMeetEvent,
-  ValidateBasicDetailsInPerson,
-} from "@/actions/EventActions";
+import { UpdateGoogleMeetEvent } from "@/actions/EventActions";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -34,6 +31,7 @@ import { slugify } from "@/lib/Slugify";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
+import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { EventDay } from "./types";
 
 export default function EditInPersonEventForm({
@@ -105,7 +103,9 @@ export default function EditInPersonEventForm({
     getValues,
     control,
     trigger,
-    formState: { errors, isSubmitting, isDirty },
+    watch,
+    setError,
+    formState: { errors, isSubmitting, isDirty, dirtyFields },
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
     defaultValues: {
@@ -187,6 +187,11 @@ export default function EditInPersonEventForm({
       event.eventId,
     );
     if (result.status === "success") {
+      // The event has sales and this edit could change what those buyers think
+      // they bought, so it is waiting on an admin rather than already live.
+      // Saying so here is the difference between "nothing happened" and "your
+      // change is queued" — the event page will still show the old details.
+      if (result.pendingReview) toast.info(t("held_for_review"));
       const redirectUrl = `/events/show/${slugify(result.event.eventName, result.event.eventId)}`;
       router.push(redirectUrl);
     }
@@ -196,6 +201,29 @@ export default function EditInPersonEventForm({
   type FieldName = keyof TForm;
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  // Checked live per keystroke, the same as the create form. The event's own id
+  // is excluded so keeping the name it already has never reads as taken.
+  const nameStatus = useEventNameAvailability(watch("eventName"), event.eventId);
+
+  /**
+   * Will this edit be held for review rather than applied straight away?
+   *
+   * Mirrors the server rule (fieldsNeedingReview): sales are the multiplier, and
+   * only fields that could misrepresent what someone already bought count. No
+   * address here — an online event has none. Predicted purely so the confirm
+   * dialog can tell the truth; the API decides.
+   */
+  const ticketsSold = event.eventTicketTypes.reduce(
+    (total, ticketType) => total + (ticketType.ticketTypeQuantitySold ?? 0),
+    0,
+  );
+  const willBeHeldForReview =
+    ticketsSold > 0 &&
+    (imageChanged ||
+      Boolean(dirtyFields.eventName) ||
+      Boolean(dirtyFields.eventDescription) ||
+      Boolean(dirtyFields.eventDays));
 
   const next = async () => {
     let fields: FieldName[];
@@ -224,6 +252,7 @@ export default function EditInPersonEventForm({
         isDirty ||
         imageChanged ||
         isFree !== event.isFree ||
+        isPrivate !== (event.isPrivate ?? false) ||
         isRefundable !== (event.eventTicketTypes[0]?.isRefundable ?? false);
       if (!hasChanges) {
         toast.info(t("no_changes"));
@@ -232,35 +261,16 @@ export default function EditInPersonEventForm({
       setShowConfirm(true);
       return;
     }
-    if (currentStep === 0) {
-      // validate basic details
-      setIsLoading(true);
-      const formData = new FormData();
-      formData.append("eventName", getValues("eventName"));
-      formData.append("eventDescription", getValues("eventDescription"));
-      formData.append("address", getValues("address"));
-      formData.append("state", getValues("state"));
-      formData.append("city", getValues("city"));
-      formData.append("country", getValues("country"));
-      formData.append("eventImage", getValues("eventImage"));
-      formData.append("eventType", event.eventType);
-      formData.append(
-        "activityTags",
-        JSON.stringify(getValues("activityTags")),
+    // The name is checked live per keystroke now, so leaving step 1 no longer
+    // needs a round trip to re-validate what the field already knows. All that
+    // is left is refusing to move on while the answer is bad or not yet in.
+    if (currentStep === 0 && nameStatus === "taken") {
+      setError(
+        "eventName",
+        { type: "manual", message: t("errors.basicDetails.nameTaken") },
+        { shouldFocus: true },
       );
-      const result = await ValidateBasicDetailsInPerson(
-        organisation?.organisationId ?? "",
-        session?.user.accessToken ?? "",
-        formData,
-        locale,
-        "update",
-      );
-      if (result.status !== "success") {
-        setIsLoading(false);
-        toast.error(result.error);
-        return;
-      }
-      setIsLoading(false);
+      return;
     }
     setPreviousStep(currentStep);
     setCurrentStep((s) => s + 1);
@@ -328,7 +338,11 @@ export default function EditInPersonEventForm({
         <ButtonPrimary
           onClick={next}
           className=" w-full max-w-[530px] mx-auto  "
-          disabled={isSubmitting || isLoading}
+          disabled={
+            isSubmitting ||
+            isLoading ||
+            (currentStep === 0 && nameStatus === "checking")
+          }
         >
           {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
         </ButtonPrimary>
@@ -339,7 +353,11 @@ export default function EditInPersonEventForm({
           <div className="text-[2.2rem] text-neutral-600">
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
-          <ButtonPrimary onClick={next} disabled={isSubmitting || isLoading}>
+          <ButtonPrimary onClick={next} disabled={
+            isSubmitting ||
+            isLoading ||
+            (currentStep === 0 && nameStatus === "checking")
+          }>
             {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
           </ButtonPrimary>
         </div>
@@ -401,7 +419,9 @@ export default function EditInPersonEventForm({
           <DialogHeader>
             <DialogTitle>{t("edit_warning_title")}</DialogTitle>
             <DialogDescription className="text-[1.5rem]">
-              {t("edit_warning_body")}
+              {willBeHeldForReview
+                ? t("edit_warning_body_review")
+                : t("edit_warning_body")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-4 pt-2">
@@ -446,6 +466,7 @@ export default function EditInPersonEventForm({
               event={event}
               isPrivate={isPrivate}
               setIsPrivate={setIsPrivate}
+              nameStatus={nameStatus}
             />
           </motion.div>
         )}

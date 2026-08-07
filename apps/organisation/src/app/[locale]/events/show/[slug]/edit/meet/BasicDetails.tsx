@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import type { EventNameAvailability } from "@/hooks/useEventNameAvailability";
 import React, { useRef, useState } from "react";
 import {
   Controller,
@@ -36,6 +37,7 @@ type Props = {
   getValues: UseFormGetValues<EditMeetFormValues>;
   event: Event;
   isPrivate: boolean;
+  nameStatus: EventNameAvailability;
   setIsPrivate: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -50,6 +52,7 @@ export default function BasicDetails({
   event,
   isPrivate,
   setIsPrivate,
+  nameStatus,
 }: Props) {
   const t = useTranslations("Events.create_event");
   const availableCountries = countries.map((country) => country.name);
@@ -149,7 +152,12 @@ export default function BasicDetails({
           {...register("eventName")}
           type="text"
           maxLength={50}
-          error={errors.eventName?.message}
+          error={
+            errors.eventName?.message ??
+            (nameStatus === "taken"
+              ? t("errors.basicDetails.nameTaken")
+              : undefined)
+          }
         >
           {t("event_name")}
         </Input>
@@ -321,14 +329,6 @@ export default function BasicDetails({
         <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
           {t("event_tags")}
         </span>
-        <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
-          <Warning2 size="24" color="#737C8A" variant="Bulk" />
-          <div>
-            <p className="text-[1.2rem] leading-8 text-neutral-800">
-              {t("tagTip.description")}
-            </p>
-          </div>
-        </div>
         <div className="w-full">
           <div
             className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-[20px] text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
@@ -358,6 +358,14 @@ export default function BasicDetails({
             {errors.activityTags?.message}
           </span>
         )}
+        <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+          <Warning2 size="24" color="#737C8A" variant="Bulk" />
+          <div>
+            <p className="text-[1.2rem] leading-8 text-neutral-800">
+              {t("tagTip.description")}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div></div>

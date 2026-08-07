@@ -994,7 +994,8 @@
       "max_party": "{count, plural, one {Ce restaurant accueille une personne par créneau} other {Ce restaurant accueille jusqu’à # personnes par créneau}}.",
       "all_slots_full": "{count, plural, one {Aucune table pour une personne ce jour-là} other {Aucune table pour # personnes ce jour-là}}. Essayez une autre date ou un plus petit groupe.",
       "download_ticket": "Télécharger ma réservation"
-    }
+    },
+    "changeRefundWindowNotice": "L'organisateur a modifié cette activité après votre achat. Vous pouvez retourner vos billets et être remboursé intégralement pendant une courte période, même s'ils ne sont normalement pas remboursables."
   },
   "Checkout": {
     "back": "Retour",

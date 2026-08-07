@@ -1,7 +1,8 @@
 "use client";
 import BackButton from "@/components/shared/BackButton";
 import { ButtonPrimary, ButtonRed } from "@/components/shared/buttons";
-import { MarkFailedDialog, MarkPaidDialog } from "./PayoutActionDialogs";
+import { SettlePayoutDialog } from "./SettlePayoutDialog";
+import { usePermissions } from "@/hooks/usePermissions";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ActivityPerformanceList from "./ActivityPerformanceList";
 import OrganisationStats from "./OrganisationStats";
@@ -20,13 +21,28 @@ export default function PayoutRequestPageWrapper({
   request,
   organisationTier,
   organisationActiveSubscription,
+  wiseCanFundAutomatically,
 }: {
   request: WithdrawalRequest;
   organisationTier: MembershipTier;
   organisationActiveSubscription: OrganisationSubscription | null;
+  wiseCanFundAutomatically: boolean;
 }) {
   const t = useTranslations("Payouts");
   const locale = useLocale();
+  const { can } = usePermissions();
+
+  /**
+   * A Wise payout is approved, not marked paid: approval creates the transfer
+   * rather than recording one someone already made by hand. So it needs a
+   * different button, a different permission, and a dialog that leads with the
+   * recipient name.
+   */
+  const isWise = request.accountType === "wise";
+  // Already handed to the job. Offering approve again would only produce a
+  // conflict, and the sweep owns the request from here.
+  const isWiseInFlight = isWise && Boolean(request.wiseTransferId);
+
   return (
     <div className="flex flex-col gap-8 h-full overflow-hidden">
       <BackButton text={t("back")}></BackButton>
@@ -63,19 +79,24 @@ export default function PayoutRequestPageWrapper({
             </span>
           )}
         </h2>
-        {request.status !== "FAILED" && (
+        {/* Only an open request can be settled. A Wise transfer already in
+            flight belongs to the reconciliation sweep from here, so offering
+            the modal would just produce a conflict. */}
+        {request.status === "PENDING" && !isWiseInFlight && (
           <div className="flex gap-4 items-center h-fit">
-            <MarkFailedDialog
+            <SettlePayoutDialog
               withdrawalRequestId={request.withdrawalRequestId}
-              trigger={
-                <ButtonRed className="py-[7.5px]">{t("cancel")}</ButtonRed>
+              isWise={isWise}
+              canSendWise={can("payouts.send")}
+              wiseCanFundAutomatically={wiseCanFundAutomatically}
+              resolvedName={request.wiseResolvedName ?? request.accountName}
+              recipientValue={
+                request.wiseRecipientValue ?? request.accountNumber
               }
-            />
-            <MarkPaidDialog
-              withdrawalRequestId={request.withdrawalRequestId}
+              amountUsd={request.usdAmount}
               trigger={
                 <ButtonPrimary className="py-[7.5px]">
-                  {t("paid")}
+                  {t("settle")}
                 </ButtonPrimary>
               }
             />
@@ -175,6 +196,32 @@ export default function PayoutRequestPageWrapper({
                     t("request_details.processed_date"),
                     formatDate(request.updatedAt, locale, "UTC"),
                   ],
+                  /* Wise rows, only once there is something to say. The
+                     transfer id is what a human looks the payment up by in
+                     Wise, so it matters most when something has gone wrong. */
+                  isWise && [
+                    t("request_details.wise_resolved_name"),
+                    request.wiseResolvedName,
+                  ],
+                  isWise && [
+                    t("request_details.wise_identifier"),
+                    request.wiseRecipientValue,
+                  ],
+                  isWise &&
+                    Boolean(request.wiseTransferId) && [
+                      t("request_details.wise_transfer_id"),
+                      request.wiseTransferId,
+                    ],
+                  isWise &&
+                    Boolean(request.wiseStatus) && [
+                      t("request_details.wise_status"),
+                      request.wiseStatus,
+                    ],
+                  isWise &&
+                    Boolean(request.wiseFailureReason) && [
+                      t("request_details.wise_failure_reason"),
+                      request.wiseFailureReason,
+                    ],
                 ] as ([string, React.ReactNode] | false)[]
               )
                 .filter((item): item is [string, React.ReactNode] =>

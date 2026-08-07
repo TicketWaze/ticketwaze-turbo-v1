@@ -27,6 +27,7 @@ import LocationPicker from "@/lib/LocationPicker";
 import { compressImage } from "@/lib/compressImage";
 import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
 import PrizeImagePicker from "@/components/shared/PrizeImagePicker";
+import useRaffleTitleAvailability from "@/hooks/useRaffleTitleAvailability";
 
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
@@ -155,6 +156,10 @@ export default function CreateRaffleForm() {
 
   const { fields, append, remove } = useFieldArray({ control, name: "prizes" });
   const unlimited = watch("unlimited");
+
+  // Checked live per keystroke. The API re-checks on submit, so this only
+  // decides whether the button is usable, never whether the title is valid.
+  const titleStatus = useRaffleTitleAvailability(watch("name"));
 
   // Free-form tags, same UX as the event form.
   const [tags, setTags] = useState<string[]>([]);
@@ -394,7 +399,13 @@ export default function CreateRaffleForm() {
         {/* Details */}
         <div className={cardClass}>
           <span className={sectionTitle}>{t("details")}</span>
-          <Field label={t("name")} error={errors.name?.message}>
+          <Field
+            label={t("name")}
+            error={
+              errors.name?.message ??
+              (titleStatus === "taken" ? t("errors.name_taken") : undefined)
+            }
+          >
             <input
               {...register("name")}
               type="text"
@@ -421,17 +432,6 @@ export default function CreateRaffleForm() {
         {/* Tags */}
         <div className={cardClass}>
           <span className={sectionTitle}>{t("tags")}</span>
-          <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
-            <Warning2
-              size="24"
-              color="#737C8A"
-              variant="Bulk"
-              className="shrink-0"
-            />
-            <p className="text-[1.2rem] leading-8 text-neutral-800">
-              {t("tags_tip")}
-            </p>
-          </div>
           <div
             className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
             onClick={() => tagInputRef.current?.focus()}
@@ -454,6 +454,17 @@ export default function CreateRaffleForm() {
               placeholder={t("tags_placeholder")}
               className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
             />
+          </div>
+          <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+            <Warning2
+              size="24"
+              color="#737C8A"
+              variant="Bulk"
+              className="shrink-0"
+            />
+            <p className="text-[1.2rem] leading-8 text-neutral-800">
+              {t("tags_tip")}
+            </p>
           </div>
         </div>
 
@@ -714,7 +725,15 @@ export default function CreateRaffleForm() {
         </div>
 
         <div className="max-w-216 w-full mx-auto">
-          <ButtonPrimary type="submit" className="w-full" disabled={submitting}>
+          <ButtonPrimary
+            type="submit"
+            className="w-full"
+            disabled={
+              submitting ||
+              titleStatus === "checking" ||
+              titleStatus === "taken"
+            }
+          >
             {submitting ? <LoadingCircleSmall /> : t("submit")}
           </ButtonPrimary>
         </div>

@@ -37,6 +37,8 @@ export default function FinancePageContent({
     allOrders: Order[];
     organisation: Organisation;
     withdrawalRequests: WithdrawalRequest[];
+    /** One payout may be open at a time; the request button is blocked while one is. */
+    hasPendingPayout?: boolean;
   };
   authorizedUpdate: boolean;
 }) {
@@ -136,7 +138,10 @@ export default function FinancePageContent({
       </div>
       {authorizedUpdate && (
         <div className="lg:hidden w-full py-[7.5px]">
-          <InitiateWithdrawalButton organisation={transactions.organisation} />
+          <InitiateWithdrawalButton
+            organisation={transactions.organisation}
+            hasPendingPayout={Boolean(transactions.hasPendingPayout)}
+          />
         </div>
       )}
 

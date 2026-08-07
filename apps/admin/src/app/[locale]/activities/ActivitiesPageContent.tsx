@@ -28,7 +28,17 @@ import PageLoader from "@/components/PageLoader";
 import Image from "next/image";
 import MoneySend from "@ticketwaze/ui/assets/icons/money-send.svg";
 
-type StatusFilter = "all" | "requested" | "review" | "approved" | "rejected";
+// `pending_edit` is not an adminStatus — it is the separate "an organiser
+// changed something on a live event" axis. Editing deliberately leaves
+// adminStatus alone so the event keeps selling, so these rows would otherwise
+// only ever be reachable buried in the approved list.
+type StatusFilter =
+  | "all"
+  | "requested"
+  | "review"
+  | "approved"
+  | "rejected"
+  | "pending_edit";
 
 function StatusFilterSelect({
   value,
@@ -62,6 +72,12 @@ function StatusFilterSelect({
           <SelectItem className={"text-[1.4rem] text-deep-100"} value="rejected">
             Rejected
           </SelectItem>
+          <SelectItem
+            className={"text-[1.4rem] text-deep-100"}
+            value="pending_edit"
+          >
+            Pending Edits
+          </SelectItem>
         </SelectGroup>
       </SelectContent>
     </Select>
@@ -84,6 +100,22 @@ function StatusBadge({
       className={`py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-[#f5f5f5] ${styles[status]}`}
     >
       {status}
+    </span>
+  );
+}
+
+/**
+ * Sits alongside the status badge rather than replacing it: the activity is
+ * still approved and still selling, it just has an unreviewed edit on it. Same
+ * shape as StatusBadge so the pair reads as one control, not two designs.
+ */
+function PendingEditBadge({ fields }: { fields: string[] | null }) {
+  return (
+    <span
+      title={fields?.length ? fields.join(", ") : undefined}
+      className="py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-[#f5f5f5] text-warning"
+    >
+      edited
     </span>
   );
 }
@@ -197,16 +229,22 @@ export default function ActivitiesPageContent({
           </p>
         </div>
 
-        <div className={"pl-0 lg:pl-10"}>
+        {/* Was a second "suspended" tile hardcoded to 0. Reused for the review
+            queue: edits leave adminStatus alone, so this count is the only
+            at-a-glance signal that work is waiting — and the way into it. */}
+        <div
+          className={"pl-0 lg:pl-10 cursor-pointer"}
+          onClick={() => router.push("/activities/revisions")}
+        >
           <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
-            {t("suspended")}
+            {t("pending_edits")}
           </span>
           <p
             className={
               "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
             }
           >
-            0
+            {allEvents.filter((event) => event.pendingReviewAt).length}
           </p>
         </div>
       </div>
@@ -338,7 +376,14 @@ export default function ActivitiesPageContent({
                       </span>
                     </TableCell>
                     <TableCell className="py-6">
-                      <StatusBadge status={event.adminStatus} />
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={event.adminStatus} />
+                        {event.pendingReviewAt && (
+                          <PendingEditBadge
+                            fields={event.pendingReviewReason}
+                          />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell
                       className={
@@ -432,7 +477,14 @@ export default function ActivitiesPageContent({
                       {formatDate(raffle.drawAt, locale, "local")}
                     </TableCell>
                     <TableCell className="py-6">
-                      <StatusBadge status={raffle.adminStatus} />
+                      <div className="flex items-center gap-2">
+                        <StatusBadge status={raffle.adminStatus} />
+                        {raffle.pendingReviewAt && (
+                          <PendingEditBadge
+                            fields={raffle.pendingReviewReason}
+                          />
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell
                       className={

@@ -43,6 +43,98 @@ export async function UpdateEventStatusAction(
   }
 }
 
+/**
+ * Rule on an edit held back from a selling event. Approving replays it onto the
+ * live event; rejecting leaves the event exactly as buyers last saw it.
+ */
+export async function ReviewEventRevisionAction(
+  revisionId: string,
+  decision: "approve" | "reject",
+  accessToken: string,
+  locale: string,
+  rejectionReason?: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/event-revision/${revisionId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({
+          decision,
+          ...(decision === "reject" && rejectionReason
+            ? { rejectionReason }
+            : {}),
+        }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath("/activities/revisions");
+      // The edit itself applied; only the Google Calendar push failed. Worth
+      // telling the admin so the invitees can be resynced, but not an error.
+      return {
+        status: "success",
+        calendarSyncFailed: data.calendarSyncFailed === true,
+      };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+/** Rule on an edit held back from a draw that is already selling entries. */
+export async function ReviewRaffleRevisionAction(
+  revisionId: string,
+  decision: "approve" | "reject",
+  accessToken: string,
+  locale: string,
+  rejectionReason?: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/raffle-revision/${revisionId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({
+          decision,
+          ...(decision === "reject" && rejectionReason
+            ? { rejectionReason }
+            : {}),
+        }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath("/activities/revisions");
+      return { status: "success" };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function UpdateRaffleStatusAction(
   raffleId: string,
   adminStatus: string,

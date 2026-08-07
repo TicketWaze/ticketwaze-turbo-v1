@@ -15,6 +15,7 @@ import { Organisation } from "@ticketwaze/typescript-config";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import moncashIcon from "@/assets/images/moncash-icon.svg";
+import wiseIcon from "@/assets/images/wise-icon.svg";
 import { toast } from "sonner";
 import {
   InputOTP,
@@ -24,12 +25,16 @@ import {
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import {
   BankWithdrawalRequest,
+  ResolveWiseRecipient,
   UpdateOrganisationBankPaymentInformation,
   UpdateOrganisationMoncashPaymentInformation,
 } from "@/actions/organisationActions";
 import PageLoader from "@/components/PageLoader";
 import { useRouter } from "@/i18n/navigation";
 import { Input } from "@/components/shared/Inputs";
+
+/** The screens this wizard can show. Which apply depends on the payout method. */
+type StepKey = "summary" | "method" | "amount" | "details" | "pin";
 
 /* ─── Animation helpers ──────────────────────────────────────────── */
 
@@ -170,8 +175,15 @@ function AnimatedCheckbox({ checked }: { checked: boolean }) {
 
 export default function InitiateWithdrawalPageWrapper({
   organisation,
+  /**
+   * False on an environment with no Wise credentials, where the method is not
+   * offered at all. Better than presenting it and failing at Verify with an
+   * error the organiser would read as their own mistake.
+   */
+  wiseAvailable,
 }: {
   organisation: Organisation;
+  wiseAvailable: boolean;
 }) {
   const t = useTranslations("Finance");
   const locale = useLocale();
@@ -188,10 +200,22 @@ export default function InitiateWithdrawalPageWrapper({
 
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
-  const [accountType, setAccountType] = useState<"bank" | "moncash" | null>(
-    null,
-  );
+  const [accountType, setAccountType] = useState<
+    "bank" | "moncash" | "wise" | null
+  >(null);
   const [bankCurrency, setBankCurrency] = useState<"HTG" | "USD">("HTG");
+
+  /* Wise state.
+     The Wisetag is NOT read from the organisation and never saved back to it:
+     a payout destination that is entered once and reused silently sends every
+     future payout to the wrong place if it is ever wrong. It is stated fresh
+     each time, and re-resolved server-side before the request is taken. */
+  const [wiseRecipientValue, setWiseRecipientValue] = useState("");
+  /** The name Wise reported. Non-null only while it matches the typed value. */
+  const [wiseResolvedName, setWiseResolvedName] = useState<string | null>(null);
+  const [isVerifyingWise, setIsVerifyingWise] = useState(false);
+  /** The organiser has read the name and said it is theirs. */
+  const [wiseNameConfirmed, setWiseNameConfirmed] = useState(false);
 
   // Bank state
   const [bankName, setBankName] = useState(organisation.bankName ?? "");
@@ -228,23 +252,103 @@ export default function InitiateWithdrawalPageWrapper({
       ? organisation.availableBalance
       : organisation.usdAvailableBalance;
 
-  // Amount step: bank uses selected currency, moncash is always HTG
+  // Amount step: bank uses the selected currency, moncash is always HTG, and
+  // Wise is always USD — a Wise payout is USD on both sides by design.
   const activeCurrency: "HTG" | "USD" =
-    accountType === "moncash" ? "HTG" : bankCurrency;
+    accountType === "moncash"
+      ? "HTG"
+      : accountType === "wise"
+        ? "USD"
+        : bankCurrency;
   const activeCurrencyBalance =
     activeCurrency === "HTG"
       ? organisation.availableBalance
       : organisation.usdAvailableBalance;
 
-  const step3Label =
-    accountType === "moncash" ? t("moncash_details") : t("bank_details");
-  const stepLabels = [
-    t("summary"),
-    t("payment_method"),
-    t("amount"),
-    step3Label,
-    t("security"),
-  ];
+  /**
+   * The wizard's steps, as data rather than as hardcoded indices.
+   *
+   * Wise skips the amount step entirely: there is nothing to decide there. The
+   * currency is fixed to USD, the amount is always the full available balance,
+   * and both are already stated on the summary — so for Wise that screen asked
+   * a question with no answer and made the flow a step longer than it is.
+   *
+   * Deriving the list means the stepper, the mobile dots, the "last step" check
+   * and every validation follow from one place. With indices written by hand in
+   * a dozen spots, removing a step for one method silently desynchronised them.
+   */
+  const steps: StepKey[] =
+    accountType === "wise"
+      ? ["summary", "method", "details", "pin"]
+      : ["summary", "method", "amount", "details", "pin"];
+  const step = steps[currentStep];
+  const isLastStep = currentStep === steps.length - 1;
+
+  const detailsLabel =
+    accountType === "moncash"
+      ? t("moncash_details")
+      : accountType === "wise"
+        ? t("wise_details")
+        : t("bank_details");
+  const stepLabels = steps.map((key) =>
+    key === "summary"
+      ? t("summary")
+      : key === "method"
+        ? t("payment_method")
+        : key === "amount"
+          ? t("amount")
+          : key === "details"
+            ? detailsLabel
+            : t("security"),
+  );
+
+  /* ── Wise verification ───────────────────────────────────────── */
+
+  /**
+   * Any edit invalidates a previous verification. Without this, an organiser
+   * could verify one Wisetag, change a character, and carry the confirmed name
+   * of a different account through to the request.
+   */
+  function updateWiseIdentifier(value: string) {
+    setWiseRecipientValue(value);
+    setWiseResolvedName(null);
+    setWiseNameConfirmed(false);
+  }
+
+  async function handleVerifyWise() {
+    if (!wiseRecipientValue.trim()) {
+      toast.error(t("errors.wise_identifier_required"));
+      return;
+    }
+    setIsVerifyingWise(true);
+    const result = await ResolveWiseRecipient(
+      organisation.organisationId,
+      session?.user.accessToken ?? "",
+      locale,
+      { wiseRecipientValue: wiseRecipientValue.trim() },
+    );
+    if (result.status === "success" && result.name) {
+      setWiseResolvedName(result.name);
+      setWiseNameConfirmed(false);
+    } else {
+      setWiseResolvedName(null);
+      // The API answers with a stable code so the copy can be localised here.
+      // `wise_unresolved` is by far the most common, and almost always means a
+      // typo or a profile that is not discoverable — so it says both.
+      const code = (result as { error?: string }).error ?? "wise_error";
+      const messages: Record<string, string> = {
+        wise_unresolved: t("errors.wise_unresolved"),
+        // Not a spelling problem — telling someone to check discoverability
+        // when they typed their own Wisetag just wastes their time.
+        wise_self: t("errors.wise_self"),
+        wise_invalid_identifier: t("errors.wise_invalid_identifier"),
+        wise_no_name: t("errors.wise_no_name"),
+        wise_unavailable: t("errors.wise_unavailable"),
+      };
+      toast.error(messages[code] ?? t("errors.wise_error"));
+    }
+    setIsVerifyingWise(false);
+  }
 
   /* ── Submission ──────────────────────────────────────────────── */
 
@@ -281,33 +385,62 @@ export default function InitiateWithdrawalPageWrapper({
         organisation.organisationId,
         session?.user.accessToken ?? "",
         locale,
-        {
-          accountType,
-          pin,
-          pin_confirmation: pinConfirmation,
-          accountName,
-          accountNumber,
-          // No amount — the full available balance is withdrawn. MonCash is
-          // always HTG; bank uses the chosen currency.
-          currency: activeCurrency,
-          bankName: accountType === "bank" ? bankName : "Moncash",
-        },
+        accountType === "wise"
+          ? {
+              accountType,
+              pin,
+              pin_confirmation: pinConfirmation,
+              // No accountName/accountNumber: the account name is whatever Wise
+              // reports for the Wisetag, resolved again server-side. Sending a
+              // name from here would let the client state one Wise never
+              // confirmed, which is what the Verify step exists to prevent.
+              // No type either — a Wisetag is the only thing accepted.
+              wiseRecipientValue: wiseRecipientValue.trim(),
+              currency: "USD",
+            }
+          : {
+              accountType,
+              pin,
+              pin_confirmation: pinConfirmation,
+              accountName,
+              accountNumber,
+              // No amount — the full available balance is withdrawn. MonCash is
+              // always HTG; bank uses the chosen currency.
+              currency: activeCurrency,
+              bankName: accountType === "bank" ? bankName : "Moncash",
+            },
       );
 
       if (result.status === "success") {
         toast.success(t("withdrawSuccess"));
         router.push("/finance");
-      } else if ((result as { error?: string }).error === "pin") {
-        toast.error(t("errors.incorrectPin"));
+        return;
+      }
+
+      /**
+       * The API answers with stable codes, not sentences. Rendering one raw
+       * showed organisers the literal word "insufficient" — map every code we
+       * know, and only fall back for one we do not.
+       */
+      const code = (result as { error?: string }).error ?? "";
+      const messages: Record<string, string> = {
+        pin: t("errors.incorrectPin"),
+        Unauthorized: t("errors.Unauthorized"),
+        insufficient: t("errors.insufficient"),
+        pending_exists: t("errors.pending_exists"),
+        wise_unresolved: t("errors.wise_unresolved"),
+        wise_self: t("errors.wise_self"),
+        wise_invalid_identifier: t("errors.wise_invalid_identifier"),
+        wise_no_name: t("errors.wise_no_name"),
+        wise_unavailable: t("errors.wise_unavailable"),
+        wise_error: t("errors.wise_error"),
+      };
+
+      if (code === "pin") {
         setPin("");
         setPinConfirmation("");
-      } else if ((result as { error?: string }).error === "Unauthorized") {
-        toast.error(t("errors.Unauthorized"));
-      } else {
-        toast.error(
-          (result as { error?: string }).error ?? t("errors.insufficient"),
-        );
       }
+      toast.error(messages[code] ?? t("errors.insufficient"));
     } finally {
       setIsLoading(false);
     }
@@ -321,16 +454,25 @@ export default function InitiateWithdrawalPageWrapper({
   };
 
   const next = async () => {
-    if (currentStep === 1) {
+    if (step === "method") {
       if (!accountType) {
         toast.error(t("accountTypeError"));
+        return;
+      }
+      /**
+       * Wise has no amount step to catch an empty balance, so it is checked on
+       * the way out of here instead. Its currency is fixed, so there is nothing
+       * later that could change which balance applies.
+       */
+      if (accountType === "wise" && organisation.usdAvailableBalance <= 0) {
+        toast.error(t("errors.insufficient"));
         return;
       }
       go(currentStep + 1);
       return;
     }
 
-    if (currentStep === 2) {
+    if (step === "amount") {
       if (activeCurrencyBalance <= 0) {
         toast.error(t("errors.insufficient"));
         return;
@@ -339,7 +481,26 @@ export default function InitiateWithdrawalPageWrapper({
       return;
     }
 
-    if (currentStep === 3) {
+    if (step === "details") {
+      if (accountType === "wise") {
+        if (!wiseRecipientValue.trim()) {
+          toast.error(t("errors.wise_identifier_required"));
+          return;
+        }
+        // Both checkpoints are required before the request can be made: Wise
+        // has to have resolved the identifier, and the organiser has to have
+        // read the resulting name and said it is theirs.
+        if (!wiseResolvedName) {
+          toast.error(t("errors.wise_not_verified"));
+          return;
+        }
+        if (!wiseNameConfirmed) {
+          toast.error(t("errors.wise_name_not_confirmed"));
+          return;
+        }
+        go(currentStep + 1);
+        return;
+      }
       if (accountType === "bank") {
         if (!bankName.trim()) {
           toast.error(t("errors.bank_name"));
@@ -371,7 +532,7 @@ export default function InitiateWithdrawalPageWrapper({
       return;
     }
 
-    if (currentStep === 4) {
+    if (step === "pin") {
       if (!pin || pin.length !== 4) {
         toast.error(t("errors.noPin"));
         return;
@@ -399,7 +560,7 @@ export default function InitiateWithdrawalPageWrapper({
     }
   };
 
-  const proceedLabel = currentStep === 4 ? t("withdraw") : t("proceed");
+  const proceedLabel = isLastStep ? t("withdraw") : t("proceed");
 
   /* ── Render ──────────────────────────────────────────────────── */
 
@@ -455,7 +616,7 @@ export default function InitiateWithdrawalPageWrapper({
         <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden pb-44 lg:pb-44">
           <AnimatePresence mode="wait" custom={delta}>
             {/* ── Step 0: Summary ─────────────────────────────── */}
-            {currentStep === 0 && (
+            {step === "summary" && (
               <motion.div
                 key="summary"
                 custom={delta}
@@ -519,7 +680,7 @@ export default function InitiateWithdrawalPageWrapper({
             )}
 
             {/* ── Step 1: Payment method ───────────────────────── */}
-            {currentStep === 1 && (
+            {step === "method" && (
               <motion.div
                 key="payment-method"
                 custom={delta}
@@ -625,12 +786,55 @@ export default function InitiateWithdrawalPageWrapper({
                       <TickCircle size="14" color="#fff" variant="Bold" />
                     </motion.div>
                   </motion.button>
+
+                  {/* Wise. Only where the environment has credentials for it. */}
+                  {wiseAvailable && (
+                    <motion.button
+                      whileTap={{ scale: 0.985 }}
+                      onClick={() => setAccountType("wise")}
+                      className={`flex items-center w-full justify-between cursor-pointer p-5 rounded-[16px] border-2 transition-colors duration-200 ${
+                        accountType === "wise"
+                          ? "border-primary-500 bg-primary-50"
+                          : "border-neutral-100 hover:border-neutral-200"
+                      }`}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div
+                          className={`w-[46px] h-[46px] rounded-[12px] flex items-center justify-center transition-colors duration-200 ${accountType === "wise" ? "bg-primary-100" : "bg-neutral-100"}`}
+                        >
+                          <Image src={wiseIcon} width={26} alt="Wise" />
+                        </div>
+                        <div className="flex flex-col items-start gap-[3px]">
+                          <span className="font-semibold text-[1.5rem] leading-6 text-deep-100">
+                            {t("wise")}
+                          </span>
+                          <span className="text-[1.2rem] leading-5 text-neutral-500">
+                            {t("wise_hint")}
+                          </span>
+                        </div>
+                      </div>
+                      <motion.div
+                        animate={{
+                          scale: accountType === "wise" ? 1 : 0.4,
+                          opacity: accountType === "wise" ? 1 : 0,
+                        }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 420,
+                          damping: 22,
+                        }}
+                        className="w-[22px] h-[22px] rounded-full bg-primary-500 flex items-center justify-center shrink-0"
+                      >
+                        <TickCircle size="14" color="#fff" variant="Bold" />
+                      </motion.div>
+                    </motion.button>
+                  )}
                 </div>
               </motion.div>
             )}
 
             {/* ── Step 2: Amount ───────────────────────────────── */}
-            {currentStep === 2 && (
+            {step === "amount" && (
               <motion.div
                 key="amount"
                 custom={delta}
@@ -696,7 +900,7 @@ export default function InitiateWithdrawalPageWrapper({
             )}
 
             {/* ── Step 3: Account details ──────────────────────── */}
-            {currentStep === 3 && (
+            {step === "details" && (
               <motion.div
                 key="account-details"
                 custom={delta}
@@ -707,7 +911,110 @@ export default function InitiateWithdrawalPageWrapper({
                 transition={slideTransition}
                 className="flex flex-col gap-8 lg:w-212 mx-auto w-full"
               >
-                {accountType === "bank" ? (
+                {accountType === "wise" ? (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
+                        {t("wise_details")}
+                      </h2>
+                      <p className="text-[1.4rem] leading-7 text-neutral-500">
+                        {t("wise_details_hint")}
+                      </p>
+                    </div>
+
+                    <div className="border border-neutral-100 rounded-[16px] p-6 flex flex-col gap-8">
+                      {/* Wisetag only. Wise's endpoint also takes an email or a
+                          phone number, but a Wisetag is the only identifier
+                          somebody picks deliberately for being paid. */}
+                      <div className="flex flex-col gap-2">
+                        <Input
+                          value={wiseRecipientValue}
+                          onChange={(e) => updateWiseIdentifier(e.target.value)}
+                          type="text"
+                          placeholder="@wisetag"
+                        >
+                          {t("wise_value_label")}
+                        </Input>
+                        <p className="flex items-center gap-[6px] text-[1.2rem] leading-5 text-neutral-400 px-1">
+                          <InfoCircle size="14" color="#9ca3af" />
+                          {t("wise_discoverable_hint")}
+                        </p>
+                      </div>
+
+                      {/* Verify. Resolving here rather than at submission means
+                          a typo is a corrected field, not a rejected request. */}
+                      <ButtonPrimary
+                        onClick={handleVerifyWise}
+                        disabled={
+                          isVerifyingWise ||
+                          !wiseRecipientValue.trim() ||
+                          Boolean(wiseResolvedName)
+                        }
+                        className="w-full"
+                      >
+                        {isVerifyingWise ? (
+                          <LoadingCircleSmall />
+                        ) : wiseResolvedName ? (
+                          t("wise_verified")
+                        ) : (
+                          t("wise_verify")
+                        )}
+                      </ButtonPrimary>
+                    </div>
+
+                    {/* The name Wise returned, and the organiser confirming it.
+                        This is the first of two human checkpoints — the admin
+                        sees the same name again before the money goes. Nothing
+                        in the code can catch an identifier that resolves to the
+                        wrong real person; only someone reading this can. */}
+                    {wiseResolvedName && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.22 }}
+                        className="flex flex-col gap-4"
+                      >
+                        <div className="flex flex-col gap-[6px] p-6 rounded-[16px] bg-neutral-100">
+                          <span className="text-[1.2rem] leading-5 text-neutral-500 uppercase font-medium tracking-wide">
+                            {t("wise_resolved_name_label")}
+                          </span>
+                          <span className="font-semibold text-[2rem] leading-8 text-deep-100 wrap-break-word">
+                            {wiseResolvedName}
+                          </span>
+                        </div>
+                        <motion.button
+                          whileTap={{ scale: 0.985 }}
+                          onClick={() => setWiseNameConfirmed((v) => !v)}
+                          className={`flex items-start gap-4 p-5 rounded-[14px] border-2 w-full text-left transition-colors duration-200 ${
+                            wiseNameConfirmed
+                              ? "border-primary-500 bg-primary-50"
+                              : "border-neutral-100 hover:border-neutral-200"
+                          }`}
+                        >
+                          <AnimatedCheckbox checked={wiseNameConfirmed} />
+                          <div className="flex flex-col gap-[4px]">
+                            <span className="font-semibold text-[1.4rem] leading-6 text-deep-100">
+                              {t("wise_confirm_name")}
+                            </span>
+                            <span className="text-[1.2rem] leading-5 text-neutral-500">
+                              {t("wise_confirm_name_hint")}
+                            </span>
+                          </div>
+                        </motion.button>
+                      </motion.div>
+                    )}
+
+                    {/* Approval is a real gate, not a formality — say so, so
+                        nobody expects the money to arrive the moment they
+                        finish this form. */}
+                    <div className="flex items-start gap-3 p-4 rounded-[12px] border border-neutral-200 bg-neutral-50 text-[1.3rem] leading-7 text-neutral-600">
+                      <div className="shrink-0 mt-[2px]">
+                        <InfoCircle size="18" color="#737c8a" />
+                      </div>
+                      <span>{t("wise_review_note")}</span>
+                    </div>
+                  </>
+                ) : accountType === "bank" ? (
                   <>
                     <div className="flex flex-col gap-2">
                       <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
@@ -782,7 +1089,9 @@ export default function InitiateWithdrawalPageWrapper({
                         <Input
                           value={moncashNumber}
                           onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, "").slice(0, 8);
+                            const val = e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 8);
                             setMoncashNumber(val);
                           }}
                           type="tel"
@@ -828,7 +1137,7 @@ export default function InitiateWithdrawalPageWrapper({
             )}
 
             {/* ── Step 4: PIN ──────────────────────────────────── */}
-            {currentStep === 4 && (
+            {step === "pin" && (
               <motion.div
                 key="pin"
                 custom={delta}
@@ -863,14 +1172,18 @@ export default function InitiateWithdrawalPageWrapper({
                   </div>
                   <div className="text-right flex flex-col gap-[2px]">
                     <span className="text-[1.3rem] font-medium text-deep-100">
-                      {accountType === "bank"
-                        ? bankAccountName
-                        : moncashAccountName}
+                      {accountType === "wise"
+                        ? (wiseResolvedName ?? "")
+                        : accountType === "bank"
+                          ? bankAccountName
+                          : moncashAccountName}
                     </span>
                     <span className="text-[1.2rem] text-neutral-400">
-                      {accountType === "bank"
-                        ? bankAccountNumber
-                        : moncashNumber}
+                      {accountType === "wise"
+                        ? wiseRecipientValue
+                        : accountType === "bank"
+                          ? bankAccountNumber
+                          : moncashNumber}
                     </span>
                   </div>
                 </div>

@@ -329,6 +329,21 @@ export interface Event {
    */
   comingSoonDate?: string | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
+  /**
+   * An organiser edited something worth a second look. A separate axis from
+   * adminStatus, which edits deliberately leave alone: this gates nothing, so
+   * the event keeps selling and scanning while it waits in the admin queue.
+   * Null once an admin has ruled either way.
+   */
+  pendingReviewAt: string | null;
+  /** Field keys that triggered the review ("name", "description", ...). */
+  pendingReviewReason: string[] | null;
+  /**
+   * When this event last changed in a way that affects whether a buyer can
+   * still use what they bought. Opens a fixed refund window for tickets bought
+   * before it.
+   */
+  materialChangeAt: string | null;
   isActive: boolean;
   isFree: boolean;
   isPrivate: boolean;
@@ -360,6 +375,64 @@ export interface Event {
   deletionRequestedAt: string | null;
   scheduledDeletionAt: string | null;
   ticketReturns: TicketReturn[];
+}
+
+/**
+ * An organiser's edit held back from an event that already has sales, waiting
+ * on an admin. The live event is unchanged until this is approved — see the
+ * event_revisions migration.
+ */
+export interface EventRevision {
+  revisionId: string;
+  eventId: string;
+  organisationId: string;
+  /** The complete proposed edit, not a diff. */
+  payload: {
+    eventName: string;
+    eventDescription: string;
+    address: string;
+    eventDays?: { dayNumber: number; eventDate: string; startTime: string }[];
+  };
+  /** Which misrepresentable fields this edit touches. */
+  changedFields: string[];
+  /** A new poster, uploaded but deliberately not yet live. */
+  imageUrl: string | null;
+  imageKey: string | null;
+  status: "pending" | "applied" | "rejected" | "superseded";
+  rejectionReason: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  event: Event;
+}
+
+/**
+ * A raffle edit held back from a draw that already has entries. The live raffle
+ * is unchanged until this is approved.
+ */
+export interface RaffleRevision {
+  revisionId: string;
+  raffleId: string;
+  organisationId: string;
+  payload: {
+    title: string;
+    description: string;
+    salesEndAt: string;
+    drawAt: string;
+    coverImageUrl: string | null;
+    prizes: {
+      title: string;
+      description: string | null;
+      imageUrl: string | null;
+    }[];
+  };
+  changedFields: string[];
+  status: "pending" | "applied" | "rejected" | "superseded";
+  rejectionReason: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  raffle: Raffle;
 }
 
 export interface RafflePrize {
@@ -400,6 +473,14 @@ export interface Raffle {
   drawAlgorithm?: string | null;
   drawRecord?: Record<string, unknown> | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
+  /**
+   * An organiser edited something worth a second look. A separate axis from
+   * adminStatus, which edits deliberately leave alone: this gates nothing, so
+   * the draw keeps selling entries while it waits in the admin queue.
+   */
+  pendingReviewAt: string | null;
+  /** Field keys that triggered the review ("name", "description", ...). */
+  pendingReviewReason: string[] | null;
   rejectionReason: string | null;
   status: "on_sale" | "closed" | "drawn" | "completed" | "cancelled";
   deletionStatus: "pending_deletion" | "deleted" | null;
@@ -652,6 +733,22 @@ export interface WithdrawalRequest {
   createdAt: DateTime;
   updatedAt: DateTime;
   organisation: Organisation;
+
+  /* Wise payouts. Null for `bank` and `moncash`, which settle by hand.
+     The recipient lives on the request rather than the organisation so it is
+     stated fresh each time and visible to the admin who approves it. */
+  /** Only "wisetag" is written today; the column records which kind was used. */
+  wiseRecipientType: "wisetag" | "email" | "phone" | null;
+  wiseRecipientValue: string | null;
+  /** The name Wise reported. Re-checked at approval before anything is sent. */
+  wiseResolvedName: string | null;
+  wiseContactId: string | null;
+  wiseQuoteId: string | null;
+  wiseTransferId: string | null;
+  wiseStatus: string | null;
+  wiseFailureReason: string | null;
+  /** When the transfer actually settled, which is not when it was approved. */
+  processedAt: DateTime | null;
 }
 
 export interface OrganisationSubscription {

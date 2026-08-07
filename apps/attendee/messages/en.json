@@ -950,7 +950,8 @@
       "max_party": "{count, plural, one {This restaurant seats one guest per time slot} other {This restaurant seats up to # guests per time slot}}.",
       "all_slots_full": "{count, plural, one {No table for one is free on this day} other {No table for # is free on this day}}. Try another date or a smaller party.",
       "download_ticket": "Download my reservation"
-    }
+    },
+    "changeRefundWindowNotice": "The organiser changed this activity after you bought. You can return your tickets for a full refund for a short time, even if they are normally non-refundable."
   },
   "Checkout": {
     "back": "Back",

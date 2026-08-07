@@ -264,7 +264,7 @@
         "wrong": "Adresse email ou mot de passe incorrect",
         "no_account": "Aucun compte Ticketwaze n'est associé à ce compte Google. Créez d'abord un compte, puis revenez pour accéder à votre tableau de bord.",
         "google_failed": "La connexion avec Google a échoué. Veuillez réessayer.",
-      "organisation_suspended": "Cette organisation est suspendue, son tableau de bord n'est donc pas accessible. Consultez l'e-mail que nous vous avons envoyé pour en connaître la raison, ou contactez le support pour faire appel."
+        "organisation_suspended": "Cette organisation est suspendue, son tableau de bord n'est donc pas accessible. Consultez l'e-mail que nous vous avons envoyé pour en connaître la raison, ou contactez le support pour faire appel."
       },
       "forgot": "Mot de passe oublié",
       "method": {
@@ -525,7 +525,17 @@
       "bank_account_number": "Le numéro de compte est requis",
       "moncash_account_name": "Le nom du titulaire du compte est requis",
       "moncash_number": "Le numéro de téléphone MonCash est requis",
-      "moncash_number_invalid": "Le numéro MonCash doit comporter exactement 8 chiffres"
+      "moncash_number_invalid": "Le numéro MonCash doit comporter exactement 8 chiffres",
+      "wise_identifier_required": "Entrez le Wisetag du bénéficiaire",
+      "wise_not_verified": "Vérifiez d'abord le Wisetag",
+      "wise_name_not_confirmed": "Confirmez que le nom affiché correspond au bon compte Wise",
+      "wise_unresolved": "Nous n'avons pas trouvé ce Wisetag. Vérifiez qu'il est correct et que le profil Wise est visible.",
+      "wise_no_name": "Wise a trouvé ce compte mais n'a pas renvoyé de nom, nous ne pouvons donc pas confirmer à qui il appartient.",
+      "wise_unavailable": "Les virements Wise ne sont pas disponibles pour le moment.",
+      "wise_error": "Nous n'avons pas pu joindre Wise. Veuillez réessayer dans un instant.",
+      "wise_self": "Il s'agit du compte Ticketwaze. Entrez le compte Wise qui doit recevoir l'argent.",
+      "wise_invalid_identifier": "Cela ne ressemble pas à un Wisetag. Un Wisetag commence par @.",
+      "pending_exists": "Vous avez déjà une demande de virement en cours d'examen. Attendez qu'elle soit finalisée ou rejetée avant d'en faire une autre."
     },
     "withdrawSuccess": "Votre demande de retrait a été soumise avec succès et est en cours de traitement.",
     "breakdown": "Répartition",
@@ -605,7 +615,20 @@
         "date": "Date",
         "reason": "Motif du rejet"
       }
-    }
+    },
+    "wise": "Wise",
+    "wise_hint": "Virement instantané vers votre compte Wise, en USD",
+    "wise_details": "Compte Wise",
+    "wise_details_hint": "Entrez le Wisetag du compte qui doit recevoir votre virement. Les virements sont envoyés en USD.",
+    "wise_verify": "Vérifier",
+    "wise_verified": "Vérifié",
+    "wise_discoverable_hint": "Votre Wisetag doit être visible dans vos paramètres de confidentialité Wise, sinon nous ne pouvons pas le trouver.",
+    "wise_resolved_name_label": "Titulaire du compte Wise",
+    "wise_confirm_name": "C'est bien mon compte Wise",
+    "wise_confirm_name_hint": "Vérifiez le nom attentivement. Une fois envoyé, un virement Wise ne peut pas être rappelé.",
+    "wise_review_note": "Ticketwaze examine chaque demande de virement avant que le transfert ne soit envoyé.",
+    "wise_value_label": "Wisetag",
+    "pendingPayoutWarning": "Vous avez déjà une demande de virement en cours d'examen. Vous pourrez en faire une nouvelle une fois celle-ci finalisée ou rejetée."
   },
   "Events": {
     "title": "Aperçu des activités",
@@ -619,6 +642,7 @@
     "history": "Historique",
     "deleted": "Supprimées",
     "deleted_description": "Vos activités supprimées apparaîtront ici.",
+    "edit_under_review": "Modification en revue",
     "from": "À partir de",
     "free": "Gratuit",
     "single_event": {
@@ -1033,7 +1057,8 @@
           "prize_description": "La description du prix est requise",
           "submit_failed": "Impossible de soumettre le tirage. Veuillez réessayer.",
           "too_large": "Les images de ce tirage sont trop volumineuses pour être envoyées. Retirez ou remplacez les plus lourdes.",
-          "prize_image": "Une photo est requise pour ce lot"
+          "prize_image": "Une photo est requise pour ce lot",
+          "name_taken": "Un autre tirage utilise déjà ce titre. Veuillez en choisir un autre."
         },
         "tags": "Étiquettes",
         "tags_tip": "Ajoutez quelques étiquettes pour décrire votre tirage. Appuyez sur Entrée, virgule ou espace pour en ajouter une. Cliquez sur une étiquette pour la retirer.",
@@ -1093,8 +1118,9 @@
       "meet_default": "Participez à notre session Meet avec un accès complet ! Connectez-vous et profitez de partout. Réservez votre place dès aujourd’hui !",
       "draft": "Enregistrer comme brouillon",
       "no_changes": "Aucune modification n'a été effectuée.",
+      "held_for_review": "Vos modifications ont été soumises pour revue. Cette activité a déjà des ventes de billets, les informations actuelles restent donc en ligne jusqu'à l'approbation d'un administrateur.",
       "edit_warning_title": "Enregistrer les modifications ?",
-      "edit_warning_body": "En modifiant cette activité, elle sera soumise à une nouvelle révision. Elle ne sera pas visible sur l'application tant que la révision n'aura pas été approuvée.",
+      "edit_warning_body": "Vos modifications seront appliquées immédiatement à cette activité.",
       "edit_warning_confirm": "Oui, enregistrer",
       "edit_warning_cancel": "Retour",
       "optional": "optionnel",
@@ -1249,7 +1275,8 @@
       "publish_success": "Votre événement a été envoyé pour révision.",
       "prize_image": "Photo du lot",
       "prize_image_tip": "Obligatoire. Visible par les acheteurs et pendant le tirage.",
-      "prize_image_remove": "Retirer la photo du lot"
+      "prize_image_remove": "Retirer la photo du lot",
+      "edit_warning_body_review": "Cette activité a déjà des ventes de billets, vos modifications seront donc examinées avant leur mise en ligne. Elle reste visible et en vente avec ses informations actuelles jusqu'à l'approbation d'un administrateur."
     },
     "filters": {
       "first": {
@@ -1668,7 +1695,8 @@
           "claimed": "Remis",
           "unclaimed": "Jamais réclamé"
         }
-      }
+      },
+      "heldForReview": "Vos modifications ont été soumises pour revue. Ce tirage a déjà des participations, les informations actuelles restent donc en ligne jusqu'à l'approbation d'un administrateur."
     }
   },
   "WelcomeModal": {

@@ -206,14 +206,6 @@ export default function BasicDetails({
         <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
           {t("event_tags")}
         </span>
-        <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
-          <Warning2 size="24" color="#737C8A" variant="Bulk" />
-          <div>
-            <p className="text-[1.2rem] leading-8 text-neutral-800">
-              {t("tagTip.description")}
-            </p>
-          </div>
-        </div>
         <div className="w-full">
           <div
             className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
@@ -244,6 +236,14 @@ export default function BasicDetails({
             {errors.activityTags?.message}
           </span>
         )}
+        <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+          <Warning2 size="24" color="#737C8A" variant="Bulk" />
+          <div>
+            <p className="text-[1.2rem] leading-8 text-neutral-800">
+              {t("tagTip.description")}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div></div>

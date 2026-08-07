@@ -98,6 +98,16 @@ export default function RichTextEditor({
     lastInternalHtml.current = value;
   }, [value, editor]);
 
+  /**
+   * The character count belongs in here with the toolbar state, not in a bare
+   * render-time read of `editor.storage`.
+   *
+   * `editor` is one stable object whose identity never changes, so with the
+   * React Compiler on, a top-level `editor.storage.characterCount.characters()`
+   * gets memoized against that identity and cached forever — the count renders
+   * once and then freezes while you type. `useEditorState` subscribes to editor
+   * transactions, so the value is recomputed and re-rendered on every keystroke.
+   */
   const activeState = useEditorState({
     editor,
     selector: (ctx) => ({
@@ -108,10 +118,11 @@ export default function RichTextEditor({
       h3: ctx.editor?.isActive("heading", { level: 3 }) ?? false,
       bulletList: ctx.editor?.isActive("bulletList") ?? false,
       orderedList: ctx.editor?.isActive("orderedList") ?? false,
+      charCount: ctx.editor?.storage.characterCount?.characters() ?? 0,
     }),
   });
 
-  const charCount = editor?.storage.characterCount?.characters() ?? 0;
+  const charCount = activeState.charCount;
 
   if (!mounted) {
     return (

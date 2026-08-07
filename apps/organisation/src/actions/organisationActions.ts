@@ -612,6 +612,48 @@ export async function DeleteBankingInformations(
 /*
   ====================FINANCE===================
 */
+/**
+ * Resolve a Wisetag to the name Wise holds for it.
+ *
+ * The Verify step of a Wise withdrawal. Nothing is created and no balance
+ * moves — this exists so the organiser confirms a name before requesting, which
+ * is the only defence against a Wisetag that resolves to a real stranger.
+ *
+ * The failure `message` is a stable code (`wise_unresolved`, `wise_self`,
+ * `wise_invalid_identifier`, `wise_no_name`, `wise_unavailable`,
+ * `wise_error`), which the caller turns into copy. Passing the API's English
+ * text straight through would break French.
+ */
+export async function ResolveWiseRecipient(
+  organisationId: string,
+  accessToken: string,
+  locale: string,
+  body: { wiseRecipientValue: string },
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/transactions/withdrawal/wise/resolve`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify(body),
+      },
+    );
+    const data = await res.json();
+    if (data.status === "success") {
+      return { status: "success", name: data.recipient?.name as string };
+    }
+    return { error: (data.message as string) ?? "wise_error" };
+  } catch {
+    return { error: "wise_error" };
+  }
+}
+
 export async function BankWithdrawalRequest(
   organisationId: string,
   accessToken: string,
