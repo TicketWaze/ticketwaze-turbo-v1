@@ -1,4 +1,6 @@
 "use client"; // Error boundaries must be Client Components
+import { useEffect } from "react";
+import { reportClientError } from "@ticketwaze/client-logging";
 import LogoOrange from "@/assets/images/logo-horizontal-orange-org.svg";
 import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
 import { I24Support, Logout } from "iconsax-reactjs";
@@ -12,6 +14,18 @@ export default function GlobalError({
   reset: () => void;
 }) {
   const router = useRouter();
+  // The boundary already showed the user a friendly screen; without this the
+  // error that caused it was never recorded anywhere.
+  useEffect(() => {
+    reportClientError({
+      app: "organisation",
+      source: "render",
+      message: error.message,
+      stack: error.stack,
+      digest: error.digest,
+    });
+  }, [error]);
+
   return (
     <html>
       <body className="w-full h-dvh overflow-hidden flex flex-col items-center justify-center bg-neutral-200 p-8">

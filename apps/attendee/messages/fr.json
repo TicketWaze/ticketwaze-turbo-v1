@@ -550,7 +550,47 @@
         "email": "Courriel",
         "required": "Veuillez saisir votre nom et votre courriel."
       }
-    }
+    },
+    "myEntries": {
+      "title": "Vos participations",
+      "count": "{count, plural, one {# numéro} other {# numéros}} dans ce tirage",
+      "awaitingDraw": "Les gagnants sont annoncés après le tirage. Si l'un de vos numéros est tiré au sort, nous vous contacterons par e-mail.",
+      "organiser": "Organisé par"
+    },
+    "drawComplete": "Tirage effectué",
+    "cancelled": "Annulé",
+    "results": {
+      "title": "Résultats",
+      "anonymous": "Gagnant",
+      "fairness": "Les gagnants ont été tirés avec un générateur aléatoire sécurisé et le tirage a été enregistré, afin que son résultat puisse être vérifié de manière indépendante.",
+      "watch": "Regarder le tirage"
+    },
+    "myEntriesDrawn": {
+      "won": "Vous avez gagné ! L'organisateur vous contactera pour la remise de votre lot.",
+      "lost": "Le tirage a eu lieu et vos numéros n'ont pas été tirés cette fois.",
+      "cancelled": "Ce tirage a été annulé et vos participations ont été remboursées sur votre portefeuille."
+    },
+    "draw": {
+      "eyebrow": "Le tirage",
+      "notYet": "Ce tirage n'a pas encore eu lieu",
+      "entriesSoFar": "{count, plural, one {# participation à ce jour} other {# participations à ce jour}}",
+      "cancelled": "Ce tirage a été annulé et n'a pas eu lieu. Toutes les participations vendues ont été remboursées.",
+      "entriesInDraw": "{count, plural, one {# participation dans ce tirage} other {# participations dans ce tirage}}",
+      "drawingRank": "Tirage du lot n°{rank}",
+      "anonymous": "Gagnant",
+      "replay": "Revoir le tirage",
+      "skip": "Passer aux résultats",
+      "noWinners": "Aucune participation vendue, aucun lot n'a été attribué.",
+      "verify": {
+        "title": "Vérifier ce tirage",
+        "explainer": "Les gagnants ont été tirés avec un générateur aléatoire sécurisé. La graine ci-dessous, combinée à la liste ordonnée des participations, reproduit exactement ce résultat : pour chaque rang, HMAC-SHA256 de la graine avec le message « rank:N », lu comme un entier 64 bits big-endian modulo la taille du tirage, donne la position gagnante.",
+        "algorithm": "Algorithme",
+        "seed": "Graine du tirage",
+        "entriesHash": "Empreinte de la liste (SHA-256)"
+      }
+    },
+    "salesEnd": "Fin des entrées",
+    "salesClosed": "Entrées fermées"
   },
   "Explore": {
     "title": "Explorer les activités",
@@ -714,8 +754,11 @@
       "days": "{count, plural, one {# jour} other {# jours}} <muted>restant(s)</muted>",
       "hours": "{count, plural, one {# heure} other {# heures}} <muted>restante(s)</muted>",
       "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>restante(s)</muted>",
-      "soon": "<muted>Commence bientôt</muted>"
-    }
+      "soon": "<muted>Commence bientôt</muted>",
+      "awaitingDraw": "En attente du tirage",
+      "drawn": "Tirage effectué"
+    },
+    "entries": "participations"
   },
   "History": {
     "title": "Historique des activités",
@@ -951,7 +994,8 @@
       "max_party": "{count, plural, one {Ce restaurant accueille une personne par créneau} other {Ce restaurant accueille jusqu’à # personnes par créneau}}.",
       "all_slots_full": "{count, plural, one {Aucune table pour une personne ce jour-là} other {Aucune table pour # personnes ce jour-là}}. Essayez une autre date ou un plus petit groupe.",
       "download_ticket": "Télécharger ma réservation"
-    }
+    },
+    "changeRefundWindowNotice": "L'organisateur a modifié cette activité après votre achat. Vous pouvez retourner vos billets et être remboursé intégralement pendant une courte période, même s'ils ne sont normalement pas remboursables."
   },
   "Checkout": {
     "back": "Retour",
@@ -996,6 +1040,7 @@
       "card": "Payer par carte",
       "paypal": "Payer avec PayPal",
       "moncash": "Payer avec MonCash",
+      "natcash": "Payer avec NatCash",
       "nopayment": "Cette activité est entièrement gratuit. Aucun paiement n'est requis pour finaliser votre inscription. Continuez simplement pour confirmer votre billet et le tour est joué.",
       "secured": "Votre sécurité est notre priorité. Toutes les transactions sont effectuées via des canaux cryptés et sont surveillées en temps réel afin de prévenir toute fraude et de garantir la protection de vos informations personnelles. Nos systèmes sont supervisés par des partenaires de confiance et respectent les normes les plus strictes en matière de sécurité des paiements et des données.",
       "paymentType": "Sélétionner un moyen de paiement",
@@ -1281,5 +1326,13 @@
         "description": "Partagez votre lien de parrainage avec vos amis. Lorsqu’ils s’inscrivent et achètent leur premier billet, vous gagnez tous les deux des récompenses. Consultez votre Wallet pour voir votre solde."
       }
     }
+  },
+  "Suspension": {
+    "title": "Votre compte est suspendu",
+    "description": "Vous pouvez toujours vous connecter et utiliser les billets déjà achetés, mais les achats, les remboursements et les avis sont désactivés pendant la suspension.",
+    "reason_label": "Motif indiqué",
+    "cta": "Contacter le support",
+    "blocked_action": "Votre compte est suspendu, cette action n'est donc pas disponible. Consultez l'e-mail que nous vous avons envoyé pour en connaître la raison, ou contactez le support pour faire appel.",
+    "generic_error": "Une erreur est survenue"
   }
 }

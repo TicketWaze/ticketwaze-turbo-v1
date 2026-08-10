@@ -14,6 +14,7 @@ import { useLocale, useTranslations } from "next-intl";
 import FormatDate from "@/lib/FormatDate";
 import {
   Order,
+  OrderActivitySummary,
   Organisation,
   WithdrawalRequest,
 } from "@ticketwaze/typescript-config";
@@ -22,6 +23,9 @@ import TruncateUrl from "@/lib/TruncateUrl";
 import { Link } from "@/i18n/navigation";
 import WithdrawalInformations from "./components/WithdrawalInformations";
 import OrdersInformations from "./components/OrdersInformations";
+
+/** An order the finance table can render: the API resolved its activity. */
+export type OrderWithActivity = Order & { activity: OrderActivitySummary };
 
 export default function FinancePageContent({
   transactions,
@@ -33,18 +37,21 @@ export default function FinancePageContent({
     allOrders: Order[];
     organisation: Organisation;
     withdrawalRequests: WithdrawalRequest[];
+    /** One payout may be open at a time; the request button is blocked while one is. */
+    hasPendingPayout?: boolean;
   };
   authorizedUpdate: boolean;
 }) {
   const t = useTranslations("Finance");
   const { data: session } = useSession();
   const currentOrganisation = transactions.organisation;
-  // The API returns only ticketed (event) orders, but guard here too: every
-  // cell below reads tickets[0].event, so a single order without a loaded event
-  // ticket would crash the whole page rather than just omit a row.
-  const hasEventTicket = (order: Order) => Boolean(order.tickets?.[0]?.event);
-  const orders = transactions.orders.filter(hasEventTicket);
-  const allOrders = transactions.allOrders.filter(hasEventTicket);
+  // The API attaches `activity` to every order it returns (events and raffles
+  // alike), but guard here too: every cell below reads it, so one malformed
+  // order should omit a row rather than crash the page.
+  const hasActivity = (order: Order): order is OrderWithActivity =>
+    Boolean(order.activity);
+  const orders = transactions.orders.filter(hasActivity);
+  const allOrders = transactions.allOrders.filter(hasActivity);
   const total = allOrders.reduce((sum, order) => {
     const orderTotal = order.tickets.reduce(
       (s, ticket) =>
@@ -131,7 +138,10 @@ export default function FinancePageContent({
       </div>
       {authorizedUpdate && (
         <div className="lg:hidden w-full py-[7.5px]">
-          <InitiateWithdrawalButton organisation={transactions.organisation} />
+          <InitiateWithdrawalButton
+            organisation={transactions.organisation}
+            hasPendingPayout={Boolean(transactions.hasPendingPayout)}
+          />
         </div>
       )}
 
@@ -220,14 +230,14 @@ export default function FinancePageContent({
                           "text-[1.5rem] py-6 leading-8 text-neutral-900"
                         }
                       >
-                        {TruncateUrl(order.tickets[0].event.eventName, 20)}
+                        {TruncateUrl(order.activity.name, 20)}
                       </TableCell>
                       <TableCell
                         className={
                           "text-[1.5rem] font-medium leading-8 text-neutral-900"
                         }
                       >
-                        {order.tickets[0].event.currency === "USD"
+                        {order.activity.currency === "USD"
                           ? order.tickets.reduce(
                               (sum, t) => sum + Number(t.ticketUsdPrice),
                               0,
@@ -236,7 +246,7 @@ export default function FinancePageContent({
                               (sum, t) => sum + Number(t.ticketPrice),
                               0,
                             )}{" "}
-                        {order.tickets[0].event.currency}
+                        {order.activity.currency}
                       </TableCell>
                       <TableCell className={"hidden lg:table-cell"}>
                         {order?.status === "SUCCESSFUL" && (
@@ -266,14 +276,15 @@ export default function FinancePageContent({
                         {FormatDate(
                           order.createdAt,
                           locale,
-                          order.tickets[0].event.eventDays[0].timezone,
+                          order.activity.timezone ?? "local",
                         )}
                       </TableCell>
                     </TableRow>
                   </DrawerTrigger>
                   <OrdersInformations
                     tickets={order.tickets}
-                    order={order as Order}
+                    order={order}
+                    activity={order.activity}
                   />
                 </Drawer>
               );

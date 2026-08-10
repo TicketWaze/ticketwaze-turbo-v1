@@ -125,7 +125,13 @@ export interface Ticket {
   ticketType: string;
   eventId: string;
   orderId: string;
+  /** Who paid for the ticket. */
   userId: string;
+  /**
+   * Who the ticket is for, when it was bought for someone else who has an
+   * account. Null when the buyer kept it or the recipient has no account.
+   */
+  recipientUserId?: string | null;
   fullName: string;
   email: string;
   ticketPrice: number;
@@ -133,7 +139,16 @@ export interface Ticket {
   organisationId: string;
   isRefundable: boolean;
   status: "PENDING" | "CHECKED" | "RETURNED";
-  event: Event;
+  /**
+   * Only ever populated for EVENT tickets — a raffle entry hangs off an activity
+   * with no `events` row. Prefer `activity` on any endpoint that sends it.
+   */
+  event?: Event;
+  /**
+   * Normalized activity behind the ticket, built server-side. Present on the
+   * admin tickets endpoint; absent wherever tickets are returned raw.
+   */
+  activity?: OrderActivitySummary | null;
   order?: Order;
   // Attendance (check-in/out) summary — present on the event records payload.
   checkIns?: TicketCheckIn[];
@@ -200,6 +215,31 @@ export interface Organisation {
   updatedAt: DateTime;
 }
 
+/**
+ * Normalized activity behind an order, built server-side. The finance tables
+ * read this instead of `order.tickets[0].event`, which only exists for events
+ * and left raffle sales invisible.
+ */
+export interface OrderActivitySummary {
+  activityId: string;
+  activityType: "event" | "raffle";
+  name: string;
+  currency: string;
+  timezone: string | null;
+  /** Events only: day 1, naive wall-clock (format with keepLocalTime). */
+  eventDate: string | null;
+  startTime: string | null;
+  endTime: string | null;
+  /** Raffles only: the draw instant, correct UTC (format by converting). */
+  drawAt: string | null;
+  /** Events only: venue, for the admin ticket drawer. Null on raffles. */
+  eventCategory?: string | null;
+  address?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country?: string | null;
+}
+
 export interface Order {
   orderId: string;
   eventId: string;
@@ -216,6 +256,8 @@ export interface Order {
   lastName: string | null;
   email: string | null;
   tickets: Ticket[];
+  /** Present on the finance endpoints; absent wherever orders are returned raw. */
+  activity?: OrderActivitySummary;
   createdAt: DateTime;
   updatedAt: DateTime;
 }
@@ -287,6 +329,21 @@ export interface Event {
    */
   comingSoonDate?: string | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
+  /**
+   * An organiser edited something worth a second look. A separate axis from
+   * adminStatus, which edits deliberately leave alone: this gates nothing, so
+   * the event keeps selling and scanning while it waits in the admin queue.
+   * Null once an admin has ruled either way.
+   */
+  pendingReviewAt: string | null;
+  /** Field keys that triggered the review ("name", "description", ...). */
+  pendingReviewReason: string[] | null;
+  /**
+   * When this event last changed in a way that affects whether a buyer can
+   * still use what they bought. Opens a fixed refund window for tickets bought
+   * before it.
+   */
+  materialChangeAt: string | null;
   isActive: boolean;
   isFree: boolean;
   isPrivate: boolean;
@@ -306,11 +363,76 @@ export interface Event {
   organisation: Organisation;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Cancellation is distinct from deletion: the event and its tickets stay on
+   * record, everything is marked RETURNED, and buyers keep a visible answer to
+   * what became of what they paid for. Set by the admin refund action.
+   */
+  cancelledAt: string | null;
+  cancellationReason: string | null;
   deletionStatus: "pending_deletion" | "deleted" | null;
   deletionReason: string | null;
   deletionRequestedAt: string | null;
   scheduledDeletionAt: string | null;
   ticketReturns: TicketReturn[];
+}
+
+/**
+ * An organiser's edit held back from an event that already has sales, waiting
+ * on an admin. The live event is unchanged until this is approved — see the
+ * event_revisions migration.
+ */
+export interface EventRevision {
+  revisionId: string;
+  eventId: string;
+  organisationId: string;
+  /** The complete proposed edit, not a diff. */
+  payload: {
+    eventName: string;
+    eventDescription: string;
+    address: string;
+    eventDays?: { dayNumber: number; eventDate: string; startTime: string }[];
+  };
+  /** Which misrepresentable fields this edit touches. */
+  changedFields: string[];
+  /** A new poster, uploaded but deliberately not yet live. */
+  imageUrl: string | null;
+  imageKey: string | null;
+  status: "pending" | "applied" | "rejected" | "superseded";
+  rejectionReason: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  event: Event;
+}
+
+/**
+ * A raffle edit held back from a draw that already has entries. The live raffle
+ * is unchanged until this is approved.
+ */
+export interface RaffleRevision {
+  revisionId: string;
+  raffleId: string;
+  organisationId: string;
+  payload: {
+    title: string;
+    description: string;
+    salesEndAt: string;
+    drawAt: string;
+    coverImageUrl: string | null;
+    prizes: {
+      title: string;
+      description: string | null;
+      imageUrl: string | null;
+    }[];
+  };
+  changedFields: string[];
+  status: "pending" | "applied" | "rejected" | "superseded";
+  rejectionReason: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  raffle: Raffle;
 }
 
 export interface RafflePrize {
@@ -319,6 +441,12 @@ export interface RafflePrize {
   rank: number;
   title: string;
   description: string | null;
+  /** Optional picture of the prize, shown to buyers and during the draw. */
+  imageUrl?: string | null;
+  imageKey?: string | null;
+  /** Set by the draw. Null means this rank went unawarded. */
+  winningRaffleTicketId?: string | null;
+  claimStatus?: "to_claim" | "claimed" | "unclaimed";
 }
 
 export interface Raffle {
@@ -338,7 +466,21 @@ export interface Raffle {
   drawAt: string;
   timezone: string | null;
   drawMode: "automatic" | "manual";
+  /** Set once the draw has run; the raffle is immutable from then on. */
+  drawnAt: string | null;
+  /** Published so participants can recompute the draw themselves. */
+  drawSeed?: string | null;
+  drawAlgorithm?: string | null;
+  drawRecord?: Record<string, unknown> | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
+  /**
+   * An organiser edited something worth a second look. A separate axis from
+   * adminStatus, which edits deliberately leave alone: this gates nothing, so
+   * the draw keeps selling entries while it waits in the admin queue.
+   */
+  pendingReviewAt: string | null;
+  /** Field keys that triggered the review ("name", "description", ...). */
+  pendingReviewReason: string[] | null;
   rejectionReason: string | null;
   status: "on_sale" | "closed" | "drawn" | "completed" | "cancelled";
   deletionStatus: "pending_deletion" | "deleted" | null;
@@ -348,6 +490,31 @@ export interface Raffle {
   prizes: RafflePrize[];
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * One awarded prize, resolved to the person holding the winning entry. Ranks
+ * that went unawarded (fewer entries than prizes) have no row at all.
+ */
+export interface RaffleWinner {
+  rank: number;
+  rafflePrizeId: string;
+  prizeTitle: string;
+  claimStatus: "to_claim" | "claimed" | "unclaimed";
+  ticketId: string | null;
+  ticketName: string | null;
+  fullName: string | null;
+  email: string | null;
+}
+
+/**
+ * A raffle as returned by the attendee's own endpoints (`/me/raffles`), with
+ * the signed-in buyer's entry numbers attached. Never the full entry list of
+ * the raffle: only the caller's own.
+ */
+export interface MyRaffle extends Raffle {
+  entries: Ticket[];
+  organisation?: Organisation;
 }
 
 export interface RestaurantHour {
@@ -496,6 +663,13 @@ export interface User {
   lastResendAt: DateTime;
   referralCode: string;
   isVerified: boolean;
+  /**
+   * Set at login and kept current by the token refresh. A suspended attendee
+   * keeps their session and their tickets but cannot transact — the interface
+   * reads this to say so rather than letting them find out at checkout.
+   */
+  isSuspended: boolean;
+  suspensionReason: string | null;
   mfaEnabled: boolean;
   createdAt: DateTime;
   updatedAt: DateTime;
@@ -559,6 +733,22 @@ export interface WithdrawalRequest {
   createdAt: DateTime;
   updatedAt: DateTime;
   organisation: Organisation;
+
+  /* Wise payouts. Null for `bank` and `moncash`, which settle by hand.
+     The recipient lives on the request rather than the organisation so it is
+     stated fresh each time and visible to the admin who approves it. */
+  /** Only "wisetag" is written today; the column records which kind was used. */
+  wiseRecipientType: "wisetag" | "email" | "phone" | null;
+  wiseRecipientValue: string | null;
+  /** The name Wise reported. Re-checked at approval before anything is sent. */
+  wiseResolvedName: string | null;
+  wiseContactId: string | null;
+  wiseQuoteId: string | null;
+  wiseTransferId: string | null;
+  wiseStatus: string | null;
+  wiseFailureReason: string | null;
+  /** When the transfer actually settled, which is not when it was approved. */
+  processedAt: DateTime | null;
 }
 
 export interface OrganisationSubscription {
@@ -682,6 +872,32 @@ export interface AdminUser {
   updatedAt: string;
   userAnalytic: UserAnalytic | null;
   tickets: Ticket[];
+  /**
+   * A pending account deletion, or null when none is in flight. Dates are
+   * resolved server-side: `requestedAt` is when the attendee asked, and
+   * `scheduledFor` is when the cron will actually anonymize them — the grace
+   * period between the two is backend policy, never recomputed here.
+   */
+  deletion?: {
+    requestedAt: string;
+    scheduledFor: string;
+    reason: string | null;
+    daysLeft: number;
+  } | null;
+  /**
+   * The suspension in force, or null when the account is in good standing.
+   * `suspendedAt` and `suspendedByEmail` are null for accounts suspended before
+   * those columns were added — the fact was recorded, its circumstances were
+   * not.
+   */
+  suspension?: AccountSuspension | null;
+}
+
+/** Shared by suspended attendees and suspended organisations alike. */
+export interface AccountSuspension {
+  reason: string | null;
+  suspendedAt: string | null;
+  suspendedByEmail: string | null;
 }
 
 export interface AdminAttendeesRequest {
@@ -725,6 +941,8 @@ export interface AdminOrganisation {
   isPublished: boolean;
   isSuspended: boolean;
   suspensionReason: string | null;
+  /** Populated by the admin detail endpoint; see AccountSuspension. */
+  suspension?: AccountSuspension | null;
   events: Event[];
   subscription: OrganisationSubscription | null;
   createdAt: string;

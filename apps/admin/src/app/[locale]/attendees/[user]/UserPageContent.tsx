@@ -27,8 +27,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdminUser, Ticket, UserAnalytic } from "@ticketwaze/typescript-config";
+import SuspensionNotice from "@/components/shared/SuspensionNotice";
 import formatDate from "@/lib/FormatDate";
+import { formatMoney } from "@ticketwaze/currency";
 import { useState } from "react";
+
+/**
+ * A ticket's price in its own activity's currency. Tickets carry both columns,
+ * so reading the HTG one and labelling it with the activity's currency (what
+ * this used to do) misreported every ticket sold in USD. Read off the
+ * normalized `activity` — `ticket.event` is null for a raffle entry, which
+ * silently forced those rows to HTG.
+ */
+export function formatTicketPrice(ticket: Ticket, locale: string): string {
+  const currency = ticket.activity?.currency ?? "HTG";
+  return formatMoney(
+    currency === "USD" ? ticket.ticketUsdPrice : ticket.ticketPrice,
+    currency,
+    locale,
+  );
+}
 
 export default function UserPageContent({
   user,
@@ -49,8 +67,6 @@ export default function UserPageContent({
     );
   }
 
-  const primaryCurrency = user.tickets?.[0]?.event?.currency ?? "HTG";
-
   return (
     <AdminLayout>
       <div className="flex flex-col gap-8 lg:h-full lg:overflow-hidden">
@@ -67,6 +83,14 @@ export default function UserPageContent({
             )}
           </div>
         </div>
+        {/* An active suspension is the first thing that explains everything
+            else on this page, so it sits above the record — and above the
+            deletion notice, since it is the stronger state. */}
+        {user.suspension && <SuspensionNotice suspension={user.suspension} />}
+        {/* A pending deletion is time-boxed and irreversible once it runs, so it
+            is called out above the record rather than only listed inside it. */}
+        {user.deletion && <DeletionNotice deletion={user.deletion} />}
+
         <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] gap-8 lg:gap-16 lg:min-h-0">
           <div className="w-full flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
             <form className="flex flex-col gap-12 w-full pb-4 overflow-x-hidden">
@@ -188,8 +212,8 @@ export default function UserPageContent({
               <ActivitySummary
                 userAnalytic={user.userAnalytic}
                 totalSpent={totalSpent}
-                currency={primaryCurrency}
                 createdAt={user.createdAt}
+                deletion={user.deletion}
               />
             </Tabs>
           </div>
@@ -207,16 +231,57 @@ export default function UserPageContent({
   );
 }
 
+type AccountDeletion = NonNullable<AdminUser["deletion"]>;
+
+/**
+ * The pending-deletion callout. Amber rather than red: nothing has been lost
+ * yet, and logging in still cancels it — but the date is fixed and the outcome
+ * is irreversible, so it states both plainly.
+ */
+function DeletionNotice({ deletion }: { deletion: AccountDeletion }) {
+  const t = useTranslations("Attendees.profile.deletion");
+  const locale = useLocale();
+
+  return (
+    <div className="flex flex-col gap-2 rounded-[15px] border border-[#EA961C]/30 bg-[#FEF6E7] p-6">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <span className="text-[1.4rem] font-medium text-warning">
+          {t("title")}
+        </span>
+        <span className="text-[1.1rem] font-bold uppercase text-warning bg-white/70 rounded-[30px] py-[0.3rem] px-3">
+          {t("countdown", { days: deletion.daysLeft })}
+        </span>
+      </div>
+      <p className="text-[1.4rem] leading-8 text-neutral-700">
+        {t("body", {
+          date: formatDate(deletion.scheduledFor, locale, "local"),
+        })}
+      </p>
+      {deletion.reason && (
+        <p className="text-[1.4rem] leading-8 text-neutral-700">
+          <span className="text-neutral-600">{t("reason")}: </span>
+          {deletion.reason}
+        </p>
+      )}
+    </div>
+  );
+}
+
 function ActivitySummary({
   userAnalytic,
   totalSpent,
-  currency,
   createdAt,
+  deletion,
 }: {
   userAnalytic: UserAnalytic | null;
+  /**
+   * USD. A buyer's tickets can span events priced in different currencies, so a
+   * single total has to settle on one — the same denominator the platform
+   * analytics report in.
+   */
   totalSpent: number;
-  currency: string;
   createdAt: string;
+  deletion?: AccountDeletion | null;
 }) {
   const t = useTranslations("Attendees.profile");
   const locale = useLocale();
@@ -255,7 +320,7 @@ function ActivitySummary({
             {t("summary.total_spent")}
           </span>
           <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {totalSpent.toLocaleString()} {currency}
+            {formatMoney(totalSpent, "USD", locale)}
           </span>
         </li>
 
@@ -269,6 +334,39 @@ function ActivitySummary({
             {formatDate(createdAt, locale, "local")}
           </span>
         </li>
+
+        {/* Repeated from the banner on purpose: the banner is the alert, these
+            are the record — an operator reading the summary should not have to
+            scroll back up to find when the account goes and why. */}
+        {deletion && (
+          <>
+            <Separator />
+            <li className="flex justify-between">
+              <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
+                {t("deletion.requested_on")}
+              </span>
+              <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
+                {formatDate(deletion.requestedAt, locale, "local")}
+              </span>
+            </li>
+            <li className="flex justify-between">
+              <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
+                {t("deletion.scheduled_for")}
+              </span>
+              <span className="text-[1.6rem] text-warning font-medium leading-8">
+                {formatDate(deletion.scheduledFor, locale, "local")}
+              </span>
+            </li>
+            <li className="flex justify-between gap-8">
+              <span className="text-[1.6rem] text-neutral-600 leading-[22.5px] shrink-0">
+                {t("deletion.reason")}
+              </span>
+              <span className="text-[1.6rem] text-deep-100 font-medium leading-8 text-right">
+                {deletion.reason || t("deletion.no_reason")}
+              </span>
+            </li>
+          </>
+        )}
       </ul>
     </TabsContent>
   );
@@ -408,7 +506,7 @@ function TicketHistory({ tickets }: { tickets: Ticket[] }) {
                 <TableRow>
                   <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900">
                     <span className="cursor-pointer">
-                      {ticket.event?.eventName ?? "—"}
+                      {ticket.activity?.name ?? "—"}
                     </span>
                   </TableCell>
                   <TableCell className="py-6">
@@ -417,7 +515,7 @@ function TicketHistory({ tickets }: { tickets: Ticket[] }) {
                     </span>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900">
-                    {ticket.ticketPrice} {ticket.event?.currency ?? "HTG"}
+                    {formatTicketPrice(ticket, locale)}
                   </TableCell>
                   <TableCell className="py-6">
                     <span

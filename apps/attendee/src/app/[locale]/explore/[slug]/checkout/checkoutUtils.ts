@@ -7,6 +7,7 @@ export {
   SERVICE_FEE_RATE,
   STRIPE_TX_FEE_RATE,
   MONCASH_TX_FEE_RATE,
+  NATCASH_TX_FEE_RATE,
   PER_TICKET_FEE_USD,
   PER_TICKET_FEE_HTG_LOW,
   HTG_LOW_PRICE_THRESHOLD,
@@ -18,6 +19,7 @@ import {
   SERVICE_FEE_RATE,
   STRIPE_TX_FEE_RATE,
   MONCASH_TX_FEE_RATE,
+  NATCASH_TX_FEE_RATE,
   FALLBACK_HTG_EXCHANGE_RATE,
   getPerTicketFee,
 } from "@/lib/pricing";
@@ -29,6 +31,7 @@ import {
 export function getTransactionFeeRate(paymentType: PaymentType): number {
   if (paymentType === "card") return STRIPE_TX_FEE_RATE;
   if (paymentType === "moncash") return MONCASH_TX_FEE_RATE;
+  if (paymentType === "natcash") return NATCASH_TX_FEE_RATE;
   return 0;
 }
 
@@ -39,7 +42,7 @@ export function getTransactionFeeRate(paymentType: PaymentType): number {
  *   serviceFee    = 3% × subtotal
  *   platformFee   = Σ getPerTicketFee(price) × quantity
  *   transactionFee = txRate × (subtotal + serviceFee + platformFee)
- *                    (4% Stripe | 2.5% MonCash | 0% Wallet)
+ *                    (3% Stripe | 2.5% MonCash | 2.5% NatCash | 0% Wallet)
  *   total         = subtotal + serviceFee + platformFee + transactionFee
  */
 export function calculateFeeBreakdown(

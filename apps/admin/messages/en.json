@@ -210,7 +210,6 @@
       "signing": "Signing you in..."
     }
   },
-
   "Layout": {
     "sidebar": {
       "more": "More",
@@ -231,7 +230,8 @@
         "payouts": "Payouts",
         "user_withdrawals": "User Withdrawals",
         "support": "Live Chat",
-        "contact": "Contact Messages"
+        "contact": "Contact Messages",
+        "pending_edits": "Pending Edits"
       }
     },
     "topbar": {
@@ -241,7 +241,6 @@
       "view": "View"
     }
   },
-
   "Admins": {
     "title": "Administrators",
     "back": "Back",
@@ -277,12 +276,12 @@
       "email": "Enter a valid email address"
     }
   },
-
   "Activities": {
     "title": "Activities Overview",
     "total": "Total Activities",
     "active": "Active Activities",
     "suspended": "Suspended Activities",
+    "pending_edits": "Pending Edits",
     "filters": {
       "period": {
         "actual": "This month"
@@ -396,9 +395,40 @@
         "success": "Ticket sent to {email}",
         "error": "Failed to resend the ticket"
       }
+    },
+    "revisions": {
+      "title": "Pending edits",
+      "subtitle": "Changes to activities that already have ticket sales. The activity keeps selling the details on the left until one of these is approved.",
+      "empty": "Nothing waiting for review.",
+      "submitted": "Submitted",
+      "currently_live": "Currently live",
+      "proposed": "Proposed",
+      "approve": "Approve and apply",
+      "reject": "Reject",
+      "reject_title": "Reject this edit",
+      "reject_description": "The activity stays exactly as buyers last saw it. The organiser sees your reason.",
+      "reason_placeholder": "Why is this edit being rejected?",
+      "confirm_rejection": "Confirm rejection",
+      "cancel": "Cancel",
+      "approved_toast": "Edit applied to the live activity.",
+      "rejected_toast": "Edit rejected. The activity is unchanged.",
+      "calendar_warning": "The activity was updated, but its Google Calendar entry could not be refreshed. Invitees still hold the old details.",
+      "fields": {
+        "name": "Name",
+        "description": "Description",
+        "venue": "Venue",
+        "date": "First day",
+        "image": "Poster",
+        "prizes": "Prizes",
+        "sales_window": "Sales window",
+        "draw_date": "Draw date",
+        "sales_close": "Sales close"
+      },
+      "events_heading": "Events",
+      "raffles_heading": "Raffles",
+      "reason_label": "Reason"
     }
   },
-
   "Payouts": {
     "back": "Back",
     "cancel": "Mark as Failed",
@@ -486,7 +516,6 @@
       "organisation": "Organisations",
       "user": "Users"
     },
-
     "filters": {
       "period": {
         "actual": "This month"
@@ -542,6 +571,39 @@
         "reason_placeholder": "Describe why this payout failed...",
         "irreversible": "This action is irreversible. Once marked as failed, it cannot be undone.",
         "confirm": "Yes, mark as failed"
+      },
+      "approve_wise": {
+        "title_send": "Approve & Send",
+        "title_prepare": "Approve & Prepare Transfer",
+        "description_send": "You are about to send this payout to the organizer's Wise account. Check the recipient name below before you continue.",
+        "description_prepare": "You are about to create this transfer at Wise. Check the recipient name below before you continue.",
+        "recipient_label": "Recipient name at Wise",
+        "identifier_label": "Wisetag",
+        "amount_label": "Amount",
+        "irreversible": "This transfer is immediate and cannot be recalled. Make sure the recipient name is the organizer you expect.",
+        "needs_funding": "This creates the transfer only. You still need to log in to Wise and fund it before the organizer is paid.",
+        "confirm_send": "Yes, send the payout",
+        "confirm_prepare": "Yes, prepare the transfer",
+        "queued_sending": "Approved. The transfer is being sent.",
+        "queued_needs_funding": "Transfer being created at Wise. Log in to Wise to fund it."
+      },
+      "settle": {
+        "title": "Settle this payout",
+        "description": "Choose the outcome. This is the only place a payout is completed or rejected.",
+        "paid_title": "Successful",
+        "paid_hint": "You have already sent this money. Records it and debits the balance.",
+        "wise_send_title": "Successful — approve & send",
+        "wise_send_hint": "Creates the Wise transfer and sends it. Completes when Wise confirms.",
+        "wise_prepare_title": "Successful — approve & prepare",
+        "wise_prepare_hint": "Creates the transfer at Wise. You still fund it there afterwards.",
+        "failed_title": "Failed",
+        "failed_hint": "Rejects the request. No money is taken and nothing is refunded.",
+        "note_label": "Internal note (optional)",
+        "note_placeholder": "Bank reference, who authorised it, anything worth recording…",
+        "no_send_permission": "You do not have permission to send payouts. You can still mark this request as failed, or ask an owner to grant you the payouts.send permission.",
+        "confirm": "Confirm",
+        "paid_done": "Payout marked as paid.",
+        "failed_done": "Payout marked as failed."
       }
     },
     "request_details": {
@@ -558,7 +620,12 @@
       "account": "Account Number",
       "processed_date": "Processed Date",
       "close": "Close",
-      "approve": "Approve payout"
+      "approve": "Approve payout",
+      "wise_resolved_name": "Wise Recipient Name",
+      "wise_identifier": "Wisetag",
+      "wise_transfer_id": "Wise Transfer ID",
+      "wise_status": "Wise Status",
+      "wise_failure_reason": "Wise Failure Reason"
     },
     "withdrawal_details": {
       "title": "Withdrawal Details",
@@ -570,15 +637,14 @@
       "account": "Account Number",
       "processed_date": "Processed Date",
       "close": "Close"
-    }
+    },
+    "settle": "Settle Payout"
   },
-
   "Payments": {
     "title": "Payments",
     "total_revenue": "Total Revenue",
     "total_transactions": "Total Transactions",
     "fees": "Platform Fees Earned",
-
     "filters": {
       "period": {
         "actual": "This month"
@@ -587,7 +653,6 @@
       "time": "All time",
       "search": "Search name or transaction ID"
     },
-
     "transactions": {
       "title": "Transactions",
       "table": {
@@ -621,10 +686,13 @@
       "transaction_status": "Transaction Status",
       "check_status": "Checked-In Status",
       "check_time": "Check-In Time",
-      "close": "Close"
+      "close": "Close",
+      "draw_date": "Draw Date",
+      "activity_type": "Activity Type",
+      "type_event": "Event",
+      "type_raffle": "Raffle"
     }
   },
-
   "Tickets": {
     "title": "Tickets",
     "total_sold": "Total Sold",
@@ -632,12 +700,15 @@
     "checked-in": "Checked-In Tickets",
     "filters": {
       "period": {
-        "actual": "Ce mois-ci"
+        "actual": "This month"
       },
       "status": "All status",
       "time": "All time",
       "ticket_class": "All classes",
-      "search": "Search name or ticket ID"
+      "search": "Search name or ticket ID",
+      "activity_type": "All activities",
+      "activity_event": "Events",
+      "activity_raffle": "Raffles"
     },
     "tickets_list": {
       "title": "Tickets list",
@@ -650,7 +721,8 @@
         "purchase": "Date Purchased"
       },
       "no_history": "You’ll see all attendee ticket records here once events begin selling.",
-      "no_results": "No tickets match “{term}”."
+      "no_results": "No tickets match “{term}” with the current filters.",
+      "no_filtered": "No tickets match the selected filters."
     },
     "ticket_details": {
       "title": "Ticket Details",
@@ -671,7 +743,11 @@
       "check_status": "Checked-In Status",
       "check_time": "Check-In Time",
       "close": "Close",
-      "resend": "Resend ticket"
+      "resend": "Resend ticket",
+      "draw_date": "Draw Date",
+      "activity_type": "Activity Type",
+      "type_event": "Event",
+      "type_raffle": "Raffle"
     }
   },
   "Organisations": {
@@ -788,7 +864,6 @@
       }
     }
   },
-
   "Attendees": {
     "title": "Attendees Overview",
     "total": "Total Attendees",
@@ -796,7 +871,7 @@
     "guest": "Guest Attendees",
     "filters": {
       "period": {
-        "actual": "Ce mois-ci"
+        "actual": "This month"
       },
       "status": "All status",
       "status_active": "Active",
@@ -897,16 +972,28 @@
           "payment_date": "Payment Date",
           "transaction_status": "Transaction Status",
           "check_status": "Checked-In Status",
-          "check_time": "Check-In Time"
+          "check_time": "Check-In Time",
+          "draw_date": "Draw Date",
+          "activity_type": "Activity Type",
+          "type_event": "Event",
+          "type_raffle": "Raffle"
         },
         "cta": {
           "close": "Close",
           "resend": "Resend ticket"
         }
+      },
+      "deletion": {
+        "title": "Account deletion requested",
+        "body": "This account will be permanently anonymized on {date}.",
+        "countdown": "{days, plural, =0 {Today} one {Tomorrow} other {In # days}}",
+        "requested_on": "Deletion requested",
+        "scheduled_for": "Anonymized on",
+        "reason": "Reason given",
+        "no_reason": "No reason given"
       }
     }
   },
-
   "Waitlist": {
     "title": "Waitlist",
     "tabs": {
@@ -964,7 +1051,6 @@
       "close": "Close"
     }
   },
-
   "Analytics": {
     "title": "Platform Overview",
     "description": "Track platform-wide metrics in real time and understand key trends.",
@@ -1026,12 +1112,10 @@
       "rejected": "Rejected"
     }
   },
-
   "Event": {
     "from": "From",
     "free": "Free"
   },
-
   "Contact": {
     "title": "Contact Messages",
     "back": "Back",
@@ -1061,7 +1145,6 @@
     },
     "empty": "No contact messages yet. When customers reach out, their messages will appear here."
   },
-
   "Support": {
     "title": "Live Chat",
     "back": "Back",
@@ -1173,6 +1256,14 @@
         "accepted": "Request accepted and user notified.",
         "rejected": "Request rejected and user notified."
       }
+    }
+  },
+  "Suspension": {
+    "notice": {
+      "title": "Account suspended",
+      "since": "Suspended on",
+      "by": "Suspended by",
+      "reason": "Reason"
     }
   }
 }

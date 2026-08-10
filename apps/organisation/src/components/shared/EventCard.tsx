@@ -58,11 +58,23 @@ function EventCard({
             {event.adminStatus.toUpperCase()}
           </div>
         )}
-        {event.adminStatus === "approved" && event.deletionStatus !== "deleted" && (
-          <div className="bg-success block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
-            {event.adminStatus.toUpperCase()}
-          </div>
-        )}
+        {/* An edit to an approved event is reviewed after the fact, so the event
+            is still live and selling — it just has a look owed on it. That is a
+            different thing to say than "APPROVED", so it takes the same slot. */}
+        {event.adminStatus === "approved" &&
+          event.pendingReviewAt &&
+          event.deletionStatus !== "deleted" && (
+            <div className="bg-warning block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
+              {t("edit_under_review").toUpperCase()}
+            </div>
+          )}
+        {event.adminStatus === "approved" &&
+          !event.pendingReviewAt &&
+          event.deletionStatus !== "deleted" && (
+            <div className="bg-success block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
+              {event.adminStatus.toUpperCase()}
+            </div>
+          )}
         {event.deletionStatus === "deleted" && (
           <div className="bg-neutral-500 block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
             {t("deleted").toUpperCase()}

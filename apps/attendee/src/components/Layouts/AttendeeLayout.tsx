@@ -4,6 +4,7 @@ import MobileNavigation from "./MobileNavigation";
 import Head from "next/head";
 import { cn } from "@/lib/utils";
 import WelcomeModal from "@/components/WelcomeModal";
+import SuspensionBanner from "@/components/SuspensionBanner";
 
 function AttendeeLayout({
   title,
@@ -36,6 +37,9 @@ function AttendeeLayout({
               className,
             )}
           >
+            {/* Renders nothing unless the account is suspended, so it costs an
+                ordinary session read on every other page. */}
+            <SuspensionBanner />
             {children}
           </div>
           <MobileNavigation />

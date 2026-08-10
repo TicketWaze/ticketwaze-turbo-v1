@@ -23,9 +23,15 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 export default function ReturnPaidTicketView({
   tickets,
   eventDays,
+  changeWindowOpen = false,
 }: {
   tickets: Ticket[];
   eventDays: EventDay[];
+  /**
+   * The event materially changed recently, so the seven-day cutoff does not
+   * apply and non-refundable tickets can still be returned.
+   */
+  changeWindowOpen?: boolean;
 }) {
   const t = useTranslations("Event");
   const { data: session } = useSession();
@@ -81,7 +87,11 @@ export default function ReturnPaidTicketView({
     const daysUntilEvent =
       (earliestStart.getTime() - now.getTime()) / (1_000 * 60 * 60 * 24);
 
-    if (daysUntilEvent <= 7) {
+    // The cutoff exists so organisers can plan against a settled headcount.
+    // That reasoning does not survive the organiser being the one who moved the
+    // event, so an open change window overrides it. The API re-checks this per
+    // ticket and is the real authority.
+    if (daysUntilEvent <= 7 && !changeWindowOpen) {
       toast.error(t("return_deadline_error"));
       return;
     }

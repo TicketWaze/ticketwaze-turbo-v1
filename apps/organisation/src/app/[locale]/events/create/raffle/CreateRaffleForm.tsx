@@ -25,6 +25,9 @@ import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
 import { compressImage } from "@/lib/compressImage";
+import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
+import PrizeImagePicker from "@/components/shared/PrizeImagePicker";
+import useRaffleTitleAvailability from "@/hooks/useRaffleTitleAvailability";
 
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
@@ -154,6 +157,10 @@ export default function CreateRaffleForm() {
   const { fields, append, remove } = useFieldArray({ control, name: "prizes" });
   const unlimited = watch("unlimited");
 
+  // Checked live per keystroke. The API re-checks on submit, so this only
+  // decides whether the button is usable, never whether the title is valid.
+  const titleStatus = useRaffleTitleAvailability(watch("name"));
+
   // Free-form tags, same UX as the event form.
   const [tags, setTags] = useState<string[]>([]);
   const [tagInput, setTagInput] = useState("");
@@ -196,6 +203,49 @@ export default function CreateRaffleForm() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [coverError, setCoverError] = useState("");
 
+  // Keyed by the field-array id, not the index: removing a prize must not
+  // shift everyone else's picture onto the wrong row.
+  const [prizeImages, setPrizeImages] = useState<
+    Record<string, { file: File; preview: string }>
+  >({});
+
+  // A prize picture is required, and it lives outside the zod schema (a File
+  // cannot travel in the prizes JSON), so it is validated on submit the same
+  // way the cover is. Keyed by field id for the same reason as the images.
+  const [missingPrizeImages, setMissingPrizeImages] = useState<
+    Record<string, true>
+  >({});
+
+  function setPrizeImage(fieldId: string, file: File) {
+    setPrizeImages((current) => ({
+      ...current,
+      [fieldId]: { file, preview: URL.createObjectURL(file) },
+    }));
+    setMissingPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+  }
+
+  function clearPrizeImage(fieldId: string) {
+    setPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+  }
+
+  function removePrize(index: number, fieldId: string) {
+    clearPrizeImage(fieldId);
+    setMissingPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+    remove(index);
+  }
+
   async function handleCover(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -210,6 +260,13 @@ export default function CreateRaffleForm() {
   const onSubmit: SubmitHandler<TFormOut> = async (data) => {
     if (!coverFile) {
       setCoverError(t("errors.cover"));
+      return;
+    }
+    const missing = fields.filter((field) => !prizeImages[field.id]);
+    if (missing.length > 0) {
+      setMissingPrizeImages(
+        Object.fromEntries(missing.map((field) => [field.id, true as const])),
+      );
       return;
     }
     if (!organisation?.organisationId) {
@@ -245,20 +302,44 @@ export default function CreateRaffleForm() {
         data.prizes.map((p) => ({ title: p.title, description: p.description })),
       ),
     );
+    // Files cannot travel inside the prizes JSON, so each one rides as an
+    // indexed field the server lines up with the array by position.
+    fields.forEach((field, index) => {
+      const image = prizeImages[field.id];
+      if (image) fd.append(`prizeImage_${index}`, image.file);
+    });
 
-    const result = await CreateRaffle(
-      organisation.organisationId,
-      session?.user.accessToken ?? "",
-      fd,
-      locale,
-    );
-    if (result.status === "success") {
-      toast.success(t("success"));
-      router.push("/events");
-    } else {
-      toast.error(result.error);
+    if (formDataSize(fd) > MAX_UPLOAD_BYTES) {
+      toast.error(t("errors.too_large"));
+      setSubmitting(false);
+      return;
     }
-    setSubmitting(false);
+
+    try {
+      const result = await CreateRaffle(
+        organisation.organisationId,
+        session?.user.accessToken ?? "",
+        fd,
+        locale,
+      );
+      if (result.status === "success") {
+        toast.success(t("success"));
+        router.push("/events");
+      } else {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      // The action itself can reject rather than return — an oversized body, a
+      // gateway timeout, or a stale action id after a redeploy never reach the
+      // branch above. Without this the button spins forever with no message.
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("errors.submit_failed"),
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -318,7 +399,13 @@ export default function CreateRaffleForm() {
         {/* Details */}
         <div className={cardClass}>
           <span className={sectionTitle}>{t("details")}</span>
-          <Field label={t("name")} error={errors.name?.message}>
+          <Field
+            label={t("name")}
+            error={
+              errors.name?.message ??
+              (titleStatus === "taken" ? t("errors.name_taken") : undefined)
+            }
+          >
             <input
               {...register("name")}
               type="text"
@@ -345,17 +432,6 @@ export default function CreateRaffleForm() {
         {/* Tags */}
         <div className={cardClass}>
           <span className={sectionTitle}>{t("tags")}</span>
-          <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
-            <Warning2
-              size="24"
-              color="#737C8A"
-              variant="Bulk"
-              className="shrink-0"
-            />
-            <p className="text-[1.2rem] leading-8 text-neutral-800">
-              {t("tags_tip")}
-            </p>
-          </div>
           <div
             className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
             onClick={() => tagInputRef.current?.focus()}
@@ -378,6 +454,17 @@ export default function CreateRaffleForm() {
               placeholder={t("tags_placeholder")}
               className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
             />
+          </div>
+          <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+            <Warning2
+              size="24"
+              color="#737C8A"
+              variant="Bulk"
+              className="shrink-0"
+            />
+            <p className="text-[1.2rem] leading-8 text-neutral-800">
+              {t("tags_tip")}
+            </p>
           </div>
         </div>
 
@@ -579,10 +666,20 @@ export default function CreateRaffleForm() {
                     color="#DE0028"
                     size={20}
                     className="cursor-pointer"
-                    onClick={() => remove(index)}
+                    onClick={() => removePrize(index, field.id)}
                   />
                 )}
               </div>
+              <PrizeImagePicker
+                preview={prizeImages[field.id]?.preview ?? null}
+                onSelect={(file) => setPrizeImage(field.id, file)}
+                onClear={() => clearPrizeImage(field.id)}
+                error={
+                  missingPrizeImages[field.id]
+                    ? t("errors.prize_image")
+                    : undefined
+                }
+              />
               <Field
                 label={t("prize_title")}
                 error={errors.prizes?.[index]?.title?.message}
@@ -628,7 +725,15 @@ export default function CreateRaffleForm() {
         </div>
 
         <div className="max-w-216 w-full mx-auto">
-          <ButtonPrimary type="submit" className="w-full" disabled={submitting}>
+          <ButtonPrimary
+            type="submit"
+            className="w-full"
+            disabled={
+              submitting ||
+              titleStatus === "checking" ||
+              titleStatus === "taken"
+            }
+          >
             {submitting ? <LoadingCircleSmall /> : t("submit")}
           </ButtonPrimary>
         </div>

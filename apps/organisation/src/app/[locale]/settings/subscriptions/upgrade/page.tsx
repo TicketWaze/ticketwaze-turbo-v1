@@ -3,7 +3,10 @@ import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { auth } from "@/lib/auth";
 import { getLocale, getTranslations } from "next-intl/server";
 import SubscriptionUpgradePageContent from "./SubscriptionUpgradePageContent";
-import { MembershipTier, OrganisationSubscription } from "@ticketwaze/typescript-config";
+import {
+  MembershipTier,
+  OrganisationSubscription,
+} from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 
 export default async function SubscriptionUpgradePage() {
@@ -45,7 +48,7 @@ export default async function SubscriptionUpgradePage() {
 
   return (
     <OrganizerLayout title="" className="">
-      <BackButton text={t("back")} />
+      {/* <BackButton text={t("back")} /> */}
       {/* <TopBar title={t("upgrade")} /> */}
       <SubscriptionUpgradePageContent
         membershipTier={membershipTier}

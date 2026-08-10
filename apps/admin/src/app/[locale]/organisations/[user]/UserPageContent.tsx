@@ -16,11 +16,13 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { formatMoney } from "@ticketwaze/currency";
 import { useTranslations, useLocale } from "next-intl";
 import { Input, TextArea } from "@/components/shared/Inputs";
 import formatDate from "@/lib/FormatDate";
 import ActivitySummary from "./ActivitySummary";
 import { AdminOrganisation } from "@ticketwaze/typescript-config";
+import SuspensionNotice from "@/components/shared/SuspensionNotice";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 
 export default function UserPageContent({
@@ -35,11 +37,18 @@ export default function UserPageContent({
   const t = useTranslations("Organisations.profile");
   const locale = useLocale();
 
+  /**
+   * The API returns only the subscription that actually entitles this
+   * organisation, resolved by SubscriptionHelper — the same rule the rest of
+   * the platform uses. Its presence IS the answer.
+   *
+   * This used to re-derive it here as `status === "ACTIVE" && endsAt > now`,
+   * which reported "Free" for an organisation that had cancelled but was still
+   * paid up through the end of its period — they keep every feature until then,
+   * so every other screen correctly showed them on Pro.
+   */
   const sub = organisation?.subscription ?? null;
-  const subActive =
-    !!sub &&
-    sub.status === "ACTIVE" &&
-    new Date(sub.endsAt as unknown as string).getTime() > Date.now();
+  const subActive = !!sub;
 
   if (!organisation) {
     return (
@@ -77,6 +86,12 @@ export default function UserPageContent({
             )}
           </div>
         </div>
+
+        {/* An active suspension explains everything else on this page — the
+            missing events, the frozen balance — so it is stated up front. */}
+        {organisation.suspension && (
+          <SuspensionNotice suspension={organisation.suspension} />
+        )}
 
         <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] lg:grid-rows-1 gap-8 lg:gap-16 lg:flex-1 lg:min-h-0">
           <div className="w-full flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
@@ -265,11 +280,22 @@ export default function UserPageContent({
                 events={organisation.events ?? []}
                 createdAt={organisation.createdAt}
               />
+              {/* Balances are stored in both currencies; show the pair that
+                  matches the organisation's own, never the HTG figures under a
+                  USD label. totalRevenue already arrives in that currency. */}
               <Finance
                 totalTicketsSold={totalTicketsSold}
                 totalRevenue={totalRevenue}
-                availableBalance={organisation.availableBalance}
-                pendingBalance={organisation.pendingBalance}
+                availableBalance={
+                  organisation.currency === "USD"
+                    ? organisation.usdAvailableBalance
+                    : organisation.availableBalance
+                }
+                pendingBalance={
+                  organisation.currency === "USD"
+                    ? organisation.usdPendingBalance
+                    : organisation.pendingBalance
+                }
                 currency={organisation.currency}
               />
             </Tabs>
@@ -309,6 +335,7 @@ function Finance({
   currency: string;
 }) {
   const t = useTranslations("Organisations.profile");
+  const locale = useLocale();
   return (
     <TabsContent value="finance">
       <ul className="flex flex-col pt-4 gap-8 overflow-y-scroll">
@@ -326,7 +353,7 @@ function Finance({
             {t("finance.total_revenue")}
           </span>
           <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {totalRevenue.toLocaleString()} {currency}
+            {formatMoney(totalRevenue, currency, locale)}
           </span>
         </li>
 
@@ -337,7 +364,7 @@ function Finance({
             {t("finance.pending_balance")}
           </span>
           <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {pendingBalance.toLocaleString()} {currency}
+            {formatMoney(pendingBalance, currency, locale)}
           </span>
         </li>
 
@@ -346,7 +373,7 @@ function Finance({
             {t("finance.balance")}
           </span>
           <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {availableBalance.toLocaleString()} {currency}
+            {formatMoney(availableBalance, currency, locale)}
           </span>
         </li>
       </ul>

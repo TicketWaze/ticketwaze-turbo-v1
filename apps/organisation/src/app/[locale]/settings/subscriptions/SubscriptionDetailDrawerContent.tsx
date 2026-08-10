@@ -42,7 +42,9 @@ export default function SubscriptionDetailDrawerContent({
       ? t("drawer.stripe")
       : sub.paymentMethod === "moncash"
         ? t("drawer.moncash")
-        : sub.paymentMethod;
+        : sub.paymentMethod === "natcash"
+          ? t("drawer.natcash")
+          : sub.paymentMethod;
 
   const statusColors: Record<string, string> = {
     ACTIVE: "text-[#349C2E]",
@@ -67,19 +69,33 @@ export default function SubscriptionDetailDrawerContent({
           <div>
             {/* Plan info */}
             <div className={"w-full flex flex-col gap-8"}>
-              <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
+              <p
+                className={
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
                 {t("drawer.plan")}
-                <span className={"text-deep-100 font-medium leading-8 capitalize"}>
+                <span
+                  className={"text-deep-100 font-medium leading-8 capitalize"}
+                >
                   {sub.subscriptionName || sub.membershipTier}
                 </span>
               </p>
-              <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
+              <p
+                className={
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
                 {t("drawer.billing_cycle")}
                 <span className={"text-deep-100 font-medium leading-8"}>
                   {billingCycleLabel}
                 </span>
               </p>
-              <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
+              <p
+                className={
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
                 {t("drawer.payment_method")}
                 <span className={"text-deep-100 font-medium leading-8"}>
                   {paymentMethodLabel}
@@ -91,13 +107,21 @@ export default function SubscriptionDetailDrawerContent({
 
             {/* Financials */}
             <div className={"w-full flex flex-col gap-8"}>
-              <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
+              <p
+                className={
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
                 {t("drawer.amount_usd")}
                 <span className={"text-deep-100 font-medium leading-8"}>
                   {formatMoney(sub.usdAmountPaid, "USD")}
                 </span>
               </p>
-              <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
+              <p
+                className={
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
                 {t("table.status")}
                 <span
                   className={`py-[.3rem] text-[1.1rem] font-bold leading-6 uppercase px-2 rounded-[30px] bg-[#f5f5f5] ${statusColors[sub.status] ?? "text-neutral-500"}`}
@@ -111,23 +135,38 @@ export default function SubscriptionDetailDrawerContent({
 
             {/* Dates */}
             <div className={"w-full flex flex-col gap-8"}>
-              <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
+              <p
+                className={
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
                 {t("drawer.start_date")}
                 <span className={"text-deep-100 font-medium leading-8"}>
                   {formatDate(startDate, locale)}
                 </span>
               </p>
-              <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
+              <p
+                className={
+                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
                 {t("drawer.end_date")}
                 <span className={"text-deep-100 font-medium leading-8"}>
                   {formatDate(endDate, locale)}
                 </span>
               </p>
               {sub.isTrial && sub.trialEndsAt && (
-                <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
+                <p
+                  className={
+                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                  }
+                >
                   {t("trial_badge")}
                   <span className={"text-primary-500 font-medium leading-8"}>
-                    {formatDate(new Date(sub.trialEndsAt as unknown as string), locale)}
+                    {formatDate(
+                      new Date(sub.trialEndsAt as unknown as string),
+                      locale,
+                    )}
                   </span>
                 </p>
               )}
@@ -137,24 +176,48 @@ export default function SubscriptionDetailDrawerContent({
 
             {/* IDs */}
             <div className={"w-full flex flex-col gap-8"}>
-              <p className={"flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"}>
+              <p
+                className={
+                  "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
+                }
+              >
                 {t("drawer.subscription_id")}
-                <span className={"text-primary-500 font-bold truncate leading-8 max-w-[20rem] text-right font-mono text-[1.2rem]"}>
+                <span
+                  className={
+                    "text-primary-500 font-bold truncate leading-8 max-w-[20rem] text-right font-mono text-[1.2rem]"
+                  }
+                >
                   {sub.organisationSubscriptionId}
                 </span>
               </p>
               {sub.stripeSubscriptionId && (
-                <p className={"flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"}>
+                <p
+                  className={
+                    "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
+                  }
+                >
                   {t("drawer.stripe_id")}
-                  <span className={"text-primary-500 font-bold truncate leading-8 max-w-[20rem] text-right font-mono text-[1.2rem]"}>
+                  <span
+                    className={
+                      "text-primary-500 font-bold truncate leading-8 max-w-[20rem] text-right font-mono text-[1.2rem]"
+                    }
+                  >
                     {sub.stripeSubscriptionId}
                   </span>
                 </p>
               )}
               {sub.cancelAtPeriodEnd && (
-                <p className={"flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"}>
+                <p
+                  className={
+                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                  }
+                >
                   {t("drawer.cancel_at_end")}
-                  <span className={"py-[.3rem] text-[1.1rem] font-bold leading-6 uppercase px-2 rounded-[30px] bg-[#f5f5f5] text-failure"}>
+                  <span
+                    className={
+                      "py-[.3rem] text-[1.1rem] font-bold leading-6 uppercase px-2 rounded-[30px] bg-[#f5f5f5] text-failure"
+                    }
+                  >
                     {t("table.status")}
                   </span>
                 </p>

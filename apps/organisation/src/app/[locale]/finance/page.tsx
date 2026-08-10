@@ -54,6 +54,7 @@ export default async function FinancePage() {
           <div className="hidden lg:block">
             <InitiateWithdrawalButton
               organisation={transactions.organisation}
+              hasPendingPayout={Boolean(transactions.hasPendingPayout)}
             />
           </div>
         )}

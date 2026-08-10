@@ -72,6 +72,11 @@ export async function UpdateGoogleMeetEvent(
       return {
         status: "success",
         event: response.event,
+        // Set when the event already has sales and the edit touched something
+        // that could misrepresent it: the change is held for an admin and the
+        // live event is unchanged. Still a success — just not applied yet.
+        pendingReview: response.pendingReview === true,
+        changedFields: (response.changedFields ?? []) as string[],
       };
     } else {
       throw new Error(response.message);
@@ -212,7 +217,13 @@ export async function UpdateRaffle(
     const response = await request.json();
     if (response.status === "success") {
       revalidatePath("/events");
-      return { status: "success" };
+      return {
+        status: "success",
+        // Set when the draw already has entries and the edit touched something
+        // that could misrepresent it: the change is held for an admin and the
+        // live raffle is unchanged. Still a success — just not applied yet.
+        pendingReview: response.pendingReview === true,
+      };
     } else {
       throw new Error(response.message);
     }
@@ -293,6 +304,75 @@ export async function CancelRaffleDeletion(
   }
 }
 
+/** Manual-mode draw. The API refuses if it is too early or already drawn. */
+export async function TriggerRaffleDraw(
+  organisationId: string,
+  raffleId: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}/draw`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/events");
+      return { drawn: response.drawn as boolean, message: response.message };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+export async function UpdateRafflePrizeClaim(
+  organisationId: string,
+  raffleId: string,
+  prizeId: string,
+  claimStatus: "to_claim" | "claimed" | "unclaimed",
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}/prizes/${prizeId}/claim`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify({ claimStatus }),
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      return { status: "success" };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: any) {
+    return {
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
 export async function UpdateInPersonEvent(
   organisationId: string,
   accessToken: string,
@@ -321,6 +401,11 @@ export async function UpdateInPersonEvent(
       return {
         status: "success",
         event: response.event,
+        // Set when the event already has sales and the edit touched something
+        // that could misrepresent it: the change is held for an admin and the
+        // live event is unchanged. Still a success — just not applied yet.
+        pendingReview: response.pendingReview === true,
+        changedFields: (response.changedFields ?? []) as string[],
       };
     } else {
       throw new Error(response.message);

@@ -10,6 +10,7 @@
 export const SERVICE_FEE_RATE = 0.03; // 3% Ticketwaze service fee
 export const STRIPE_TX_FEE_RATE = 0.03; // 3% Stripe transaction fee
 export const MONCASH_TX_FEE_RATE = 0.025; // 2.5% MonCash transaction fee
+export const NATCASH_TX_FEE_RATE = 0.025; // 2.5% NatCash transaction fee
 export const PER_TICKET_FEE_USD = 1.49; // flat fee per ticket in USD
 export const PER_TICKET_FEE_HTG_LOW = 100; // flat fee for HTG tickets priced <= 500 HTG
 export const HTG_LOW_PRICE_THRESHOLD = 500;
@@ -52,6 +53,20 @@ export function calculateMoncashTotalHTG(
   const perFee = getPerTicketFee("HTG", htgPrice, htgExchangeRate);
   const subtotal = htgPrice * (1 + SERVICE_FEE_RATE) + perFee;
   return round2(subtotal * (1 + MONCASH_TX_FEE_RATE));
+}
+
+/**
+ * All-in NatCash price for one HTG ticket — the API's `calculateNatcashTotal`.
+ *
+ *   (price + 3% service + flat per-ticket fee) × 1.025
+ */
+export function calculateNatcashTotalHTG(
+  htgPrice: number,
+  htgExchangeRate: number,
+): number {
+  const perFee = getPerTicketFee("HTG", htgPrice, htgExchangeRate);
+  const subtotal = htgPrice * (1 + SERVICE_FEE_RATE) + perFee;
+  return round2(subtotal * (1 + NATCASH_TX_FEE_RATE));
 }
 
 /**

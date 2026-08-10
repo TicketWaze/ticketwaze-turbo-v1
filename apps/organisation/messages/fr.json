@@ -263,7 +263,8 @@
         "password": "Le champ mot de passe ne peut pas être vide",
         "wrong": "Adresse email ou mot de passe incorrect",
         "no_account": "Aucun compte Ticketwaze n'est associé à ce compte Google. Créez d'abord un compte, puis revenez pour accéder à votre tableau de bord.",
-        "google_failed": "La connexion avec Google a échoué. Veuillez réessayer."
+        "google_failed": "La connexion avec Google a échoué. Veuillez réessayer.",
+        "organisation_suspended": "Cette organisation est suspendue, son tableau de bord n'est donc pas accessible. Consultez l'e-mail que nous vous avons envoyé pour en connaître la raison, ou contactez le support pour faire appel."
       },
       "forgot": "Mot de passe oublié",
       "method": {
@@ -524,7 +525,17 @@
       "bank_account_number": "Le numéro de compte est requis",
       "moncash_account_name": "Le nom du titulaire du compte est requis",
       "moncash_number": "Le numéro de téléphone MonCash est requis",
-      "moncash_number_invalid": "Le numéro MonCash doit comporter exactement 8 chiffres"
+      "moncash_number_invalid": "Le numéro MonCash doit comporter exactement 8 chiffres",
+      "wise_identifier_required": "Entrez le Wisetag du bénéficiaire",
+      "wise_not_verified": "Vérifiez d'abord le Wisetag",
+      "wise_name_not_confirmed": "Confirmez que le nom affiché correspond au bon compte Wise",
+      "wise_unresolved": "Nous n'avons pas trouvé ce Wisetag. Vérifiez qu'il est correct et que le profil Wise est visible.",
+      "wise_no_name": "Wise a trouvé ce compte mais n'a pas renvoyé de nom, nous ne pouvons donc pas confirmer à qui il appartient.",
+      "wise_unavailable": "Les virements Wise ne sont pas disponibles pour le moment.",
+      "wise_error": "Nous n'avons pas pu joindre Wise. Veuillez réessayer dans un instant.",
+      "wise_self": "Il s'agit du compte Ticketwaze. Entrez le compte Wise qui doit recevoir l'argent.",
+      "wise_invalid_identifier": "Cela ne ressemble pas à un Wisetag. Un Wisetag commence par @.",
+      "pending_exists": "Vous avez déjà une demande de virement en cours d'examen. Attendez qu'elle soit finalisée ou rejetée avant d'en faire une autre."
     },
     "withdrawSuccess": "Votre demande de retrait a été soumise avec succès et est en cours de traitement.",
     "breakdown": "Répartition",
@@ -586,7 +597,8 @@
         "inside": "À l'intérieur",
         "checked_out": "Sorti",
         "close": "Fermer",
-        "resend": "Renvoyer le billet"
+        "resend": "Renvoyer le billet",
+        "draw_date": "Date du tirage"
       }
     },
     "withdrawal": {
@@ -603,7 +615,20 @@
         "date": "Date",
         "reason": "Motif du rejet"
       }
-    }
+    },
+    "wise": "Wise",
+    "wise_hint": "Virement instantané vers votre compte Wise, en USD",
+    "wise_details": "Compte Wise",
+    "wise_details_hint": "Entrez le Wisetag du compte qui doit recevoir votre virement. Les virements sont envoyés en USD.",
+    "wise_verify": "Vérifier",
+    "wise_verified": "Vérifié",
+    "wise_discoverable_hint": "Votre Wisetag doit être visible dans vos paramètres de confidentialité Wise, sinon nous ne pouvons pas le trouver.",
+    "wise_resolved_name_label": "Titulaire du compte Wise",
+    "wise_confirm_name": "C'est bien mon compte Wise",
+    "wise_confirm_name_hint": "Vérifiez le nom attentivement. Une fois envoyé, un virement Wise ne peut pas être rappelé.",
+    "wise_review_note": "Ticketwaze examine chaque demande de virement avant que le transfert ne soit envoyé.",
+    "wise_value_label": "Wisetag",
+    "pendingPayoutWarning": "Vous avez déjà une demande de virement en cours d'examen. Vous pourrez en faire une nouvelle une fois celle-ci finalisée ou rejetée."
   },
   "Events": {
     "title": "Aperçu des activités",
@@ -617,6 +642,7 @@
     "history": "Historique",
     "deleted": "Supprimées",
     "deleted_description": "Vos activités supprimées apparaîtront ici.",
+    "edit_under_review": "Modification en revue",
     "from": "À partir de",
     "free": "Gratuit",
     "single_event": {
@@ -1028,7 +1054,11 @@
           "total_tickets": "Le total de billets doit être au moins égal au nombre de prix",
           "prize_min": "Ajoutez au moins un prix",
           "prize_title": "Le titre du prix est requis",
-          "prize_description": "La description du prix est requise"
+          "prize_description": "La description du prix est requise",
+          "submit_failed": "Impossible de soumettre le tirage. Veuillez réessayer.",
+          "too_large": "Les images de ce tirage sont trop volumineuses pour être envoyées. Retirez ou remplacez les plus lourdes.",
+          "prize_image": "Une photo est requise pour ce lot",
+          "name_taken": "Un autre tirage utilise déjà ce titre. Veuillez en choisir un autre."
         },
         "tags": "Étiquettes",
         "tags_tip": "Ajoutez quelques étiquettes pour décrire votre tirage. Appuyez sur Entrée, virgule ou espace pour en ajouter une. Cliquez sur une étiquette pour la retirer.",
@@ -1088,8 +1118,9 @@
       "meet_default": "Participez à notre session Meet avec un accès complet ! Connectez-vous et profitez de partout. Réservez votre place dès aujourd’hui !",
       "draft": "Enregistrer comme brouillon",
       "no_changes": "Aucune modification n'a été effectuée.",
+      "held_for_review": "Vos modifications ont été soumises pour revue. Cette activité a déjà des ventes de billets, les informations actuelles restent donc en ligne jusqu'à l'approbation d'un administrateur.",
       "edit_warning_title": "Enregistrer les modifications ?",
-      "edit_warning_body": "En modifiant cette activité, elle sera soumise à une nouvelle révision. Elle ne sera pas visible sur l'application tant que la révision n'aura pas été approuvée.",
+      "edit_warning_body": "Vos modifications seront appliquées immédiatement à cette activité.",
       "edit_warning_confirm": "Oui, enregistrer",
       "edit_warning_cancel": "Retour",
       "optional": "optionnel",
@@ -1241,7 +1272,11 @@
         "pro_feature": "Les restaurants font partie de nos formules payantes Pro et Premium. Passez à une formule supérieure pour publier votre établissement, partager votre menu par code QR et accepter les réservations. Les périodes d'essai n'incluent pas les restaurants."
       },
       "publish_name_locked": "Vous avez annoncé cette activité sous ce nom, il reste donc inchangé. Toutes les personnes qui la suivent gardent leur place.",
-      "publish_success": "Votre événement a été envoyé pour révision."
+      "publish_success": "Votre événement a été envoyé pour révision.",
+      "prize_image": "Photo du lot",
+      "prize_image_tip": "Obligatoire. Visible par les acheteurs et pendant le tirage.",
+      "prize_image_remove": "Retirer la photo du lot",
+      "edit_warning_body_review": "Cette activité a déjà des ventes de billets, vos modifications seront donc examinées avant leur mise en ligne. Elle reste visible et en vente avec ses informations actuelles jusqu'à l'approbation d'un administrateur."
     },
     "filters": {
       "first": {
@@ -1637,7 +1672,31 @@
         "noDescription": "Aucune description",
         "winner": "Gagnant",
         "notDrawn": "Pas encore tiré"
-      }
+      },
+      "draw": {
+        "cta": "Lancer le tirage",
+        "confirm_title": "Lancer le tirage",
+        "confirm_body": "Les gagnants seront tirés au hasard parmi toutes les participations vendues, et le résultat enregistré afin de pouvoir être vérifié.",
+        "confirm_warning": "Cette action est irréversible. Chaque participant reçoit le résultat par e-mail immédiatement, et le tirage ne peut plus être modifié ni supprimé.",
+        "confirm_cta": "Tirer les gagnants",
+        "success": "Le tirage est terminé. Les participants ont été notifiés.",
+        "noEntries": "Aucune participation vendue, le tirage a été clôturé sans tirage au sort.",
+        "pending_notice": "Ce tirage a atteint sa date et attend que vous le lanciez. S'il n'est pas effectué dans les 72 heures suivant la date prévue, il est annulé automatiquement et tous les participants sont remboursés."
+      },
+      "winners": {
+        "title": "Gagnants",
+        "rank": "Rang",
+        "prize": "Lot",
+        "winner": "Gagnant",
+        "entry": "Numéro",
+        "claim": "Remise du lot",
+        "status": {
+          "to_claim": "À remettre",
+          "claimed": "Remis",
+          "unclaimed": "Jamais réclamé"
+        }
+      },
+      "heldForReview": "Vos modifications ont été soumises pour revue. Ce tirage a déjà des participations, les informations actuelles restent donc en ligne jusqu'à l'approbation d'un administrateur."
     }
   },
   "WelcomeModal": {
@@ -1922,11 +1981,11 @@
       "trial_badge": "Essai",
       "billed_via_stripe": "Facturé via Stripe",
       "billed_via_moncash": "Facturé via Mon Cash",
+      "billed_via_natcash": "Facturé via NatCash",
       "billed_trial": "Essai gratuit",
       "trial_cta": "Commencer l'essai gratuit de {days} jours",
       "trial_success": "Votre essai gratuit de {days} jours est maintenant actif !",
       "trial_error": "Échec du démarrage de l'essai. Veuillez réessayer.",
-      "manage_billing": "Gérer la facturation",
       "resubscribe": "Choisir un nouveau plan",
       "canceled_notice": "Votre abonnement est annulé. Vous gardez l'accès jusqu'au {date}.",
       "cancel_sub": "Annuler l’abonnement",
@@ -1961,6 +2020,7 @@
         "yearly": "Annuel",
         "stripe": "Carte bancaire",
         "moncash": "Mon Cash",
+        "natcash": "NatCash",
         "close": "Fermer"
       },
       "free": {
@@ -2013,6 +2073,12 @@
         "step_plan": "Choisir un plan",
         "step_payment": "Paiement",
         "step_checkout": "Paiement sécurisé",
+        "proceed": "Continuer",
+        "upgrade": "Mettre à niveau",
+        "pay_moncash": "Payer avec MonCash",
+        "pay_natcash": "Payer avec NatCash",
+        "pay_card": "Payer par carte",
+        "secured": "Votre sécurité est notre priorité. Toutes les transactions sont effectuées via des canaux cryptés et sont surveillées en temps réel afin de prévenir toute fraude et de garantir la protection de vos informations personnelles. Nos systèmes sont supervisés par des partenaires de confiance et respectent les normes les plus strictes en matière de sécurité des paiements et des données.",
         "title": "Moyen de paiement",
         "subtitle": "Choisissez comment vous souhaitez payer",
         "billed_monthly": "Mensuel",

@@ -11,6 +11,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import Separator from "@/components/shared/Separator";
+import { formatMoney } from "@ticketwaze/currency";
 import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { ResendTicketAction } from "@/actions/Activity";
@@ -174,10 +175,13 @@ export default function Informations({
               <p className="flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600">
                 {t("Ticket.details.price")}
                 <span className="text-deep-100 font-medium leading-8">
-                  {event.currency === "HTG"
-                    ? ticket.ticketPrice.toLocaleString()
-                    : ticket.ticketUsdPrice.toLocaleString()}{" "}
-                  {event.currency}
+                  {formatMoney(
+                    event.currency === "USD"
+                      ? ticket.ticketUsdPrice
+                      : ticket.ticketPrice,
+                    event.currency,
+                    locale,
+                  )}
                 </span>
               </p>
               <p className="flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600">

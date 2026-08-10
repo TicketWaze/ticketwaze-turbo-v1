@@ -396,7 +396,7 @@ export default function EventPageDetails({
                               "hidden lg:table-cell text-[1.5rem] font-medium leading-8 text-neutral-900"
                             }
                           >
-                            {ticket.event.currency === "USD"
+                            {event.currency === "USD"
                               ? ticket.ticketUsdPrice
                               : ticket.ticketPrice}{" "}
                             {event.currency}
@@ -671,7 +671,7 @@ export default function EventPageDetails({
                                   "hidden lg:table-cell text-[1.5rem] font-medium leading-8 text-neutral-900"
                                 }
                               >
-                                {ticket.event.currency === "USD"
+                                {event.currency === "USD"
                                   ? ticket.ticketUsdPrice
                                   : ticket.ticketPrice}{" "}
                                 {event.currency}

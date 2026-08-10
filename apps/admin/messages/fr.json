@@ -230,7 +230,8 @@
         "payouts": "Versements",
         "user_withdrawals": "Retraits utilisateurs",
         "support": "Chat en direct",
-        "contact": "Messages de contact"
+        "contact": "Messages de contact",
+        "pending_edits": "Modifications en attente"
       }
     },
     "topbar": {
@@ -245,6 +246,7 @@
     "total": "Total des activités",
     "active": "Activités actives",
     "suspended": "Activités suspendues",
+    "pending_edits": "Modifications en attente",
     "filters": {
       "period": {
         "actual": "Ce mois-ci"
@@ -351,6 +353,38 @@
         "success": "Billet envoyé à {email}",
         "error": "Échec du renvoi du billet"
       }
+    },
+    "revisions": {
+      "title": "Modifications en attente",
+      "subtitle": "Modifications d'activités qui ont déjà des ventes de billets. L'activité continue de vendre les informations de gauche jusqu'à l'approbation.",
+      "empty": "Aucune modification à examiner.",
+      "submitted": "Soumise le",
+      "currently_live": "Actuellement en ligne",
+      "proposed": "Proposé",
+      "approve": "Approuver et appliquer",
+      "reject": "Refuser",
+      "reject_title": "Refuser cette modification",
+      "reject_description": "L'activité reste exactement telle que les acheteurs l'ont vue. L'organisateur voit votre motif.",
+      "reason_placeholder": "Pourquoi cette modification est-elle refusée ?",
+      "confirm_rejection": "Confirmer le refus",
+      "cancel": "Annuler",
+      "approved_toast": "Modification appliquée à l'activité en ligne.",
+      "rejected_toast": "Modification refusée. L'activité est inchangée.",
+      "calendar_warning": "L'activité a été mise à jour, mais son entrée Google Agenda n'a pas pu être actualisée. Les invités ont encore les anciennes informations.",
+      "fields": {
+        "name": "Nom",
+        "description": "Description",
+        "venue": "Lieu",
+        "date": "Premier jour",
+        "image": "Affiche",
+        "prizes": "Lots",
+        "sales_window": "Période de vente",
+        "draw_date": "Date du tirage",
+        "sales_close": "Fin des ventes"
+      },
+      "events_heading": "Événements",
+      "raffles_heading": "Tirages",
+      "reason_label": "Motif"
     }
   },
   "Admins": {
@@ -475,7 +509,6 @@
       "organisation": "Organisations",
       "user": "Utilisateurs"
     },
-
     "filters": {
       "period": {
         "actual": "Ce mois-ci"
@@ -531,6 +564,39 @@
         "reason_placeholder": "Décrivez pourquoi ce virement a échoué...",
         "irreversible": "Cette action est irréversible. Une fois marquée comme échouée, elle ne peut pas être annulée.",
         "confirm": "Oui, marquer comme échoué"
+      },
+      "approve_wise": {
+        "title_send": "Approuver et envoyer",
+        "title_prepare": "Approuver et préparer le virement",
+        "description_send": "Vous êtes sur le point d'envoyer ce virement vers le compte Wise de l'organisateur. Vérifiez le nom du bénéficiaire ci-dessous avant de continuer.",
+        "description_prepare": "Vous êtes sur le point de créer ce virement chez Wise. Vérifiez le nom du bénéficiaire ci-dessous avant de continuer.",
+        "recipient_label": "Nom du bénéficiaire chez Wise",
+        "identifier_label": "Wisetag",
+        "amount_label": "Montant",
+        "irreversible": "Ce virement est immédiat et ne peut pas être rappelé. Assurez-vous que le nom du bénéficiaire correspond bien à l'organisateur attendu.",
+        "needs_funding": "Ceci crée uniquement le virement. Vous devez encore vous connecter à Wise et l'approvisionner pour que l'organisateur soit payé.",
+        "confirm_send": "Oui, envoyer le virement",
+        "confirm_prepare": "Oui, préparer le virement",
+        "queued_sending": "Approuvé. Le virement est en cours d'envoi.",
+        "queued_needs_funding": "Virement en cours de création chez Wise. Connectez-vous à Wise pour l'approvisionner."
+      },
+      "settle": {
+        "title": "Traiter ce virement",
+        "description": "Choisissez le résultat. C'est le seul endroit où un virement est finalisé ou rejeté.",
+        "paid_title": "Réussi",
+        "paid_hint": "Vous avez déjà envoyé cet argent. Enregistre l'opération et débite le solde.",
+        "wise_send_title": "Réussi — approuver et envoyer",
+        "wise_send_hint": "Crée le virement Wise et l'envoie. Finalisé lorsque Wise confirme.",
+        "wise_prepare_title": "Réussi — approuver et préparer",
+        "wise_prepare_hint": "Crée le virement chez Wise. Vous devez ensuite l'approvisionner.",
+        "failed_title": "Échoué",
+        "failed_hint": "Rejette la demande. Aucun montant n'est prélevé ni remboursé.",
+        "note_label": "Note interne (facultative)",
+        "note_placeholder": "Référence bancaire, qui a autorisé, tout élément utile…",
+        "no_send_permission": "Vous n'avez pas la permission d'envoyer des virements. Vous pouvez tout de même marquer cette demande comme échouée, ou demander à un propriétaire de vous accorder la permission payouts.send.",
+        "confirm": "Confirmer",
+        "paid_done": "Virement marqué comme payé.",
+        "failed_done": "Virement marqué comme échoué."
       }
     },
     "request_details": {
@@ -547,7 +613,12 @@
       "account": "Numéro de compte",
       "processed_date": "Date de traitement",
       "close": "Fermer",
-      "approve": "Approuver le virement"
+      "approve": "Approuver le virement",
+      "wise_resolved_name": "Nom du bénéficiaire Wise",
+      "wise_identifier": "Wisetag",
+      "wise_transfer_id": "ID du virement Wise",
+      "wise_status": "Statut Wise",
+      "wise_failure_reason": "Raison de l'échec Wise"
     },
     "withdrawal_details": {
       "title": "Détails du retrait",
@@ -559,15 +630,14 @@
       "account": "Numéro de compte",
       "processed_date": "Date de traitement",
       "close": "Fermer"
-    }
+    },
+    "settle": "Traiter le virement"
   },
-
   "Payments": {
     "title": "Paiements",
     "total_revenue": "Revenu total",
     "total_transactions": "Total des transactions",
     "fees": "Frais de plateforme gagnés",
-
     "filters": {
       "period": {
         "actual": "Ce mois-ci"
@@ -576,7 +646,6 @@
       "time": "Toute la période",
       "search": "Rechercher un nom ou un ID"
     },
-
     "transactions": {
       "title": "Transactions",
       "table": {
@@ -610,10 +679,13 @@
       "transaction_status": "Statut de la transaction",
       "check_status": "Statut d'enregistrement",
       "check_time": "Heure d'enregistrement",
-      "close": "Fermer"
+      "close": "Fermer",
+      "draw_date": "Date du tirage",
+      "activity_type": "Type d’activité",
+      "type_event": "Événement",
+      "type_raffle": "Tirage"
     }
   },
-
   "Tickets": {
     "title": "Tickets",
     "total_sold": "Total  vendus",
@@ -626,7 +698,10 @@
       "status": "Tous les statuts",
       "time": "Toute la période",
       "ticket_class": "Tous les classes",
-      "search": "Rechercher un nom ou un ID"
+      "search": "Rechercher un nom ou un ID",
+      "activity_type": "Toutes les activités",
+      "activity_event": "Événements",
+      "activity_raffle": "Tirages"
     },
     "tickets_list": {
       "title": "Liste des billets",
@@ -639,7 +714,8 @@
         "purchase": "Date d'achat"
       },
       "no_history": "Vous verrez ici tous les billets des participants une fois que les événements commenceront à être vendus.",
-      "no_results": "Aucun billet ne correspond à « {term} »."
+      "no_results": "Aucun billet ne correspond à « {term} » avec les filtres actuels.",
+      "no_filtered": "Aucun billet ne correspond aux filtres sélectionnés."
     },
     "ticket_details": {
       "title": "Détails du billet",
@@ -660,7 +736,11 @@
       "check_status": "Statut d'enregistrement",
       "check_time": "Heure d'enregistrement",
       "close": "Fermer",
-      "resend": "Renvoyer le billet"
+      "resend": "Renvoyer le billet",
+      "draw_date": "Date du tirage",
+      "activity_type": "Type d’activité",
+      "type_event": "Événement",
+      "type_raffle": "Tirage"
     }
   },
   "Organisations": {
@@ -777,7 +857,6 @@
       }
     }
   },
-
   "Attendees": {
     "title": "Aperçu des participants",
     "total": "Total des participants",
@@ -886,16 +965,28 @@
           "payment_date": "Date de paiement",
           "transaction_status": "Statut de la transaction",
           "check_status": "Statut d'enregistrement",
-          "check_time": "Heure d'enregistrement"
+          "check_time": "Heure d'enregistrement",
+          "draw_date": "Date du tirage",
+          "activity_type": "Type d’activité",
+          "type_event": "Événement",
+          "type_raffle": "Tirage"
         },
         "cta": {
           "close": "Fermer",
           "resend": "Renvoyer le billet"
         }
+      },
+      "deletion": {
+        "title": "Suppression de compte demandée",
+        "body": "Ce compte sera définitivement anonymisé le {date}.",
+        "countdown": "{days, plural, =0 {Aujourd’hui} one {Demain} other {Dans # jours}}",
+        "requested_on": "Suppression demandée",
+        "scheduled_for": "Anonymisation le",
+        "reason": "Motif indiqué",
+        "no_reason": "Aucun motif indiqué"
       }
     }
   },
-
   "Waitlist": {
     "title": "Liste d'attente",
     "tabs": {
@@ -953,7 +1044,6 @@
       "close": "Fermer"
     }
   },
-
   "Analytics": {
     "title": "Vue d'ensemble de la plateforme",
     "description": "Suivez les métriques de la plateforme en temps réel et comprenez les tendances clés.",
@@ -1015,12 +1105,10 @@
       "rejected": "Rejetées"
     }
   },
-
   "Event": {
     "from": "À partir de",
     "free": "Gratuit"
   },
-
   "Contact": {
     "title": "Messages de contact",
     "back": "Retour",
@@ -1050,7 +1138,6 @@
     },
     "empty": "Aucun message de contact pour l'instant. Les messages des clients apparaîtront ici."
   },
-
   "Support": {
     "title": "Chat en direct",
     "back": "Retour",
@@ -1162,6 +1249,14 @@
         "accepted": "Demande acceptée et utilisateur notifié.",
         "rejected": "Demande refusée et utilisateur notifié."
       }
+    }
+  },
+  "Suspension": {
+    "notice": {
+      "title": "Compte suspendu",
+      "since": "Suspendu le",
+      "by": "Suspendu par",
+      "reason": "Motif"
     }
   }
 }

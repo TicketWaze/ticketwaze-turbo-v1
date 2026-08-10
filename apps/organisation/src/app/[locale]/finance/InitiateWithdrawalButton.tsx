@@ -19,12 +19,65 @@ import { Organisation } from "@ticketwaze/typescript-config";
 
 export default function InitiateWithdrawalButton({
   organisation,
+  /**
+   * One payout may be open at a time. Blocking here rather than at submission
+   * means the organiser is not walked through five steps and a PIN before being
+   * told no.
+   */
+  hasPendingPayout = false,
 }: {
   organisation: Organisation;
+  hasPendingPayout?: boolean;
 }) {
   const t = useTranslations("Finance");
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+
+  if (hasPendingPayout) {
+    return (
+      <Dialog>
+        <DialogTrigger asChild>
+          <ButtonPrimary className="w-full">{t("withdraw_btn")}</ButtonPrimary>
+        </DialogTrigger>
+        <DialogContent className={"w-[360px] lg:w-[520px]"}>
+          <DialogHeader>
+            <DialogTitle
+              className={
+                "font-medium border-b border-neutral-100 pb-[2rem] text-[2.6rem] leading-[30px] text-black font-primary"
+              }
+            >
+              {t("withdraw_btn")}
+            </DialogTitle>
+            <DialogDescription className={"sr-only"}>
+              <span>A payout request is already pending</span>
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-8 flex flex-col gap-8 items-center">
+            <div
+              className={
+                "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+              }
+            >
+              <div
+                className={
+                  "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+                }
+              >
+                <InfoCircle size="30" color="#0d0d0d" variant="Bulk" />
+              </div>
+            </div>
+            <p
+              className={
+                "font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full"
+              }
+            >
+              {t("pendingPayoutWarning")}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   if (!organisation.withdrawalPin) {
     return (

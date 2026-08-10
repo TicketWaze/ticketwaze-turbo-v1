@@ -1,3 +1,4 @@
+import ClientErrorReporter from "@/components/ClientErrorReporter";
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -51,6 +52,7 @@ export default async function RootLayout({
       <body
         className={`${bricolageGrotesque.variable} ${dmMono.variable} ${dmSans.className} antialiased`}
       >
+        <ClientErrorReporter />
         <NextIntlClientProvider>
           {children}
           <Toaster richColors position="top-right" />

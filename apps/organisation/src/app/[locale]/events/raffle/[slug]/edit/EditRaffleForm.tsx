@@ -26,8 +26,11 @@ import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
 import { compressImage } from "@/lib/compressImage";
+import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
+import PrizeImagePicker from "@/components/shared/PrizeImagePicker";
 import { Raffle } from "@ticketwaze/typescript-config";
 import { slugify } from "@/lib/Slugify";
+import useRaffleTitleAvailability from "@/hooks/useRaffleTitleAvailability";
 
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
@@ -62,6 +65,10 @@ function makeRaffleSchema(t: TranslateFn) {
           z.object({
             title: z.string().min(1, t("errors.prize_title")),
             description: z.string().min(1, t("errors.prize_description")),
+            // Carried through the form so an edit that does not touch a prize
+            // keeps its existing picture. Cleared when the organiser removes it.
+            imageKey: z.string().nullable().optional(),
+            imageUrl: z.string().nullable().optional(),
           }),
         )
         .min(1, t("errors.prize_min")),
@@ -160,13 +167,22 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
         raffle.prizes.length > 0
           ? [...raffle.prizes]
               .sort((a, b) => a.rank - b.rank)
-              .map((p) => ({ title: p.title, description: p.description ?? "" }))
-          : [{ title: "", description: "" }],
+              .map((p) => ({
+                title: p.title,
+                description: p.description ?? "",
+                imageKey: p.imageKey ?? null,
+                imageUrl: p.imageUrl ?? null,
+              }))
+          : [{ title: "", description: "", imageKey: null, imageUrl: null }],
     },
   });
 
   const { fields, append, remove } = useFieldArray({ control, name: "prizes" });
   const unlimited = watch("unlimited");
+
+  // Checked live per keystroke. The API re-checks on submit, so this only
+  // decides whether the button is usable, never whether the title is valid.
+  const titleStatus = useRaffleTitleAvailability(watch("name"), raffle.raffleId);
 
   const [tags, setTags] = useState<string[]>(raffle.activityTags ?? []);
   const [tagInput, setTagInput] = useState("");
@@ -220,7 +236,86 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
     setCoverPreview(URL.createObjectURL(compressed));
   }
 
+  // Prize images are tracked here rather than in form state: an existing image
+  // is not something the user types, and reading it back with `watch()` would
+  // drag the whole form through React Compiler's incompatible-library path.
+  // Both maps are keyed by the field-array id, so removing a prize cannot shift
+  // someone else's picture onto the wrong row.
+  const [prizeFiles, setPrizeFiles] = useState<
+    Record<string, { file: File; preview: string }>
+  >({});
+  // Prizes whose stored image the organiser explicitly removed.
+  const [clearedPrizeImages, setClearedPrizeImages] = useState<
+    Record<string, true>
+  >({});
+
+  // A prize picture is required. Validated on submit rather than in the zod
+  // schema, since a File cannot travel inside the prizes JSON.
+  const [missingPrizeImages, setMissingPrizeImages] = useState<
+    Record<string, true>
+  >({});
+
+  function setPrizeImage(fieldId: string, file: File) {
+    setPrizeFiles((current) => ({
+      ...current,
+      [fieldId]: { file, preview: URL.createObjectURL(file) },
+    }));
+    setClearedPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+    setMissingPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+  }
+
+  function clearPrizeImage(fieldId: string) {
+    setPrizeFiles((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+    setClearedPrizeImages((current) => ({ ...current, [fieldId]: true }));
+  }
+
+  function removePrize(index: number, fieldId: string) {
+    setPrizeFiles((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+    setMissingPrizeImages((current) => {
+      const next = { ...current };
+      delete next[fieldId];
+      return next;
+    });
+    remove(index);
+  }
+
+  /** A prize satisfies the picture requirement with a new upload or a kept one. */
+  function hasPrizeImage(field: { id: string; imageUrl?: string | null }) {
+    if (prizeFiles[field.id]) return true;
+    if (clearedPrizeImages[field.id]) return false;
+    return Boolean(field.imageUrl);
+  }
+
+  /** The image a prize should keep, if any: a new upload wins, a clear removes. */
+  function keptImageKey(field: { id: string; imageKey?: string | null }) {
+    if (prizeFiles[field.id] || clearedPrizeImages[field.id]) return null;
+    return field.imageKey ?? null;
+  }
+
   const onSubmit: SubmitHandler<TFormOut> = async (data) => {
+    const missing = fields.filter((field) => !hasPrizeImage(field));
+    if (missing.length > 0) {
+      setMissingPrizeImages(
+        Object.fromEntries(missing.map((field) => [field.id, true as const])),
+      );
+      return;
+    }
     if (!organisation?.organisationId) {
       toast.error(t("no_org"));
       return;
@@ -254,24 +349,61 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
     fd.append(
       "prizes",
       JSON.stringify(
-        data.prizes.map((p) => ({ title: p.title, description: p.description })),
+        data.prizes.map((p, index) => {
+          // Present only when this prize keeps the image it already had; the
+          // server ignores any key that is not already one of its own.
+          const keep = fields[index] ? keptImageKey(fields[index]) : null;
+          return {
+            title: p.title,
+            description: p.description,
+            ...(keep ? { imageKey: keep } : {}),
+          };
+        }),
       ),
     );
+    // Files cannot travel inside the prizes JSON, so each new one rides as an
+    // indexed field the server lines up with the array by position.
+    fields.forEach((field, index) => {
+      const image = prizeFiles[field.id];
+      if (image) fd.append(`prizeImage_${index}`, image.file);
+    });
 
-    const result = await UpdateRaffle(
-      organisation.organisationId,
-      raffle.raffleId,
-      session?.user.accessToken ?? "",
-      fd,
-      locale,
-    );
-    if (result.status === "success") {
-      toast.success(tr("updateSuccess"));
-      router.push(`/events/raffle/${slugify(data.name, raffle.raffleId)}`);
-    } else {
-      toast.error(result.error);
+    if (formDataSize(fd) > MAX_UPLOAD_BYTES) {
+      toast.error(t("errors.too_large"));
+      setSubmitting(false);
+      return;
     }
-    setSubmitting(false);
+
+    try {
+      const result = await UpdateRaffle(
+        organisation.organisationId,
+        raffle.raffleId,
+        session?.user.accessToken ?? "",
+        fd,
+        locale,
+      );
+      if (result.status === "success") {
+        // The draw has entries and this edit could change what those entrants
+        // think they paid for, so it is waiting on an admin rather than already
+        // live. Saying so is the difference between "nothing happened" and
+        // "your change is queued" — the raffle page still shows the old details.
+        if (result.pendingReview) toast.info(tr("heldForReview"));
+        else toast.success(tr("updateSuccess"));
+        router.push(`/events/raffle/${slugify(data.name, raffle.raffleId)}`);
+      } else {
+        toast.error(result.error);
+      }
+    } catch (error) {
+      // See CreateRaffleForm: a rejected server action would otherwise leave the
+      // button spinning with nothing to show for it.
+      toast.error(
+        error instanceof Error && error.message
+          ? error.message
+          : t("errors.submit_failed"),
+      );
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -328,7 +460,13 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
         {/* Details */}
         <div className={cardClass}>
           <span className={sectionTitle}>{t("details")}</span>
-          <Field label={t("name")} error={errors.name?.message}>
+          <Field
+            label={t("name")}
+            error={
+              errors.name?.message ??
+              (titleStatus === "taken" ? t("errors.name_taken") : undefined)
+            }
+          >
             <input
               {...register("name")}
               type="text"
@@ -355,17 +493,6 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
         {/* Tags */}
         <div className={cardClass}>
           <span className={sectionTitle}>{t("tags")}</span>
-          <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
-            <Warning2
-              size="24"
-              color="#737C8A"
-              variant="Bulk"
-              className="shrink-0"
-            />
-            <p className="text-[1.2rem] leading-8 text-neutral-800">
-              {t("tags_tip")}
-            </p>
-          </div>
           <div
             className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
             onClick={() => tagInputRef.current?.focus()}
@@ -389,6 +516,17 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
               placeholder={t("tags_placeholder")}
               className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
             />
+          </div>
+          <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+            <Warning2
+              size="24"
+              color="#737C8A"
+              variant="Bulk"
+              className="shrink-0"
+            />
+            <p className="text-[1.2rem] leading-8 text-neutral-800">
+              {t("tags_tip")}
+            </p>
           </div>
         </div>
 
@@ -590,10 +728,23 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
                     color="#DE0028"
                     size={20}
                     className="cursor-pointer"
-                    onClick={() => remove(index)}
+                    onClick={() => removePrize(index, field.id)}
                   />
                 )}
               </div>
+              <PrizeImagePicker
+                preview={
+                  prizeFiles[field.id]?.preview ??
+                  (clearedPrizeImages[field.id] ? null : (field.imageUrl ?? null))
+                }
+                onSelect={(file) => setPrizeImage(field.id, file)}
+                onClear={() => clearPrizeImage(field.id)}
+                error={
+                  missingPrizeImages[field.id]
+                    ? t("errors.prize_image")
+                    : undefined
+                }
+              />
               <Field
                 label={t("prize_title")}
                 error={errors.prizes?.[index]?.title?.message}
@@ -621,7 +772,14 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
 
           <button
             type="button"
-            onClick={() => append({ title: "", description: "" })}
+            onClick={() =>
+              append({
+                title: "",
+                description: "",
+                imageKey: null,
+                imageUrl: null,
+              })
+            }
             className="flex items-center gap-3 self-start cursor-pointer"
           >
             <AddCircle color="#E45B00" variant="Bulk" size={20} />
@@ -639,7 +797,15 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
         </div>
 
         <div className="max-w-216 w-full mx-auto">
-          <ButtonPrimary type="submit" className="w-full" disabled={submitting}>
+          <ButtonPrimary
+            type="submit"
+            className="w-full"
+            disabled={
+              submitting ||
+              titleStatus === "checking" ||
+              titleStatus === "taken"
+            }
+          >
             {submitting ? <LoadingCircleSmall /> : tr("save")}
           </ButtonPrimary>
         </div>

@@ -506,7 +506,47 @@
         "email": "Email",
         "required": "Please enter your name and email."
       }
-    }
+    },
+    "myEntries": {
+      "title": "Your entries",
+      "count": "{count, plural, one {# entry number} other {# entry numbers}} in this draw",
+      "awaitingDraw": "Winners are announced after the draw. If one of your numbers is drawn, we will contact you by email.",
+      "organiser": "Organised by"
+    },
+    "drawComplete": "Draw complete",
+    "cancelled": "Cancelled",
+    "results": {
+      "title": "Results",
+      "anonymous": "Winner",
+      "fairness": "Winners were picked with a secure random generator and the draw was recorded, so its result can be verified independently.",
+      "watch": "Watch the draw"
+    },
+    "myEntriesDrawn": {
+      "won": "You won! The organiser will contact you to arrange handover of your prize.",
+      "lost": "The draw has taken place and your numbers were not drawn this time.",
+      "cancelled": "This raffle was cancelled and your entries were refunded to your wallet."
+    },
+    "draw": {
+      "eyebrow": "The draw",
+      "notYet": "This draw has not taken place yet",
+      "entriesSoFar": "{count, plural, one {# entry so far} other {# entries so far}}",
+      "cancelled": "This raffle was cancelled and no draw took place. Any entries that were sold have been refunded.",
+      "entriesInDraw": "{count, plural, one {# entry in this draw} other {# entries in this draw}}",
+      "drawingRank": "Drawing prize #{rank}",
+      "anonymous": "Winner",
+      "replay": "Watch again",
+      "skip": "Skip to results",
+      "noWinners": "No entries were sold, so no prize was awarded.",
+      "verify": {
+        "title": "Verify this draw",
+        "explainer": "Winners were picked with a secure random generator. The seed below, combined with the ordered list of entries, reproduces exactly this result: for each prize rank, HMAC-SHA256 of the seed with the message \"rank:N\", read as a 64-bit big-endian integer modulo the pool size, gives the winning position.",
+        "algorithm": "Algorithm",
+        "seed": "Draw seed",
+        "entriesHash": "Entry list hash (SHA-256)"
+      }
+    },
+    "salesEnd": "Entries close",
+    "salesClosed": "Entries closed"
   },
   "Explore": {
     "title": "Explore Activities",
@@ -670,8 +710,11 @@
       "days": "{count, plural, one {# day} other {# days}} <muted>to go</muted>",
       "hours": "{count, plural, one {# hour} other {# hours}} <muted>to go</muted>",
       "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>to go</muted>",
-      "soon": "<muted>Starting soon</muted>"
-    }
+      "soon": "<muted>Starting soon</muted>",
+      "awaitingDraw": "Awaiting draw",
+      "drawn": "Draw complete"
+    },
+    "entries": "entries"
   },
   "History": {
     "title": "Activities history",
@@ -907,7 +950,8 @@
       "max_party": "{count, plural, one {This restaurant seats one guest per time slot} other {This restaurant seats up to # guests per time slot}}.",
       "all_slots_full": "{count, plural, one {No table for one is free on this day} other {No table for # is free on this day}}. Try another date or a smaller party.",
       "download_ticket": "Download my reservation"
-    }
+    },
+    "changeRefundWindowNotice": "The organiser changed this activity after you bought. You can return your tickets for a full refund for a short time, even if they are normally non-refundable."
   },
   "Checkout": {
     "back": "Back",
@@ -952,6 +996,7 @@
       "card": "Pay with card",
       "paypal": "Pay with PayPal",
       "moncash": "Pay with MonCash",
+      "natcash": "Pay with NatCash",
       "nopayment": "This activity is completely free of charge. No payment is required to complete your registration. Just continue to confirm your ticket and you’re all set.",
       "secured": "Your security matters to us. Every transaction is processed through encrypted channels and monitored in real time to prevent fraud and ensure your personal information remains protected. Our systems are supervised by trusted partners and comply with the highest industry standards for data and payment security.",
       "paymentType": "Select a payment provider",
@@ -1237,5 +1282,13 @@
         "description": "Share your referral link with friends. When they sign up and buy their first ticket, you both earn rewards. Check your Wallet to see your balance."
       }
     }
+  },
+  "Suspension": {
+    "title": "Your account is suspended",
+    "description": "You can still sign in and use the tickets you already bought, but purchases, refunds and reviews are turned off while the suspension is in force.",
+    "reason_label": "Reason given",
+    "cta": "Contact support",
+    "blocked_action": "Your account is suspended, so this action is unavailable. Check the email we sent for the reason, or contact support to appeal.",
+    "generic_error": "Something went wrong"
   }
 }

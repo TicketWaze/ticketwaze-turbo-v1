@@ -288,7 +288,13 @@ export async function CreateUserWithdrawalRequestAction(
       revalidatePath("/wallet");
       return { status: "success" as const };
     }
-    return { status: "failed" as const, message: data.message as string };
+    // `code` rides along so the dialog can translate an account-suspension
+    // refusal instead of printing the API's English developer message.
+    return {
+      status: "failed" as const,
+      message: data.message as string,
+      code: data.code as string | undefined,
+    };
   } catch (err: unknown) {
     return { error: err instanceof Error ? err.message : "An unknown error occurred" };
   }

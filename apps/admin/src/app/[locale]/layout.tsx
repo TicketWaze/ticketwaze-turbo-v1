@@ -1,3 +1,4 @@
+import ClientErrorReporter from "@/components/ClientErrorReporter";
 import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
 import type { Metadata, Viewport } from "next";
 import "@ticketwaze/ui/styles/globals.css";
@@ -53,6 +54,7 @@ export default async function RootLayout({
       <body
         className={`${bricolageGrotesque.variable} ${dmMono.variable} ${dmSans.className} `}
       >
+        <ClientErrorReporter />
         <NextIntlClientProvider>
           <AuthProvider>
             {/* <OrganisationProvider/> */}

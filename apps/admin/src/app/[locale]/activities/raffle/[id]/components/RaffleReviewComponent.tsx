@@ -7,6 +7,21 @@ import formatRaffleDate from "@/lib/formatRaffleDate";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Award } from "iconsax-reactjs";
 import { RaffleStatusDialog, StatusBadge } from "./RaffleStatusDialog";
+import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
+
+/**
+ * Why the refund action is unavailable, or null when it is offered. Mirrors the
+ * API's guards in services/activity_refund.ts — the API decides, this only
+ * explains the answer without a round trip.
+ */
+function raffleRefundBlockedReason(raffle: Raffle): string | null {
+  if (raffle.drawnAt)
+    return "This raffle has already been drawn and cannot be refunded.";
+  if (raffle.status === "cancelled")
+    return "This raffle has already been cancelled.";
+  if (raffle.deletionStatus) return "This raffle is being deleted.";
+  return null;
+}
 
 export default function RaffleReviewComponent({
   raffle,
@@ -45,7 +60,16 @@ export default function RaffleReviewComponent({
           </h3>
           <StatusBadge status={raffle.adminStatus} />
         </div>
-        <RaffleStatusDialog raffle={raffle} />
+        <div className="flex flex-wrap items-center gap-4">
+          <RaffleStatusDialog raffle={raffle} />
+          <RefundActivityDialog
+            activityKind="raffle"
+            activityId={raffle.raffleId}
+            activityName={raffle.title}
+            ticketsSold={entriesSold}
+            disabledReason={raffleRefundBlockedReason(raffle)}
+          />
+        </div>
       </div>
 
       {raffle.adminStatus === "rejected" && raffle.rejectionReason && (
@@ -156,11 +180,24 @@ export default function RaffleReviewComponent({
                 key={prize.rafflePrizeId}
                 className="flex items-start gap-4 rounded-[15px] border border-neutral-100 p-6"
               >
-                <span className="shrink-0 w-12 h-12 rounded-full bg-primary-50 text-primary-500 font-bold flex items-center justify-center text-[1.4rem]">
-                  {prize.rank}
-                </span>
-                <div className="flex flex-col gap-1">
+                {/* The picture is part of what is being reviewed, so it has to
+                    be visible here and not just to buyers. */}
+                {prize.imageUrl ? (
+                  <Image
+                    src={prize.imageUrl}
+                    alt={prize.title}
+                    width={48}
+                    height={48}
+                    className="shrink-0 w-12 h-12 rounded-[0.8rem] object-cover"
+                  />
+                ) : (
+                  <span className="shrink-0 w-12 h-12 rounded-full bg-primary-50 text-primary-500 font-bold flex items-center justify-center text-[1.4rem]">
+                    {prize.rank}
+                  </span>
+                )}
+                <div className="flex flex-col gap-1 min-w-0">
                   <p className="text-[1.6rem] font-medium leading-8 text-deep-100">
+                    {prize.imageUrl ? `${prize.rank}. ` : ""}
                     {prize.title}
                   </p>
                   <p className="text-[1.3rem] leading-6 text-neutral-600">

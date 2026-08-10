@@ -11,17 +11,28 @@ import Separator from "@/components/shared/Separator";
 import { ButtonAccent } from "@/components/shared/buttons";
 import { Order } from "@ticketwaze/typescript-config";
 
-function formatDate(d: unknown) {
+/**
+ * An event date is a naive calendar day stored as midnight UTC, so it is read
+ * back in UTC — formatting it in the viewer's zone slides it a day earlier
+ * anywhere west of Greenwich.
+ */
+function formatDate(d: unknown, timeZone = "UTC") {
   return new Date(d as string).toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone,
   });
 }
 
-function formatDateTime(d: unknown) {
+/**
+ * For real instants (payment date, check-in time) the viewer's own zone is the
+ * right frame, so `timeZone` is left off. A raffle draw passes its own zone.
+ */
+function formatDateTime(d: unknown, timeZone?: string) {
   const date = new Date(d as string);
-  return `${date.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })}, ${date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+  const zone = timeZone ? { timeZone } : {};
+  return `${date.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric", ...zone })}, ${date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", ...zone })}`;
 }
 
 function getTicketTypeColor(ticketType: string) {
@@ -48,24 +59,40 @@ export default function TransactionDetails({ order }: { order: Order }) {
   const t = useTranslations("Payments.transaction_details");
 
   const firstTicket = order.tickets?.[0];
-  const event = firstTicket?.event;
-  const firstDay = event?.eventDays?.[0];
+  const activity = order.activity;
+  const isRaffle = activity?.activityType === "raffle";
 
   const attendeeName = firstTicket?.fullName ?? "—";
   const attendeeEmail = firstTicket?.email ?? "—";
 
-  const eventDate = firstDay ? formatDate(firstDay.eventDate) : "—";
-  const eventTime = firstDay
-    ? `${firstDay.startTime} - ${firstDay.endTime}`
-    : "—";
+  /**
+   * Read off the order's normalized activity. Every field here used to come
+   * from `order.tickets[0].event`, which is null for a raffle order — that null
+   * is what rendered this whole drawer as dashes.
+   */
+  const activityDate = isRaffle
+    ? // A draw is a correct UTC instant, so it is CONVERTED into the raffle's
+      // zone rather than re-labelled the way a naive event date is.
+      activity?.drawAt
+      ? formatDateTime(activity.drawAt, activity.timezone ?? "UTC")
+      : "—"
+    : activity?.eventDate
+      ? formatDate(activity.eventDate)
+      : "—";
+
+  const eventTime =
+    activity?.startTime && activity?.endTime
+      ? `${activity.startTime} - ${activity.endTime}`
+      : "—";
+
   const address =
-    event?.eventCategory === "meet"
+    activity?.eventCategory === "meet"
       ? "Google Meet"
-      : [event?.address, event?.city, event?.state, event?.country]
+      : [activity?.address, activity?.city, activity?.state, activity?.country]
           .filter(Boolean)
           .join(", ") || "—";
 
-  const currency = event?.currency ?? "HTG";
+  const currency = activity?.currency ?? "HTG";
   const orderTotal =
     currency === "HTG"
       ? order.amount.toLocaleString()
@@ -133,9 +160,21 @@ export default function TransactionDetails({ order }: { order: Order }) {
               >
                 {t("activity")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {event?.eventName ?? "—"}
+                  {activity?.name ?? "—"}
                 </span>
               </p>
+              {activity && (
+                <p
+                  className={
+                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                  }
+                >
+                  {t("activity_type")}
+                  <span className={"text-deep-100 font-medium leading-8"}>
+                    {isRaffle ? t("type_raffle") : t("type_event")}
+                  </span>
+                </p>
+              )}
               <ul className="flex flex-col gap-6 w-full">
                 <li>
                   <p
@@ -143,23 +182,29 @@ export default function TransactionDetails({ order }: { order: Order }) {
                       "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                     }
                   >
-                    {t("date")}
+                    {isRaffle ? t("draw_date") : t("date")}
                     <span className={"text-deep-100 font-medium leading-8"}>
-                      {eventDate}
+                      {activityDate}
                     </span>
                   </p>
-                  <p
-                    className={
-                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                    }
-                  >
-                    {t("time")}
-                    <span className={"text-deep-100 font-medium leading-8"}>
-                      {eventTime}
-                    </span>
-                  </p>
+                  {/* A draw is a single moment and a raffle has no venue, so the
+                      start/end and location rows are dropped rather than shown
+                      as dashes. */}
+                  {!isRaffle && (
+                    <p
+                      className={
+                        "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                      }
+                    >
+                      {t("time")}
+                      <span className={"text-deep-100 font-medium leading-8"}>
+                        {eventTime}
+                      </span>
+                    </p>
+                  )}
                 </li>
               </ul>
+              {!isRaffle && (
               <p
                 className={
                   "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
@@ -174,6 +219,7 @@ export default function TransactionDetails({ order }: { order: Order }) {
                   {address}
                 </span>
               </p>
+              )}
             </div>
             <Separator />
             {/* ticket info */}

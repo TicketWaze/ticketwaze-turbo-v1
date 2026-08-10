@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Event, EventTicketType } from "@ticketwaze/typescript-config";
 import moncash from "../moncash.svg";
+import natcash from "@/assets/images/natcash.png";
 import Capitalize from "@/lib/Capitalize";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "../checkout.types";
 import { SERVICE_FEE_RATE } from "../checkoutUtils";
@@ -35,6 +36,9 @@ function PaymentMethodDisplay({
       {type === "moncash" && (
         <Image src={moncash} alt="MonCash" className="h-[1.8rem] w-auto" />
       )}
+      {type === "natcash" && (
+        <Image src={natcash} alt="NatCash" className="h-[1.8rem] w-auto" />
+      )}
       {type === "card" && <Card size="18" color="#0d0d0d" variant="Bulk" />}
       <span className="text-[1.5rem] font-medium text-deep-100">{label}</span>
     </div>
@@ -61,9 +65,11 @@ export default function SummaryStep({
       ? t("payment.wallet")
       : paymentType === "moncash"
         ? "MonCash"
-        : paymentType === "card"
-          ? t("payment.card")
-          : "";
+        : paymentType === "natcash"
+          ? "NatCash"
+          : paymentType === "card"
+            ? t("payment.card")
+            : "";
 
   return (
     <motion.div

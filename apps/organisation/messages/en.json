@@ -264,7 +264,8 @@
         "password": "Password Field cannot be blank",
         "wrong": "Email address or password is incorrect",
         "no_account": "No Ticketwaze account found for this Google account. Create an account first, then come back to access your dashboard.",
-        "google_failed": "Google sign-in failed. Please try again."
+        "google_failed": "Google sign-in failed. Please try again.",
+        "organisation_suspended": "This organisation is suspended, so its dashboard is unavailable. Check the email we sent for the reason, or contact support to appeal."
       },
       "forgot": "Forgot password",
       "method": {
@@ -525,7 +526,17 @@
       "bank_account_number": "Account number is required",
       "moncash_account_name": "Account holder name is required",
       "moncash_number": "MonCash phone number is required",
-      "moncash_number_invalid": "MonCash number must be exactly 8 digits"
+      "moncash_number_invalid": "MonCash number must be exactly 8 digits",
+      "wise_identifier_required": "Enter the recipient Wisetag",
+      "wise_not_verified": "Verify the Wisetag first",
+      "wise_name_not_confirmed": "Confirm that the name shown is the right Wise account",
+      "wise_unresolved": "We could not find that Wisetag. Check it is correct and that the Wise profile is discoverable.",
+      "wise_no_name": "Wise found that account but did not return a name, so we cannot confirm who it belongs to.",
+      "wise_unavailable": "Wise payouts are not available right now.",
+      "wise_error": "We could not reach Wise. Please try again in a moment.",
+      "wise_self": "That is the Ticketwaze account. Enter the Wise account that should receive the money.",
+      "wise_invalid_identifier": "That does not look like a Wisetag. A Wisetag starts with @.",
+      "pending_exists": "You already have a payout request being reviewed. Wait for it to be completed or rejected before requesting another."
     },
     "withdrawSuccess": "Your withdrawal request has been successfully submitted and is now being processed.",
     "breakdown": "Breakdown",
@@ -587,7 +598,8 @@
         "inside": "Inside",
         "checked_out": "Checked out",
         "close": "Close",
-        "resend": "Resend Ticket"
+        "resend": "Resend Ticket",
+        "draw_date": "Draw date"
       }
     },
     "withdrawal": {
@@ -604,7 +616,20 @@
         "date": "Date",
         "reason": "Rejection reason"
       }
-    }
+    },
+    "wise": "Wise",
+    "wise_hint": "Instant transfer to your Wise account, in USD",
+    "wise_details": "Wise account",
+    "wise_details_hint": "Enter the Wisetag of the account that should receive your payout. Payouts are sent in USD.",
+    "wise_verify": "Verify",
+    "wise_verified": "Verified",
+    "wise_discoverable_hint": "Your Wisetag must be discoverable in your Wise privacy settings, or we cannot find it.",
+    "wise_resolved_name_label": "Wise account holder",
+    "wise_confirm_name": "This is my Wise account",
+    "wise_confirm_name_hint": "Check the name carefully. Once sent, a Wise transfer cannot be recalled.",
+    "wise_review_note": "Ticketwaze reviews every payout request before the transfer is sent.",
+    "wise_value_label": "Wisetag",
+    "pendingPayoutWarning": "You already have a payout request being reviewed. You can request a new one once it has been completed or rejected."
   },
   "Events": {
     "title": "Activity Overview",
@@ -618,6 +643,7 @@
     "history": "History",
     "deleted": "Deleted",
     "deleted_description": "Your deleted activities will appear here.",
+    "edit_under_review": "Edit under review",
     "from": "From",
     "free": "Free",
     "single_event": {
@@ -1029,7 +1055,11 @@
           "total_tickets": "Total tickets must be at least the number of prizes",
           "prize_min": "Add at least one prize",
           "prize_title": "Prize title is required",
-          "prize_description": "Prize description is required"
+          "prize_description": "Prize description is required",
+          "submit_failed": "Could not submit the raffle. Please try again.",
+          "too_large": "The pictures on this raffle are too large to upload. Please remove or replace the biggest ones.",
+          "prize_image": "A picture is required for this prize",
+          "name_taken": "Another raffle already uses this title. Please choose a different one."
         },
         "tags": "Tags",
         "tags_tip": "Add a few tags to describe your raffle. Press Enter, comma or space to add each one. Click a tag to remove it.",
@@ -1089,8 +1119,9 @@
       "meet_default": "Join our Meet session with full access! Connect, and enjoy anywhere. Reserve your place today!",
       "draft": "Save as draft",
       "no_changes": "No changes were made.",
+      "held_for_review": "Your changes were submitted for review. This activity already has ticket sales, so the current details stay live until an admin approves the update.",
       "edit_warning_title": "Save changes?",
-      "edit_warning_body": "By editing this activity, it will be sent for review again. It will not be listed on the app until the review is approved.",
+      "edit_warning_body": "Your changes will be applied to this activity right away.",
       "edit_warning_confirm": "Yes, save changes",
       "edit_warning_cancel": "Go back",
       "optional": "optional",
@@ -1246,7 +1277,11 @@
         "pro_feature": "Restaurants are part of our paid Pro and Premium plans. Upgrade to publish your venue, share your menu by QR code and take reservations. Trials do not include restaurants."
       },
       "publish_name_locked": "You announced this activity under this name, so it stays. Everyone following it keeps their place.",
-      "publish_success": "Your event was sent for review."
+      "publish_success": "Your event was sent for review.",
+      "prize_image": "Prize picture",
+      "prize_image_tip": "Required. Shown to buyers and during the draw.",
+      "prize_image_remove": "Remove prize picture",
+      "edit_warning_body_review": "This activity already has ticket sales, so your changes will be reviewed before they go live. It stays listed and on sale with its current details until an admin approves them."
     },
     "filters": {
       "first": {
@@ -1642,7 +1677,31 @@
         "noDescription": "No description",
         "winner": "Winner",
         "notDrawn": "Not drawn yet"
-      }
+      },
+      "draw": {
+        "cta": "Run the draw",
+        "confirm_title": "Run the draw",
+        "confirm_body": "Winners will be picked at random from every entry sold, and the result recorded so it can be verified.",
+        "confirm_warning": "This cannot be undone. Every participant is emailed the result immediately, and the raffle can no longer be edited or deleted.",
+        "confirm_cta": "Draw winners now",
+        "success": "The draw is complete. Participants have been notified.",
+        "noEntries": "No entries were sold, so the raffle was closed without a draw.",
+        "pending_notice": "This raffle has reached its draw date and is waiting for you to run the draw. If it is not drawn within 72 hours of the draw date, it is cancelled automatically and every participant is refunded."
+      },
+      "winners": {
+        "title": "Winners",
+        "rank": "Rank",
+        "prize": "Prize",
+        "winner": "Winner",
+        "entry": "Entry",
+        "claim": "Prize handover",
+        "status": {
+          "to_claim": "To hand over",
+          "claimed": "Handed over",
+          "unclaimed": "Never claimed"
+        }
+      },
+      "heldForReview": "Your changes were submitted for review. This draw already has entries, so the current details stay live until an admin approves the update."
     }
   },
   "WelcomeModal": {
@@ -1927,11 +1986,11 @@
       "trial_badge": "Trial",
       "billed_via_stripe": "Billed via Stripe",
       "billed_via_moncash": "Billed via Mon Cash",
+      "billed_via_natcash": "Billed via NatCash",
       "billed_trial": "Free trial",
       "trial_cta": "Start {days}-day free trial",
       "trial_success": "Your {days}-day free trial is now active!",
       "trial_error": "Failed to start trial. Please try again.",
-      "manage_billing": "Manage billing",
       "resubscribe": "Get a new plan",
       "canceled_notice": "Your subscription is canceled. You still have access until {date}.",
       "cancel_sub": "Cancel subscription",
@@ -1966,6 +2025,7 @@
         "yearly": "Annual",
         "stripe": "Credit / Debit Card",
         "moncash": "Mon Cash",
+        "natcash": "NatCash",
         "close": "Close"
       },
       "free": {
@@ -2018,6 +2078,12 @@
         "step_plan": "Choose a plan",
         "step_payment": "Payment",
         "step_checkout": "Checkout",
+        "proceed": "Proceed",
+        "upgrade": "Upgrade",
+        "pay_moncash": "Pay with MonCash",
+        "pay_natcash": "Pay with NatCash",
+        "pay_card": "Pay with card",
+        "secured": "Your security matters to us. Every transaction is processed through encrypted channels and monitored in real time to prevent fraud and ensure your personal information remains protected. Our systems are supervised by trusted partners and comply with the highest industry standards for data and payment security.",
         "title": "Payment method",
         "subtitle": "Choose how you'd like to pay",
         "billed_monthly": "Monthly",

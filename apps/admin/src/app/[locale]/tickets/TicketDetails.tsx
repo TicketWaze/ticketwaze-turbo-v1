@@ -11,17 +11,28 @@ import Separator from "@/components/shared/Separator";
 import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
 import { Ticket } from "@ticketwaze/typescript-config";
 
-function formatDate(d: unknown) {
+/**
+ * An event date is a naive calendar day stored as midnight UTC, so it is read
+ * back in UTC — formatting it in the viewer's zone slides it a day earlier
+ * anywhere west of Greenwich.
+ */
+function formatDate(d: unknown, timeZone = "UTC") {
   return new Date(d as string).toLocaleDateString("en-US", {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone,
   });
 }
 
-function formatDateTime(d: unknown) {
+/**
+ * For real instants (payment date, check-in time) the viewer's own zone is the
+ * right frame, so `timeZone` is left off. A raffle draw passes its own zone.
+ */
+function formatDateTime(d: unknown, timeZone?: string) {
   const date = new Date(d as string);
-  return `${date.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })}, ${date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+  const zone = timeZone ? { timeZone } : {};
+  return `${date.toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric", ...zone })}, ${date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", ...zone })}`;
 }
 
 function getTicketTypeColor(ticketType: string) {
@@ -47,22 +58,39 @@ function getTransactionStatusStyle(status: string) {
 export default function TicketDetails({ ticket }: { ticket: Ticket }) {
   const t = useTranslations("Tickets");
 
-  const event = ticket.event;
+  const activity = ticket.activity;
   const order = ticket.order;
-  const firstDay = event?.eventDays?.[0];
+  const isRaffle = activity?.activityType === "raffle";
 
-  const eventDate = firstDay ? formatDate(firstDay.eventDate) : "—";
-  const eventTime = firstDay
-    ? `${firstDay.startTime} - ${firstDay.endTime}`
-    : "—";
+  /**
+   * A raffle entry has no `events` row, so everything below used to read null
+   * and the drawer rendered a column of dashes. The normalized `activity`
+   * summary carries whichever shape the ticket actually has: an event's day-1
+   * date/time and venue, or a raffle's draw instant.
+   */
+  const activityDate = isRaffle
+    ? // The draw is a correct UTC instant, so it is CONVERTED into the raffle's
+      // zone rather than re-labelled the way a naive event date is.
+      activity?.drawAt
+      ? formatDateTime(activity.drawAt, activity.timezone ?? "UTC")
+      : "—"
+    : activity?.eventDate
+      ? formatDate(activity.eventDate)
+      : "—";
+
+  const eventTime =
+    activity?.startTime && activity?.endTime
+      ? `${activity.startTime} - ${activity.endTime}`
+      : "—";
+
   const address =
-    event?.eventCategory === "meet"
+    activity?.eventCategory === "meet"
       ? "Google Meet"
-      : [event?.address, event?.city, event?.state, event?.country]
+      : [activity?.address, activity?.city, activity?.state, activity?.country]
           .filter(Boolean)
           .join(", ") || "—";
 
-  const currency = event?.currency ?? "HTG";
+  const currency = activity?.currency ?? "HTG";
   const displayPrice =
     currency === "HTG"
       ? ticket.ticketPrice.toLocaleString()
@@ -122,9 +150,23 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
               >
                 {t("ticket_details.activity")}
                 <span className={"text-deep-100 font-medium leading-8"}>
-                  {event?.eventName ?? "—"}
+                  {activity?.name ?? "—"}
                 </span>
               </p>
+              {activity && (
+                <p
+                  className={
+                    "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                  }
+                >
+                  {t("ticket_details.activity_type")}
+                  <span className={"text-deep-100 font-medium leading-8"}>
+                    {isRaffle
+                      ? t("ticket_details.type_raffle")
+                      : t("ticket_details.type_event")}
+                  </span>
+                </p>
+              )}
               <ul className="flex flex-col gap-6 w-full">
                 <li>
                   <p
@@ -132,37 +174,46 @@ export default function TicketDetails({ ticket }: { ticket: Ticket }) {
                       "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
                     }
                   >
-                    {t("ticket_details.date")}
+                    {isRaffle
+                      ? t("ticket_details.draw_date")
+                      : t("ticket_details.date")}
                     <span className={"text-deep-100 font-medium leading-8"}>
-                      {eventDate}
+                      {activityDate}
                     </span>
                   </p>
-                  <p
-                    className={
-                      "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                    }
-                  >
-                    {t("ticket_details.time")}
-                    <span className={"text-deep-100 font-medium leading-8"}>
-                      {eventTime}
-                    </span>
-                  </p>
+                  {/* A draw is a single moment and a raffle has no venue, so the
+                      start/end and location rows are dropped rather than shown
+                      as dashes. */}
+                  {!isRaffle && (
+                    <p
+                      className={
+                        "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
+                      }
+                    >
+                      {t("ticket_details.time")}
+                      <span className={"text-deep-100 font-medium leading-8"}>
+                        {eventTime}
+                      </span>
+                    </p>
+                  )}
                 </li>
               </ul>
-              <p
-                className={
-                  "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
-                }
-              >
-                {t("ticket_details.location")}
-                <span
+              {!isRaffle && (
+                <p
                   className={
-                    "text-deep-100 font-medium leading-8 max-w-[39.9rem] text-right"
+                    "flex justify-between items-start text-[1.4rem] leading-8 text-neutral-600"
                   }
                 >
-                  {address}
-                </span>
-              </p>
+                  {t("ticket_details.location")}
+                  <span
+                    className={
+                      "text-deep-100 font-medium leading-8 max-w-[39.9rem] text-right"
+                    }
+                  >
+                    {address}
+                  </span>
+                </p>
+              )}
             </div>
             <Separator />
             {/* ticket info */}

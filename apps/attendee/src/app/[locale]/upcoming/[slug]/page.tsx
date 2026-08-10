@@ -17,6 +17,7 @@ import { notFound } from "next/navigation";
 import ReturnPaidTicketView from "./ReturnPaidTicketView";
 import CheckoutEmailAlert from "./CheckoutEmailAlert";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
+import { isChangeWindowOpen } from "@/lib/changeRefundWindow";
 
 export default async function UpcomingEventPage({
   params,
@@ -52,6 +53,17 @@ export default async function UpcomingEventPage({
   }
   const organisation = event.organisation;
   const tickets: Ticket[] = event.tickets ?? [];
+
+  /**
+   * The organiser moved this event under its buyers. For a short window that
+   * overrides both of the usual bars — the seven-day cutoff and the ticket type
+   * being non-refundable — so the return option has to be offered even when
+   * `isRefundable` is false, or the refund the API now permits is unreachable.
+   */
+  const changeWindowOpen = isChangeWindowOpen(event);
+  const canReturnPaid =
+    !event.isFree &&
+    (event.eventTicketTypes[0]?.isRefundable || changeWindowOpen);
 
   const favoriteRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/favorite`,
@@ -232,6 +244,16 @@ export default async function UpcomingEventPage({
             <div></div>
             <div></div> */}
             <div className=" flex-col w-full gap-3 hidden lg:flex">
+              {changeWindowOpen && (
+                <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+                  <Warning2 size="24" color="#737C8A" variant="Bulk" />
+                  <div>
+                    <p className="text-[1.2rem] leading-8 text-neutral-800">
+                      {t("changeRefundWindowNotice")}
+                    </p>
+                  </div>
+                </div>
+              )}
               {event.eventTicketTypes[0]?.isRefundable && event.isFree && (
                 <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
                   <Warning2 size="24" color="#737C8A" variant="Bulk" />
@@ -245,10 +267,11 @@ export default async function UpcomingEventPage({
               {event.eventTicketTypes[0]?.isRefundable && event.isFree && (
                 <ReturnFreeTicketView ticket={tickets[0]} />
               )}
-              {event.eventTicketTypes[0]?.isRefundable && !event.isFree && (
+              {canReturnPaid && (
                 <ReturnPaidTicketView
                   tickets={tickets}
                   eventDays={event.eventDays}
+                  changeWindowOpen={changeWindowOpen}
                 />
               )}
             </div>
@@ -263,6 +286,16 @@ export default async function UpcomingEventPage({
             <TicketViewer tickets={tickets} event={event} />
           </div>
           <div className="flex lg:hidden flex-col w-full gap-3 ">
+            {changeWindowOpen && (
+              <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+                <Warning2 size="24" color="#737C8A" variant="Bulk" />
+                <div>
+                  <p className="text-[1.2rem] leading-8 text-neutral-800">
+                    {t("changeRefundWindowNotice")}
+                  </p>
+                </div>
+              </div>
+            )}
             {event.eventTicketTypes[0]?.isRefundable && event.isFree && (
               <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
                 <Warning2 size="24" color="#737C8A" variant="Bulk" />
@@ -276,10 +309,11 @@ export default async function UpcomingEventPage({
             {event.eventTicketTypes[0]?.isRefundable && event.isFree && (
               <ReturnFreeTicketView ticket={tickets[0]} />
             )}
-            {event.eventTicketTypes[0]?.isRefundable && !event.isFree && (
+            {canReturnPaid && (
               <ReturnPaidTicketView
                 tickets={tickets}
                 eventDays={event.eventDays}
+                changeWindowOpen={changeWindowOpen}
               />
             )}
             <div></div>

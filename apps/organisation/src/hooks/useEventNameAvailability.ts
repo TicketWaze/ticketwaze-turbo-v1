@@ -23,6 +23,12 @@ type CheckResult = {
  */
 export default function useEventNameAvailability(
   eventName: string,
+  /**
+   * The activity being edited. Excluded from the lookup so it does not match
+   * its own name — without it every edit screen reports "name taken" for a name
+   * the organiser never touched.
+   */
+  excludeEventId?: string,
 ): EventNameAvailability {
   const { data: session } = useSession();
   const accessToken = session?.user.accessToken;
@@ -34,8 +40,10 @@ export default function useEventNameAvailability(
     if (name.length < 3 || !accessToken) return;
 
     const controller = new AbortController();
+    const query = new URLSearchParams({ eventName: name });
+    if (excludeEventId) query.set("eventId", excludeEventId);
     fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/validation/event-name?eventName=${encodeURIComponent(name)}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/events/validation/event-name?${query.toString()}`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
         signal: controller.signal,
@@ -55,7 +63,7 @@ export default function useEventNameAvailability(
       });
 
     return () => controller.abort();
-  }, [name, accessToken]);
+  }, [name, accessToken, excludeEventId]);
 
   // Status is derived: a result only counts if it matches the current value,
   // otherwise a request for that value is still in flight.

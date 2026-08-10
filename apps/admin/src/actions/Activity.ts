@@ -43,6 +43,98 @@ export async function UpdateEventStatusAction(
   }
 }
 
+/**
+ * Rule on an edit held back from a selling event. Approving replays it onto the
+ * live event; rejecting leaves the event exactly as buyers last saw it.
+ */
+export async function ReviewEventRevisionAction(
+  revisionId: string,
+  decision: "approve" | "reject",
+  accessToken: string,
+  locale: string,
+  rejectionReason?: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/event-revision/${revisionId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({
+          decision,
+          ...(decision === "reject" && rejectionReason
+            ? { rejectionReason }
+            : {}),
+        }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath("/activities/revisions");
+      // The edit itself applied; only the Google Calendar push failed. Worth
+      // telling the admin so the invitees can be resynced, but not an error.
+      return {
+        status: "success",
+        calendarSyncFailed: data.calendarSyncFailed === true,
+      };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+/** Rule on an edit held back from a draw that is already selling entries. */
+export async function ReviewRaffleRevisionAction(
+  revisionId: string,
+  decision: "approve" | "reject",
+  accessToken: string,
+  locale: string,
+  rejectionReason?: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/raffle-revision/${revisionId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({
+          decision,
+          ...(decision === "reject" && rejectionReason
+            ? { rejectionReason }
+            : {}),
+        }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath("/activities/revisions");
+      return { status: "success" };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function UpdateRaffleStatusAction(
   raffleId: string,
   adminStatus: string,
@@ -193,6 +285,59 @@ export async function UpdateRestaurantSuspensionAction(
     } else {
       throw new Error(data.message);
     }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Refund every buyer of an upcoming activity and cancel it.
+ *
+ * Irreversible from the dashboard, so the API is the sole judge of whether it
+ * is allowed — the dialog's own guards only save a round trip. A refusal
+ * (already cancelled, already started, balance already released) comes back as
+ * a 422 with a message worth showing, so it is surfaced rather than replaced
+ * with a generic failure.
+ */
+export async function RefundActivityAction(
+  activityKind: "event" | "raffle",
+  activityId: string,
+  reason: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/${activityKind}/${activityId}/refund`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({ reason }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath(
+        activityKind === "raffle"
+          ? `/activities/raffle/${activityId}`
+          : `/activities/${activityId}`,
+      );
+      return {
+        status: "success" as const,
+        ticketsRefunded: data.ticketsRefunded as number,
+        walletsCredited: data.walletsCredited as number,
+        guestTicketsVoided: data.guestTicketsVoided as number,
+      };
+    }
+    throw new Error(data.message);
   } catch (error: unknown) {
     return {
       error:

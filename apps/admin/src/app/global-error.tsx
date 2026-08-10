@@ -1,4 +1,6 @@
 "use client";
+import { useEffect } from "react";
+import { reportClientError } from "@ticketwaze/client-logging";
 import LogoSimpleOrange from "@ticketwaze/ui/assets/images/logo-simple-orange.svg";
 import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
 import { I24Support, Logout } from "iconsax-reactjs";
@@ -10,6 +12,18 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // The boundary already showed the user a friendly screen; without this the
+  // error that caused it was never recorded anywhere.
+  useEffect(() => {
+    reportClientError({
+      app: "admin",
+      source: "render",
+      message: error.message,
+      stack: error.stack,
+      digest: error.digest,
+    });
+  }, [error]);
+
   return (
     <html>
       <body className="w-full h-dvh overflow-hidden flex flex-col items-center justify-center bg-neutral-200 p-8">

@@ -12,11 +12,19 @@ export default function formatRaffleDate(
   iso: string,
   locale: string,
   timezone: string | null,
+  // A deadline needs its time of day: sales usually close on the same date as
+  // the draw, and "27 JUL 2026" for both reads as if entries stay open all day.
+  options: { withTime?: boolean } = {},
 ) {
   const dt = DateTime.fromISO(iso).setZone(timezone || "local");
   if (!dt.isValid) return "";
   return dt
     .setLocale(localeMap[locale] ?? "en-US")
-    .toLocaleString({ year: "numeric", month: "short", day: "numeric" })
+    .toLocaleString({
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      ...(options.withTime ? { hour: "2-digit", minute: "2-digit" } : {}),
+    })
     .toUpperCase();
 }

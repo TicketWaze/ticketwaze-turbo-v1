@@ -27,6 +27,7 @@ export default async function PayoutRequestPage({
         request={response.request}
         organisationTier={response.organisationTier}
         organisationActiveSubscription={response.organisationActiveSubscription}
+        wiseCanFundAutomatically={Boolean(response.wiseCanFundAutomatically)}
       />
     </AdminLayout>
   );

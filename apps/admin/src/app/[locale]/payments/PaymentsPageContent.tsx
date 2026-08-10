@@ -44,7 +44,9 @@ function getTransactionStatusStyle(status: string) {
 }
 
 function formatOrderAmount(order: Order) {
-  const currency = order.tickets?.[0]?.event?.currency ?? "HTG";
+  // From the normalized activity, not the first ticket's event — a raffle order
+  // has no `events` row, so that path silently fell back to HTG.
+  const currency = order.activity?.currency ?? "HTG";
   const amount =
     currency === "HTG"
       ? order.amount.toLocaleString()
@@ -439,7 +441,6 @@ export default function PaymentsPageContent({
                 <TableBody>
                   {rows.map((order) => {
                     const statusStyle = getTransactionStatusStyle(order.status);
-                    const firstTicket = order.tickets?.[0];
                     const attendeeName = getOrderAttendeeName(order);
                     return (
                       <Drawer key={order.orderId} direction="right">
@@ -474,7 +475,7 @@ export default function PaymentsPageContent({
                                 "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
                               }
                             >
-                              {firstTicket?.event?.eventName ?? "—"}
+                              {order.activity?.name ?? "—"}
                             </TableCell>
                             <TableCell
                               className={

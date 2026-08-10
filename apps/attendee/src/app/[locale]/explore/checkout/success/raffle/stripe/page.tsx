@@ -31,8 +31,11 @@ export default async function SuccessRaffleStripe({
     (response.status === "success" || response.status === "duplicate") &&
     response.raffle
   ) {
+    // A signed-in buyer's entries live in their upcoming list, which is where
+    // an event purchase lands too. The guest variant of this page keeps the
+    // public URL — a guest has no account page to land on.
     redirect({
-      href: `/explore/raffle/${slugify(response.raffle.title, response.raffle.raffleId)}?from=checkout`,
+      href: `/upcoming/raffle/${slugify(response.raffle.title, response.raffle.raffleId)}?from=checkout`,
       locale,
     });
   } else {

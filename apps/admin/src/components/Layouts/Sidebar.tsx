@@ -5,6 +5,7 @@ import {
   Building,
   Calendar,
   Chart1,
+  Edit2,
   Headphone,
   Logout,
   Message,
@@ -54,12 +55,24 @@ function Sidebar({ className }: { className: string }) {
 
   const operationsLinks = [
     { label: t("links.activities"), path: `/activities`, Icon: Calendar },
+    {
+      label: t("links.pending_edits"),
+      path: `/activities/revisions`,
+      Icon: Edit2,
+    },
     { label: t("links.tickets"), path: `/tickets`, Icon: Ticket },
     { label: t("links.payments"), path: `/payments`, Icon: Money },
     { label: t("links.payouts"), path: `/payouts`, Icon: MoneyRecive },
   ];
 
   function isActive(path: string) {
+    // Pending edits lives under /activities, so a prefix match would light up
+    // both rows at once. The parent yields to its more specific sibling.
+    if (path === `/activities`) {
+      return (
+        pathname.startsWith(path) && !pathname.startsWith(`/activities/revisions`)
+      );
+    }
     return pathname.startsWith(path);
   }
 

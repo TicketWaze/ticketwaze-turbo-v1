@@ -1,6 +1,7 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import AnalyticsPageTopbar from "./AnalyticsPageTopbar";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { formatMoney } from "@ticketwaze/currency";
 import BarChart from "./BarChart";
 import { InfoCircle } from "iconsax-reactjs";
 import UserGrowthChart from "./UserGrowthChat";
@@ -68,6 +69,7 @@ export default function AnalyticsPageContent({
   data: AnalyticsData;
 }) {
   const t = useTranslations("Analytics");
+  const locale = useLocale();
   const {
     stats,
     revenueChart,
@@ -120,10 +122,9 @@ export default function AnalyticsPageContent({
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
                     }
                   >
-                    {stats.totalRevenue.toLocaleString(undefined, {
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    <span className={"font-normal text-neutral-500"}>USD</span>
+                    {/* The API sums the tickets' USD column for these tiles, so
+                        USD is the real unit, not just a label. */}
+                    {formatMoney(stats.totalRevenue, "USD", locale)}
                   </p>
                 </div>
               </div>
@@ -294,10 +295,7 @@ export default function AnalyticsPageContent({
                       "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
                     }
                   >
-                    {stats.topOrganizerRevenue.toLocaleString(undefined, {
-                      maximumFractionDigits: 2,
-                    })}{" "}
-                    <span className={"font-normal text-neutral-500"}>USD</span>
+                    {formatMoney(stats.topOrganizerRevenue, "USD", locale)}
                   </p>
                 </div>
               </div>
@@ -458,7 +456,11 @@ export default function AnalyticsPageContent({
               }
             >
               <div className={"flex flex-col gap-9 pb-6 lg:pr-10 lg:pb-8"}>
-                <span className={"text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"}>
+                <span
+                  className={
+                    "text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"
+                  }
+                >
                   {t("top_organizers.title")}
                 </span>
                 <div className={"w-full"}>
@@ -467,9 +469,21 @@ export default function AnalyticsPageContent({
                       category1={topOrganizers[0]?.name}
                       category2={topOrganizers[1]?.name}
                       category3={topOrganizers[2]?.name}
-                      percent1={topOrganizers[0] ? `${topOrganizers[0].percent}%` : undefined}
-                      percent2={topOrganizers[1] ? `${topOrganizers[1].percent}%` : undefined}
-                      percent3={topOrganizers[2] ? `${topOrganizers[2].percent}%` : undefined}
+                      percent1={
+                        topOrganizers[0]
+                          ? `${topOrganizers[0].percent}%`
+                          : undefined
+                      }
+                      percent2={
+                        topOrganizers[1]
+                          ? `${topOrganizers[1].percent}%`
+                          : undefined
+                      }
+                      percent3={
+                        topOrganizers[2]
+                          ? `${topOrganizers[2].percent}%`
+                          : undefined
+                      }
                     />
                   ) : (
                     <div className="flex flex-col justify-center items-center gap-4">
@@ -482,18 +496,49 @@ export default function AnalyticsPageContent({
                 </div>
               </div>
               <div className={"flex flex-col gap-9 lg:pl-10 lg:pb-8"}>
-                <span className={"text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"}>
+                <span
+                  className={
+                    "text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"
+                  }
+                >
                   {t("payment_methods.title")}
                 </span>
                 <div className={"w-full"}>
                   {paymentMethods.length > 0 ? (
                     <BarChart
-                      category1={paymentMethods[0] ? paymentMethods[0].provider.charAt(0).toUpperCase() + paymentMethods[0].provider.slice(1) : undefined}
-                      category2={paymentMethods[1] ? paymentMethods[1].provider.charAt(0).toUpperCase() + paymentMethods[1].provider.slice(1) : undefined}
-                      category3={paymentMethods[2] ? paymentMethods[2].provider.charAt(0).toUpperCase() + paymentMethods[2].provider.slice(1) : undefined}
-                      percent1={paymentMethods[0] ? `${paymentMethods[0].percent}%` : undefined}
-                      percent2={paymentMethods[1] ? `${paymentMethods[1].percent}%` : undefined}
-                      percent3={paymentMethods[2] ? `${paymentMethods[2].percent}%` : undefined}
+                      category1={
+                        paymentMethods[0]
+                          ? paymentMethods[0].provider.charAt(0).toUpperCase() +
+                            paymentMethods[0].provider.slice(1)
+                          : undefined
+                      }
+                      category2={
+                        paymentMethods[1]
+                          ? paymentMethods[1].provider.charAt(0).toUpperCase() +
+                            paymentMethods[1].provider.slice(1)
+                          : undefined
+                      }
+                      category3={
+                        paymentMethods[2]
+                          ? paymentMethods[2].provider.charAt(0).toUpperCase() +
+                            paymentMethods[2].provider.slice(1)
+                          : undefined
+                      }
+                      percent1={
+                        paymentMethods[0]
+                          ? `${paymentMethods[0].percent}%`
+                          : undefined
+                      }
+                      percent2={
+                        paymentMethods[1]
+                          ? `${paymentMethods[1].percent}%`
+                          : undefined
+                      }
+                      percent3={
+                        paymentMethods[2]
+                          ? `${paymentMethods[2].percent}%`
+                          : undefined
+                      }
                     />
                   ) : (
                     <div className="flex flex-col justify-center items-center gap-4">
@@ -525,33 +570,57 @@ export default function AnalyticsPageContent({
               <div className={"flex flex-col gap-4 pr-10"}>
                 <div className="flex items-center gap-3">
                   <span className="w-[0.8rem] h-[0.8rem] rounded-full bg-green-500 shrink-0" />
-                  <span className={"text-[14px] text-neutral-600 font-sans leading-tight"}>
+                  <span
+                    className={
+                      "text-[14px] text-neutral-600 font-sans leading-tight"
+                    }
+                  >
                     {t("activity_status.approved")}
                   </span>
                 </div>
-                <p className={"text-[16px] font-medium font-primary lg:text-[25px]"}>
+                <p
+                  className={
+                    "text-[16px] font-medium font-primary lg:text-[25px]"
+                  }
+                >
                   {activityStatus.approved.toLocaleString()}
                 </p>
               </div>
               <div className={"flex flex-col gap-4 px-10"}>
                 <div className="flex items-center gap-3">
                   <span className="w-[0.8rem] h-[0.8rem] rounded-full bg-amber-400 shrink-0" />
-                  <span className={"text-[14px] text-neutral-600 font-sans leading-tight"}>
+                  <span
+                    className={
+                      "text-[14px] text-neutral-600 font-sans leading-tight"
+                    }
+                  >
                     {t("activity_status.in_review")}
                   </span>
                 </div>
-                <p className={"text-[16px] font-medium font-primary lg:text-[25px]"}>
+                <p
+                  className={
+                    "text-[16px] font-medium font-primary lg:text-[25px]"
+                  }
+                >
                   {activityStatus.inReview.toLocaleString()}
                 </p>
               </div>
               <div className={"flex flex-col gap-4 pl-10"}>
                 <div className="flex items-center gap-3">
                   <span className="w-[0.8rem] h-[0.8rem] rounded-full bg-red-400 shrink-0" />
-                  <span className={"text-[14px] text-neutral-600 font-sans leading-tight"}>
+                  <span
+                    className={
+                      "text-[14px] text-neutral-600 font-sans leading-tight"
+                    }
+                  >
                     {t("activity_status.rejected")}
                   </span>
                 </div>
-                <p className={"text-[16px] font-medium font-primary lg:text-[25px]"}>
+                <p
+                  className={
+                    "text-[16px] font-medium font-primary lg:text-[25px]"
+                  }
+                >
                   {activityStatus.rejected.toLocaleString()}
                 </p>
               </div>

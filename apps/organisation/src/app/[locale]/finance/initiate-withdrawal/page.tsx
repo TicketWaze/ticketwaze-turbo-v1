@@ -35,7 +35,10 @@ export default async function InitiateWithdrawalPage() {
   const organisation: Organisation = response.organisation;
   return (
     <OrganizerLayout title="">
-      <InitiateWithdrawalPageWrapper organisation={organisation} />
+      <InitiateWithdrawalPageWrapper
+        organisation={organisation}
+        wiseAvailable={Boolean(response.wiseAvailable)}
+      />
     </OrganizerLayout>
   );
 }

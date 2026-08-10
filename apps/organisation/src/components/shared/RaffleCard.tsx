@@ -39,7 +39,15 @@ function RaffleCard({ raffle }: { raffle: Raffle }) {
             {raffle.adminStatus.toUpperCase()}
           </div>
         )}
-        {raffle.adminStatus === "approved" && (
+        {/* An edit to an approved draw is reviewed after the fact, so it is
+            still live and still selling entries — it just has a look owed on
+            it. That is a different thing to say than "APPROVED". */}
+        {raffle.adminStatus === "approved" && raffle.pendingReviewAt && (
+          <div className="bg-warning block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
+            {t("edit_under_review").toUpperCase()}
+          </div>
+        )}
+        {raffle.adminStatus === "approved" && !raffle.pendingReviewAt && (
           <div className="bg-success block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
             {raffle.adminStatus.toUpperCase()}
           </div>
