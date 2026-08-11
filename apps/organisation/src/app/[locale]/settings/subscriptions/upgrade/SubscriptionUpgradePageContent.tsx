@@ -24,6 +24,7 @@ import {
 import Image from "next/image";
 import moncash from "@/assets/icons/moncash.svg";
 import natcash from "@/assets/icons/natcash.png";
+import { NATCASH_ENABLED } from "@/lib/paymentMethods";
 import pinwheel from "@/assets/images/logo-simple-orange.svg";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -506,23 +507,30 @@ export default function SubscriptionUpgradePageContent({
                   )}
                 </button>
 
-                <button
-                  className={optionClass("natcash")}
-                  onClick={() => payWithWallet("natcash")}
-                  disabled={processing !== null}
-                >
-                  <div className="flex items-center gap-4">
-                    <Image src={natcash} alt="NatCash" width={20} height={21} />
-                    <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
-                      {t("payment.pay_natcash")}
-                    </span>
-                  </div>
-                  {processing === "natcash" ? (
-                    <LoadingCircleSmall />
-                  ) : (
-                    <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
-                  )}
-                </button>
+                {NATCASH_ENABLED && (
+                  <button
+                    className={optionClass("natcash")}
+                    onClick={() => payWithWallet("natcash")}
+                    disabled={processing !== null}
+                  >
+                    <div className="flex items-center gap-4">
+                      <Image
+                        src={natcash}
+                        alt="NatCash"
+                        width={20}
+                        height={21}
+                      />
+                      <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
+                        {t("payment.pay_natcash")}
+                      </span>
+                    </div>
+                    {processing === "natcash" ? (
+                      <LoadingCircleSmall />
+                    ) : (
+                      <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+                    )}
+                  </button>
+                )}
 
                 <button
                   className={optionClass("stripe")}

@@ -32,6 +32,7 @@ import {
 } from "@/actions/paymentActions";
 import moncashLogo from "../../../[slug]/checkout/moncash.svg";
 import natcashLogo from "@/assets/images/natcash.png";
+import { NATCASH_ENABLED } from "@/lib/paymentMethods";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import BackButton from "@/components/shared/BackButton";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -437,23 +438,25 @@ export default function RaffleCheckout({
               </div>
               <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
             </button>
-            <button
-              className={optionClass("natcash")}
-              onClick={() => setMethod("natcash")}
-            >
-              <div className="flex items-center gap-4">
-                <Image
-                  src={natcashLogo}
-                  alt="Logo of natcash"
-                  width={20}
-                  height={21}
-                />
-                <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
-                  {ct("payment.natcash")}
-                </span>
-              </div>
-              <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
-            </button>
+            {NATCASH_ENABLED && (
+              <button
+                className={optionClass("natcash")}
+                onClick={() => setMethod("natcash")}
+              >
+                <div className="flex items-center gap-4">
+                  <Image
+                    src={natcashLogo}
+                    alt="Logo of natcash"
+                    width={20}
+                    height={21}
+                  />
+                  <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
+                    {ct("payment.natcash")}
+                  </span>
+                </div>
+                <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+              </button>
+            )}
             <button
               className={optionClass("card")}
               onClick={() => setMethod("card")}

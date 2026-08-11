@@ -14,6 +14,7 @@ import moncash from "../moncash.svg";
 import natcash from "@/assets/images/natcash.png";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "../checkout.types";
 import TicketSummaryCard from "../TicketSummaryCard";
+import { NATCASH_ENABLED } from "@/lib/paymentMethods";
 
 interface Props {
   delta: number;
@@ -75,23 +76,25 @@ export default function PaymentStep({
               <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
             </button>
 
-            <button
-              className={optionClass("natcash")}
-              onClick={() => onSelectPayment("natcash")}
-            >
-              <div className="flex items-center gap-4">
-                <Image
-                  src={natcash}
-                  alt="Logo of natcash"
-                  width={20}
-                  height={21}
-                />
-                <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
-                  {t("payment.natcash")}
-                </span>
-              </div>
-              <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
-            </button>
+            {NATCASH_ENABLED && (
+              <button
+                className={optionClass("natcash")}
+                onClick={() => onSelectPayment("natcash")}
+              >
+                <div className="flex items-center gap-4">
+                  <Image
+                    src={natcash}
+                    alt="Logo of natcash"
+                    width={20}
+                    height={21}
+                  />
+                  <span className="font-semibold text-[1.6rem] leading-[2.2rem] text-deep-100">
+                    {t("payment.natcash")}
+                  </span>
+                </div>
+                <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
+              </button>
+            )}
 
             <button
               className={optionClass("card")}
