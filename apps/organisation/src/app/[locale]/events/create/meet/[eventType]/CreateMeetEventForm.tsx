@@ -245,7 +245,11 @@ export default function CreateMeetEventForm({
   ]);
 
   return (
-    <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
+    // `overflow-clip`, not `overflow-hidden`. See CreateInPersonEventForm: an
+    // `overflow-hidden` box is still a scroll container, so Tiptap's
+    // scroll-caret-into-view after a paste shifts it permanently, with no
+    // scrollbar or wheel for the user to shift it back. `clip` does not scroll.
+    <div className="relative flex flex-col gap-8 overflow-clip h-full ">
       <div className="absolute bottom-4 z-9999 w-full hidden lg:block">
         <ButtonPrimary
           onClick={next}

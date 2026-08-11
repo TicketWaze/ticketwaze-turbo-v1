@@ -17,11 +17,18 @@ import BackButton from "@/components/shared/BackButton";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import RichTextEditor from "@/components/shared/RichTextEditor";
+import CharCounter from "@/components/shared/CharCounter";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
 import { compressImage, compressImages } from "@/lib/compressImage";
 import { slugify } from "@/lib/Slugify";
+
+// The counter has to promise the limit the input actually enforces, so the
+// `maxLength` attribute and the counter's denominator read from one constant.
+// The minimum mirrors the schema's `name: z.string().min(2)`.
+const NAME_MIN_CHARS = 2;
+const NAME_MAX_CHARS = 120;
 
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
@@ -101,10 +108,13 @@ function makeRestaurantSchema(t: TranslateFn) {
 function Field({
   label,
   error,
+  counter,
   children,
 }: {
   label: string;
   error?: string;
+  /** Optional <CharCounter>, shown opposite the error on the same row. */
+  counter?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -113,7 +123,12 @@ function Field({
         {label}
       </label>
       {children}
-      {error && <span className="text-[1.2rem] text-failure">{error}</span>}
+      {(error || counter) && (
+        <div className="flex items-center justify-between">
+          <span className="text-[1.2rem] text-failure">{error}</span>
+          {counter}
+        </div>
+      )}
     </div>
   );
 }
@@ -222,7 +237,8 @@ export default function EditRestaurantForm({
       deliveryPhone: restaurant.deliveryPhone ?? "",
       deliveryFee: restaurant.deliveryFee ?? undefined,
       minimumOrder: restaurant.minimumOrder ?? undefined,
-      deliveryEstimatedMinutes: restaurant.deliveryEstimatedMinutes ?? undefined,
+      deliveryEstimatedMinutes:
+        restaurant.deliveryEstimatedMinutes ?? undefined,
     },
   });
 
@@ -426,7 +442,10 @@ export default function EditRestaurantForm({
       fd.append("minPartySize", String(data.minPartySize));
       fd.append("maxPartySize", String(data.maxPartySize));
     }
-    fd.append("acceptsOnlinePayment", JSON.stringify(data.acceptsOnlinePayment));
+    fd.append(
+      "acceptsOnlinePayment",
+      JSON.stringify(data.acceptsOnlinePayment),
+    );
     fd.append("offersTakeout", JSON.stringify(data.offersTakeout));
     fd.append("offersDelivery", JSON.stringify(data.offersDelivery));
     if (data.offersDelivery) {
@@ -632,11 +651,21 @@ export default function EditRestaurantForm({
         {/* Details */}
         <div className={cardClass}>
           <span className={sectionTitle}>{t("details")}</span>
-          <Field label={t("name")} error={errors.name?.message}>
+          <Field
+            label={t("name")}
+            error={errors.name?.message}
+            counter={
+              <CharCounter
+                count={(watch("name") ?? "").length}
+                min={NAME_MIN_CHARS}
+                max={NAME_MAX_CHARS}
+              />
+            }
+          >
             <input
               {...register("name")}
               type="text"
-              maxLength={120}
+              maxLength={NAME_MAX_CHARS}
               className={inputClass}
             />
           </Field>
@@ -714,12 +743,20 @@ export default function EditRestaurantForm({
         <div className={cardClass}>
           <span className={sectionTitle}>{t("location")}</span>
           <Field label={t("address")} error={errors.address?.message}>
-            <input {...register("address")} type="text" className={inputClass} />
+            <input
+              {...register("address")}
+              type="text"
+              className={inputClass}
+            />
           </Field>
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex-1">
               <Field label={t("city")} error={errors.city?.message}>
-                <input {...register("city")} type="text" className={inputClass} />
+                <input
+                  {...register("city")}
+                  type="text"
+                  className={inputClass}
+                />
               </Field>
             </div>
             <div className="flex-1">

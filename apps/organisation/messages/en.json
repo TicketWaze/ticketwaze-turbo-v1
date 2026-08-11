@@ -1283,6 +1283,14 @@
       "prize_image_remove": "Remove prize picture",
       "edit_warning_body_review": "This activity already has ticket sales, so your changes will be reviewed before they go live. It stays listed and on sale with its current details until an admin approves them."
     },
+    "price_preview": {
+      "title": "What your attendees will pay",
+      "base_price": "Base price",
+      "transaction_fees": "Transaction fees",
+      "attendee_pays": "Attendee pays",
+      "you_receive": "You receive",
+      "note": "Fees are added on top of your price, so you always receive the full amount you set."
+    },
     "filters": {
       "first": {
         "all": "All",

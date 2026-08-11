@@ -1278,6 +1278,14 @@
       "prize_image_remove": "Retirer la photo du lot",
       "edit_warning_body_review": "Cette activité a déjà des ventes de billets, vos modifications seront donc examinées avant leur mise en ligne. Elle reste visible et en vente avec ses informations actuelles jusqu'à l'approbation d'un administrateur."
     },
+    "price_preview": {
+      "title": "Ce que vos participants paieront",
+      "base_price": "Prix de base",
+      "transaction_fees": "Frais de transaction",
+      "attendee_pays": "Le participant paie",
+      "you_receive": "Vous recevez",
+      "note": "Les frais s’ajoutent à votre prix, vous recevez donc toujours le montant total que vous avez fixé."
+    },
     "filters": {
       "first": {
         "all": "Tous",

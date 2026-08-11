@@ -16,10 +16,17 @@ import BackButton from "@/components/shared/BackButton";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import RichTextEditor from "@/components/shared/RichTextEditor";
+import CharCounter from "@/components/shared/CharCounter";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import LocationPicker from "@/lib/LocationPicker";
 import { compressImage, compressImages } from "@/lib/compressImage";
+
+// The counter has to promise the limit the input actually enforces, so the
+// `maxLength` attribute and the counter's denominator read from one constant.
+// The minimum mirrors the schema's `name: z.string().min(2)`.
+const NAME_MIN_CHARS = 2;
+const NAME_MAX_CHARS = 120;
 
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
@@ -56,58 +63,63 @@ interface DayHours {
 }
 
 function makeRestaurantSchema(t: TranslateFn) {
-  return z
-    .object({
-      name: z.string().min(2, t("errors.name")),
-      description: z.string().min(20, t("errors.description")),
-      establishmentType: z.enum(ESTABLISHMENT_TYPES),
-      address: z.string().min(1, t("errors.address")),
-      city: z.string().min(1, t("errors.city")),
-      state: z.string().min(1, t("errors.state")),
-      country: z.string().min(1, t("errors.country")),
-      locationNotes: z.string().optional(),
-      location: z.object({ lat: z.number(), lng: z.number() }).optional(),
-      phone: z.string().optional(),
-      whatsapp: z.string().optional(),
-      email: z.string().optional(),
-      website: z.string().optional(),
-      acceptsReservations: z.boolean(),
-      reservationFee: z.coerce.number().min(0),
-      reservationFeeCurrency: z.enum(["HTG", "USD"]),
-      maxCoversPerSlot: z.coerce.number().min(0),
-      minPartySize: z.coerce.number().min(1),
-      maxPartySize: z.coerce.number().min(1),
-      acceptsOnlinePayment: z.boolean(),
-      offersDelivery: z.boolean(),
-      offersTakeout: z.boolean(),
-      deliveryPhone: z.string().optional(),
-      deliveryFee: z.coerce.number().optional(),
-      minimumOrder: z.coerce.number().optional(),
-      deliveryEstimatedMinutes: z.coerce.number().optional(),
-    })
-    // Reservations are paid: without a fee there is nothing to confirm the
-    // booking with, so the toggle and the fee have to travel together.
-    .refine((d) => !d.acceptsReservations || d.reservationFee > 0, {
-      message: t("errors.fee"),
-      path: ["reservationFee"],
-    })
-    .refine((d) => !d.acceptsReservations || d.maxCoversPerSlot > 0, {
-      message: t("errors.covers"),
-      path: ["maxCoversPerSlot"],
-    })
-    .refine((d) => d.minPartySize <= d.maxPartySize, {
-      message: t("errors.party"),
-      path: ["maxPartySize"],
-    });
+  return (
+    z
+      .object({
+        name: z.string().min(2, t("errors.name")),
+        description: z.string().min(20, t("errors.description")),
+        establishmentType: z.enum(ESTABLISHMENT_TYPES),
+        address: z.string().min(1, t("errors.address")),
+        city: z.string().min(1, t("errors.city")),
+        state: z.string().min(1, t("errors.state")),
+        country: z.string().min(1, t("errors.country")),
+        locationNotes: z.string().optional(),
+        location: z.object({ lat: z.number(), lng: z.number() }).optional(),
+        phone: z.string().optional(),
+        whatsapp: z.string().optional(),
+        email: z.string().optional(),
+        website: z.string().optional(),
+        acceptsReservations: z.boolean(),
+        reservationFee: z.coerce.number().min(0),
+        reservationFeeCurrency: z.enum(["HTG", "USD"]),
+        maxCoversPerSlot: z.coerce.number().min(0),
+        minPartySize: z.coerce.number().min(1),
+        maxPartySize: z.coerce.number().min(1),
+        acceptsOnlinePayment: z.boolean(),
+        offersDelivery: z.boolean(),
+        offersTakeout: z.boolean(),
+        deliveryPhone: z.string().optional(),
+        deliveryFee: z.coerce.number().optional(),
+        minimumOrder: z.coerce.number().optional(),
+        deliveryEstimatedMinutes: z.coerce.number().optional(),
+      })
+      // Reservations are paid: without a fee there is nothing to confirm the
+      // booking with, so the toggle and the fee have to travel together.
+      .refine((d) => !d.acceptsReservations || d.reservationFee > 0, {
+        message: t("errors.fee"),
+        path: ["reservationFee"],
+      })
+      .refine((d) => !d.acceptsReservations || d.maxCoversPerSlot > 0, {
+        message: t("errors.covers"),
+        path: ["maxCoversPerSlot"],
+      })
+      .refine((d) => d.minPartySize <= d.maxPartySize, {
+        message: t("errors.party"),
+        path: ["maxPartySize"],
+      })
+  );
 }
 
 function Field({
   label,
   error,
+  counter,
   children,
 }: {
   label: string;
   error?: string;
+  /** Optional <CharCounter>, shown opposite the error on the same row. */
+  counter?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -116,7 +128,12 @@ function Field({
         {label}
       </label>
       {children}
-      {error && <span className="text-[1.2rem] text-failure">{error}</span>}
+      {(error || counter) && (
+        <div className="flex items-center justify-between">
+          <span className="text-[1.2rem] text-failure">{error}</span>
+          {counter}
+        </div>
+      )}
     </div>
   );
 }
@@ -376,7 +393,10 @@ export default function CreateRestaurantForm() {
       fd.append("minPartySize", String(data.minPartySize));
       fd.append("maxPartySize", String(data.maxPartySize));
     }
-    fd.append("acceptsOnlinePayment", JSON.stringify(data.acceptsOnlinePayment));
+    fd.append(
+      "acceptsOnlinePayment",
+      JSON.stringify(data.acceptsOnlinePayment),
+    );
     fd.append("offersTakeout", JSON.stringify(data.offersTakeout));
     fd.append("offersDelivery", JSON.stringify(data.offersDelivery));
     if (data.offersDelivery) {
@@ -536,11 +556,21 @@ export default function CreateRestaurantForm() {
         {/* Details */}
         <div className={cardClass}>
           <span className={sectionTitle}>{t("details")}</span>
-          <Field label={t("name")} error={errors.name?.message}>
+          <Field
+            label={t("name")}
+            error={errors.name?.message}
+            counter={
+              <CharCounter
+                count={(watch("name") ?? "").length}
+                min={NAME_MIN_CHARS}
+                max={NAME_MAX_CHARS}
+              />
+            }
+          >
             <input
               {...register("name")}
               type="text"
-              maxLength={120}
+              maxLength={NAME_MAX_CHARS}
               className={inputClass}
             />
           </Field>
@@ -618,12 +648,20 @@ export default function CreateRestaurantForm() {
         <div className={cardClass}>
           <span className={sectionTitle}>{t("location")}</span>
           <Field label={t("address")} error={errors.address?.message}>
-            <input {...register("address")} type="text" className={inputClass} />
+            <input
+              {...register("address")}
+              type="text"
+              className={inputClass}
+            />
           </Field>
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex-1">
               <Field label={t("city")} error={errors.city?.message}>
-                <input {...register("city")} type="text" className={inputClass} />
+                <input
+                  {...register("city")}
+                  type="text"
+                  className={inputClass}
+                />
               </Field>
             </div>
             <div className="flex-1">

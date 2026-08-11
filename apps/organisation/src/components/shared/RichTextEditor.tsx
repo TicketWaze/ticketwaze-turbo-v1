@@ -5,6 +5,7 @@ import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import CharacterCount from "@tiptap/extension-character-count";
 import { useEffect, useRef, useState } from "react";
+import CharCounter from "@/components/shared/CharCounter";
 import {
   Bold,
   Italic,
@@ -208,15 +209,7 @@ export default function RichTextEditor({
       {/* Footer */}
       <div className="flex items-center justify-between px-8 pt-1">
         <span className="text-[1.2rem] text-failure">{error}</span>
-        {charCount > 0 && (
-          <span
-            className={`text-[1.2rem] text-nowrap ${
-              charCount < minChars ? "text-failure" : "text-success"
-            }`}
-          >
-            {charCount} / {maxChars}
-          </span>
-        )}
+        <CharCounter count={charCount} min={minChars} max={maxChars} />
       </div>
     </div>
   );
