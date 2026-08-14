@@ -195,7 +195,11 @@ export default function StepTicket({
                 </span>
               </div>
             ) : (
-              <Input defaultValue={membershipTier.freeTickets} readOnly disabled>
+              <Input
+                defaultValue={membershipTier.freeTickets}
+                readOnly
+                disabled
+              >
                 {t("quantity")}
               </Input>
             )}
@@ -337,7 +341,9 @@ export default function StepTicket({
       <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-4 border border-neutral-100">
         <span className="font-semibold text-[16px] leading-8 text-deep-100">
           {t("sales_end_at")}{" "}
-          <span className="text-neutral-600 font-normal">({t("optional")})</span>
+          <span className="text-neutral-600 font-normal">
+            ({t("optional")})
+          </span>
         </span>
         <input
           type="datetime-local"

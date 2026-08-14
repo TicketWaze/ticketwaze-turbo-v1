@@ -61,6 +61,12 @@ export const Permission = {
   "menu.manage": iota(),
   "pos.charge": iota(),
   "pos.refund": iota(),
+
+  // Sale module. APPEND ONLY, for the same reason as the block above.
+  "sales.view": iota(),
+  "sales.create": iota(),
+  "sales.edit": iota(),
+  "sales.delete": iota(),
 } as const;
 
 export type TPermission = (typeof Permission)[keyof typeof Permission];
@@ -94,7 +100,8 @@ const FinanceManagerPermission =
   P["tickets.cancel"] |
   P["attendees.view"] |
   P["restaurants.view"] |
-  P["pos.refund"];
+  P["pos.refund"] |
+  P["sales.view"];
 
 const EventManagerPermission =
   P["staff.view"] |
@@ -118,7 +125,11 @@ const EventManagerPermission =
   P["restaurants.create"] |
   P["restaurants.edit"] |
   P["menu.manage"] |
-  P["pos.charge"];
+  P["pos.charge"] |
+  // Same shape as restaurants: runs sales day to day, cannot delete one.
+  P["sales.view"] |
+  P["sales.create"] |
+  P["sales.edit"];
 
 const AdminPermission =
   P["organisation.view"] |
@@ -157,7 +168,11 @@ const AdminPermission =
   P["restaurants.delete"] |
   P["menu.manage"] |
   P["pos.charge"] |
-  P["pos.refund"];
+  P["pos.refund"] |
+  P["sales.view"] |
+  P["sales.create"] |
+  P["sales.edit"] |
+  P["sales.delete"];
 
 const OwnerPermission =
   P["organisation.view"] |
@@ -204,7 +219,11 @@ const OwnerPermission =
   P["restaurants.delete"] |
   P["menu.manage"] |
   P["pos.charge"] |
-  P["pos.refund"];
+  P["pos.refund"] |
+  P["sales.view"] |
+  P["sales.create"] |
+  P["sales.edit"] |
+  P["sales.delete"];
 
 export const OrganisationPermissions: Record<TRole, bigint> = {
   [Role.Owner]: OwnerPermission,

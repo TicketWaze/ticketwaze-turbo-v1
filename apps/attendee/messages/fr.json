@@ -620,7 +620,8 @@
       }
     },
     "raffles": "Tirages",
-    "restaurants": "Bar & Restaurant"
+    "restaurants": "Bar & Restaurant",
+    "sales": "Produits numériques"
   },
   "Wallet": {
     "title": "Portefeuille",
@@ -995,7 +996,11 @@
       "all_slots_full": "{count, plural, one {Aucune table pour une personne ce jour-là} other {Aucune table pour # personnes ce jour-là}}. Essayez une autre date ou un plus petit groupe.",
       "download_ticket": "Télécharger ma réservation"
     },
-    "changeRefundWindowNotice": "L'organisateur a modifié cette activité après votre achat. Vous pouvez retourner vos billets et être remboursé intégralement pendant une courte période, même s'ils ne sont normalement pas remboursables."
+    "changeRefundWindowNotice": "L'organisateur a modifié cette activité après votre achat. Vous pouvez retourner vos billets et être remboursé intégralement pendant une courte période, même s'ils ne sont normalement pas remboursables.",
+    "saleCard": {
+      "tag": "Produit",
+      "instant": "Téléchargement immédiat"
+    }
   },
   "Checkout": {
     "back": "Retour",
@@ -1334,5 +1339,31 @@
     "cta": "Contacter le support",
     "blocked_action": "Votre compte est suspendu, cette action n'est donc pas disponible. Consultez l'e-mail que nous vous avons envoyé pour en connaître la raison, ou contactez le support pour faire appel.",
     "generic_error": "Une erreur est survenue"
+  },
+  "Sale": {
+    "back": "Retour",
+    "about": "À propos de ce produit",
+    "price": "Prix",
+    "whatYouGet": "Ce que vous recevez",
+    "instantDownload": "Téléchargement immédiat après le paiement",
+    "finalSale": "Toutes les ventes sont définitives",
+    "finalSaleNote": "Un produit numérique ne peut pas être remboursé une fois acheté. Vérifiez le type et la taille du fichier avant de payer.",
+    "soldBy": "Vendu par",
+    "buyNow": "Acheter",
+    "checkoutTitle": "Finaliser votre achat",
+    "total": "Total",
+    "payNow": "Payer maintenant",
+    "loginToBuy": "Connectez-vous pour acheter ce produit. Vos achats restent dans votre compte, vous pouvez donc les télécharger à nouveau quand vous voulez.",
+    "walletShort": "Solde insuffisant",
+    "purchaseComplete": "Achat terminé. Votre fichier est prêt à être téléchargé.",
+    "purchasesTitle": "Mes achats",
+    "download": "Télécharger",
+    "downloadFailed": "Ce téléchargement n'a pas pu être ouvert. Veuillez réessayer.",
+    "refunded": "Cet achat a été remboursé, le téléchargement n'est donc plus disponible.",
+    "noPurchases": "Aucun achat pour le moment",
+    "noPurchasesHint": "Les produits numériques que vous achetez apparaîtront ici, prêts à être téléchargés quand vous en avez besoin.",
+    "selectMethod": "Choisissez votre moyen de paiement",
+    "failed": "Ce paiement n'a pas pu être lancé. Veuillez réessayer.",
+    "login": "Se connecter"
   }
 }

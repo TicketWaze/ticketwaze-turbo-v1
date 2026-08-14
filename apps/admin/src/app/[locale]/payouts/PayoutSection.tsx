@@ -274,6 +274,14 @@ function OrgStatusBadge({
         {t("payout_request.table.request_status.failed")}
       </span>
     );
+  // Approved but not yet sent — open work with a person's name on it, and not
+  // the same thing as a request nobody has looked at.
+  if (status === "APPROVED")
+    return (
+      <span className={`${badgeBase} text-[#3b82f6] bg-[#f5f5f5]`}>
+        {t("payout_request.table.request_status.awaiting_send")}
+      </span>
+    );
   return (
     <span className={`${badgeBase} text-[#EA961C] bg-[#f5f5f5]`}>
       {t("payout_request.table.request_status.pending")}

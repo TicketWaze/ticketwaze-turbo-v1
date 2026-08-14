@@ -146,8 +146,28 @@ export default function EventActions({
   // A live event is only "joinable" when it actually has a meet link. In-person
   // events have a null googleMeetLink, and passing null to <Link> crashes it
   // ("Cannot read properties of null (reading 'pathname')").
-  const canJoinLive = isLive && Boolean(event.googleMeetLink);
-  const joinHref = (isLive && event.googleMeetLink) || "#";
+  /**
+   * WHERE THIS VIEWER JOINS FROM.
+   *
+   * Google Meet is one link for the whole event, held on the event. Zoom is
+   * one link PER BUYER, issued when they were registered and held on their own
+   * ticket — so for a Zoom event the event's own `zoomJoinUrl` is the wrong
+   * one to hand out and is deliberately ignored here.
+   *
+   * A Zoom ticket with no link yet is a registration that has not landed. The
+   * hourly retry sweep is still working on it, so the button stays disabled
+   * rather than sending the holder somewhere that will turn them away.
+   */
+  const onlineJoinUrl =
+    event.onlineProvider === "zoom"
+      ? (event.tickets?.find((ticket) => ticket.zoomJoinUrl)?.zoomJoinUrl ??
+        null)
+      : event.googleMeetLink;
+
+  // In-person events have a null link, and passing null to <Link> crashes it
+  // ("Cannot read properties of null (reading 'pathname')").
+  const canJoinLive = isLive && Boolean(onlineJoinUrl);
+  const joinHref = (isLive && onlineJoinUrl) || "#";
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">

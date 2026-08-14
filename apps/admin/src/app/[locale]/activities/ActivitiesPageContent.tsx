@@ -20,7 +20,9 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
+import { Event, Raffle, Restaurant, Sale } from "@ticketwaze/typescript-config";
+import { formatMoney } from "@ticketwaze/currency";
+import { SaleStatusBadge } from "./sale/[id]/components/SaleStatusDialog";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
 import { useEffect, useState } from "react";
@@ -84,6 +86,64 @@ function StatusFilterSelect({
   );
 }
 
+/**
+ * Sales do not share the other three activities' filter.
+ *
+ * Their `status` column carries the whole lifecycle rather than just a review
+ * outcome, so there is no `approved`/`review` to filter on — a product is
+ * `live` or it is somewhere on the way there.
+ */
+type SaleStatusFilter =
+  | "all"
+  | "pending_review"
+  | "scanning"
+  | "live"
+  | "rejected"
+  | "draft"
+  | "unlisted";
+
+function SaleStatusFilterSelect({
+  value,
+  onChange,
+}: {
+  value: SaleStatusFilter;
+  onChange: (value: SaleStatusFilter) => void;
+}) {
+  const options: { value: SaleStatusFilter; label: string }[] = [
+    { value: "all", label: "All" },
+    { value: "pending_review", label: "Awaiting review" },
+    { value: "scanning", label: "Scanning" },
+    { value: "live", label: "Live" },
+    { value: "rejected", label: "Rejected" },
+    { value: "draft", label: "Draft" },
+    { value: "unlisted", label: "Unlisted" },
+  ];
+
+  return (
+    <Select
+      value={value}
+      onValueChange={(e) => onChange(e as SaleStatusFilter)}
+    >
+      <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
+        <SelectValue placeholder="" />
+      </SelectTrigger>
+      <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
+        <SelectGroup>
+          {options.map((option) => (
+            <SelectItem
+              key={option.value}
+              className={"text-[1.4rem] text-deep-100"}
+              value={option.value}
+            >
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
+}
+
 function StatusBadge({
   status,
 }: {
@@ -141,12 +201,14 @@ export default function ActivitiesPageContent({
   status,
   raffles = [],
   restaurants = [],
+  sales = [],
 }: {
   eventData: Event[];
   allEvents: Event[];
   status: string;
   raffles?: Raffle[];
   restaurants?: Restaurant[];
+  sales?: Sale[];
 }) {
   const t = useTranslations("Activities");
   const locale = useLocale();
@@ -156,6 +218,7 @@ export default function ActivitiesPageContent({
   const [tab, setTab] = useState("events");
   const [raffleStatus, setRaffleStatus] = useState<StatusFilter>("all");
   const [restaurantStatus, setRestaurantStatus] = useState<StatusFilter>("all");
+  const [saleStatus, setSaleStatus] = useState<SaleStatusFilter>("all");
 
   useEffect(() => {
     setIsLoading(false);
@@ -177,6 +240,20 @@ export default function ActivitiesPageContent({
     restaurantStatus === "all"
       ? restaurants
       : restaurants.filter((r) => r.adminStatus === restaurantStatus);
+
+  /**
+   * Sales carry lifecycle and review in one status, so they cannot share the
+   * approved/rejected/review filter the other three use. `pending_review` leads
+   * because it is the only value that is somebody's job.
+   */
+  const filteredSales =
+    saleStatus === "all"
+      ? sales
+      : sales.filter((sale) => sale.status === saleStatus);
+
+  const pendingSaleCount = sales.filter(
+    (sale) => sale.status === "pending_review",
+  ).length;
 
   return (
     <div className="overflow-y-scroll flex flex-col gap-8">
@@ -259,6 +336,17 @@ export default function ActivitiesPageContent({
               <TabsTrigger value="events">Events</TabsTrigger>
               <TabsTrigger value="raffles">Raffles</TabsTrigger>
               <TabsTrigger value="restaurants">Bar & Restaurant</TabsTrigger>
+              {/* The count is the point of the tab: approval is the only way a
+                  product goes on sale, so an unattended queue is sellers
+                  waiting with no other route forward. */}
+              <TabsTrigger value="sales">
+                Products
+                {pendingSaleCount > 0 && (
+                  <span className="ml-2 rounded-[30px] bg-[#FEF3E2] px-2 py-[0.1rem] text-[1.1rem] font-bold text-[#EA961C]">
+                    {pendingSaleCount}
+                  </span>
+                )}
+              </TabsTrigger>
             </TabsList>
             {tab === "events" ? (
               <StatusFilterSelect
@@ -269,6 +357,11 @@ export default function ActivitiesPageContent({
               <StatusFilterSelect
                 value={restaurantStatus}
                 onChange={setRestaurantStatus}
+              />
+            ) : tab === "sales" ? (
+              <SaleStatusFilterSelect
+                value={saleStatus}
+                onChange={setSaleStatus}
               />
             ) : (
               <StatusFilterSelect
@@ -602,6 +695,94 @@ export default function ActivitiesPageContent({
             </TableBody>
           </Table>
           {filteredRestaurants.length === 0 && (
+            <EmptyState message={t("list.noActivities")} />
+          )}
+        </TabsContent>
+
+        {/* Products tab */}
+        <TabsContent value="sales" className="flex flex-col gap-8">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead
+                  className={
+                    "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  {t("list.table.name")}
+                </TableHead>
+                <TableHead
+                  className={
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  Seller
+                </TableHead>
+                <TableHead
+                  className={
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  Price
+                </TableHead>
+                <TableHead
+                  className={
+                    "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  {t("list.table.status")}
+                </TableHead>
+                <TableHead
+                  className={
+                    "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
+                  }
+                >
+                  {t("list.table.created")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+
+            <TableBody>
+              {filteredSales.map((sale) => (
+                <TableRow
+                  key={sale.saleId}
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/activities/sale/${sale.saleId}`)}
+                >
+                  <TableCell
+                    className={"text-[1.5rem] py-6 leading-8 text-neutral-900"}
+                  >
+                    <span className={"truncate"}>{sale.title}</span>
+                  </TableCell>
+                  <TableCell
+                    className={
+                      "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                    }
+                  >
+                    {sale.organisation?.organisationName ?? "-"}
+                  </TableCell>
+                  <TableCell
+                    className={
+                      "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
+                    }
+                  >
+                    {formatMoney(sale.price, sale.currencyCode, locale)}
+                  </TableCell>
+                  <TableCell className="py-6">
+                    <SaleStatusBadge status={sale.status} />
+                  </TableCell>
+                  <TableCell
+                    className={
+                      "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
+                    }
+                  >
+                    {formatDate(sale.createdAt, locale, "local")}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+          {filteredSales.length === 0 && (
             <EmptyState message={t("list.noActivities")} />
           )}
         </TabsContent>

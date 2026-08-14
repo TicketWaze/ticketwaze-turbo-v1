@@ -5,6 +5,7 @@ import {
   Event,
   Raffle,
   Restaurant,
+  Sale,
 } from "@ticketwaze/typescript-config";
 import AdminLayout from "@/components/Layouts/AdminLayout";
 
@@ -60,6 +61,30 @@ async function fetchRestaurants(
   return request.json();
 }
 
+/**
+ * Every product, not just the queue.
+ *
+ * `status=ALL` because this list is filtered client-side like raffles and
+ * venues, and because an admin looking for a product they rejected yesterday
+ * should find it here rather than nowhere.
+ */
+async function fetchSales(
+  accessToken: string | undefined,
+): Promise<{ sales?: { data?: Sale[] } }> {
+  const request = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/sales?status=ALL&limit=100`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+  // The API omits its data keys on error, so guard before reading.
+  return request.json().catch(() => ({}));
+}
+
 export default async function ActivitiesPage({
   searchParams,
 }: {
@@ -75,6 +100,7 @@ export default async function ActivitiesPage({
 
   const rafflesPromise = fetchRaffles(accessToken);
   const restaurantsPromise = fetchRestaurants(accessToken);
+  const salesPromise = fetchSales(accessToken);
 
   if (activeStatus === "all") {
     // The API filters by a single status, so "all" aggregates every status.
@@ -95,6 +121,8 @@ export default async function ActivitiesPage({
 
   const raffles = (await rafflesPromise).raffles ?? [];
   const restaurants = (await restaurantsPromise).restaurants ?? [];
+  // Paginated by the API, unlike raffles and venues.
+  const sales = (await salesPromise).sales?.data ?? [];
 
   return (
     <AdminLayout>
@@ -104,6 +132,7 @@ export default async function ActivitiesPage({
         status={activeStatus}
         raffles={raffles}
         restaurants={restaurants}
+        sales={sales}
       />
     </AdminLayout>
   );

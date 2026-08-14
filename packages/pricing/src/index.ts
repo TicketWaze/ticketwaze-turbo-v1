@@ -96,6 +96,68 @@ export function calculateStripeTotalUSD(usdPrice: number): number {
   return round2(subtotal * (1 + STRIPE_TX_FEE_RATE));
 }
 
+// ── Digital sales ─────────────────────────────────────────────────────────────
+
+/**
+ * Sales price differently from tickets: the buyer sees one all-in number and no
+ * itemised fees, and the seller receives exactly the price they set. Ticketwaze
+ * absorbs the payment-processor fee out of the surcharge.
+ *
+ * The percentage arm is what makes absorbing it safe. A flat-only surcharge goes
+ * underwater as soon as the processor's own percentage exceeds it — break-even
+ * is `floor / (rate / (1 - rate))`, about $97 at a $3 floor and Stripe's 3%.
+ * Above that the percentage takes over and the margin keeps growing.
+ */
+export const SALE_FEE_RATE = 0.12;
+export const SALE_FEE_FLOOR_USD = 3;
+export const SALE_FEE_FLOOR_HTG = 400;
+
+/** Below these a sale is refused, so the floor can never dwarf the product. */
+export const SALE_MIN_PRICE_USD = 3;
+export const SALE_MIN_PRICE_HTG = 500;
+
+export function getSaleFeeFloor(currency: string): number {
+  return currency === "USD" ? SALE_FEE_FLOOR_USD : SALE_FEE_FLOOR_HTG;
+}
+
+export function getSaleMinPrice(currency: string): number {
+  return currency === "USD" ? SALE_MIN_PRICE_USD : SALE_MIN_PRICE_HTG;
+}
+
+export interface SalePrice {
+  /** What the seller set, and exactly what the seller is credited. */
+  sellerPrice: number;
+  /** Ticketwaze's margin; never shown itemised to a buyer. */
+  surcharge: number;
+  /** The single all-in number the buyer pays. */
+  buyerPays: number;
+  currency: string;
+}
+
+/**
+ * All-in price of one digital sale.
+ *
+ *   surcharge = max(floor, 12% x price)
+ *   buyerPays = price + surcharge
+ *
+ * Mirrors `calculateSaleTotal` in the API's `utils/pricing.ts`, which is what
+ * actually charges the buyer. Any change here has to be made there too.
+ */
+export function getSalePrice(currency: string, price: number): SalePrice {
+  const sellerPrice = Number.isFinite(price) && price > 0 ? price : 0;
+  const surcharge = Math.max(
+    getSaleFeeFloor(currency),
+    SALE_FEE_RATE * sellerPrice,
+  );
+
+  return {
+    sellerPrice: round2(sellerPrice),
+    surcharge: round2(surcharge),
+    buyerPays: round2(sellerPrice + surcharge),
+    currency,
+  };
+}
+
 // ── Single-ticket breakdown ───────────────────────────────────────────────────
 
 /** How the buyer pays. `wallet` carries no payment-processor fee. */

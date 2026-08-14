@@ -576,7 +576,8 @@
       }
     },
     "raffles": "Raffles",
-    "restaurants": "Bar & Restaurant"
+    "restaurants": "Bar & Restaurant",
+    "sales": "Digital products"
   },
   "Wallet": {
     "title": "Wallet",
@@ -951,7 +952,11 @@
       "all_slots_full": "{count, plural, one {No table for one is free on this day} other {No table for # is free on this day}}. Try another date or a smaller party.",
       "download_ticket": "Download my reservation"
     },
-    "changeRefundWindowNotice": "The organiser changed this activity after you bought. You can return your tickets for a full refund for a short time, even if they are normally non-refundable."
+    "changeRefundWindowNotice": "The organiser changed this activity after you bought. You can return your tickets for a full refund for a short time, even if they are normally non-refundable.",
+    "saleCard": {
+      "tag": "Product",
+      "instant": "Instant download"
+    }
   },
   "Checkout": {
     "back": "Back",
@@ -1290,5 +1295,31 @@
     "cta": "Contact support",
     "blocked_action": "Your account is suspended, so this action is unavailable. Check the email we sent for the reason, or contact support to appeal.",
     "generic_error": "Something went wrong"
+  },
+  "Sale": {
+    "back": "Back",
+    "about": "About this product",
+    "price": "Price",
+    "whatYouGet": "What you get",
+    "instantDownload": "Download straight after payment",
+    "finalSale": "All sales are final",
+    "finalSaleNote": "Digital products cannot be refunded once bought. Check the file type and size before you pay.",
+    "soldBy": "Sold by",
+    "buyNow": "Buy now",
+    "checkoutTitle": "Complete your purchase",
+    "total": "Total",
+    "payNow": "Pay now",
+    "loginToBuy": "Sign in to buy this product. Your purchases stay in your account so you can download them again any time.",
+    "walletShort": "Not enough balance",
+    "purchaseComplete": "Purchase complete. Your file is ready to download.",
+    "purchasesTitle": "My purchases",
+    "download": "Download",
+    "downloadFailed": "That download could not be opened. Please try again.",
+    "refunded": "This purchase was refunded, so the download is no longer available.",
+    "noPurchases": "No purchases yet",
+    "noPurchasesHint": "Digital products you buy will appear here, ready to download whenever you need them.",
+    "selectMethod": "Choose how you want to pay",
+    "failed": "That payment could not be started. Please try again.",
+    "login": "Sign in"
   }
 }

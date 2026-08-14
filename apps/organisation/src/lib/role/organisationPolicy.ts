@@ -45,6 +45,13 @@ export function sessionChecker(permissions: string[]) {
     manageWebhooks: () => has("webhooks.manage"),
     manageSettings: () => has("settings.manage"),
     manageBranding: () => has("branding.manage"),
+    // Sale module. These read permission NAMES out of the session, so unlike
+    // the bitmask in organisationRole.ts the order they are added in is
+    // irrelevant.
+    viewSales: () => has("sales.view"),
+    createSale: () => has("sales.create"),
+    editSale: () => has("sales.edit"),
+    deleteSale: () => has("sales.delete"),
     // Backward-compatible aliases
     addMember: () => has("staff.manage"),
     removeMember: () => has("staff.manage"),

@@ -176,6 +176,17 @@ export default function WithdrawalRequestPageContent({
                           {t("filters.pending")}
                         </span>
                       )}
+                      {/* Approved: the payout is on its way. Without this the
+                          cell renders empty for a request that is progressing. */}
+                      {request.status.toUpperCase() === "APPROVED" && (
+                        <span
+                          className={
+                            "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#3b82f6]  px-4 rounded-[30px] bg-[#3b82f6]/20"
+                          }
+                        >
+                          {t("filters.processing")}
+                        </span>
+                      )}
                       {request.status.toUpperCase() === "FAILED" && (
                         <span
                           className={

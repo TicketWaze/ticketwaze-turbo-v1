@@ -25,10 +25,16 @@ import { MembershipTier } from "@ticketwaze/typescript-config";
 export default function CreateMeetEventForm({
   eventType,
   code,
+  onlineProvider,
+  zoomSeatLimit,
   membershipTier,
 }: {
   eventType: string;
   code: string | undefined;
+  /** 'google_meet' | 'zoom' — chosen before the category list. */
+  onlineProvider: string;
+  /** Seats on the connected Zoom plan; null for Google Meet. */
+  zoomSeatLimit: number | null;
   membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event");
@@ -44,6 +50,7 @@ export default function CreateMeetEventForm({
     isFree,
     (k, values) => t(k, values),
     membershipTier.freeTickets,
+    zoomSeatLimit,
   );
   type TForm = z.infer<typeof FormDataSchema>;
 
@@ -109,6 +116,7 @@ export default function CreateMeetEventForm({
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
     formData.append("eventType", eventType);
+    formData.append("onlineProvider", onlineProvider);
     formData.append("isFree", JSON.stringify(data.isFree));
     formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("isRefundable", JSON.stringify(isRefundable));

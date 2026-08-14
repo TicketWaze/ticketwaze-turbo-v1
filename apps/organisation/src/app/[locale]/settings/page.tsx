@@ -6,6 +6,7 @@ import {
   CardPos,
   I24Support,
   Icon,
+  Link21,
   MoneySend,
   Notification,
   Profile2User,
@@ -39,6 +40,11 @@ export default async function Settings() {
       label: t("payment.title"),
       href: "/settings/payment",
       Icon: CardPos,
+    },
+    {
+      label: t("integrations.title"),
+      href: "/settings/integrations",
+      Icon: Link21,
     },
     {
       label: t("notification.title"),

@@ -1,6 +1,11 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import ExplorePageContent from "./ExplorePageContent";
-import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  PublicSale,
+  Raffle,
+  Restaurant,
+} from "@ticketwaze/typescript-config";
 import { getHtgExchangeRate } from "@/lib/getHtgExchangeRate";
 
 export default async function Explore({
@@ -13,17 +18,21 @@ export default async function Explore({
   // client round trip the user could outrun on a slow connection.
   const { welcome } = await searchParams;
   const htgExchangeRate = await getHtgExchangeRate();
-  const [request, rafflesRequest, restaurantsRequest] = await Promise.all([
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
-      next: { revalidate: 60 },
-    }),
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/raffles`, {
-      next: { revalidate: 60 },
-    }),
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/restaurants`, {
-      next: { revalidate: 60 },
-    }),
-  ]);
+  const [request, rafflesRequest, restaurantsRequest, salesRequest] =
+    await Promise.all([
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+        next: { revalidate: 60 },
+      }),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/raffles`, {
+        next: { revalidate: 60 },
+      }),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/restaurants`, {
+        next: { revalidate: 60 },
+      }),
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/sales`, {
+        next: { revalidate: 60 },
+      }),
+    ]);
   const response = await request.json();
   const pastEvents: Event[] = response.pastEvents ?? [];
   // Teasers come back as their own array: they have no event_days, so the
@@ -52,6 +61,16 @@ export default async function Explore({
     restaurants = [];
   }
 
+  // Same guard as the two above: the API omits its data key on error, and one
+  // failing section must not take the whole explore page down with it.
+  let sales: PublicSale[] = [];
+  try {
+    const salesResponse = await salesRequest.json();
+    sales = salesResponse.sales ?? [];
+  } catch {
+    sales = [];
+  }
+
   return (
     <AttendeeLayout
       title="Explore"
@@ -63,6 +82,7 @@ export default async function Explore({
         pastEvents={pastEvents}
         raffles={raffles}
         restaurants={restaurants}
+        sales={sales}
         wallet={null}
         htgExchangeRate={htgExchangeRate}
       />

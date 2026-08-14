@@ -559,7 +559,8 @@
       "pending": "Pending",
       "successful": "Successful",
       "failed": "Failed",
-      "returned": "Returned"
+      "returned": "Returned",
+      "processing": "Processing"
     },
     "search": "Search for transaction id",
     "transactions": {
@@ -618,7 +619,7 @@
       }
     },
     "wise": "Wise",
-    "wise_hint": "Instant transfer to your Wise account, in USD",
+    "wise_hint": "Paid to your Wise account in USD, once reviewed",
     "wise_details": "Wise account",
     "wise_details_hint": "Enter the Wisetag of the account that should receive your payout. Payouts are sent in USD.",
     "wise_verify": "Verify",
@@ -965,8 +966,8 @@
           "description": "Sell numbered tickets and draw winners for one or more prizes."
         },
         "meet": {
-          "title": "Google Meet",
-          "description": "Attend virtually with Google Meet, wherever your audience is.",
+          "title": "Online",
+          "description": "Host it on Google Meet or Zoom, wherever your audience is.",
           "warning": "To create a Google Meet event, we’ll use your Google account and request access to your calendar. If you proceed, you agree to grant us permission to access and manage your calendar events through your Google account. Please note that if you remove this access, users will no longer be able to purchase tickets for your Meet events.",
           "fetchFailedError": "We couldn’t retrieve the requested data at the moment. Please check your internet connection and try again. If the error persit, reach out support."
         },
@@ -997,6 +998,32 @@
         "comingSoon": {
           "title": "Coming soon",
           "description": "Tease something before you have dates or tickets"
+        },
+        "sale": {
+          "title": "Digital product",
+          "description": "Sell a file once and deliver it automatically: an ebook, a beat, a preset, a template."
+        },
+        "online": {
+          "back": "Back",
+          "title": "Select Online Platform",
+          "connectFailed": "We could not reach Zoom at the moment. Please check your internet connection and try again. If the error persists, reach out to support.",
+          "googleMeet": {
+            "title": "Google Meet",
+            "hint": "Buyers are added to the calendar invite and Google emails them the link."
+          },
+          "zoom": {
+            "title": "Zoom",
+            "back": "Back to platforms",
+            "connect": "Connect Zoom",
+            "connectFailed": "We could not reach Zoom at the moment. Please check your internet connection and try again. If the error persists, reach out to support.",
+            "connectedAs": "Connected as {email}. Each buyer gets their own join link.",
+            "notConnected": "Connect your Zoom account to use Zoom.",
+            "needsPaidPlan": "Requires a paid Zoom plan.",
+            "unavailable": "Zoom is not available yet.",
+            "unavailableBody": "Zoom events are not available on this environment yet. Create the event on Google Meet instead.",
+            "warning": "To create a Zoom event, we will use your Zoom account to schedule the meeting and register each buyer, so everyone gets their own join link. Zoom events require a paid Zoom plan. If you disconnect this access later, buyers will no longer be able to purchase tickets for your Zoom events.",
+            "paidPlanBody": "Your Zoom account is on the free Basic plan. Zoom events need a paid plan, because giving each buyer their own join link relies on meeting registration, which the free plan does not include. The free plan also ends meetings after 40 minutes. Upgrade your Zoom plan, or create the event on Google Meet instead."
+          }
         }
       },
       "tagPlaceholder": "Type a hashtag and press enter or spacebar",
@@ -1175,7 +1202,8 @@
           "quantity": {
             "empty": "Quantity cannot be empty",
             "decimal": "Quantity cannot have decimal or trailling zero",
-            "exceedsLimit": "Quantity cannot exceed your plan limit of {limit} free tickets"
+            "exceedsLimit": "Quantity cannot exceed your plan limit of {limit} free tickets",
+            "exceedsZoomSeats": "The total number of tickets cannot exceed your Zoom plan’s {limit} seats."
           }
         }
       },
@@ -1281,7 +1309,51 @@
       "prize_image": "Prize picture",
       "prize_image_tip": "Required. Shown to buyers and during the draw.",
       "prize_image_remove": "Remove prize picture",
-      "edit_warning_body_review": "This activity already has ticket sales, so your changes will be reviewed before they go live. It stays listed and on sale with its current details until an admin approves them."
+      "edit_warning_body_review": "This activity already has ticket sales, so your changes will be reviewed before they go live. It stays listed and on sale with its current details until an admin approves them.",
+      "sale": {
+        "back": "Back",
+        "title_heading": "Sell a digital product",
+        "edit_heading": "Edit your product",
+        "cover": "Cover image",
+        "cover_text": "Drag your cover here or",
+        "browse": "browse",
+        "details": "Details",
+        "name": "Product name",
+        "description": "Description",
+        "description_placeholder": "What is it, what is inside, and who is it for?",
+        "tags": "Tags",
+        "tags_placeholder": "Type a hashtag and press enter or spacebar",
+        "tags_tip": "Tags help buyers find your product. Use the words someone would search for.",
+        "file": "The file you are selling",
+        "file_text": "Drag your file here or",
+        "file_tip": "One file per product. Zip it first if you are selling more than one. Your plan sets the size limit.",
+        "file_remove": "Remove file",
+        "uploading": "Uploading… {percent}%",
+        "pricing": "Price",
+        "price": "Your price",
+        "currency": "Currency",
+        "currency_lock_tip": "The currency cannot be changed once someone has bought this product.",
+        "review_note": "Your file is scanned and reviewed before your product goes on sale. You will be told either way.",
+        "final_note": "All sales are final. Buyers cannot request a refund on a digital product.",
+        "delivery_note": "Buyers download the file straight after paying, as many times as they need.",
+        "submit": "Create product",
+        "save": "Save changes",
+        "success": "Your product was created and sent for review.",
+        "update_success": "Your product was updated.",
+        "edit_metadata_note": "Editing the name, description or price does not send your product back for review. Replacing the file does.",
+        "no_org": "Select an organisation first.",
+        "errors": {
+          "title": "The name must be at least 10 characters.",
+          "description": "The description must be at least 20 characters.",
+          "price": "Enter a price.",
+          "min_price": "This price is below the minimum for a digital product.",
+          "cover": "Add a cover image.",
+          "file": "Add the file you are selling.",
+          "too_large": "Your cover image is too large. Try a smaller one.",
+          "submit_failed": "We could not create your product. Please try again.",
+          "title_taken": "A product with this name already exists. Choose a different name."
+        }
+      }
     },
     "price_preview": {
       "title": "What your attendees will pay",
@@ -1290,6 +1362,13 @@
       "attendee_pays": "Attendee pays",
       "you_receive": "You receive",
       "note": "Fees are added on top of your price, so you always receive the full amount you set."
+    },
+    "sale_price_preview": {
+      "title": "What your buyers will pay",
+      "buyer_pays": "Buyer pays",
+      "you_receive": "You receive",
+      "note": "Buyers see one price, never a list of fees. You receive the full amount you set.",
+      "below_minimum": "The minimum price for a digital product is {minimum}."
     },
     "filters": {
       "first": {
@@ -1318,7 +1397,9 @@
       "empty_events": "No events yet. Create your first event to get started.",
       "empty_raffles": "No raffles yet. Create your first raffle to get started.",
       "restaurants": "Bar & Restaurant",
-      "empty_restaurants": "No venue yet. Add your bar or restaurant to get started."
+      "empty_restaurants": "No venue yet. Add your bar or restaurant to get started.",
+      "sales": "Digital products",
+      "empty_sales": "No digital product yet. Upload your first file to start selling."
     },
     "restaurantCard": {
       "tag": "Bar & Restaurant",
@@ -1332,6 +1413,19 @@
       "suspended": "Suspended",
       "closed_permanently": "Permanently closed",
       "no_hours": "No opening hours set"
+    },
+    "saleCard": {
+      "tag": "Digital product",
+      "no_file": "No file uploaded",
+      "you_receive": "you receive {amount}",
+      "status": {
+        "draft": "Draft",
+        "scanning": "Scanning",
+        "pending_review": "In review",
+        "live": "Live",
+        "rejected": "Rejected",
+        "unlisted": "Unlisted"
+      }
     },
     "restaurantDetail": {
       "overview": "Overview",
@@ -1599,6 +1693,62 @@
       }
     },
     "coming_soon_label": "Coming soon"
+  },
+  "Sales": {
+    "single_sale": {
+      "back": "Back",
+      "more": "More",
+      "edit": "Edit",
+      "delete": "Delete",
+      "description": "Description",
+      "created": "Created {date}",
+      "stats": {
+        "buyer_pays": "Buyer pays",
+        "you_receive": "You receive",
+        "status": "Status",
+        "file_size": "File size"
+      },
+      "status": {
+        "draft": "Draft",
+        "scanning": "Scanning",
+        "pending_review": "In review",
+        "live": "Live",
+        "rejected": "Rejected",
+        "unlisted": "Unlisted"
+      },
+      "banners": {
+        "draft": "This product is a draft. Upload the file you are selling to send it for review.",
+        "scanning": "We are checking your file. This usually takes a few minutes.",
+        "pending_review": "Your product is waiting for an admin to review it. It is not on sale yet.",
+        "rejected": "Your product was rejected",
+        "unlisted": "This product is no longer listed. People who already bought it keep their download."
+      },
+      "file": {
+        "title": "The file you are selling",
+        "none_yet": "No file uploaded yet.",
+        "version": "version {version}",
+        "versions": "{count} versions kept. Buyers keep the version they paid for.",
+        "add": "Upload your file",
+        "replace": "Replace the file",
+        "replace_warning": "Replacing the file sends your product back for review. It stops being on sale until an admin approves the new file.",
+        "upload_cta": "Upload",
+        "upload_success": "Your file was uploaded and sent for review.",
+        "choose_first": "Choose a file first.",
+        "scan": {
+          "pending": "Scan pending",
+          "clean": "Scanned, clean",
+          "infected": "Malware found",
+          "error": "Scan failed"
+        }
+      },
+      "delete_dialog": {
+        "title": "Delete this product",
+        "warning": "This removes the product from Ticketwaze. This cannot be undone.",
+        "buyers_note": "If anyone has already bought it, the product is unlisted instead of deleted and its buyers keep their download.",
+        "cta": "Delete product",
+        "done": "Product deleted."
+      }
+    }
   },
   "Raffles": {
     "single_raffle": {
@@ -2120,6 +2270,24 @@
         "error_title": "Something went wrong",
         "error_desc": "We couldn't activate your subscription. Please try again or contact support.",
         "error_retry": "Try again"
+      }
+    },
+    "integrations": {
+      "title": "Integrations",
+      "back": "Back",
+      "zoom": {
+        "title": "Zoom",
+        "description": "Host online events on your own Zoom account.",
+        "connect": "Connect Zoom",
+        "connectFailed": "We could not reach Zoom at the moment. Please check your internet connection and try again. If the error persists, reach out to support.",
+        "notConnected": "No Zoom account is connected. Connect one to host online events on Zoom. You can also connect while creating an online event.",
+        "connectedAs": "Connected as {email}. Your plan seats {seats} people, so an online event on Zoom can sell up to {seats} tickets in total.",
+        "connectedButFree": "Connected as {email}, on the free Basic plan. Zoom events need a paid plan, because giving each buyer their own join link relies on meeting registration, which the free plan does not include. Upgrade your Zoom plan to host events on Zoom.",
+        "unavailable": "Zoom is not available on this environment yet.",
+        "disconnect": "Disconnect",
+        "disconnectWarning": "Your Zoom account will be unlinked and you will no longer be able to create Zoom events. Events you have already published keep working and buyers keep their join links, so this does not cancel anything you have sold. You can reconnect at any time.",
+        "disconnected": "Your Zoom account has been disconnected.",
+        "disconnectFailed": "We could not disconnect your Zoom account. Please try again."
       }
     }
   }

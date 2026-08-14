@@ -72,6 +72,30 @@ export default async function EventPage() {
     restaurants = [];
   }
 
+  // Digital products are the fourth activity type and share the activities list.
+  let sales = [];
+  try {
+    const salesRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/sales/${session?.activeOrganisation.organisationId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          Authorization: `Bearer ${session?.user.accessToken}`,
+        },
+        cache: "no-store",
+      },
+    );
+    const salesResponse = await salesRequest.json();
+    // The sales endpoint answers under `data`, and omits the key entirely on
+    // an error — so this cannot be a bare property read.
+    sales = salesResponse.data ?? [];
+  } catch {
+    sales = [];
+  }
+
   const perms = session?.activeOrganisation?.myPermissions ?? [];
   const canCreate = checkPermission(perms, "events.create");
   return (
@@ -95,6 +119,7 @@ export default async function EventPage() {
         events={events.events}
         raffles={raffles}
         restaurants={restaurants}
+        sales={sales}
       />
     </OrganizerLayout>
   );

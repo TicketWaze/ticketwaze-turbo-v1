@@ -3,10 +3,11 @@ import { useState } from "react";
 import { DateTime } from "luxon";
 import { Money3 } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
-import { Event, Raffle, Restaurant } from "@ticketwaze/typescript-config";
+import { Event, Raffle, Restaurant, Sale } from "@ticketwaze/typescript-config";
 import EventCard from "@/components/shared/EventCard";
 import RaffleCard from "@/components/shared/RaffleCard";
 import RestaurantCard from "@/components/shared/RestaurantCard";
+import SaleCard from "@/components/shared/SaleCard";
 import {
   Select,
   SelectContent,
@@ -17,7 +18,7 @@ import {
 } from "@/components/ui/select";
 
 type Category = "upcoming" | "ongoing" | "past";
-type ActivityFilter = "all" | "events" | "raffles" | "restaurants";
+type ActivityFilter = "all" | "events" | "raffles" | "restaurants" | "sales";
 
 function categorizeEvent(event: Event): Category {
   const now = DateTime.now();
@@ -60,15 +61,17 @@ export default function EventPageContent({
   events,
   raffles = [],
   restaurants = [],
+  sales = [],
 }: {
   events: Event[];
   raffles?: Raffle[];
   restaurants?: Restaurant[];
+  sales?: Sale[];
 }) {
   const t = useTranslations("Events");
   const [filter, setFilter] = useState<ActivityFilter>("all");
 
-  // Events, raffles and restaurants share one grid, newest first.
+  // Every activity type shares one grid, newest first.
   const items = [
     ...events.map((event) => ({
       kind: "event" as const,
@@ -85,6 +88,11 @@ export default function EventPageContent({
       createdAt: restaurant.createdAt,
       restaurant,
     })),
+    ...sales.map((sale) => ({
+      kind: "sale" as const,
+      createdAt: sale.createdAt,
+      sale,
+    })),
   ].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
@@ -93,6 +101,7 @@ export default function EventPageContent({
     if (filter === "events") return item.kind === "event";
     if (filter === "raffles") return item.kind === "raffle";
     if (filter === "restaurants") return item.kind === "restaurant";
+    if (filter === "sales") return item.kind === "sale";
     return true;
   });
 
@@ -101,6 +110,7 @@ export default function EventPageContent({
     { value: "events", label: t("filter.events") },
     { value: "raffles", label: t("filter.raffles") },
     { value: "restaurants", label: t("filter.restaurants") },
+    { value: "sales", label: t("filter.sales") },
   ];
 
   return (
@@ -164,6 +174,13 @@ export default function EventPageContent({
                   </li>
                 );
               }
+              if (item.kind === "sale") {
+                return (
+                  <li key={item.sale.saleId}>
+                    <SaleCard sale={item.sale} />
+                  </li>
+                );
+              }
               const category = categorizeEvent(item.event);
               return (
                 <li
@@ -185,9 +202,11 @@ export default function EventPageContent({
                 ? t("filter.empty_raffles")
                 : filter === "restaurants"
                   ? t("filter.empty_restaurants")
-                  : filter === "events"
-                    ? t("filter.empty_events")
-                    : t("description")
+                  : filter === "sales"
+                    ? t("filter.empty_sales")
+                    : filter === "events"
+                      ? t("filter.empty_events")
+                      : t("description")
             }
           />
         )}

@@ -8,7 +8,10 @@ import InPerson from "@/assets/images/in-person.jpg";
 import Draw from "@/assets/images/draw.jpg";
 import RestaurantCover from "@/assets/images/restaurant.jpg";
 import GoogleMeet from "@/assets/images/meet.jpg";
-import ComingSoonCover from "@/assets/images/online.jpg";
+import ComingSoonCover from "@/assets/images/coming.jpg";
+// Placeholder art: this was the old coming-soon cover, freed up when that card
+// moved to coming.jpg. Swap it for a digital-product image when one exists.
+import SaleCover from "@/assets/images/online.jpg";
 // import Private from "@/assets/images/private.jpeg";
 // import Reservations from "@/assets/images/reservations.jpg";
 // import Transportations from "@/assets/images/transportations.jpg";
@@ -54,17 +57,12 @@ export default function EventTypeList({
     // same row once the organiser has dates and tickets. Listed first because
     // it is the cheapest thing an organiser can post.
     {
-      title: t("list.comingSoon.title"),
-      description: t("list.comingSoon.description"),
-      image: ComingSoonCover,
-      value: "coming-soon",
-    },
-    {
       title: t("list.inPerson.title"),
       description: t("list.inPerson.description"),
       image: InPerson,
       value: "in-person",
     },
+
     {
       title: t("list.raffle.title"),
       description: t("list.raffle.description"),
@@ -72,10 +70,16 @@ export default function EventTypeList({
       value: "raffle",
     },
     {
-      title: t("list.restaurant.title"),
-      description: t("list.restaurant.description"),
-      image: RestaurantCover,
-      value: "restaurant",
+      title: t("list.comingSoon.title"),
+      description: t("list.comingSoon.description"),
+      image: ComingSoonCover,
+      value: "coming-soon",
+    },
+    {
+      title: t("list.sale.title"),
+      description: t("list.sale.description"),
+      image: SaleCover,
+      value: "sale",
     },
     {
       title: t("list.meet.title"),
@@ -83,6 +87,13 @@ export default function EventTypeList({
       image: GoogleMeet,
       value: "meet",
     },
+    // {
+    //   title: t("list.restaurant.title"),
+    //   description: t("list.restaurant.description"),
+    //   image: RestaurantCover,
+    //   value: "restaurant",
+    // },
+
     // {
     //   title: t("list.private.title"),
     //   description: t("list.private.description"),
@@ -134,33 +145,37 @@ export default function EventTypeList({
     return category.title.toLowerCase().includes(search);
   });
 
+  /**
+   * Currently unreachable — the dialog that called this is commented out below,
+   * and the Google connect flow is broken anyway (its OAuth redirect URI has no
+   * locale prefix and this app has no middleware, so it 404s).
+   *
+   * The "already connected?" branch this used to open with is gone: it read
+   * `organisation.googleRefreshToken`, which the API no longer serializes
+   * because sending an organiser's refresh token to the browser was a
+   * credential leak. Connection state has to come from an endpoint now, the way
+   * `/events/zoom/:id/status` does for Zoom.
+   */
   async function proceedGoogleMeet() {
     setIsLoading(true);
     try {
-      if (
-        organisation.googleRefreshToken &&
-        organisation.googleRefreshToken.length !== 0
-      ) {
-        router.push("/events/create/meet");
-      } else {
-        const request = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/events/google/callback`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${session?.user.accessToken}`,
-            },
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/google/callback`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.accessToken}`,
           },
-        );
-        const response = await request.json();
-        if (response.status === "success") {
-          closeRef.current?.click();
-          router.push(response.authorizationUrl);
-        } else {
-          toast.error(response.message);
-          setIsLoading(false);
-        }
+        },
+      );
+      const response = await request.json();
+      if (response.status === "success") {
+        closeRef.current?.click();
+        router.push(response.authorizationUrl);
+      } else {
+        toast.error(response.message);
+        setIsLoading(false);
       }
     } catch {
       closeRef.current?.click();
@@ -291,7 +306,7 @@ export default function EventTypeList({
           if (
             // category.value === "raffle" ||
             category.value === "restaurant" ||
-            category.value === "meet" ||
+            // category.value === "meet" ||
             category.value === "reservations" ||
             category.value === "transportations" ||
             category.value === "tours" ||

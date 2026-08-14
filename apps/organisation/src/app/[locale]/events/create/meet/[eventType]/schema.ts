@@ -10,6 +10,14 @@ export function makeMeetPersonSchema(
   isFree: boolean,
   t: TranslateFn,
   freeTicketLimit: number,
+  /**
+   * Seats on the organiser's Zoom plan, or null for Google Meet.
+   *
+   * Checked here as well as by the API because the API's refusal arrives only
+   * on submit, three steps in. The API is still the authority — this exists so
+   * the organiser is told before they have filled in a form they must redo.
+   */
+  zoomSeatLimit: number | null = null,
 ) {
   return z
     .object({
@@ -109,6 +117,33 @@ export function makeMeetPersonSchema(
       ticketSalesEndAt: z.string().optional(),
     })
     .superRefine((data, ctx) => {
+      /**
+       * The Zoom seat cap, across ALL ticket types combined.
+       *
+       * Three 50-seat tiers on a 100-seat plan still oversells, so the sum is
+       * what matters, not each tier. Reported on the last row because that is
+       * the one the organiser is editing when they cross the line.
+       */
+      if (zoomSeatLimit !== null) {
+        const total = data.ticketTypes.reduce((sum, ticket) => {
+          const quantity = parseInt(ticket.ticketTypeQuantity, 10);
+          return sum + (isNaN(quantity) ? 0 : quantity);
+        }, 0);
+        if (total > zoomSeatLimit) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("errors.ticketClass.quantity.exceedsZoomSeats", {
+              limit: zoomSeatLimit,
+            }),
+            path: [
+              "ticketTypes",
+              Math.max(0, data.ticketTypes.length - 1),
+              "ticketTypeQuantity",
+            ],
+          });
+        }
+      }
+
       if (data.isFree) {
         data.ticketTypes.forEach((ticket, index) => {
           const quantity = parseInt(ticket.ticketTypeQuantity, 10);
