@@ -1008,6 +1008,7 @@
         "online": {
           "back": "Back",
           "title": "Select Online Platform",
+          "comingSoon": "Coming soon.",
           "connectFailed": "We could not reach Zoom at the moment. Please check your internet connection and try again. If the error persists, reach out to support.",
           "googleMeet": {
             "title": "Google Meet",

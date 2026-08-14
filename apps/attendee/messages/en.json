@@ -708,6 +708,7 @@
     "noResult": "There's no result for ",
     "countdown": {
       "ongoing": "Ongoing",
+      "past": "Ended",
       "days": "{count, plural, one {# day} other {# days}} <muted>to go</muted>",
       "hours": "{count, plural, one {# hour} other {# hours}} <muted>to go</muted>",
       "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>to go</muted>",

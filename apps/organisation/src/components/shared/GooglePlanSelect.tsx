@@ -47,12 +47,19 @@ export default function GooglePlanSelect({
       <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
         <SelectValue placeholder={t("placeholder")} />
       </SelectTrigger>
-      <SelectContent>
+      {/*
+        Bounded to the viewport rather than to the label. "Workspace Business
+        Standard · 149 tickets · 24 hours" is a long line, and inside the
+        360px-wide create dialog an unbounded menu would run off the screen.
+      */}
+      <SelectContent className="max-w-[min(90vw,480px)]">
         {GOOGLE_PLANS.map((plan) => (
           <SelectItem
             key={plan}
             value={plan}
-            className="text-[1.5rem] leading-8 text-deep-200"
+            // Wraps instead of overflowing: the limits are the reason this
+            // dropdown exists, so they must stay readable at any width.
+            className="text-[1.5rem] leading-8 text-deep-200 whitespace-normal"
           >
             {t("option", {
               name: t(plan),

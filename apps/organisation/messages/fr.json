@@ -1007,6 +1007,7 @@
         "online": {
           "back": "Retour",
           "title": "Sélectionnez une plateforme en ligne",
+          "comingSoon": "Bientôt disponible.",
           "connectFailed": "Nous ne parvenons pas à joindre Zoom pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
           "googleMeet": {
             "title": "Google Meet",

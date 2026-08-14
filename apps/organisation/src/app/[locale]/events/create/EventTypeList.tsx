@@ -37,6 +37,7 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import PageLoader from "@/components/PageLoader";
 import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 import { LinkPrimary } from "@/components/shared/Links";
+import { ONLINE_EVENTS_ENABLED } from "@/lib/featureFlags";
 
 export default function EventTypeList({
   organisation,
@@ -275,7 +276,10 @@ export default function EventTypeList({
           if (
             // category.value === "raffle" ||
             category.value === "restaurant" ||
-            // category.value === "meet" ||
+            // Online events are built but closed to new creation for now — the
+            // card stays and says "coming soon" rather than vanishing. See
+            // lib/featureFlags.
+            (!ONLINE_EVENTS_ENABLED && category.value === "meet") ||
             category.value === "reservations" ||
             category.value === "transportations" ||
             category.value === "tours" ||

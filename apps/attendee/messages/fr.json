@@ -752,6 +752,7 @@
     "noResult": "Il n'y a aucun résultat pour ",
     "countdown": {
       "ongoing": "En cours",
+      "past": "Terminé",
       "days": "{count, plural, one {# jour} other {# jours}} <muted>restant(s)</muted>",
       "hours": "{count, plural, one {# heure} other {# heures}} <muted>restante(s)</muted>",
       "minutes": "{count, plural, one {# minute} other {# minutes}} <muted>restante(s)</muted>",

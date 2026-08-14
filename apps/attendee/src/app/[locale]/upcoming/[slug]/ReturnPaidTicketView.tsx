@@ -13,6 +13,8 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { Warning2, TickCircle } from "iconsax-reactjs";
 import { EventDay, Ticket } from "@ticketwaze/typescript-config";
+import { DateTime } from "luxon";
+import { eventWindows } from "@/lib/eventSchedule";
 import { ReturnPaidTicketAction } from "@/actions/eventActions";
 import { useSession } from "next-auth/react";
 import { useRouter } from "@/i18n/navigation";
@@ -68,24 +70,20 @@ export default function ReturnPaidTicketView({
   function handleContinue() {
     if (selectedIds.size === 0) return;
 
-    const now = new Date();
+    const now = DateTime.now();
 
-    const earliestStart = eventDays
-      .map((day) => {
-        const dateStr = (
-          typeof day.eventDate === "string"
-            ? day.eventDate
-            : new Date(day.eventDate).toISOString()
-        ).split("T")[0];
-        return new Date(`${dateStr}T${day.startTime}`);
-      })
-      .sort((a, b) => a.getTime() - b.getTime())
+    // Resolved in the EVENT's timezone rather than the browser's: the old naive
+    // parse could shift the start by a whole day's worth of offset, which is
+    // enough to put a ticket on the wrong side of a 7-day cutoff. See
+    // lib/eventSchedule.
+    const earliestStart = eventWindows(eventDays)
+      .map(({ start }) => start)
+      .sort((a, b) => a.toMillis() - b.toMillis())
       .at(0);
 
     if (!earliestStart) return;
 
-    const daysUntilEvent =
-      (earliestStart.getTime() - now.getTime()) / (1_000 * 60 * 60 * 24);
+    const daysUntilEvent = earliestStart.diff(now, "days").days;
 
     // The cutoff exists so organisers can plan against a settled headcount.
     // That reasoning does not survive the organiser being the one who moved the

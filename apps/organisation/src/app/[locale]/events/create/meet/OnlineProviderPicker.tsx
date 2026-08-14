@@ -26,6 +26,7 @@ import { MembershipTier } from "@ticketwaze/typescript-config";
 import GooglePlanSelect from "@/components/shared/GooglePlanSelect";
 import type { GooglePlan } from "@/lib/googleMeetPlans";
 import { useRouter } from "@/i18n/navigation";
+import { ONLINE_EVENTS_ENABLED } from "@/lib/featureFlags";
 // Placeholder: both providers share the online cover for now.
 import OnlineCover from "@/assets/images/meet.jpg";
 import Zoom from "@/assets/images/zoom.webp";
@@ -84,6 +85,9 @@ export default function OnlineProviderPicker({
   membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event.list.online");
+  // The same toast the activity-type list uses for a feature that is not open
+  // yet, so both screens say the identical thing.
+  const tCreate = useTranslations("Events.create_event");
   const locale = useLocale();
   const router = useRouter();
   const { data: session } = useSession();
@@ -255,7 +259,19 @@ export default function OnlineProviderPicker({
       </div>
       <ul className="list overflow-y-scroll py-2 px-2">
         <li>
-          {googleReady ? (
+          {/*
+            Online events are closed to new creation for now. This screen is
+            still reachable by URL and by anyone part-way through the flow, so
+            both providers answer here too rather than relying on the
+            activity-type list being the only door. See lib/featureFlags.
+          */}
+          {!ONLINE_EVENTS_ENABLED ? (
+            <ComingSoonCard
+              title={t("googleMeet.title")}
+              description={t("comingSoon")}
+              onClick={() => toast.info(tCreate("coming"))}
+            />
+          ) : googleReady ? (
             <Link
               href={`/events/create/meet/categories?code=${code}&provider=google_meet`}
               className="block relative cursor-pointer group"
@@ -288,7 +304,18 @@ export default function OnlineProviderPicker({
                   />
                 </div>
               </DialogTrigger>
-              <DialogContent className={"w-[360px] lg:w-[520px] "}>
+              {/*
+                Capped and scrolled INSIDE, not grown.
+                The plan picker added a paragraph and a select to a dialog that
+                had no height limit, so on a short window it ran off the bottom
+                of the screen and took the Connect button with it. The title and
+                the footer stay put; only the body between them moves.
+              */}
+              <DialogContent
+                className={
+                  "w-[360px] lg:w-[520px] max-h-[85vh] grid-rows-[auto_1fr_auto] overflow-hidden"
+                }
+              >
                 <DialogHeader>
                   <DialogTitle
                     className={
@@ -301,7 +328,9 @@ export default function OnlineProviderPicker({
                     <span>{t("googleMeet.title")}</span>
                   </DialogDescription>
                 </DialogHeader>
-                <div className="py-8 flex flex-col gap-8 items-center">
+                {/* min-h-0 is what lets a grid row shrink below its content
+                    and actually scroll, rather than pushing the dialog taller. */}
+                <div className="py-8 flex flex-col gap-8 items-center overflow-y-auto min-h-0">
                   <div
                     className={
                       "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
@@ -369,7 +398,14 @@ export default function OnlineProviderPicker({
           )}
         </li>
         <li>
-          {zoomReady ? (
+          {!ONLINE_EVENTS_ENABLED ? (
+            <ComingSoonCard
+              title={t("zoom.title")}
+              description={t("comingSoon")}
+              image={Zoom}
+              onClick={() => toast.info(tCreate("coming"))}
+            />
+          ) : zoomReady ? (
             <Link
               href={`/events/create/meet/categories?provider=zoom`}
               className="block relative cursor-pointer group"
@@ -469,6 +505,39 @@ export default function OnlineProviderPicker({
           )}
         </li>
       </ul>
+    </div>
+  );
+}
+
+/**
+ * The same card, but it only announces itself.
+ *
+ * Matches how the activity-type list shows a feature that is not open yet: the
+ * card stays in place and a toast explains, rather than the option quietly
+ * disappearing and looking like a bug to someone who used it last week.
+ */
+function ComingSoonCard({
+  title,
+  description,
+  image,
+  onClick,
+}: {
+  title: string;
+  description: string;
+  image?: StaticImageData;
+  onClick: () => void;
+}) {
+  return (
+    <div
+      onClick={onClick}
+      className="block relative cursor-pointer group"
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") onClick();
+      }}
+    >
+      <ProviderCard title={title} description={description} image={image} />
     </div>
   );
 }
