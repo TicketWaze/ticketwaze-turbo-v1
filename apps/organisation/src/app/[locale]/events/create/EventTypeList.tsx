@@ -7,7 +7,8 @@ import { useRef, useState } from "react";
 import InPerson from "@/assets/images/in-person.jpg";
 import Draw from "@/assets/images/draw.jpg";
 import RestaurantCover from "@/assets/images/restaurant.jpg";
-import GoogleMeet from "@/assets/images/meet.jpg";
+// import GoogleMeet from "@/assets/images/meet.jpg";
+import Online from "@/assets/images/online.webp";
 import ComingSoonCover from "@/assets/images/coming.jpg";
 // Placeholder art: this was the old coming-soon cover, freed up when that card
 // moved to coming.jpg. Swap it for a digital-product image when one exists.
@@ -84,7 +85,7 @@ export default function EventTypeList({
     {
       title: t("list.meet.title"),
       description: t("list.meet.description"),
-      image: GoogleMeet,
+      image: Online,
       value: "meet",
     },
     // {

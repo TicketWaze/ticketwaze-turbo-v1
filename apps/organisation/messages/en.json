@@ -1022,8 +1022,12 @@
             "unavailable": "Zoom is not available yet.",
             "unavailableBody": "Zoom events are not available on this environment yet. Create the event on Google Meet instead.",
             "warning": "To create a Zoom event, we will use your Zoom account to schedule the meeting and register each buyer, so everyone gets their own join link. Zoom events require a paid Zoom plan. If you disconnect this access later, buyers will no longer be able to purchase tickets for your Zoom events.",
-            "paidPlanBody": "Your Zoom account is on the free Basic plan. Zoom events need a paid plan, because giving each buyer their own join link relies on meeting registration, which the free plan does not include. The free plan also ends meetings after 40 minutes. Upgrade your Zoom plan, or create the event on Google Meet instead."
-          }
+            "paidPlanBody": "Your Zoom account is on the free Basic plan. Zoom events need a paid plan, because giving each buyer their own join link relies on meeting registration, which the free plan does not include. The free plan also ends meetings after 40 minutes. Upgrade your Zoom plan, or create the event on Google Meet instead.",
+            "plan": "Available on Pro and above.",
+            "proFeature": "Zoom events are available on the Pro plan and above. Upgrade to host ticketed events on Zoom, where every buyer gets their own join link.",
+            "connectedGeneric": "Connected. Each buyer gets their own join link."
+          },
+          "upgrade": "Upgrade"
         }
       },
       "tagPlaceholder": "Type a hashtag and press enter or spacebar",

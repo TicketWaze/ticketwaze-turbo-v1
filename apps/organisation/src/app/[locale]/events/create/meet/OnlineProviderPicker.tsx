@@ -1,19 +1,15 @@
 "use client";
 import { Link } from "@/i18n/navigation";
-import {
-  ArrowRight2,
-  Icon,
-  InfoCircle,
-  Video,
-  VideoPlay,
-} from "iconsax-reactjs";
+import { Crown, InfoCircle } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
+import Image, { StaticImageData } from "next/image";
 import { useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import { ButtonPrimary } from "@/components/shared/buttons";
+import { LinkPrimary } from "@/components/shared/Links";
 import {
   Dialog,
   DialogClose,
@@ -26,6 +22,10 @@ import {
 } from "@/components/ui/dialog";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import PageLoader from "@/components/PageLoader";
+import { MembershipTier } from "@ticketwaze/typescript-config";
+// Placeholder: both providers share the online cover for now.
+import OnlineCover from "@/assets/images/meet.jpg";
+import Zoom from "@/assets/images/zoom.webp";
 
 export type ZoomStatus = {
   connected: boolean;
@@ -34,22 +34,31 @@ export type ZoomStatus = {
   email?: string;
   isLicensed?: boolean;
   seatLimit?: number;
+  maxDurationMinutes?: number;
 };
 
 /**
  * Google Meet or Zoom, as one step in the online-event flow.
  *
- * Zoom needs a paid plan, because meeting registration — the only way to give
- * each buyer their own revocable join link — is a paid-only feature. That is
- * said here, at the point of choosing, rather than at publish time when the
+ * Two gates sit on the Zoom card and they are different things, which is why
+ * they are reported separately rather than collapsed into "unavailable":
+ *
+ * - The TICKETWAZE plan. Zoom events are Pro+, so a free organiser is shown the
+ *   upgrade path, not a connect button that would strand them at publish time.
+ * - The ZOOM plan. Per-buyer join links rely on meeting registration, which
+ *   Zoom does not offer on Basic.
+ *
+ * Said here, at the point of choosing, rather than at publish time when the
  * organiser has already filled in three steps of a form.
  */
 export default function OnlineProviderPicker({
   code,
   zoom,
+  membershipTier,
 }: {
   code: string | undefined;
   zoom: ZoomStatus;
+  membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event.list.online");
   const locale = useLocale();
@@ -60,17 +69,23 @@ export default function OnlineProviderPicker({
   const organisationId = session?.activeOrganisation?.organisationId;
 
   /**
+   * Pro+, with a trial counting — the same rule raffles and private events
+   * use. A trial exists to show the paid features off.
+   */
+  const isProLocked = membershipTier.membershipName === "free";
+
+  /**
    * Send the organiser to Zoom's consent screen.
    *
-   * The locale goes along because Zoom returns to one fixed, locale-less URL —
-   * `state` is the only thing it echoes back, so it is the only way an
-   * organiser working in English does not come back into the French dashboard.
+   * The locale and origin go along because Zoom returns to one fixed,
+   * locale-less URL — `state` is the only thing it echoes back, so it is the
+   * only way an organiser comes back to the right language and the right place.
    */
   async function connectZoom() {
     setIsLoading(true);
     try {
       const request = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${organisationId}/authorize?locale=${locale}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${organisationId}/authorize?locale=${locale}&origin=create`,
         {
           method: "GET",
           headers: {
@@ -96,46 +111,65 @@ export default function OnlineProviderPicker({
     }
   }
 
-  const zoomReady = zoom.connected && zoom.isLicensed;
+  const zoomReady = !isProLocked && zoom.connected && zoom.isLicensed;
+
+  /**
+   * The blocking reason, in the order the organiser can act on them: upgrade
+   * Ticketwaze, then make Zoom reachable, then connect, then upgrade Zoom.
+   */
+  const zoomBlocker = isProLocked
+    ? "plan"
+    : !zoom.available
+      ? "unavailable"
+      : !zoom.connected
+        ? "notConnected"
+        : "needsPaidPlan";
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 overflow-y-scroll">
       <PageLoader isLoading={isLoading} />
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
         <TopBar title={t("title")} />
       </div>
-      <ul className="list-3 w-full overflow-y-scroll pb-4">
-        <li className={"cursor-pointer"}>
-          <ProviderCardLink
-            Icon={VideoPlay}
-            label={t("googleMeet.title")}
-            hint={t("googleMeet.hint")}
+      <ul className="list overflow-y-scroll py-2 px-2">
+        <li>
+          <Link
             href={`/events/create/meet/categories?code=${code}&provider=google_meet`}
-          />
-        </li>
-        <li className={"cursor-pointer"}>
-          {zoomReady ? (
-            <ProviderCardLink
-              Icon={Video}
-              label={t("zoom.title")}
-              hint={t("zoom.connectedAs", { email: zoom.email ?? "" })}
-              href={`/events/create/meet/categories?provider=zoom`}
+            className="block relative cursor-pointer group"
+          >
+            <ProviderCard
+              title={t("googleMeet.title")}
+              description={t("googleMeet.hint")}
             />
+          </Link>
+        </li>
+        <li>
+          {zoomReady ? (
+            <Link
+              href={`/events/create/meet/categories?provider=zoom`}
+              className="block relative cursor-pointer group"
+            >
+              <ProviderCard
+                title={t("zoom.title")}
+                description={
+                  // Zoom can report a connection whose account read failed, and
+                  // "Connected as ." is worse than saying nothing about who.
+                  zoom.email
+                    ? t("zoom.connectedAs", { email: zoom.email })
+                    : t("zoom.connectedGeneric")
+                }
+                image={Zoom}
+              />
+            </Link>
           ) : (
             <Dialog>
               <DialogTrigger asChild>
-                <div>
+                <div className="block relative cursor-pointer group">
                   <ProviderCard
-                    Icon={Video}
-                    label={t("zoom.title")}
-                    hint={
-                      !zoom.available
-                        ? t("zoom.unavailable")
-                        : !zoom.connected
-                          ? t("zoom.notConnected")
-                          : t("zoom.needsPaidPlan")
-                    }
+                    title={t("zoom.title")}
+                    description={t(`zoom.${zoomBlocker}`)}
+                    image={Zoom}
                   />
                 </div>
               </DialogTrigger>
@@ -143,7 +177,7 @@ export default function OnlineProviderPicker({
                 <DialogHeader>
                   <DialogTitle
                     className={
-                      "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
+                      "font-medium border-b border-neutral-100 pb-8 text-[2.6rem] leading-12 text-black font-primary"
                     }
                   >
                     {t("zoom.title")}
@@ -163,28 +197,46 @@ export default function OnlineProviderPicker({
                         "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
                       }
                     >
-                      <InfoCircle size="30" color="#0d0d0d" variant="Bulk" />
+                      {isProLocked ? (
+                        <Crown size="30" color="#0d0d0d" variant="Bulk" />
+                      ) : (
+                        <InfoCircle size="30" color="#0d0d0d" variant="Bulk" />
+                      )}
                     </div>
                   </div>
                   <p
                     className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
                   >
-                    {!zoom.available
-                      ? t("zoom.unavailableBody")
-                      : !zoom.connected
-                        ? t("zoom.warning")
-                        : t("zoom.paidPlanBody")}
+                    {isProLocked
+                      ? t("zoom.proFeature")
+                      : zoomBlocker === "unavailable"
+                        ? t("zoom.unavailableBody")
+                        : zoomBlocker === "notConnected"
+                          ? t("zoom.warning")
+                          : t("zoom.paidPlanBody")}
                   </p>
                 </div>
                 <DialogFooter>
-                  {zoom.available && !zoom.connected && (
-                    <ButtonPrimary
-                      onClick={connectZoom}
-                      disabled={isLoading}
-                      className="w-full"
-                    >
-                      {isLoading ? <LoadingCircleSmall /> : t("zoom.connect")}
-                    </ButtonPrimary>
+                  {isProLocked ? (
+                    <div className="flex-1 p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+                      <LinkPrimary
+                        className="bg-transparent gap-4 py-2 items-center"
+                        href="/settings/subscriptions/upgrade"
+                      >
+                        <Crown size="24" color="#fff" variant="Bulk" />
+                        {t("upgrade")}
+                      </LinkPrimary>
+                    </div>
+                  ) : (
+                    zoomBlocker === "notConnected" && (
+                      <ButtonPrimary
+                        onClick={connectZoom}
+                        disabled={isLoading}
+                        className="w-full"
+                      >
+                        {isLoading ? <LoadingCircleSmall /> : t("zoom.connect")}
+                      </ButtonPrimary>
+                    )
                   )}
                   <DialogClose ref={closeRef} className="sr-only"></DialogClose>
                 </DialogFooter>
@@ -197,72 +249,37 @@ export default function OnlineProviderPicker({
   );
 }
 
-/** The card, matching the category list exactly. */
+/**
+ * The activity-type card, reused verbatim from the create list so the two
+ * screens read as one flow rather than two designs.
+ */
 function ProviderCard({
-  Icon,
-  label,
-  hint,
+  title,
+  description,
+  image = OnlineCover,
 }: {
-  Icon: Icon;
-  label: string;
-  hint: string;
+  title: string;
+  description: string;
+  image?: StaticImageData;
 }) {
   return (
     <div
-      className={
-        "py-14 px-6 rounded-[10px] bg-neutral-100 hover:bg-primary-50 flex justify-between transition-all duration-500 cursor-pointer group"
-      }
+      className={`h-[165px] lg:h-[280px] rounded-2xl overflow-hidden relative transition-all duration-300`}
     >
-      <div className={"flex items-center gap-6"}>
-        <Icon
-          size="25"
-          className=" transition-all duration-500 stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"
-          variant="Bulk"
-        />
-        <div className={"flex flex-col gap-1"}>
-          <span
-            className={
-              "font-primary font-medium text-[2.2rem] transition-all duration-500 leading-12 text-neutral-900 group-hover:text-primary-500"
-            }
-          >
-            {label}
-          </span>
-          <span
-            className={"font-sans text-[1.4rem] leading-8 text-neutral-600"}
-          >
-            {hint}
-          </span>
-        </div>
-      </div>
-      <div
-        className={
-          "w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 bg-neutral-200 group-hover:bg-primary-100 shrink-0 self-center"
-        }
-      >
-        <ArrowRight2
-          size="20"
-          className=" transition-all duration-500 stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"
-          variant="Bulk"
-        />
+      <Image
+        src={image}
+        alt={title}
+        className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        width={255}
+        height={191}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/10" />
+      <div className="absolute bottom-8 left-4 right-4 text-white z-10 flex flex-col gap-2">
+        <h3 className="text-[2.6rem] font-primary leading-[30px] font-bold">
+          {title}
+        </h3>
+        <p className="text-[1.5rem] text-neutral-300">{description}</p>
       </div>
     </div>
-  );
-}
-
-function ProviderCardLink({
-  href,
-  Icon,
-  label,
-  hint,
-}: {
-  href: string;
-  Icon: Icon;
-  label: string;
-  hint: string;
-}) {
-  return (
-    <Link href={href}>
-      <ProviderCard Icon={Icon} label={label} hint={hint} />
-    </Link>
   );
 }

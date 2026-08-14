@@ -1021,8 +1021,12 @@
             "unavailable": "Zoom n’est pas encore disponible.",
             "unavailableBody": "Les événements Zoom ne sont pas encore disponibles sur cet environnement. Créez plutôt l’événement sur Google Meet.",
             "warning": "Pour créer un événement Zoom, nous utiliserons votre compte Zoom afin de planifier la réunion et d’inscrire chaque acheteur, pour que chacun reçoive son propre lien. Les événements Zoom nécessitent un forfait Zoom payant. Si vous retirez cet accès plus tard, les acheteurs ne pourront plus acheter de billets pour vos événements Zoom.",
-            "paidPlanBody": "Votre compte Zoom utilise le forfait gratuit Basic. Les événements Zoom nécessitent un forfait payant, car attribuer à chaque acheteur son propre lien repose sur l’inscription aux réunions, absente du forfait gratuit. Le forfait gratuit met également fin aux réunions après 40 minutes. Passez à un forfait Zoom payant, ou créez plutôt l’événement sur Google Meet."
-          }
+            "paidPlanBody": "Votre compte Zoom utilise le forfait gratuit Basic. Les événements Zoom nécessitent un forfait payant, car attribuer à chaque acheteur son propre lien repose sur l’inscription aux réunions, absente du forfait gratuit. Le forfait gratuit met également fin aux réunions après 40 minutes. Passez à un forfait Zoom payant, ou créez plutôt l’événement sur Google Meet.",
+            "plan": "Disponible à partir du forfait Pro.",
+            "proFeature": "Les événements Zoom sont disponibles à partir du forfait Pro. Passez à un forfait supérieur pour organiser des événements payants sur Zoom, où chaque acheteur reçoit son propre lien.",
+            "connectedGeneric": "Connecté. Chaque acheteur reçoit son propre lien."
+          },
+          "upgrade": "Passer à la version supérieure"
         }
       },
       "tagPlaceholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d’espace",

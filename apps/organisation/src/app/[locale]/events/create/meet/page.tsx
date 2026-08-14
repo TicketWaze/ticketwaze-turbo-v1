@@ -3,6 +3,7 @@ import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import { auth } from "@/lib/auth";
 import { getLocale } from "next-intl/server";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import OnlineProviderPicker, { ZoomStatus } from "./OnlineProviderPicker";
 
 /**
@@ -36,6 +37,33 @@ export default async function OnlinePlatformPage({
   const organisationId = session?.activeOrganisation?.organisationId;
 
   /**
+   * The Ticketwaze plan, which gates Zoom as a Pro+ feature. Read here so the
+   * card can show the upgrade path instead of a connect button that would
+   * strand a free organiser at publish time.
+   */
+  const tierRequest = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${organisationId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.user.accessToken}`,
+        "Accept-Language": locale,
+        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+      },
+    },
+  );
+  const tierResponse = await tierRequest.json().catch(() => null);
+  const membershipTier = tierResponse?.membershipTier;
+  if (!tierRequest.ok || !membershipTier) {
+    return (
+      <OrganizerLayout title="OnlinePlatformPage">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
+
+  /**
    * A Zoom read that fails is reported as "not connected", never as an error
    * page: Google Meet is still a perfectly good answer on this screen, and
    * blocking both platforms because one status call timed out would be worse
@@ -66,7 +94,11 @@ export default async function OnlinePlatformPage({
 
   return (
     <OrganizerLayout title="OnlinePlatformPage">
-      <OnlineProviderPicker code={code} zoom={zoom} />
+      <OnlineProviderPicker
+        code={code}
+        zoom={zoom}
+        membershipTier={membershipTier}
+      />
     </OrganizerLayout>
   );
 }
