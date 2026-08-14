@@ -26,18 +26,22 @@ export default function CreateMeetEventForm({
   eventType,
   code,
   onlineProvider,
-  zoomSeatLimit,
-  zoomMaxMeetingMinutes,
+  seatLimit,
+  maxMeetingMinutes,
   membershipTier,
 }: {
   eventType: string;
   code: string | undefined;
   /** 'google_meet' | 'zoom' — chosen before the category list. */
   onlineProvider: string;
-  /** Seats on the connected Zoom plan; null for Google Meet. */
-  zoomSeatLimit: number | null;
-  /** Longest a meeting may run on that plan; null for Google Meet. */
-  zoomMaxMeetingMinutes: number | null;
+  /**
+   * Seats on the plan hosting the call, or null when it could not be read.
+   * Zoom's comes from the account; Google's from the plan the organiser
+   * declared, which is the only way to know it.
+   */
+  seatLimit: number | null;
+  /** Longest a call may run on that plan; null when unknown. */
+  maxMeetingMinutes: number | null;
   membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event");
@@ -53,8 +57,9 @@ export default function CreateMeetEventForm({
     isFree,
     (k, values) => t(k, values),
     membershipTier.freeTickets,
-    zoomSeatLimit,
-    zoomMaxMeetingMinutes,
+    seatLimit,
+    maxMeetingMinutes,
+    onlineProvider === "zoom" ? "zoom" : "google_meet",
   );
   type TForm = z.infer<typeof FormDataSchema>;
 

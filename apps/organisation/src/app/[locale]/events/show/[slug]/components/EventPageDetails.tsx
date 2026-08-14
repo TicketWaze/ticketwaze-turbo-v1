@@ -24,6 +24,7 @@ import {
 } from "@ticketwaze/typescript-config";
 import MoreComponent from "./MoreComponent";
 import CheckingDialog from "./CheckingDialog";
+import StartMeetingButton from "./StartMeetingButton";
 import DeletionBanner from "./DeletionBanner";
 import Informations from "./Informations";
 import EventArtist from "./EventArtist";
@@ -116,6 +117,16 @@ export default function EventPageDetails({
             !isPast &&
             !isPendingDeletion &&
             deletionStatus !== "deleted" && <CheckingDialog event={event} />}
+          {/* The online counterpart of the scan button: check-in is disabled
+              for online events, so this slot is free and this is what the
+              organiser actually needs there. Same conditions, same design. */}
+          {event.adminStatus === "approved" &&
+            event.eventCategory === "meet" &&
+            !isPast &&
+            !isPendingDeletion &&
+            deletionStatus !== "deleted" && (
+              <StartMeetingButton event={event} />
+            )}
           <MoreComponent
             daysLeft={daysLeft}
             event={event}
@@ -172,16 +183,10 @@ export default function EventPageDetails({
               key={t.ticketTypeName}
               className={`${index % 2 === 0 ? "pl-10 " : "pl-0 pt-8 "} lg:pt-0 lg:pl-10 pb-12 ${index === 2 && "pt-8"}`}
             >
-              <span
-                className={"text-[14px] text-neutral-600 leading-8 pb-2"}
-              >
+              <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
                 {Capitalize(t.ticketTypeName)}
               </span>
-              <p
-                className={
-                  "font-medium text-[25px] leading-12 font-primary"
-                }
-              >
+              <p className={"font-medium text-[25px] leading-12 font-primary"}>
                 {quantity}{" "}
                 <span className={"font-normal text-[20px] text-neutral-500"}>
                   / {t.ticketTypeQuantity}
@@ -259,6 +264,16 @@ export default function EventPageDetails({
         deletionStatus !== "deleted" && (
           <div className="flex lg:hidden items-center w-full gap-4 justify-between">
             <CheckingDialog event={event} />
+          </div>
+        )}
+      {/* Mobile counterpart, mirroring the scan button above it. */}
+      {event.eventCategory === "meet" &&
+        event.adminStatus === "approved" &&
+        !isPast &&
+        !isPendingDeletion &&
+        deletionStatus !== "deleted" && (
+          <div className="flex lg:hidden items-center w-full gap-4 justify-between">
+            <StartMeetingButton event={event} />
           </div>
         )}
       {isUpcoming && deletionStatus !== "deleted" && (

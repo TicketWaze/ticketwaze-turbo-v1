@@ -872,7 +872,9 @@
         "banner_refund": "All ticket holders will be refunded to their Ticketwaze wallet.",
         "cancel_cta": "Cancel deletion",
         "cancel_success": "Deletion cancelled successfully."
-      }
+      },
+      "start_meeting": "Start meeting",
+      "start_meeting_failed": "We could not open the meeting. Please try again, or start it from your Zoom or Google Calendar account."
     },
     "create_event": {
       "title": "Create Activity",
@@ -1009,7 +1011,19 @@
           "connectFailed": "We could not reach Zoom at the moment. Please check your internet connection and try again. If the error persists, reach out to support.",
           "googleMeet": {
             "title": "Google Meet",
-            "hint": "Buyers are added to the calendar invite and Google emails them the link."
+            "hint": "Buyers are added to the calendar invite and Google emails them the link.",
+            "back": "Back to platforms",
+            "connect": "Connect Google",
+            "connectFailed": "We could not reach Google at the moment. Please check your internet connection and try again. If the error persists, reach out to support.",
+            "notConnected": "Connect your Google account to use Google Meet.",
+            "unavailable": "Google Meet is not available yet.",
+            "unavailableBody": "Google Meet events are not available on this environment yet. Create the event on Zoom instead.",
+            "warning": "To create a Google Meet event, we will use your Google account to add the meeting to your calendar and invite each buyer, so they receive the link. We only ask for permission to manage calendar events we create. If you disconnect this access later, buyers will no longer be able to purchase tickets for your Google Meet events.",
+            "planNeeded": "Tell us which Google plan you are on.",
+            "planBody": "Your Google account is connected. Before creating the event, tell us which plan it is on: Google does not report that to us, and it decides how many people can join the call and how long the call can run. A free personal account ends any call with three or more people after 60 minutes.",
+            "planContinue": "Continue",
+            "planRequired": "Choose your Google plan first.",
+            "planFailed": "We could not save your Google plan. Please try again."
           },
           "zoom": {
             "title": "Zoom",
@@ -1192,7 +1206,9 @@
           "timezone": "Timezone is required",
           "invalidTimezone": "Invalid timezone",
           "endBeforeStart": "End time must be after start time",
-          "exceedsZoomDuration": "This event runs longer than the {hours} hours your Zoom plan allows, so Zoom would end it early. Shorten it or split it across days."
+          "exceedsZoomDuration": "This event runs longer than the {hours} hours your Zoom plan allows, so Zoom would end it early. Shorten it or split it across days.",
+          "exceedsGoogleDuration": "This event runs longer than the {hours} hours Google Meet allows on your plan, so Google would end it early. Shorten it or split it across days.",
+          "exceedsGoogleDurationMinutes": "Your Google plan ends any Meet call with three or more people after {minutes} minutes, so Google would cut this event off partway through. Shorten it, split it across days, or connect a Google Workspace account."
         },
         "ticketClass": {
           "name": "Ticket class description should be at least 3 characters",
@@ -1208,7 +1224,8 @@
             "empty": "Quantity cannot be empty",
             "decimal": "Quantity cannot have decimal or trailling zero",
             "exceedsLimit": "Quantity cannot exceed your plan limit of {limit} free tickets",
-            "exceedsZoomSeats": "The total number of tickets cannot exceed your Zoom plan’s {limit} seats."
+            "exceedsZoomSeats": "The total number of tickets cannot exceed your Zoom plan’s {limit} seats.",
+            "exceedsGoogleSeats": "The total number of tickets cannot exceed the {limit} people your Google plan can seat, once your own place as the host is counted."
           }
         }
       },
@@ -2292,7 +2309,41 @@
         "disconnect": "Disconnect",
         "disconnectWarning": "Your Zoom account will be unlinked and you will no longer be able to create Zoom events. Events you have already published keep working and buyers keep their join links, so this does not cancel anything you have sold. You can reconnect at any time.",
         "disconnected": "Your Zoom account has been disconnected.",
-        "disconnectFailed": "We could not disconnect your Zoom account. Please try again."
+        "disconnectFailed": "We could not disconnect your Zoom account. Please try again.",
+        "reconnect": "Reconnect Zoom"
+      },
+      "google": {
+        "title": "Google Meet",
+        "description": "Host online events on your own Google account.",
+        "connect": "Connect Google",
+        "reconnect": "Reconnect Google",
+        "connectFailed": "We could not reach Google at the moment. Please check your internet connection and try again. If the error persists, reach out to support.",
+        "notConnected": "No Google account is connected. Connect one to host online events on Google Meet. You can also connect while creating an online event.",
+        "connected": "Connected. Buyers are added to the calendar invite and Google emails them the link. If creating an event says your connection has expired, reconnect here.",
+        "unavailable": "Google Meet is not available on this environment yet.",
+        "disconnect": "Disconnect",
+        "disconnectWarning": "Your Google account will be unlinked and you will no longer be able to create Google Meet events. Events you have already published keep working and buyers keep their calendar invites, so this does not cancel anything you have sold. You can reconnect at any time.",
+        "disconnected": "Your Google account has been disconnected.",
+        "disconnectFailed": "We could not disconnect your Google account. Please try again.",
+        "planLabel": "Your Google plan",
+        "planHint": "Google does not tell us which plan an account is on, and it decides how many people can join a Meet call and how long the call can run. Choose yours so we can check your events against it before you publish them.",
+        "planRequired": "Choose your Google plan first.",
+        "planSave": "Save plan",
+        "planSaved": "Your Google plan has been saved.",
+        "planFailed": "We could not save your Google plan. Please try again.",
+        "planCurrent": "On {name}: up to {seats} tickets, and a call can run {duration}.",
+        "planMissing": "No plan chosen yet. Creating a Google Meet event will ask for one, because it decides how many tickets you can sell and how long the call can run.",
+        "plans": {
+          "placeholder": "Choose your Google plan",
+          "option": "{name} · {seats} tickets · {duration}",
+          "free": "Free personal Google account",
+          "business_starter": "Workspace Business Starter",
+          "business_standard": "Workspace Business Standard",
+          "business_plus": "Workspace Business Plus",
+          "enterprise": "Workspace Enterprise",
+          "durationMinutes": "{minutes} minutes",
+          "durationHours": "{hours} hours"
+        }
       }
     }
   }

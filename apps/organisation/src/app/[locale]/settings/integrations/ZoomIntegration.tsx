@@ -128,7 +128,7 @@ export default function ZoomIntegration({ zoom }: { zoom: ZoomStatus }) {
             <ButtonPrimary
               onClick={connect}
               disabled={isLoading}
-              className="self-start"
+              className="w-full lg:w-fit"
             >
               {isLoading ? <LoadingCircleSmall /> : t("connect")}
             </ButtonPrimary>
@@ -146,10 +146,23 @@ export default function ZoomIntegration({ zoom }: { zoom: ZoomStatus }) {
                   : t("connectedButFree", { email: zoom.email ?? "" })
               }
             />
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+              {/*
+                Offered even while connected, for the same reason as Google's:
+                a connection whose tokens have gone stale still reports as
+                connected, and re-authorising is the only fix. Hiding it behind
+                looking healthy is what makes a stale connection unescapable.
+              */}
+              <ButtonPrimary
+                onClick={connect}
+                disabled={isLoading}
+                className="w-full lg:w-fit"
+              >
+                {isLoading ? <LoadingCircleSmall /> : t("reconnect")}
+              </ButtonPrimary>
               <Dialog>
                 <DialogTrigger asChild>
-                  <ButtonRed disabled={isLoading} className="self-start">
+                  <ButtonRed disabled={isLoading} className="w-full lg:w-fit">
                     {t("disconnect")}
                   </ButtonRed>
                 </DialogTrigger>

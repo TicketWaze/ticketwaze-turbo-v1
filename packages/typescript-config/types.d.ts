@@ -383,6 +383,12 @@ export interface Event {
   zoomJoinUrl?: string | null;
   zoomMeetingId?: string | null;
   zoomSeatLimit?: number | null;
+  /**
+   * Seats this Google Meet event was built against, from the plan the organiser
+   * had declared at the time. Absent on events created before plans were
+   * declared at all, which fall back to the organisation's current declaration.
+   */
+  googleSeatLimit?: number | null;
   discountCodes: DiscountCode[];
   eventPerformers: EventPerformer[];
   eventAttendees: EventAttendee[];

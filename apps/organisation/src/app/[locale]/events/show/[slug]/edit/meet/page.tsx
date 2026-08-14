@@ -65,41 +65,52 @@ export default async function EditEvent({
   const membershipTier = response.membershipTier;
 
   /**
-   * The Zoom plan's meeting duration limit.
+   * The plan's meeting duration limit, on whichever platform hosts this event.
    *
    * Read here rather than stored on the event: unlike the seat cap, which is
    * frozen at creation because tickets are already sold against it, the
-   * duration ceiling is whatever the plan allows right now. Null on Google
-   * Meet, which has no such limit.
+   * duration ceiling is whatever the plan allows right now — the platform will
+   * cut the call at today's limit regardless of what was true when the event
+   * was made.
+   *
+   * The seat figure alongside it is the FALLBACK for Google Meet events created
+   * before the plan was declared, and is ignored where the event carries its
+   * own.
    */
-  let zoomMaxMeetingMinutes: number | null = null;
-  if (event.onlineProvider === "zoom") {
-    try {
-      const zoomRequest = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${session?.activeOrganisation?.organisationId}/status`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.accessToken}`,
-            "Accept-Language": locale,
-            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-          },
-          cache: "no-store",
+  let maxMeetingMinutes: number | null = null;
+  let googleSeatLimit: number | null = null;
+  try {
+    const provider = event.onlineProvider === "zoom" ? "zoom" : "google";
+    const statusRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/${provider}/${session?.activeOrganisation?.organisationId}/status`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
         },
-      );
-      const zoomResponse = await zoomRequest.json();
-      if (
-        zoomResponse.status === "success" &&
-        zoomResponse.zoom?.maxDurationMinutes
-      ) {
-        zoomMaxMeetingMinutes = Number(zoomResponse.zoom.maxDurationMinutes);
-      }
-    } catch (error) {
-      // Left null. The API still refuses an over-long edit on submit, so the
-      // limit holds either way; only the early warning is lost.
-      console.error("Failed to read the Zoom meeting duration limit:", error);
+        cache: "no-store",
+      },
+    );
+    const statusResponse = await statusRequest.json();
+    const status =
+      provider === "zoom" ? statusResponse.zoom : statusResponse.google;
+    if (statusResponse.status === "success" && status?.maxDurationMinutes) {
+      maxMeetingMinutes = Number(status.maxDurationMinutes);
     }
+    if (
+      provider === "google" &&
+      statusResponse.status === "success" &&
+      status?.seatLimit
+    ) {
+      googleSeatLimit = Number(status.seatLimit);
+    }
+  } catch (error) {
+    // Left null. The API still refuses an over-long edit on submit, so the
+    // limit holds either way; only the early warning is lost.
+    console.error("Failed to read the meeting duration limit:", error);
   }
 
   return (
@@ -107,7 +118,8 @@ export default async function EditEvent({
       <EditInPersonEventForm
         event={event}
         membershipTier={membershipTier}
-        zoomMaxMeetingMinutes={zoomMaxMeetingMinutes}
+        maxMeetingMinutes={maxMeetingMinutes}
+        googleSeatLimit={googleSeatLimit}
       />
     </OrganizerLayout>
   );

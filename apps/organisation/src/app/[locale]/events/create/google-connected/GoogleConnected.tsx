@@ -8,19 +8,17 @@ import PageLoader from "@/components/PageLoader";
 import { LinkPrimary } from "@/components/shared/Links";
 import { hasRedeemed, markRedeemed } from "@/lib/oauthRedeemGuard";
 
-type Outcome =
-  | { kind: "working" }
-  | { kind: "unlicensed" }
-  | { kind: "failed"; message: string };
-
 /**
- * Finishes the Zoom OAuth exchange and sends the organiser back into the flow.
+ * Finishes the Google OAuth exchange and sends the organiser back into the flow.
  *
- * The exchange happens here rather than server-side because the API's callback
- * route sits behind auth: the organiser's access token is what proves the code
- * may be redeemed against this organisation at all.
+ * The exchange happens here rather than at event-creation time, which is what
+ * the old flow did — it carried the `code` through three screens of a form and
+ * redeemed it on submit. Authorisation codes expire in minutes, so an organiser
+ * who filled the form slowly lost the connection to "invalid or expired". The
+ * connection is now established the moment they return, and creating an event
+ * just uses the stored refresh token.
  */
-export default function ZoomConnected({
+export default function GoogleConnected({
   code,
   state,
   error,
@@ -29,10 +27,10 @@ export default function ZoomConnected({
   state: string | undefined;
   error: string | undefined;
 }) {
-  const t = useTranslations("Events.create_event.list.online.zoom");
+  const t = useTranslations("Events.create_event.list.online.googleMeet");
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [outcome, setOutcome] = useState<Outcome>({ kind: "working" });
+  const [failure, setFailure] = useState<string | null>(null);
   /**
    * An authorisation code can be redeemed exactly once. React runs effects
    * twice in development, and a second redemption fails — so the guard is what
@@ -40,18 +38,10 @@ export default function ZoomConnected({
    */
   const redeemed = useRef(false);
 
-  /**
-   * Zoom came back without a code, or said no outright. Derived during render
-   * rather than set from the effect: there is nothing to redeem, so there is
-   * nothing to wait for, and the answer is already known from the URL.
-   */
+  // Derived during render rather than set from the effect: there is nothing to
+  // redeem, so the answer is already known from the URL.
   const cameBackEmpty = Boolean(error) || !code || !state;
 
-  /**
-   * Where this connection was started from, packed into `state` by the API
-   * because it is the only field Zoom echoes back and the redirect URI is one
-   * fixed URL shared by both entry points.
-   */
   const origin = state?.split(".")[2] === "settings" ? "settings" : "create";
 
   useEffect(() => {
@@ -67,7 +57,7 @@ export default function ZoomConnected({
     (async () => {
       try {
         const request = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/callback`,
+          `${process.env.NEXT_PUBLIC_API_URL}/events/google/callback`,
           {
             method: "POST",
             headers: {
@@ -80,50 +70,24 @@ export default function ZoomConnected({
         const response = await request.json();
 
         if (response.status !== "success") {
-          setOutcome({
-            kind: "failed",
-            message: response.message ?? t("connectFailed"),
-          });
+          setFailure(response.message ?? t("connectFailed"));
           return;
         }
 
-        /**
-         * Connected, but on a free plan. Reported rather than refused: the
-         * connection itself is fine and worth keeping, and the organiser may
-         * be about to upgrade. The refusal belongs at event creation, where
-         * real tickets are at stake.
-         */
-        if (!response.zoom?.isLicensed) {
-          setOutcome({ kind: "unlicensed" });
-          return;
-        }
-
-        /**
-         * Back where they started. An organiser who connected from settings
-         * was not creating anything, so dropping them into the category list
-         * would start a task they never asked for.
-         */
         router.replace(
           origin === "settings"
-            ? "/settings/integrations?connected=zoom"
-            : "/events/create/meet/categories?provider=zoom",
+            ? "/settings/integrations?connected=google"
+            : "/events/create/meet/categories?provider=google_meet",
         );
       } catch {
-        setOutcome({ kind: "failed", message: t("connectFailed") });
+        setFailure(t("connectFailed"));
       }
     })();
   }, [code, state, cameBackEmpty, origin, status, session, router, t]);
 
-  if (!cameBackEmpty && outcome.kind === "working") {
+  if (!cameBackEmpty && !failure) {
     return <PageLoader isLoading={true} />;
   }
-
-  const message =
-    outcome.kind === "unlicensed"
-      ? t("paidPlanBody")
-      : outcome.kind === "failed"
-        ? outcome.message
-        : t("connectFailed");
 
   return (
     <div
@@ -150,9 +114,8 @@ export default function ZoomConnected({
             "text-[1.8rem] leading-[25px] text-neutral-600 max-w-[330px] lg:max-w-[422px]"
           }
         >
-          {message}
+          {failure ?? t("connectFailed")}
         </p>
-        {/* Back to wherever this started, not always to the create flow. */}
         <LinkPrimary
           href={
             origin === "settings"

@@ -871,7 +871,9 @@
         "banner_refund": "Tous les porteurs de billets seront remboursés sur leur portefeuille Ticketwaze.",
         "cancel_cta": "Annuler la suppression",
         "cancel_success": "Suppression annulée avec succès."
-      }
+      },
+      "start_meeting": "Démarrer la réunion",
+      "start_meeting_failed": "Nous n’avons pas pu ouvrir la réunion. Veuillez réessayer, ou la démarrer depuis votre compte Zoom ou Google Agenda."
     },
     "create_event": {
       "title": "Créer une activité",
@@ -1008,7 +1010,19 @@
           "connectFailed": "Nous ne parvenons pas à joindre Zoom pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
           "googleMeet": {
             "title": "Google Meet",
-            "hint": "Les acheteurs sont ajoutés à l’invitation agenda et Google leur envoie le lien."
+            "hint": "Les acheteurs sont ajoutés à l’invitation agenda et Google leur envoie le lien.",
+            "back": "Retour aux plateformes",
+            "connect": "Connecter Google",
+            "connectFailed": "Nous ne parvenons pas à joindre Google pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
+            "notConnected": "Connectez votre compte Google pour utiliser Google Meet.",
+            "unavailable": "Google Meet n’est pas encore disponible.",
+            "unavailableBody": "Les événements Google Meet ne sont pas encore disponibles sur cet environnement. Créez plutôt l’événement sur Zoom.",
+            "warning": "Pour créer un événement Google Meet, nous utiliserons votre compte Google afin d’ajouter la réunion à votre agenda et d’y inviter chaque acheteur, qui recevra ainsi le lien. Nous demandons uniquement l’autorisation de gérer les événements d’agenda que nous créons. Si vous retirez cet accès plus tard, les acheteurs ne pourront plus acheter de billets pour vos événements Google Meet.",
+            "planNeeded": "Indiquez-nous votre forfait Google.",
+            "planBody": "Votre compte Google est connecté. Avant de créer l’événement, indiquez-nous son forfait : Google ne nous le communique pas, et c’est lui qui détermine combien de personnes peuvent rejoindre l’appel et combien de temps il peut durer. Un compte personnel gratuit met fin à tout appel de trois personnes ou plus après 60 minutes.",
+            "planContinue": "Continuer",
+            "planRequired": "Choisissez d’abord votre forfait Google.",
+            "planFailed": "Nous n’avons pas pu enregistrer votre forfait Google. Veuillez réessayer."
           },
           "zoom": {
             "title": "Zoom",
@@ -1191,7 +1205,9 @@
           "timezone": "Le fuseau horaire est requis",
           "invalidTimezone": "Fuseau horaire invalide",
           "endBeforeStart": "L’heure de fin doit être postérieure à l’heure de début",
-          "exceedsZoomDuration": "Cet événement dure plus longtemps que les {hours} heures autorisées par votre forfait Zoom : Zoom y mettrait fin avant la fin. Raccourcissez-le ou répartissez-le sur plusieurs jours."
+          "exceedsZoomDuration": "Cet événement dure plus longtemps que les {hours} heures autorisées par votre forfait Zoom : Zoom y mettrait fin avant la fin. Raccourcissez-le ou répartissez-le sur plusieurs jours.",
+          "exceedsGoogleDuration": "Cet événement dure plus longtemps que les {hours} heures autorisées par Google Meet sur votre forfait : Google y mettrait fin avant la fin. Raccourcissez-le ou répartissez-le sur plusieurs jours.",
+          "exceedsGoogleDurationMinutes": "Votre forfait Google met fin à tout appel Meet de trois personnes ou plus après {minutes} minutes : Google interromprait donc cet événement en cours de route. Raccourcissez-le, répartissez-le sur plusieurs jours, ou connectez un compte Google Workspace."
         },
         "ticketClass": {
           "name": "Le nom de la catégorie de billet doit comporter au moins 3 caractères",
@@ -1203,7 +1219,8 @@
             "empty": "La quantité ne peut pas être vide",
             "decimal": "La quantité ne peut pas contenir de décimales ni de zéro final",
             "exceedsLimit": "La quantité ne peut pas dépasser la limite de {limit} billets gratuits de votre forfait",
-            "exceedsZoomSeats": "Le nombre total de billets ne peut pas dépasser les {limit} places de votre forfait Zoom."
+            "exceedsZoomSeats": "Le nombre total de billets ne peut pas dépasser les {limit} places de votre forfait Zoom.",
+            "exceedsGoogleSeats": "Le nombre total de billets ne peut pas dépasser les {limit} personnes que votre forfait Google peut accueillir, une fois votre propre place d’hôte comptée."
           }
         }
       },
@@ -2287,7 +2304,41 @@
         "disconnect": "Déconnecter",
         "disconnectWarning": "Votre compte Zoom sera dissocié et vous ne pourrez plus créer d’événements Zoom. Les événements déjà publiés continuent de fonctionner et les acheteurs conservent leurs liens : cela n’annule rien de ce que vous avez vendu. Vous pouvez vous reconnecter à tout moment.",
         "disconnected": "Votre compte Zoom a été déconnecté.",
-        "disconnectFailed": "Nous n’avons pas pu déconnecter votre compte Zoom. Veuillez réessayer."
+        "disconnectFailed": "Nous n’avons pas pu déconnecter votre compte Zoom. Veuillez réessayer.",
+        "reconnect": "Reconnecter Zoom"
+      },
+      "google": {
+        "title": "Google Meet",
+        "description": "Organisez vos événements en ligne sur votre propre compte Google.",
+        "connect": "Connecter Google",
+        "reconnect": "Reconnecter Google",
+        "connectFailed": "Nous ne parvenons pas à joindre Google pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
+        "notConnected": "Aucun compte Google n’est connecté. Connectez-en un pour organiser des événements en ligne sur Google Meet. Vous pouvez également le faire pendant la création d’un événement en ligne.",
+        "connected": "Connecté. Les acheteurs sont ajoutés à l’invitation agenda et Google leur envoie le lien. Si la création d’un événement indique que votre connexion a expiré, reconnectez-vous ici.",
+        "unavailable": "Google Meet n’est pas encore disponible sur cet environnement.",
+        "disconnect": "Déconnecter",
+        "disconnectWarning": "Votre compte Google sera dissocié et vous ne pourrez plus créer d’événements Google Meet. Les événements déjà publiés continuent de fonctionner et les acheteurs conservent leurs invitations : cela n’annule rien de ce que vous avez vendu. Vous pouvez vous reconnecter à tout moment.",
+        "disconnected": "Votre compte Google a été déconnecté.",
+        "disconnectFailed": "Nous n’avons pas pu déconnecter votre compte Google. Veuillez réessayer.",
+        "planLabel": "Votre forfait Google",
+        "planHint": "Google ne nous indique pas le forfait d’un compte, et c’est lui qui détermine combien de personnes peuvent rejoindre un appel Meet et combien de temps l’appel peut durer. Choisissez le vôtre pour que nous puissions vérifier vos événements avant leur publication.",
+        "planRequired": "Choisissez d’abord votre forfait Google.",
+        "planSave": "Enregistrer le forfait",
+        "planSaved": "Votre forfait Google a été enregistré.",
+        "planFailed": "Nous n’avons pas pu enregistrer votre forfait Google. Veuillez réessayer.",
+        "planCurrent": "Sur {name} : jusqu’à {seats} billets, et un appel peut durer {duration}.",
+        "planMissing": "Aucun forfait choisi pour l’instant. La création d’un événement Google Meet vous le demandera, car il détermine combien de billets vous pouvez vendre et combien de temps l’appel peut durer.",
+        "plans": {
+          "placeholder": "Choisissez votre forfait Google",
+          "option": "{name} · {seats} billets · {duration}",
+          "free": "Compte Google personnel gratuit",
+          "business_starter": "Workspace Business Starter",
+          "business_standard": "Workspace Business Standard",
+          "business_plus": "Workspace Business Plus",
+          "enterprise": "Workspace Enterprise",
+          "durationMinutes": "{minutes} minutes",
+          "durationHours": "{hours} heures"
+        }
       }
     }
   }

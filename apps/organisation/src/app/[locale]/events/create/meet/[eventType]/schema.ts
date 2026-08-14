@@ -22,34 +22,59 @@ export function minutesBetween(
   return end - start;
 }
 
+/** Which platform hosts the call. Both have plan limits; they differ in wording. */
+export type OnlineProvider = "zoom" | "google_meet";
+
 /**
- * Refuse a first day longer than the Zoom plan allows.
+ * Refuse a first day longer than the provider's plan allows.
  *
  * Shared by the create and edit schemas so the two cannot drift, and scoped to
  * day 1 because that is the day the meeting is created from — matching the
  * server exactly. A client stricter than the server would block saves the API
  * would have accepted.
+ *
+ * Both providers cap meeting length by plan and neither reports it through an
+ * API — Zoom's comes from the account tier, Google's from what the organiser
+ * declared — so the check is identical and only the message differs.
  */
-export function addZoomDurationIssue(
+export function addMeetingDurationIssue(
   ctx: z.RefinementCtx,
   eventDays: { dayNumber: number; startTime: string; endTime: string }[],
-  zoomMaxMeetingMinutes: number | null,
+  maxMeetingMinutes: number | null,
   t: TranslateFn,
+  provider: OnlineProvider = "zoom",
 ) {
-  if (zoomMaxMeetingMinutes === null) return;
+  if (maxMeetingMinutes === null) return;
 
   const firstDay = eventDays.find((day) => day.dayNumber === 1);
   if (!firstDay) return;
 
   const minutes = minutesBetween(firstDay.startTime, firstDay.endTime);
-  if (minutes === null || minutes <= zoomMaxMeetingMinutes) return;
+  if (minutes === null || minutes <= maxMeetingMinutes) return;
 
   const index = eventDays.indexOf(firstDay);
+
+  /**
+   * Stated in minutes below two hours, because the limit that bites here is a
+   * free Google account's 60-minute group-call cap and "1 hours" would read as
+   * a bug rather than as the rule it is.
+   */
+  const message =
+    provider === "zoom"
+      ? t("errors.dateAndTime.exceedsZoomDuration", {
+          hours: Math.floor(maxMeetingMinutes / 60),
+        })
+      : maxMeetingMinutes < 120
+        ? t("errors.dateAndTime.exceedsGoogleDurationMinutes", {
+            minutes: maxMeetingMinutes,
+          })
+        : t("errors.dateAndTime.exceedsGoogleDuration", {
+            hours: Math.floor(maxMeetingMinutes / 60),
+          });
+
   ctx.addIssue({
     code: z.ZodIssueCode.custom,
-    message: t("errors.dateAndTime.exceedsZoomDuration", {
-      hours: Math.floor(zoomMaxMeetingMinutes / 60),
-    }),
+    message,
     path: ["eventDays", index, "endTime"],
   });
 }
@@ -64,20 +89,28 @@ export function makeMeetPersonSchema(
   t: TranslateFn,
   freeTicketLimit: number,
   /**
-   * Seats on the organiser's Zoom plan, or null for Google Meet.
+   * Seats on the plan hosting the call, or null when it is not known.
    *
    * Checked here as well as by the API because the API's refusal arrives only
    * on submit, three steps in. The API is still the authority — this exists so
    * the organiser is told before they have filled in a form they must redo.
+   *
+   * Read from the Zoom account for Zoom, and from the plan the organiser
+   * declared for Google Meet, which is the only way to know: Google reports
+   * neither capacity nor edition to the scopes we hold.
    */
-  zoomSeatLimit: number | null = null,
+  seatLimit: number | null = null,
   /**
-   * How long a meeting may run on the organiser's Zoom plan, or null for
-   * Google Meet. Zoom cuts a meeting off at this limit whether or not the
-   * event has finished, which would put every attendee out of a call they paid
-   * for, partway through.
+   * How long a call may run on that plan, or null when it is not known.
+   *
+   * Both providers cut a call off at the plan's limit whether or not the event
+   * has finished, which would put every attendee out of a call they paid for,
+   * partway through. A free personal Google account is the sharpest case at 60
+   * minutes.
    */
-  zoomMaxMeetingMinutes: number | null = null,
+  maxMeetingMinutes: number | null = null,
+  /** Chosen two steps back, and only used to word the two messages above. */
+  provider: OnlineProvider = "zoom",
 ) {
   return z
     .object({
@@ -177,26 +210,35 @@ export function makeMeetPersonSchema(
       ticketSalesEndAt: z.string().optional(),
     })
     .superRefine((data, ctx) => {
-      addZoomDurationIssue(ctx, data.eventDays, zoomMaxMeetingMinutes, t);
+      addMeetingDurationIssue(
+        ctx,
+        data.eventDays,
+        maxMeetingMinutes,
+        t,
+        provider,
+      );
 
       /**
-       * The Zoom seat cap, across ALL ticket types combined.
+       * The seat cap, across ALL ticket types combined.
        *
        * Three 50-seat tiers on a 100-seat plan still oversells, so the sum is
        * what matters, not each tier. Reported on the last row because that is
        * the one the organiser is editing when they cross the line.
        */
-      if (zoomSeatLimit !== null) {
+      if (seatLimit !== null) {
         const total = data.ticketTypes.reduce((sum, ticket) => {
           const quantity = parseInt(ticket.ticketTypeQuantity, 10);
           return sum + (isNaN(quantity) ? 0 : quantity);
         }, 0);
-        if (total > zoomSeatLimit) {
+        if (total > seatLimit) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t("errors.ticketClass.quantity.exceedsZoomSeats", {
-              limit: zoomSeatLimit,
-            }),
+            message: t(
+              provider === "zoom"
+                ? "errors.ticketClass.quantity.exceedsZoomSeats"
+                : "errors.ticketClass.quantity.exceedsGoogleSeats",
+              { limit: seatLimit },
+            ),
             path: [
               "ticketTypes",
               Math.max(0, data.ticketTypes.length - 1),

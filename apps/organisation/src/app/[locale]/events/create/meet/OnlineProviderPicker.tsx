@@ -23,6 +23,9 @@ import {
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import PageLoader from "@/components/PageLoader";
 import { MembershipTier } from "@ticketwaze/typescript-config";
+import GooglePlanSelect from "@/components/shared/GooglePlanSelect";
+import type { GooglePlan } from "@/lib/googleMeetPlans";
+import { useRouter } from "@/i18n/navigation";
 // Placeholder: both providers share the online cover for now.
 import OnlineCover from "@/assets/images/meet.jpg";
 import Zoom from "@/assets/images/zoom.webp";
@@ -51,20 +54,44 @@ export type ZoomStatus = {
  * Said here, at the point of choosing, rather than at publish time when the
  * organiser has already filled in three steps of a form.
  */
+export type GoogleStatus = {
+  connected: boolean;
+  /** False when the environment has no Google credentials at all. */
+  available: boolean;
+  /**
+   * The plan the organiser declared, or null when they have not yet.
+   *
+   * Google reports no capacity or edition to the scopes we hold, so this is the
+   * only source of the Meet seat cap and duration ceiling. Connected-without-a-
+   * plan is a real state — every organisation connected before plans existed is
+   * in it — and the card asks rather than walking them into a form the API will
+   * refuse at submit.
+   */
+  plan?: GooglePlan | null;
+  seatLimit?: number | null;
+  maxDurationMinutes?: number | null;
+};
+
 export default function OnlineProviderPicker({
   code,
   zoom,
+  google,
   membershipTier,
 }: {
   code: string | undefined;
   zoom: ZoomStatus;
+  google: GoogleStatus;
   membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event.list.online");
   const locale = useLocale();
+  const router = useRouter();
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
+  const [googlePlan, setGooglePlan] = useState<GooglePlan | null>(
+    google.plan ?? null,
+  );
 
   const organisationId = session?.activeOrganisation?.organisationId;
 
@@ -111,6 +138,100 @@ export default function OnlineProviderPicker({
     }
   }
 
+  /**
+   * Google Meet is on every Ticketwaze plan, but two things gate the card: the
+   * connection, and the declared Google plan the seat and duration limits are
+   * read from. Both have to be answered before the form is worth opening.
+   */
+  const googleReady = google.connected && Boolean(google.plan);
+
+  /** Store the declared plan. Shared by the connect path and the declare path. */
+  async function saveGooglePlan(next: GooglePlan): Promise<boolean> {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/plan`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.accessToken}`,
+          },
+          body: JSON.stringify({ plan: next }),
+        },
+      );
+      const response = await request.json();
+      if (response.status === "success") return true;
+      toast.error(response.message ?? t("googleMeet.planFailed"));
+      return false;
+    } catch {
+      toast.error(t("googleMeet.planFailed"));
+      return false;
+    }
+  }
+
+  /**
+   * Already connected, just never asked. Declares the plan and carries straight
+   * on into the category list, so an organisation that connected before plans
+   * existed answers one question instead of being sent to settings mid-task.
+   */
+  async function declareGooglePlanAndContinue() {
+    if (!googlePlan) {
+      toast.error(t("googleMeet.planRequired"));
+      return;
+    }
+    setIsLoading(true);
+    if (!(await saveGooglePlan(googlePlan))) {
+      setIsLoading(false);
+      return;
+    }
+    closeRef.current?.click();
+    router.push(
+      `/events/create/meet/categories?code=${code}&provider=google_meet`,
+    );
+  }
+
+  /** Send the organiser to Google's consent screen, plan declared first. */
+  async function connectGoogle() {
+    if (!googlePlan) {
+      toast.error(t("googleMeet.planRequired"));
+      return;
+    }
+    setIsLoading(true);
+    /**
+     * Declared BEFORE leaving for Google, because after the redirect this
+     * component is gone and the answer with it. A plan stored against a connect
+     * the organiser then abandons is still true about their account.
+     */
+    if (!(await saveGooglePlan(googlePlan))) {
+      setIsLoading(false);
+      return;
+    }
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/authorize?locale=${locale}&origin=create`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.accessToken}`,
+          },
+        },
+      );
+      const response = await request.json();
+      if (response.status === "success") {
+        closeRef.current?.click();
+        window.location.href = response.authorizationUrl;
+      } else {
+        toast.error(response.message);
+        setIsLoading(false);
+      }
+    } catch {
+      closeRef.current?.click();
+      toast.error(t("googleMeet.connectFailed"));
+      setIsLoading(false);
+    }
+  }
+
   const zoomReady = !isProLocked && zoom.connected && zoom.isLicensed;
 
   /**
@@ -134,15 +255,118 @@ export default function OnlineProviderPicker({
       </div>
       <ul className="list overflow-y-scroll py-2 px-2">
         <li>
-          <Link
-            href={`/events/create/meet/categories?code=${code}&provider=google_meet`}
-            className="block relative cursor-pointer group"
-          >
-            <ProviderCard
-              title={t("googleMeet.title")}
-              description={t("googleMeet.hint")}
-            />
-          </Link>
+          {googleReady ? (
+            <Link
+              href={`/events/create/meet/categories?code=${code}&provider=google_meet`}
+              className="block relative cursor-pointer group"
+            >
+              <ProviderCard
+                title={t("googleMeet.title")}
+                description={t("googleMeet.hint")}
+              />
+            </Link>
+          ) : (
+            /**
+             * Either not connected, or connected with no plan declared. Both
+             * ask a question here rather than walking the organiser into a form
+             * that would be refused on submit — the connection is stored when
+             * they come back from Google, and the plan is what the seat and
+             * duration limits are read from.
+             */
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="block relative cursor-pointer group">
+                  <ProviderCard
+                    title={t("googleMeet.title")}
+                    description={
+                      !google.available
+                        ? t("googleMeet.unavailable")
+                        : google.connected
+                          ? t("googleMeet.planNeeded")
+                          : t("googleMeet.notConnected")
+                    }
+                  />
+                </div>
+              </DialogTrigger>
+              <DialogContent className={"w-[360px] lg:w-[520px] "}>
+                <DialogHeader>
+                  <DialogTitle
+                    className={
+                      "font-medium border-b border-neutral-100 pb-8 text-[2.6rem] leading-12 text-black font-primary"
+                    }
+                  >
+                    {t("googleMeet.title")}
+                  </DialogTitle>
+                  <DialogDescription className={"sr-only"}>
+                    <span>{t("googleMeet.title")}</span>
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="py-8 flex flex-col gap-8 items-center">
+                  <div
+                    className={
+                      "w-[100px] h-[100px] rounded-full flex items-center justify-center bg-neutral-100"
+                    }
+                  >
+                    <div
+                      className={
+                        "w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200"
+                      }
+                    >
+                      <InfoCircle size="30" color="#0d0d0d" variant="Bulk" />
+                    </div>
+                  </div>
+                  <p
+                    className={`font-sans text-[1.4rem] leading-[25px] text-deep-100 text-center w-[320px] lg:w-full`}
+                  >
+                    {!google.available
+                      ? t("googleMeet.unavailableBody")
+                      : google.connected
+                        ? t("googleMeet.planBody")
+                        : t("googleMeet.warning")}
+                  </p>
+                  {/*
+                    Asked in both states, because Google tells us neither the
+                    participant capacity nor the edition and this is the only
+                    place the answer can come from. Shown with each plan's
+                    limits beside it: an organiser who does not know a free
+                    Gmail cuts group calls at 60 minutes would otherwise pick
+                    the right plan and still schedule a three-hour event.
+                  */}
+                  {google.available && (
+                    <div className="w-full">
+                      <GooglePlanSelect
+                        value={googlePlan}
+                        onChange={setGooglePlan}
+                        disabled={isLoading}
+                      />
+                    </div>
+                  )}
+                </div>
+                <DialogFooter>
+                  {google.available && (
+                    <ButtonPrimary
+                      onClick={
+                        google.connected
+                          ? declareGooglePlanAndContinue
+                          : connectGoogle
+                      }
+                      disabled={isLoading || !googlePlan}
+                      className="w-full"
+                    >
+                      {isLoading ? (
+                        <LoadingCircleSmall />
+                      ) : google.connected ? (
+                        t("googleMeet.planContinue")
+                      ) : (
+                        t("googleMeet.connect")
+                      )}
+                    </ButtonPrimary>
+                  )}
+                  <DialogClose ref={closeRef} className="sr-only"></DialogClose>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </li>
         <li>
           {zoomReady ? (

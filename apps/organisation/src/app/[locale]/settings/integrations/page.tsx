@@ -6,6 +6,7 @@ import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import { auth } from "@/lib/auth";
 import { getLocale, getTranslations } from "next-intl/server";
 import ZoomIntegration, { ZoomStatus } from "./ZoomIntegration";
+import GoogleIntegration, { GoogleStatus } from "./GoogleIntegration";
 
 /**
  * THE ACCOUNTS THIS ORGANISATION HAS LINKED.
@@ -61,13 +62,49 @@ export default async function IntegrationsPage() {
     console.error("Failed to read the Zoom connection status:", error);
   }
 
+  let google: GoogleStatus = { connected: false, available: false };
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/status`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        cache: "no-store",
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success" && response.google) {
+      google = response.google;
+    }
+  } catch (error) {
+    console.error("Failed to read the Google connection status:", error);
+  }
+
   return (
     <OrganizerLayout title={t("title")}>
       <div className="flex flex-col gap-8">
         <BackButton text={t("back")} />
         <TopBar title={t("title")} />
       </div>
-      <ZoomIntegration zoom={zoom} />
+      {/*
+        The header stays put and this scrolls, matching the other settings
+        screens. Without the scroll container the cards simply overflow the
+        shell, which has a fixed height — the second one is unreachable.
+      */}
+      <div
+        className={
+          "flex flex-col gap-16 w-full lg:w-212 mx-auto overflow-y-scroll overflow-x-hidden h-full"
+        }
+      >
+        <GoogleIntegration google={google} />
+        <ZoomIntegration zoom={zoom} />
+        <div></div>
+      </div>
     </OrganizerLayout>
   );
 }

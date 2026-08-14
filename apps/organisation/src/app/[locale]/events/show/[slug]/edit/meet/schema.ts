@@ -4,7 +4,10 @@ import z from "zod";
 import type { TranslateFn } from "./types";
 // Shared with the create schema deliberately: two copies of a plan limit is two
 // chances for them to disagree about what the API will accept.
-import { addZoomDurationIssue } from "@/app/[locale]/events/create/meet/[eventType]/schema";
+import {
+  addMeetingDurationIssue,
+  type OnlineProvider,
+} from "@/app/[locale]/events/create/meet/[eventType]/schema";
 
 /**
  * Schema factory function.
@@ -16,14 +19,21 @@ export function makeEditMeetSchema(
   t: TranslateFn,
   freeTicketLimit: number,
   /**
-   * Seats on the Zoom plan this event was built against, or null for Google
-   * Meet. Creation refusing an oversell would mean nothing if an edit could
-   * raise the quantities afterwards, so the cap is checked here too. The API
-   * remains the authority; this is the early warning.
+   * Seats on the plan this event was built against, or null when unknown.
+   *
+   * Creation refusing an oversell would mean nothing if an edit could raise the
+   * quantities afterwards, so the cap is checked here too. The API remains the
+   * authority; this is the early warning.
    */
-  zoomSeatLimit: number | null = null,
-  /** How long a meeting may run on the organiser's Zoom plan; null for Meet. */
-  zoomMaxMeetingMinutes: number | null = null,
+  seatLimit: number | null = null,
+  /**
+   * How long a call may run on the plan hosting it, or null when unknown.
+   * Read live rather than frozen at creation: the platform will cut the call at
+   * whatever today's plan allows.
+   */
+  maxMeetingMinutes: number | null = null,
+  /** Only used to word the two messages above. */
+  provider: OnlineProvider = "zoom",
 ) {
   return z
     .object({
@@ -135,21 +145,30 @@ export function makeEditMeetSchema(
       ticketSalesEndAt: z.string().optional(),
     })
     .superRefine((data, ctx) => {
-      addZoomDurationIssue(ctx, data.eventDays, zoomMaxMeetingMinutes, t);
+      addMeetingDurationIssue(
+        ctx,
+        data.eventDays,
+        maxMeetingMinutes,
+        t,
+        provider,
+      );
 
       // Across ALL ticket types combined: three 50-seat tiers on a 100-seat plan
       // still oversells.
-      if (zoomSeatLimit !== null) {
+      if (seatLimit !== null) {
         const total = data.ticketTypes.reduce((sum, ticket) => {
           const quantity = parseInt(ticket.ticketTypeQuantity, 10);
           return sum + (isNaN(quantity) ? 0 : quantity);
         }, 0);
-        if (total > zoomSeatLimit) {
+        if (total > seatLimit) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: t("errors.ticketClass.quantity.exceedsZoomSeats", {
-              limit: zoomSeatLimit,
-            }),
+            message: t(
+              provider === "zoom"
+                ? "errors.ticketClass.quantity.exceedsZoomSeats"
+                : "errors.ticketClass.quantity.exceedsGoogleSeats",
+              { limit: seatLimit },
+            ),
             path: [
               "ticketTypes",
               Math.max(0, data.ticketTypes.length - 1),

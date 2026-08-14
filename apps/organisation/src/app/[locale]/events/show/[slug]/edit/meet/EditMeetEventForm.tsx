@@ -37,12 +37,24 @@ import { EventDay } from "./types";
 export default function EditInPersonEventForm({
   event,
   membershipTier,
-  zoomMaxMeetingMinutes,
+  maxMeetingMinutes,
+  googleSeatLimit,
 }: {
   event: Event;
   membershipTier: MembershipTier;
-  /** Longest a meeting may run on the organiser's Zoom plan; null for Meet. */
-  zoomMaxMeetingMinutes: number | null;
+  /**
+   * Longest a call may run on the plan hosting it, read live rather than frozen
+   * at creation: the platform cuts the call at whatever today's plan allows.
+   * Null when the provider's limit is not known.
+   */
+  maxMeetingMinutes: number | null;
+  /**
+   * Seats on the organisation's currently declared Google plan, used only as a
+   * fallback for events created before the plan was declared. The event's own
+   * stored cap wins where it has one — that is what its tickets were sold
+   * against.
+   */
+  googleSeatLimit: number | null;
 }) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
@@ -75,9 +87,13 @@ export default function EditInPersonEventForm({
     (k, values) => t(k, values),
     membershipTier.freeTickets,
     // The cap this event was actually built against, which is what the API
-    // measures an edit by. Google Meet events carry neither field.
-    event.onlineProvider === "zoom" ? (event.zoomSeatLimit ?? null) : null,
-    zoomMaxMeetingMinutes,
+    // measures an edit by. An older Google Meet event has none, and falls back
+    // to what the organisation's declared plan allows today.
+    event.onlineProvider === "zoom"
+      ? (event.zoomSeatLimit ?? null)
+      : (event.googleSeatLimit ?? googleSeatLimit),
+    maxMeetingMinutes,
+    event.onlineProvider === "zoom" ? "zoom" : "google_meet",
   );
   type TForm = z.infer<typeof FormDataSchema>;
 

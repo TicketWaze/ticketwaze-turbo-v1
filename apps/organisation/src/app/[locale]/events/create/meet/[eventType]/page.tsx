@@ -46,42 +46,46 @@ export default async function InPersonPage({
   const membershipTier = response.membershipTier;
 
   /**
-   * The Zoom seat cap, so the ticket step can refuse an oversell where the
-   * organiser can still fix it — rather than on submit, three steps later.
-   * Null on Google Meet, which has no equivalent limit.
+   * The plan's seat cap and duration ceiling, so the ticket and date steps can
+   * refuse an oversell or an over-long event where the organiser can still fix
+   * it — rather than on submit, three steps later.
+   *
+   * BOTH providers have these limits. Zoom reports them from the account;
+   * Google reports nothing at all, so its figures come from the plan the
+   * organiser declared and are null until they have. Either way the shape is
+   * the same, so one read serves both and the form does not care which platform
+   * answered.
    */
-  let zoomSeatLimit: number | null = null;
-  let zoomMaxMeetingMinutes: number | null = null;
-  if (onlineProvider === "zoom") {
-    try {
-      const zoomRequest = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${session?.activeOrganisation?.organisationId}/status`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.accessToken}`,
-            "Accept-Language": locale,
-            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-          },
-          cache: "no-store",
+  let seatLimit: number | null = null;
+  let maxMeetingMinutes: number | null = null;
+  try {
+    const provider = onlineProvider === "zoom" ? "zoom" : "google";
+    const statusRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/${provider}/${session?.activeOrganisation?.organisationId}/status`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
         },
-      );
-      const zoomResponse = await zoomRequest.json();
-      if (zoomResponse.status === "success" && zoomResponse.zoom?.seatLimit) {
-        zoomSeatLimit = Number(zoomResponse.zoom.seatLimit);
-      }
-      if (
-        zoomResponse.status === "success" &&
-        zoomResponse.zoom?.maxDurationMinutes
-      ) {
-        zoomMaxMeetingMinutes = Number(zoomResponse.zoom.maxDurationMinutes);
-      }
-    } catch (error) {
-      // Left null rather than guessed at. The API still refuses an oversell on
-      // submit, so the cap holds either way; only the early warning is lost.
-      console.error("Failed to read the Zoom seat limit:", error);
+        cache: "no-store",
+      },
+    );
+    const statusResponse = await statusRequest.json();
+    const status =
+      provider === "zoom" ? statusResponse.zoom : statusResponse.google;
+    if (statusResponse.status === "success" && status?.seatLimit) {
+      seatLimit = Number(status.seatLimit);
     }
+    if (statusResponse.status === "success" && status?.maxDurationMinutes) {
+      maxMeetingMinutes = Number(status.maxDurationMinutes);
+    }
+  } catch (error) {
+    // Left null rather than guessed at. The API still refuses an oversell on
+    // submit, so the cap holds either way; only the early warning is lost.
+    console.error("Failed to read the online plan limits:", error);
   }
 
   return (
@@ -90,8 +94,8 @@ export default async function InPersonPage({
         eventType={eventType}
         code={code}
         onlineProvider={onlineProvider}
-        zoomSeatLimit={zoomSeatLimit}
-        zoomMaxMeetingMinutes={zoomMaxMeetingMinutes}
+        seatLimit={seatLimit}
+        maxMeetingMinutes={maxMeetingMinutes}
         membershipTier={membershipTier}
       />
     </OrganizerLayout>

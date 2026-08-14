@@ -146,44 +146,12 @@ export default function EventTypeList({
     return category.title.toLowerCase().includes(search);
   });
 
-  /**
-   * Currently unreachable — the dialog that called this is commented out below,
-   * and the Google connect flow is broken anyway (its OAuth redirect URI has no
-   * locale prefix and this app has no middleware, so it 404s).
-   *
-   * The "already connected?" branch this used to open with is gone: it read
-   * `organisation.googleRefreshToken`, which the API no longer serializes
-   * because sending an organiser's refresh token to the browser was a
-   * credential leak. Connection state has to come from an endpoint now, the way
-   * `/events/zoom/:id/status` does for Zoom.
-   */
-  async function proceedGoogleMeet() {
-    setIsLoading(true);
-    try {
-      const request = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/google/callback`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.accessToken}`,
-          },
-        },
-      );
-      const response = await request.json();
-      if (response.status === "success") {
-        closeRef.current?.click();
-        router.push(response.authorizationUrl);
-      } else {
-        toast.error(response.message);
-        setIsLoading(false);
-      }
-    } catch {
-      closeRef.current?.click();
-      toast.error(t("list.meet.fetchFailedError"));
-      setIsLoading(false);
-    }
-  }
+  /*
+    The Google connect flow used to live here, behind a dialog on the "Online"
+    card. It now belongs to the platform picker at `create/meet`, alongside
+    Zoom's, so both providers are connected the same way and at the same point
+    in the flow. This card just opens that picker.
+  */
 
   return (
     <div className="flex flex-col gap-8 overflow-y-scroll">

@@ -4,7 +4,10 @@ import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import { auth } from "@/lib/auth";
 import { getLocale } from "next-intl/server";
 import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
-import OnlineProviderPicker, { ZoomStatus } from "./OnlineProviderPicker";
+import OnlineProviderPicker, {
+  GoogleStatus,
+  ZoomStatus,
+} from "./OnlineProviderPicker";
 
 /**
  * WHICH PLATFORM HOSTS THE CALL.
@@ -92,11 +95,40 @@ export default async function OnlinePlatformPage({
     console.error("Failed to read the Zoom connection status:", error);
   }
 
+  /**
+   * Google's connection state has to come from the API now: the refresh token
+   * used to be serialized onto the organisation and read in the browser, which
+   * was a credential leak and is no longer sent.
+   */
+  let googleStatus: GoogleStatus = { connected: false, available: false };
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/status`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        cache: "no-store",
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success" && response.google) {
+      googleStatus = response.google;
+    }
+  } catch (error) {
+    console.error("Failed to read the Google connection status:", error);
+  }
+
   return (
     <OrganizerLayout title="OnlinePlatformPage">
       <OnlineProviderPicker
         code={code}
         zoom={zoom}
+        google={googleStatus}
         membershipTier={membershipTier}
       />
     </OrganizerLayout>
