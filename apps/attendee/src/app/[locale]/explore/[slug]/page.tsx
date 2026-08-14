@@ -10,6 +10,7 @@ import {
   Location,
   RouteSquare,
   SecurityUser,
+  Video,
 } from "iconsax-reactjs";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import FollowButton from "./FollowButton";
@@ -460,22 +461,7 @@ export default async function EventPage({
                 </ul>
                 {/*  address*/}
                 {event.eventCategory === "meet" && (
-                  <div className={"flex items-center gap-2 "}>
-                    <div
-                      className={
-                        "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                      }
-                    >
-                      <Google size="20" color="#737c8a" variant="Bulk" />
-                    </div>
-                    <span
-                      className={
-                        "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
-                      }
-                    >
-                      Meet, Google
-                    </span>
-                  </div>
+                  <OnlinePlatform provider={event.onlineProvider} />
                 )}
                 {event.eventCategory !== "meet" && locationLabel && (
                   <div className={"flex items-center gap-2 "}>
@@ -645,22 +631,7 @@ export default async function EventPage({
               </ul>
               {/*  address*/}
               {event.eventCategory === "meet" && (
-                <div className={"flex items-center gap-2 "}>
-                  <div
-                    className={
-                      "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                    }
-                  >
-                    <Google size="20" color="#737c8a" variant="Bulk" />
-                  </div>
-                  <span
-                    className={
-                      "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
-                    }
-                  >
-                    Meet, Google
-                  </span>
-                </div>
+                <OnlinePlatform provider={event.onlineProvider} />
               )}
               {event.eventCategory !== "meet" && locationLabel && (
                 <div className={"flex items-center gap-2 "}>
@@ -717,4 +688,38 @@ export default async function EventPage({
 
 function Separator() {
   return <div className="bg-neutral-100 h-[0.2rem] w-full shrink-0"></div>;
+}
+
+/**
+ * The "where" line for an online event.
+ *
+ * `eventCategory === "meet"` only says the event is online — Zoom was added as
+ * a provider on that same category, so it is true of Zoom events too and does
+ * not tell you which platform to name. That is `onlineProvider`. Anything other
+ * than Zoom is Google Meet, which is what an online event meant before Zoom.
+ */
+function OnlinePlatform({ provider }: { provider: string | null | undefined }) {
+  const isZoom = provider === "zoom";
+  return (
+    <div className={"flex items-center gap-2 "}>
+      <div
+        className={
+          "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
+        }
+      >
+        {isZoom ? (
+          <Video size="20" color="#737c8a" variant="Bulk" />
+        ) : (
+          <Google size="20" color="#737c8a" variant="Bulk" />
+        )}
+      </div>
+      <span
+        className={
+          "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
+        }
+      >
+        {isZoom ? "Zoom" : "Meet, Google"}
+      </span>
+    </div>
+  );
 }

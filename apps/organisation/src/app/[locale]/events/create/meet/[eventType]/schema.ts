@@ -2,6 +2,59 @@ import z from "zod";
 import type { TranslateFn } from "./types";
 
 /**
+ * Minutes between two "HH:MM" times on the same date.
+ *
+ * Same date is the whole model here: an event day carries one date with a start
+ * and an end, and the schema requires the end to be later, so this cannot go
+ * negative or wrap past midnight.
+ */
+export function minutesBetween(
+  startTime: string,
+  endTime: string,
+): number | null {
+  const parse = (value: string) => {
+    const [h, m] = (value ?? "").split(":").map(Number);
+    return Number.isFinite(h) && Number.isFinite(m) ? h * 60 + m : null;
+  };
+  const start = parse(startTime);
+  const end = parse(endTime);
+  if (start === null || end === null) return null;
+  return end - start;
+}
+
+/**
+ * Refuse a first day longer than the Zoom plan allows.
+ *
+ * Shared by the create and edit schemas so the two cannot drift, and scoped to
+ * day 1 because that is the day the meeting is created from — matching the
+ * server exactly. A client stricter than the server would block saves the API
+ * would have accepted.
+ */
+export function addZoomDurationIssue(
+  ctx: z.RefinementCtx,
+  eventDays: { dayNumber: number; startTime: string; endTime: string }[],
+  zoomMaxMeetingMinutes: number | null,
+  t: TranslateFn,
+) {
+  if (zoomMaxMeetingMinutes === null) return;
+
+  const firstDay = eventDays.find((day) => day.dayNumber === 1);
+  if (!firstDay) return;
+
+  const minutes = minutesBetween(firstDay.startTime, firstDay.endTime);
+  if (minutes === null || minutes <= zoomMaxMeetingMinutes) return;
+
+  const index = eventDays.indexOf(firstDay);
+  ctx.addIssue({
+    code: z.ZodIssueCode.custom,
+    message: t("errors.dateAndTime.exceedsZoomDuration", {
+      hours: Math.floor(zoomMaxMeetingMinutes / 60),
+    }),
+    path: ["eventDays", index, "endTime"],
+  });
+}
+
+/**
  * Schema factory function.
  * - Accepts `isFree` so ticket price requirement can change.
  * - Accepts `t` translation function (same style as useTranslations).
@@ -18,6 +71,13 @@ export function makeMeetPersonSchema(
    * the organiser is told before they have filled in a form they must redo.
    */
   zoomSeatLimit: number | null = null,
+  /**
+   * How long a meeting may run on the organiser's Zoom plan, or null for
+   * Google Meet. Zoom cuts a meeting off at this limit whether or not the
+   * event has finished, which would put every attendee out of a call they paid
+   * for, partway through.
+   */
+  zoomMaxMeetingMinutes: number | null = null,
 ) {
   return z
     .object({
@@ -117,6 +177,8 @@ export function makeMeetPersonSchema(
       ticketSalesEndAt: z.string().optional(),
     })
     .superRefine((data, ctx) => {
+      addZoomDurationIssue(ctx, data.eventDays, zoomMaxMeetingMinutes, t);
+
       /**
        * The Zoom seat cap, across ALL ticket types combined.
        *

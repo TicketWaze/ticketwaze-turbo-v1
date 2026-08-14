@@ -1187,7 +1187,8 @@
           "invalidTime": "Invalid time format (HH:mm or HH:mm:ss expected)",
           "timezone": "Timezone is required",
           "invalidTimezone": "Invalid timezone",
-          "endBeforeStart": "End time must be after start time"
+          "endBeforeStart": "End time must be after start time",
+          "exceedsZoomDuration": "This event runs longer than the {hours} hours your Zoom plan allows, so Zoom would end it early. Shorten it or split it across days."
         },
         "ticketClass": {
           "name": "Ticket class description should be at least 3 characters",

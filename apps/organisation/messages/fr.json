@@ -1186,7 +1186,8 @@
           "invalidTime": "Format d’heure invalide (HH:mm ou HH:mm:ss attendu)",
           "timezone": "Le fuseau horaire est requis",
           "invalidTimezone": "Fuseau horaire invalide",
-          "endBeforeStart": "L’heure de fin doit être postérieure à l’heure de début"
+          "endBeforeStart": "L’heure de fin doit être postérieure à l’heure de début",
+          "exceedsZoomDuration": "Cet événement dure plus longtemps que les {hours} heures autorisées par votre forfait Zoom : Zoom y mettrait fin avant la fin. Raccourcissez-le ou répartissez-le sur plusieurs jours."
         },
         "ticketClass": {
           "name": "Le nom de la catégorie de billet doit comporter au moins 3 caractères",

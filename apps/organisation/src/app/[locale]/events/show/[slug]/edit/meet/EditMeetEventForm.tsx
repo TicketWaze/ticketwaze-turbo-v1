@@ -37,9 +37,12 @@ import { EventDay } from "./types";
 export default function EditInPersonEventForm({
   event,
   membershipTier,
+  zoomMaxMeetingMinutes,
 }: {
   event: Event;
   membershipTier: MembershipTier;
+  /** Longest a meeting may run on the organiser's Zoom plan; null for Meet. */
+  zoomMaxMeetingMinutes: number | null;
 }) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
@@ -74,6 +77,7 @@ export default function EditInPersonEventForm({
     // The cap this event was actually built against, which is what the API
     // measures an edit by. Google Meet events carry neither field.
     event.onlineProvider === "zoom" ? (event.zoomSeatLimit ?? null) : null,
+    zoomMaxMeetingMinutes,
   );
   type TForm = z.infer<typeof FormDataSchema>;
 

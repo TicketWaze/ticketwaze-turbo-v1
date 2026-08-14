@@ -2,6 +2,9 @@
 
 import z from "zod";
 import type { TranslateFn } from "./types";
+// Shared with the create schema deliberately: two copies of a plan limit is two
+// chances for them to disagree about what the API will accept.
+import { addZoomDurationIssue } from "@/app/[locale]/events/create/meet/[eventType]/schema";
 
 /**
  * Schema factory function.
@@ -19,6 +22,8 @@ export function makeEditMeetSchema(
    * remains the authority; this is the early warning.
    */
   zoomSeatLimit: number | null = null,
+  /** How long a meeting may run on the organiser's Zoom plan; null for Meet. */
+  zoomMaxMeetingMinutes: number | null = null,
 ) {
   return z
     .object({
@@ -130,6 +135,8 @@ export function makeEditMeetSchema(
       ticketSalesEndAt: z.string().optional(),
     })
     .superRefine((data, ctx) => {
+      addZoomDurationIssue(ctx, data.eventDays, zoomMaxMeetingMinutes, t);
+
       // Across ALL ticket types combined: three 50-seat tiers on a 100-seat plan
       // still oversells.
       if (zoomSeatLimit !== null) {

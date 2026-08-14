@@ -27,6 +27,7 @@ export default function CreateMeetEventForm({
   code,
   onlineProvider,
   zoomSeatLimit,
+  zoomMaxMeetingMinutes,
   membershipTier,
 }: {
   eventType: string;
@@ -35,6 +36,8 @@ export default function CreateMeetEventForm({
   onlineProvider: string;
   /** Seats on the connected Zoom plan; null for Google Meet. */
   zoomSeatLimit: number | null;
+  /** Longest a meeting may run on that plan; null for Google Meet. */
+  zoomMaxMeetingMinutes: number | null;
   membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event");
@@ -51,6 +54,7 @@ export default function CreateMeetEventForm({
     (k, values) => t(k, values),
     membershipTier.freeTickets,
     zoomSeatLimit,
+    zoomMaxMeetingMinutes,
   );
   type TForm = z.infer<typeof FormDataSchema>;
 

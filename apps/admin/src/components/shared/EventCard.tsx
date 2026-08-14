@@ -1,6 +1,6 @@
 "use client";
 import { Link } from "@/i18n/navigation";
-import { Calendar2, Google, Location } from "iconsax-reactjs";
+import { Calendar2, Google, Location, Video } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { Event } from "@ticketwaze/typescript-config";
@@ -78,13 +78,23 @@ function EventCard({ event, aside }: { event: Event; aside?: boolean }) {
           </div>
           {event.eventCategory === "meet" ? (
             <div className={"flex items-center gap-[5px]"}>
-              <Google size="15" color="#2e3237" variant="Bulk" />
+              {event.onlineProvider === "zoom" ? (
+                <Video size="15" color="#2e3237" variant="Bulk" />
+              ) : (
+                <Google size="15" color="#2e3237" variant="Bulk" />
+              )}
               <p
                 className={
                   "font-medium text-[1rem] text-deep-100 leading-[15px]"
                 }
               >
-                Meet, <span className={"text-neutral-700"}>Google</span>
+                {event.onlineProvider === "zoom" ? (
+                  <span className={"text-neutral-700"}>Zoom</span>
+                ) : (
+                  <>
+                    Meet, <span className={"text-neutral-700"}>Google</span>
+                  </>
+                )}
               </p>
             </div>
           ) : (

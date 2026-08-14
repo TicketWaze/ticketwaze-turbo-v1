@@ -51,6 +51,7 @@ export default async function InPersonPage({
    * Null on Google Meet, which has no equivalent limit.
    */
   let zoomSeatLimit: number | null = null;
+  let zoomMaxMeetingMinutes: number | null = null;
   if (onlineProvider === "zoom") {
     try {
       const zoomRequest = await fetch(
@@ -70,6 +71,12 @@ export default async function InPersonPage({
       if (zoomResponse.status === "success" && zoomResponse.zoom?.seatLimit) {
         zoomSeatLimit = Number(zoomResponse.zoom.seatLimit);
       }
+      if (
+        zoomResponse.status === "success" &&
+        zoomResponse.zoom?.maxDurationMinutes
+      ) {
+        zoomMaxMeetingMinutes = Number(zoomResponse.zoom.maxDurationMinutes);
+      }
     } catch (error) {
       // Left null rather than guessed at. The API still refuses an oversell on
       // submit, so the cap holds either way; only the early warning is lost.
@@ -84,6 +91,7 @@ export default async function InPersonPage({
         code={code}
         onlineProvider={onlineProvider}
         zoomSeatLimit={zoomSeatLimit}
+        zoomMaxMeetingMinutes={zoomMaxMeetingMinutes}
         membershipTier={membershipTier}
       />
     </OrganizerLayout>
