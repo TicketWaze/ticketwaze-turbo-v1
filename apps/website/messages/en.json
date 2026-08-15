@@ -312,6 +312,28 @@
         "cta": "Talk to sales!",
         "waitlist": "Join the waitlist!"
       }
+    },
+    "enterprise": {
+      "title1": "Need more than a plan? Let’s build it",
+      "title2": "together.",
+      "beyond": "Beyond the platform",
+      "word": "Enterprise",
+      "tailored": "tailored to your business",
+      "services": {
+        "integrations": {
+          "title": "Custom integrations",
+          "description": "API access and connections to the tools you already use for accounting, CRM, POS or payroll."
+        },
+        "onsite": {
+          "title": "On-site support",
+          "description": "Scanning hardware, box office setup and trained staff for your biggest activities."
+        },
+        "support": {
+          "title": "Dedicated account manager",
+          "description": "A direct line, custom team and ticket limits, priority payouts and negotiated fees."
+        }
+      },
+      "cta": "Talk to our team"
     }
   },
   "AboutPage": {

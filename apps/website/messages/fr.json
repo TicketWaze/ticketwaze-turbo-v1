@@ -312,6 +312,28 @@
         "cta": "Parlez à nos équipes commerciales !",
         "waitlist": "Rejoindre la liste d’attente !"
       }
+    },
+    "enterprise": {
+      "title1": "Besoin de plus qu’un plan ? Construisons-le",
+      "title2": "ensemble.",
+      "beyond": "Au-delà de la plateforme",
+      "word": "Entreprise",
+      "tailored": "sur mesure pour votre entreprise",
+      "services": {
+        "integrations": {
+          "title": "Intégrations sur mesure",
+          "description": "Accès à l’API et connexions aux outils que vous utilisez déjà : comptabilité, CRM, caisse ou paie."
+        },
+        "onsite": {
+          "title": "Support sur place",
+          "description": "Matériel de scan, installation de la billetterie sur site et personnel formé pour vos plus grandes activités."
+        },
+        "support": {
+          "title": "Gestionnaire de compte dédié",
+          "description": "Une ligne directe, des limites d’équipe et de billets personnalisées, des paiements prioritaires et des frais négociés."
+        }
+      },
+      "cta": "Parlez à notre équipe"
     }
   },
   "AboutPage": {
