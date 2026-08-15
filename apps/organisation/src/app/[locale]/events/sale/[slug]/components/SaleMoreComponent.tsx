@@ -3,7 +3,9 @@ import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { Edit2, MoreCircle, Trash } from "iconsax-reactjs";
+import { Edit2, HamburgerMenu, MoreCircle, Trash } from "iconsax-reactjs";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
+import SaleDrawerContent from "./SaleDrawerContent";
 import {
   Popover,
   PopoverContent,
@@ -80,6 +82,27 @@ export default function SaleMoreComponent({ sale }: { sale: Sale }) {
             {t("more")}
           </span>
           <div className={"flex flex-col gap-4"}>
+            {/*
+              Details first, exactly as on the event page. The description and
+              the cover moved off the page and in here: the page itself is now
+              the numbers and the list of buyers, and the product's own blurb is
+              one click away rather than occupying the middle of it.
+            */}
+            <li>
+              <Drawer direction={"right"}>
+                <DrawerTrigger className={"w-full"}>
+                  <div
+                    className={
+                      "font-normal cursor-pointer group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full"
+                    }
+                  >
+                    <span>{t("details")}</span>
+                    <HamburgerMenu size="20" variant="Bulk" color={"#2E3237"} />
+                  </div>
+                </DrawerTrigger>
+                <SaleDrawerContent sale={sale} />
+              </Drawer>
+            </li>
             <li>
               <Link
                 href={`/events/sale/${slugify(sale.title, sale.saleId)}/edit`}

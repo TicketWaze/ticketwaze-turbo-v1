@@ -49,7 +49,8 @@ function SaleCard({ sale }: { sale: Sale }) {
   return (
     <Link
       href={`/events/sale/${slugify(sale.title, sale.saleId)}`}
-      className="flex flex-row items-center lg:items-stretch lg:mb-8 lg:flex-col gap-4 w-full lg:max-w-140 bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0">
+      className="flex flex-row items-center lg:items-stretch lg:mb-8 lg:flex-col gap-4 w-full lg:max-w-140 bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0"
+    >
       <div className="relative">
         {sale.coverImageUrl && (
           <Image
@@ -61,7 +62,8 @@ function SaleCard({ sale }: { sale: Sale }) {
           />
         )}
         <div
-          className={`${saleStatusClass(sale.status)} block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit`}>
+          className={`${saleStatusClass(sale.status)} block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit`}
+        >
           {t(`saleCard.status.${sale.status}`).toUpperCase()}
         </div>
         <div className="bg-primary-50 block absolute bottom-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-primary-500 font-primary font-bold leading-6 w-fit">
@@ -89,9 +91,28 @@ function SaleCard({ sale }: { sale: Sale }) {
             </ul>
           )}
         </div>
-        <div className="flex flex-col lg:flex-row gap-6 lg:items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0">
-            <DocumentText size="15" color="#2e3237" variant="Bulk" />
+        {/*
+          THE FILENAME YIELDS, THE SIZE DOES NOT.
+
+          Uploaded filenames are arbitrarily long and frequently unbroken
+          ("Ticketwaze-Team-Management-Plan-v3-final.pdf"), so without this the
+          name pushed the size out of the row and "62 KB" wrapped onto two
+          lines, making the card taller than every other card in the grid.
+
+          `min-w-0` is the part that actually does the work: a flex child
+          defaults to min-width:auto and refuses to shrink below its content, so
+          `truncate` alone never engages. The size is `shrink-0` and
+          `whitespace-nowrap` because it is short, fixed and the one of the two
+          that must stay whole.
+        */}
+        <div className="flex flex-row gap-4 items-center justify-between">
+          <div className="flex items-center gap-2 min-w-0 flex-1">
+            <DocumentText
+              size="15"
+              color="#2e3237"
+              variant="Bulk"
+              className="shrink-0"
+            />
             <p className="font-medium truncate text-[1rem] text-deep-100 leading-6">
               {/* A sale with no file cannot be reviewed, let alone sold, so the
                   missing case is worth naming rather than leaving blank. */}
@@ -99,9 +120,14 @@ function SaleCard({ sale }: { sale: Sale }) {
             </p>
           </div>
           {file && (
-            <div className="flex items-center gap-2">
-              <ArchiveBox size="15" color="#2e3237" variant="Bulk" />
-              <span className="font-medium text-[1rem] text-deep-100 leading-6">
+            <div className="flex items-center gap-2 shrink-0">
+              <ArchiveBox
+                size="15"
+                color="#2e3237"
+                variant="Bulk"
+                className="shrink-0"
+              />
+              <span className="font-medium text-[1rem] text-deep-100 leading-6 whitespace-nowrap">
                 {formatFileSize(file.byteSize)}
               </span>
             </div>

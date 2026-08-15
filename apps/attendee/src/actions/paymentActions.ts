@@ -72,7 +72,11 @@ export async function StartRaffleStripe(
     if (data.status === "success") {
       return { status: "success" as const, clientSecret: data.clientSecret };
     }
-    return { status: "failed" as const, message: data.message, code: data.code };
+    return {
+      status: "failed" as const,
+      message: data.message,
+      code: data.code,
+    };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -105,7 +109,11 @@ export async function StartRaffleGuestStripe(
     if (data.status === "success") {
       return { status: "success" as const, clientSecret: data.clientSecret };
     }
-    return { status: "failed" as const, message: data.message, code: data.code };
+    return {
+      status: "failed" as const,
+      message: data.message,
+      code: data.code,
+    };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -136,7 +144,11 @@ export async function StartRaffleGuestMoncash(
     if (data.status === "success") {
       return { status: "success" as const, paymentURL: data.paymentURL };
     }
-    return { status: "failed" as const, message: data.message, code: data.code };
+    return {
+      status: "failed" as const,
+      message: data.message,
+      code: data.code,
+    };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -168,7 +180,11 @@ export async function StartRaffleMoncash(
     if (data.status === "success") {
       return { status: "success" as const, paymentURL: data.paymentURL };
     }
-    return { status: "failed" as const, message: data.message, code: data.code };
+    return {
+      status: "failed" as const,
+      message: data.message,
+      code: data.code,
+    };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -199,7 +215,11 @@ export async function StartRaffleGuestNatcash(
     if (data.status === "success") {
       return { status: "success" as const, paymentURL: data.paymentURL };
     }
-    return { status: "failed" as const, message: data.message, code: data.code };
+    return {
+      status: "failed" as const,
+      message: data.message,
+      code: data.code,
+    };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -231,7 +251,11 @@ export async function StartRaffleNatcash(
     if (data.status === "success") {
       return { status: "success" as const, paymentURL: data.paymentURL };
     }
-    return { status: "failed" as const, message: data.message, code: data.code };
+    return {
+      status: "failed" as const,
+      message: data.message,
+      code: data.code,
+    };
   } catch (err: unknown) {
     return {
       error: err instanceof Error ? err.message : "An unknown error occurred",
@@ -264,7 +288,11 @@ export async function BuyRaffleEntriesWallet(
     if (data.status === "success") {
       return { status: "success" as const };
     } else {
-      return { status: "failed" as const, message: data.message, code: data.code };
+      return {
+        status: "failed" as const,
+        message: data.message,
+        code: data.code,
+      };
     }
   } catch (err: unknown) {
     return {
@@ -282,32 +310,60 @@ export async function BuySaleWallet(
   accessToken: string,
   saleId: string,
   locale: string,
+  recipientEmail?: string,
 ) {
-  return startSalePayment("wallet", accessToken, saleId, locale);
+  return startSalePayment(
+    "wallet",
+    accessToken,
+    saleId,
+    locale,
+    recipientEmail,
+  );
 }
 
 export async function StartSaleStripe(
   accessToken: string,
   saleId: string,
   locale: string,
+  recipientEmail?: string,
 ) {
-  return startSalePayment("stripe", accessToken, saleId, locale);
+  return startSalePayment(
+    "stripe",
+    accessToken,
+    saleId,
+    locale,
+    recipientEmail,
+  );
 }
 
 export async function StartSaleMoncash(
   accessToken: string,
   saleId: string,
   locale: string,
+  recipientEmail?: string,
 ) {
-  return startSalePayment("moncash", accessToken, saleId, locale);
+  return startSalePayment(
+    "moncash",
+    accessToken,
+    saleId,
+    locale,
+    recipientEmail,
+  );
 }
 
 export async function StartSaleNatcash(
   accessToken: string,
   saleId: string,
   locale: string,
+  recipientEmail?: string,
 ) {
-  return startSalePayment("natcash", accessToken, saleId, locale);
+  return startSalePayment(
+    "natcash",
+    accessToken,
+    saleId,
+    locale,
+    recipientEmail,
+  );
 }
 
 /**
@@ -324,6 +380,12 @@ async function startSalePayment(
   accessToken: string,
   saleId: string,
   locale: string,
+  /**
+   * Set only when buying for somebody else. The API resolves it to an account
+   * and refuses before charging anything if there is none — it is never
+   * trusted as merely "an email to deliver to".
+   */
+  recipientEmail?: string,
 ) {
   try {
     const res = await fetch(
@@ -336,6 +398,7 @@ async function startSalePayment(
           "Accept-Language": locale,
           origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
         },
+        body: JSON.stringify(recipientEmail ? { recipientEmail } : {}),
       },
     );
     const data = await res.json();
@@ -346,7 +409,92 @@ async function startSalePayment(
         paymentURL: data.paymentURL as string | undefined,
       };
     }
-    return { status: "failed" as const, message: data.message as string };
+    return {
+      status: "failed" as const,
+      message: data.message as string,
+      // Lets the checkout offer to invite them instead of dead-ending.
+      needsInvite: data.needsInvite === true,
+    };
+  } catch (err: unknown) {
+    return {
+      status: "failed" as const,
+      message: err instanceof Error ? err.message : "An unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Can this product be bought for this address?
+ *
+ * Asked as the buyer types, before a payment method is chosen: "no account" and
+ * "they already own it" are both things to fix before paying, not after.
+ */
+export async function CheckSaleRecipient(
+  accessToken: string,
+  saleId: string,
+  email: string,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/sales/${saleId}/recipient?email=${encodeURIComponent(email)}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
+        },
+        cache: "no-store",
+      },
+    );
+    const data = await res.json();
+    return {
+      status: data.status as "success" | "failed",
+      found: data.found === true,
+      canReceive: data.canReceive === true,
+      isSelf: data.isSelf === true,
+      firstName: data.firstName as string | undefined,
+      message: data.message as string | null,
+    };
+  } catch {
+    return {
+      status: "failed" as const,
+      found: false,
+      canReceive: false,
+      isSelf: false,
+      firstName: undefined,
+      message: null,
+    };
+  }
+}
+
+/** Ask somebody with no account to create one, so they can be sent a product. */
+export async function InviteSaleRecipient(
+  accessToken: string,
+  saleId: string,
+  email: string,
+  locale: string,
+) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/sales/${saleId}/invite`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ATTENDEE_URL!,
+        },
+        body: JSON.stringify({ email }),
+      },
+    );
+    const data = await res.json();
+    return {
+      status: data.status as "success" | "failed",
+      message: data.message as string | undefined,
+    };
   } catch (err: unknown) {
     return {
       status: "failed" as const,

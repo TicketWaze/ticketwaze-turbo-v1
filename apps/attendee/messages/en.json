@@ -1321,6 +1321,36 @@
     "noPurchasesHint": "Digital products you buy will appear here, ready to download whenever you need them.",
     "selectMethod": "Choose how you want to pay",
     "failed": "That payment could not be started. Please try again.",
-    "login": "Sign in"
+    "login": "Sign in",
+    "details": "Details",
+    "gift": {
+      "forSomeoneElse": "Buy this for someone else",
+      "emailPlaceholder": "Their Ticketwaze email address",
+      "checking": "Checking that address...",
+      "willBeSentTo": "This will be sent to {name}. The download goes to their account, not yours.",
+      "cannotReceive": "This cannot be sent to that address.",
+      "invite": "Invite them to create an account",
+      "inviteSent": "Invitation sent. They can buy it once they have an account.",
+      "enterValidRecipient": "Enter the email address of the person you are buying this for.",
+      "keepingItNote": "The download will go to your own account.",
+      "accountRequired": "They need a Ticketwaze account, because the download is added to their account permanently.",
+      "summaryFor": "For",
+      "deliveredTo": "To {name}"
+    },
+    "alreadyOwned": "Download it",
+    "steps": {
+      "product": "Your product",
+      "recipient": "Who it is for",
+      "payment": "Payment method",
+      "summary": "Summary"
+    },
+    "summary": {
+      "delivery": "Delivery",
+      "deliveryToYou": "To your account",
+      "method": "Payment method"
+    },
+    "summaryTitle": "Your order",
+    "continue": "Continue",
+    "cardPayment": "Card payment"
   }
 }

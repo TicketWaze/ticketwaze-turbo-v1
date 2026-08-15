@@ -37,9 +37,16 @@ import {
 export default function SaleActions({
   sale,
   isFavorite,
+  alreadyOwned = false,
 }: {
   sale: PublicSale;
   isFavorite: boolean;
+  /**
+   * Whether the signed-in viewer already holds this product — bought for
+   * themselves OR received as a gift. Read on the server so the page never
+   * flashes a Buy button at somebody who owns it.
+   */
+  alreadyOwned?: boolean;
 }) {
   const t = useTranslations("Event");
   const st = useTranslations("Sale");
@@ -162,12 +169,30 @@ export default function SaleActions({
       {/* Signed-out buyers are sent to sign in first: guest purchase of a
           digital product is not built, and the API would refuse it. */}
       {session?.user ? (
-        <LinkPrimary
-          href={`/explore/sale/${saleSlug}/checkout`}
-          className="py-[7.5px] px-12 text-[1.5rem] font-semibold tracking-[-0.50px] normal font-sans"
-        >
-          {st("buyNow")}
-        </LinkPrimary>
+        /**
+         * ALREADY OWNED — say so, and point at the download.
+         *
+         * The API refuses a second purchase, but until now nothing said so
+         * until the buyer had picked a payment method: they could open the
+         * checkout, choose a card, and only then be told. There is nothing
+         * extra to receive, so the honest button is the one that takes them to
+         * the file they already have.
+         */
+        alreadyOwned ? (
+          <LinkPrimary
+            href="/purchases"
+            className="py-[7.5px] px-12 text-[1.5rem] font-semibold tracking-[-0.50px] normal font-sans"
+          >
+            {st("alreadyOwned")}
+          </LinkPrimary>
+        ) : (
+          <LinkPrimary
+            href={`/explore/sale/${saleSlug}/checkout`}
+            className="py-[7.5px] px-12 text-[1.5rem] font-semibold tracking-[-0.50px] normal font-sans"
+          >
+            {st("buyNow")}
+          </LinkPrimary>
+        )
       ) : (
         <Dialog>
           <DialogTrigger>

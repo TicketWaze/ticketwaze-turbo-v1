@@ -1370,7 +1370,10 @@
           "too_large": "Votre image de couverture est trop lourde. Essayez-en une plus petite.",
           "submit_failed": "Nous n'avons pas pu créer votre produit. Veuillez réessayer.",
           "title_taken": "Un produit portant ce nom existe déjà. Choisissez un autre nom."
-        }
+        },
+        "file_section": "Le fichier que vous vendez",
+        "file_versions_note": "{count} versions conservées. Chaque acheteur conserve la version qu’il a payée : remplacer le fichier ne change jamais ce que quelqu’un a déjà acheté.",
+        "file_immediate_note": "L’envoi d’un fichier prend effet immédiatement et n’attend pas l’enregistrement. Il renvoie votre produit en révision : il n’est donc plus en vente jusqu’à ce qu’un administrateur approuve la nouvelle version. Les personnes qui l’ont déjà acheté conservent la version qu’elles ont payée et ne sont pas affectées."
       }
     },
     "sale_price_preview": {
@@ -1417,7 +1420,14 @@
       "restaurants": "Bar & Restaurant",
       "empty_restaurants": "Aucun établissement pour l'instant. Ajoutez votre bar ou restaurant pour commencer.",
       "sales": "Produits numériques",
-      "empty_sales": "Aucun produit numérique pour l'instant. Envoyez votre premier fichier pour commencer à vendre."
+      "empty_sales": "Aucun produit numérique pour l'instant. Envoyez votre premier fichier pour commencer à vendre.",
+      "ongoing": "En cours",
+      "upcoming": "À venir",
+      "history": "Historique",
+      "all_categories": "Toutes les catégories",
+      "empty_status": "Rien ici pour le moment. Essayez un autre onglet ou retirez le filtre de catégorie.",
+      "status_label": "Statut",
+      "category_label": "Catégorie"
     },
     "restaurantCard": {
       "tag": "Bar & Restaurant",
@@ -1724,7 +1734,10 @@
         "buyer_pays": "L'acheteur paie",
         "you_receive": "Vous recevez",
         "status": "Statut",
-        "file_size": "Taille du fichier"
+        "file_size": "Taille du fichier",
+        "revenue": "Revenus",
+        "sold": "Exemplaires vendus",
+        "you_receive_inline": "vous recevez {amount}"
       },
       "status": {
         "draft": "Brouillon",
@@ -1756,7 +1769,8 @@
           "pending": "Analyse en attente",
           "clean": "Analysé, sain",
           "infected": "Logiciel malveillant détecté",
-          "error": "Échec de l'analyse"
+          "error": "Échec de l'analyse",
+          "skipped": "Non analysé"
         }
       },
       "delete_dialog": {
@@ -1765,6 +1779,31 @@
         "buyers_note": "Si quelqu'un l'a déjà acheté, le produit est masqué plutôt que supprimé et ses acheteurs gardent leur téléchargement.",
         "cta": "Supprimer le produit",
         "done": "Produit supprimé."
+      },
+      "details": "Détails",
+      "about": "À propos",
+      "product_details": "Détails du produit",
+      "drawer": {
+        "price": "L’acheteur paie {buyer} · vous recevez {seller}",
+        "file": "{name} · {size} · version {version}"
+      },
+      "buyers": {
+        "title": "Acheteurs",
+        "search": "Rechercher un acheteur",
+        "empty": "Personne n’a encore acheté ce produit. Dès qu’une vente aura lieu, l’acheteur apparaîtra ici avec la version qu’il a téléchargée.",
+        "deleted_account": "Compte supprimé",
+        "refunded": "Remboursé",
+        "version_label": "v{version}",
+        "table": {
+          "name": "Nom",
+          "email": "E-mail",
+          "amount": "Montant",
+          "version": "Version du fichier",
+          "downloads": "Téléchargements",
+          "date_purchased": "Acheté le"
+        },
+        "no_results": "Aucun acheteur ne correspond à « {term} ».",
+        "showing_latest": "{count} derniers sur {total}"
       }
     }
   },

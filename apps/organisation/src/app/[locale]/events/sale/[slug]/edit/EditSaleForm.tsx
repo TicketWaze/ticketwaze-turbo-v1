@@ -24,6 +24,7 @@ import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
 import SalePricePreview from "@/components/shared/SalePricePreview";
 import CharCounter from "@/components/shared/CharCounter";
 import useSaleTitleAvailability from "@/hooks/useSaleTitleAvailability";
+import SaleFileManager from "../components/SaleFileManager";
 import { slugify } from "@/lib/Slugify";
 
 const TITLE_MIN_CHARS = 10;
@@ -242,6 +243,29 @@ export default function EditSaleForm({ sale }: { sale: Sale }) {
       <h1 className="max-w-216 w-full mx-auto font-primary font-medium text-[2.6rem] leading-12 text-black">
         {t("edit_heading")}
       </h1>
+
+      {/*
+        THE FILE, ABOVE THE FORM AND OUTSIDE IT.
+
+        Outside because it does not belong to Save: picking a file uploads it
+        immediately on its own button, sends the product back through review,
+        and the metadata below is still unsaved at that point. Putting it inside
+        the form would promise they travel together, which they do not.
+
+        Above because it is the product. Until now the file could only be
+        replaced from the detail page, so "edit" meant everything about the
+        product except the thing being sold.
+      */}
+      <div className={`${cardClass} !gap-6`}>
+        <span className={sectionTitle}>{t("file_section")}</span>
+        <SaleFileManager sale={sale} />
+        {(sale.files?.length ?? 0) > 1 && (
+          <p className="text-[1.2rem] leading-7 text-neutral-600">
+            {t("file_versions_note", { count: sale.files?.length ?? 0 })}
+          </p>
+        )}
+        <Note>{t("file_immediate_note")}</Note>
+      </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}

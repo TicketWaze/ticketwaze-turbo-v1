@@ -1365,6 +1365,36 @@
     "noPurchasesHint": "Les produits numériques que vous achetez apparaîtront ici, prêts à être téléchargés quand vous en avez besoin.",
     "selectMethod": "Choisissez votre moyen de paiement",
     "failed": "Ce paiement n'a pas pu être lancé. Veuillez réessayer.",
-    "login": "Se connecter"
+    "login": "Se connecter",
+    "details": "Détails",
+    "gift": {
+      "forSomeoneElse": "Acheter pour quelqu’un d’autre",
+      "emailPlaceholder": "Son adresse e-mail Ticketwaze",
+      "checking": "Vérification de l’adresse...",
+      "willBeSentTo": "Ce produit sera envoyé à {name}. Le téléchargement ira dans son compte, pas dans le vôtre.",
+      "cannotReceive": "Impossible d’envoyer ce produit à cette adresse.",
+      "invite": "L’inviter à créer un compte",
+      "inviteSent": "Invitation envoyée. Vous pourrez le lui offrir une fois son compte créé.",
+      "enterValidRecipient": "Saisissez l’adresse e-mail de la personne pour qui vous achetez.",
+      "keepingItNote": "Le téléchargement ira dans votre propre compte.",
+      "accountRequired": "Cette personne doit avoir un compte Ticketwaze, car le téléchargement est ajouté définitivement à son compte.",
+      "summaryFor": "Pour",
+      "deliveredTo": "À {name}"
+    },
+    "alreadyOwned": "Le télécharger",
+    "steps": {
+      "product": "Votre produit",
+      "recipient": "Pour qui",
+      "payment": "Moyen de paiement",
+      "summary": "Récapitulatif"
+    },
+    "summary": {
+      "delivery": "Livraison",
+      "deliveryToYou": "Dans votre compte",
+      "method": "Moyen de paiement"
+    },
+    "summaryTitle": "Votre commande",
+    "continue": "Continuer",
+    "cardPayment": "Paiement par carte"
   }
 }

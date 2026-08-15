@@ -723,6 +723,44 @@ export interface SalePricing {
  * switches, a sale has one linear status: it is approved and listed, or it is
  * not.
  */
+/**
+ * One purchase of a digital product, as the SELLER sees it.
+ *
+ * The sale module's answer to a ticket on the event page. `fileVersion` has no
+ * event equivalent and is the point of the row: an entitlement pins the version
+ * that was bought, so after a seller uploads a replacement their buyers are
+ * split across versions and this is the only place that is visible.
+ */
+export interface SaleBuyer {
+  entitlementId: string;
+  orderId: string;
+  /** Null only if the buyer's user row is gone (an anonymised account). */
+  fullName: string | null;
+  email: string | null;
+  /** What the SELLER earned, snapshotted at purchase — not today's price. */
+  price: number;
+  usdPrice: number;
+  /** The version this buyer holds, which may not be the current one. */
+  fileVersion: number | null;
+  fileName: string | null;
+  downloadCount: number;
+  lastDownloadedAt: string | null;
+  /** Set only by an admin refund; there are no seller-facing refunds. */
+  revokedAt: string | null;
+  revokedReason: string | null;
+  purchasedAt: string;
+}
+
+/** Totals over every buyer of a product, refunds excluded from the money. */
+export interface SaleBuyersSummary {
+  /** Copies sold, excluding admin-refunded purchases. */
+  sold: number;
+  revenue: number;
+  usdRevenue: number;
+  /** Every entitlement including refunds — what the buyers table is a window onto. */
+  total: number;
+}
+
 export interface Sale {
   saleId: string;
   organisationId: string;
@@ -747,6 +785,19 @@ export interface Sale {
   publishedAt: string | null;
   /** Present on the list and detail endpoints; the current version first. */
   files?: SaleFile[];
+  /**
+   * The latest page of buyers, newest first — NOT every buyer. The seller's
+   * detail endpoint sends ten; searching goes to `/sales/:org/:sale/buyers`.
+   */
+  buyers?: SaleBuyer[];
+  /**
+   * Totals over EVERY buyer, counted in the database.
+   *
+   * Separate from `buyers` because that is only a page: summing the rows on
+   * screen would report the revenue of the last ten sales and call it the
+   * revenue.
+   */
+  buyersSummary?: SaleBuyersSummary;
   pricing?: SalePricing;
   /** Preloaded by the admin review endpoints so the queue can name the seller. */
   organisation?: Organisation;
@@ -792,6 +843,12 @@ export interface PublicSale {
     organisationName: string;
     profileImageUrl: string | null;
     isVerified: boolean;
+    /**
+     * A count, never the follower list: this payload is public and cached, so
+     * who follows a seller does not belong in it. Whether the CURRENT viewer
+     * follows them is asked for separately, per user.
+     */
+    followersCount: number;
   } | null;
 }
 

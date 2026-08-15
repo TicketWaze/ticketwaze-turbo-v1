@@ -1,17 +1,13 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
-import Image from "next/image";
-import { getLocale, getTranslations } from "next-intl/server";
-import { DocumentText, Danger, DocumentDownload } from "iconsax-reactjs";
-import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { PublicSale } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
-import { formatMoney } from "@ticketwaze/currency";
 import { notFound } from "next/navigation";
 import AnimatedEventPage from "../../[slug]/AnimatedEventPage";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
+import OrganisationSummary from "@/components/shared/OrganisationSummary";
 import SaleActions from "./SaleActions";
-import { fileKind, formatFileSize } from "@/lib/saleFile";
 import { extractIdFromSlug } from "@/lib/Slugify";
 
 function Separator() {
@@ -28,7 +24,6 @@ export default async function SalePage({
   // decoration, so renaming a product never breaks a shared link.
   const saleId = extractIdFromSlug(slug);
   const session = await auth();
-  const locale = await getLocale();
   const t = await getTranslations("Sale");
 
   /**
@@ -66,6 +61,62 @@ export default async function SalePage({
     }
   }
 
+  /**
+   * DOES THIS VIEWER ALREADY OWN IT?
+   *
+   * Read on the server so the page never offers a Buy button to somebody who
+   * owns the product and would only be refused at the end of the checkout.
+   * `/me/purchases` lists what they HOLD, so a product received as a gift
+   * counts exactly as much as one they bought.
+   */
+  let alreadyOwned = false;
+  if (session?.user?.accessToken) {
+    try {
+      const purchasesReq = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/me/purchases`,
+        {
+          headers: { Authorization: `Bearer ${session.user.accessToken}` },
+          cache: "no-store",
+        },
+      );
+      const purchasesRes = await purchasesReq.json();
+      alreadyOwned = Boolean(
+        purchasesRes?.purchases?.some(
+          (purchase: { saleId: string; revokedAt?: string | null }) =>
+            purchase.saleId === sale.saleId && !purchase.revokedAt,
+        ),
+      );
+    } catch {
+      // Left false: the API refuses a duplicate purchase anyway, so the worst
+      // case is the old behaviour of finding out at checkout.
+      alreadyOwned = false;
+    }
+  }
+
+  /**
+   * Asked separately, and never cached.
+   *
+   * The product payload above is public and shared by every visitor, so it can
+   * carry the follower COUNT but not whether *you* are one of them. A signed-out
+   * visitor simply sees the un-followed state, which is the truth for them.
+   */
+  let isFollowing = false;
+  if (session?.user?.accessToken && sale.organisation) {
+    try {
+      const followReq = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/organisations/${sale.organisation.organisationId}/is-following`,
+        {
+          headers: { Authorization: `Bearer ${session.user.accessToken}` },
+          cache: "no-store",
+        },
+      );
+      const followRes = await followReq.json();
+      isFollowing = followRes?.isFollowing === true;
+    } catch {
+      isFollowing = false;
+    }
+  }
+
   return (
     <AttendeeLayout title={sale.title}>
       <AnimatedEventPage>
@@ -83,7 +134,11 @@ export default async function SalePage({
                 height={298}
               />
             )}
-            <SaleActions sale={sale} isFavorite={isFavorite} />
+            <SaleActions
+              sale={sale}
+              isFavorite={isFavorite}
+              alreadyOwned={alreadyOwned}
+            />
             <Separator />
             <div className="flex flex-col gap-4">
               <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
@@ -104,96 +159,49 @@ export default async function SalePage({
                 </ul>
               </>
             )}
+
+            {/* On a phone there is no sidebar to put this in, so it follows the
+                description — the same place the event page keeps it. */}
+            {sale.organisation && (
+              <div className="lg:hidden flex flex-col gap-8">
+                <Separator />
+                <span className="font-semibold text-[1.6rem] leading-8 text-deep-200">
+                  {t("details")}
+                </span>
+                <OrganisationSummary
+                  organisation={sale.organisation}
+                  followersCount={sale.organisation.followersCount}
+                  isFollowing={isFollowing}
+                />
+              </div>
+            )}
           </div>
 
-          <aside className="flex flex-col gap-8 lg:overflow-y-auto min-h-0">
-            {/* Price. One number, all in — the surcharge is never itemised to a
-                buyer (SALE-MODULE.md §6). */}
-            <div className="flex flex-col gap-2 rounded-[15px] border border-neutral-100 p-8">
-              <span className="text-[1.4rem] leading-8 text-neutral-600">
-                {t("price")}
-              </span>
-              <span className="font-primary font-medium text-[2.6rem] leading-12 text-primary-500">
-                {formatMoney(
-                  sale.pricing.buyerPays,
-                  sale.pricing.currency,
-                  locale,
-                )}
-              </span>
-            </div>
+          {/*
+            THE SIDEBAR, BUILT LIKE THE EVENT PAGE'S.
 
-            {/* What you get. A buyer cannot open the file before paying, so the
-                type and size are the only things they can judge it by. */}
-            {sale.file && (
-              <div className="flex flex-col gap-6 rounded-[15px] border border-neutral-100 p-8">
-                <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-                  {t("whatYouGet")}
-                </span>
-                <div className="flex items-center gap-4">
-                  <DocumentText size="20" color="#2e3237" variant="Bulk" />
-                  <span className="text-[1.5rem] leading-8 text-neutral-700">
-                    {fileKind(sale.file.originalFilename, sale.file.mimeType)}
-                    {" · "}
-                    {formatFileSize(sale.file.byteSize)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-4">
-                  <DocumentDownload size="20" color="#2e3237" variant="Bulk" />
-                  <span className="text-[1.5rem] leading-8 text-neutral-700">
-                    {t("instantDownload")}
-                  </span>
-                </div>
-              </div>
-            )}
+            The three cards that used to sit here — a price card, a "what you
+            get" card and a final-sale notice — are gone. The price already sits
+            on the buy button in `SaleActions`, the file type and size are on
+            the product line beside it, and repeating each of them in its own
+            bordered box gave a one-file product a longer sidebar than a
+            multi-day event.
 
-            {/* Stated before purchase, not after. This is the one term a buyer
-                of a digital file has to know up front. */}
-            <div className="flex items-start gap-4 rounded-[15px] bg-neutral-100 p-8">
-              <Danger
-                size="20"
-                color="#737C8A"
-                variant="Bulk"
-                className="shrink-0 mt-1"
-              />
-              <div className="flex flex-col gap-1">
-                <span className="font-semibold text-[1.5rem] leading-8 text-deep-100">
-                  {t("finalSale")}
-                </span>
-                <span className="text-[1.4rem] leading-8 text-neutral-600">
-                  {t("finalSaleNote")}
-                </span>
-              </div>
-            </div>
-
+            What is here is what the event page puts here: who is selling, and
+            how to follow them.
+          */}
+          <div className="hidden lg:flex lg:flex-col lg:overflow-y-auto min-h-0 flex-col gap-8 p-4 pt-0">
+            <span className="font-semibold text-[1.6rem] leading-8 text-deep-200">
+              {t("details")}
+            </span>
             {sale.organisation && (
-              <div className="flex flex-col gap-4 rounded-[15px] border border-neutral-100 p-8">
-                <span className="text-[1.4rem] leading-8 text-neutral-600">
-                  {t("soldBy")}
-                </span>
-                <div className="flex items-center gap-4">
-                  {sale.organisation.profileImageUrl ? (
-                    <Image
-                      src={sale.organisation.profileImageUrl}
-                      width={40}
-                      height={40}
-                      alt={sale.organisation.organisationName}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2rem] font-primary">
-                      {sale.organisation.organisationName.slice(0, 1)}
-                    </span>
-                  )}
-                  <span className="text-[1.5rem] text-deep-100 leading-8 inline-flex items-center gap-2">
-                    {sale.organisation.organisationName}
-                    {sale.organisation.isVerified && (
-                      <VerifiedOrganisationCheckMark />
-                    )}
-                  </span>
-                </div>
-              </div>
+              <OrganisationSummary
+                organisation={sale.organisation}
+                followersCount={sale.organisation.followersCount}
+                isFollowing={isFollowing}
+              />
             )}
-          </aside>
+          </div>
         </main>
       </AnimatedEventPage>
     </AttendeeLayout>

@@ -1375,7 +1375,10 @@
           "too_large": "Your cover image is too large. Try a smaller one.",
           "submit_failed": "We could not create your product. Please try again.",
           "title_taken": "A product with this name already exists. Choose a different name."
-        }
+        },
+        "file_section": "The file you are selling",
+        "file_versions_note": "{count} versions kept. Each buyer keeps the version they paid for, so replacing the file never changes what someone has already bought.",
+        "file_immediate_note": "Uploading a file takes effect straight away and does not wait for Save. It sends your product back for review, so it stops being on sale until an admin approves the new version. People who already bought it keep the version they paid for and are not affected."
       }
     },
     "price_preview": {
@@ -1422,7 +1425,14 @@
       "restaurants": "Bar & Restaurant",
       "empty_restaurants": "No venue yet. Add your bar or restaurant to get started.",
       "sales": "Digital products",
-      "empty_sales": "No digital product yet. Upload your first file to start selling."
+      "empty_sales": "No digital product yet. Upload your first file to start selling.",
+      "ongoing": "Ongoing",
+      "upcoming": "Upcoming",
+      "history": "History",
+      "all_categories": "All categories",
+      "empty_status": "Nothing here right now. Try another tab or clear the category filter.",
+      "status_label": "Status",
+      "category_label": "Category"
     },
     "restaurantCard": {
       "tag": "Bar & Restaurant",
@@ -1729,7 +1739,10 @@
         "buyer_pays": "Buyer pays",
         "you_receive": "You receive",
         "status": "Status",
-        "file_size": "File size"
+        "file_size": "File size",
+        "revenue": "Revenue",
+        "sold": "Copies sold",
+        "you_receive_inline": "you receive {amount}"
       },
       "status": {
         "draft": "Draft",
@@ -1761,7 +1774,8 @@
           "pending": "Scan pending",
           "clean": "Scanned, clean",
           "infected": "Malware found",
-          "error": "Scan failed"
+          "error": "Scan failed",
+          "skipped": "Not scanned"
         }
       },
       "delete_dialog": {
@@ -1770,6 +1784,31 @@
         "buyers_note": "If anyone has already bought it, the product is unlisted instead of deleted and its buyers keep their download.",
         "cta": "Delete product",
         "done": "Product deleted."
+      },
+      "details": "Details",
+      "about": "About",
+      "product_details": "Product details",
+      "drawer": {
+        "price": "Buyer pays {buyer} · you receive {seller}",
+        "file": "{name} · {size} · version {version}"
+      },
+      "buyers": {
+        "title": "Buyers",
+        "search": "Search buyers",
+        "empty": "Nobody has bought this product yet. Once someone does, they show up here with the version they downloaded.",
+        "deleted_account": "Deleted account",
+        "refunded": "Refunded",
+        "version_label": "v{version}",
+        "table": {
+          "name": "Name",
+          "email": "Email",
+          "amount": "Amount",
+          "version": "File version",
+          "downloads": "Downloads",
+          "date_purchased": "Purchased"
+        },
+        "no_results": "No buyer matches \"{term}\".",
+        "showing_latest": "latest {count} of {total}"
       }
     }
   },
