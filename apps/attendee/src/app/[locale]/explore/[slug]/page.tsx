@@ -10,12 +10,14 @@ import {
   Location,
   RouteSquare,
   SecurityUser,
+  Video,
 } from "iconsax-reactjs";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import FollowButton from "./FollowButton";
 import { auth } from "@/lib/auth";
 import Map from "./MapComponent";
 import { Link, redirect } from "@/i18n/navigation";
+import { notFound } from "next/navigation";
 import AddToCalendar from "./AddToCalendar";
 import { Metadata } from "next";
 import { Event } from "@ticketwaze/typescript-config";
@@ -50,8 +52,14 @@ export async function generateMetadata({
     // sold-out badge cannot oversell anything.
     { next: { revalidate: 60 } },
   );
-  const eventResponse = await eventRequest.json();
-  const event: Event = eventResponse.event;
+  const eventResponse = await eventRequest.json().catch(() => null);
+  const event: Event | undefined = eventResponse?.event;
+
+  // Metadata must not throw. The API omits `event` for an event that is
+  // deleted, cancelled or unapproved, and the page below answers that with
+  // notFound() — but generateMetadata runs first, so it needs its own answer.
+  if (!event) return { title: "Ticketwaze" };
+
   // Descriptions are rich text (HTML); strip tags so they don't leak into
   // meta/OpenGraph previews, and trim to a sensible preview length.
   const plainDescription = StripHtml(event.eventDescription).slice(0, 200);
@@ -100,7 +108,12 @@ export default async function EventPage({
     // sold-out badge cannot oversell anything.
     { next: { revalidate: 60 } },
   );
-  const eventResponse = await eventRequest.json();
+  const eventResponse = await eventRequest.json().catch(() => null);
+
+  // Same guard as the checkout page: the API omits `event` entirely when it is
+  // unavailable, and every line below assumes it exists.
+  if (!eventRequest.ok || !eventResponse?.event) notFound();
+
   const event: Event = eventResponse.event;
   const organisation = eventResponse.organisation;
   const eventPerformers = event.eventPerformers;
@@ -460,22 +473,7 @@ export default async function EventPage({
                 </ul>
                 {/*  address*/}
                 {event.eventCategory === "meet" && (
-                  <div className={"flex items-center gap-2 "}>
-                    <div
-                      className={
-                        "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                      }
-                    >
-                      <Google size="20" color="#737c8a" variant="Bulk" />
-                    </div>
-                    <span
-                      className={
-                        "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
-                      }
-                    >
-                      Meet, Google
-                    </span>
-                  </div>
+                  <OnlinePlatform provider={event.onlineProvider} />
                 )}
                 {event.eventCategory !== "meet" && locationLabel && (
                   <div className={"flex items-center gap-2 "}>
@@ -645,22 +643,7 @@ export default async function EventPage({
               </ul>
               {/*  address*/}
               {event.eventCategory === "meet" && (
-                <div className={"flex items-center gap-2 "}>
-                  <div
-                    className={
-                      "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                    }
-                  >
-                    <Google size="20" color="#737c8a" variant="Bulk" />
-                  </div>
-                  <span
-                    className={
-                      "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
-                    }
-                  >
-                    Meet, Google
-                  </span>
-                </div>
+                <OnlinePlatform provider={event.onlineProvider} />
               )}
               {event.eventCategory !== "meet" && locationLabel && (
                 <div className={"flex items-center gap-2 "}>
@@ -717,4 +700,38 @@ export default async function EventPage({
 
 function Separator() {
   return <div className="bg-neutral-100 h-[0.2rem] w-full shrink-0"></div>;
+}
+
+/**
+ * The "where" line for an online event.
+ *
+ * `eventCategory === "meet"` only says the event is online — Zoom was added as
+ * a provider on that same category, so it is true of Zoom events too and does
+ * not tell you which platform to name. That is `onlineProvider`. Anything other
+ * than Zoom is Google Meet, which is what an online event meant before Zoom.
+ */
+function OnlinePlatform({ provider }: { provider: string | null | undefined }) {
+  const isZoom = provider === "zoom";
+  return (
+    <div className={"flex items-center gap-2 "}>
+      <div
+        className={
+          "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
+        }
+      >
+        {isZoom ? (
+          <Video size="20" color="#737c8a" variant="Bulk" />
+        ) : (
+          <Google size="20" color="#737c8a" variant="Bulk" />
+        )}
+      </div>
+      <span
+        className={
+          "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
+        }
+      >
+        {isZoom ? "Zoom" : "Meet, Google"}
+      </span>
+    </div>
+  );
 }

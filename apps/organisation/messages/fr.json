@@ -558,7 +558,8 @@
       "pending": "En attente",
       "successful": "Réussi",
       "failed": "Echoué",
-      "returned": "Rendu"
+      "returned": "Rendu",
+      "processing": "En cours"
     },
     "search": "Rechercher par ID de transaction",
     "transactions": {
@@ -617,7 +618,7 @@
       }
     },
     "wise": "Wise",
-    "wise_hint": "Virement instantané vers votre compte Wise, en USD",
+    "wise_hint": "Versé sur votre compte Wise en USD, après vérification",
     "wise_details": "Compte Wise",
     "wise_details_hint": "Entrez le Wisetag du compte qui doit recevoir votre virement. Les virements sont envoyés en USD.",
     "wise_verify": "Vérifier",
@@ -870,7 +871,9 @@
         "banner_refund": "Tous les porteurs de billets seront remboursés sur leur portefeuille Ticketwaze.",
         "cancel_cta": "Annuler la suppression",
         "cancel_success": "Suppression annulée avec succès."
-      }
+      },
+      "start_meeting": "Démarrer la réunion",
+      "start_meeting_failed": "Nous n’avons pas pu ouvrir la réunion. Veuillez réessayer, ou la démarrer depuis votre compte Zoom ou Google Agenda."
     },
     "create_event": {
       "title": "Créer une activité",
@@ -964,8 +967,8 @@
           "description": "Vendez des billets numérotés et tirez au sort des gagnants pour un ou plusieurs prix."
         },
         "meet": {
-          "title": "Google Meet",
-          "description": "Participez virtuellement avec Google Meet, où que soit votre public.",
+          "title": "En ligne",
+          "description": "Organisez-le sur Google Meet ou Zoom, où que soit votre public.",
           "warning": "Pour créer un événement Google Meet, nous utiliserons votre compte Google et demanderons l’accès à votre calendrier. En poursuivant, vous acceptez de nous accorder la permission d’accéder et de gérer vos événements de calendrier via votre compte Google. Veuillez noter que si vous retirez cet accès, les utilisateurs ne pourront plus acheter de billets pour vos événements Meet.",
           "fetchFailedError": "Impossible de récupérer les données demandées pour le moment. Vérifiez votre connexion internet et réessayez. Si l’erreur persiste, contactez le support."
         },
@@ -996,6 +999,49 @@
         "comingSoon": {
           "title": "Bientot disponible",
           "description": "Annoncez quelque chose avant d avoir dates ou billets"
+        },
+        "sale": {
+          "title": "Produit numérique",
+          "description": "Vendez un fichier et livrez-le automatiquement : un ebook, un beat, un preset, un modèle."
+        },
+        "online": {
+          "back": "Retour",
+          "title": "Sélectionnez une plateforme en ligne",
+          "comingSoon": "Bientôt disponible.",
+          "connectFailed": "Nous ne parvenons pas à joindre Zoom pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
+          "googleMeet": {
+            "title": "Google Meet",
+            "hint": "Les acheteurs sont ajoutés à l’invitation agenda et Google leur envoie le lien.",
+            "back": "Retour aux plateformes",
+            "connect": "Connecter Google",
+            "connectFailed": "Nous ne parvenons pas à joindre Google pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
+            "notConnected": "Connectez votre compte Google pour utiliser Google Meet.",
+            "unavailable": "Google Meet n’est pas encore disponible.",
+            "unavailableBody": "Les événements Google Meet ne sont pas encore disponibles sur cet environnement. Créez plutôt l’événement sur Zoom.",
+            "warning": "Pour créer un événement Google Meet, nous utiliserons votre compte Google afin d’ajouter la réunion à votre agenda et d’y inviter chaque acheteur, qui recevra ainsi le lien. Nous demandons uniquement l’autorisation de gérer les événements d’agenda que nous créons. Si vous retirez cet accès plus tard, les acheteurs ne pourront plus acheter de billets pour vos événements Google Meet.",
+            "planNeeded": "Indiquez-nous votre forfait Google.",
+            "planBody": "Votre compte Google est connecté. Avant de créer l’événement, indiquez-nous son forfait : Google ne nous le communique pas, et c’est lui qui détermine combien de personnes peuvent rejoindre l’appel et combien de temps il peut durer. Un compte personnel gratuit met fin à tout appel de trois personnes ou plus après 60 minutes.",
+            "planContinue": "Continuer",
+            "planRequired": "Choisissez d’abord votre forfait Google.",
+            "planFailed": "Nous n’avons pas pu enregistrer votre forfait Google. Veuillez réessayer."
+          },
+          "zoom": {
+            "title": "Zoom",
+            "back": "Retour aux plateformes",
+            "connect": "Connecter Zoom",
+            "connectFailed": "Nous ne parvenons pas à joindre Zoom pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
+            "connectedAs": "Connecté en tant que {email}. Chaque acheteur reçoit son propre lien.",
+            "notConnected": "Connectez votre compte Zoom pour utiliser Zoom.",
+            "needsPaidPlan": "Nécessite un forfait Zoom payant.",
+            "unavailable": "Zoom n’est pas encore disponible.",
+            "unavailableBody": "Les événements Zoom ne sont pas encore disponibles sur cet environnement. Créez plutôt l’événement sur Google Meet.",
+            "warning": "Pour créer un événement Zoom, nous utiliserons votre compte Zoom afin de planifier la réunion et d’inscrire chaque acheteur, pour que chacun reçoive son propre lien. Les événements Zoom nécessitent un forfait Zoom payant. Si vous retirez cet accès plus tard, les acheteurs ne pourront plus acheter de billets pour vos événements Zoom.",
+            "paidPlanBody": "Votre compte Zoom utilise le forfait gratuit Basic. Les événements Zoom nécessitent un forfait payant, car attribuer à chaque acheteur son propre lien repose sur l’inscription aux réunions, absente du forfait gratuit. Le forfait gratuit met également fin aux réunions après 40 minutes. Passez à un forfait Zoom payant, ou créez plutôt l’événement sur Google Meet.",
+            "plan": "Disponible à partir du forfait Pro.",
+            "proFeature": "Les événements Zoom sont disponibles à partir du forfait Pro. Passez à un forfait supérieur pour organiser des événements payants sur Zoom, où chaque acheteur reçoit son propre lien.",
+            "connectedGeneric": "Connecté. Chaque acheteur reçoit son propre lien."
+          },
+          "upgrade": "Passer à la version supérieure"
         }
       },
       "tagPlaceholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d’espace",
@@ -1159,7 +1205,10 @@
           "invalidTime": "Format d’heure invalide (HH:mm ou HH:mm:ss attendu)",
           "timezone": "Le fuseau horaire est requis",
           "invalidTimezone": "Fuseau horaire invalide",
-          "endBeforeStart": "L’heure de fin doit être postérieure à l’heure de début"
+          "endBeforeStart": "L’heure de fin doit être postérieure à l’heure de début",
+          "exceedsZoomDuration": "Cet événement dure plus longtemps que les {hours} heures autorisées par votre forfait Zoom : Zoom y mettrait fin avant la fin. Raccourcissez-le ou répartissez-le sur plusieurs jours.",
+          "exceedsGoogleDuration": "Cet événement dure plus longtemps que les {hours} heures autorisées par Google Meet sur votre forfait : Google y mettrait fin avant la fin. Raccourcissez-le ou répartissez-le sur plusieurs jours.",
+          "exceedsGoogleDurationMinutes": "Votre forfait Google met fin à tout appel Meet de trois personnes ou plus après {minutes} minutes : Google interromprait donc cet événement en cours de route. Raccourcissez-le, répartissez-le sur plusieurs jours, ou connectez un compte Google Workspace."
         },
         "ticketClass": {
           "name": "Le nom de la catégorie de billet doit comporter au moins 3 caractères",
@@ -1170,7 +1219,9 @@
           "quantity": {
             "empty": "La quantité ne peut pas être vide",
             "decimal": "La quantité ne peut pas contenir de décimales ni de zéro final",
-            "exceedsLimit": "La quantité ne peut pas dépasser la limite de {limit} billets gratuits de votre forfait"
+            "exceedsLimit": "La quantité ne peut pas dépasser la limite de {limit} billets gratuits de votre forfait",
+            "exceedsZoomSeats": "Le nombre total de billets ne peut pas dépasser les {limit} places de votre forfait Zoom.",
+            "exceedsGoogleSeats": "Le nombre total de billets ne peut pas dépasser les {limit} personnes que votre forfait Google peut accueillir, une fois votre propre place d’hôte comptée."
           }
         }
       },
@@ -1276,7 +1327,69 @@
       "prize_image": "Photo du lot",
       "prize_image_tip": "Obligatoire. Visible par les acheteurs et pendant le tirage.",
       "prize_image_remove": "Retirer la photo du lot",
-      "edit_warning_body_review": "Cette activité a déjà des ventes de billets, vos modifications seront donc examinées avant leur mise en ligne. Elle reste visible et en vente avec ses informations actuelles jusqu'à l'approbation d'un administrateur."
+      "edit_warning_body_review": "Cette activité a déjà des ventes de billets, vos modifications seront donc examinées avant leur mise en ligne. Elle reste visible et en vente avec ses informations actuelles jusqu'à l'approbation d'un administrateur.",
+      "sale": {
+        "back": "Retour",
+        "title_heading": "Vendre un produit numérique",
+        "edit_heading": "Modifier votre produit",
+        "cover": "Image de couverture",
+        "cover_text": "Glissez votre couverture ici ou",
+        "browse": "parcourir",
+        "details": "Détails",
+        "name": "Nom du produit",
+        "description": "Description",
+        "description_placeholder": "Qu'est-ce que c'est, que contient-il et à qui s'adresse-t-il ?",
+        "tags": "Mots-clés",
+        "tags_placeholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d'espace",
+        "tags_tip": "Les mots-clés aident les acheteurs à trouver votre produit. Utilisez les mots qu'ils chercheraient.",
+        "file": "Le fichier que vous vendez",
+        "file_text": "Glissez votre fichier ici ou",
+        "file_tip": "Un seul fichier par produit. Compressez-le en zip si vous en vendez plusieurs. Votre formule fixe la taille maximale.",
+        "file_remove": "Retirer le fichier",
+        "uploading": "Envoi en cours… {percent}%",
+        "pricing": "Prix",
+        "price": "Votre prix",
+        "currency": "Devise",
+        "currency_lock_tip": "La devise ne peut plus être changée une fois que quelqu'un a acheté ce produit.",
+        "review_note": "Votre fichier est analysé et vérifié avant la mise en vente de votre produit. Vous serez informé dans les deux cas.",
+        "final_note": "Toutes les ventes sont définitives. Les acheteurs ne peuvent pas demander de remboursement sur un produit numérique.",
+        "delivery_note": "Les acheteurs téléchargent le fichier juste après le paiement, autant de fois qu'ils le souhaitent.",
+        "submit": "Créer le produit",
+        "save": "Enregistrer les modifications",
+        "success": "Votre produit a été créé et envoyé pour vérification.",
+        "update_success": "Votre produit a été mis à jour.",
+        "edit_metadata_note": "Modifier le nom, la description ou le prix ne renvoie pas votre produit en vérification. Remplacer le fichier, si.",
+        "no_org": "Sélectionnez d'abord une organisation.",
+        "errors": {
+          "title": "Le nom doit contenir au moins 10 caractères.",
+          "description": "La description doit contenir au moins 20 caractères.",
+          "price": "Indiquez un prix.",
+          "min_price": "Ce prix est inférieur au minimum pour un produit numérique.",
+          "cover": "Ajoutez une image de couverture.",
+          "file": "Ajoutez le fichier que vous vendez.",
+          "too_large": "Votre image de couverture est trop lourde. Essayez-en une plus petite.",
+          "submit_failed": "Nous n'avons pas pu créer votre produit. Veuillez réessayer.",
+          "title_taken": "Un produit portant ce nom existe déjà. Choisissez un autre nom."
+        },
+        "file_section": "Le fichier que vous vendez",
+        "file_versions_note": "{count} versions conservées. Chaque acheteur conserve la version qu’il a payée : remplacer le fichier ne change jamais ce que quelqu’un a déjà acheté.",
+        "file_immediate_note": "L’envoi d’un fichier prend effet immédiatement et n’attend pas l’enregistrement. Il renvoie votre produit en révision : il n’est donc plus en vente jusqu’à ce qu’un administrateur approuve la nouvelle version. Les personnes qui l’ont déjà acheté conservent la version qu’elles ont payée et ne sont pas affectées."
+      }
+    },
+    "sale_price_preview": {
+      "title": "Ce que vos acheteurs paieront",
+      "buyer_pays": "L'acheteur paie",
+      "you_receive": "Vous recevez",
+      "note": "Les acheteurs voient un seul prix, jamais une liste de frais. Vous recevez le montant total que vous avez fixé.",
+      "below_minimum": "Le prix minimum pour un produit numérique est de {minimum}."
+    },
+    "price_preview": {
+      "title": "Ce que vos participants paieront",
+      "base_price": "Prix de base",
+      "transaction_fees": "Frais de transaction",
+      "attendee_pays": "Le participant paie",
+      "you_receive": "Vous recevez",
+      "note": "Les frais s’ajoutent à votre prix, vous recevez donc toujours le montant total que vous avez fixé."
     },
     "filters": {
       "first": {
@@ -1305,7 +1418,16 @@
       "empty_events": "Aucun événement pour le moment. Créez votre premier événement pour commencer.",
       "empty_raffles": "Aucun tirage pour le moment. Créez votre premier tirage pour commencer.",
       "restaurants": "Bar & Restaurant",
-      "empty_restaurants": "Aucun établissement pour l'instant. Ajoutez votre bar ou restaurant pour commencer."
+      "empty_restaurants": "Aucun établissement pour l'instant. Ajoutez votre bar ou restaurant pour commencer.",
+      "sales": "Produits numériques",
+      "empty_sales": "Aucun produit numérique pour l'instant. Envoyez votre premier fichier pour commencer à vendre.",
+      "ongoing": "En cours",
+      "upcoming": "À venir",
+      "history": "Historique",
+      "all_categories": "Toutes les catégories",
+      "empty_status": "Rien ici pour le moment. Essayez un autre onglet ou retirez le filtre de catégorie.",
+      "status_label": "Statut",
+      "category_label": "Catégorie"
     },
     "restaurantCard": {
       "tag": "Bar & Restaurant",
@@ -1319,6 +1441,19 @@
       "suspended": "Suspendu",
       "closed_permanently": "Fermé définitivement",
       "no_hours": "Horaires non définis"
+    },
+    "saleCard": {
+      "tag": "Produit numérique",
+      "no_file": "Aucun fichier envoyé",
+      "you_receive": "vous recevez {amount}",
+      "status": {
+        "draft": "Brouillon",
+        "scanning": "Analyse",
+        "pending_review": "En vérification",
+        "live": "En vente",
+        "rejected": "Refusé",
+        "unlisted": "Masqué"
+      }
     },
     "restaurantDetail": {
       "overview": "Aperçu",
@@ -1586,6 +1721,91 @@
       }
     },
     "coming_soon_label": "Bientôt disponible"
+  },
+  "Sales": {
+    "single_sale": {
+      "back": "Retour",
+      "more": "Plus",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "description": "Description",
+      "created": "Créé le {date}",
+      "stats": {
+        "buyer_pays": "L'acheteur paie",
+        "you_receive": "Vous recevez",
+        "status": "Statut",
+        "file_size": "Taille du fichier",
+        "revenue": "Revenus",
+        "sold": "Exemplaires vendus",
+        "you_receive_inline": "vous recevez {amount}"
+      },
+      "status": {
+        "draft": "Brouillon",
+        "scanning": "Analyse",
+        "pending_review": "En vérification",
+        "live": "En vente",
+        "rejected": "Refusé",
+        "unlisted": "Masqué"
+      },
+      "banners": {
+        "draft": "Ce produit est un brouillon. Envoyez le fichier que vous vendez pour le soumettre à la vérification.",
+        "scanning": "Nous analysons votre fichier. Cela prend généralement quelques minutes.",
+        "pending_review": "Votre produit attend la vérification d'un administrateur. Il n'est pas encore en vente.",
+        "rejected": "Votre produit a été refusé",
+        "unlisted": "Ce produit n'est plus affiché. Les personnes qui l'ont déjà acheté gardent leur téléchargement."
+      },
+      "file": {
+        "title": "Le fichier que vous vendez",
+        "none_yet": "Aucun fichier envoyé pour l'instant.",
+        "version": "version {version}",
+        "versions": "{count} versions conservées. Les acheteurs gardent la version qu'ils ont payée.",
+        "add": "Envoyer votre fichier",
+        "replace": "Remplacer le fichier",
+        "replace_warning": "Remplacer le fichier renvoie votre produit en vérification. Il cesse d'être en vente jusqu'à ce qu'un administrateur approuve le nouveau fichier.",
+        "upload_cta": "Envoyer",
+        "upload_success": "Votre fichier a été envoyé et soumis à la vérification.",
+        "choose_first": "Choisissez d'abord un fichier.",
+        "scan": {
+          "pending": "Analyse en attente",
+          "clean": "Analysé, sain",
+          "infected": "Logiciel malveillant détecté",
+          "error": "Échec de l'analyse",
+          "skipped": "Non analysé"
+        }
+      },
+      "delete_dialog": {
+        "title": "Supprimer ce produit",
+        "warning": "Cette action retire le produit de Ticketwaze. Elle est irréversible.",
+        "buyers_note": "Si quelqu'un l'a déjà acheté, le produit est masqué plutôt que supprimé et ses acheteurs gardent leur téléchargement.",
+        "cta": "Supprimer le produit",
+        "done": "Produit supprimé."
+      },
+      "details": "Détails",
+      "about": "À propos",
+      "product_details": "Détails du produit",
+      "drawer": {
+        "price": "L’acheteur paie {buyer} · vous recevez {seller}",
+        "file": "{name} · {size} · version {version}"
+      },
+      "buyers": {
+        "title": "Acheteurs",
+        "search": "Rechercher un acheteur",
+        "empty": "Personne n’a encore acheté ce produit. Dès qu’une vente aura lieu, l’acheteur apparaîtra ici avec la version qu’il a téléchargée.",
+        "deleted_account": "Compte supprimé",
+        "refunded": "Remboursé",
+        "version_label": "v{version}",
+        "table": {
+          "name": "Nom",
+          "email": "E-mail",
+          "amount": "Montant",
+          "version": "Version du fichier",
+          "downloads": "Téléchargements",
+          "date_purchased": "Acheté le"
+        },
+        "no_results": "Aucun acheteur ne correspond à « {term} ».",
+        "showing_latest": "{count} derniers sur {total}"
+      }
+    }
   },
   "Raffles": {
     "single_raffle": {
@@ -2107,6 +2327,58 @@
         "error_title": "Une erreur est survenue",
         "error_desc": "Nous n'avons pas pu activer votre abonnement. Veuillez réessayer ou contacter le support.",
         "error_retry": "Réessayer"
+      }
+    },
+    "integrations": {
+      "title": "Intégrations",
+      "back": "Retour",
+      "zoom": {
+        "title": "Zoom",
+        "description": "Organisez vos événements en ligne sur votre propre compte Zoom.",
+        "connect": "Connecter Zoom",
+        "connectFailed": "Nous ne parvenons pas à joindre Zoom pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
+        "notConnected": "Aucun compte Zoom n’est connecté. Connectez-en un pour organiser des événements en ligne sur Zoom. Vous pouvez également le faire pendant la création d’un événement en ligne.",
+        "connectedAs": "Connecté en tant que {email}. Votre forfait compte {seats} places, un événement en ligne sur Zoom peut donc vendre jusqu’à {seats} billets au total.",
+        "connectedButFree": "Connecté en tant que {email}, sur le forfait gratuit Basic. Les événements Zoom nécessitent un forfait payant, car attribuer à chaque acheteur son propre lien repose sur l’inscription aux réunions, absente du forfait gratuit. Passez à un forfait payant pour organiser des événements sur Zoom.",
+        "unavailable": "Zoom n’est pas encore disponible sur cet environnement.",
+        "disconnect": "Déconnecter",
+        "disconnectWarning": "Votre compte Zoom sera dissocié et vous ne pourrez plus créer d’événements Zoom. Les événements déjà publiés continuent de fonctionner et les acheteurs conservent leurs liens : cela n’annule rien de ce que vous avez vendu. Vous pouvez vous reconnecter à tout moment.",
+        "disconnected": "Votre compte Zoom a été déconnecté.",
+        "disconnectFailed": "Nous n’avons pas pu déconnecter votre compte Zoom. Veuillez réessayer.",
+        "reconnect": "Reconnecter Zoom"
+      },
+      "google": {
+        "title": "Google Meet",
+        "description": "Organisez vos événements en ligne sur votre propre compte Google.",
+        "connect": "Connecter Google",
+        "reconnect": "Reconnecter Google",
+        "connectFailed": "Nous ne parvenons pas à joindre Google pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
+        "notConnected": "Aucun compte Google n’est connecté. Connectez-en un pour organiser des événements en ligne sur Google Meet. Vous pouvez également le faire pendant la création d’un événement en ligne.",
+        "connected": "Connecté. Les acheteurs sont ajoutés à l’invitation agenda et Google leur envoie le lien. Si la création d’un événement indique que votre connexion a expiré, reconnectez-vous ici.",
+        "unavailable": "Google Meet n’est pas encore disponible sur cet environnement.",
+        "disconnect": "Déconnecter",
+        "disconnectWarning": "Votre compte Google sera dissocié et vous ne pourrez plus créer d’événements Google Meet. Les événements déjà publiés continuent de fonctionner et les acheteurs conservent leurs invitations : cela n’annule rien de ce que vous avez vendu. Vous pouvez vous reconnecter à tout moment.",
+        "disconnected": "Votre compte Google a été déconnecté.",
+        "disconnectFailed": "Nous n’avons pas pu déconnecter votre compte Google. Veuillez réessayer.",
+        "planLabel": "Votre forfait Google",
+        "planHint": "Google ne nous indique pas le forfait d’un compte, et c’est lui qui détermine combien de personnes peuvent rejoindre un appel Meet et combien de temps l’appel peut durer. Choisissez le vôtre pour que nous puissions vérifier vos événements avant leur publication.",
+        "planRequired": "Choisissez d’abord votre forfait Google.",
+        "planSave": "Enregistrer le forfait",
+        "planSaved": "Votre forfait Google a été enregistré.",
+        "planFailed": "Nous n’avons pas pu enregistrer votre forfait Google. Veuillez réessayer.",
+        "planCurrent": "Sur {name} : jusqu’à {seats} billets, et un appel peut durer {duration}.",
+        "planMissing": "Aucun forfait choisi pour l’instant. La création d’un événement Google Meet vous le demandera, car il détermine combien de billets vous pouvez vendre et combien de temps l’appel peut durer.",
+        "plans": {
+          "placeholder": "Choisissez votre forfait Google",
+          "option": "{name} · {seats} billets · {duration}",
+          "free": "Compte Google personnel gratuit",
+          "business_starter": "Workspace Business Starter",
+          "business_standard": "Workspace Business Standard",
+          "business_plus": "Workspace Business Plus",
+          "enterprise": "Workspace Enterprise",
+          "durationMinutes": "{minutes} minutes",
+          "durationHours": "{hours} heures"
+        }
       }
     }
   }

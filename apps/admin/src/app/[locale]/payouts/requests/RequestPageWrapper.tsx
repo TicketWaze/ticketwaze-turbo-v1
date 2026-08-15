@@ -95,8 +95,9 @@ export default function RequestPageWrapper({
     return range;
   };
 
-  // Requests are all pending, so the filter only applies to History (processed
-  // payouts). First entry is "all statuses"; the rest are tab-specific.
+  // Requests are all still open — pending, or a Wise payout approved and
+  // waiting to be sent — so the filter only applies to History (payouts that
+  // are finished). First entry is "all statuses"; the rest are tab-specific.
   const showFilter = scope === "history";
   const statusOptions: { value: string; label: string }[] = [
     { value: "ALL", label: t("filters.status") },
@@ -367,6 +368,14 @@ function OrgStatusBadge({
     return (
       <span className={`${badgeBase} text-failure bg-failure/20`}>
         {t("payout_request.table.request_status.failed")}
+      </span>
+    );
+  // Approved but not yet sent — open work with a person's name on it, and not
+  // the same thing as a request nobody has looked at.
+  if (status === "APPROVED")
+    return (
+      <span className={`${badgeBase} text-[#3b82f6] bg-[#f5f5f5]`}>
+        {t("payout_request.table.request_status.awaiting_send")}
       </span>
     );
   return (

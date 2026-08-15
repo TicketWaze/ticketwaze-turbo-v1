@@ -295,7 +295,13 @@ export default function CreateInPersonEventForm({
   ]);
 
   return (
-    <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
+    // `overflow-clip`, not `overflow-hidden`: `hidden` makes this a scroll
+    // container, and a scroll container can still be scrolled *programmatically*
+    // even though it shows no scrollbar and ignores the wheel. Tiptap scrolls the
+    // caret into view after a paste, which walks up every scrollable ancestor and
+    // shifted this one permanently — the wizard jumped and could not be scrolled
+    // back. `clip` clips identically but is not a scroll container at all.
+    <div className="relative flex flex-col gap-8 overflow-clip h-full ">
       <div className="absolute bottom-4 z-9999 w-full hidden lg:block">
         <ButtonPrimary
           onClick={next}

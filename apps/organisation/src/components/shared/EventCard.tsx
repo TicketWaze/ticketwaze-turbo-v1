@@ -1,6 +1,6 @@
 "use client";
 import { Link } from "@/i18n/navigation";
-import { Calendar2, Google, Location } from "iconsax-reactjs";
+import { Calendar2, Google, Location, Video } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { slugify } from "@/lib/Slugify";
@@ -135,10 +135,13 @@ function EventCard({
               {date
                 ? FormatDate(date.eventDate, locale, date.timezone)
                 : event.comingSoonDate
-                  ? new Date(`${event.comingSoonDate}T00:00:00`).toLocaleDateString(
-                      locale,
-                      { day: "numeric", month: "short", year: "numeric" },
-                    )
+                  ? new Date(
+                      `${event.comingSoonDate}T00:00:00`,
+                    ).toLocaleDateString(locale, {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })
                   : (event.comingSoonHint ?? t("coming_soon_label"))}
             </span>
           </div>
@@ -146,9 +149,19 @@ function EventCard({
               two nulls prints a bare comma. */}
           {isTeaser && !event.city ? null : event.eventCategory === "meet" ? (
             <div className={"flex items-center gap-2"}>
-              <Google size="15" color="#2e3237" variant="Bulk" />
+              {event.onlineProvider === "zoom" ? (
+                <Video size="15" color="#2e3237" variant="Bulk" />
+              ) : (
+                <Google size="15" color="#2e3237" variant="Bulk" />
+              )}
               <p className={"font-medium text-[1rem] text-deep-100 leading-6"}>
-                Meet, <span className={"text-neutral-700"}>Google</span>
+                {event.onlineProvider === "zoom" ? (
+                  <span className={"text-neutral-700"}>Zoom</span>
+                ) : (
+                  <>
+                    Meet, <span className={"text-neutral-700"}>Google</span>
+                  </>
+                )}
               </p>
             </div>
           ) : (

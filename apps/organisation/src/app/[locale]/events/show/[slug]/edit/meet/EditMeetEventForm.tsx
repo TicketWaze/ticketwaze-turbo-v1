@@ -37,9 +37,24 @@ import { EventDay } from "./types";
 export default function EditInPersonEventForm({
   event,
   membershipTier,
+  maxMeetingMinutes,
+  googleSeatLimit,
 }: {
   event: Event;
   membershipTier: MembershipTier;
+  /**
+   * Longest a call may run on the plan hosting it, read live rather than frozen
+   * at creation: the platform cuts the call at whatever today's plan allows.
+   * Null when the provider's limit is not known.
+   */
+  maxMeetingMinutes: number | null;
+  /**
+   * Seats on the organisation's currently declared Google plan, used only as a
+   * fallback for events created before the plan was declared. The event's own
+   * stored cap wins where it has one — that is what its tickets were sold
+   * against.
+   */
+  googleSeatLimit: number | null;
 }) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
@@ -71,6 +86,14 @@ export default function EditInPersonEventForm({
     isFree,
     (k, values) => t(k, values),
     membershipTier.freeTickets,
+    // The cap this event was actually built against, which is what the API
+    // measures an edit by. An older Google Meet event has none, and falls back
+    // to what the organisation's declared plan allows today.
+    event.onlineProvider === "zoom"
+      ? (event.zoomSeatLimit ?? null)
+      : (event.googleSeatLimit ?? googleSeatLimit),
+    maxMeetingMinutes,
+    event.onlineProvider === "zoom" ? "zoom" : "google_meet",
   );
   type TForm = z.infer<typeof FormDataSchema>;
 
@@ -204,7 +227,10 @@ export default function EditInPersonEventForm({
 
   // Checked live per keystroke, the same as the create form. The event's own id
   // is excluded so keeping the name it already has never reads as taken.
-  const nameStatus = useEventNameAvailability(watch("eventName"), event.eventId);
+  const nameStatus = useEventNameAvailability(
+    watch("eventName"),
+    event.eventId,
+  );
 
   /**
    * Will this edit be held for review rather than applied straight away?
@@ -333,7 +359,11 @@ export default function EditInPersonEventForm({
   );
 
   return (
-    <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
+    // `overflow-clip`, not `overflow-hidden`. See CreateInPersonEventForm: an
+    // `overflow-hidden` box is still a scroll container, so Tiptap's
+    // scroll-caret-into-view after a paste shifts it permanently, with no
+    // scrollbar or wheel for the user to shift it back. `clip` does not scroll.
+    <div className="relative flex flex-col gap-8 overflow-clip h-full ">
       <div className="absolute bottom-4 z-[9999] w-full hidden lg:block">
         <ButtonPrimary
           onClick={next}
@@ -353,11 +383,14 @@ export default function EditInPersonEventForm({
           <div className="text-[2.2rem] text-neutral-600">
             <span className="text-primary-500">{currentStep + 1}</span>/3
           </div>
-          <ButtonPrimary onClick={next} disabled={
-            isSubmitting ||
-            isLoading ||
-            (currentStep === 0 && nameStatus === "checking")
-          }>
+          <ButtonPrimary
+            onClick={next}
+            disabled={
+              isSubmitting ||
+              isLoading ||
+              (currentStep === 0 && nameStatus === "checking")
+            }
+          >
             {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
           </ButtonPrimary>
         </div>
@@ -441,7 +474,6 @@ export default function EditInPersonEventForm({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
 
       <form
         className=" flex flex-col gap-12 h-full overflow-y-scroll overflow-x-hidden"

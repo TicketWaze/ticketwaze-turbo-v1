@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import CheckoutFlow from "./CheckoutFlow";
 import { Event, EventTicketType, User } from "@ticketwaze/typescript-config";
 import { extractIdFromSlug } from "@/lib/Slugify";
+import { notFound } from "next/navigation";
 
 export default async function CheckoutPage({
   params,
@@ -15,9 +16,22 @@ export default async function CheckoutPage({
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
   );
-  const eventResponse = await eventRequest.json();
+  const eventResponse = await eventRequest.json().catch(() => null);
+
+  /**
+   * The API OMITS `event` rather than sending a null one when the event is
+   * unavailable — deleted, cancelled, not yet approved, or its organisation
+   * suspended. Without this guard the undefined flows into `CheckoutFlow`,
+   * which reads `event.isFree` on its first line and takes the whole page down
+   * with "Cannot read properties of undefined".
+   *
+   * `notFound()` rather than an error view: an event scheduled for deletion is
+   * genuinely not there, and this matches the raffle checkout beside it.
+   */
+  if (!eventRequest.ok || !eventResponse?.event) notFound();
+
   const event: Event = eventResponse.event;
-  const ticketTypes: EventTicketType[] = eventResponse.ticketTypes;
+  const ticketTypes: EventTicketType[] = eventResponse.ticketTypes ?? [];
 
   // The HTG/USD rate the backend will charge with. The displayed total must be
   // computed from this same value or checkout and gateway amounts diverge.

@@ -5,25 +5,18 @@ import { Calendar2, Ticket } from "iconsax-reactjs";
 import { Link } from "@/i18n/navigation";
 import { EventDay } from "@ticketwaze/typescript-config";
 import { useTranslations } from "next-intl";
+import { DateTime } from "luxon";
+import { eventWindows } from "@/lib/eventSchedule";
 
 type Countdown =
   | { kind: "ongoing" }
+  | { kind: "past" }
   | { kind: "awaitingDraw" }
   | { kind: "drawn" }
   | { kind: "days"; count: number }
   | { kind: "hours"; count: number }
   | { kind: "minutes"; count: number }
   | { kind: "soon" };
-
-// Combine a day's date with a time-of-day. Mirrors the detail page's live logic
-// so a card and its event page agree on "ongoing".
-function toDate(day: EventDay, time: string): Date {
-  const dateStr =
-    typeof day.eventDate === "string"
-      ? day.eventDate.split("T")[0]
-      : new Date(day.eventDate).toISOString().split("T")[0];
-  return new Date(`${dateStr}T${time}`);
-}
 
 // A raffle has no start/end window, just the instant it is drawn. Unlike event
 // days (naive wall-clock dates), `drawAt` is already a correct UTC instant.
@@ -57,27 +50,40 @@ function computeCountdownTo(instant: string, draw?: DrawState): Countdown {
 type DrawState = { drawnAt?: string | null; drawMode?: "automatic" | "manual" };
 
 function computeCountdown(eventDays: EventDay[]): Countdown {
-  const now = new Date();
+  const now = DateTime.now();
+
+  // Built in the EVENT's timezone, not the viewer's — see lib/eventSchedule.
+  const windows = eventWindows(eventDays);
+
+  // No usable schedule at all — a teaser event with no days yet, or malformed
+  // ones. Neither "live" nor "finished" is defensible, so say the vaguest true
+  // thing rather than assert something wrong.
+  if (windows.length === 0) return { kind: "soon" };
 
   // Ongoing: now falls within any day's start–end window.
-  const live = eventDays.some((day) => {
-    const start = toDate(day, day.startTime);
-    const end = toDate(day, day.endTime);
-    return now >= start && now <= end;
-  });
-  if (live) return { kind: "ongoing" };
+  if (windows.some(({ start, end }) => now >= start && now <= end)) {
+    return { kind: "ongoing" };
+  }
 
-  const nextStart = eventDays
-    .map((day) => toDate(day, day.startTime))
-    .filter((start) => start.getTime() > now.getTime())
-    .sort((a, b) => a.getTime() - b.getTime())
+  const nextStart = windows
+    .map(({ start }) => start)
+    .filter((start) => start > now)
+    .sort((a, b) => a.toMillis() - b.toMillis())
     .at(0);
 
-  // No future day and not currently live: the day is over but still listed for
-  // today — show it as ongoing rather than a misleading "0 days to go".
-  if (!nextStart) return { kind: "ongoing" };
+  /**
+   * Every day has finished.
+   *
+   * **This is what used to return "ongoing".** The intent was to avoid a
+   * misleading "0 days to go" for an event still running today, but it swallowed
+   * the finished case into the same branch — and because the API keeps an event
+   * on this list until its DATE rolls over at midnight, a card for something
+   * that ended at 11:30 in the morning stayed green and "Ongoing" for the rest
+   * of the day.
+   */
+  if (!nextStart) return { kind: "past" };
 
-  const diffMs = nextStart.getTime() - now.getTime();
+  const diffMs = nextStart.diff(now).toMillis();
   const totalMinutes = Math.floor(diffMs / 60_000);
   const totalHours = Math.floor(totalMinutes / 60);
   const days = Math.floor(totalHours / 24);
@@ -138,9 +144,15 @@ function UpcomingCard({
   // Amber matches the organiser's "waiting for you to draw" notice, so both
   // sides of the same raffle read the same way.
   const isAwaitingDraw = countdown?.kind === "awaitingDraw";
+  // Finished events are stated plainly and greyed: the card stays on the list
+  // until midnight, and green "Ongoing" was telling buyers to go and join a
+  // call that had already ended.
+  const isPast = countdown?.kind === "past";
   let label: React.ReactNode = null;
   if (countdown?.kind === "ongoing") {
     label = t("ongoing");
+  } else if (countdown?.kind === "past") {
+    label = t("past");
   } else if (countdown?.kind === "awaitingDraw") {
     label = t("awaitingDraw");
   } else if (countdown?.kind === "drawn") {
@@ -151,7 +163,13 @@ function UpcomingCard({
     label = t.rich(countdown.kind, { count: countdown.count, muted });
   }
 
-  const accent = isOngoing ? "#16A34A" : isAwaitingDraw ? "#F59E0B" : "#2e3237";
+  const accent = isOngoing
+    ? "#16A34A"
+    : isAwaitingDraw
+      ? "#F59E0B"
+      : isPast
+        ? "#737c8a"
+        : "#2e3237";
 
   return (
     <Link
@@ -190,7 +208,9 @@ function UpcomingCard({
                   ? "text-[#16A34A]"
                   : isAwaitingDraw
                     ? "text-[#F59E0B]"
-                    : "text-deep-100"
+                    : isPast
+                      ? "text-neutral-600"
+                      : "text-deep-100"
               }`}
             >
               {label}

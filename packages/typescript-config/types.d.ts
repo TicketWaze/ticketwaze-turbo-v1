@@ -140,6 +140,14 @@ export interface Ticket {
   isRefundable: boolean;
   status: "PENDING" | "CHECKED" | "RETURNED";
   /**
+   * THIS holder's own Zoom join link, set only on tickets for an online event
+   * whose `onlineProvider` is "zoom". Null on Google Meet events, where access
+   * comes from the calendar invite instead, and null while a registration is
+   * still outstanding. Never the event's generic `zoomJoinUrl`.
+   */
+  zoomJoinUrl?: string | null;
+  zoomRegistrantId?: string | null;
+  /**
    * Only ever populated for EVENT tickets — a raffle entry hangs off an activity
    * with no `events` row. Prefer `activity` on any endpoint that sends it.
    */
@@ -205,8 +213,15 @@ export interface Organisation {
   isVerified: boolean;
   isPublished: boolean;
   membershipTierId: string;
-  googleAccessToken: string;
-  googleRefreshToken: string;
+  /**
+   * OAuth tokens are deliberately ABSENT from this type.
+   *
+   * `google_*` and `zoom_*` access and refresh tokens are `serializeAs: null`
+   * on the API model — they used to be serialized into responses that reach
+   * attendees, which was a live credential leak. Nothing client-side may know
+   * them, so connection state is read from `GET /events/zoom/:id/status`
+   * rather than by checking whether a token is present.
+   */
   events: Event[];
   followers: User[];
   followersCount?: number;
@@ -355,6 +370,25 @@ export interface Event {
   eventTagId: string;
   googleMeetLink: string;
   googleCalendarEventId: string;
+  /**
+   * Which platform hosts an online event. Null on in-person events; existing
+   * online events are backfilled to "google_meet".
+   */
+  onlineProvider?: "google_meet" | "zoom" | null;
+  /**
+   * The event's GENERIC Zoom link. Deliberately not what a buyer joins with —
+   * each buyer is registered separately and gets their own link on their
+   * ticket. Present for the organiser's own reference only.
+   */
+  zoomJoinUrl?: string | null;
+  zoomMeetingId?: string | null;
+  zoomSeatLimit?: number | null;
+  /**
+   * Seats this Google Meet event was built against, from the plan the organiser
+   * had declared at the time. Absent on events created before plans were
+   * declared at all, which fall back to the organisation's current declaration.
+   */
+  googleSeatLimit?: number | null;
   discountCodes: DiscountCode[];
   eventPerformers: EventPerformer[];
   eventAttendees: EventAttendee[];
@@ -642,6 +676,182 @@ export interface RestaurantStats {
   averageSale: number;
 }
 
+/**
+ * One uploaded version of the file a sale sells.
+ *
+ * `s3Key` is deliberately absent: it points into a private prefix CloudFront
+ * does not serve, and nothing in a browser should ever hold it. Downloads are
+ * short-lived presigned URLs minted against a checked entitlement.
+ */
+export interface SaleFile {
+  saleFileId: string;
+  saleId: string;
+  originalFilename: string;
+  byteSize: number;
+  mimeType: string;
+  /**
+   * `skipped` means no scanner ran, and is deliberately not `clean` — no
+   * automated scanner is wired up yet, and a file nobody checked must not be
+   * displayed as one that came back clean.
+   */
+  scanStatus: "pending" | "clean" | "infected" | "error" | "skipped";
+  scanResult: string | null;
+  scannedAt: string | null;
+  version: number;
+  /** Exactly one per sale; older versions stay for the buyers who paid for them. */
+  isCurrent: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * What a buyer pays for a sale, derived on every read rather than stored, so a
+ * change to the fee rule can never leave old listings quoting an old surcharge.
+ */
+export interface SalePricing {
+  /** What the seller set, and exactly what the seller is credited. */
+  sellerPrice: number;
+  /** Ticketwaze's margin. Never itemised to a buyer. */
+  surcharge: number;
+  /** The single all-in number the buyer pays. */
+  buyerPays: number;
+  currency: string;
+}
+
+/**
+ * A digital product. Unlike the restaurant's four independent visibility
+ * switches, a sale has one linear status: it is approved and listed, or it is
+ * not.
+ */
+/**
+ * One purchase of a digital product, as the SELLER sees it.
+ *
+ * The sale module's answer to a ticket on the event page. `fileVersion` has no
+ * event equivalent and is the point of the row: an entitlement pins the version
+ * that was bought, so after a seller uploads a replacement their buyers are
+ * split across versions and this is the only place that is visible.
+ */
+export interface SaleBuyer {
+  entitlementId: string;
+  orderId: string;
+  /** Null only if the buyer's user row is gone (an anonymised account). */
+  fullName: string | null;
+  email: string | null;
+  /** What the SELLER earned, snapshotted at purchase — not today's price. */
+  price: number;
+  usdPrice: number;
+  /** The version this buyer holds, which may not be the current one. */
+  fileVersion: number | null;
+  fileName: string | null;
+  downloadCount: number;
+  lastDownloadedAt: string | null;
+  /** Set only by an admin refund; there are no seller-facing refunds. */
+  revokedAt: string | null;
+  revokedReason: string | null;
+  purchasedAt: string;
+}
+
+/** Totals over every buyer of a product, refunds excluded from the money. */
+export interface SaleBuyersSummary {
+  /** Copies sold, excluding admin-refunded purchases. */
+  sold: number;
+  revenue: number;
+  usdRevenue: number;
+  /** Every entitlement including refunds — what the buyers table is a window onto. */
+  total: number;
+}
+
+export interface Sale {
+  saleId: string;
+  organisationId: string;
+  title: string;
+  slug: string;
+  description: string;
+  coverImageUrl: string | null;
+  activityTags: string[];
+  /** What the seller receives. The buyer pays `pricing.buyerPays`. */
+  price: number;
+  usdPrice: number;
+  currencyCode: string;
+  status:
+    | "draft"
+    | "scanning"
+    | "pending_review"
+    | "live"
+    | "rejected"
+    | "unlisted";
+  rejectionReason: string | null;
+  reviewedAt: string | null;
+  publishedAt: string | null;
+  /** Present on the list and detail endpoints; the current version first. */
+  files?: SaleFile[];
+  /**
+   * The latest page of buyers, newest first — NOT every buyer. The seller's
+   * detail endpoint sends ten; searching goes to `/sales/:org/:sale/buyers`.
+   */
+  buyers?: SaleBuyer[];
+  /**
+   * Totals over EVERY buyer, counted in the database.
+   *
+   * Separate from `buyers` because that is only a page: summing the rows on
+   * screen would report the revenue of the last ten sales and call it the
+   * revenue.
+   */
+  buyersSummary?: SaleBuyersSummary;
+  pricing?: SalePricing;
+  /** Preloaded by the admin review endpoints so the queue can name the seller. */
+  organisation?: Organisation;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * A digital product as the PUBLIC sees it.
+ *
+ * A separate type from `Sale` rather than a Partial of it, because the
+ * difference is a security boundary and not a convenience: the review trail and
+ * the `SaleFile` rows (which carry the private S3 key) never cross it. The API
+ * builds this by projection for the same reason — see `serializePublic`.
+ *
+ * Only `live` products are ever served in this shape.
+ */
+export interface PublicSale {
+  saleId: string;
+  organisationId: string;
+  title: string;
+  slug: string;
+  description: string;
+  coverImageUrl: string | null;
+  activityTags: string[];
+  /** What the seller set. Show `pricing.buyerPays` instead. */
+  price: number;
+  usdPrice: number;
+  currencyCode: string;
+  status: "live";
+  publishedAt: string | null;
+  createdAt: string;
+  /** The single all-in number a buyer pays. The fee is never itemised. */
+  pricing: SalePricing;
+  /** Enough to judge the product; nothing that locates the object in S3. */
+  file: {
+    originalFilename: string;
+    byteSize: number;
+    mimeType: string;
+  } | null;
+  organisation: {
+    organisationId: string;
+    organisationName: string;
+    profileImageUrl: string | null;
+    isVerified: boolean;
+    /**
+     * A count, never the follower list: this payload is public and cached, so
+     * who follows a seller does not belong in it. Whether the CURRENT viewer
+     * follows them is asked for separately, per user.
+     */
+    followersCount: number;
+  } | null;
+}
+
 export interface User {
   accessToken: string;
   refreshToken: string;
@@ -728,7 +938,12 @@ export interface WithdrawalRequest {
   accountNumber: string;
   amount: number;
   usdAmount: number;
-  status: "PENDING" | "SUCCESSFUL" | "FAILED";
+  /**
+   * "APPROVED" is Wise-only: the recipient has been confirmed on the Ticketwaze
+   * Wise account and somebody is expected to make the transfer by hand. Still
+   * open work, and no money has moved yet.
+   */
+  status: "PENDING" | "APPROVED" | "SUCCESSFUL" | "FAILED";
   reason: string | null;
   createdAt: DateTime;
   updatedAt: DateTime;
@@ -743,10 +958,8 @@ export interface WithdrawalRequest {
   /** The name Wise reported. Re-checked at approval before anything is sent. */
   wiseResolvedName: string | null;
   wiseContactId: string | null;
-  wiseQuoteId: string | null;
-  wiseTransferId: string | null;
-  wiseStatus: string | null;
-  wiseFailureReason: string | null;
+  /** When the recipient was confirmed and the payout became a person's job. */
+  wiseApprovedAt: DateTime | null;
   /** When the transfer actually settled, which is not when it was approved. */
   processedAt: DateTime | null;
 }

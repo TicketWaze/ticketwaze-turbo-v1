@@ -122,6 +122,18 @@ export default function WithdrawalInformations({
                     {t("filters.pending")}
                   </span>
                 )}
+                {/* Approved: the payout is being sent. Worth its own label —
+                    without one this row would render blank, and "pending" would
+                    understate work that is actually under way. */}
+                {request.status.toUpperCase() === "APPROVED" && (
+                  <span
+                    className={
+                      "py-[.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#3b82f6]  px-4 rounded-[30px] bg-[#3b82f6]/20"
+                    }
+                  >
+                    {t("filters.processing")}
+                  </span>
+                )}
                 {request.status.toUpperCase() === "FAILED" && (
                   <span
                     className={

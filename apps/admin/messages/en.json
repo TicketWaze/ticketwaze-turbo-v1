@@ -536,7 +536,8 @@
           "approved": "Approved",
           "pending": "Pending",
           "failed": "Failed",
-          "rejected": "Rejected"
+          "rejected": "Rejected",
+          "awaiting_send": "To send"
         }
       },
       "no_request": "You'll see new payout requests from organizers here when they request to withdraw their earnings."
@@ -573,29 +574,19 @@
         "confirm": "Yes, mark as failed"
       },
       "approve_wise": {
-        "title_send": "Approve & Send",
-        "title_prepare": "Approve & Prepare Transfer",
-        "description_send": "You are about to send this payout to the organizer's Wise account. Check the recipient name below before you continue.",
-        "description_prepare": "You are about to create this transfer at Wise. Check the recipient name below before you continue.",
         "recipient_label": "Recipient name at Wise",
         "identifier_label": "Wisetag",
         "amount_label": "Amount",
-        "irreversible": "This transfer is immediate and cannot be recalled. Make sure the recipient name is the organizer you expect.",
-        "needs_funding": "This creates the transfer only. You still need to log in to Wise and fund it before the organizer is paid.",
-        "confirm_send": "Yes, send the payout",
-        "confirm_prepare": "Yes, prepare the transfer",
-        "queued_sending": "Approved. The transfer is being sent.",
-        "queued_needs_funding": "Transfer being created at Wise. Log in to Wise to fund it."
+        "no_money_moves": "This does not pay anyone. It confirms the recipient on our Wise account. You still have to send the transfer in Wise, then come back and mark it sent.",
+        "only_if_sent": "Only confirm this if you have actually sent the transfer in Wise. This debits the organizer's balance and tells them they have been paid.",
+        "approved_now_send": "Recipient confirmed. Send the transfer in Wise, then mark this payout as sent.",
+        "sent_done": "Payout marked as sent. The organizer has been notified."
       },
       "settle": {
         "title": "Settle this payout",
         "description": "Choose the outcome. This is the only place a payout is completed or rejected.",
         "paid_title": "Successful",
         "paid_hint": "You have already sent this money. Records it and debits the balance.",
-        "wise_send_title": "Successful — approve & send",
-        "wise_send_hint": "Creates the Wise transfer and sends it. Completes when Wise confirms.",
-        "wise_prepare_title": "Successful — approve & prepare",
-        "wise_prepare_hint": "Creates the transfer at Wise. You still fund it there afterwards.",
         "failed_title": "Failed",
         "failed_hint": "Rejects the request. No money is taken and nothing is refunded.",
         "note_label": "Internal note (optional)",
@@ -603,7 +594,11 @@
         "no_send_permission": "You do not have permission to send payouts. You can still mark this request as failed, or ask an owner to grant you the payouts.send permission.",
         "confirm": "Confirm",
         "paid_done": "Payout marked as paid.",
-        "failed_done": "Payout marked as failed."
+        "failed_done": "Payout marked as failed.",
+        "wise_approve_title": "Approve — add the recipient",
+        "wise_approve_hint": "Confirms the recipient in Wise. No money moves. You send the transfer yourself afterwards.",
+        "wise_sent_title": "Successful — I sent it",
+        "wise_sent_hint": "You have already sent this transfer in Wise. Records it and debits the balance."
       }
     },
     "request_details": {
@@ -623,9 +618,7 @@
       "approve": "Approve payout",
       "wise_resolved_name": "Wise Recipient Name",
       "wise_identifier": "Wisetag",
-      "wise_transfer_id": "Wise Transfer ID",
-      "wise_status": "Wise Status",
-      "wise_failure_reason": "Wise Failure Reason"
+      "wise_approved_at": "Recipient approved"
     },
     "withdrawal_details": {
       "title": "Withdrawal Details",
@@ -638,7 +631,8 @@
       "processed_date": "Processed Date",
       "close": "Close"
     },
-    "settle": "Settle Payout"
+    "settle": "Settle Payout",
+    "confirm_sent": "Mark as sent"
   },
   "Payments": {
     "title": "Payments",

@@ -21,27 +21,24 @@ export default function PayoutRequestPageWrapper({
   request,
   organisationTier,
   organisationActiveSubscription,
-  wiseCanFundAutomatically,
 }: {
   request: WithdrawalRequest;
   organisationTier: MembershipTier;
   organisationActiveSubscription: OrganisationSubscription | null;
-  wiseCanFundAutomatically: boolean;
 }) {
   const t = useTranslations("Payouts");
   const locale = useLocale();
   const { can } = usePermissions();
 
   /**
-   * A Wise payout is approved, not marked paid: approval creates the transfer
-   * rather than recording one someone already made by hand. So it needs a
-   * different button, a different permission, and a dialog that leads with the
-   * recipient name.
+   * A Wise payout is settled in two steps rather than one: approving confirms
+   * the recipient on the Ticketwaze Wise account, someone sends the transfer by
+   * hand, and a second action records that. So it needs a different permission
+   * and a dialog that leads with the recipient name.
    */
   const isWise = request.accountType === "wise";
-  // Already handed to the job. Offering approve again would only produce a
-  // conflict, and the sweep owns the request from here.
-  const isWiseInFlight = isWise && Boolean(request.wiseTransferId);
+  // APPROVED is still open work — it is a payout somebody has yet to send.
+  const isOpen = request.status === "PENDING" || request.status === "APPROVED";
 
   return (
     <div className="flex flex-col gap-8 h-full overflow-hidden">
@@ -69,6 +66,18 @@ export default function PayoutRequestPageWrapper({
               {t("payout_request.table.request_status.pending")}
             </span>
           )}
+          {/* Its own colour, because it is its own state: the recipient is
+              confirmed and somebody owes this organiser a transfer. Reading as
+              either "pending" or "paid" would be wrong in opposite ways. */}
+          {request.status === "APPROVED" && (
+            <span
+              className={
+                "py-[.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#3b82f6]  px-2 rounded-[30px] bg-[#f5f5f5]"
+              }
+            >
+              {t("payout_request.table.request_status.awaiting_send")}
+            </span>
+          )}
           {request.status === "FAILED" && (
             <span
               className={
@@ -79,16 +88,16 @@ export default function PayoutRequestPageWrapper({
             </span>
           )}
         </h2>
-        {/* Only an open request can be settled. A Wise transfer already in
-            flight belongs to the reconciliation sweep from here, so offering
-            the modal would just produce a conflict. */}
-        {request.status === "PENDING" && !isWiseInFlight && (
+        {/* Both open states get the modal, and it does something different in
+            each: PENDING approves the recipient, APPROVED records the transfer
+            that was then made by hand. */}
+        {isOpen && (
           <div className="flex gap-4 items-center h-fit">
             <SettlePayoutDialog
               withdrawalRequestId={request.withdrawalRequestId}
               isWise={isWise}
+              wiseStage={request.status === "APPROVED" ? "confirm" : "approve"}
               canSendWise={can("payouts.send")}
-              wiseCanFundAutomatically={wiseCanFundAutomatically}
               resolvedName={request.wiseResolvedName ?? request.accountName}
               recipientValue={
                 request.wiseRecipientValue ?? request.accountNumber
@@ -96,7 +105,9 @@ export default function PayoutRequestPageWrapper({
               amountUsd={request.usdAmount}
               trigger={
                 <ButtonPrimary className="py-[7.5px]">
-                  {t("settle")}
+                  {request.status === "APPROVED"
+                    ? t("confirm_sent")
+                    : t("settle")}
                 </ButtonPrimary>
               }
             />
@@ -196,9 +207,9 @@ export default function PayoutRequestPageWrapper({
                     t("request_details.processed_date"),
                     formatDate(request.updatedAt, locale, "UTC"),
                   ],
-                  /* Wise rows, only once there is something to say. The
-                     transfer id is what a human looks the payment up by in
-                     Wise, so it matters most when something has gone wrong. */
+                  /* Wise rows. The name and identifier are what someone matches
+                     against the recipient list in Wise; the approval time is
+                     how long the organiser has been waiting on a human. */
                   isWise && [
                     t("request_details.wise_resolved_name"),
                     request.wiseResolvedName,
@@ -208,19 +219,9 @@ export default function PayoutRequestPageWrapper({
                     request.wiseRecipientValue,
                   ],
                   isWise &&
-                    Boolean(request.wiseTransferId) && [
-                      t("request_details.wise_transfer_id"),
-                      request.wiseTransferId,
-                    ],
-                  isWise &&
-                    Boolean(request.wiseStatus) && [
-                      t("request_details.wise_status"),
-                      request.wiseStatus,
-                    ],
-                  isWise &&
-                    Boolean(request.wiseFailureReason) && [
-                      t("request_details.wise_failure_reason"),
-                      request.wiseFailureReason,
+                    Boolean(request.wiseApprovedAt) && [
+                      t("request_details.wise_approved_at"),
+                      formatDate(request.wiseApprovedAt!, locale, "UTC"),
                     ],
                 ] as ([string, React.ReactNode] | false)[]
               )

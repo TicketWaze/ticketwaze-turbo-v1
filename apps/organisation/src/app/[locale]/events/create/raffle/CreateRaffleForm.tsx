@@ -28,6 +28,14 @@ import { compressImage } from "@/lib/compressImage";
 import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
 import PrizeImagePicker from "@/components/shared/PrizeImagePicker";
 import useRaffleTitleAvailability from "@/hooks/useRaffleTitleAvailability";
+import AttendeePricePreview from "@/components/shared/AttendeePricePreview";
+import CharCounter from "@/components/shared/CharCounter";
+
+// The counter has to promise the limit the input actually enforces, so the
+// `maxLength` attribute and the counter's denominator read from one constant.
+// The minimum mirrors the schema's `name: z.string().min(10)`.
+const NAME_MIN_CHARS = 10;
+const NAME_MAX_CHARS = 80;
 
 const inputClass =
   "bg-neutral-100 w-full rounded-[1.5rem] p-6 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500";
@@ -53,9 +61,7 @@ function makeRaffleSchema(t: TranslateFn) {
       unlimited: z.boolean(),
       totalTickets: z.coerce.number().optional(),
       activityTags: z.array(z.string()),
-      location: z
-        .object({ lat: z.number(), lng: z.number() })
-        .optional(),
+      location: z.object({ lat: z.number(), lng: z.number() }).optional(),
       salesStart: z.string().min(1, t("errors.sales_start")),
       salesEnd: z.string().min(1, t("errors.sales_end")),
       drawDate: z.string().min(1, t("errors.draw_date")),
@@ -85,10 +91,13 @@ function makeRaffleSchema(t: TranslateFn) {
 function Field({
   label,
   error,
+  counter,
   children,
 }: {
   label: string;
   error?: string;
+  /** Optional <CharCounter>, shown opposite the error on the same row. */
+  counter?: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -97,7 +106,12 @@ function Field({
         {label}
       </label>
       {children}
-      {error && <span className="text-[1.2rem] text-failure">{error}</span>}
+      {(error || counter) && (
+        <div className="flex items-center justify-between">
+          <span className="text-[1.2rem] text-failure">{error}</span>
+          {counter}
+        </div>
+      )}
     </div>
   );
 }
@@ -299,7 +313,10 @@ export default function CreateRaffleForm() {
     fd.append(
       "prizes",
       JSON.stringify(
-        data.prizes.map((p) => ({ title: p.title, description: p.description })),
+        data.prizes.map((p) => ({
+          title: p.title,
+          description: p.description,
+        })),
       ),
     );
     // Files cannot travel inside the prizes JSON, so each one rides as an
@@ -375,7 +392,12 @@ export default function CreateRaffleForm() {
           ) : (
             <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
               <div className="flex flex-col items-center gap-4">
-                <Image src={UploadDocument} alt="upload" width={24} height={24} />
+                <Image
+                  src={UploadDocument}
+                  alt="upload"
+                  width={24}
+                  height={24}
+                />
                 <p className="text-[1.5rem] leading-6 text-neutral-500">
                   {t("cover_text")}{" "}
                   <span className="font-medium text-primary-500">
@@ -405,11 +427,18 @@ export default function CreateRaffleForm() {
               errors.name?.message ??
               (titleStatus === "taken" ? t("errors.name_taken") : undefined)
             }
+            counter={
+              <CharCounter
+                count={(watch("name") ?? "").length}
+                min={NAME_MIN_CHARS}
+                max={NAME_MAX_CHARS}
+              />
+            }
           >
             <input
               {...register("name")}
               type="text"
-              maxLength={80}
+              maxLength={NAME_MAX_CHARS}
               className={inputClass}
             />
           </Field>
@@ -491,7 +520,10 @@ export default function CreateRaffleForm() {
           <span className={sectionTitle}>{t("pricing")}</span>
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex-1">
-              <Field label={t("ticket_price")} error={errors.ticketPrice?.message}>
+              <Field
+                label={t("ticket_price")}
+                error={errors.ticketPrice?.message}
+              >
                 <input
                   {...register("ticketPrice")}
                   type="number"
@@ -528,6 +560,11 @@ export default function CreateRaffleForm() {
               </Field>
             </div>
           </div>
+
+          <AttendeePricePreview
+            price={watch("ticketPrice")}
+            currency={watch("currency")}
+          />
         </div>
 
         {/* Supply */}
@@ -548,7 +585,10 @@ export default function CreateRaffleForm() {
             </label>
           </div>
           {!unlimited && (
-            <Field label={t("total_tickets")} error={errors.totalTickets?.message}>
+            <Field
+              label={t("total_tickets")}
+              error={errors.totalTickets?.message}
+            >
               <input
                 {...register("totalTickets")}
                 type="number"
@@ -568,7 +608,10 @@ export default function CreateRaffleForm() {
           <span className={sectionTitle}>{t("schedule")}</span>
           <div className="flex flex-col lg:flex-row gap-6">
             <div className="flex-1">
-              <Field label={t("sales_start")} error={errors.salesStart?.message}>
+              <Field
+                label={t("sales_start")}
+                error={errors.salesStart?.message}
+              >
                 <input
                   {...register("salesStart")}
                   type="datetime-local"

@@ -25,10 +25,23 @@ import { MembershipTier } from "@ticketwaze/typescript-config";
 export default function CreateMeetEventForm({
   eventType,
   code,
+  onlineProvider,
+  seatLimit,
+  maxMeetingMinutes,
   membershipTier,
 }: {
   eventType: string;
   code: string | undefined;
+  /** 'google_meet' | 'zoom' — chosen before the category list. */
+  onlineProvider: string;
+  /**
+   * Seats on the plan hosting the call, or null when it could not be read.
+   * Zoom's comes from the account; Google's from the plan the organiser
+   * declared, which is the only way to know it.
+   */
+  seatLimit: number | null;
+  /** Longest a call may run on that plan; null when unknown. */
+  maxMeetingMinutes: number | null;
   membershipTier: MembershipTier;
 }) {
   const t = useTranslations("Events.create_event");
@@ -44,6 +57,9 @@ export default function CreateMeetEventForm({
     isFree,
     (k, values) => t(k, values),
     membershipTier.freeTickets,
+    seatLimit,
+    maxMeetingMinutes,
+    onlineProvider === "zoom" ? "zoom" : "google_meet",
   );
   type TForm = z.infer<typeof FormDataSchema>;
 
@@ -109,6 +125,7 @@ export default function CreateMeetEventForm({
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
     formData.append("eventType", eventType);
+    formData.append("onlineProvider", onlineProvider);
     formData.append("isFree", JSON.stringify(data.isFree));
     formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("isRefundable", JSON.stringify(isRefundable));
@@ -245,7 +262,11 @@ export default function CreateMeetEventForm({
   ]);
 
   return (
-    <div className="relative flex flex-col gap-8 overflow-hidden h-full ">
+    // `overflow-clip`, not `overflow-hidden`. See CreateInPersonEventForm: an
+    // `overflow-hidden` box is still a scroll container, so Tiptap's
+    // scroll-caret-into-view after a paste shifts it permanently, with no
+    // scrollbar or wheel for the user to shift it back. `clip` does not scroll.
+    <div className="relative flex flex-col gap-8 overflow-clip h-full ">
       <div className="absolute bottom-4 z-9999 w-full hidden lg:block">
         <ButtonPrimary
           onClick={next}

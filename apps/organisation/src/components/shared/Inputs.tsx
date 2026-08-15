@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Eye, EyeSlash, Verify } from "iconsax-reactjs";
 import React, { useState } from "react";
+import CharCounter from "@/components/shared/CharCounter";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   children: React.ReactNode;
@@ -13,6 +14,15 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   validate?: boolean;
   trailing?: React.ReactNode;
   t?: any;
+  /**
+   * Pass all three to show a "12 / 50" counter under the field, matching the
+   * description editor. `charCount` comes from the caller because these inputs
+   * are uncontrolled (react-hook-form `register`), so the component has no
+   * value of its own to measure — watch the field and pass its length.
+   */
+  charCount?: number;
+  minChars?: number;
+  maxChars?: number;
 }
 
 export function Input({
@@ -22,6 +32,9 @@ export function Input({
   className,
   error,
   trailing,
+  charCount,
+  minChars,
+  maxChars,
   ...props
 }: InputProps) {
   return (
@@ -40,7 +53,21 @@ export function Input({
           {trailing}
         </div>
       )}
-      <span className={"text-[1.2rem] px-8 py-2 text-failure"}>{error}</span>
+      {maxChars === undefined ? (
+        <span className={"text-[1.2rem] px-8 py-2 text-failure"}>{error}</span>
+      ) : (
+        <div className="flex items-center justify-between">
+          <span className={"text-[1.2rem] px-8 py-2 text-failure"}>
+            {error}
+          </span>
+          <CharCounter
+            count={charCount ?? 0}
+            min={minChars ?? 0}
+            max={maxChars}
+            className="px-8 py-2"
+          />
+        </div>
+      )}
     </div>
   );
 }

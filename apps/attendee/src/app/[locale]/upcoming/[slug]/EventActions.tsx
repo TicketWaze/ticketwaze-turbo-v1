@@ -21,31 +21,31 @@ import {
 import AddToCalendar from "../../explore/[slug]/AddToCalendar";
 import { LinkPrimary } from "@/components/shared/Links";
 import ShareEvent from "@/components/shared/ShareEvent";
+import { DateTime } from "luxon";
+import { isEventLiveAt, nextStartAfter } from "@/lib/eventSchedule";
 
 function useCountdownToNextDay(eventDays: EventDay[]): string | null {
   const [countdown, setCountdown] = useState<string | null>(null);
 
   useEffect(() => {
     function compute() {
-      const now = new Date();
+      const now = DateTime.now();
 
-      const upcoming = eventDays
-        .map((day) => {
-          const dateStr =
-            typeof day.eventDate === "string"
-              ? day.eventDate.split("T")[0]
-              : new Date(day.eventDate).toISOString().split("T")[0];
-          return new Date(`${dateStr}T${day.startTime}`);
-        })
-        .filter((start) => start > now)
-        .sort((a, b) => a.getTime() - b.getTime());
+      /**
+       * Resolved in the EVENT's timezone, not the browser's.
+       *
+       * This used to parse a naive "2026-08-14T11:00" string, which JavaScript
+       * reads as local time for whoever is looking, so a buyer abroad counted
+       * down to the wrong moment entirely. See lib/eventSchedule.
+       */
+      const next = nextStartAfter(eventDays, now);
 
-      if (upcoming.length === 0) {
+      if (!next) {
         setCountdown(null);
         return;
       }
 
-      const diff = upcoming[0].getTime() - now.getTime();
+      const diff = next.diff(now).toMillis();
       const totalHours = Math.floor(diff / 3_600_000);
       const m = Math.floor((diff % 3_600_000) / 60_000);
       const s = Math.floor((diff % 60_000) / 1_000);
@@ -119,19 +119,16 @@ export default function EventActions({
 
     useEffect(() => {
       function check() {
-        const now = new Date();
-        const live = eventDays.some((day) => {
-          const dateStr =
-            typeof day.eventDate === "string"
-              ? day.eventDate.split("T")[0]
-              : new Date(day.eventDate).toISOString().split("T")[0];
-
-          const start = new Date(`${dateStr}T${day.startTime}`);
-          const end = new Date(`${dateStr}T${day.endTime}`);
-
-          return now >= start && now <= end;
-        });
-        setIsLive(live);
+        /**
+         * THE WINDOW IN THE EVENT'S OWN TIMEZONE.
+         *
+         * This gates the Join button, so getting the zone wrong is not
+         * cosmetic: the old naive parse used the viewer's local time, which
+         * meant a buyer in a different timezone from the event found the button
+         * still locked while the call they had paid for was already running,
+         * or unlocked hours before anyone was there. See lib/eventSchedule.
+         */
+        setIsLive(isEventLiveAt(eventDays, DateTime.now()));
       }
 
       check();
@@ -146,8 +143,28 @@ export default function EventActions({
   // A live event is only "joinable" when it actually has a meet link. In-person
   // events have a null googleMeetLink, and passing null to <Link> crashes it
   // ("Cannot read properties of null (reading 'pathname')").
-  const canJoinLive = isLive && Boolean(event.googleMeetLink);
-  const joinHref = (isLive && event.googleMeetLink) || "#";
+  /**
+   * WHERE THIS VIEWER JOINS FROM.
+   *
+   * Google Meet is one link for the whole event, held on the event. Zoom is
+   * one link PER BUYER, issued when they were registered and held on their own
+   * ticket — so for a Zoom event the event's own `zoomJoinUrl` is the wrong
+   * one to hand out and is deliberately ignored here.
+   *
+   * A Zoom ticket with no link yet is a registration that has not landed. The
+   * hourly retry sweep is still working on it, so the button stays disabled
+   * rather than sending the holder somewhere that will turn them away.
+   */
+  const onlineJoinUrl =
+    event.onlineProvider === "zoom"
+      ? (event.tickets?.find((ticket) => ticket.zoomJoinUrl)?.zoomJoinUrl ??
+        null)
+      : event.googleMeetLink;
+
+  // In-person events have a null link, and passing null to <Link> crashes it
+  // ("Cannot read properties of null (reading 'pathname')").
+  const canJoinLive = isLive && Boolean(onlineJoinUrl);
+  const joinHref = (isLive && onlineJoinUrl) || "#";
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
@@ -222,7 +239,7 @@ export default function EventActions({
                 : ""
             }
           >
-            {!isLive ? countdown : "test"}
+            {!isLive ? countdown : t("join")}
           </LinkPrimary>
         </div>
       </div>
@@ -241,7 +258,7 @@ export default function EventActions({
               : "w-full"
           }
         >
-          {!isLive ? countdown : "test"}
+          {!isLive ? countdown : t("join")}
         </LinkPrimary>
       </div>
     </div>

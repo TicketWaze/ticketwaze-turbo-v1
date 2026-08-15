@@ -7,8 +7,12 @@ import { useRef, useState } from "react";
 import InPerson from "@/assets/images/in-person.jpg";
 import Draw from "@/assets/images/draw.jpg";
 import RestaurantCover from "@/assets/images/restaurant.jpg";
-import GoogleMeet from "@/assets/images/meet.jpg";
-import ComingSoonCover from "@/assets/images/online.jpg";
+// import GoogleMeet from "@/assets/images/meet.jpg";
+import Online from "@/assets/images/online.webp";
+import ComingSoonCover from "@/assets/images/coming.jpg";
+// Placeholder art: this was the old coming-soon cover, freed up when that card
+// moved to coming.jpg. Swap it for a digital-product image when one exists.
+import SaleCover from "@/assets/images/online.jpg";
 // import Private from "@/assets/images/private.jpeg";
 // import Reservations from "@/assets/images/reservations.jpg";
 // import Transportations from "@/assets/images/transportations.jpg";
@@ -33,6 +37,7 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import PageLoader from "@/components/PageLoader";
 import { MembershipTier, Organisation } from "@ticketwaze/typescript-config";
 import { LinkPrimary } from "@/components/shared/Links";
+import { ONLINE_EVENTS_ENABLED } from "@/lib/featureFlags";
 
 export default function EventTypeList({
   organisation,
@@ -54,17 +59,12 @@ export default function EventTypeList({
     // same row once the organiser has dates and tickets. Listed first because
     // it is the cheapest thing an organiser can post.
     {
-      title: t("list.comingSoon.title"),
-      description: t("list.comingSoon.description"),
-      image: ComingSoonCover,
-      value: "coming-soon",
-    },
-    {
       title: t("list.inPerson.title"),
       description: t("list.inPerson.description"),
       image: InPerson,
       value: "in-person",
     },
+
     {
       title: t("list.raffle.title"),
       description: t("list.raffle.description"),
@@ -72,17 +72,30 @@ export default function EventTypeList({
       value: "raffle",
     },
     {
-      title: t("list.restaurant.title"),
-      description: t("list.restaurant.description"),
-      image: RestaurantCover,
-      value: "restaurant",
+      title: t("list.comingSoon.title"),
+      description: t("list.comingSoon.description"),
+      image: ComingSoonCover,
+      value: "coming-soon",
+    },
+    {
+      title: t("list.sale.title"),
+      description: t("list.sale.description"),
+      image: SaleCover,
+      value: "sale",
     },
     {
       title: t("list.meet.title"),
       description: t("list.meet.description"),
-      image: GoogleMeet,
+      image: Online,
       value: "meet",
     },
+    // {
+    //   title: t("list.restaurant.title"),
+    //   description: t("list.restaurant.description"),
+    //   image: RestaurantCover,
+    //   value: "restaurant",
+    // },
+
     // {
     //   title: t("list.private.title"),
     //   description: t("list.private.description"),
@@ -134,40 +147,12 @@ export default function EventTypeList({
     return category.title.toLowerCase().includes(search);
   });
 
-  async function proceedGoogleMeet() {
-    setIsLoading(true);
-    try {
-      if (
-        organisation.googleRefreshToken &&
-        organisation.googleRefreshToken.length !== 0
-      ) {
-        router.push("/events/create/meet");
-      } else {
-        const request = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/events/google/callback`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${session?.user.accessToken}`,
-            },
-          },
-        );
-        const response = await request.json();
-        if (response.status === "success") {
-          closeRef.current?.click();
-          router.push(response.authorizationUrl);
-        } else {
-          toast.error(response.message);
-          setIsLoading(false);
-        }
-      }
-    } catch {
-      closeRef.current?.click();
-      toast.error(t("list.meet.fetchFailedError"));
-      setIsLoading(false);
-    }
-  }
+  /*
+    The Google connect flow used to live here, behind a dialog on the "Online"
+    card. It now belongs to the platform picker at `create/meet`, alongside
+    Zoom's, so both providers are connected the same way and at the same point
+    in the flow. This card just opens that picker.
+  */
 
   return (
     <div className="flex flex-col gap-8 overflow-y-scroll">
@@ -291,7 +276,10 @@ export default function EventTypeList({
           if (
             // category.value === "raffle" ||
             category.value === "restaurant" ||
-            category.value === "meet" ||
+            // Online events are built but closed to new creation for now — the
+            // card stays and says "coming soon" rather than vanishing. See
+            // lib/featureFlags.
+            (!ONLINE_EVENTS_ENABLED && category.value === "meet") ||
             category.value === "reservations" ||
             category.value === "transportations" ||
             category.value === "tours" ||

@@ -529,7 +529,8 @@
           "approved": "Approuvé",
           "pending": "En attente",
           "failed": "Échoué",
-          "rejected": "Rejeté"
+          "rejected": "Rejeté",
+          "awaiting_send": "À envoyer"
         }
       },
       "no_request": "Vous verrez ici les nouvelles demandes de virement des organisateurs lorsqu'ils souhaitent retirer leurs gains."
@@ -566,29 +567,19 @@
         "confirm": "Oui, marquer comme échoué"
       },
       "approve_wise": {
-        "title_send": "Approuver et envoyer",
-        "title_prepare": "Approuver et préparer le virement",
-        "description_send": "Vous êtes sur le point d'envoyer ce virement vers le compte Wise de l'organisateur. Vérifiez le nom du bénéficiaire ci-dessous avant de continuer.",
-        "description_prepare": "Vous êtes sur le point de créer ce virement chez Wise. Vérifiez le nom du bénéficiaire ci-dessous avant de continuer.",
         "recipient_label": "Nom du bénéficiaire chez Wise",
         "identifier_label": "Wisetag",
         "amount_label": "Montant",
-        "irreversible": "Ce virement est immédiat et ne peut pas être rappelé. Assurez-vous que le nom du bénéficiaire correspond bien à l'organisateur attendu.",
-        "needs_funding": "Ceci crée uniquement le virement. Vous devez encore vous connecter à Wise et l'approvisionner pour que l'organisateur soit payé.",
-        "confirm_send": "Oui, envoyer le virement",
-        "confirm_prepare": "Oui, préparer le virement",
-        "queued_sending": "Approuvé. Le virement est en cours d'envoi.",
-        "queued_needs_funding": "Virement en cours de création chez Wise. Connectez-vous à Wise pour l'approvisionner."
+        "no_money_moves": "Ceci ne paie personne. Cela confirme le bénéficiaire sur notre compte Wise. Vous devez encore envoyer le virement chez Wise, puis revenir le marquer comme envoyé.",
+        "only_if_sent": "Ne confirmez que si vous avez réellement envoyé le virement chez Wise. Ceci débite le solde de l'organisateur et lui annonce qu'il a été payé.",
+        "approved_now_send": "Bénéficiaire confirmé. Envoyez le virement chez Wise, puis marquez ce virement comme envoyé.",
+        "sent_done": "Virement marqué comme envoyé. L'organisateur a été notifié."
       },
       "settle": {
         "title": "Traiter ce virement",
         "description": "Choisissez le résultat. C'est le seul endroit où un virement est finalisé ou rejeté.",
         "paid_title": "Réussi",
         "paid_hint": "Vous avez déjà envoyé cet argent. Enregistre l'opération et débite le solde.",
-        "wise_send_title": "Réussi — approuver et envoyer",
-        "wise_send_hint": "Crée le virement Wise et l'envoie. Finalisé lorsque Wise confirme.",
-        "wise_prepare_title": "Réussi — approuver et préparer",
-        "wise_prepare_hint": "Crée le virement chez Wise. Vous devez ensuite l'approvisionner.",
         "failed_title": "Échoué",
         "failed_hint": "Rejette la demande. Aucun montant n'est prélevé ni remboursé.",
         "note_label": "Note interne (facultative)",
@@ -596,7 +587,11 @@
         "no_send_permission": "Vous n'avez pas la permission d'envoyer des virements. Vous pouvez tout de même marquer cette demande comme échouée, ou demander à un propriétaire de vous accorder la permission payouts.send.",
         "confirm": "Confirmer",
         "paid_done": "Virement marqué comme payé.",
-        "failed_done": "Virement marqué comme échoué."
+        "failed_done": "Virement marqué comme échoué.",
+        "wise_approve_title": "Approuver — ajouter le bénéficiaire",
+        "wise_approve_hint": "Confirme le bénéficiaire chez Wise. Aucun montant n'est déplacé. Vous envoyez le virement vous-même ensuite.",
+        "wise_sent_title": "Réussi — je l'ai envoyé",
+        "wise_sent_hint": "Vous avez déjà envoyé ce virement chez Wise. Enregistre l'opération et débite le solde."
       }
     },
     "request_details": {
@@ -616,9 +611,7 @@
       "approve": "Approuver le virement",
       "wise_resolved_name": "Nom du bénéficiaire Wise",
       "wise_identifier": "Wisetag",
-      "wise_transfer_id": "ID du virement Wise",
-      "wise_status": "Statut Wise",
-      "wise_failure_reason": "Raison de l'échec Wise"
+      "wise_approved_at": "Bénéficiaire approuvé"
     },
     "withdrawal_details": {
       "title": "Détails du retrait",
@@ -631,7 +624,8 @@
       "processed_date": "Date de traitement",
       "close": "Fermer"
     },
-    "settle": "Traiter le virement"
+    "settle": "Traiter le virement",
+    "confirm_sent": "Marquer comme envoyé"
   },
   "Payments": {
     "title": "Paiements",

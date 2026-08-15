@@ -11,6 +11,7 @@ import { AddCircle, Trash, Warning2 } from "iconsax-reactjs";
 import type { EditMeetFormValues } from "./types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ToggleIcon from "@/components/shared/ToggleIcon";
+import { TicketTypePricePreview } from "@/components/shared/AttendeePricePreview";
 import { Input } from "@/components/shared/Inputs";
 import { toast } from "sonner";
 import { Event, MembershipTier } from "@ticketwaze/typescript-config";
@@ -306,6 +307,12 @@ export default function StepTicket({
                   </span>
                 </div>
               </div>
+
+              <TicketTypePricePreview
+                control={control}
+                index={index}
+                currency={currency}
+              />
             </div>
           ))}
 

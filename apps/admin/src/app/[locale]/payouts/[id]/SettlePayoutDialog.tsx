@@ -17,6 +17,7 @@ import {
 import { CloseCircle, TickCircle, Warning2 } from "iconsax-reactjs";
 import {
   ApproveWisePayoutAction,
+  ConfirmWiseSentAction,
   MarkFailedAction,
   MarkPaidAction,
 } from "@/actions/Payout";
@@ -42,15 +43,21 @@ type Outcome = "successful" | "failed";
  * about the difference:
  *   - bank / MonCash — the admin has already sent the money by hand, so this
  *     records it and debits the balance.
- *   - Wise — the transfer has not happened yet. This starts it, and the request
- *     only becomes SUCCESSFUL when Wise confirms.
+ *   - Wise, not yet approved — confirms the recipient and adds them in Wise.
+ *     NOBODY IS PAID by this. The transfer is made by hand afterwards.
+ *   - Wise, already approved — records the transfer the admin has now made,
+ *     which is what debits the balance and tells the organiser.
+ *
+ * Ticketwaze does not send Wise transfers itself, and no wording here may
+ * suggest otherwise — an admin who believes the money went out is an organiser
+ * waiting forever.
  */
 export function SettlePayoutDialog({
   trigger,
   withdrawalRequestId,
   isWise,
+  wiseStage,
   canSendWise,
-  wiseCanFundAutomatically,
   resolvedName,
   recipientValue,
   amountUsd,
@@ -58,9 +65,13 @@ export function SettlePayoutDialog({
   trigger: React.ReactNode;
   withdrawalRequestId: string;
   isWise: boolean;
+  /**
+   * Which of the two Wise steps this payout is at. "approve" confirms the
+   * recipient; "confirm" records the transfer that was then made by hand.
+   */
+  wiseStage: "approve" | "confirm";
   /** `payouts.send` — held per-admin, so this can be false for a real admin. */
   canSendWise: boolean;
-  wiseCanFundAutomatically: boolean;
   resolvedName: string;
   recipientValue: string;
   amountUsd: number;
@@ -108,21 +119,27 @@ export function SettlePayoutDialog({
       return;
     }
 
-    // Wise settles by sending, not by declaring. Anything else is the admin
-    // recording a transfer they already made themselves.
-    const result = isWise
-      ? await ApproveWisePayoutAction(token, locale, withdrawalRequestId)
-      : await MarkPaidAction(token, locale, withdrawalRequestId, note);
+    /**
+     * Three different things wear the same "successful" label, and only two of
+     * them pay anybody. Approving a Wise payout confirms a recipient and stops
+     * there — the toast has to say what still needs doing, because nothing else
+     * will chase it.
+     */
+    const result =
+      isWise && wiseStage === "approve"
+        ? await ApproveWisePayoutAction(token, locale, withdrawalRequestId)
+        : isWise
+          ? await ConfirmWiseSentAction(token, locale, withdrawalRequestId, note)
+          : await MarkPaidAction(token, locale, withdrawalRequestId, note);
 
     if (result.status === "success" || result.status === "sucess") {
       handleOpenChange(false);
       toast.success(
         !isWise
           ? t("settle.paid_done")
-          : (result as { willFundAutomatically?: boolean })
-                .willFundAutomatically
-            ? t("approve_wise.queued_sending")
-            : t("approve_wise.queued_needs_funding"),
+          : wiseStage === "approve"
+            ? t("approve_wise.approved_now_send")
+            : t("approve_wise.sent_done"),
       );
     } else {
       toast.error(result.error);
@@ -168,16 +185,16 @@ export function SettlePayoutDialog({
               tone="success"
               title={
                 isWise
-                  ? wiseCanFundAutomatically
-                    ? t("settle.wise_send_title")
-                    : t("settle.wise_prepare_title")
+                  ? wiseStage === "approve"
+                    ? t("settle.wise_approve_title")
+                    : t("settle.wise_sent_title")
                   : t("settle.paid_title")
               }
               subtitle={
                 isWise
-                  ? wiseCanFundAutomatically
-                    ? t("settle.wise_send_hint")
-                    : t("settle.wise_prepare_hint")
+                  ? wiseStage === "approve"
+                    ? t("settle.wise_approve_hint")
+                    : t("settle.wise_sent_hint")
                   : t("settle.paid_hint")
               }
             />
@@ -206,10 +223,12 @@ export function SettlePayoutDialog({
             </div>
           )}
 
-          {/* The recipient, for a Wise send. This is the second of the two human
-            checkpoints — the organiser confirmed this name at request time, and
-            nothing in the code can catch a Wisetag that resolved to the wrong
-            real person. Only someone reading this name can. */}
+          {/* The recipient. This is the second of the two human checkpoints —
+            the organiser confirmed this name at request time, and nothing in
+            the code can catch a Wisetag that resolved to the wrong real person.
+            Only someone reading this name can. It stays on screen at the
+            confirm step too, because that is the name they should have just
+            paid in Wise. */}
           {outcome === "successful" && isWise && !blockedFromSending && (
             <div className="w-full rounded-[12px] bg-neutral-100 px-6 py-5 flex flex-col gap-4 text-left">
               <Field label={t("approve_wise.recipient_label")}>
@@ -266,6 +285,10 @@ export function SettlePayoutDialog({
             </div>
           )}
 
+          {/* Says what this click does NOT do. At the approve step that is the
+            whole message — nobody is paid, and the transfer still has to be
+            made by hand. At the confirm step it is the opposite warning: the
+            balance is debited on the admin's word that they already sent it. */}
           {outcome === "successful" && isWise && !blockedFromSending && (
             <div className="w-full rounded-[12px] bg-[#FEF3E2] px-6 py-4 flex items-start gap-3">
               <Warning2
@@ -275,9 +298,9 @@ export function SettlePayoutDialog({
                 className="shrink-0 mt-[2px]"
               />
               <p className="text-[1.4rem] leading-7 text-[#EA961C] text-left font-medium">
-                {wiseCanFundAutomatically
-                  ? t("approve_wise.irreversible")
-                  : t("approve_wise.needs_funding")}
+                {wiseStage === "approve"
+                  ? t("approve_wise.no_money_moves")
+                  : t("approve_wise.only_if_sent")}
               </p>
             </div>
           )}

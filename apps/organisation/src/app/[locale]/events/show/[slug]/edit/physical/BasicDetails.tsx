@@ -9,7 +9,14 @@ import {
   Control,
   UseFormSetValue,
   UseFormGetValues,
+  useWatch,
 } from "react-hook-form";
+
+// The counter has to promise the limit the input actually enforces, so the
+// `maxLength` attribute and the counter's denominator read from one constant.
+// The minimum mirrors the schema's `eventName: z.string().min(10)`.
+const NAME_MIN_CHARS = 10;
+const NAME_MAX_CHARS = 50;
 import {
   Select,
   SelectContent,
@@ -65,6 +72,10 @@ export default function BasicDetails({
   const [selectedState, setSelectedState] = useState<string>(
     getValues("state") ?? "",
   );
+
+  // `register` leaves the name input uncontrolled, so its length is read back
+  // through the form rather than from component state.
+  const nameLength = (useWatch({ control, name: "eventName" }) ?? "").length;
 
   const availableStates =
     countries.find((c) => c.name === selectedCountry)?.state ?? [];
@@ -162,7 +173,10 @@ export default function BasicDetails({
         <Input
           {...register("eventName")}
           type="text"
-          maxLength={50}
+          maxLength={NAME_MAX_CHARS}
+          charCount={nameLength}
+          minChars={NAME_MIN_CHARS}
+          maxChars={NAME_MAX_CHARS}
           error={
             errors.eventName?.message ??
             (nameStatus === "taken"
