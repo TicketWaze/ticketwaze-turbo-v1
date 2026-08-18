@@ -260,7 +260,7 @@ export default function OnlineProviderPicker({
       <ul className="list overflow-y-scroll py-2 px-2">
         <li>
           {/*
-            Online events are closed to new creation for now. This screen is
+            When online events are closed to new creation, this screen is
             still reachable by URL and by anyone part-way through the flow, so
             both providers answer here too rather than relying on the
             activity-type list being the only door. See lib/featureFlags.

@@ -276,8 +276,8 @@ export default function EventTypeList({
           if (
             // category.value === "raffle" ||
             category.value === "restaurant" ||
-            // Online events are built but closed to new creation for now — the
-            // card stays and says "coming soon" rather than vanishing. See
+            // Online events are switchable: when the flag is off the card
+            // stays and says "coming soon" rather than vanishing. See
             // lib/featureFlags.
             (!ONLINE_EVENTS_ENABLED && category.value === "meet") ||
             category.value === "reservations" ||
