@@ -63,6 +63,9 @@ export default async function EditEvent({
     );
   }
   const membershipTier = response.membershipTier;
+  // Null on a free plan AND on a trial — the trial-excluding signal the
+  // document rule needs, unlike `membershipTier`, which counts trials.
+  const paidTierName = response.paidTierName ?? null;
 
   /**
    * The plan's meeting duration limit, on whichever platform hosts this event.
@@ -120,6 +123,7 @@ export default async function EditEvent({
         membershipTier={membershipTier}
         maxMeetingMinutes={maxMeetingMinutes}
         googleSeatLimit={googleSeatLimit}
+        paidTierName={paidTierName}
       />
     </OrganizerLayout>
   );

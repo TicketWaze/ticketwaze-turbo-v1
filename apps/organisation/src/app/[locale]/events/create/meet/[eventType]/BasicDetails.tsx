@@ -26,6 +26,8 @@ import type { EventNameAvailability } from "@/hooks/useEventNameAvailability";
 import RichTextEditor from "@/components/shared/RichTextEditor";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import ToggleIcon from "@/components/shared/ToggleIcon";
+import EventDocumentField from "@/components/shared/EventDocumentField";
+import type useEventDocumentField from "@/hooks/useEventDocumentField";
 
 type Props = {
   register: UseFormRegister<CreateMeetFormValues>;
@@ -38,6 +40,8 @@ type Props = {
   isPrivate: boolean;
   setIsPrivate: React.Dispatch<React.SetStateAction<boolean>>;
   nameStatus: EventNameAvailability;
+  /** The optional handout's state and rules. See `useEventDocumentField`. */
+  document: ReturnType<typeof useEventDocumentField>;
 };
 
 export default function BasicDetails({
@@ -51,6 +55,7 @@ export default function BasicDetails({
   isPrivate,
   setIsPrivate,
   nameStatus,
+  document,
 }: Props) {
   const t = useTranslations("Events.create_event");
 
@@ -165,7 +170,9 @@ export default function BasicDetails({
             errors.eventName?.message ??
             (nameStatus === "taken"
               ? t("errors.basicDetails.nameTaken")
-              : undefined)
+              : nameStatus === "unknown"
+                ? t("errors.basicDetails.nameCheckFailed")
+                : undefined)
           }
           trailing={
             nameStatus === "checking" ? (
@@ -174,6 +181,10 @@ export default function BasicDetails({
               <TickCircle size="20" color="#349C2E" variant="Bulk" />
             ) : nameStatus === "taken" ? (
               <CloseCircle size="20" color="#DE0028" variant="Bulk" />
+            ) : nameStatus === "unknown" ? (
+              // Not a tick and not a cross: the name was never actually
+              // checked, and pretending either way is what hid this bug.
+              <Warning2 size="20" color="#E45B00" variant="Bulk" />
             ) : null
           }
         >
@@ -259,6 +270,15 @@ export default function BasicDetails({
           </div>
         </div>
       </div>
+
+      {/* Optional handout, delivered to ticket holders once the event starts. */}
+      <EventDocumentField
+        file={document.file}
+        onChange={document.choose}
+        maxFileMb={document.maxFileMb}
+        locked={document.locked}
+        error={document.error}
+      />
 
       <div></div>
       <div></div>

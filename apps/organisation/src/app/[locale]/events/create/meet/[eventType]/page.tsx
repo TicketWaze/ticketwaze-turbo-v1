@@ -44,6 +44,9 @@ export default async function InPersonPage({
   );
   const response = await request.json();
   const membershipTier = response.membershipTier;
+  // Null on a free plan AND on a trial. The document rule needs the
+  // trial-excluding signal, not `membershipTier`, which counts trials.
+  const paidTierName = response.paidTierName ?? null;
 
   /**
    * The plan's seat cap and duration ceiling, so the ticket and date steps can
@@ -97,6 +100,7 @@ export default async function InPersonPage({
         seatLimit={seatLimit}
         maxMeetingMinutes={maxMeetingMinutes}
         membershipTier={membershipTier}
+        paidTierName={paidTierName}
       />
     </OrganizerLayout>
   );

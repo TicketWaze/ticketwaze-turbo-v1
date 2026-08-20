@@ -317,6 +317,18 @@ export interface EventDay {
   updatedAt: DateTime;
 }
 
+/** The optional file attached to an online event. One per event, or none. */
+export interface EventDocument {
+  eventDocumentId: string;
+  eventId: string;
+  originalFilename: string;
+  byteSize: number;
+  mimeType: string;
+  scanStatus: "pending" | "clean" | "infected" | "error" | "skipped";
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
+
 export interface Event {
   eventId: string;
   organisationId: string;
@@ -365,8 +377,26 @@ export interface Event {
   currency: string;
   activityTags: string[];
   ticketSalesEndAt: string | null;
+  /**
+   * When this event's attached document unlocks, as an ISO string.
+   *
+   * Computed by the API — the rule is one timezone-sensitive comparison over
+   * the event's days, and recomputing it in the browser would be a second
+   * implementation of something easy to get subtly wrong. Null when there is no
+   * document. Populated only by `GET /events/upcoming/:eventId`.
+   */
+  documentAvailableAt?: string | null;
   eventDays: EventDay[];
   eventTicketTypes: EventTicketType[];
+  /**
+   * The optional document attached to an online event, when one is stored.
+   *
+   * Never carries the S3 key: it is `serializeAs: null` on the API model, so a
+   * private key cannot ride out on a response. Downloads go through
+   * `GET /events/:eventId/document/download`, which checks the ticket and the
+   * unlock time before minting a short-lived URL.
+   */
+  eventDocument?: EventDocument | null;
   eventTagId: string;
   googleMeetLink: string;
   googleCalendarEventId: string;
@@ -1002,6 +1032,8 @@ export interface MembershipTier {
   membershipUsdPrice: number;
   apiAccess: boolean;
   dedicatedAccountManager: boolean;
+  /** Upload ceiling for an online event's optional document, in MB. */
+  eventDocumentMaxMb: number;
   createdAt: DateTime;
   updatedAt: DateTime;
 }

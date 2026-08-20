@@ -181,7 +181,11 @@ export default function BasicDetails({
             errors.eventName?.message ??
             (nameStatus === "taken"
               ? t("errors.basicDetails.nameTaken")
-              : undefined)
+              : nameStatus === "unknown"
+                ? // The name was never actually checked. Said out loud rather
+                  // than left blank, which reads as "cleared".
+                  t("errors.basicDetails.nameCheckFailed")
+                : undefined)
           }
         >
           {t("event_name")}

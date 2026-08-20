@@ -1007,7 +1007,6 @@
         "online": {
           "back": "Retour",
           "title": "Sélectionnez une plateforme en ligne",
-          "comingSoon": "Bientôt disponible.",
           "connectFailed": "Nous ne parvenons pas à joindre Zoom pour le moment. Veuillez vérifier votre connexion Internet et réessayer. Si l’erreur persiste, contactez le support.",
           "googleMeet": {
             "title": "Google Meet",
@@ -1195,7 +1194,8 @@
             "required": "L’activité doit avoir une image de couverture",
             "max": "La taille maximale du fichier est de 200ko.",
             "type": "Les fichiers .jpg, .jpeg, .png et .webp sont acceptés."
-          }
+          },
+          "nameCheckFailed": "Nous n’avons pas pu vérifier si ce nom est libre. Vous pouvez continuer, mais s’il est déjà pris, l’activité sera refusée au moment de l’envoi."
         },
         "dateAndTime": {
           "eventDate": "La date de l’événement est requise",
@@ -1374,6 +1374,24 @@
         "file_section": "Le fichier que vous vendez",
         "file_versions_note": "{count} versions conservées. Chaque acheteur conserve la version qu’il a payée : remplacer le fichier ne change jamais ce que quelqu’un a déjà acheté.",
         "file_immediate_note": "L’envoi d’un fichier prend effet immédiatement et n’attend pas l’enregistrement. Il renvoie votre produit en révision : il n’est donc plus en vente jusqu’à ce qu’un administrateur approuve la nouvelle version. Les personnes qui l’ont déjà acheté conservent la version qu’elles ont payée et ne sont pas affectées."
+      },
+      "document": {
+        "title": "Document (facultatif)",
+        "hint": "Joignez un fichier pour vos participants : diapositives, cahier d’exercices, liste de lectures. Un seul fichier — regroupez-les dans un zip si vous en avez plusieurs.",
+        "dropzone": "Déposez votre fichier ici ou",
+        "browse": "parcourir",
+        "limit": "Jusqu’à {limit} Mo",
+        "stored": "Joint",
+        "remove": "Retirer le document",
+        "availabilityTip": "Les participants pourront le télécharger dès le début de l’activité, pas avant.",
+        "lockedFreePlan": "Joindre un document à une activité en ligne gratuite nécessite un forfait payant. Changez de forfait ou vendez des billets pour cette activité.",
+        "errors": {
+          "tooLarge": "Ce fichier dépasse {limit} Mo. Choisissez-en un plus petit ou changez de forfait.",
+          "empty": "Ce fichier est vide.",
+          "uploadFailedAfterCreate": "Votre activité a été créée, mais le document n’a pas pu être téléversé. Ajoutez-le depuis la page de modification.",
+          "uploadFailed": "Le document n’a pas pu être téléversé. Veuillez réessayer.",
+          "removeFailed": "Le document n’a pas pu être retiré. Veuillez réessayer."
+        }
       }
     },
     "sale_price_preview": {

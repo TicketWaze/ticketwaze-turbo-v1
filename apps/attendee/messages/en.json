@@ -852,7 +852,8 @@
       "guest": "Continue as guest",
       "guest_description": "Quick checkout without creating an account.",
       "private_note": "This is a private activity. Please sign in with the email you were invited with to purchase tickets.",
-      "back": "Back"
+      "back": "Back",
+      "online_note": "Online activities require an account, so you can be added to the invite and join the call."
     },
     "raffleCard": {
       "tag": "Raffle",
@@ -957,6 +958,11 @@
     "saleCard": {
       "tag": "Product",
       "instant": "Instant download"
+    },
+    "document": {
+      "download": "Download document",
+      "lockedHint": "Available from {date}, when the event starts.",
+      "failed": "The document could not be downloaded. Please try again."
     }
   },
   "Checkout": {
@@ -1042,7 +1048,9 @@
       "create_account": "Create an account",
       "view_event": "Want to revisit the event?",
       "view_event_cta": "View event"
-    }
+    },
+    "online_login_required": "Online activities require an account. Please sign in or create one to buy a ticket.",
+    "google_mail_required": "This activity is hosted on Google Meet, so tickets can only be bought with a Gmail address. Please sign in with a Google account to purchase."
   },
   "Liked": {
     "title": "Like activities",

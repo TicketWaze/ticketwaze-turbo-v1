@@ -6,7 +6,18 @@ export type EventNameAvailability =
   | "idle"
   | "checking"
   | "available"
-  | "taken";
+  | "taken"
+  /**
+   * The check could not be performed — network error, 401, or the API
+   * answering `status: "failed"`.
+   *
+   * Used to be folded into "idle", which renders NOTHING and lets submit
+   * through. That made a broken check indistinguishable from one that had not
+   * run yet: the organiser saw no indicator, no warning, and only found out the
+   * name was taken when the create failed with a generic error three steps
+   * later. Whatever the underlying cause, it presented as "the check passes".
+   */
+  | "unknown";
 
 type CheckResult = {
   name: string;
@@ -69,6 +80,9 @@ export default function useEventNameAvailability(
   // otherwise a request for that value is still in flight.
   if (name.length < 3 || !accessToken) return "idle";
   if (result?.name !== name) return "checking";
-  if (result.available === null) return "idle";
+  // Reported, never silently swallowed. The create endpoint is still the
+  // authority and will refuse a duplicate either way; this is about the
+  // organiser knowing the name has not actually been cleared.
+  if (result.available === null) return "unknown";
   return result.available ? "available" : "taken";
 }

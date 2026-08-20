@@ -896,7 +896,8 @@
       "guest": "Continuer en tant qu’invité",
       "guest_description": "Paiement rapide sans créer de compte.",
       "private_note": "Ceci est une activité privée. Veuillez vous connecter avec l’adresse e-mail avec laquelle vous avez été invité pour acheter des billets.",
-      "back": "Retour"
+      "back": "Retour",
+      "online_note": "Les activités en ligne nécessitent un compte, afin de vous ajouter à l’invitation et de vous permettre de rejoindre l’appel."
     },
     "raffleCard": {
       "tag": "Tirage",
@@ -1001,6 +1002,11 @@
     "saleCard": {
       "tag": "Produit",
       "instant": "Téléchargement immédiat"
+    },
+    "document": {
+      "download": "Télécharger le document",
+      "lockedHint": "Disponible à partir du {date}, au début de l’activité.",
+      "failed": "Le document n’a pas pu être téléchargé. Veuillez réessayer."
     }
   },
   "Checkout": {
@@ -1086,7 +1092,9 @@
       "create_account": "Créer un compte",
       "view_event": "Vous souhaitez revoir l'événement ?",
       "view_event_cta": "Voir l'événement"
-    }
+    },
+    "online_login_required": "Les activités en ligne nécessitent un compte. Connectez-vous ou créez-en un pour acheter un billet.",
+    "google_mail_required": "Cette activité se déroule sur Google Meet : les billets ne peuvent être achetés qu’avec une adresse Gmail. Connectez-vous avec un compte Google pour acheter."
   },
   "Liked": {
     "title": "Activités aimées",

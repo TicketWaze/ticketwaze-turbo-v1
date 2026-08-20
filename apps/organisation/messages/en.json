@@ -1008,7 +1008,6 @@
         "online": {
           "back": "Back",
           "title": "Select Online Platform",
-          "comingSoon": "Coming soon.",
           "connectFailed": "We could not reach Zoom at the moment. Please check your internet connection and try again. If the error persists, reach out to support.",
           "googleMeet": {
             "title": "Google Meet",
@@ -1196,7 +1195,8 @@
             "required": "Activity should have a cover image",
             "max": "Max file size is 200ko.",
             "type": ".jpg, .jpeg, .png and .webp files are accepted."
-          }
+          },
+          "nameCheckFailed": "We could not confirm this name is free. You can continue, but if it is already taken the activity will be refused when you submit."
         },
         "dateAndTime": {
           "eventDate": "Event date is required",
@@ -1379,6 +1379,24 @@
         "file_section": "The file you are selling",
         "file_versions_note": "{count} versions kept. Each buyer keeps the version they paid for, so replacing the file never changes what someone has already bought.",
         "file_immediate_note": "Uploading a file takes effect straight away and does not wait for Save. It sends your product back for review, so it stops being on sale until an admin approves the new version. People who already bought it keep the version they paid for and are not affected."
+      },
+      "document": {
+        "title": "Document (optional)",
+        "hint": "Attach a file for your attendees: slides, a workbook, a reading list. One file — zip several together if you have more than one.",
+        "dropzone": "Drop your file here or",
+        "browse": "browse",
+        "limit": "Up to {limit} MB",
+        "stored": "Attached",
+        "remove": "Remove the document",
+        "availabilityTip": "Attendees can download this once the event starts, not before.",
+        "lockedFreePlan": "Attaching a document to a free online event requires a paid plan. Upgrade your plan, or sell tickets for this event.",
+        "errors": {
+          "tooLarge": "That file is larger than {limit} MB. Choose a smaller one, or upgrade your plan.",
+          "empty": "That file is empty.",
+          "uploadFailedAfterCreate": "Your event was created, but the document could not be uploaded. Add it from the event’s edit screen.",
+          "uploadFailed": "The document could not be uploaded. Please try again.",
+          "removeFailed": "The document could not be removed. Please try again."
+        }
       }
     },
     "price_preview": {
