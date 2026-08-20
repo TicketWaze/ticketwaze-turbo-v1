@@ -187,21 +187,40 @@ export default async function EventPage({
     );
   }
 
-  const favoriteRequest = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/favorite`,
-    {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${session?.user.accessToken}`,
-        "Content-Type": "application/json",
-      },
-      // Explicit, not merely Next's default: this response is per-user, and the
-      // public fetches on this page ARE cached. Anything that caches it would
-      // serve one visitor's favourite state to everyone.
-      cache: "no-store",
-    },
-  );
-  const favoriteResponse = await favoriteRequest.json();
+  /*
+   * Favourite state, for signed-in visitors only.
+   *
+   * GUARDED ON THE TOKEN, matching the raffle, sale and restaurant pages.
+   * Without the guard the header was built as `Bearer ${session?.user...}`,
+   * which stringifies to the literal "Bearer undefined" when nobody is signed
+   * in: a guaranteed 401 on every anonymous view of every event page, and one
+   * "Authentication Failed" alert in #logs for each.
+   *
+   * Nobody signed out has favourites, so there is nothing to ask for.
+   */
+  let isFavorite = false;
+  if (session?.user?.accessToken) {
+    try {
+      const favoriteRequest = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/favorite`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${session.user.accessToken}`,
+            "Content-Type": "application/json",
+          },
+          // Explicit, not merely Next's default: this response is per-user, and
+          // the public fetches on this page ARE cached. Anything that caches it
+          // would serve one visitor's favourite state to everyone.
+          cache: "no-store",
+        },
+      );
+      const favoriteResponse = await favoriteRequest.json();
+      isFavorite = favoriteResponse?.isFavorite === true;
+    } catch {
+      isFavorite = false;
+    }
+  }
 
   /**
    * Reservation state for a teaser. The count rides along on the cached public
@@ -230,9 +249,6 @@ export default async function EventPage({
     }
   }
 
-  if (favoriteResponse.status === "failed") {
-    redirect({ href: "/explore", locale });
-  }
 
   const isFollowing = organisation.followers.filter(
     (follower: any) => follower.userId === session?.user.userId,
@@ -269,7 +285,7 @@ export default async function EventPage({
             />
             <EventActions
               event={event}
-              isFavorite={favoriteResponse.isFavorite}
+              isFavorite={isFavorite}
               isPast={isEventPast(event)}
               salesEnded={isEventSalesEnded(event)}
               hasReserved={hasReserved}

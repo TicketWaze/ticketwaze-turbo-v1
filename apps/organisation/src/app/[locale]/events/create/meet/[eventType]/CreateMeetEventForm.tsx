@@ -11,7 +11,7 @@ import { CreateGoogleMeetEvent } from "@/actions/EventActions";
 import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import StepBasic from "./BasicDetails";
 import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
@@ -56,6 +56,16 @@ export default function CreateMeetEventForm({
   const locale = useLocale();
   const { data: session } = useSession();
   const organisation = session?.activeOrganisation;
+  /*
+   * `router.push`, NOT `redirect()`.
+   *
+   * `redirect()` works by THROWING a NEXT_REDIRECT control-flow error. That is
+   * fine in a Server Component, but this runs inside a react-hook-form submit
+   * handler, which re-throws whatever the handler throws — so the navigation
+   * happened AND an "Unhandled rejection: NEXT_REDIRECT" was shipped to #logs
+   * on every successful event creation. The edit forms already use the router.
+   */
+  const router = useRouter();
   const [isFree, setIsfree] = useState(false);
   const [isRefundable, setIsRefundable] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
@@ -195,7 +205,7 @@ export default function CreateMeetEventForm({
       } else {
         toast.success("success");
       }
-      redirect("/events");
+      router.push("/events");
     }
     if (result.error) toast.error(result.error);
   };

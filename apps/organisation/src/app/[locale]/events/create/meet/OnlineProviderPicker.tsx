@@ -29,6 +29,7 @@ import { useRouter } from "@/i18n/navigation";
 // Placeholder: both providers share the online cover for now.
 import OnlineCover from "@/assets/images/meet.jpg";
 import Zoom from "@/assets/images/zoom.webp";
+import { meetFlowUrl } from "@/lib/meetFlowLinks";
 
 export type ZoomStatus = {
   connected: boolean;
@@ -186,7 +187,10 @@ export default function OnlineProviderPicker({
     }
     closeRef.current?.click();
     router.push(
-      `/events/create/meet/categories?code=${code}&provider=google_meet`,
+      meetFlowUrl("/events/create/meet/categories", {
+        code,
+        provider: "google_meet",
+      }),
     );
   }
 
@@ -257,7 +261,10 @@ export default function OnlineProviderPicker({
         <li>
           {googleReady ? (
             <Link
-              href={`/events/create/meet/categories?code=${code}&provider=google_meet`}
+              href={meetFlowUrl("/events/create/meet/categories", {
+                code,
+                provider: "google_meet",
+              })}
               className="block relative cursor-pointer group"
             >
               <ProviderCard
