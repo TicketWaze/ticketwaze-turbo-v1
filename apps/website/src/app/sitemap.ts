@@ -9,6 +9,7 @@ const pages = [
   { path: "/business", changeFrequency: "monthly" as const, priority: 0.9 },
   { path: "/contact", changeFrequency: "monthly" as const, priority: 0.6 },
   { path: "/legals", changeFrequency: "yearly" as const, priority: 0.3 },
+  { path: "/media-kit", changeFrequency: "monthly" as const, priority: 0.5 },
   { path: "/waitlist", changeFrequency: "monthly" as const, priority: 0.7 },
 ];
 

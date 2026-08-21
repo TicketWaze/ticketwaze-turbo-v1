@@ -29,6 +29,10 @@
       "title": "Mentions légales et Politique de confidentialité",
       "description": "Consultez les Conditions d'utilisation et la Politique de confidentialité de Ticketwaze régissant l'utilisation de la plateforme."
     },
+    "mediaKit": {
+      "title": "Kit média",
+      "description": "Téléchargez les logos, couleurs, typographies et captures produit officiels de Ticketwaze, ainsi que les règles pour les utiliser."
+    },
     "waitlist": {
       "title": "Rejoindre la liste d'attente",
       "description": "Faites partie des premiers à découvrir Ticketwaze. Rejoignez la liste d'attente et obtenez un accès anticipé à la plateforme."
@@ -150,7 +154,8 @@
       "contact": "NOUS CONTACTER",
       "others": "AUTRES",
       "help": "Aide",
-      "legal": "Mentions légales"
+      "legal": "Mentions légales",
+      "mediaKit": "Kit média"
     }
   },
   "WaitlistPage": {
@@ -388,6 +393,52 @@
         "description": "Ce qui nous a convaincus, c’est la flexibilité. Nous ne sommes pas limités aux activités : nous vendons aussi des sessions, des pass et des expériences.",
         "name": "Bandana",
         "role": "Organisation expérimentée"
+      }
+    }
+  },
+  "MediaKitPage": {
+    "hero": {
+      "title": "La marque Ticketwaze, prête à l'emploi",
+      "description": "Tout ce qu'il faut pour parler de Ticketwaze, nous présenter comme partenaire ou annoncer que vous vendez vos billets avec nous. Logos, couleurs, typographies et captures produit, prêts à être publiés.",
+      "logos": "Logos",
+      "colors": "Couleurs",
+      "typography": "Typographies",
+      "screenshots": "Captures"
+    },
+    "details": {
+      "title1": "Ce que vous pouvez faire avec le",
+      "title2": "Kit média",
+      "description": "Le kit est libre d'utilisation pour la presse, les partenariats et les intégrations. Quelques règles suffisent à garder la marque reconnaissable partout où elle apparaît.",
+      "first": {
+        "title": "Parler de nous dans la presse",
+        "description": "Articles, newsletters, billets de blog et interviews. Utilisez le logo et les captures tels quels, sans autorisation préalable."
+      },
+      "second": {
+        "title": "Nous afficher comme partenaire",
+        "description": "Ajoutez la marque Ticketwaze à votre site ou à vos supports lorsque vous vendez des billets ou acceptez des paiements via la plateforme."
+      },
+      "third": {
+        "title": "Garder le logo intact",
+        "description": "Laissez de l'espace autour de la marque, respectez la taille minimale et ne la recolorez jamais, ne l'étirez pas, ne la faites pas pivoter et n'y ajoutez aucun effet."
+      },
+      "fourth": {
+        "title": "Ce qui demande notre accord",
+        "description": "N'utilisez pas le nom ni le logo dans votre propre produit, domaine ou logo, ni d'une manière qui laisse croire que nous vous recommandons. Écrivez-nous avant."
+      }
+    },
+    "kit": {
+      "title1": "Télécharger le",
+      "title2": "Kit média",
+      "description": "Une seule archive avec tous les éléments approuvés, dans les formats dont vous aurez besoin. Mise à jour à chaque évolution de la marque.",
+      "download": {
+        "title": "Kit média Ticketwaze",
+        "description": "Logos, couleurs, typographies, captures et présentation de l'entreprise, en un seul téléchargement.",
+        "cta": "Télécharger le kit",
+        "meta": "Archive ZIP, SVG et PNG inclus"
+      },
+      "help": {
+        "text": "Besoin d'un élément précis, d'une photo des fondateurs ou d'une interview ?",
+        "cta": "Contactez notre équipe"
       }
     }
   },
