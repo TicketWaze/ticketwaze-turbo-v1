@@ -33,12 +33,18 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
 import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { EventDay } from "./types";
+import useEventDocumentField from "@/hooks/useEventDocumentField";
+import {
+  uploadEventDocument,
+  deleteEventDocument,
+} from "@/lib/eventDocumentUpload";
 
 export default function EditInPersonEventForm({
   event,
   membershipTier,
   maxMeetingMinutes,
   googleSeatLimit,
+  paidTierName,
 }: {
   event: Event;
   membershipTier: MembershipTier;
@@ -55,6 +61,11 @@ export default function EditInPersonEventForm({
    * against.
    */
   googleSeatLimit: number | null;
+  /**
+   * The paid tier's name, or null on a free plan OR a trial. The
+   * trial-excluding signal the document rule needs.
+   */
+  paidTierName: string | null;
 }) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
@@ -65,6 +76,13 @@ export default function EditInPersonEventForm({
   const [isFree, setIsfree] = useState(
     (event.eventTicketTypes[0]?.ticketTypePrice ?? 0) < 1,
   );
+  // The optional handout. `event.eventDocument` is whatever is stored today;
+  // choosing a new file replaces it, and removing it deletes it outright.
+  const document = useEventDocumentField({
+    membershipTier,
+    paidTierName,
+    isFree,
+  });
   const [isRefundable, setIsRefundable] = useState(
     event.eventTicketTypes[0]?.isRefundable ?? false,
   );
@@ -210,6 +228,34 @@ export default function EditInPersonEventForm({
       event.eventId,
     );
     if (result.status === "success") {
+      /*
+       * The document is its own request, and deliberately NOT part of the edit
+       * review flow above: it is not one of the details a buyer agreed to, so
+       * swapping a handout does not need an admin to approve it.
+       */
+      if (document.removeExisting && !document.file) {
+        const removed = await deleteEventDocument({
+          organisationId: organisation?.organisationId ?? "",
+          eventId: event.eventId,
+          accessToken: session?.user.accessToken ?? "",
+          locale,
+        });
+        if (removed.status === "failed") {
+          toast.error(t("document.errors.removeFailed"));
+        }
+      } else if (document.file) {
+        const upload = await uploadEventDocument({
+          organisationId: organisation?.organisationId ?? "",
+          eventId: event.eventId,
+          accessToken: session?.user.accessToken ?? "",
+          file: document.file,
+          locale,
+        });
+        if (upload.status === "failed") {
+          toast.error(t("document.errors.uploadFailed"));
+        }
+      }
+
       // The event has sales and this edit could change what those buyers think
       // they bought, so it is waiting on an admin rather than already live.
       // Saying so here is the difference between "nothing happened" and "your
@@ -499,6 +545,7 @@ export default function EditInPersonEventForm({
               isPrivate={isPrivate}
               setIsPrivate={setIsPrivate}
               nameStatus={nameStatus}
+              document={document}
             />
           </motion.div>
         )}

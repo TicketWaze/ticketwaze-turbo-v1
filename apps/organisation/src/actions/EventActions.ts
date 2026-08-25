@@ -33,6 +33,9 @@ export async function CreateGoogleMeetEvent(
       revalidatePath("/events");
       return {
         status: "success",
+        // Needed to upload the optional document, which happens in a second
+        // call once the event row exists.
+        eventId: response.eventId as string | undefined,
       };
     } else {
       throw new Error(response.message);

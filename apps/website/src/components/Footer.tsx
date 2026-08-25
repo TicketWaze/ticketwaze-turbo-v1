@@ -202,6 +202,9 @@ function Footer() {
                 <FooterLink href={"/contact"}>{t("help")}</FooterLink>
                 <FooterLink href={"/legals"}>{t("legal")}</FooterLink>
               </div>
+              <div className={"flex gap-4"}>
+                <FooterLink href={"/media-kit"}>{t("mediaKit")}</FooterLink>
+              </div>
             </div>
           </div>
           <div className={"flex flex-1 flex-col gap-[15px]"}>

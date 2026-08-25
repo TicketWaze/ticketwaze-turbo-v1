@@ -5,6 +5,7 @@ import Hero from "./components/Hero";
 import Footer from "@/components/Footer";
 import Details1 from "./components/Details1";
 import Pricing from "./components/Pricing";
+import Enterprise from "./components/Enterprise";
 import { JsonLd, buildBreadcrumbs } from "@/lib/structuredData";
 
 const siteUrl = "https://ticketwaze.com";
@@ -83,6 +84,14 @@ export default async function BusinessPage({
         description:
           "AI-powered analytics, up to 15 team members, unlimited free tickets",
       },
+      {
+        "@type": "Offer",
+        name: "Enterprise",
+        priceCurrency: "USD",
+        description:
+          "Custom pricing: custom integrations and API access, on-site support and a dedicated account manager",
+        availability: "https://schema.org/InStock",
+      },
     ],
   };
   const breadcrumbs = buildBreadcrumbs(
@@ -100,6 +109,7 @@ export default async function BusinessPage({
       <Hero />
       <Details1 />
       <Pricing />
+      <Enterprise />
       <Footer />
     </>
   );

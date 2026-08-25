@@ -57,9 +57,16 @@ function TermsNote() {
 export default function BuyTicketAuthDialog({
   checkoutUrl,
   isPrivate = false,
+  isOnline = false,
 }: {
   checkoutUrl: string;
   isPrivate?: boolean;
+  /**
+   * An online activity (`eventCategory === 'meet'`, either provider). Guest
+   * checkout is closed for these: attending means a calendar invite and a call
+   * to join, which need an account to attach to. The API refuses it too.
+   */
+  isOnline?: boolean;
 }) {
   const [view, setView] = useState<View>("choice");
   const [isLoading, setIsLoading] = useState(false);
@@ -160,9 +167,10 @@ export default function BuyTicketAuthDialog({
                 />
               </button>
 
-              {/* Guest checkout is not available for private activities — buyers must
-                  sign in with the invited account email. */}
-              {!isPrivate && (
+              {/* Guest checkout is closed for private activities (buyers must sign
+                  in with the invited account email) and for online ones (a calendar
+                  invite and a call need an account to attach to). */}
+              {!isPrivate && !isOnline && (
                 <button
                   onClick={() => router.push(checkoutUrl)}
                   className="flex items-center justify-between gap-4 p-6 rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left group"
@@ -193,6 +201,14 @@ export default function BuyTicketAuthDialog({
             {isPrivate && (
               <p className="text-[1.4rem] leading-7 text-neutral-600 text-center">
                 {t("private_note")}
+              </p>
+            )}
+
+            {/* Said only when it is the reason: a private online activity is
+                already explained by the note above. */}
+            {isOnline && !isPrivate && (
+              <p className="text-[1.4rem] leading-7 text-neutral-600 text-center">
+                {t("online_note")}
               </p>
             )}
 

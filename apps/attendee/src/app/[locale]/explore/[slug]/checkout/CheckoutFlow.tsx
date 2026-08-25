@@ -88,6 +88,9 @@ export default function CheckoutFlow({
   // `eventType`, which only ever holds public/private, so every check below was
   // dead and online events were run through the full in-person checkout.
   const isMeet = event.eventCategory === "meet";
+  // Mirrors the API's `isGoogleMeetEvent`: online, and not hosted by Zoom.
+  // Online events created before Zoom existed carry no provider and are Google.
+  const isGoogleMeet = isMeet && event.onlineProvider !== "zoom";
   /**
    * A Google Meet seat is one seat, for the account that will receive the
    * calendar invite — so the recipient step is skipped for online activities as
@@ -120,6 +123,34 @@ export default function CheckoutFlow({
       router.push(`/explore/${slugify(event.eventName, event.eventId)}`);
     }
   }, [isGuest, event, router, t]);
+
+  // Online activities cannot be purchased as a guest at all — a calendar invite
+  // and a call to join need an account to attach to. (The API enforces this too.)
+  useEffect(() => {
+    if (isGuest && isMeet) {
+      toast.error(t("online_login_required"));
+      router.push(`/explore/${slugify(event.eventName, event.eventId)}`);
+    }
+  }, [isGuest, isMeet, event, router, t]);
+
+  /*
+   * A Google Meet event needs a Google identity on the invite, so the buyer
+   * must hold a Gmail address.
+   *
+   * Said here rather than at the pay button: being refused after choosing
+   * tickets and filling in attendee details wastes work the buyer cannot
+   * salvage. Sent back to the event page because the fix is signing in with a
+   * different account, which is where that happens. The API refuses it too.
+   */
+  useEffect(() => {
+    if (isGuest || !isGoogleMeet) return;
+    const email = user?.email ?? "";
+    if (!email) return;
+    const domain = email.trim().toLowerCase().split("@").pop();
+    if (domain === "gmail.com" || domain === "googlemail.com") return;
+    toast.error(t("google_mail_required"));
+    router.push(`/explore/${slugify(event.eventName, event.eventId)}`);
+  }, [isGuest, isGoogleMeet, user, event, router, t]);
 
   const { control, register, watch, setValue, getValues } = useForm<{
     tickets: TicketFormData[];

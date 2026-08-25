@@ -9,6 +9,8 @@ import {
   Warning2,
 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 import { QRCodeCanvas } from "qrcode.react";
 import { domToPng } from "modern-screenshot";
 import FormatDate from "@/lib/FormatDate";
@@ -48,6 +50,66 @@ export default function TicketViewer({
       </div>
     );
   }
+
+  const locale = useLocale();
+  const { data: session } = useSession();
+  const [isFetchingDocument, setIsFetchingDocument] = useState(false);
+
+  /*
+   * The attached document, if this event has one.
+   *
+   * `documentAvailableAt` is resolved by the API from the event's days and its
+   * timezone, and the download endpoint enforces the identical comparison. It
+   * is read rather than recomputed so the button and the server cannot disagree
+   * — a button that looks live and then refuses is worse than one that waits.
+   */
+  const isOnline = event.eventCategory === "meet";
+  const hasDocument = Boolean(event.eventDocument);
+  const availableAt = event.documentAvailableAt
+    ? new Date(event.documentAvailableAt)
+    : null;
+  const documentUnlocked = availableAt !== null && availableAt <= new Date();
+  const documentReady = hasDocument && documentUnlocked;
+  const availableAtLabel = availableAt
+    ? availableAt.toLocaleString(locale, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      })
+    : "";
+
+  /**
+   * Swap a short-lived presigned URL for the file.
+   *
+   * The URL is minted per click and expires in minutes, which is what keeps a
+   * copied link from becoming a public download. Navigating to it is enough:
+   * the API signs it with a Content-Disposition attachment header, so the
+   * browser saves it under the organiser's filename rather than rendering it.
+   */
+  const downloadDocument = async () => {
+    if (!documentReady || isFetchingDocument) return;
+    setIsFetchingDocument(true);
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/document/download`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.user.accessToken}`,
+            "Accept-Language": locale,
+          },
+        },
+      );
+      const response = await request.json();
+      if (response.status !== "success" || !response.data?.downloadUrl) {
+        toast.error(response.message ?? t("document.failed"));
+        return;
+      }
+      window.location.href = response.data.downloadUrl;
+    } catch {
+      toast.error(t("document.failed"));
+    } finally {
+      setIsFetchingDocument(false);
+    }
+  };
 
   const ticketRef = useRef<HTMLDivElement>(null);
 
@@ -98,7 +160,6 @@ export default function TicketViewer({
       alert("Failed to download ticket. Please try again.");
     }
   };
-  const locale = useLocale();
 
   return (
     <>
@@ -232,9 +293,22 @@ export default function TicketViewer({
             <ArrowRight2 variant="Bulk" size={20} color="#0D0D0D" />
           </button>
         </div>
+        {/*
+          One button, two jobs, decided by what kind of event this is.
+
+          An online event has no scannable ticket image to save — which is why
+          this button was disabled outright for `meet`. Where the organiser
+          attached a document it becomes that download instead, so the button
+          earns its place rather than sitting greyed out.
+        */}
         <button
-          onClick={downloadImage}
-          disabled={event.eventCategory === "meet"}
+          onClick={isOnline ? downloadDocument : downloadImage}
+          disabled={isOnline ? !documentReady || isFetchingDocument : false}
+          title={
+            isOnline && hasDocument && !documentUnlocked
+              ? t("document.lockedHint", { date: availableAtLabel })
+              : undefined
+          }
           className="border-2 cursor-pointer border-primary-500 disabled:border-neutral-700 px-12 py-[7.5px] bg-[#FFEFE2] disabled:bg-neutral-200 rounded-[100px] flex gap-4 items-center justify-center disabled:cursor-not-allowed text-primary-500 disabled:text-neutral-700"
         >
           <DocumentDownload
@@ -243,7 +317,9 @@ export default function TicketViewer({
             color="#E45B00"
             className="hidden lg:block"
           />
-          <span className="text-[1.5rem] ">{t("download")}</span>
+          <span className="text-[1.5rem] ">
+            {isOnline ? t("document.download") : t("download")}
+          </span>
         </button>
       </div>
     </>

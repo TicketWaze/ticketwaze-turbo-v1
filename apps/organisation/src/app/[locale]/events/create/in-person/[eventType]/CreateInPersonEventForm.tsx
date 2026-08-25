@@ -14,7 +14,7 @@ import {
 import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import StepBasic from "./BasicDetails";
 import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
@@ -44,6 +44,13 @@ export default function CreateInPersonEventForm({
   const locale = useLocale();
   const { data: session } = useSession();
   const organisation = session?.activeOrganisation;
+  /*
+   * `router.push`, NOT `redirect()` — see the online create form for the full
+   * reason. Short version: `redirect()` navigates by THROWING, and
+   * react-hook-form re-throws it, so every successful creation also reported an
+   * "Unhandled rejection: NEXT_REDIRECT".
+   */
+  const router = useRouter();
   const isPublishing = Boolean(teaser);
   const [isFree, setIsfree] = useState(false);
   const [isRefundable, setIsRefundable] = useState(false);
@@ -185,7 +192,7 @@ export default function CreateInPersonEventForm({
         );
     if (result.status === "success") {
       toast.success(teaser ? t("publish_success") : "success");
-      redirect("/events");
+      router.push("/events");
     }
     if (result.error) toast.error(result.error);
   };

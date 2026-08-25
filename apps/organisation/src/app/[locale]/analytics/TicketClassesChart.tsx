@@ -121,7 +121,7 @@ export default function TicketClassesChart({
             <span className="text-[14px] font-sans justify-start text-gray-800 text-base font-medium leading-tight lg:text-[15px]">
               {t("tickets.classes")}
             </span>
-            <div className="flex justify-between items-start lg:grid lg:grid-cols-2 gap-x-20 lg:gap-y-14">
+            <div className="grid grid-cols-2 items-start gap-x-8 gap-y-8 lg:gap-x-20 lg:gap-y-14">
               {tickets.map((type, index) => (
                 <div
                   key={type.name}

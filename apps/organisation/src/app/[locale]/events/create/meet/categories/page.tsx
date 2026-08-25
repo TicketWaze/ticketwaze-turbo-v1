@@ -18,6 +18,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { meetFlowUrl } from "@/lib/meetFlowLinks";
 
 export default async function InPersonEventTypePage({
   searchParams,
@@ -159,7 +160,7 @@ function EventTypeCardLink({
 }) {
   return (
     <Link
-      href={`/events/create/meet/${href}?code=${code}&provider=${provider}`}
+      href={meetFlowUrl(`/events/create/meet/${href}`, { code, provider })}
       className={
         "py-14 px-6 rounded-[10px] bg-neutral-100 hover:bg-primary-50 flex justify-between transition-all duration-500 cursor-pointer group"
       }

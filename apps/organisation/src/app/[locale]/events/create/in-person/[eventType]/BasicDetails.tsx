@@ -196,7 +196,9 @@ export default function BasicDetails({
           className={nameLocked ? "opacity-60 cursor-not-allowed" : undefined}
           error={
             errors.eventName?.message ??
-            (!nameLocked && nameStatus === "taken"
+            (!nameLocked && nameStatus === "unknown"
+              ? t("errors.basicDetails.nameCheckFailed")
+              : !nameLocked && nameStatus === "taken"
               ? t("errors.basicDetails.nameTaken")
               : undefined)
           }
@@ -207,6 +209,10 @@ export default function BasicDetails({
               <TickCircle size="20" color="#349C2E" variant="Bulk" />
             ) : nameStatus === "taken" ? (
               <CloseCircle size="20" color="#DE0028" variant="Bulk" />
+            ) : nameStatus === "unknown" ? (
+              // Not a tick and not a cross: the name was never actually
+              // checked, and pretending either way is what hid this bug.
+              <Warning2 size="20" color="#E45B00" variant="Bulk" />
             ) : null
           }
         >

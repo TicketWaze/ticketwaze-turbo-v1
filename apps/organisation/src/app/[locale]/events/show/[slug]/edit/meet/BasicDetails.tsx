@@ -33,6 +33,8 @@ import { Warning2 } from "iconsax-reactjs";
 import { Event } from "@ticketwaze/typescript-config";
 import RichTextEditor from "@/components/shared/RichTextEditor";
 import ToggleIcon from "@/components/shared/ToggleIcon";
+import EventDocumentField from "@/components/shared/EventDocumentField";
+import type useEventDocumentField from "@/hooks/useEventDocumentField";
 
 type Props = {
   register: UseFormRegister<EditMeetFormValues>;
@@ -45,6 +47,8 @@ type Props = {
   event: Event;
   isPrivate: boolean;
   nameStatus: EventNameAvailability;
+  /** The optional handout's state and rules. See `useEventDocumentField`. */
+  document: ReturnType<typeof useEventDocumentField>;
   setIsPrivate: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -60,6 +64,7 @@ export default function BasicDetails({
   isPrivate,
   setIsPrivate,
   nameStatus,
+  document,
 }: Props) {
   const t = useTranslations("Events.create_event");
   const availableCountries = countries.map((country) => country.name);
@@ -170,7 +175,11 @@ export default function BasicDetails({
             errors.eventName?.message ??
             (nameStatus === "taken"
               ? t("errors.basicDetails.nameTaken")
-              : undefined)
+              : nameStatus === "unknown"
+                ? // The name was never actually checked. Said out loud rather
+                  // than left blank, which reads as "cleared".
+                  t("errors.basicDetails.nameCheckFailed")
+                : undefined)
           }
         >
           {t("event_name")}
@@ -381,6 +390,22 @@ export default function BasicDetails({
           </div>
         </div>
       </div>
+
+      {/* Optional handout, delivered to ticket holders once the event starts. */}
+      <EventDocumentField
+        file={document.file}
+        onChange={document.choose}
+        existingFilename={
+          document.removeExisting
+            ? null
+            : (event.eventDocument?.originalFilename ?? null)
+        }
+        existingByteSize={event.eventDocument?.byteSize ?? null}
+        onRemoveExisting={document.markExistingRemoved}
+        maxFileMb={document.maxFileMb}
+        locked={document.locked}
+        error={document.error}
+      />
 
       <div></div>
       <div></div>

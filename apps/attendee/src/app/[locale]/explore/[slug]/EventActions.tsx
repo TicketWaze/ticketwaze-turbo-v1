@@ -188,6 +188,7 @@ export default function EventActions({
           <BuyTicketAuthDialog
             checkoutUrl={`/explore/${slugify(event.eventName, event.eventId)}/checkout`}
             isPrivate={event.isPrivate}
+            isOnline={event.eventCategory === "meet"}
           />
         </Dialog>
       )}

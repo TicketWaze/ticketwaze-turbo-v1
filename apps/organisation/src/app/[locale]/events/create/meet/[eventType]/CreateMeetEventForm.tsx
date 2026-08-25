@@ -11,7 +11,7 @@ import { CreateGoogleMeetEvent } from "@/actions/EventActions";
 import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import StepBasic from "./BasicDetails";
 import StepDateTime from "./EventDays";
 import StepTicket from "./TicketClasses";
@@ -21,6 +21,8 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import BackButton from "@/components/shared/BackButton";
 import { EventDay } from "./types";
 import { MembershipTier } from "@ticketwaze/typescript-config";
+import { uploadEventDocument } from "@/lib/eventDocumentUpload";
+import useEventDocumentField from "@/hooks/useEventDocumentField";
 
 export default function CreateMeetEventForm({
   eventType,
@@ -29,6 +31,7 @@ export default function CreateMeetEventForm({
   seatLimit,
   maxMeetingMinutes,
   membershipTier,
+  paidTierName,
 }: {
   eventType: string;
   code: string | undefined;
@@ -43,14 +46,36 @@ export default function CreateMeetEventForm({
   /** Longest a call may run on that plan; null when unknown. */
   maxMeetingMinutes: number | null;
   membershipTier: MembershipTier;
+  /**
+   * The paid tier's name, or null on a free plan OR a trial. The trial-excluding
+   * signal, which is what the document rule needs — see `useEventDocumentField`.
+   */
+  paidTierName: string | null;
 }) {
   const t = useTranslations("Events.create_event");
   const locale = useLocale();
   const { data: session } = useSession();
   const organisation = session?.activeOrganisation;
+  /*
+   * `router.push`, NOT `redirect()`.
+   *
+   * `redirect()` works by THROWING a NEXT_REDIRECT control-flow error. That is
+   * fine in a Server Component, but this runs inside a react-hook-form submit
+   * handler, which re-throws whatever the handler throws — so the navigation
+   * happened AND an "Unhandled rejection: NEXT_REDIRECT" was shipped to #logs
+   * on every successful event creation. The edit forms already use the router.
+   */
+  const router = useRouter();
   const [isFree, setIsfree] = useState(false);
   const [isRefundable, setIsRefundable] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
+  // The optional handout. Held in state and uploaded after the event is saved,
+  // because its S3 key is scoped to an event id that does not exist yet.
+  const document = useEventDocumentField({
+    membershipTier,
+    paidTierName,
+    isFree,
+  });
 
   // create schema using factory (depends on isFree)
   const FormDataSchema = makeMeetPersonSchema(
@@ -159,8 +184,28 @@ export default function CreateMeetEventForm({
       decodeURIComponent(code ?? ""),
     );
     if (result.status === "success") {
-      toast.success("success");
-      redirect("/events");
+      /*
+       * The document goes up AFTER the event, in its own request, because its
+       * S3 key is scoped to the event id that only exists now.
+       *
+       * A failure here does NOT fail the event — it is already created and
+       * selling. Saying so plainly and sending the organiser on beats rolling
+       * back a published event over a handout they can re-attach from the edit
+       * screen in ten seconds.
+       */
+      const upload = await uploadEventDocument({
+        organisationId: organisation?.organisationId ?? "",
+        eventId: result.eventId ?? "",
+        accessToken: session?.user.accessToken ?? "",
+        file: document.file,
+        locale,
+      });
+      if (upload.status === "failed") {
+        toast.error(t("document.errors.uploadFailedAfterCreate"));
+      } else {
+        toast.success("success");
+      }
+      router.push("/events");
     }
     if (result.error) toast.error(result.error);
   };
@@ -371,6 +416,7 @@ export default function CreateMeetEventForm({
               isPrivate={isPrivate}
               setIsPrivate={setIsPrivate}
               nameStatus={nameStatus}
+              document={document}
             />
           </motion.div>
         )}
