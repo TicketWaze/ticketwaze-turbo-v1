@@ -25,6 +25,20 @@ import {
 } from "@/lib/pricing";
 
 /**
+ * Is this tier given away?
+ *
+ * The price is the whole answer — there is no `isFree` column on a ticket type.
+ * `event.isFree` is a different question: it means EVERY tier is free, which is
+ * what routes the buyer to the free-claim endpoint. On an activity that mixes
+ * the two, `event.isFree` is false while some tiers here are still free.
+ */
+export function isFreeTicketType(
+  ticketType: Pick<EventTicketType, "ticketTypePrice" | "usdPrice">,
+): boolean {
+  return Number(ticketType.ticketTypePrice) <= 0 && Number(ticketType.usdPrice) <= 0;
+}
+
+/**
  * Payment-processor transaction fee rate for a given payment type.
  * Wallet has no processor fee.
  */

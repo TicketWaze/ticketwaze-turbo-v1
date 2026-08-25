@@ -1028,6 +1028,8 @@
       "discount_code": "Code de réduction",
       "apply": "Appliquer",
       "error": "Sélectionnez au moins un billet",
+      "mixed_error": "Les billets gratuits et payants doivent être pris séparément. Choisissez l'un ou l'autre, puis revenez pour le reste.",
+      "free_login_required": "Connectez-vous pour réclamer votre billet gratuit.",
       "ticketWarning": "Les billets ne sont pas remboursables. Toutes les ventes sont définitives"
     },
     "recipient": {

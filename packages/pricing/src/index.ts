@@ -30,12 +30,18 @@ export function round2(n: number): number {
 /**
  * Per-ticket platform fee for a single ticket, using the live exchange rate.
  * Edge case: HTG event with price <= 500 HTG → 100 HTG flat fee.
+ *
+ * A FREE ticket type (price 0) carries no fee in either currency. Without the
+ * first line a 0-price ticket falls into the HTG low-price band and is quoted
+ * a 100 HTG flat fee, so the tier labelled "Free" would cost money. Mirrors
+ * `perTicketFeeHTG` / `perTicketFeeUSD` in the API's pricing utils.
  */
 export function getPerTicketFee(
   currency: string,
   ticketPrice: number,
   htgExchangeRate: number,
 ): number {
+  if (ticketPrice <= 0) return 0;
   if (currency === "HTG") {
     return ticketPrice <= HTG_LOW_PRICE_THRESHOLD
       ? PER_TICKET_FEE_HTG_LOW
@@ -92,7 +98,9 @@ export function calculateStripeTotalHTG(
  *   (price + 3% service + $1.49) × 1.03
  */
 export function calculateStripeTotalUSD(usdPrice: number): number {
-  const subtotal = usdPrice * (1 + SERVICE_FEE_RATE) + PER_TICKET_FEE_USD;
+  const subtotal =
+    usdPrice * (1 + SERVICE_FEE_RATE) +
+    getPerTicketFee("USD", usdPrice, FALLBACK_HTG_EXCHANGE_RATE);
   return round2(subtotal * (1 + STRIPE_TX_FEE_RATE));
 }
 

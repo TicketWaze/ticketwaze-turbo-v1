@@ -56,9 +56,9 @@ export default function CreateInPersonEventForm({
   const [isRefundable, setIsRefundable] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
 
-  // create schema using factory (depends on isFree)
+  // The schema no longer depends on `isFree`: whether a price is required is a
+  // per-tier question now, answered by each tier's own flag.
   const FormDataSchema = makeCreateInPersonSchema(
-    isFree,
     (k, values) => t(k, values),
     membershipTier.freeTickets,
     // The teaser's cover image already exists server-side.
@@ -129,6 +129,7 @@ export default function CreateInPersonEventForm({
             : t("general.description"),
           ticketTypePrice: "",
           ticketTypeQuantity: "",
+          isFree: false,
         },
       ],
       eventCurrency: "HTG",
@@ -151,21 +152,37 @@ export default function CreateInPersonEventForm({
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
     formData.append("eventType", eventType);
-    formData.append("isFree", JSON.stringify(data.isFree));
+    // The activity is free only when EVERY tier is. The API derives this from
+    // the prices anyway and ignores what we send, but sending the truth keeps
+    // the two from telling different stories in a request log.
+    const allTiersFree =
+      data.ticketTypes.length > 0 &&
+      data.ticketTypes.every((ticket) => ticket.isFree);
+    formData.append("isFree", JSON.stringify(allTiersFree));
     formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("isRefundable", JSON.stringify(isRefundable));
     formData.append("isPrivate", JSON.stringify(isPrivate));
     if (data.ticketSalesEndAt) {
       formData.append("ticketSalesEndAt", data.ticketSalesEndAt);
     }
-    if (isFree) {
+    /**
+     * A free plan's activity-wide switch still collapses to the one locked
+     * "General" tier it always did — those inputs are read-only, so the values
+     * have to be supplied here rather than read back off the form.
+     *
+     * Everything else goes through as typed, with the form-only `isFree` flag
+     * turned into the price 0 that the API actually stores. The flag itself is
+     * dropped: the price is the source of truth server-side, and sending both
+     * invites them to disagree.
+     */
+    if (!membershipTier.customTicketTypes && isFree) {
       formData.append(
         "ticketTypes",
         JSON.stringify([
           {
             ticketTypeName: "General",
             ticketTypeDescription: t("general_default"),
-            ticketTypePrice: "",
+            ticketTypePrice: "0",
             ticketTypeQuantity:
               data.ticketTypes[0]?.ticketTypeQuantity ||
               String(membershipTier.freeTickets),
@@ -173,7 +190,15 @@ export default function CreateInPersonEventForm({
         ]),
       );
     } else {
-      formData.append("ticketTypes", JSON.stringify(data.ticketTypes));
+      formData.append(
+        "ticketTypes",
+        JSON.stringify(
+          data.ticketTypes.map(({ isFree: tierIsFree, ...ticket }) => ({
+            ...ticket,
+            ticketTypePrice: tierIsFree ? "0" : ticket.ticketTypePrice,
+          })),
+        ),
+      );
     }
 
     const result = teaser

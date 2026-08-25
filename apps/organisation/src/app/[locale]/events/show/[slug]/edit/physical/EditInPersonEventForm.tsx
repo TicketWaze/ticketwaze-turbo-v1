@@ -66,9 +66,8 @@ export default function EditInPersonEventForm({
         .toFormat("yyyy-MM-dd'T'HH:mm")
     : "";
 
-  // create schema using factory (depends on isFree)
+  // Whether a price is required is a per-tier question now — see the schema.
   const FormDataSchema = makeEditInPersonSchema(
-    isFree,
     (k, values) => t(k, values),
     membershipTier.freeTickets,
   );
@@ -128,16 +127,24 @@ export default function EditInPersonEventForm({
           timezone: eventDay.timezone,
         };
       }),
-      ticketTypes: event.eventTicketTypes.map((ticketType) => ({
-        eventTicketTypeId: ticketType.eventTicketTypeId,
-        ticketTypeDescription: ticketType.ticketTypeDescription,
-        ticketTypeName: ticketType.ticketTypeName,
-        ticketTypePrice:
-          event.currency === "USD"
-            ? String(ticketType.usdPrice)
-            : String(ticketType.ticketTypePrice),
-        ticketTypeQuantity: String(ticketType.ticketTypeQuantity),
-      })),
+      ticketTypes: event.eventTicketTypes.map((ticketType) => {
+        // Free-ness is read back off the stored price — there is no column for
+        // it. A free tier's price field is then rendered read-only rather than
+        // showing an editable "0" the organiser could change.
+        const tierIsFree = Number(ticketType.ticketTypePrice) <= 0;
+        return {
+          eventTicketTypeId: ticketType.eventTicketTypeId,
+          ticketTypeDescription: ticketType.ticketTypeDescription,
+          ticketTypeName: ticketType.ticketTypeName,
+          ticketTypePrice: tierIsFree
+            ? ""
+            : event.currency === "USD"
+              ? String(ticketType.usdPrice)
+              : String(ticketType.ticketTypePrice),
+          ticketTypeQuantity: String(ticketType.ticketTypeQuantity),
+          isFree: tierIsFree,
+        };
+      }),
       eventCurrency: event.currency,
       isFree: event.isFree,
       ticketSalesEndAt: ticketSalesEndAtDefault,
@@ -163,7 +170,17 @@ export default function EditInPersonEventForm({
     formData.append("isPrivate", JSON.stringify(isPrivate));
     // Always sent (even empty) so clearing the field removes the cutoff.
     formData.append("ticketSalesEndAt", data.ticketSalesEndAt ?? "");
-    if (isFree) {
+    /**
+     * A free plan's activity keeps collapsing to its one locked "General" tier
+     * — those inputs are read-only, so the values are supplied here rather than
+     * read back off the form.
+     *
+     * Everything else goes as typed, with the form-only `isFree` flag turned
+     * into the price 0 the API stores. The flag is dropped on the way out: the
+     * price is the source of truth server-side, and sending both invites them
+     * to disagree.
+     */
+    if (!membershipTier.customTicketTypes && isFree) {
       formData.append(
         "ticketTypes",
         JSON.stringify([
@@ -171,7 +188,7 @@ export default function EditInPersonEventForm({
             eventTicketTypeId: event.eventTicketTypes[0]?.eventTicketTypeId,
             ticketTypeName: "General",
             ticketTypeDescription: t("general_default"),
-            ticketTypePrice: "",
+            ticketTypePrice: "0",
             ticketTypeQuantity:
               data.ticketTypes[0]?.ticketTypeQuantity ||
               String(membershipTier.freeTickets),
@@ -179,7 +196,15 @@ export default function EditInPersonEventForm({
         ]),
       );
     } else {
-      formData.append("ticketTypes", JSON.stringify(data.ticketTypes));
+      formData.append(
+        "ticketTypes",
+        JSON.stringify(
+          data.ticketTypes.map(({ isFree: tierIsFree, ...ticket }) => ({
+            ...ticket,
+            ticketTypePrice: tierIsFree ? "0" : ticket.ticketTypePrice,
+          })),
+        ),
+      );
     }
 
     const result = await UpdateInPersonEvent(

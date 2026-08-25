@@ -984,6 +984,8 @@
       "discount_code": "Discount Code",
       "apply": "Apply",
       "error": "Select at least one ticket",
+      "mixed_error": "Free and paid tickets have to be taken separately. Please choose one or the other, then come back for the rest.",
+      "free_login_required": "Please sign in to claim your free ticket.",
       "ticketWarning": "Tickets are non-refundable. All sales are final."
     },
     "recipient": {
