@@ -4,6 +4,15 @@ export type TicketType = {
   ticketTypeDescription: string;
   ticketTypePrice: string;
   ticketTypeQuantity: string;
+  /**
+   * Is this tier given away?
+   *
+   * Form-only, and READ-ONLY on this form: whether a tier is free is settled
+   * when the activity is created and the API refuses a flip afterwards. It is
+   * derived from the stored price here purely so a free tier renders the way it
+   * does on the create form instead of showing an editable price of 0.
+   */
+  isFree: boolean;
 };
 export type EventDay = {
   dayNumber: number;

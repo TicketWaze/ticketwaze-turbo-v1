@@ -63,5 +63,15 @@ export function getActivityCardPrice(
   // charged on a free checkout.
   if (totals.length === 0) return { kind: "free" };
 
+  /**
+   * An activity that MIXES a free tier with paid ones lands here, and quotes
+   * the cheapest PAID tier rather than "Free".
+   *
+   * Deliberate, and the same direction of error as the fee waiver above: the
+   * card is rendered with a "from" prefix, so quoting the cheapest paid tier
+   * understates how cheaply someone can get in — they discover a free option on
+   * the activity page — whereas "Free" would promise a price the food ticket
+   * does not honour. Under-promising beats over-promising on a public listing.
+   */
   return { kind: "priced", amount: Math.min(...totals), currency };
 }

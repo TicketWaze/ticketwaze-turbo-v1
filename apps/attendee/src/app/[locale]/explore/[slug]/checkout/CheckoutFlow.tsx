@@ -32,7 +32,7 @@ import {
   SelectedTicket,
   TicketFormData,
 } from "./checkout.types";
-import { calculateFeeBreakdown } from "./checkoutUtils";
+import { calculateFeeBreakdown, isFreeTicketType } from "./checkoutUtils";
 import TicketSummaryCard from "./TicketSummaryCard";
 import TicketSelectionStep from "./steps/TicketSelectionStep";
 import RecipientStep from "./steps/RecipientStep";
@@ -82,7 +82,17 @@ export default function CheckoutFlow({
     );
   }
 
-  const isFree = event.isFree;
+  /**
+   * EVERY tier on this activity is free.
+   *
+   * This is the activity-wide question, and it is the one that decides the
+   * opening state: an all-free activity preselects its single ticket, exactly
+   * as it always has. What it no longer decides is which checkout the buyer
+   * gets — on a Pro activity that mixes free and paid tiers this is false while
+   * the buyer may still be claiming a free ticket. `selectionIsFree` below is
+   * what answers that, and it depends on what they picked.
+   */
+  const eventIsAllFree = event.isFree;
   const isGuest = !user;
   // Online activities are `eventCategory === "meet"`. This used to test
   // `eventType`, which only ever holds public/private, so every check below was
@@ -91,14 +101,6 @@ export default function CheckoutFlow({
   // Mirrors the API's `isGoogleMeetEvent`: online, and not hosted by Zoom.
   // Online events created before Zoom existed carry no provider and are Google.
   const isGoogleMeet = isMeet && event.onlineProvider !== "zoom";
-  /**
-   * A Google Meet seat is one seat, for the account that will receive the
-   * calendar invite — so the recipient step is skipped for online activities as
-   * well as free ones. The PAYMENT step is a separate question: an online
-   * activity can still be paid, and must not be routed to the free flow.
-   */
-  const skipsRecipientStep = isFree || isMeet;
-
   const [currentStep, setCurrentStep] = useState(0);
   const [previousStep, setPreviousStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -169,7 +171,10 @@ export default function CheckoutFlow({
   const { fields } = useFieldArray({ control, name: "tickets" });
 
   useEffect(() => {
-    if (skipsRecipientStep) {
+    // Keyed off the ACTIVITY, not the selection — at mount nothing is selected
+    // yet. An all-free activity and an online one each hand out exactly one
+    // seat, so that seat is chosen for the buyer.
+    if (eventIsAllFree || isMeet) {
       setValue("tickets.0.quantity", 1, { shouldValidate: true });
       setValue("attendees", [
         {
@@ -245,8 +250,39 @@ export default function CheckoutFlow({
     .map((t, i) => ({ ...t, __index: i }))
     .filter((t) => t.quantity > 0);
 
-  // The fee waiver only applies to paid events (free tickets carry no fees).
-  const feeWaived = feeWaiverEligible && !isFree;
+  /**
+   * WHICH CHECKOUT THIS ORDER GETS — decided by what is in the cart.
+   *
+   * A cart is all-free or all-paid, never both. Mixing them would mean a
+   * zero-value line item at Stripe (which refuses amounts under its minimum) or
+   * a zero-gourde MonCash/NatCash transaction, and it would let the free tier's
+   * one-per-person rule be sidestepped by hiding a free seat behind a paid one.
+   * The API refuses a mixed cart on every payment route; `selectionIsMixed`
+   * exists so the buyer is told at selection time instead of at the pay button.
+   */
+  const selectedTicketTypes = selectedWithIndex
+    .map((selected) =>
+      ticketTypes.find((tt) => tt.eventTicketTypeId === selected.ticketTypeId),
+    )
+    .filter((tt): tt is EventTicketType => Boolean(tt));
+  const hasSelection = selectedTicketTypes.length > 0;
+  const selectionIsFree =
+    hasSelection && selectedTicketTypes.every(isFreeTicketType);
+  const selectionIsMixed =
+    hasSelection &&
+    selectedTicketTypes.some(isFreeTicketType) &&
+    !selectedTicketTypes.every(isFreeTicketType);
+
+  /**
+   * A Google Meet seat is one seat, for the account that will receive the
+   * calendar invite — so the recipient step is skipped for online activities as
+   * well as for a free claim. The PAYMENT step is a separate question: an
+   * online activity can still be paid, and must not be routed to the free flow.
+   */
+  const skipsRecipientStep = selectionIsFree || isMeet;
+
+  // The fee waiver only applies to paid orders (free tickets carry no fees).
+  const feeWaived = feeWaiverEligible && !selectionIsFree;
   const feeBreakdown = calculateFeeBreakdown(
     selectedWithIndex,
     ticketTypes,
@@ -423,8 +459,8 @@ export default function CheckoutFlow({
 
   const prev = () => {
     if (currentStep === 0) return;
-    // Free: 0 → 3, so back from the summary returns to ticket selection.
-    if (isFree && currentStep === 3) {
+    // A free claim goes 0 → 3, so back from the summary returns to selection.
+    if (selectionIsFree && currentStep === 3) {
       goToStep(0);
       return;
     }
@@ -447,14 +483,27 @@ export default function CheckoutFlow({
         toast.error(t("ticket.error"));
         return;
       }
+      // Free and paid tickets are separate orders — see `selectionIsMixed`.
+      // Said here so the buyer can fix it while still on the selection screen.
+      if (selectionIsMixed) {
+        toast.error(t("ticket.mixed_error"));
+        return;
+      }
+      // A free ticket has to be attached to an account: the free-claim route
+      // needs authentication, and there is no guest path to it.
+      if (isGuest && selectionIsFree) {
+        toast.error(t("ticket.free_login_required"));
+        router.push(`/auth/login`);
+        return;
+      }
       if (isGuest && skipsRecipientStep) {
         router.push(`/auth/login`);
         return;
       }
-      // Free has nothing to pay, so it goes straight to the summary. Paid
-      // online activities still need the payment step — they just skip the
+      // A free claim has nothing to pay, so it goes straight to the summary.
+      // Paid online activities still need the payment step — they just skip the
       // recipient step on the way there.
-      goToStep(isFree ? 3 : skipsRecipientStep ? 2 : 1);
+      goToStep(selectionIsFree ? 3 : skipsRecipientStep ? 2 : 1);
       return;
     }
 
@@ -522,9 +571,9 @@ export default function CheckoutFlow({
         toast.error(tSuspension("blocked_action"), { duration: 10000 });
         return;
       }
-      // Keyed off price alone: a paid online activity must charge, not be
-      // handed out through the free endpoint.
-      if (isFree) {
+      // Keyed off the CART's prices, not the activity's flag: on an activity
+      // that mixes tiers a free-only cart is claimed, a paid cart is charged.
+      if (selectionIsFree) {
         await BuyFreeTicket();
       } else if (paymentType === "moncash" || paymentType === "natcash") {
         await WalletGatewayPayment(paymentType);
@@ -545,13 +594,13 @@ export default function CheckoutFlow({
 
   const footerButtonText =
     currentStep === 3
-      ? isFree
+      ? selectionIsFree
         ? t("summary.confirm_free")
         : t("summary.confirm")
       : t("footer.continue");
 
   const isFooterButtonDisabled =
-    isLoading || (currentStep === 2 && !isFree && !paymentType);
+    isLoading || (currentStep === 2 && !selectionIsFree && !paymentType);
 
   const stepLabels = [
     t("footer.ticket"),
@@ -599,7 +648,7 @@ export default function CheckoutFlow({
               watchedTickets={watchedTickets}
               ticketTypes={ticketTypes}
               event={event}
-              isFree={isFree}
+              eventIsAllFree={eventIsAllFree}
               selectedWithIndex={selectedWithIndex}
               feeBreakdown={feeBreakdown}
               paymentType={paymentType}
@@ -616,7 +665,7 @@ export default function CheckoutFlow({
               watchedAttendees={watchedAttendees}
               ticketTypes={ticketTypes}
               event={event}
-              isFree={isFree}
+              isFree={selectionIsFree}
               isGuest={isGuest}
               guestInfo={guestInfo}
               onGuestInfoChange={setGuestInfo}
@@ -632,7 +681,7 @@ export default function CheckoutFlow({
           {currentStep === 2 && (
             <PaymentStep
               delta={delta}
-              isFree={isFree}
+              isFree={selectionIsFree}
               isGuest={isGuest}
               paymentType={paymentType}
               onSelectPayment={setPaymentType}
@@ -647,7 +696,7 @@ export default function CheckoutFlow({
             <SummaryStep
               delta={delta}
               event={event}
-              isFree={isFree}
+              isFree={selectionIsFree}
               ticketTypes={ticketTypes}
               selectedWithIndex={selectedWithIndex}
               paymentType={paymentType}
@@ -661,7 +710,7 @@ export default function CheckoutFlow({
               selectedWithIndex={selectedWithIndex}
               ticketTypes={ticketTypes}
               event={event}
-              isFree={isFree}
+              isFree={selectionIsFree}
               feeBreakdown={feeBreakdown}
               paymentType={paymentType}
             />

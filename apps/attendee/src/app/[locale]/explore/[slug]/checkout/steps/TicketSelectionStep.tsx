@@ -14,6 +14,7 @@ import {
 } from "../checkout.types";
 import TicketSummaryCard from "../TicketSummaryCard";
 import TicketSalesCountdown from "@/components/shared/TicketSalesCountdown";
+import { isFreeTicketType } from "../checkoutUtils";
 
 interface Props {
   delta: number;
@@ -21,7 +22,16 @@ interface Props {
   watchedTickets: TicketFormData[];
   ticketTypes: EventTicketType[];
   event: Event;
-  isFree: boolean;
+  /**
+   * EVERY tier on this activity is free.
+   *
+   * Not "this tier is free" — that is read per row from the tier's own price,
+   * because an activity may now offer a free tier beside paid ones. This flag
+   * only decides whether a free row shows a fixed quantity of 1 (an all-free
+   * activity, where the seat is preselected and there is nothing to choose) or
+   * a 0/1 stepper (a mixed activity, where taking the free ticket is a choice).
+   */
+  eventIsAllFree: boolean;
   selectedWithIndex: SelectedTicket[];
   feeBreakdown: FeeBreakdown;
   paymentType: PaymentType;
@@ -35,7 +45,7 @@ export default function TicketSelectionStep({
   watchedTickets,
   ticketTypes,
   event,
-  isFree,
+  eventIsAllFree,
   selectedWithIndex,
   feeBreakdown,
   paymentType,
@@ -46,6 +56,21 @@ export default function TicketSelectionStep({
   const [quantities, setQuantities] = useState<number[]>(() =>
     watchedTickets.map((t) => t.quantity),
   );
+
+  /**
+   * Is the CURRENT cart a free claim? Only used for the summary card below, so
+   * it shows "Free" rather than a total of 0 with fee lines under it. Recomputed
+   * here rather than passed down because the parent's copy describes the same
+   * cart and this component already holds everything it needs.
+   */
+  const selectionIsFree =
+    selectedWithIndex.length > 0 &&
+    selectedWithIndex.every((selected) => {
+      const ticketType = ticketTypes.find(
+        (tt) => tt.eventTicketTypeId === selected.ticketTypeId,
+      );
+      return ticketType ? isFreeTicketType(ticketType) : false;
+    });
 
   const increment = (index: number, ticketLeft: number) => {
     const current = quantities[index] ?? 0;
@@ -82,6 +107,11 @@ export default function TicketSelectionStep({
           const quantity = quantities[index] ?? 0;
           const ticketLeft =
             ticketType.ticketTypeQuantity - ticketType.ticketTypeQuantitySold;
+          // Per TIER: the price is the whole answer. On a mixed activity some
+          // rows here are free while `event.isFree` is false.
+          const tierIsFree = isFreeTicketType(ticketType);
+          // One free ticket per person, so a free row never goes past 1.
+          const maxSelectable = tierIsFree ? Math.min(1, ticketLeft) : ticketLeft;
 
           return (
             <li
@@ -108,7 +138,7 @@ export default function TicketSelectionStep({
                   {ticketType.ticketTypeDescription}
                 </p>
               </div>
-              {isFree ? (
+              {tierIsFree ? (
                 <span className="font-primary font-bold text-[1.8rem] leading-12 text-primary-500">
                   {t("free")}
                 </span>
@@ -124,7 +154,7 @@ export default function TicketSelectionStep({
                 <span className="text-[1.5rem] text-neutral-900">
                   {t("ticket.quantity")}
                 </span>
-                {isFree ? (
+                {tierIsFree && eventIsAllFree ? (
                   <span className="text-[1.5rem] leading-12 text-neutral-900 font-medium">
                     1
                   </span>
@@ -144,10 +174,11 @@ export default function TicketSelectionStep({
                     <button
                       type="button"
                       disabled={
-                        event.eventCategory === "meet" || quantity === ticketLeft
+                        event.eventCategory === "meet" ||
+                        quantity === maxSelectable
                       }
                       className="w-14 h-14 disabled:cursor-not-allowed rounded-full bg-black flex items-center justify-center cursor-pointer"
-                      onClick={() => increment(index, ticketLeft)}
+                      onClick={() => increment(index, maxSelectable)}
                     >
                       <AddCircle size="20" color="#FFFFFF" variant="Bulk" />
                     </button>
@@ -163,7 +194,7 @@ export default function TicketSelectionStep({
           selectedWithIndex={selectedWithIndex}
           ticketTypes={ticketTypes}
           event={event}
-          isFree={isFree}
+          isFree={selectionIsFree}
           feeBreakdown={feeBreakdown}
           paymentType={paymentType}
         />

@@ -5,14 +5,20 @@ import type { TranslateFn } from "./types";
 
 /**
  * Schema factory function.
- * - Accepts `isFree` so ticket price requirement can change.
  * - Accepts `t` translation function (same style as useTranslations).
+ * - Accepts `freeTicketLimit`, the plan's allowance of give-away seats. It is a
+ *   single budget shared across every free tier — see `superRefine`.
  * - Accepts `imageOptional` for publishing a teaser, which already has a cover
  *   image on the server; uploading again is then a replacement, not a
  *   requirement.
+ *
+ * It used to take an activity-wide `isFree` to decide whether a price was
+ * required. It no longer can: a Pro organisation may price each tier
+ * separately, so that question is now answered per tier by the tier's own
+ * `isFree` flag, and the factory no longer has to be rebuilt when the toggle
+ * moves.
  */
 export function makeCreateInPersonSchema(
-  isFree: boolean,
   t: TranslateFn,
   freeTicketLimit: number,
   imageOptional = false,
@@ -121,15 +127,18 @@ export function makeCreateInPersonSchema(
           .string()
           .min(20, t("errors.ticketClass.description"))
           .max(150),
-        ticketTypePrice: isFree
-          ? z.string()
-          : z.string().min(1, t("errors.ticketClass.price")),
+        // Required-ness is per TIER, not per activity: a Pro organisation can
+        // put a free tier beside a paid one, so `isFree` on the whole activity
+        // no longer answers "must this field be filled in?". Checked in
+        // `superRefine` below, where the sibling `isFree` flag is readable.
+        ticketTypePrice: z.string(),
         ticketTypeQuantity: z
           .string()
           .min(1, t("errors.ticketClass.quantity.empty"))
           .refine((val) => /^[1-9]\d*$/.test(val), {
             message: t("errors.ticketClass.quantity.decimal"),
           }),
+        isFree: z.boolean(),
       }),
     ),
     eventCurrency: z.string(),
@@ -147,24 +156,51 @@ export function makeCreateInPersonSchema(
         path: ["eventImage"],
       });
     }
-    if (data.isFree) {
-      data.ticketTypes.forEach((ticket, index) => {
+    /**
+     * The plan's free-seat allowance is ONE budget shared by every free tier,
+     * not a ceiling each tier gets to itself — otherwise two "free" tiers of
+     * 300 would give away 600 on a plan that allows 300. Mirrors
+     * `checkTicketTierPolicy` in the API, which is what actually enforces it.
+     *
+     * The error is attached to the last free tier's quantity field so it lands
+     * somewhere the organiser can see and act on.
+     */
+    const freeTiers = data.ticketTypes
+      .map((ticket, index) => ({ ticket, index }))
+      .filter(({ ticket }) => ticket.isFree);
+
+    if (freeTiers.length > 0) {
+      const freeQuantity = freeTiers.reduce((total, { ticket }) => {
         const quantity = parseInt(ticket.ticketTypeQuantity, 10);
-        if (!isNaN(quantity) && quantity > freeTicketLimit) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t("errors.ticketClass.quantity.exceedsLimit", {
-              limit: freeTicketLimit,
-            }),
-            path: ["ticketTypes", index, "ticketTypeQuantity"],
-          });
-        }
-      });
-      return;
+        return total + (isNaN(quantity) ? 0 : quantity);
+      }, 0);
+      if (freeQuantity > freeTicketLimit) {
+        const last = freeTiers[freeTiers.length - 1]!;
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("errors.ticketClass.quantity.exceedsLimit", {
+            limit: freeTicketLimit,
+          }),
+          path: ["ticketTypes", last.index, "ticketTypeQuantity"],
+        });
+      }
     }
+
     const isHTG = data.eventCurrency === "HTG";
     const isUSD = data.eventCurrency === "USD";
     data.ticketTypes.forEach((ticket, index) => {
+      // A free tier has no price to check, and no price to demand.
+      if (ticket.isFree) return;
+
+      if (ticket.ticketTypePrice.trim().length === 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: t("errors.ticketClass.price"),
+          path: ["ticketTypes", index, "ticketTypePrice"],
+        });
+        return;
+      }
+
       const price = parseFloat(ticket.ticketTypePrice);
       if (isHTG && (!isNaN(price) && price < 250)) {
         ctx.addIssue({
