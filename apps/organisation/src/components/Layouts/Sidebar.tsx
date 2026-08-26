@@ -423,7 +423,7 @@ function Sidebar({
                         "text-neutral-700 text-[1.5rem] flex-1 leading-8 min-w-0"
                       }
                     >
-                      <span>
+                      <span className="line-clamp-2">
                         {organisation?.organisationName}{" "}
                         {organisation?.isVerified ? (
                           <VerifierOrganisationCheckMark />
@@ -464,7 +464,7 @@ function Sidebar({
                       "text-neutral-700 text-[1.5rem] flex-1 leading-8 min-w-0"
                     }
                   >
-                    <span>
+                    <span className="line-clamp-2">
                       {organisation?.organisationName}{" "}
                       {organisation?.isVerified ? (
                         <VerifierOrganisationCheckMark />
