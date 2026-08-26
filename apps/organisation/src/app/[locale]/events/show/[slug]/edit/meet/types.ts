@@ -26,6 +26,12 @@ export type EditMeetFormValues = {
   ticketTypes: TicketType[];
   eventCurrency: string;
   isFree: boolean;
+  /**
+   * Who pays the fees. False (the default) adds them on top of the ticket
+   * price for the buyer; true makes the price below exactly what the buyer
+   * pays and takes the fees out of what the organiser receives.
+   */
+  absorbFees: boolean;
   ticketSalesEndAt?: string;
 };
 

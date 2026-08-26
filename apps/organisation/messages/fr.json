@@ -681,7 +681,8 @@
         "name": "Nom",
         "email": "Email",
         "status": "Statut",
-        "date_purchased": "Acheté le"
+        "date_purchased": "Acheté le",
+        "answers": "Réponses au paiement"
       },
       "create_ticket": "Créer un billet",
       "ticket": "Classes de billets",
@@ -873,7 +874,62 @@
         "cancel_success": "Suppression annulée avec succès."
       },
       "start_meeting": "Démarrer la réunion",
-      "start_meeting_failed": "Nous n’avons pas pu ouvrir la réunion. Veuillez réessayer, ou la démarrer depuis votre compte Zoom ou Google Agenda."
+      "start_meeting_failed": "Nous n’avons pas pu ouvrir la réunion. Veuillez réessayer, ou la démarrer depuis votre compte Zoom ou Google Agenda.",
+      "forms": {
+        "title": "Questions au paiement",
+        "subtitle": "Questions pour vos acheteurs",
+        "back": "Retour à l'activité",
+        "intro": "Chaque personne qui reçoit un billet y répond avant de payer. Laissez vide et rien de plus ne sera demandé.",
+        "empty": "Aucune question pour l'instant. Ajoutez-en une et elle apparaîtra immédiatement au paiement.",
+        "tab_questions": "Questions",
+        "tab_responses": "Réponses",
+        "add_question": "Ajouter une question",
+        "new_question": "Nouvelle question",
+        "edit_question": "Modifier la question",
+        "label": "Votre question",
+        "type": "Type de réponse",
+        "type_text": "Réponse libre",
+        "type_radio": "Choix multiple",
+        "type_text_hint": "La personne écrit ce qu’elle veut.",
+        "type_radio_hint": "La personne choisit une des options que vous définissez.",
+        "options": "Options",
+        "option_placeholder": "Option {number}",
+        "add_option": "Ajouter une option",
+        "remove_option": "Retirer cette option",
+        "other_option": "Autre",
+        "allow_other": "Ajouter une option « Autre »",
+        "allow_other_hint": "Permet de choisir « Autre » et d’écrire sa propre réponse, pour tout ce que vos options ne couvrent pas.",
+        "required_label": "Cette question doit être répondue",
+        "required": "Obligatoire",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "move_up": "Monter",
+        "move_down": "Descendre",
+        "added": "Question ajoutée",
+        "saved": "Question enregistrée",
+        "deleted": "Question supprimée",
+        "reordered": "Ordre mis à jour",
+        "turned_on": "Cette question est de nouveau posée",
+        "turned_off": "Cette question n’est plus posée",
+        "answers_count": "{count} réponse(s)",
+        "locked_hint": "Des personnes y ont déjà répondu, elle ne peut donc plus être modifiée ni supprimée. Désactivez-la pour ne plus la poser, et ajoutez une nouvelle question à la place.",
+        "limit_reached": "Vous pouvez poser jusqu’à {max} questions sur une activité.",
+        "no_responses": "Personne n’a encore répondu. Les réponses apparaîtront ici au fur et à mesure des achats.",
+        "col_attendee": "Participant",
+        "col_ticket": "Billet",
+        "col_date": "Acheté le",
+        "retired": "Inactive",
+        "other_tag": "Autre",
+        "upgrade_title": "Les questions au paiement sont une fonctionnalité Pro",
+        "upgrade_body": "Passez à Pro pour demander à vos acheteurs tout ce dont vous avez besoin avant le paiement. Les questions que vous avez déjà créées restent telles quelles.",
+        "errors": {
+          "label": "Écrivez une question d’au moins 3 caractères.",
+          "options_min": "Une question à choix multiple nécessite au moins deux options.",
+          "options_unique": "Chaque option doit être différente."
+        }
+      }
     },
     "create_event": {
       "title": "Créer une activité",
@@ -1109,7 +1165,9 @@
         "tags_tip": "Ajoutez quelques étiquettes pour décrire votre tirage. Appuyez sur Entrée, virgule ou espace pour en ajouter une. Cliquez sur une étiquette pour la retirer.",
         "tags_placeholder": "Ajouter une étiquette",
         "location": "Emplacement (facultatif)",
-        "location_tip": "Ajoutez un lieu de retrait ou de tirage. Si vous en définissez un, les participants le voient sur une carte ; laissez vide pour masquer la carte."
+        "location_tip": "Ajoutez un lieu de retrait ou de tirage. Si vous en définissez un, les participants le voient sur une carte ; laissez vide pour masquer la carte.",
+        "absorb_fees": "Prendre les frais en charge pour vos participants",
+        "absorb_fees_hint": "Désactivé, les frais s’ajoutent à votre prix d’entrée et votre participant les paie. Activé, le prix que vous fixez est exactement ce qu’il paie et les frais sont déduits de ce que vous recevez."
       },
       "ticket": "Billet",
       "event_type": "Type d’activité",
@@ -1323,7 +1381,9 @@
         "gallery_add": "Ajouter des photos",
         "gallery_count": "{count} sur 5 sélectionnées",
         "gallery_remove": "Retirer",
-        "pro_feature": "Les restaurants font partie de nos formules payantes Pro et Premium. Passez à une formule supérieure pour publier votre établissement, partager votre menu par code QR et accepter les réservations. Les périodes d'essai n'incluent pas les restaurants."
+        "pro_feature": "Les restaurants font partie de nos formules payantes Pro et Premium. Passez à une formule supérieure pour publier votre établissement, partager votre menu par code QR et accepter les réservations. Les périodes d'essai n'incluent pas les restaurants.",
+        "absorb_fees": "Prendre les frais de réservation en charge pour vos clients",
+        "absorb_fees_hint": "Désactivé, les frais s’ajoutent à vos frais de réservation et votre client les paie. Activé, le montant que vous fixez est exactement ce qu’il paie et les frais sont déduits de ce que vous recevez."
       },
       "publish_name_locked": "Vous avez annoncé cette activité sous ce nom, il reste donc inchangé. Toutes les personnes qui la suivent gardent leur place.",
       "publish_success": "Votre événement a été envoyé pour révision.",
@@ -1376,7 +1436,11 @@
         },
         "file_section": "Le fichier que vous vendez",
         "file_versions_note": "{count} versions conservées. Chaque acheteur conserve la version qu’il a payée : remplacer le fichier ne change jamais ce que quelqu’un a déjà acheté.",
-        "file_immediate_note": "L’envoi d’un fichier prend effet immédiatement et n’attend pas l’enregistrement. Il renvoie votre produit en révision : il n’est donc plus en vente jusqu’à ce qu’un administrateur approuve la nouvelle version. Les personnes qui l’ont déjà acheté conservent la version qu’elles ont payée et ne sont pas affectées."
+        "file_immediate_note": "L’envoi d’un fichier prend effet immédiatement et n’attend pas l’enregistrement. Il renvoie votre produit en révision : il n’est donc plus en vente jusqu’à ce qu’un administrateur approuve la nouvelle version. Les personnes qui l’ont déjà acheté conservent la version qu’elles ont payée et ne sont pas affectées.",
+        "absorb_fees": "Prendre les frais en charge pour vos acheteurs",
+        "absorb_fees_hint": "Désactivé, nos frais s’ajoutent à votre prix et votre acheteur les paie. Activé, le prix que vous fixez est exactement ce qu’il paie et les frais sont déduits de ce que vous recevez.",
+        "absorb_fees_min": "Prendre les frais en charge relève le prix minimum, car ces frais ont un plancher qui ne diminue pas avec le prix.",
+        "you_receive": "Vous recevez"
       },
       "document": {
         "title": "Document (facultatif)",
@@ -1395,7 +1459,10 @@
           "uploadFailed": "Le document n’a pas pu être téléversé. Veuillez réessayer.",
           "removeFailed": "Le document n’a pas pu être retiré. Veuillez réessayer."
         }
-      }
+      },
+      "absorb_fees": "Prendre les frais en charge pour vos participants",
+      "absorb_fees_hint": "Désactivé, les frais s’ajoutent à votre prix et votre participant les paie. Activé, le prix que vous fixez est exactement ce qu’il paie et les frais sont déduits de ce que vous recevez.",
+      "absorb_fees_locked": "Vous pouvez modifier ce réglage à tout moment. Il s’applique aux ventes futures ; les billets déjà vendus conservent le prix auquel ils ont été achetés."
     },
     "sale_price_preview": {
       "title": "Ce que vos acheteurs paieront",
@@ -1410,7 +1477,14 @@
       "transaction_fees": "Frais de transaction",
       "attendee_pays": "Le participant paie",
       "you_receive": "Vous recevez",
-      "note": "Les frais s’ajoutent à votre prix, vous recevez donc toujours le montant total que vous avez fixé."
+      "note": "Les frais s’ajoutent à votre prix, vous recevez donc toujours le montant total que vous avez fixé.",
+      "title_absorbed": "Ce que vous recevrez",
+      "listed_price": "Votre prix",
+      "fees_deducted": "Frais déduits",
+      "attendee_pays_absorbed": "Le participant paie",
+      "you_receive_range": "Vous recevez",
+      "note_absorbed": "Votre participant paie exactement le prix que vous avez fixé. Ce que vous recevez dépend de son moyen de paiement, chacun appliquant son propre taux.",
+      "range_hint": "Portefeuille au mieux, carte au pire"
     },
     "filters": {
       "first": {

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 "use client";
 import React, { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
@@ -147,6 +147,7 @@ export default function EditInPersonEventForm({
       }),
       eventCurrency: event.currency,
       isFree: event.isFree,
+      absorbFees: event.absorbFees === true,
       ticketSalesEndAt: ticketSalesEndAtDefault,
     },
   });
@@ -167,6 +168,7 @@ export default function EditInPersonEventForm({
     formData.append("eventCurrency", data.eventCurrency);
     formData.append("isRefundable", JSON.stringify(isRefundable));
     formData.append("isFree", JSON.stringify(isFree));
+    formData.append("absorbFees", JSON.stringify(data.absorbFees));
     formData.append("isPrivate", JSON.stringify(isPrivate));
     // Always sent (even empty) so clearing the field removes the cutoff.
     formData.append("ticketSalesEndAt", data.ticketSalesEndAt ?? "");

@@ -134,6 +134,7 @@ export default function CreateInPersonEventForm({
       ],
       eventCurrency: "HTG",
       isFree: false,
+      absorbFees: false,
     },
   });
   // submission
@@ -159,6 +160,7 @@ export default function CreateInPersonEventForm({
       data.ticketTypes.length > 0 &&
       data.ticketTypes.every((ticket) => ticket.isFree);
     formData.append("isFree", JSON.stringify(allTiersFree));
+    formData.append("absorbFees", JSON.stringify(data.absorbFees));
     formData.append("activityTags", JSON.stringify(data.activityTags));
     formData.append("isRefundable", JSON.stringify(isRefundable));
     formData.append("isPrivate", JSON.stringify(isPrivate));

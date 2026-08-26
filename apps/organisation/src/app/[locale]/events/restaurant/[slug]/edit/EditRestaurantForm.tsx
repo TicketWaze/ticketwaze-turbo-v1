@@ -80,6 +80,7 @@ function makeRestaurantSchema(t: TranslateFn) {
       acceptsReservations: z.boolean(),
       reservationFee: z.coerce.number().min(0),
       reservationFeeCurrency: z.enum(["HTG", "USD"]),
+      absorbFees: z.boolean(),
       maxCoversPerSlot: z.coerce.number().min(0),
       minPartySize: z.coerce.number().min(1),
       maxPartySize: z.coerce.number().min(1),
@@ -206,6 +207,7 @@ export default function EditRestaurantForm({
     handleSubmit,
     control,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<TFormIn, any, TFormOut>({
     resolver: zodResolver(schema),
@@ -228,6 +230,7 @@ export default function EditRestaurantForm({
       reservationFeeCurrency: restaurant.reservationFeeCurrency as
         | "HTG"
         | "USD",
+      absorbFees: restaurant.absorbFees === true,
       maxCoversPerSlot: restaurant.maxCoversPerSlot,
       minPartySize: restaurant.minPartySize,
       maxPartySize: restaurant.maxPartySize,
@@ -243,6 +246,7 @@ export default function EditRestaurantForm({
   });
 
   const acceptsReservations = watch("acceptsReservations");
+  const absorbFees = watch("absorbFees");
   const offersDelivery = watch("offersDelivery");
 
   // ── Cuisine tags ─────────────────────────────────────────────────────
@@ -438,6 +442,7 @@ export default function EditRestaurantForm({
     if (data.acceptsReservations) {
       fd.append("reservationFee", String(data.reservationFee));
       fd.append("reservationFeeCurrency", data.reservationFeeCurrency);
+      fd.append("absorbFees", JSON.stringify(data.absorbFees));
       fd.append("maxCoversPerSlot", String(data.maxCoversPerSlot));
       fd.append("minPartySize", String(data.minPartySize));
       fd.append("maxPartySize", String(data.maxPartySize));
@@ -1002,6 +1007,28 @@ export default function EditRestaurantForm({
                   </Field>
                 </div>
               </div>
+
+              {/* Who pays the booking fee. Directly under the fee and its
+                  currency, because it is what decides whether the amount above
+                  is what the guest pays or what the venue keeps. */}
+              <div className="flex items-center justify-between">
+                <p className="text-[1.5rem] leading-8 text-deep-100">
+                  {t("absorb_fees")}
+                </p>
+                <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
+                  <input
+                    className="peer sr-only"
+                    type="checkbox"
+                    checked={absorbFees}
+                    onChange={(e) => setValue("absorbFees", e.target.checked)}
+                  />
+                  <ToggleIcon />
+                </label>
+              </div>
+              <p className="text-[1.2rem] leading-7 text-neutral-600">
+                {t("absorb_fees_hint")}
+              </p>
+
               <Field
                 label={t("covers_per_slot")}
                 error={errors.maxCoversPerSlot?.message}

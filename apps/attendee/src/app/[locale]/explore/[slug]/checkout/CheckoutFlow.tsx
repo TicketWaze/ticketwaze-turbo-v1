@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft2 } from "iconsax-reactjs";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -18,7 +18,12 @@ import {
 import { FreeEventTicket } from "@/actions/paymentActions";
 import { useRouter } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
-import { Event, EventTicketType, User } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  EventTicketType,
+  PublicEventFormQuestion,
+  User,
+} from "@ticketwaze/typescript-config";
 import { useSession } from "next-auth/react";
 import PageLoader from "@/components/PageLoader";
 import BackButton from "@/components/shared/BackButton";
@@ -29,7 +34,10 @@ import {
   AttendeeFormData,
   GuestInfo,
   PaymentType,
+  SeatAnswers,
   SelectedTicket,
+  StepKey,
+  SubmittedAnswer,
   TicketFormData,
 } from "./checkout.types";
 import { calculateFeeBreakdown, isFreeTicketType } from "./checkoutUtils";
@@ -38,6 +46,7 @@ import TicketSelectionStep from "./steps/TicketSelectionStep";
 import RecipientStep from "./steps/RecipientStep";
 import PaymentStep from "./steps/PaymentStep";
 import SummaryStep from "./steps/SummaryStep";
+import QuestionsStep from "./steps/QuestionsStep";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
@@ -49,12 +58,18 @@ export default function CheckoutFlow({
   user,
   feeWaiverEligible = false,
   htgExchangeRate = 0,
+  formQuestions = [],
 }: {
   event: Event;
   ticketTypes: EventTicketType[];
   user?: User;
   feeWaiverEligible?: boolean;
   htgExchangeRate?: number;
+  /**
+   * The organiser's checkout questions. Empty for almost every activity, which
+   * is exactly when the questions step does not exist.
+   */
+  formQuestions?: PublicEventFormQuestion[];
 }) {
   const t = useTranslations("Checkout");
   const tSuspension = useTranslations("Suspension");
@@ -114,6 +129,15 @@ export default function CheckoutFlow({
     lastName: "",
     email: "",
   });
+  /**
+   * One entry per seat, in the same order as `attendees`.
+   *
+   * Held here rather than in the form because a text answer would otherwise
+   * re-render the whole ticket selection on every keystroke, and because the
+   * shape (a map keyed by question id) is not something react-hook-form's field
+   * arrays express well.
+   */
+  const [seatAnswers, setSeatAnswers] = useState<SeatAnswers[]>([]);
 
   const idempotencyKey = useRef(crypto.randomUUID());
 
@@ -281,6 +305,121 @@ export default function CheckoutFlow({
    */
   const skipsRecipientStep = selectionIsFree || isMeet;
 
+  /**
+   * WHICH STEPS THIS CHECKOUT HAS, in order.
+   *
+   * Built from the cart and the activity rather than hard-coded, so every
+   * navigation below can ask for a step BY NAME and none of them has to know
+   * what number it landed on. The four conditions, each for its own reason:
+   *
+   *   recipient — skipped for a free claim (one seat, the buyer's own) and for
+   *               an online activity (one seat, and it must be the account
+   *               holder's).
+   *   questions — only when the organiser actually asked something. This is the
+   *               new one, and it sits BEFORE payment so nobody is asked for
+   *               information after their money has gone.
+   *   payment   — nothing to pay on a free claim.
+   *
+   * `tickets` and `summary` always exist, so the list is never empty.
+   */
+  const hasQuestions = formQuestions.length > 0;
+  const steps: StepKey[] = useMemo(() => {
+    const list: StepKey[] = ["tickets"];
+    if (!skipsRecipientStep) list.push("recipient");
+    if (hasQuestions) list.push("questions");
+    if (!selectionIsFree) list.push("payment");
+    list.push("summary");
+    return list;
+  }, [skipsRecipientStep, hasQuestions, selectionIsFree]);
+
+  /**
+   * The step being shown. Clamped rather than indexed raw: changing the cart on
+   * the first screen can shorten the list (a paid cart becoming free drops the
+   * payment step), and a stale index would otherwise render nothing at all.
+   */
+  const step: StepKey =
+    steps[Math.min(currentStep, steps.length - 1)] ?? "tickets";
+
+  /** Display name per ticket type, for the per-seat cards in the questions step. */
+  const ticketTypeNames = useMemo(
+    () =>
+      Object.fromEntries(
+        ticketTypes.map((type) => [
+          type.eventTicketTypeId,
+          type.ticketTypeName,
+        ]),
+      ),
+    [ticketTypes],
+  );
+
+  /**
+   * Answers are dropped whenever the number of seats changes.
+   *
+   * They are held by POSITION, and changing the cart renumbers the positions —
+   * keeping them would quietly move one attendee's answers onto another seat,
+   * which is worse than asking again.
+   */
+  useEffect(() => {
+    setSeatAnswers((previous) =>
+      previous.length === watchedAttendees.length
+        ? previous
+        : watchedAttendees.map(() => ({})),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedAttendees.length]);
+
+  function setAnswer(
+    seatIndex: number,
+    questionId: string,
+    value: { answer: string; isOther: boolean },
+  ) {
+    setSeatAnswers((previous) => {
+      const next = [...previous];
+      while (next.length <= seatIndex) next.push({});
+      next[seatIndex] = { ...next[seatIndex], [questionId]: value };
+      return next;
+    });
+  }
+
+  /**
+   * The answers for one seat, in the shape the API takes. Blank answers are
+   * dropped so an untouched optional question is absent rather than empty —
+   * the API treats those as the same thing, and sending nothing is clearer.
+   */
+  function answersForSeat(seatIndex: number): SubmittedAnswer[] {
+    const seat = seatAnswers[seatIndex] ?? {};
+    return Object.entries(seat)
+      .filter(([, value]) => value.answer.trim().length > 0)
+      .map(([questionId, value]) => ({
+        questionId,
+        answer: value.answer.trim(),
+        isOther: value.isOther,
+      }));
+  }
+
+  /**
+   * The first unanswered required question, as a message. Null when the form is
+   * complete. The API enforces this too — this is so the buyer is told before
+   * a payment sheet opens rather than after.
+   */
+  function firstMissingAnswer(): string | null {
+    for (let seat = 0; seat < watchedAttendees.length; seat += 1) {
+      for (const question of formQuestions) {
+        if (!question.isRequired) continue;
+        const value = seatAnswers[seat]?.[question.eventFormQuestionId];
+        if (!value || value.answer.trim().length === 0) {
+          return watchedAttendees.length > 1
+            ? t("questions.missing_for_seat", {
+                number: seat + 1,
+                question: question.label,
+              })
+            : t("questions.missing", { question: question.label });
+        }
+      }
+    }
+    return null;
+  }
+
   // The fee waiver only applies to paid orders (free tickets carry no fees).
   const feeWaived = feeWaiverEligible && !selectionIsFree;
   const feeBreakdown = calculateFeeBreakdown(
@@ -290,6 +429,7 @@ export default function CheckoutFlow({
     paymentType,
     feeWaived,
     htgExchangeRate,
+    event.absorbFees === true,
   );
 
   // --- Payment actions ---
@@ -297,8 +437,8 @@ export default function CheckoutFlow({
   async function BuyFreeTicket() {
     setIsLoading(true);
     const values = getValues();
-    const validAttendees = values.attendees.filter(
-      (a: AttendeeFormData) => !a.isForSomeoneElse || (a.name && a.email),
+    const validAttendees = keepCompleteAttendees(
+      attendeesWithAnswers(values.attendees),
     );
     const result = await FreeEventTicket(
       accessToken,
@@ -314,14 +454,36 @@ export default function CheckoutFlow({
     setIsLoading(false);
   }
 
+  /**
+   * The attendee list with each seat's answers attached.
+   *
+   * ATTACHED BEFORE ANY FILTERING, and that ordering is the whole point.
+   * `seatAnswers` is held by position, and the paid paths below drop incomplete
+   * "for someone else" rows before posting — pairing answers to attendees after
+   * that filter would shift every answer onto the wrong seat. Doing it here
+   * means the pair travels together through whatever happens next.
+   */
+  function attendeesWithAnswers(attendees: AttendeeFormData[]) {
+    return attendees.map((attendee, index) => ({
+      ...attendee,
+      answers: answersForSeat(index),
+    }));
+  }
+
+  /** The same rule every paid path applies, kept in one place. */
+  function keepCompleteAttendees<T extends AttendeeFormData>(attendees: T[]) {
+    return attendees.filter((a) => !a.isForSomeoneElse || (a.name && a.email));
+  }
+
   function buildGuestTickets(attendees: AttendeeFormData[]) {
-    return attendees.map((a) => ({
+    return attendeesWithAnswers(attendees).map((a) => ({
       ticketTypeId: a.ticketTypeId,
       name:
         a.isForSomeoneElse && a.name
           ? a.name
           : `${guestInfo.firstName} ${guestInfo.lastName}`,
       email: a.isForSomeoneElse && a.email ? a.email : guestInfo.email,
+      answers: a.answers,
     }));
   }
 
@@ -355,8 +517,8 @@ export default function CheckoutFlow({
       return;
     }
 
-    const validAttendees = values.attendees.filter(
-      (a: AttendeeFormData) => !a.isForSomeoneElse || (a.name && a.email),
+    const validAttendees = keepCompleteAttendees(
+      attendeesWithAnswers(values.attendees),
     );
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/${provider}`,
@@ -404,8 +566,8 @@ export default function CheckoutFlow({
       return;
     }
 
-    const validAttendees = values.attendees.filter(
-      (a: AttendeeFormData) => !a.isForSomeoneElse || (a.name && a.email),
+    const validAttendees = keepCompleteAttendees(
+      attendeesWithAnswers(values.attendees),
     );
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/stripe`,
@@ -431,8 +593,8 @@ export default function CheckoutFlow({
   async function WalletPayment() {
     setIsLoading(true);
     const values = getValues();
-    const validAttendees = values.attendees.filter(
-      (a: AttendeeFormData) => !a.isForSomeoneElse || (a.name && a.email),
+    const validAttendees = keepCompleteAttendees(
+      attendeesWithAnswers(values.attendees),
     );
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/wallet`,
@@ -457,18 +619,14 @@ export default function CheckoutFlow({
 
   // --- Navigation ---
 
+  /**
+   * One line, because the list no longer contains steps that are not there.
+   * This used to need a special case per skipped step — each one written twice,
+   * forwards and backwards — and every new conditional step would have added
+   * another pair.
+   */
   const prev = () => {
     if (currentStep === 0) return;
-    // A free claim goes 0 → 3, so back from the summary returns to selection.
-    if (selectionIsFree && currentStep === 3) {
-      goToStep(0);
-      return;
-    }
-    // Paid online: 0 → 2 → 3, so back from payment skips the recipient step.
-    if (skipsRecipientStep && currentStep === 2) {
-      goToStep(0);
-      return;
-    }
     goToStep(currentStep - 1);
   };
 
@@ -478,7 +636,7 @@ export default function CheckoutFlow({
       (t: TicketFormData) => t.quantity > 0,
     );
 
-    if (currentStep === 0) {
+    if (step === "tickets") {
       if (selectedTickets.length === 0) {
         toast.error(t("ticket.error"));
         return;
@@ -500,14 +658,14 @@ export default function CheckoutFlow({
         router.push(`/auth/login`);
         return;
       }
-      // A free claim has nothing to pay, so it goes straight to the summary.
-      // Paid online activities still need the payment step — they just skip the
-      // recipient step on the way there.
-      goToStep(selectionIsFree ? 3 : skipsRecipientStep ? 2 : 1);
+      // Whatever comes next in THIS checkout's list — which already excludes
+      // the recipient step for online and free carts, and the payment step for
+      // free ones.
+      goToStep(1);
       return;
     }
 
-    if (currentStep === 1) {
+    if (step === "recipient") {
       if (isGuest) {
         if (
           !guestInfo.firstName.trim() ||
@@ -550,20 +708,33 @@ export default function CheckoutFlow({
         toast.error(t("recipient.error"));
         return;
       }
-      goToStep(2);
+      goToStep(currentStep + 1);
       return;
     }
 
-    if (currentStep === 2) {
+    if (step === "questions") {
+      // Required answers are checked here so the buyer can fix them while still
+      // on the form. The API refuses the same thing at payment time — this is
+      // the explanation, not the enforcement.
+      const missing = firstMissingAnswer();
+      if (missing) {
+        toast.error(missing);
+        return;
+      }
+      goToStep(currentStep + 1);
+      return;
+    }
+
+    if (step === "payment") {
       if (!paymentType) {
         toast.error(t("payment.paymentType"));
         return;
       }
-      goToStep(3);
+      goToStep(currentStep + 1);
       return;
     }
 
-    if (currentStep === 3) {
+    if (step === "summary") {
       // Refused here rather than at the API, so a suspended buyer is told why
       // before a payment sheet opens rather than after. The API refuses it too
       // — this is the explanation, not the enforcement.
@@ -585,36 +756,42 @@ export default function CheckoutFlow({
     }
   };
 
-  const stepTitle = [
-    t("ticket.title"),
-    t("recipient.title"),
-    t("payment.title"),
-    t("summary.title"),
-  ][currentStep];
+  const stepTitles: Record<StepKey, string> = {
+    tickets: t("ticket.title"),
+    recipient: t("recipient.title"),
+    questions: t("questions.title"),
+    payment: t("payment.title"),
+    summary: t("summary.title"),
+  };
+  const stepTitle = stepTitles[step];
 
   const footerButtonText =
-    currentStep === 3
+    step === "summary"
       ? selectionIsFree
         ? t("summary.confirm_free")
         : t("summary.confirm")
       : t("footer.continue");
 
   const isFooterButtonDisabled =
-    isLoading || (currentStep === 2 && !selectionIsFree && !paymentType);
+    isLoading || (step === "payment" && !paymentType);
 
-  const stepLabels = [
-    t("footer.ticket"),
-    t("footer.recipient"),
-    t("footer.payment"),
-    t("footer.summary"),
-  ];
+  const shortStepLabels: Record<StepKey, string> = {
+    tickets: t("footer.ticket"),
+    recipient: t("footer.recipient"),
+    questions: t("footer.questions"),
+    payment: t("footer.payment"),
+    summary: t("footer.summary"),
+  };
+  // Only the steps this checkout actually has, so the progress bar never
+  // promises one the buyer will never see.
+  const stepLabels = steps.map((key) => shortStepLabels[key]);
 
   return (
     <>
       <PageLoader isLoading={isLoading} />
       <div className="h-full min-h-0 flex flex-col">
         {/* Header */}
-        {currentStep === 0 ? (
+        {step === "tickets" ? (
           <div className="shrink-0 flex flex-col gap-4">
             <BackButton text={t("back")} />
             <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
@@ -641,7 +818,7 @@ export default function CheckoutFlow({
         )}
 
         <main className="flex-1 min-h-0 w-full flex flex-col overflow-y-auto pb-4 lg:pb-0 lg:overflow-hidden lg:grid lg:grid-cols-[29fr_23fr] lg:grid-rows-1 gap-8">
-          {currentStep === 0 && (
+          {step === "tickets" && (
             <TicketSelectionStep
               delta={delta}
               fields={fields}
@@ -652,14 +829,14 @@ export default function CheckoutFlow({
               selectedWithIndex={selectedWithIndex}
               feeBreakdown={feeBreakdown}
               paymentType={paymentType}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+               
               setValue={
                 setValue as (name: string, value: any, options?: object) => void
               }
             />
           )}
 
-          {currentStep === 1 && (
+          {step === "recipient" && (
             <RecipientStep
               delta={delta}
               watchedAttendees={watchedAttendees}
@@ -678,7 +855,24 @@ export default function CheckoutFlow({
             />
           )}
 
-          {currentStep === 2 && (
+          {step === "questions" && (
+            <QuestionsStep
+              delta={delta}
+              questions={formQuestions}
+              watchedAttendees={watchedAttendees}
+              ticketTypeNames={ticketTypeNames}
+              answers={seatAnswers}
+              onAnswerChange={setAnswer}
+              event={event}
+              ticketTypes={ticketTypes}
+              isFree={selectionIsFree}
+              selectedWithIndex={selectedWithIndex}
+              feeBreakdown={feeBreakdown}
+              paymentType={paymentType}
+            />
+          )}
+
+          {step === "payment" && (
             <PaymentStep
               delta={delta}
               isFree={selectionIsFree}
@@ -692,7 +886,7 @@ export default function CheckoutFlow({
             />
           )}
 
-          {currentStep === 3 && (
+          {step === "summary" && (
             <SummaryStep
               delta={delta}
               event={event}
@@ -745,7 +939,10 @@ export default function CheckoutFlow({
 
           {/* Mobile step counter */}
           <div className="text-[2.2rem] lg:hidden leading-12 text-neutral-600">
-            <span className="text-primary-500">{currentStep + 1}</span>/4
+            <span className="text-primary-500">
+              {Math.min(currentStep, steps.length - 1) + 1}
+            </span>
+            /{steps.length}
           </div>
 
           <ButtonPrimary disabled={isFooterButtonDisabled} onClick={handleNext}>
