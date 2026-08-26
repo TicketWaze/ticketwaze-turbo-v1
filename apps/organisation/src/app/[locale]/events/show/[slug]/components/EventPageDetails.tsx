@@ -30,6 +30,7 @@ import Informations from "./Informations";
 import EventArtist from "./EventArtist";
 import TopBar from "@/components/shared/TopBar";
 import Capitalize from "@/lib/Capitalize";
+import { ticketsOrganisationTotal } from "@/lib/ticketEarnings";
 import ShareEvent from "./ShareEvent";
 import ReturnedTicketsSection from "./ReturnedTicketsSection";
 
@@ -155,14 +156,10 @@ export default function EventPageDetails({
             {t("revenue")}
           </span>
           <p className={"font-medium text-[25px] leading-12 font-primary"}>
-            {tickets.reduce(
-              (acc, curr) =>
-                acc +
-                (event.currency === "USD"
-                  ? curr.ticketUsdPrice
-                  : curr.ticketPrice),
-              0,
-            )}{" "}
+            {/* What the organisation KEEPS, not what buyers handed over. When
+                the event absorbs the fees Ticketwaze takes its cut off the top,
+                so the face prices in the table below add up to more than this. */}
+            {ticketsOrganisationTotal(tickets, event.currency)}{" "}
             <span
               className={
                 "font-normal text-[1.6rem] lg:text-[25px] text-neutral-500"

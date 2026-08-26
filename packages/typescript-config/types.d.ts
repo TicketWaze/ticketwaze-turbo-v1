@@ -136,6 +136,19 @@ export interface Ticket {
   email: string;
   ticketPrice: number;
   ticketUsdPrice: number;
+  /**
+   * What the ORGANISATION earned on this ticket, as opposed to what the buyer
+   * paid for it (`ticketPrice`). The two are the same number whenever the buyer
+   * carries the fees; on an activity with `absorbFees` they differ by the fee
+   * stack, which depends on the route THIS buyer chose and so is snapshotted at
+   * sale time rather than recomputed.
+   *
+   * Null means "the same as `ticketPrice`" — every ticket sold before the column
+   * existed was credited its base price. Always read it through
+   * `ticketOrganisationAmount()` so that fallback is applied consistently.
+   */
+  organisationAmount?: number | null;
+  organisationUsdAmount?: number | null;
   organisationId: string;
   isRefundable: boolean;
   status: "PENDING" | "CHECKED" | "RETURNED";
