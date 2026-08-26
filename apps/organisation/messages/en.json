@@ -879,7 +879,7 @@
       "forms": {
         "title": "Checkout questions",
         "subtitle": "Questions for your buyers",
-        "back": "Back to the activity",
+        "back": "Back",
         "intro": "Each person getting a ticket answers these before they pay. Leave this empty and nothing extra is asked.",
         "empty": "No questions yet. Add one and it appears at checkout straight away.",
         "tab_questions": "Questions",

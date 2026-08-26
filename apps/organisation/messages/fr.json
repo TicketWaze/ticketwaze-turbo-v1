@@ -878,7 +878,7 @@
       "forms": {
         "title": "Questions au paiement",
         "subtitle": "Questions pour vos acheteurs",
-        "back": "Retour à l'activité",
+        "back": "Retour",
         "intro": "Chaque personne qui reçoit un billet y répond avant de payer. Laissez vide et rien de plus ne sera demandé.",
         "empty": "Aucune question pour l'instant. Ajoutez-en une et elle apparaîtra immédiatement au paiement.",
         "tab_questions": "Questions",

@@ -192,7 +192,7 @@ export default function FormsPageContent({
   // here is hidden, only the controls that would change it.
   if (!canUseForms) {
     return (
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 overflow-y-scroll overflow-x-hidden pb-12">
         <TopBar title={t("subtitle")} />
         <div className="max-w-216 w-full mx-auto flex flex-col items-start gap-4 border p-8 rounded-2xl border-neutral-300">
           <Warning2 size="28" color="#737C8A" variant="Bulk" />
@@ -215,7 +215,11 @@ export default function FormsPageContent({
   }
 
   return (
-    <div className="flex flex-col gap-8 h-full">
+    /* The shell clips its own overflow, so the page has to be the scroller.
+       A flex child only shrinks past its content when it establishes a scroll
+       container of its own — hence `overflow-y-scroll` here rather than on the
+       tab panel, which is what every other organiser screen does too. */
+    <div className="flex flex-col gap-8 overflow-y-scroll overflow-x-hidden pb-12">
       <TopBar title={t("subtitle")}>
         <ButtonPrimary
           className="hidden lg:flex"
