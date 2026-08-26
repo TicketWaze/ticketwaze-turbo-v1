@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import {
+  ClipboardText,
   HamburgerMenu,
   MoreCircle,
   Profile2User,
@@ -146,6 +147,26 @@ export default function MoreComponent({
               !isDeleted && (
                 <li>
                   <DownloadReport event={event} tickets={tickets} />
+                </li>
+              )}
+            {/*
+              Gated on the tier's own flag rather than its NAME, so this entry
+              and the API agree by construction — the API asks
+              `SubscriptionHelper.can(org, 'checkoutForms')`, and this is the
+              same column. `membershipTier` counts trials on both sides, which
+              is deliberate: a trial is meant to showcase exactly this.
+            */}
+            {membershipTier.checkoutForms &&
+              !isPendingDeletion &&
+              !isDeleted && (
+                <li>
+                  <Link
+                    href={`${slug}/forms`}
+                    className={`cursor-pointer font-normal group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                  >
+                    <span>{t("forms.title")}</span>
+                    <ClipboardText size="20" variant="Bulk" color={"#2E3237"} />
+                  </Link>
                 </li>
               )}
             {membershipTier.membershipName !== "free" &&

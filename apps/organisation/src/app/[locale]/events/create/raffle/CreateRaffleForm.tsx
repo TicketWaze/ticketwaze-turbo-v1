@@ -58,6 +58,7 @@ function makeRaffleSchema(t: TranslateFn) {
       description: z.string().min(20, t("errors.description")),
       ticketPrice: z.coerce.number().gt(0, t("errors.price")),
       currency: z.enum(["HTG", "USD"]),
+      absorbFees: z.boolean(),
       unlimited: z.boolean(),
       totalTickets: z.coerce.number().optional(),
       activityTags: z.array(z.string()),
@@ -156,6 +157,7 @@ export default function CreateRaffleForm() {
       description: "",
       ticketPrice: undefined as unknown as number,
       currency: "HTG",
+      absorbFees: false,
       unlimited: true,
       totalTickets: undefined,
       activityTags: [],
@@ -170,6 +172,7 @@ export default function CreateRaffleForm() {
 
   const { fields, append, remove } = useFieldArray({ control, name: "prizes" });
   const unlimited = watch("unlimited");
+  const absorbFees = watch("absorbFees");
 
   // Checked live per keystroke. The API re-checks on submit, so this only
   // decides whether the button is usable, never whether the title is valid.
@@ -295,6 +298,7 @@ export default function CreateRaffleForm() {
     fd.append("description", data.description);
     fd.append("ticketPrice", String(data.ticketPrice));
     fd.append("currency", data.currency);
+    fd.append("absorbFees", JSON.stringify(data.absorbFees));
     fd.append("unlimited", JSON.stringify(data.unlimited));
     if (!data.unlimited && data.totalTickets != null) {
       fd.append("totalTickets", String(data.totalTickets));
@@ -561,9 +565,31 @@ export default function CreateRaffleForm() {
             </div>
           </div>
 
+          {/* Who pays the fees. Sits directly under the currency, because it is
+              what decides whether the price above is what the payer pays or what
+              the organiser keeps. */}
+          <div className="flex items-center justify-between">
+            <p className="text-[1.5rem] leading-8 text-deep-100">
+              {t("absorb_fees")}
+            </p>
+            <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
+              <input
+                className="peer sr-only"
+                type="checkbox"
+                checked={absorbFees}
+                onChange={(e) => setValue("absorbFees", e.target.checked)}
+              />
+              <ToggleIcon />
+            </label>
+          </div>
+          <p className="text-[1.2rem] leading-7 text-neutral-600">
+            {t("absorb_fees_hint")}
+          </p>
+
           <AttendeePricePreview
             price={watch("ticketPrice")}
             currency={watch("currency")}
+            absorbFees={absorbFees}
           />
         </div>
 

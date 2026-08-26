@@ -160,6 +160,12 @@ export interface Ticket {
   order?: Order;
   // Attendance (check-in/out) summary — present on the event records payload.
   checkIns?: TicketCheckIn[];
+  /**
+   * What this seat's holder answered at checkout. Present only when the
+   * organiser built a form, and only on the organiser-side event fetch that
+   * preloads it — absent everywhere else, hence optional.
+   */
+  formAnswers?: TicketFormAnswer[];
   presence?: "inside" | "outside";
   totalMinutesInside?: number;
   entriesCount?: number;
@@ -375,6 +381,18 @@ export interface Event {
   isFree: boolean;
   isPrivate: boolean;
   currency: string;
+  /**
+   * Who pays the fees.
+   *
+   * False (the default) means they are added ON TOP of the price below: the
+   * buyer pays price + fees and the organisation is credited the price whole.
+   * True reverses it — the price below is exactly what the buyer pays, and the
+   * fees come out of what the organisation receives.
+   *
+   * Every surface that quotes a price has to read it, which is why it sits on
+   * the activity rather than anywhere cleverer.
+   */
+  absorbFees: boolean;
   activityTags: string[];
   ticketSalesEndAt: string | null;
   /**
@@ -522,6 +540,18 @@ export interface Raffle {
   ticketPrice: number;
   currency: string;
   usdPrice: number;
+  /**
+   * Who pays the fees.
+   *
+   * False (the default) means they are added ON TOP of the price below: the
+   * buyer pays price + fees and the organisation is credited the price whole.
+   * True reverses it — the price below is exactly what the buyer pays, and the
+   * fees come out of what the organisation receives.
+   *
+   * Every surface that quotes a price has to read it, which is why it sits on
+   * the activity rather than anywhere cleverer.
+   */
+  absorbFees: boolean;
   totalTicketsLimit: number | null;
   activityTags: string[];
   location: { lat: number; lng: number } | null;
@@ -636,6 +666,18 @@ export interface Restaurant {
   coverImageUrl: string | null;
   acceptsReservations: boolean;
   acceptsOnlinePayment: boolean;
+  /**
+   * Who pays the fees.
+   *
+   * False (the default) means they are added ON TOP of the price below: the
+   * buyer pays price + fees and the organisation is credited the price whole.
+   * True reverses it — the price below is exactly what the buyer pays, and the
+   * fees come out of what the organisation receives.
+   *
+   * Every surface that quotes a price has to read it, which is why it sits on
+   * the activity rather than anywhere cleverer.
+   */
+  absorbFees: boolean;
   offersDelivery: boolean;
   offersTakeout: boolean;
   deliveryPhone: string | null;
@@ -739,7 +781,12 @@ export interface SaleFile {
  * change to the fee rule can never leave old listings quoting an old surcharge.
  */
 export interface SalePricing {
-  /** What the seller set, and exactly what the seller is credited. */
+  /** The price on the listing, whichever way the surcharge falls. */
+  listedPrice: number;
+  /**
+   * What the seller is CREDITED — the listed price when the buyer carries the
+   * surcharge, the listed price minus it when the seller absorbs it.
+   */
   sellerPrice: number;
   /** Ticketwaze's margin. Never itemised to a buyer. */
   surcharge: number;
@@ -799,10 +846,25 @@ export interface Sale {
   description: string;
   coverImageUrl: string | null;
   activityTags: string[];
-  /** What the seller receives. The buyer pays `pricing.buyerPays`. */
+  /**
+   * The listed price. What the SELLER receives is `pricing.sellerPrice`, which
+   * equals this only while the buyer carries the surcharge — see `absorbFees`.
+   */
   price: number;
   usdPrice: number;
   currencyCode: string;
+  /**
+   * Who pays the fees.
+   *
+   * False (the default) means they are added ON TOP of the price below: the
+   * buyer pays price + fees and the organisation is credited the price whole.
+   * True reverses it — the price below is exactly what the buyer pays, and the
+   * fees come out of what the organisation receives.
+   *
+   * Every surface that quotes a price has to read it, which is why it sits on
+   * the activity rather than anywhere cleverer.
+   */
+  absorbFees: boolean;
   status:
     | "draft"
     | "scanning"
@@ -1023,6 +1085,8 @@ export interface MembershipTier {
   analytics: string;
   customTicketTypes: boolean;
   discountCodes: boolean;
+  /** May this plan ask buyers questions at checkout? Pro and above. */
+  checkoutForms: boolean;
   prioritySupport: boolean;
   aiFeatures: boolean;
   earlyAccess: boolean;
@@ -1250,4 +1314,69 @@ export interface UserWithdrawalRequestsPage {
     previousPageUrl: string | null;
   };
   data: UserWithdrawalRequest[];
+}
+
+/**
+ * THE CHECKOUT FORM.
+ *
+ * An optional set of questions an organiser attaches to an in-person or online
+ * activity AFTER creating it, from the activity page rather than the wizard.
+ * Most activities have none, which is why the checkout step they drive is
+ * conditional on the list being non-empty.
+ */
+export type EventFormQuestionType = "text" | "radio";
+
+export interface EventFormQuestion {
+  eventFormQuestionId: string;
+  eventId: string;
+  organisationId: string;
+  label: string;
+  questionType: EventFormQuestionType;
+  /** The choices, for a radio question. Empty on a text one. */
+  options: string[];
+  /** Adds an "Other" choice with its own text box to a radio question. */
+  allowOther: boolean;
+  isRequired: boolean;
+  /** Retired questions are no longer asked but keep the answers they drew. */
+  isActive: boolean;
+  position: number;
+  /**
+   * How many answers this question already holds. Present on the organiser's
+   * list only, and what the UI keys the edit/delete lock off.
+   */
+  answerCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/** The shape the public checkout reads — no ownership or audit fields. */
+export interface PublicEventFormQuestion {
+  eventFormQuestionId: string;
+  label: string;
+  questionType: EventFormQuestionType;
+  options: string[];
+  allowOther: boolean;
+  isRequired: boolean;
+  position: number;
+}
+
+export interface TicketFormAnswer {
+  ticketFormAnswerId?: string;
+  eventFormQuestionId: string;
+  /** The question as it was asked, copied at answer time. */
+  questionLabel: string;
+  answer: string;
+  /** True when this was typed into "Other" rather than chosen from the list. */
+  isOther: boolean;
+}
+
+/** One ticket holder's answers, as the organiser's responses screen reads them. */
+export interface EventFormResponse {
+  ticketId: string;
+  ticketName: string;
+  ticketType: string;
+  fullName: string;
+  email: string;
+  answeredAt: string;
+  answers: TicketFormAnswer[];
 }

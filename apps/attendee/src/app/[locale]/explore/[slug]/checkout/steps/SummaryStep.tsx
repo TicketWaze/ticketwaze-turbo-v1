@@ -55,8 +55,15 @@ export default function SummaryStep({
   feeBreakdown,
 }: Props) {
   const t = useTranslations("Checkout");
-  const { subtotal, serviceFee, platformFee, transactionFee, total, feeWaived } =
-    feeBreakdown;
+  const {
+    subtotal,
+    serviceFee,
+    platformFee,
+    transactionFee,
+    total,
+    feeWaived,
+    absorbedByOrganiser,
+  } = feeBreakdown;
   const ticketwazeFee = serviceFee + platformFee;
   const serviceFeeLabel = `${(SERVICE_FEE_RATE * 100).toFixed(0)}%`;
 
@@ -149,8 +156,12 @@ export default function SummaryStep({
           )}
         </div>
 
-        {/* Fee breakdown — only for paid events */}
-        {!isFree && selectedWithIndex.length > 0 && (
+        {/* Fee breakdown — only for paid events, and only when the buyer is
+            the one paying the fees. When the organiser has taken them on there
+            is nothing to itemise: the ticket lines above already add up to the
+            total below, and showing a subtotal identical to the total only
+            raises a question with no answer. */}
+        {!isFree && !absorbedByOrganiser && selectedWithIndex.length > 0 && (
           <div className="px-8 py-[1.8rem] flex flex-col gap-4 border-b border-dashed border-neutral-200">
             <div className="flex items-center justify-between text-[1.4rem]">
               <span className="text-neutral-500">{t("summary.subtotal")}</span>

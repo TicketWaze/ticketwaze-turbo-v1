@@ -195,26 +195,36 @@ export default function ReserveForm({
   const isMoncash = method === "moncash";
   const displayCurrency = isCard ? "USD" : isMoncash ? "HTG" : currency;
 
+  /**
+   * Both reasons the guest might pay the bare booking fee and nothing more.
+   *
+   * A waiver is Ticketwaze forgoing its margin for this person; an absorbing
+   * venue is paying it for every guest. They differ entirely in who ends up out
+   * of pocket — and not at all in what this guest is charged, which is the only
+   * question the totals below are asking.
+   */
+  const guestPaysBase = feeWaived || restaurant.absorbFees === true;
+
   const pricing = useMemo(() => {
     const base = currency === "USD" ? usdFee : htgFee;
     return {
       base,
-      walletTotal: feeWaived ? base : round2(base * (1 + SERVICE_FEE_RATE)),
+      walletTotal: guestPaysBase ? base : round2(base * (1 + SERVICE_FEE_RATE)),
       // The server checks the USD side of the wallet regardless of the venue's
       // currency, so this must too — otherwise the button enables on a healthy
       // HTG balance and the request comes back 400.
-      walletTotalUsd: feeWaived
+      walletTotalUsd: guestPaysBase
         ? usdFee
         : round2(usdFee * (1 + SERVICE_FEE_RATE)),
-      stripeUsd: feeWaived
+      stripeUsd: guestPaysBase
         ? usdFee
         : round2(usdFee * (1 + SERVICE_FEE_RATE) * (1 + STRIPE_TX_FEE_RATE)),
-      moncashHtg: feeWaived
+      moncashHtg: guestPaysBase
         ? htgFee
         : round2(htgFee * (1 + SERVICE_FEE_RATE) * (1 + MONCASH_TX_FEE_RATE)),
       walletBalance: currency === "USD" ? walletUsd : walletHtg,
     };
-  }, [currency, htgFee, usdFee, feeWaived, walletHtg, walletUsd]);
+  }, [currency, htgFee, usdFee, guestPaysBase, walletHtg, walletUsd]);
 
   const subtotal = isCard ? usdFee : isMoncash ? htgFee : pricing.base;
   const total = isCard

@@ -1,7 +1,12 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { auth } from "@/lib/auth";
 import CheckoutFlow from "./CheckoutFlow";
-import { Event, EventTicketType, User } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  EventTicketType,
+  PublicEventFormQuestion,
+  User,
+} from "@ticketwaze/typescript-config";
 import { extractIdFromSlug } from "@/lib/Slugify";
 import { notFound } from "next/navigation";
 
@@ -70,6 +75,31 @@ export default async function CheckoutPage({
     }
   }
 
+  /**
+   * The organiser's checkout questions, if this activity has any.
+   *
+   * Its own request rather than a field on the event: the questions are needed
+   * on exactly one screen, and folding them into the event payload would put
+   * them in every cached listing that never asks for them.
+   *
+   * PUBLIC, because guest checkout carries no token. A failure here yields an
+   * empty list rather than an error page — a checkout must not be blocked by an
+   * optional step, and the API re-checks every required answer at payment time
+   * regardless, so nothing can be skipped by a request that quietly failed.
+   */
+  let formQuestions: PublicEventFormQuestion[] = [];
+  try {
+    const questionsRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/form-questions`,
+      { cache: "no-store" },
+    );
+    const questionsResponse = await questionsRequest.json();
+    formQuestions = (questionsResponse?.questions ??
+      []) as PublicEventFormQuestion[];
+  } catch {
+    formQuestions = [];
+  }
+
   return (
     <AttendeeLayout title="Buy Tickets">
       <CheckoutFlow
@@ -78,6 +108,7 @@ export default async function CheckoutPage({
         user={session?.user as User | undefined}
         feeWaiverEligible={feeWaiverEligible}
         htgExchangeRate={htgExchangeRate}
+        formQuestions={formQuestions}
       />
     </AttendeeLayout>
   );

@@ -1084,7 +1084,8 @@
       "recipient": "Destinataire",
       "payment": "Paiement",
       "summary": "Résumé",
-      "continue": "Continuer"
+      "continue": "Continuer",
+      "questions": "Questions"
     },
     "guestSuccess": {
       "title": "Réservation confirmée !",
@@ -1096,7 +1097,17 @@
       "view_event_cta": "Voir l'événement"
     },
     "online_login_required": "Les activités en ligne nécessitent un compte. Connectez-vous ou créez-en un pour acheter un billet.",
-    "google_mail_required": "Cette activité se déroule sur Google Meet : les billets ne peuvent être achetés qu’avec une adresse Gmail. Connectez-vous avec un compte Google pour acheter."
+    "google_mail_required": "Cette activité se déroule sur Google Meet : les billets ne peuvent être achetés qu’avec une adresse Gmail. Connectez-vous avec un compte Google pour acheter.",
+    "questions": {
+      "title": "Quelques questions",
+      "intro_one": "L'organisateur aimerait en savoir un peu plus avant que vous continuiez.",
+      "intro_many": "L'organisateur aimerait en savoir un peu plus sur chaque personne qui reçoit un billet.",
+      "text_placeholder": "Votre réponse",
+      "other": "Autre",
+      "other_placeholder": "Précisez",
+      "missing": "Veuillez répondre à : {question}",
+      "missing_for_seat": "Billet {number} — veuillez répondre à : {question}"
+    }
   },
   "Liked": {
     "title": "Activités aimées",
