@@ -47,6 +47,9 @@ import Logo from "../../../[slug]/checkout/Logo.svg";
 // Mirrors app/controllers/utils/raffle_pricing.ts so shown totals match the
 // charge. Raffle tiers: <500 HTG → +25 flat, 500–1000 HTG → +50 flat, then
 // provider %; above 1000 HTG the standard event pricing applies.
+//
+// None of it is charged to the entrant on a raffle whose organiser has taken
+// the fees on — there the entry price is the whole of it, on every route.
 const SERVICE_FEE_RATE = 0.03;
 const PER_TICKET_FEE_USD = 1.49;
 const PER_TICKET_FEE_HTG_LOW = 100;
@@ -123,6 +126,16 @@ export default function RaffleCheckout({
 
   const maxQty = remaining !== null ? Math.max(0, remaining) : 20;
 
+  /**
+   * Both reasons the entrant might pay the bare entry price and nothing more.
+   *
+   * A waiver is Ticketwaze forgoing its margin for this person; an absorbing
+   * raffle is the organiser paying it for everyone. They differ entirely in who
+   * ends up out of pocket — and not at all in what this entrant is charged,
+   * which is the only question the four totals below are asking.
+   */
+  const buyerPaysBase = feeWaived || raffle.absorbFees === true;
+
   const pricing = useMemo(() => {
     const isUsd = raffle.currency === "USD";
     const rate = htgExchangeRate || 1;
@@ -145,7 +158,7 @@ export default function RaffleCheckout({
 
     // Wallet — no processor fee, shown in the raffle currency.
     let walletPerEntry: number;
-    if (feeWaived) walletPerEntry = base;
+    if (buyerPaysBase) walletPerEntry = base;
     else if (flat === null)
       walletPerEntry = isUsd
         ? round2(usdBase * (1 + SERVICE_FEE_RATE) + PER_TICKET_FEE_USD)
@@ -157,7 +170,7 @@ export default function RaffleCheckout({
 
     // Stripe — charged in USD.
     let stripePerEntryUsd: number;
-    if (feeWaived) stripePerEntryUsd = usdBase;
+    if (buyerPaysBase) stripePerEntryUsd = usdBase;
     else if (flat === null)
       stripePerEntryUsd = round2(
         ((htgBase * (1 + SERVICE_FEE_RATE) + perFeeHtg) *
@@ -171,7 +184,7 @@ export default function RaffleCheckout({
 
     // MonCash — charged in HTG.
     let moncashPerEntryHtg: number;
-    if (feeWaived) moncashPerEntryHtg = htgBase;
+    if (buyerPaysBase) moncashPerEntryHtg = htgBase;
     else if (flat === null)
       moncashPerEntryHtg = round2(
         (htgBase * (1 + SERVICE_FEE_RATE) + perFeeHtg) *
@@ -182,7 +195,7 @@ export default function RaffleCheckout({
 
     // NatCash — charged in HTG. Same shape as MonCash, on its own rate.
     let natcashPerEntryHtg: number;
-    if (feeWaived) natcashPerEntryHtg = htgBase;
+    if (buyerPaysBase) natcashPerEntryHtg = htgBase;
     else if (flat === null)
       natcashPerEntryHtg = round2(
         (htgBase * (1 + SERVICE_FEE_RATE) + perFeeHtg) *
@@ -202,7 +215,7 @@ export default function RaffleCheckout({
       natcashPerEntryHtg,
       walletBalance: isUsd ? walletUsd : walletHtg,
     };
-  }, [raffle, htgExchangeRate, walletHtg, walletUsd, feeWaived]);
+  }, [raffle, htgExchangeRate, walletHtg, walletUsd, buyerPaysBase]);
 
   const isCard = method === "card";
   const isMoncash = method === "moncash";

@@ -133,7 +133,12 @@ export function getSaleMinPrice(currency: string): number {
 }
 
 export interface SalePrice {
-  /** What the seller set, and exactly what the seller is credited. */
+  /** The price on the listing, whichever way the surcharge falls. */
+  listedPrice: number;
+  /**
+   * What the seller is CREDITED — the listed price when the buyer carries the
+   * surcharge, that price minus the surcharge when the seller absorbs it.
+   */
   sellerPrice: number;
   /** Ticketwaze's margin; never shown itemised to a buyer. */
   surcharge: number;
@@ -145,23 +150,34 @@ export interface SalePrice {
 /**
  * All-in price of one digital sale.
  *
+ * Passing the surcharge on (the default):
  *   surcharge = max(floor, 12% x price)
  *   buyerPays = price + surcharge
+ *   seller    = price
+ *
+ * Absorbing it, which reverses only the direction:
+ *   buyerPays = price
+ *   seller    = price - surcharge
  *
  * Mirrors `calculateSaleTotal` in the API's `utils/pricing.ts`, which is what
  * actually charges the buyer. Any change here has to be made there too.
  */
-export function getSalePrice(currency: string, price: number): SalePrice {
-  const sellerPrice = Number.isFinite(price) && price > 0 ? price : 0;
+export function getSalePrice(
+  currency: string,
+  price: number,
+  absorbFees: boolean = false,
+): SalePrice {
+  const listedPrice = Number.isFinite(price) && price > 0 ? price : 0;
   const surcharge = Math.max(
     getSaleFeeFloor(currency),
-    SALE_FEE_RATE * sellerPrice,
+    SALE_FEE_RATE * listedPrice,
   );
 
   return {
-    sellerPrice: round2(sellerPrice),
+    listedPrice: round2(listedPrice),
+    sellerPrice: round2(absorbFees ? listedPrice - surcharge : listedPrice),
     surcharge: round2(surcharge),
-    buyerPays: round2(sellerPrice + surcharge),
+    buyerPays: round2(absorbFees ? listedPrice : listedPrice + surcharge),
     currency,
   };
 }
@@ -238,4 +254,206 @@ export function getUnitPriceBreakdown(
     currency,
     route,
   };
+}
+
+// ── Who pays the fees ─────────────────────────────────────────────────────────
+
+/**
+ * WHO CARRIES THE FEE STACK.
+ *
+ * `pass_on` is the original behaviour and still the default: the fees are added
+ * ON TOP of the organiser's price, the buyer pays base + fees, and the
+ * organisation is credited the base whole.
+ *
+ * `absorb` reverses it. The price the organiser typed IS the price the buyer
+ * pays — no fee lines, no surcharge — and the same fees are taken OUT of it
+ * before the organisation is credited. The activity carries the choice
+ * (`absorbFees` on events/raffles/restaurants/sales).
+ *
+ * Mirrors `FeeMode` in the API's `utils/pricing.ts`, which is what actually
+ * charges the buyer.
+ */
+export type FeeMode = "pass_on" | "absorb";
+
+/** Reads an activity's flag as a fee mode. */
+export function getFeeMode(absorbFees: boolean | null | undefined): FeeMode {
+  return absorbFees === true ? "absorb" : "pass_on";
+}
+
+export interface AbsorbedFees {
+  /** What the buyer is charged — exactly the price the organiser set. */
+  buyerPays: number;
+  serviceFee: number;
+  platformFee: number;
+  transactionFee: number;
+  /** Everything Ticketwaze and the processor take, together. */
+  fees: number;
+  /** What actually reaches the organisation's pending balance. */
+  net: number;
+}
+
+/**
+ * The fees an organiser absorbs on ONE unit sold at face price `price`.
+ *
+ *   serviceFee     = 3% × price
+ *   platformFee    = the same flat per-unit fee as pass-on mode, same bands
+ *   transactionFee = the route's rate × price
+ *   net            = price − serviceFee − platformFee − transactionFee
+ *
+ * Mirrors `getAbsorbedFees` in the API. Components are returned unrounded so
+ * the caller can round at the point of display; `net` is rounded because it is
+ * a money amount that gets credited, not a display row.
+ */
+export function getAbsorbedFees(
+  currency: string,
+  price: number,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+  route: PaymentRoute = getDefaultRoute(currency),
+): AbsorbedFees {
+  const rate =
+    htgExchangeRate > 0 ? htgExchangeRate : FALLBACK_HTG_EXCHANGE_RATE;
+  const buyerPays = Number.isFinite(price) && price > 0 ? price : 0;
+  const serviceFee = SERVICE_FEE_RATE * buyerPays;
+  const platformFee = getPerTicketFee(currency, buyerPays, rate);
+  const transactionFee = getRouteFeeRate(route) * buyerPays;
+  const fees = serviceFee + platformFee + transactionFee;
+
+  return {
+    buyerPays: round2(buyerPays),
+    serviceFee,
+    platformFee,
+    transactionFee,
+    fees,
+    net: round2(buyerPays - fees),
+  };
+}
+
+/**
+ * WHY THERE IS A FLOOR ON AN ABSORBED PRICE.
+ *
+ * The flat per-unit fee does not scale down. At 100 HTG it is the entire
+ * ticket, and an organiser absorbing fees on a 150 HTG ticket would be paying
+ * for the privilege of selling it.
+ *
+ * So an absorbed price must leave the organiser at least HALF of it, judged
+ * against the worst-case route (card, 3%) because the organiser sets the price
+ * once and cannot know how anyone will pay:
+ *
+ *   price × (1 − 0.03 − 0.03) − flat(price) ≥ 0.5 × price
+ *   price ≥ flat(price) / 0.44
+ *
+ * Mirrors `getMinAbsorbedPrice` in the API, which is what refuses the save.
+ */
+export const ABSORBED_MIN_NET_SHARE = 0.5;
+
+export function getMinAbsorbedPrice(
+  currency: string,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+): number {
+  const headroom =
+    1 - SERVICE_FEE_RATE - STRIPE_TX_FEE_RATE - ABSORBED_MIN_NET_SHARE;
+  const rate =
+    htgExchangeRate > 0 ? htgExchangeRate : FALLBACK_HTG_EXCHANGE_RATE;
+
+  if (currency === "USD") {
+    return Math.ceil((PER_TICKET_FEE_USD / headroom) * 2) / 2;
+  }
+
+  // Two flat-fee bands, so the answer must be consistent with the band it
+  // lands in — see the API's copy.
+  const lowBandMin = PER_TICKET_FEE_HTG_LOW / headroom;
+  if (lowBandMin <= HTG_LOW_PRICE_THRESHOLD) return Math.ceil(lowBandMin / 10) * 10;
+  return Math.ceil((PER_TICKET_FEE_USD * rate) / headroom / 10) * 10;
+}
+
+/** Is this price high enough to absorb its own fees? Free is always fine. */
+export function canAbsorbFeesAtPrice(
+  currency: string,
+  price: number,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+): boolean {
+  if (!Number.isFinite(price) || price <= 0) return true;
+  return price >= getMinAbsorbedPrice(currency, htgExchangeRate);
+}
+
+/**
+ * What the organiser receives per unit, expressed as the RANGE it can land in.
+ *
+ * In absorb mode the processor's cut comes out of the organiser's side, and
+ * processors do not all charge the same — so unlike pass-on mode, where the
+ * organiser always receives exactly their base price, the net now depends on
+ * how each individual buyer chose to pay. A wallet purchase costs them nothing
+ * extra; a card purchase costs 3%.
+ *
+ * Both ends are shown rather than an average, because an average is a number
+ * no organiser will ever actually be paid.
+ */
+export interface OrganiserNetRange {
+  /** Wallet — no processor involved. */
+  best: number;
+  /** Card at 3%, the most any route costs. */
+  worst: number;
+  /** True when every route pays the same, so the UI can show one number. */
+  isFixed: boolean;
+}
+
+export function getOrganiserNetRange(
+  currency: string,
+  price: number,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+  feeMode: FeeMode = "pass_on",
+): OrganiserNetRange {
+  if (feeMode !== "absorb") {
+    const base = round2(Number.isFinite(price) && price > 0 ? price : 0);
+    return { best: base, worst: base, isFixed: true };
+  }
+
+  const best = getAbsorbedFees(currency, price, htgExchangeRate, "wallet").net;
+  const worst = getAbsorbedFees(currency, price, htgExchangeRate, "card").net;
+  return { best, worst, isFixed: best === worst };
+}
+
+// ── Digital sales, absorbed ───────────────────────────────────────────────────
+
+/**
+ * A sale's surcharge is a single all-in figure rather than a fee stack, so
+ * absorbing it is a one-line reversal: the buyer pays the listed price and the
+ * seller is credited what is left after the surcharge.
+ *
+ *   net = price − max(floor, 12% × price)
+ *
+ * Mirrors `getAbsorbedSaleNet` in the API.
+ */
+export function getAbsorbedSaleNet(currency: string, price: number): number {
+  const listed = Number.isFinite(price) && price > 0 ? price : 0;
+  const surcharge = Math.max(
+    getSaleFeeFloor(currency),
+    SALE_FEE_RATE * listed,
+  );
+  return round2(listed - surcharge);
+}
+
+/** The floor is flat below ~$25, so half-the-price reduces to twice the floor. */
+export function getMinAbsorbedSalePrice(currency: string): number {
+  return round2(getSaleFeeFloor(currency) / ABSORBED_MIN_NET_SHARE);
+}
+
+/**
+ * The all-in price to quote for one unit, whichever way the fees fall.
+ *
+ * In absorb mode that is simply the organiser's price — which is the whole
+ * point of the mode, and why every quoting surface can call this instead of
+ * branching on its own.
+ */
+export function getBuyerUnitTotal(
+  currency: string,
+  price: number,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+  route: PaymentRoute = getDefaultRoute(currency),
+  feeMode: FeeMode = "pass_on",
+): number {
+  if (feeMode === "absorb") {
+    return round2(Number.isFinite(price) && price > 0 ? price : 0);
+  }
+  return getUnitPriceBreakdown(currency, price, htgExchangeRate, route).total;
 }

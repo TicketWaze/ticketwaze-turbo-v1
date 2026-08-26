@@ -23,6 +23,7 @@ import TruncateUrl from "@/lib/TruncateUrl";
 import { Link } from "@/i18n/navigation";
 import WithdrawalInformations from "./components/WithdrawalInformations";
 import OrdersInformations from "./components/OrdersInformations";
+import { ticketsOrganisationTotal } from "@/lib/ticketEarnings";
 
 /** An order the finance table can render: the API resolved its activity. */
 export type OrderWithActivity = Order & { activity: OrderActivitySummary };
@@ -52,18 +53,17 @@ export default function FinancePageContent({
     Boolean(order.activity);
   const orders = transactions.orders.filter(hasActivity);
   const allOrders = transactions.allOrders.filter(hasActivity);
-  const total = allOrders.reduce((sum, order) => {
-    const orderTotal = order.tickets.reduce(
-      (s, ticket) =>
-        s +
-        (currentOrganisation?.currency === "HTG"
-          ? ticket.ticketPrice
-          : ticket.ticketUsdPrice),
-      0,
-    );
-    return sum + orderTotal;
-  }, 0);
-  const roundTotal = Math.round(total * 100) / 100;
+  /**
+   * The organisation's OWN money, not the money that moved through the page.
+   * On an activity that absorbs the fees the buyer still pays the face price,
+   * but Ticketwaze takes its cut off the top — so summing `ticketPrice` here
+   * would credit the organisation with fees it never received. The table below
+   * keeps showing what each buyer paid; only this tile is the net.
+   */
+  const roundTotal = ticketsOrganisationTotal(
+    allOrders.flatMap((order) => order.tickets),
+    currentOrganisation?.currency,
+  );
   const locale = useLocale();
   return (
     <div className={"flex flex-col gap-12 overflow-y-scroll overflow-x-hidden"}>

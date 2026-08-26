@@ -682,7 +682,8 @@
         "name": "Name",
         "email": "Email",
         "status": "Status",
-        "date_purchased": "Purchased"
+        "date_purchased": "Purchased",
+        "answers": "Checkout answers"
       },
       "create_ticket": "Create Ticket",
       "ticket": "Ticket Classes",
@@ -874,7 +875,62 @@
         "cancel_success": "Deletion cancelled successfully."
       },
       "start_meeting": "Start meeting",
-      "start_meeting_failed": "We could not open the meeting. Please try again, or start it from your Zoom or Google Calendar account."
+      "start_meeting_failed": "We could not open the meeting. Please try again, or start it from your Zoom or Google Calendar account.",
+      "forms": {
+        "title": "Checkout questions",
+        "subtitle": "Questions for your buyers",
+        "back": "Back",
+        "intro": "Each person getting a ticket answers these before they pay. Leave this empty and nothing extra is asked.",
+        "empty": "No questions yet. Add one and it appears at checkout straight away.",
+        "tab_questions": "Questions",
+        "tab_responses": "Answers",
+        "add_question": "Add a question",
+        "new_question": "New question",
+        "edit_question": "Edit question",
+        "label": "Your question",
+        "type": "Answer type",
+        "type_text": "Text answer",
+        "type_radio": "Multiple choice",
+        "type_text_hint": "The person types whatever they want.",
+        "type_radio_hint": "The person picks one of the choices you set.",
+        "options": "Choices",
+        "option_placeholder": "Choice {number}",
+        "add_option": "Add a choice",
+        "remove_option": "Remove this choice",
+        "other_option": "Other",
+        "allow_other": "Add an \"Other\" choice",
+        "allow_other_hint": "Lets someone pick \"Other\" and type their own answer, for anything your choices do not cover.",
+        "required_label": "This question must be answered",
+        "required": "Required",
+        "save": "Save",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "move_up": "Move up",
+        "move_down": "Move down",
+        "added": "Question added",
+        "saved": "Question saved",
+        "deleted": "Question deleted",
+        "reordered": "Order updated",
+        "turned_on": "This question is being asked again",
+        "turned_off": "This question is no longer asked",
+        "answers_count": "{count} answered",
+        "locked_hint": "People have already answered this one, so it can no longer be edited or deleted. Turn it off to stop asking it, and add a new question instead.",
+        "limit_reached": "You can ask up to {max} questions on one activity.",
+        "no_responses": "Nobody has answered yet. Answers appear here as tickets are bought.",
+        "col_attendee": "Attendee",
+        "col_ticket": "Ticket",
+        "col_date": "Bought",
+        "retired": "Off",
+        "other_tag": "Other",
+        "upgrade_title": "Checkout questions are a Pro feature",
+        "upgrade_body": "Upgrade to Pro to ask your buyers anything you need before they pay. Any questions you have already set up stay exactly as they are.",
+        "errors": {
+          "label": "Write a question of at least 3 characters.",
+          "options_min": "A multiple-choice question needs at least two choices.",
+          "options_unique": "Each choice must be different."
+        }
+      }
     },
     "create_event": {
       "title": "Create Activity",
@@ -1110,7 +1166,9 @@
         "tags_tip": "Add a few tags to describe your raffle. Press Enter, comma or space to add each one. Click a tag to remove it.",
         "tags_placeholder": "Add a tag",
         "location": "Location (optional)",
-        "location_tip": "Add a pickup or draw location. If you set one, attendees see it on a map; leave it empty to hide the map."
+        "location_tip": "Add a pickup or draw location. If you set one, attendees see it on a map; leave it empty to hide the map.",
+        "absorb_fees": "Cover the fees for your entrants",
+        "absorb_fees_hint": "Off, the fees are added to your entry price and your entrant pays them. On, the price you set is exactly what they pay and the fees come out of what you receive."
       },
       "ticket": "Ticket",
       "event_type": "Activity Type",
@@ -1328,7 +1386,9 @@
         "gallery_add": "Add photos",
         "gallery_count": "{count} of 5 selected",
         "gallery_remove": "Remove",
-        "pro_feature": "Restaurants are part of our paid Pro and Premium plans. Upgrade to publish your venue, share your menu by QR code and take reservations. Trials do not include restaurants."
+        "pro_feature": "Restaurants are part of our paid Pro and Premium plans. Upgrade to publish your venue, share your menu by QR code and take reservations. Trials do not include restaurants.",
+        "absorb_fees": "Cover the booking fees for your guests",
+        "absorb_fees_hint": "Off, the fees are added to your booking fee and your guest pays them. On, the fee you set is exactly what they pay and the fees come out of what you receive."
       },
       "publish_name_locked": "You announced this activity under this name, so it stays. Everyone following it keeps their place.",
       "publish_success": "Your event was sent for review.",
@@ -1381,7 +1441,11 @@
         },
         "file_section": "The file you are selling",
         "file_versions_note": "{count} versions kept. Each buyer keeps the version they paid for, so replacing the file never changes what someone has already bought.",
-        "file_immediate_note": "Uploading a file takes effect straight away and does not wait for Save. It sends your product back for review, so it stops being on sale until an admin approves the new version. People who already bought it keep the version they paid for and are not affected."
+        "file_immediate_note": "Uploading a file takes effect straight away and does not wait for Save. It sends your product back for review, so it stops being on sale until an admin approves the new version. People who already bought it keep the version they paid for and are not affected.",
+        "absorb_fees": "Cover the fee for your buyers",
+        "absorb_fees_hint": "Off, our fee is added to your price and your buyer pays it. On, the price you set is exactly what they pay and the fee comes out of what you receive.",
+        "absorb_fees_min": "Absorbing the fee raises the minimum price, because the fee has a floor that does not scale down.",
+        "you_receive": "You receive"
       },
       "document": {
         "title": "Document (optional)",
@@ -1400,7 +1464,10 @@
           "uploadFailed": "The document could not be uploaded. Please try again.",
           "removeFailed": "The document could not be removed. Please try again."
         }
-      }
+      },
+      "absorb_fees": "Cover the fees for your attendees",
+      "absorb_fees_hint": "Off, the fees are added to your price and your attendee pays them. On, the price you set is exactly what they pay and the fees come out of what you receive.",
+      "absorb_fees_locked": "You can change this at any time. It applies to future sales; tickets already sold keep the price they were bought at."
     },
     "price_preview": {
       "title": "What your attendees will pay",
@@ -1408,7 +1475,14 @@
       "transaction_fees": "Transaction fees",
       "attendee_pays": "Attendee pays",
       "you_receive": "You receive",
-      "note": "Fees are added on top of your price, so you always receive the full amount you set."
+      "note": "Fees are added on top of your price, so you always receive the full amount you set.",
+      "title_absorbed": "What you will receive",
+      "listed_price": "Your price",
+      "fees_deducted": "Fees deducted",
+      "attendee_pays_absorbed": "Attendee pays",
+      "you_receive_range": "You receive",
+      "note_absorbed": "Your attendee pays exactly the price you set. What you receive depends on how they pay, because each payment method charges its own rate.",
+      "range_hint": "Wallet at best, card at worst"
     },
     "sale_price_preview": {
       "title": "What your buyers will pay",

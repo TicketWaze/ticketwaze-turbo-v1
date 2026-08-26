@@ -2,7 +2,11 @@
 import { useLocale, useTranslations } from "next-intl";
 import { Receipt2 } from "iconsax-reactjs";
 import { formatAmount } from "@ticketwaze/currency";
-import { getSalePrice, getSaleMinPrice } from "@ticketwaze/pricing";
+import {
+  getSalePrice,
+  getSaleMinPrice,
+  getMinAbsorbedSalePrice,
+} from "@ticketwaze/pricing";
 
 type Props = {
   /**
@@ -13,6 +17,8 @@ type Props = {
   price: unknown;
   /** "HTG" | "USD" — the product's currency. */
   currency: string;
+  /** True when the seller has chosen to carry the fee themselves. */
+  absorbFees?: boolean;
 };
 
 function toNumber(value: unknown): number {
@@ -26,12 +32,24 @@ function toNumber(value: unknown): number {
  * currently typing.
  *
  * Sales price differently from tickets, so this is not AttendeePricePreview:
- * the buyer is shown ONE all-in number and never an itemised fee, and the
- * seller receives exactly the price they set. The seller still needs to see the
- * gap, because it is the number that decides whether their product is
- * competitive — so it is shown here, on the seller's side only.
+ * the buyer is shown ONE all-in number and never an itemised fee. The seller
+ * still needs to see the gap, because it is the number that decides whether
+ * their product is competitive — so it is shown here, on the seller's side only.
+ *
+ * WHICH SIDE THE GAP FALLS ON is the seller's choice. Passing the fee on, the
+ * buyer pays price + surcharge and the seller receives their price. Absorbing
+ * it, the buyer pays the price on the listing and the seller receives what is
+ * left. Either way the buyer sees one number and no itemisation.
+ *
+ * Absorbing raises the minimum price, because the surcharge has a floor
+ * (\$3 / 400 HTG) that does not scale down — at the ordinary minimum an
+ * absorbing seller would be credited nothing at all.
  */
-export default function SalePricePreview({ price, currency }: Props) {
+export default function SalePricePreview({
+  price,
+  currency,
+  absorbFees = false,
+}: Props) {
   const t = useTranslations("Events.sale_price_preview");
   const locale = useLocale();
 
@@ -41,7 +59,9 @@ export default function SalePricePreview({ price, currency }: Props) {
   const money = (amount: number) =>
     `${formatAmount(amount, locale)} ${currency}`;
 
-  const minimum = getSaleMinPrice(currency);
+  const minimum = absorbFees
+    ? getMinAbsorbedSalePrice(currency)
+    : getSaleMinPrice(currency);
   // Below the minimum the surcharge would dwarf the product, so the API refuses
   // it. Saying so here saves a round trip that comes back as a raw error.
   if (numericPrice < minimum) {
@@ -54,7 +74,11 @@ export default function SalePricePreview({ price, currency }: Props) {
     );
   }
 
-  const { sellerPrice, buyerPays } = getSalePrice(currency, numericPrice);
+  const { sellerPrice, buyerPays } = getSalePrice(
+    currency,
+    numericPrice,
+    absorbFees,
+  );
 
   return (
     <div className="flex flex-col gap-4 border p-4 rounded-2xl border-neutral-300">

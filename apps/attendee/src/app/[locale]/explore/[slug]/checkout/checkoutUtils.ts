@@ -58,6 +58,14 @@ export function getTransactionFeeRate(paymentType: PaymentType): number {
  *   transactionFee = txRate × (subtotal + serviceFee + platformFee)
  *                    (3% Stripe | 2.5% MonCash | 2.5% NatCash | 0% Wallet)
  *   total         = subtotal + serviceFee + platformFee + transactionFee
+ *
+ * TWO WAYS THE TOTAL COLLAPSES TO THE SUBTOTAL, and they are not the same
+ * thing. `feeWaived` is the waitlist perk — Ticketwaze forgoes its margin for
+ * this buyer, and the fee rows stay populated so the UI can show what was
+ * saved. `absorbFees` is the organiser carrying them — the fees exist but on
+ * the other side of the transaction, so they are zeroed out here rather than
+ * merely excluded from the total. Nothing about them belongs on the buyer's
+ * receipt.
  */
 export function calculateFeeBreakdown(
   selectedTickets: SelectedTicket[],
@@ -66,6 +74,7 @@ export function calculateFeeBreakdown(
   paymentType: PaymentType = "",
   feeWaived: boolean = false,
   htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+  absorbFees: boolean = false,
 ): FeeBreakdown {
   let subtotal = 0;
   let platformFee = 0;
@@ -84,6 +93,21 @@ export function calculateFeeBreakdown(
     platformFee += getPerTicketFee(currency, price, rate) * ticket.quantity;
   });
 
+  // The organiser is paying these, so as far as this buyer is concerned they do
+  // not exist. Zeroed rather than merely excluded from the total, so no surface
+  // downstream can render a fee the buyer was never going to be charged.
+  if (absorbFees) {
+    return {
+      subtotal,
+      serviceFee: 0,
+      platformFee: 0,
+      transactionFee: 0,
+      total: subtotal,
+      feeWaived: false,
+      absorbedByOrganiser: true,
+    };
+  }
+
   const serviceFee = SERVICE_FEE_RATE * subtotal;
   const txRate = getTransactionFeeRate(paymentType);
   const transactionFee = txRate * (subtotal + serviceFee + platformFee);
@@ -101,5 +125,6 @@ export function calculateFeeBreakdown(
     transactionFee,
     total,
     feeWaived,
+    absorbedByOrganiser: false,
   };
 }

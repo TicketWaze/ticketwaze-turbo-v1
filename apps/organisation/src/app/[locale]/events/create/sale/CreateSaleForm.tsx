@@ -10,7 +10,7 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { InfoCircle, Warning2 } from "iconsax-reactjs";
-import { getSaleMinPrice } from "@ticketwaze/pricing";
+import { getSaleMinPrice, getMinAbsorbedSalePrice } from "@ticketwaze/pricing";
 import { useRouter } from "@/i18n/navigation";
 import { CreateSale } from "@/actions/SaleActions";
 import BackButton from "@/components/shared/BackButton";
@@ -21,6 +21,7 @@ import UploadDocument from "@/assets/icons/document-upload.svg";
 import { compressImage } from "@/lib/compressImage";
 import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
 import SalePricePreview from "@/components/shared/SalePricePreview";
+import ToggleIcon from "@/components/shared/ToggleIcon";
 import CharCounter from "@/components/shared/CharCounter";
 import useSaleTitleAvailability from "@/hooks/useSaleTitleAvailability";
 import SaleFilePicker from "@/components/shared/SaleFilePicker";
@@ -50,14 +51,27 @@ function makeSaleSchema(t: TranslateFn) {
       description: z.string().min(20, t("errors.description")),
       price: z.coerce.number().gt(0, t("errors.price")),
       currency: z.enum(["HTG", "USD"]),
+      absorbFees: z.boolean(),
       activityTags: z.array(z.string()),
     })
-    // The floor is currency-dependent — below it the surcharge would dwarf the
-    // product — so it is checked here rather than as a fixed `min` on the field.
-    .refine((d) => d.price >= getSaleMinPrice(d.currency), {
-      message: t("errors.min_price"),
-      path: ["price"],
-    });
+    /**
+     * The floor is currency-dependent — below it the surcharge would dwarf the
+     * product — so it is checked here rather than as a fixed `min` on the
+     * field. A seller who ABSORBS the surcharge needs a higher floor still: it
+     * has a flat component that does not scale down, and at the ordinary
+     * minimum they would be credited nothing at all.
+     */
+    .refine(
+      (d) =>
+        d.price >=
+        (d.absorbFees
+          ? getMinAbsorbedSalePrice(d.currency)
+          : getSaleMinPrice(d.currency)),
+      {
+        message: t("errors.min_price"),
+        path: ["price"],
+      },
+    );
 }
 
 function Field({
@@ -130,6 +144,7 @@ export default function CreateSaleForm() {
       description: "",
       price: undefined as unknown as number,
       currency: "HTG",
+      absorbFees: false,
       activityTags: [],
     },
   });
@@ -140,6 +155,7 @@ export default function CreateSaleForm() {
   // unique index, so this only decides whether the button is usable — it is
   // never what makes the title valid.
   const titleStatus = useSaleTitleAvailability(watch("title"));
+  const absorbFees = watch("absorbFees");
 
   const [tagInput, setTagInput] = useState("");
   const tagInputRef = useRef<HTMLInputElement>(null);
@@ -217,6 +233,7 @@ export default function CreateSaleForm() {
     fd.append("description", data.description);
     fd.append("price", String(data.price));
     fd.append("currency", data.currency);
+    fd.append("absorbFees", JSON.stringify(data.absorbFees));
     fd.append("activityTags", JSON.stringify(data.activityTags));
 
     // Only the cover rides in this body — the product goes straight to S3 — but
@@ -477,9 +494,31 @@ export default function CreateSaleForm() {
             </div>
           </div>
 
+          {/* Who pays the fees. Sits directly under the currency, because it is
+              what decides whether the price above is what the payer pays or what
+              the organiser keeps. */}
+          <div className="flex items-center justify-between">
+            <p className="text-[1.5rem] leading-8 text-deep-100">
+              {t("absorb_fees")}
+            </p>
+            <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
+              <input
+                className="peer sr-only"
+                type="checkbox"
+                checked={absorbFees}
+                onChange={(e) => setValue("absorbFees", e.target.checked)}
+              />
+              <ToggleIcon />
+            </label>
+          </div>
+          <p className="text-[1.2rem] leading-7 text-neutral-600">
+            {t("absorb_fees_hint")}
+          </p>
+
           <SalePricePreview
             price={watch("price")}
             currency={watch("currency")}
+            absorbFees={absorbFees}
           />
         </div>
 

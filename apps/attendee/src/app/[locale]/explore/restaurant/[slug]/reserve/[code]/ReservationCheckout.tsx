@@ -55,7 +55,7 @@ export interface HeldReservation {
   status: "pending" | "confirmed" | "seated" | "cancelled" | "no_show";
   holdExpiresAt: string | null;
   guestName: string;
-  restaurant?: { name: string; slug: string };
+  restaurant?: { name: string; slug: string; absorbFees?: boolean };
 }
 
 export default function ReservationCheckout({
@@ -109,22 +109,35 @@ export default function ReservationCheckout({
   const expired = reservation.status === "pending" && secondsLeft <= 0;
   const alreadyPaid = reservation.status !== "pending";
 
+  /**
+   * Both reasons the guest might pay the bare booking fee and nothing more.
+   *
+   * A waiver is Ticketwaze forgoing its margin for this person; an absorbing
+   * venue is paying it for every guest. They differ entirely in who ends up out
+   * of pocket — and not at all in what this guest is charged, which is the only
+   * question the totals below are asking.
+   */
+  const guestPaysBase =
+    feeWaived || reservation.restaurant?.absorbFees === true;
+
   const pricing = useMemo(() => {
     const isUsd = reservation.currency === "USD";
     const htgBase = Number(reservation.fee);
     const usdBase = Number(reservation.usdFee);
     const base = isUsd ? usdBase : htgBase;
 
-    const walletTotal = feeWaived ? base : round2(base * (1 + SERVICE_FEE_RATE));
+    const walletTotal = guestPaysBase
+      ? base
+      : round2(base * (1 + SERVICE_FEE_RATE));
     // The server checks the USD side of the wallet whatever the venue's
     // currency, so this must too or the button enables and the request 400s.
-    const walletTotalUsd = feeWaived
+    const walletTotalUsd = guestPaysBase
       ? usdBase
       : round2(usdBase * (1 + SERVICE_FEE_RATE));
-    const stripeUsd = feeWaived
+    const stripeUsd = guestPaysBase
       ? usdBase
       : round2(usdBase * (1 + SERVICE_FEE_RATE) * (1 + STRIPE_TX_FEE_RATE));
-    const moncashHtg = feeWaived
+    const moncashHtg = guestPaysBase
       ? htgBase
       : round2(htgBase * (1 + SERVICE_FEE_RATE) * (1 + MONCASH_TX_FEE_RATE));
 
@@ -140,7 +153,7 @@ export default function ReservationCheckout({
       moncashHtg,
       walletBalance: isUsd ? walletUsd : walletHtg,
     };
-  }, [reservation, walletHtg, walletUsd, feeWaived]);
+  }, [reservation, walletHtg, walletUsd, guestPaysBase]);
 
   const isCard = method === "card";
   const isMoncash = method === "moncash";

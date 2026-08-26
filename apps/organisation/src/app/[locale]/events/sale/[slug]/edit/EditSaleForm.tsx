@@ -10,7 +10,7 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { InfoCircle, Warning2 } from "iconsax-reactjs";
-import { getSaleMinPrice } from "@ticketwaze/pricing";
+import { getSaleMinPrice, getMinAbsorbedSalePrice } from "@ticketwaze/pricing";
 import { Sale } from "@ticketwaze/typescript-config";
 import { useRouter } from "@/i18n/navigation";
 import { UpdateSale } from "@/actions/SaleActions";
@@ -22,6 +22,7 @@ import UploadDocument from "@/assets/icons/document-upload.svg";
 import { compressImage } from "@/lib/compressImage";
 import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
 import SalePricePreview from "@/components/shared/SalePricePreview";
+import ToggleIcon from "@/components/shared/ToggleIcon";
 import CharCounter from "@/components/shared/CharCounter";
 import useSaleTitleAvailability from "@/hooks/useSaleTitleAvailability";
 import SaleFileManager from "../components/SaleFileManager";
@@ -48,12 +49,20 @@ function makeSaleSchema(t: TranslateFn) {
       description: z.string().min(20, t("errors.description")),
       price: z.coerce.number().gt(0, t("errors.price")),
       currency: z.enum(["HTG", "USD"]),
+      absorbFees: z.boolean(),
       activityTags: z.array(z.string()),
     })
-    .refine((d) => d.price >= getSaleMinPrice(d.currency), {
-      message: t("errors.min_price"),
-      path: ["price"],
-    });
+    .refine(
+      (d) =>
+        d.price >=
+        (d.absorbFees
+          ? getMinAbsorbedSalePrice(d.currency)
+          : getSaleMinPrice(d.currency)),
+      {
+        message: t("errors.min_price"),
+        path: ["price"],
+      },
+    );
 }
 
 function Field({
@@ -130,6 +139,7 @@ export default function EditSaleForm({ sale }: { sale: Sale }) {
       // The row stores both currencies; the product is denominated in one.
       price: sale.currencyCode === "USD" ? sale.usdPrice : sale.price,
       currency: (sale.currencyCode === "USD" ? "USD" : "HTG") as "HTG" | "USD",
+      absorbFees: sale.absorbFees === true,
       activityTags: sale.activityTags ?? [],
     },
   });
@@ -139,6 +149,7 @@ export default function EditSaleForm({ sale }: { sale: Sale }) {
   // unique index, so this only decides whether the button is usable — it is
   // never what makes the title valid.
   const titleStatus = useSaleTitleAvailability(watch("title"), sale.saleId);
+  const absorbFees = watch("absorbFees");
 
   const [tagInput, setTagInput] = useState("");
   const tagInputRef = useRef<HTMLInputElement>(null);
@@ -199,6 +210,7 @@ export default function EditSaleForm({ sale }: { sale: Sale }) {
     fd.append("description", data.description);
     fd.append("price", String(data.price));
     fd.append("currency", data.currency);
+    fd.append("absorbFees", JSON.stringify(data.absorbFees));
     fd.append("activityTags", JSON.stringify(data.activityTags));
 
     if (formDataSize(fd) > MAX_UPLOAD_BYTES) {
@@ -437,9 +449,31 @@ export default function EditSaleForm({ sale }: { sale: Sale }) {
             </div>
           </div>
 
+          {/* Who pays the fees. Sits directly under the currency, because it is
+              what decides whether the price above is what the payer pays or what
+              the organiser keeps. */}
+          <div className="flex items-center justify-between">
+            <p className="text-[1.5rem] leading-8 text-deep-100">
+              {t("absorb_fees")}
+            </p>
+            <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
+              <input
+                className="peer sr-only"
+                type="checkbox"
+                checked={absorbFees}
+                onChange={(e) => setValue("absorbFees", e.target.checked)}
+              />
+              <ToggleIcon />
+            </label>
+          </div>
+          <p className="text-[1.2rem] leading-7 text-neutral-600">
+            {t("absorb_fees_hint")}
+          </p>
+
           <SalePricePreview
             price={watch("price")}
             currency={watch("currency")}
+            absorbFees={absorbFees}
           />
           {/* The API refuses a currency change once the product has sold —
               switching it would re-denominate revenue and contradict receipts

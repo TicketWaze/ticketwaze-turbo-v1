@@ -1040,7 +1040,8 @@
       "recipient": "Recipient",
       "payment": "Payment",
       "summary": "Summary",
-      "continue": "Continue"
+      "continue": "Continue",
+      "questions": "Questions"
     },
     "guestSuccess": {
       "title": "Booking Confirmed!",
@@ -1052,7 +1053,17 @@
       "view_event_cta": "View event"
     },
     "online_login_required": "Online activities require an account. Please sign in or create one to buy a ticket.",
-    "google_mail_required": "This activity is hosted on Google Meet, so tickets can only be bought with a Gmail address. Please sign in with a Google account to purchase."
+    "google_mail_required": "This activity is hosted on Google Meet, so tickets can only be bought with a Gmail address. Please sign in with a Google account to purchase.",
+    "questions": {
+      "title": "A few questions",
+      "intro_one": "The organiser would like to know a little more before you continue.",
+      "intro_many": "The organiser would like to know a little more about each person getting a ticket.",
+      "text_placeholder": "Your answer",
+      "other": "Other",
+      "other_placeholder": "Tell us more",
+      "missing": "Please answer: {question}",
+      "missing_for_seat": "Ticket {number} — please answer: {question}"
+    }
   },
   "Liked": {
     "title": "Like activities",

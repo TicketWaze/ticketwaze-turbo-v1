@@ -19,6 +19,11 @@ export type ActivityCardPrice =
  *   HTG activity → MonCash  (price + 3% + flat per-ticket fee) × 1.025
  *   USD activity → Stripe   (price + 3% + $1.49) × 1.03
  *
+ * Unless the organiser has taken the fees on themselves, in which case there is
+ * no arithmetic to do: the price they set IS what the buyer pays, on every
+ * route. That is the whole point of the mode, and quoting a marked-up figure
+ * here would advertise a price no buyer would ever be charged.
+ *
  * The waitlist first-purchase fee waiver is deliberately ignored. It is
  * per-user state, and cards render in public listings that are the same for
  * everyone; a waived buyer simply sees a lower total at checkout than the card
@@ -45,6 +50,8 @@ export function getActivityCardPrice(
    * the 500 HTG threshold, so deriving the cheapest total from the cheapest
    * base assumes a monotonicity the fee curve does not owe us.
    */
+  const absorbFees = event.absorbFees === true;
+
   const totals = ticketTypes
     .map((ticketType) => {
       const base = Number(
@@ -53,6 +60,7 @@ export function getActivityCardPrice(
           : (ticketType.ticketTypePrice ?? 0),
       );
       if (!Number.isFinite(base) || base <= 0) return null;
+      if (absorbFees) return base;
       return currency === "USD"
         ? calculateStripeTotalUSD(base)
         : calculateMoncashTotalHTG(base, rate);

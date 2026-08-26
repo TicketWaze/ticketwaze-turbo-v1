@@ -5,6 +5,7 @@ import {
   UseFormRegister,
   UseFormSetValue,
   useFieldArray,
+  useWatch,
   Control,
 } from "react-hook-form";
 import { AddCircle, Trash, Warning2 } from "iconsax-reactjs";
@@ -12,6 +13,7 @@ import type { CreateMeetFormValues } from "./types";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import { TicketTypePricePreview } from "@/components/shared/AttendeePricePreview";
+import AbsorbFeesToggle from "@/components/shared/AbsorbFeesToggle";
 import { Input } from "@/components/shared/Inputs";
 import { toast } from "sonner";
 import { MembershipTier } from "@ticketwaze/typescript-config";
@@ -47,6 +49,7 @@ export default function StepTicket({
   });
   const [currency, setCurrency] = useState("HTG");
   const [wordCounts, setWordCounts] = useState<number[]>(fields.map(() => 0));
+  const absorbFees = Boolean(useWatch({ control, name: "absorbFees" }));
   const canEditFreeQuantity = membershipTier.membershipName !== "free";
   function addClass() {
     if (membershipTier.membershipName === "free") {
@@ -162,6 +165,18 @@ export default function StepTicket({
             </div>
           </RadioGroup>
         </div>
+      )}
+
+      {/* Who pays the fees. Placed here deliberately: it follows from the
+          currency above and it is a premise of every price typed below it.
+          Hidden when nothing is being charged — there is no fee to absorb on a
+          ticket nobody pays for. */}
+      {!isFree && (
+        <AbsorbFeesToggle
+          checked={absorbFees}
+          onChange={(next) => setValue("absorbFees", next)}
+          t={t}
+        />
       )}
 
       {isFree ? (
@@ -315,6 +330,7 @@ export default function StepTicket({
                 control={control}
                 index={index}
                 currency={currency}
+                absorbFees={absorbFees}
               />
             </div>
           ))}

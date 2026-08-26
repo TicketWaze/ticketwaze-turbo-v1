@@ -289,6 +289,74 @@ export default function DownloadReport({
         },
       });
 
+      /**
+       * CHECKOUT ANSWERS.
+       *
+       * Its own table rather than extra columns on the attendee list above:
+       * with up to ten questions the combined table would be unreadable on A4,
+       * and the two are read for different reasons — that one is a door list,
+       * this one is what people told you.
+       *
+       * The columns come from the ANSWERS present, in the order they were
+       * asked, so a report only ever carries questions this event actually
+       * used. Skipped entirely when nobody answered anything, which is the case
+       * for almost every event.
+       */
+      const answeredTickets = [...tickets]
+        .filter((ticket) => (ticket.formAnswers?.length ?? 0) > 0)
+        .sort((a, b) => a.fullName.localeCompare(b.fullName));
+
+      if (answeredTickets.length > 0) {
+        // First appearance wins the column order, which is the order the
+        // questions were asked in — answers are preloaded in question order.
+        const columns: { id: string; label: string }[] = [];
+        const seen = new Set<string>();
+        for (const ticket of answeredTickets) {
+          for (const answer of ticket.formAnswers ?? []) {
+            if (seen.has(answer.eventFormQuestionId)) continue;
+            seen.add(answer.eventFormQuestionId);
+            columns.push({
+              id: answer.eventFormQuestionId,
+              label: answer.questionLabel,
+            });
+          }
+        }
+
+        y =
+          (doc as unknown as { lastAutoTable: { finalY: number } }).lastAutoTable
+            .finalY + 28;
+        if (y > doc.internal.pageSize.getHeight() - 120) {
+          doc.addPage();
+          y = margin;
+        }
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(13);
+        doc.text(`${t("answers")} (${answeredTickets.length})`, margin, y);
+        y += 6;
+
+        autoTable(doc, {
+          startY: y,
+          margin: { left: margin, right: margin },
+          headStyles: { fillColor: [228, 91, 0], fontSize: 8 },
+          styles: { fontSize: 8, cellPadding: 4, overflow: "linebreak" },
+          head: [[t("name"), ...columns.map((column) => column.label)]],
+          body: answeredTickets.map((ticket) => {
+            const byQuestion = new Map(
+              (ticket.formAnswers ?? []).map((answer) => [
+                answer.eventFormQuestionId,
+                answer.answer,
+              ]),
+            );
+            // A blank cell means the question was optional and skipped, which
+            // is itself worth being able to see.
+            return [
+              ticket.fullName,
+              ...columns.map((column) => byQuestion.get(column.id) ?? "—"),
+            ];
+          }),
+        });
+      }
+
       // Page numbers
       const pageCount = doc.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
