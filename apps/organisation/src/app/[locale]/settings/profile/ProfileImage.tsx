@@ -98,7 +98,7 @@ function ProfileImage() {
   return (
     <div
       className={
-        "p-12 bg-primary-500 rounded-[30px] flex flex-col lg:flex-row items-center justify-center gap-10"
+        "p-12 bg-primary-500 rounded-[30px] flex flex-col lg:flex-row items-center justify-center gap-10 w-full"
       }
     >
       <Dialog>
@@ -170,11 +170,11 @@ function ProfileImage() {
           </div>
         </>
       )}
-      <div className={"flex flex-1 flex-col gap-8 lg:gap-[2.8rem]"}>
+      <div className={"flex flex-1 min-w-0 flex-col gap-8 lg:gap-[2.8rem]"}>
         {organisation?.organisationName ? (
           <span
             className={
-              "font-primary font-medium text-center lg:font-bold text-[2.6rem] lg:text-[4.5rem] leading-12 lg:leading-20 text-white"
+              "font-primary lg:line-clamp-2 wrap-break-word overflow-hidden font-medium text-center lg:font-bold text-[2.6rem] lg:text-[4.5rem] leading-12 lg:leading-20 text-white"
             }
           >
             {organisation?.organisationName}
