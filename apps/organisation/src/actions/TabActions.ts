@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 
 /**
  * Customer tabs — the running checks the workplace keeps while guests are still
@@ -20,14 +21,27 @@ function headers(accessToken: string, locale: string) {
   };
 }
 
+/**
+ * The access token, read from the session at call time.
+ *
+ * Never taken from the caller: the browser's copy is captured by
+ * `useSession()` at mount and an access token only lives fifteen minutes, so a
+ * screen someone stays and works in was sending an expired one. auth() reads
+ * the session fresh and refreshes it if it is close to expiry.
+ */
+async function sessionToken(): Promise<string> {
+  const session = await auth();
+  return session?.user.accessToken ?? "";
+}
+
 async function send(
   url: string,
   method: string,
-  accessToken: string,
   locale: string,
   body?: unknown,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(url, {
       method,
       headers: headers(accessToken, locale),
@@ -51,7 +65,6 @@ async function send(
 export async function OpenTab(
   organisationId: string,
   restaurantId: string,
-  accessToken: string,
   locale: string,
   payload: {
     label: string;
@@ -62,7 +75,6 @@ export async function OpenTab(
   return send(
     base(organisationId, restaurantId),
     "POST",
-    accessToken,
     locale,
     payload,
   );
@@ -72,14 +84,12 @@ export async function UpdateTab(
   organisationId: string,
   restaurantId: string,
   tabId: string,
-  accessToken: string,
   locale: string,
   payload: { label: string; note?: string },
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${tabId}`,
     "PUT",
-    accessToken,
     locale,
     payload,
   );
@@ -93,7 +103,6 @@ export async function SettleTab(
   organisationId: string,
   restaurantId: string,
   tabId: string,
-  accessToken: string,
   locale: string,
   payload: {
     paymentMethod: "cash";
@@ -109,7 +118,6 @@ export async function SettleTab(
   return send(
     `${base(organisationId, restaurantId)}/${tabId}/settle`,
     "POST",
-    accessToken,
     locale,
     payload,
   );
@@ -129,14 +137,12 @@ function creditsBase(organisationId: string, restaurantId: string) {
 export async function SearchCustomerCredits(
   organisationId: string,
   restaurantId: string,
-  accessToken: string,
   locale: string,
   search: string,
 ) {
   return send(
     `${creditsBase(organisationId, restaurantId)}?search=${encodeURIComponent(search)}`,
     "GET",
-    accessToken,
     locale,
   );
 }
@@ -145,14 +151,12 @@ export async function SearchCustomerCredits(
 export async function DepositCustomerCredit(
   organisationId: string,
   restaurantId: string,
-  accessToken: string,
   locale: string,
   payload: { customerName: string; amount: number; note?: string },
 ) {
   return send(
     creditsBase(organisationId, restaurantId),
     "POST",
-    accessToken,
     locale,
     payload,
   );
@@ -163,13 +167,11 @@ export async function ReopenTab(
   organisationId: string,
   restaurantId: string,
   tabId: string,
-  accessToken: string,
   locale: string,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${tabId}/reopen`,
     "PATCH",
-    accessToken,
     locale,
   );
 }
@@ -178,13 +180,11 @@ export async function DeleteTab(
   organisationId: string,
   restaurantId: string,
   tabId: string,
-  accessToken: string,
   locale: string,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${tabId}`,
     "DELETE",
-    accessToken,
     locale,
   );
 }
@@ -194,14 +194,12 @@ export async function AddTabItem(
   organisationId: string,
   restaurantId: string,
   tabId: string,
-  accessToken: string,
   locale: string,
   payload: { itemId: string; quantity?: number },
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${tabId}/items`,
     "POST",
-    accessToken,
     locale,
     payload,
   );
@@ -212,14 +210,12 @@ export async function UpdateTabItem(
   restaurantId: string,
   tabId: string,
   tabItemId: string,
-  accessToken: string,
   locale: string,
   quantity: number,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${tabId}/items/${tabItemId}`,
     "PUT",
-    accessToken,
     locale,
     { quantity },
   );
@@ -230,13 +226,11 @@ export async function RemoveTabItem(
   restaurantId: string,
   tabId: string,
   tabItemId: string,
-  accessToken: string,
   locale: string,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${tabId}/items/${tabItemId}`,
     "DELETE",
-    accessToken,
     locale,
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useSession } from "next-auth/react";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { AddCircle, Edit2, Trash } from "iconsax-reactjs";
@@ -66,8 +65,6 @@ export default function CatalogContent({
   const t = useTranslations("Events.workplace");
   const locale = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
-  const token = session?.user.accessToken ?? "";
   const orgId = restaurant.organisationId;
   const restId = restaurant.restaurantId;
 
@@ -104,7 +101,7 @@ export default function CatalogContent({
           category={category}
           currency={restaurant.reservationFeeCurrency}
           onSubmit={(payload) =>
-            run(() => CreateCatalogItem(orgId, restId, token, locale, payload))
+            run(() => CreateCatalogItem(orgId, restId, locale, payload))
           }
         />
       </TopBar>
@@ -121,7 +118,7 @@ export default function CatalogContent({
               currency={restaurant.reservationFeeCurrency}
               onSubmit={(payload) =>
                 run(() =>
-                  CreateCatalogItem(orgId, restId, token, locale, payload),
+                  CreateCatalogItem(orgId, restId, locale, payload),
                 )
               }
             />
@@ -174,7 +171,6 @@ export default function CatalogContent({
                           orgId,
                           restId,
                           item.itemId,
-                          token,
                           locale,
                           e.target.checked,
                         ),
@@ -203,7 +199,6 @@ export default function CatalogContent({
                         orgId,
                         restId,
                         item.itemId,
-                        token,
                         locale,
                         payload,
                       ),
@@ -214,7 +209,7 @@ export default function CatalogContent({
                   busy={busy}
                   onConfirm={() =>
                     run(() =>
-                      DeleteItem(orgId, restId, item.itemId, token, locale),
+                      DeleteItem(orgId, restId, item.itemId, locale),
                     )
                   }
                 />

@@ -1,13 +1,28 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
+
+/**
+ * The access token, read from the session at call time.
+ *
+ * These actions used to be handed the token the browser was holding, captured
+ * by `useSession()` when the page mounted. An access token lives fifteen
+ * minutes; a screen someone stays and works in outlives that, and the stale
+ * token came back from the API as 401 "Unauthorized access". Reading it here
+ * means every call carries a token that auth() has just refreshed if needed.
+ */
+async function sessionToken(): Promise<string> {
+  const session = await auth();
+  return session?.user.accessToken ?? "";
+}
 
 export async function UpdateUserProfile(
   firstName: string,
   lastName: string,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
       method: "PATCH",
       headers: {
@@ -34,10 +49,10 @@ export async function UpdateUserProfile(
 }
 
 export async function UpdateUserProfileImage(
-  accessToken: string,
   body: FormData,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/users/upload-image`,
       {
@@ -70,11 +85,11 @@ export async function UpdateUserProfileImage(
 }
 
 export async function UpdateUserPreferences(
-  accessToken: string,
   body: unknown,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/users/me/preferences`,
       {

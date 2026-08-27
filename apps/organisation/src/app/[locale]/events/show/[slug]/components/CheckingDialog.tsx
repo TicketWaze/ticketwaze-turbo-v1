@@ -28,7 +28,6 @@ import {
   CheckOutTicketAction,
 } from "@/actions/EventActions";
 import { usePathname } from "@/i18n/navigation";
-import { useSession } from "next-auth/react";
 import PageLoader from "@/components/PageLoader";
 import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -100,15 +99,12 @@ export default function CheckingDialog({ event }: { event: Event }) {
   const isCleaningRef = useRef(false);
   const pathname = usePathname();
   const locale = useLocale();
-  // Live session token — read at call time so it reflects the latest refresh
   // while the scanner stays open.
-  const { data: session } = useSession();
 
   async function scan(id: string) {
-    const token = session?.user?.accessToken ?? "";
     setIsLoading(true);
     setIsScanning(false);
-    const response = await ScanTicketAction(event.eventId, token, id, locale);
+    const response = await ScanTicketAction(event.eventId, id, locale);
     setScanResult(response);
     setIsLoading(false);
   }
@@ -137,11 +133,9 @@ export default function CheckingDialog({ event }: { event: Event }) {
 
   async function performCheckIn() {
     if (!scanResult || scanResult.status !== "success") return;
-    const token = session?.user?.accessToken ?? "";
     setIsLoading(true);
     const response = await CheckInTicketAction(
       event.eventId,
-      token,
       pathname,
       scanResult.ticket.ticketId,
       locale,
@@ -152,11 +146,9 @@ export default function CheckingDialog({ event }: { event: Event }) {
 
   async function performCheckOut() {
     if (!scanResult || scanResult.status !== "success") return;
-    const token = session?.user?.accessToken ?? "";
     setIsLoading(true);
     const response = await CheckOutTicketAction(
       event.eventId,
-      token,
       pathname,
       scanResult.ticket.ticketId,
       locale,

@@ -249,7 +249,6 @@ export default function CreateSaleForm() {
     try {
       const created = await CreateSale(
         organisation.organisationId,
-        session?.user.accessToken ?? "",
         fd,
         locale,
       );

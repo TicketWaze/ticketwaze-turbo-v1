@@ -15,7 +15,6 @@ import { Crown } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useRef, useState } from "react";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { TriggerRaffleDraw } from "@/actions/EventActions";
 
@@ -34,7 +33,6 @@ export default function RaffleDrawButton({
   const t = useTranslations("Raffles.single_raffle.draw");
   const locale = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
   const closeRef = useRef<HTMLButtonElement>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,7 +41,6 @@ export default function RaffleDrawButton({
     const result = await TriggerRaffleDraw(
       organisationId,
       raffleId,
-      session?.user.accessToken ?? "",
       locale,
     );
     setIsLoading(false);

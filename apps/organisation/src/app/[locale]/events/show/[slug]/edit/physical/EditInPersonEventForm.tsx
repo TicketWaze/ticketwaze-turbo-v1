@@ -211,7 +211,6 @@ export default function EditInPersonEventForm({
 
     const result = await UpdateInPersonEvent(
       organisation?.organisationId ?? "",
-      session?.user.accessToken ?? "",
       formData,
       locale,
       event.eventId,

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 
 /**
  * Trading days. The venue decides when its day starts and ends, and every tab
@@ -19,14 +20,27 @@ function headers(accessToken: string, locale: string) {
   };
 }
 
+/**
+ * The access token, read from the session at call time.
+ *
+ * Never taken from the caller: the browser's copy is captured by
+ * `useSession()` at mount and an access token only lives fifteen minutes, so a
+ * screen someone stays and works in was sending an expired one. auth() reads
+ * the session fresh and refreshes it if it is close to expiry.
+ */
+async function sessionToken(): Promise<string> {
+  const session = await auth();
+  return session?.user.accessToken ?? "";
+}
+
 async function send(
   url: string,
   method: string,
-  accessToken: string,
   locale: string,
   body?: unknown,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(url, {
       method,
       headers: headers(accessToken, locale),
@@ -46,10 +60,9 @@ async function send(
 export async function OpenServiceDay(
   organisationId: string,
   restaurantId: string,
-  accessToken: string,
   locale: string,
 ) {
-  return send(base(organisationId, restaurantId), "POST", accessToken, locale);
+  return send(base(organisationId, restaurantId), "POST", locale);
 }
 
 /**
@@ -60,14 +73,12 @@ export async function CloseServiceDay(
   organisationId: string,
   restaurantId: string,
   serviceDayId: string,
-  accessToken: string,
   locale: string,
   payload: { note?: string },
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${serviceDayId}/close`,
     "POST",
-    accessToken,
     locale,
     payload,
   );

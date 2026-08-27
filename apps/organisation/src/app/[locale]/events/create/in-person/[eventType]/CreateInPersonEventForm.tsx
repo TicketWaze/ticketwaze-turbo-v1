@@ -207,13 +207,11 @@ export default function CreateInPersonEventForm({
       ? await PublishComingSoonEvent(
           organisation?.organisationId ?? "",
           teaser.eventId,
-          session?.user.accessToken ?? "",
           formData,
           locale,
         )
       : await CreateInPersonEvent(
           organisation?.organisationId ?? "",
-          session?.user.accessToken ?? "",
           formData,
           locale,
         );

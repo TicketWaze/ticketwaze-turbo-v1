@@ -1,7 +1,6 @@
 "use client";
 import React, { useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useSession } from "next-auth/react";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import {
@@ -104,8 +103,6 @@ export default function TabsBoard({
   const t = useTranslations("Events.workplace");
   const locale = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
-  const token = session?.user.accessToken ?? "";
   const orgId = restaurant.organisationId;
   const restId = restaurant.restaurantId;
 
@@ -169,7 +166,7 @@ export default function TabsBoard({
             busy={busy}
             locale={locale}
             onSubmit={(payload) =>
-              run(() => OpenTab(orgId, restId, token, locale, payload))
+              run(() => OpenTab(orgId, restId, locale, payload))
             }
           />
         ) : (
@@ -199,12 +196,12 @@ export default function TabsBoard({
               locale={locale}
               onRename={(payload) =>
                 run(() =>
-                  UpdateTab(orgId, restId, tab.tabId, token, locale, payload),
+                  UpdateTab(orgId, restId, tab.tabId, locale, payload),
                 )
               }
               onSettle={(payload) =>
                 run(() =>
-                  SettleTab(orgId, restId, tab.tabId, token, locale, payload),
+                  SettleTab(orgId, restId, tab.tabId, locale, payload),
                 )
               }
               /**
@@ -216,7 +213,6 @@ export default function TabsBoard({
                 const result = await SearchCustomerCredits(
                   orgId,
                   restId,
-                  token,
                   locale,
                   search,
                 );
@@ -224,7 +220,7 @@ export default function TabsBoard({
                 return result.data?.credits ?? [];
               }}
               onReopen={() =>
-                run(() => ReopenTab(orgId, restId, tab.tabId, token, locale))
+                run(() => ReopenTab(orgId, restId, tab.tabId, locale))
               }
               /**
                * The API adds one line at a time, so a selection becomes a short
@@ -240,7 +236,6 @@ export default function TabsBoard({
                       orgId,
                       restId,
                       tab.tabId,
-                      token,
                       locale,
                       item,
                     );

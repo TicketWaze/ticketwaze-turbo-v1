@@ -1,4 +1,5 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import CreateMeetEventForm from "./CreateMeetEventForm";
 import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
@@ -42,7 +43,17 @@ export default async function InPersonPage({
       },
     },
   );
-  const response = await request.json();
+  if (request.status === 403) {
+    return <UnauthorizedView />;
+  }
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.membershipTier) {
+    return (
+      <OrganizerLayout title="">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const membershipTier = response.membershipTier;
   // Null on a free plan AND on a trial. The document rule needs the
   // trial-excluding signal, not `membershipTier`, which counts trials.

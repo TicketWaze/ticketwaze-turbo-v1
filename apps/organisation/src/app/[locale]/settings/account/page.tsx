@@ -1,4 +1,5 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import { getTranslations, getLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { UserPreference } from "@ticketwaze/typescript-config";
@@ -25,7 +26,14 @@ export default async function AccountPage() {
       origin: process.env.NEXT_PUBLIC_ORANISATION_URL!,
     },
   });
-  const data = await request.json();
+  const data = await request.json().catch(() => null);
+  if (!request.ok || !data?.userPreferences) {
+    return (
+      <OrganizerLayout title={t("title")}>
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   // const user: User = await data.user;
   // const userAnalytic: UserAnalytic = await data.userAnalytic;
   const userPreferences: UserPreference = await data.userPreferences;

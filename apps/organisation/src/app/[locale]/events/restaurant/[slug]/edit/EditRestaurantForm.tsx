@@ -471,7 +471,6 @@ export default function EditRestaurantForm({
     const result = await UpdateRestaurant(
       organisation.organisationId,
       restaurant.restaurantId,
-      session?.user.accessToken ?? "",
       fd,
       locale,
     );

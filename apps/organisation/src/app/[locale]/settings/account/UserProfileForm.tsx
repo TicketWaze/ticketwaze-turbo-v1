@@ -36,7 +36,6 @@ export default function UserProfileForm({
     const result = await UpdateUserProfile(
       data.firstName,
       data.lastName,
-      accessToken,
       locale,
     );
     if (result?.error) {

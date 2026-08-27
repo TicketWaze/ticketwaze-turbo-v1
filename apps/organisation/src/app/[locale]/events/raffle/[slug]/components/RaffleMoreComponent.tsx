@@ -24,7 +24,6 @@ import { RequestRaffleDeletion } from "@/actions/EventActions";
 import { toast } from "sonner";
 import { ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { useSession } from "next-auth/react";
 
 export default function RaffleMoreComponent({
   raffle,
@@ -42,7 +41,6 @@ export default function RaffleMoreComponent({
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState("");
   const locale = useLocale();
-  const { data: session } = useSession();
 
   const isPending = deletionStatus === "pending_deletion";
   const isDeleted = deletionStatus === "deleted";
@@ -58,7 +56,6 @@ export default function RaffleMoreComponent({
     const result = await RequestRaffleDeletion(
       raffle.organisationId,
       raffle.raffleId,
-      session?.user.accessToken ?? "",
       locale,
       reason,
     );

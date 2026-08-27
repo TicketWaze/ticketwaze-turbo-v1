@@ -36,7 +36,6 @@ export default function NotificationForm({
     const result = await UpdateOrganisationNotificationPreferences(
       organisation?.organisationId ?? "",
       body,
-      session?.user.accessToken ?? "",
       locale,
     );
 

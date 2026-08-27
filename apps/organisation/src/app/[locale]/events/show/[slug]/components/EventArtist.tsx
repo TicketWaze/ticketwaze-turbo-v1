@@ -4,7 +4,6 @@ import { usePathname } from "@/i18n/navigation";
 import getCroppedImg from "@/lib/GetCroppedImage";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Event, EventPerformer } from "@ticketwaze/typescript-config";
-import { useSession } from "next-auth/react";
 import {
   Dialog,
   DialogClose,
@@ -43,7 +42,6 @@ export default function EventArtist({
   eventPerformers: EventPerformer[];
 }) {
   const t = useTranslations("Events.single_event.artist");
-  const { data: session } = useSession();
   const closeRef = useRef<HTMLButtonElement>(null);
   const AddArtistSchema = z.object({
     performerName: z.string().min(1, t("errors.name")).max(50),
@@ -80,7 +78,6 @@ export default function EventArtist({
     formData.append("performerImage", data.performerImage);
     const result = await AddArtist(
       event.eventId,
-      session?.user.accessToken ?? "",
       pathname,
       formData,
       locale,
@@ -97,7 +94,6 @@ export default function EventArtist({
     const result = await RemoveArtist(
       event.eventId,
       eventPerformerId,
-      session?.user.accessToken ?? "",
       pathname,
       locale,
     );

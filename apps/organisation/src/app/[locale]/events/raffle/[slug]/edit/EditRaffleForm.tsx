@@ -399,7 +399,6 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
       const result = await UpdateRaffle(
         organisation.organisationId,
         raffle.raffleId,
-        session?.user.accessToken ?? "",
         fd,
         locale,
       );

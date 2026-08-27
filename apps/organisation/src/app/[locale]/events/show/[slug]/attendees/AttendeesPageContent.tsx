@@ -51,7 +51,6 @@ export default function AttendeesPageContent({ event }: { event: Event }) {
     const result = await RemoveAttendeeAccess(
       event.eventId,
       eventAttendeeId,
-      session?.user.accessToken!,
       pathname,
       locale,
     );
@@ -222,7 +221,6 @@ function AttenteeDrawerContent({ event }: { event: Event }) {
   async function submitHandler(data: TAddAttendeeSchema) {
     const result = await AddAttendee(
       event.eventId,
-      session?.user.accessToken ?? "",
       { ...data },
       pathname,
       locale,

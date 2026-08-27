@@ -33,7 +33,6 @@ import { RequestEventDeletion } from "@/actions/EventActions";
 import { toast } from "sonner";
 import { ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { useSession } from "next-auth/react";
 import { DateTime } from "luxon";
 
 export default function MoreComponent({
@@ -62,7 +61,6 @@ export default function MoreComponent({
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState("");
   const locale = useLocale();
-  const { data: session } = useSession();
   const pathname = usePathname();
 
   const isPendingDeletion = deletionStatus === "pending_deletion";
@@ -76,7 +74,6 @@ export default function MoreComponent({
     setIsLoading(true);
     const result = await RequestEventDeletion(
       event.eventId,
-      session?.user.accessToken ?? "",
       locale,
       reason,
       pathname,

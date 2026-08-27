@@ -69,7 +69,6 @@ export default function ProfileForm({
       organisation.organisationId,
       data.organisationName,
       data.organisationDescription,
-      session?.user.accessToken ?? "",
       locale,
       data.organisationWebsite,
       data.instagram ?? "",

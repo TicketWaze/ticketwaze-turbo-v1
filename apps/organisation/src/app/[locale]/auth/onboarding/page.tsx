@@ -20,6 +20,12 @@ export default async function OnboardingPage() {
       },
     );
     const response = await request.json();
+    // A failed request still parses as JSON, so the try/catch never fired and
+    // OnboardingLogic received an error envelope in place of the onboarding
+    // payload.
+    if (!request.ok) {
+      return <FetchFailedErrorView />;
+    }
     return (
       <>
         <OnboardingLogic response={response} />

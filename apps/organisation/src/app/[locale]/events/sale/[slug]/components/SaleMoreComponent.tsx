@@ -1,7 +1,6 @@
 "use client";
 import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Edit2, HamburgerMenu, MoreCircle, Trash } from "iconsax-reactjs";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
@@ -32,7 +31,6 @@ export default function SaleMoreComponent({ sale }: { sale: Sale }) {
   const t = useTranslations("Sales.single_sale");
   const locale = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
   const closeRef = useRef<HTMLButtonElement>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,7 +39,6 @@ export default function SaleMoreComponent({ sale }: { sale: Sale }) {
     const result = await DeleteSale(
       sale.organisationId,
       sale.saleId,
-      session?.user.accessToken ?? "",
       locale,
     );
     setIsLoading(false);

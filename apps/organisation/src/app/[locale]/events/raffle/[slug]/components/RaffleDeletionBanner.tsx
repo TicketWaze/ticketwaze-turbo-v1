@@ -3,7 +3,6 @@ import { CancelRaffleDeletion } from "@/actions/EventActions";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { DateTime } from "luxon";
 import { CloseCircle, Warning2 } from "iconsax-reactjs";
-import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -22,7 +21,6 @@ export default function RaffleDeletionBanner({
   onCancelled: () => void;
 }) {
   const t = useTranslations("Raffles.single_raffle.deletion");
-  const { data: session } = useSession();
   const locale = useLocale();
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -41,7 +39,6 @@ export default function RaffleDeletionBanner({
     const result = await CancelRaffleDeletion(
       organisationId,
       raffleId,
-      session?.user.accessToken ?? "",
       locale,
     );
     setIsCancelling(false);

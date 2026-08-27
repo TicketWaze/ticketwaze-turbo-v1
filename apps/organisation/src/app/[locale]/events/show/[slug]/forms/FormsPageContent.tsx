@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { useRouter, usePathname } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import {
   Add,
@@ -66,8 +65,6 @@ export default function FormsPageContent({
   const locale = useLocale();
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session } = useSession();
-  const accessToken = session?.user.accessToken ?? "";
 
   const [editing, setEditing] = useState<EventFormQuestion | null>(null);
   const [creating, setCreating] = useState(false);
@@ -100,7 +97,6 @@ export default function FormsPageContent({
             UpdateFormQuestion(
               organisationId,
               eventId,
-              accessToken,
               locale,
               editing.eventFormQuestionId,
               input,
@@ -114,7 +110,6 @@ export default function FormsPageContent({
             CreateFormQuestion(
               organisationId,
               eventId,
-              accessToken,
               locale,
               input,
               pathname,
@@ -134,7 +129,6 @@ export default function FormsPageContent({
         SetFormQuestionActive(
           organisationId,
           eventId,
-          accessToken,
           locale,
           question.eventFormQuestionId,
           !question.isActive,
@@ -151,7 +145,6 @@ export default function FormsPageContent({
         DeleteFormQuestion(
           organisationId,
           eventId,
-          accessToken,
           locale,
           question.eventFormQuestionId,
           pathname,
@@ -178,7 +171,6 @@ export default function FormsPageContent({
         ReorderFormQuestions(
           organisationId,
           eventId,
-          accessToken,
           locale,
           reordered.map((question) => question.eventFormQuestionId),
           pathname,

@@ -7,14 +7,28 @@ import { auth } from "@/lib/auth";
 /*
   ====================GOOGLE MEET===================
 */
+/**
+ * The access token, read from the session at call time.
+ *
+ * These actions used to be handed the token the browser was holding, captured
+ * by `useSession()` when the page mounted. An access token lives fifteen
+ * minutes; a screen someone stays and works in outlives that, and the stale
+ * token came back from the API as 401 "Unauthorized access". Reading it here
+ * means every call carries a token that auth() has just refreshed if needed.
+ */
+async function sessionToken(): Promise<string> {
+  const session = await auth();
+  return session?.user.accessToken ?? "";
+}
+
 export async function CreateGoogleMeetEvent(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
   code: string | undefined,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/meet/${organisationId}?code=${code}`,
       {
@@ -49,12 +63,12 @@ export async function CreateGoogleMeetEvent(
 
 export async function UpdateGoogleMeetEvent(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
   eventId: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/meet/${organisationId}/${eventId}`,
       {
@@ -96,12 +110,12 @@ export async function UpdateGoogleMeetEvent(
 */
 export async function ValidateBasicDetailsInPerson(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
   requestType: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/validation/in-person/basic-details/${organisationId}/${requestType}`,
       {
@@ -131,11 +145,11 @@ export async function ValidateBasicDetailsInPerson(
 
 export async function CreateInPersonEvent(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/in-person/${organisationId}`,
       {
@@ -166,11 +180,11 @@ export async function CreateInPersonEvent(
 
 export async function CreateRaffle(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}`,
       {
@@ -200,11 +214,11 @@ export async function CreateRaffle(
 export async function UpdateRaffle(
   organisationId: string,
   raffleId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}`,
       {
@@ -240,11 +254,11 @@ export async function UpdateRaffle(
 export async function RequestRaffleDeletion(
   organisationId: string,
   raffleId: string,
-  accessToken: string,
   locale: string,
   reason: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}`,
       {
@@ -278,10 +292,10 @@ export async function RequestRaffleDeletion(
 export async function CancelRaffleDeletion(
   organisationId: string,
   raffleId: string,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}/deletion`,
       {
@@ -311,10 +325,10 @@ export async function CancelRaffleDeletion(
 export async function TriggerRaffleDraw(
   organisationId: string,
   raffleId: string,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}/draw`,
       {
@@ -346,10 +360,10 @@ export async function UpdateRafflePrizeClaim(
   raffleId: string,
   prizeId: string,
   claimStatus: "to_claim" | "claimed" | "unclaimed",
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/raffles/${organisationId}/${raffleId}/prizes/${prizeId}/claim`,
       {
@@ -378,12 +392,12 @@ export async function UpdateRafflePrizeClaim(
 
 export async function UpdateInPersonEvent(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
   eventId: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/in-person/${organisationId}/${eventId}`,
       {
@@ -425,11 +439,11 @@ export async function UpdateInPersonEvent(
 */
 export async function CreatePrivateEvent(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/private/${organisationId}`,
       {
@@ -460,12 +474,12 @@ export async function CreatePrivateEvent(
 
 export async function UpdatePrivateEvent(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
   eventId: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/private/${organisationId}/${eventId}`,
       {
@@ -500,12 +514,12 @@ export async function UpdatePrivateEvent(
 export async function UpdateTicketTypes(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   data: unknown,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/in-person/${organisationId}/${eventId}/ticket-types`,
       {
@@ -538,12 +552,12 @@ export async function UpdateTicketTypes(
 
 export async function CreateDiscountCode(
   eventId: string,
-  accessToken: string,
   data: unknown,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/discount-code`,
       {
@@ -576,12 +590,12 @@ export async function CreateDiscountCode(
 
 export async function AddAttendee(
   eventId: string,
-  accessToken: string,
   data: unknown,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/attendees`,
       {
@@ -615,11 +629,11 @@ export async function AddAttendee(
 export async function RemoveAttendeeAccess(
   eventId: string,
   eventAttendeeId: string,
-  accessToken: string,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/attendees/${eventAttendeeId}`,
       {
@@ -652,11 +666,11 @@ export async function RemoveAttendeeAccess(
 export async function MarkDiscountCodeAsInactive(
   eventId: string,
   discountCodeId: string,
-  accessToken: string,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/discount-code/${discountCodeId}/mark-as-inactive`,
       {
@@ -689,11 +703,11 @@ export async function MarkDiscountCodeAsInactive(
 export async function MarkDiscountCodeAsActive(
   eventId: string,
   discountCodeId: string,
-  accessToken: string,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/discount-code/${discountCodeId}/mark-as-active`,
       {
@@ -725,12 +739,12 @@ export async function MarkDiscountCodeAsActive(
 
 export async function UpdateCheckersListAction(
   eventId: string,
-  accessToken: string,
   pathname: string,
   body: unknown,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/checkers`,
       {
@@ -763,11 +777,11 @@ export async function UpdateCheckersListAction(
 
 export async function MarkAsActive(
   eventId: string,
-  accessToken: string,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/mark-as-active`,
       {
@@ -799,11 +813,11 @@ export async function MarkAsActive(
 
 export async function DeleteEvent(
   eventId: string,
-  accessToken: string,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
       {
@@ -834,12 +848,12 @@ export async function DeleteEvent(
 }
 export async function RequestEventDeletion(
   eventId: string,
-  accessToken: string,
   locale: string,
   reason: string,
   pathname: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
       {
@@ -871,11 +885,11 @@ export async function RequestEventDeletion(
 
 export async function CancelEventDeletion(
   eventId: string,
-  accessToken: string,
   locale: string,
   pathname: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/deletion`,
       {
@@ -902,11 +916,11 @@ export async function CancelEventDeletion(
 
 export async function MarkAsInactive(
   eventId: string,
-  accessToken: string,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/mark-as-inactive`,
       {
@@ -1052,11 +1066,11 @@ type ScannedTicket = {
 */
 export async function ScanTicketAction(
   eventId: string,
-  accessToken: string,
   ticketId: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     // Token comes from the client's live useSession() so it stays fresh while
     // the scanner is open, and avoids the rotating-refresh-token pitfall of
     // calling auth() inside a server action.
@@ -1113,12 +1127,12 @@ export async function ScanTicketAction(
 */
 export async function CheckInTicketAction(
   eventId: string,
-  accessToken: string,
   pathname: string,
   ticketId: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     if (!accessToken) {
       return {
         status: "failed" as const,
@@ -1170,12 +1184,12 @@ export async function CheckInTicketAction(
 */
 export async function CheckOutTicketAction(
   eventId: string,
-  accessToken: string,
   pathname: string,
   ticketId: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     if (!accessToken) {
       return {
         status: "failed" as const,
@@ -1226,12 +1240,12 @@ export async function CheckOutTicketAction(
 
 export async function AddArtist(
   eventId: string,
-  accessToken: string,
   pathname: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/artist`,
       {
@@ -1264,11 +1278,11 @@ export async function AddArtist(
 export async function RemoveArtist(
   eventId: string,
   eventPerformerId: string,
-  accessToken: string,
   pathname: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/artist/${eventPerformerId}`,
       {
@@ -1299,11 +1313,11 @@ export async function RemoveArtist(
 
 export async function CreateRestaurant(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${organisationId}`,
       {
@@ -1333,11 +1347,11 @@ export async function CreateRestaurant(
 export async function UpdateRestaurant(
   organisationId: string,
   restaurantId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${organisationId}/${restaurantId}`,
       {
@@ -1367,10 +1381,10 @@ export async function UpdateRestaurant(
 export async function DeleteRestaurant(
   organisationId: string,
   restaurantId: string,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${organisationId}/${restaurantId}`,
       {
@@ -1405,11 +1419,11 @@ export async function DeleteRestaurant(
  */
 export async function CreateComingSoonEvent(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/coming-soon/${organisationId}`,
       {
@@ -1436,11 +1450,11 @@ export async function CreateComingSoonEvent(
 export async function UpdateComingSoonEvent(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/coming-soon/${organisationId}/${eventId}`,
       {
@@ -1474,11 +1488,11 @@ export async function UpdateComingSoonEvent(
 export async function PublishComingSoonEvent(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/coming-soon/${organisationId}/${eventId}/publish`,
       {

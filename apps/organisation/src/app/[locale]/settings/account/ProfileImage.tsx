@@ -13,7 +13,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Image as ImageIcon, UserCirlceAdd } from "iconsax-reactjs";
-import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useCallback, useRef, useState } from "react";
 import Cropper from "react-easy-crop";
@@ -23,7 +22,6 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 function ProfileImage({ user }: { user: User }) {
   const t = useTranslations("Settings.account");
-  const { data: session } = useSession();
   const [isUploading, setIsUploading] = useState(false);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const CloseRef = useRef<HTMLSpanElement>(null);
@@ -62,7 +60,6 @@ function ProfileImage({ user }: { user: User }) {
 
     try {
       const response = await UpdateUserProfileImage(
-        session?.user.accessToken ?? "",
         formData,
       );
       if (response.status === "success") {

@@ -8,7 +8,6 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { toast } from "sonner";
-import { useSession } from "next-auth/react";
 import { InfoCircle, Warning2 } from "iconsax-reactjs";
 import { getSaleMinPrice, getMinAbsorbedSalePrice } from "@ticketwaze/pricing";
 import { Sale } from "@ticketwaze/typescript-config";
@@ -117,7 +116,6 @@ export default function EditSaleForm({ sale }: { sale: Sale }) {
   const t = useTranslations("Events.create_event.sale");
   const locale = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
   const [submitting, setSubmitting] = useState(false);
 
   const schema = makeSaleSchema((k, values) => t(k, values));
@@ -223,7 +221,6 @@ export default function EditSaleForm({ sale }: { sale: Sale }) {
       const result = await UpdateSale(
         sale.organisationId,
         sale.saleId,
-        session?.user.accessToken ?? "",
         fd,
         locale,
       );

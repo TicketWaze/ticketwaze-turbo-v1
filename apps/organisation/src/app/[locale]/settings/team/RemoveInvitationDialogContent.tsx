@@ -55,7 +55,6 @@ export default function RemoveInvitationDialogContent({
             setIsLoading(true);
             const result = await RemoveInvitation(
               organisation?.organisationId ?? "",
-              session?.user.accessToken ?? "",
               email,
               locale,
             );

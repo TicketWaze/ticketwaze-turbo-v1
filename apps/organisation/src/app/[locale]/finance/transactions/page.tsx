@@ -4,6 +4,7 @@ import { OrganisationOrders } from "@ticketwaze/typescript-config";
 import { getLocale, getTranslations } from "next-intl/server";
 import OrganisationPageWrapper from "./OrganisationPageWrapper";
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import BackButton from "@/components/shared/BackButton";
 
 export default async function OrganisationTransactions({
@@ -30,7 +31,14 @@ export default async function OrganisationTransactions({
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.orders) {
+    return (
+      <OrganizerLayout title="">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const organisationOrders: OrganisationOrders = await response.orders;
   return (
     <OrganizerLayout title="">

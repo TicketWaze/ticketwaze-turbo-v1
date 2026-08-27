@@ -180,7 +180,6 @@ export default function CreateMeetEventForm({
 
     const result = await CreateGoogleMeetEvent(
       organisation?.organisationId ?? "",
-      session?.user.accessToken ?? "",
       formData,
       locale,
       decodeURIComponent(code ?? ""),

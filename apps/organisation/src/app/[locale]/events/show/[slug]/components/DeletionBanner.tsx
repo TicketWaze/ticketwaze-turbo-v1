@@ -3,7 +3,6 @@ import { CancelEventDeletion } from "@/actions/EventActions";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { DateTime } from "luxon";
 import { CloseCircle, Warning2 } from "iconsax-reactjs";
-import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -21,7 +20,6 @@ export default function DeletionBanner({
   onCancelled: () => void;
 }) {
   const t = useTranslations("Events.single_event");
-  const { data: session } = useSession();
   const locale = useLocale();
   const [isCancelling, setIsCancelling] = useState(false);
   const pathname = usePathname();
@@ -40,7 +38,6 @@ export default function DeletionBanner({
     setIsCancelling(true);
     const result = await CancelEventDeletion(
       eventId,
-      session?.user.accessToken ?? "",
       locale,
       pathname,
     );

@@ -81,7 +81,6 @@ export default function AddMember({
     const result = await AddMemberAction(
       organisation?.organisationId ?? "",
       { fullName: data.fullName, email: data.email, permissions: selectedPermissions },
-      session?.user.accessToken ?? "",
       locale,
     );
 

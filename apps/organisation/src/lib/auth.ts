@@ -22,18 +22,73 @@ class OrganisationSuspendedError extends CredentialsSignin {
   code = "organisation_suspended";
 }
 
+/**
+ * Read a response body as JSON without trusting it to BE JSON.
+ *
+ * POST /auth/refresh does not always answer in JSON. When the throttle on that
+ * route trips, AdonisJS content-negotiates the ThrottleException, and for a
+ * request that asks for no particular content type it replies with the
+ * plain-text body "Too many requests". Calling res.json() on that threw, which
+ * dropped the refresh into its catch clause and kept the EXPIRED access token
+ * in the session. Every server component then sent that dead token as a real
+ * bearer credential: a silently broken page for the user, and a 401
+ * "Authentication Failed" alert that read as a session fault rather than as
+ * the rate limit it actually was.
+ */
+async function readJsonBody<T>(res: Response): Promise<T | null> {
+  try {
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+type RefreshResponse = {
+  status?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  accessTokenExpires?: number;
+  isOnboarded?: boolean;
+  isSuspended?: boolean;
+  suspensionReason?: string | null;
+};
+
+type MembershipContextResponse = {
+  status?: string;
+  organisation?: {
+    isSuspended?: boolean;
+    myRole?: unknown;
+    myPermissions?: unknown;
+  };
+};
 async function refreshAccessToken(token: Record<string, unknown>) {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token.refreshToken}` },
+      headers: {
+        Authorization: `Bearer ${token.refreshToken}`,
+        // Ask for JSON explicitly. Without it the API picks a representation by
+        // content negotiation and renders its errors as plain text.
+        Accept: "application/json",
+      },
     });
 
-    const data = await res.json();
+    const data = await readJsonBody<RefreshResponse>(res);
 
-    if (res.status === 401 || data.status !== "success") {
-      // Refresh token is revoked or expired — clear the session
+    // A 401 is the one answer that means the refresh token itself is gone:
+    // revoked, expired, or rotated past its grace window. Clearing the session
+    // belongs here, and only here.
+    if (res.status === 401) {
       return null;
+    }
+
+    // Everything else that is not a success is transient — a 429 from the
+    // refresh throttle, a 5xx, or a body that did not parse. None of those mean
+    // the refresh token is bad, so none of them may sign the user out. Keep the
+    // session and let the next call retry; the error flag marks the attempt as
+    // failed for anything that wants to inspect it.
+    if (!res.ok || data?.status !== "success") {
+      return { ...token, error: "RefreshAccessTokenError" as const };
     }
 
     /**
@@ -59,9 +114,14 @@ async function refreshAccessToken(token: Record<string, unknown>) {
       try {
         const meRes = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/organisations/${activeOrganisation.organisationId}/me`,
-          { headers: { Authorization: `Bearer ${data.accessToken}` } },
+          {
+            headers: {
+              Authorization: `Bearer ${data.accessToken}`,
+              Accept: "application/json",
+            },
+          },
         );
-        const meData = await meRes.json();
+        const meData = await readJsonBody<MembershipContextResponse>(meRes);
         if (meData?.status === "success" && meData.organisation) {
           // Suspension can land mid-session. Clearing the token drops the user
           // at the login page, where the API explains the refusal — far better

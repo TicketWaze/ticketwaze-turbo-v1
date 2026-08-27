@@ -18,7 +18,6 @@ import SaleCover from "@/assets/images/online.jpg";
 // import Transportations from "@/assets/images/transportations.jpg";
 // import Tours from "@/assets/images/tours.jpg";
 // import match from "@/assets/images/match.jpg";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
@@ -49,7 +48,6 @@ export default function EventTypeList({
   paidTierName: string;
 }) {
   const t = useTranslations("Events.create_event");
-  const { data: session } = useSession();
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);
