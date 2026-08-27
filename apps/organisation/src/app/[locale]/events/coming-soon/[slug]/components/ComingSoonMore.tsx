@@ -25,7 +25,6 @@ import { RequestEventDeletion } from "@/actions/EventActions";
 import { toast } from "sonner";
 import { ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { useSession } from "next-auth/react";
 
 /**
  * The teaser's overflow menu, deliberately the same control as the one on a
@@ -51,7 +50,6 @@ export default function ComingSoonMore({
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState("");
   const locale = useLocale();
-  const { data: session } = useSession();
   const pathname = usePathname();
 
   const isPendingDeletion = deletionStatus === "pending_deletion";
@@ -61,7 +59,6 @@ export default function ComingSoonMore({
     setIsLoading(true);
     const result = await RequestEventDeletion(
       event.eventId,
-      session?.user.accessToken ?? "",
       locale,
       reason,
       pathname,

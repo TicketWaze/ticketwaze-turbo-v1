@@ -22,7 +22,6 @@ export default function CurrencyPreference({
     setIsLoading(true);
     const response = await UpdateOrganisationCurrency(
       session?.activeOrganisation.organisationId ?? "",
-      session?.user.accessToken ?? "",
       {
         currency,
       },

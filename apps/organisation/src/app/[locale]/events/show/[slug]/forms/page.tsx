@@ -29,12 +29,10 @@ export default async function EventFormsPage({
   const { slug } = await params;
   const eventId = extractIdFromSlug(slug);
   const organisationId = session?.activeOrganisation.organisationId ?? "";
-  const accessToken = session?.user.accessToken ?? "";
 
   const questionsResult = await ListFormQuestions(
     organisationId,
     eventId,
-    accessToken,
     locale,
   );
 
@@ -59,7 +57,6 @@ export default async function EventFormsPage({
   const responsesResult = await ListFormResponses(
     organisationId,
     eventId,
-    accessToken,
     locale,
   );
   const responses =

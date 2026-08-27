@@ -75,7 +75,6 @@ export async function uploadSaleFile({
   const signed = await GetSaleUploadUrl(
     organisationId,
     saleId,
-    accessToken,
     locale,
     { filename: file.name, size: file.size, contentType },
   );
@@ -99,7 +98,6 @@ export async function uploadSaleFile({
   const completed = await CompleteSaleUpload(
     organisationId,
     saleId,
-    accessToken,
     locale,
     { key: signed.key, filename: file.name },
   );

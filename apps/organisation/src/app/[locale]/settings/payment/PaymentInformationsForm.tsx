@@ -19,7 +19,6 @@ import {
 } from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Organisation } from "@ticketwaze/typescript-config";
-import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -36,7 +35,6 @@ export default function PaymentInformationsForm({
 }) {
   const t = useTranslations("Settings.payment");
   const locale = useLocale();
-  const { data: session } = useSession();
   const closeRef = useRef<HTMLButtonElement>(null);
   const searchParams = useSearchParams();
   const action = searchParams.get("action");
@@ -66,7 +64,6 @@ export default function PaymentInformationsForm({
     const result = await UpdateOrganisationBankPaymentInformation(
       organisation?.organisationId ?? "",
       { bankName: data.bankName, bankAccountName: data.bankAccountName, bankAccountNumber: data.bankAccountNumber },
-      session?.user.accessToken ?? "",
       locale,
     );
 
@@ -97,7 +94,6 @@ export default function PaymentInformationsForm({
     try {
       const response = await DeleteBankingInformations(
         organisation.organisationId,
-        session?.user.accessToken ?? "",
         locale,
       );
       if (response.status === "success") {

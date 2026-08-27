@@ -2,7 +2,6 @@
 "use client";
 import React, { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useSession } from "next-auth/react";
 import { useRouter } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { InfoCircle } from "iconsax-reactjs";
@@ -63,7 +62,6 @@ export default function CreateComingSoonForm({
   const t = useTranslations("Events.coming_soon");
   const locale = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
 
   const [name, setName] = useState(event?.eventName ?? "");
   const [description, setDescription] = useState(
@@ -113,13 +111,11 @@ export default function CreateComingSoonForm({
       ? await UpdateComingSoonEvent(
           organisationId,
           event!.eventId,
-          session?.user.accessToken ?? "",
           fd,
           locale,
         )
       : await CreateComingSoonEvent(
           organisationId,
-          session?.user.accessToken ?? "",
           fd,
           locale,
         );

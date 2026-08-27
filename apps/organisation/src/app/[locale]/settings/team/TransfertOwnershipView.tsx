@@ -25,7 +25,6 @@ export default function TransfertOwnershipView({ email }: { email: string }) {
     setIsLoading(true);
     const result = await TransfertOwnershipQuery(
       organisation?.organisationId ?? "",
-      session?.user.accessToken ?? "",
       email,
       locale,
     );

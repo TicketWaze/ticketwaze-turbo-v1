@@ -19,7 +19,6 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
 import { useLocale, useTranslations } from "next-intl";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { useSession } from "next-auth/react";
 import { Organisation } from "@ticketwaze/typescript-config";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod/v4";
@@ -42,7 +41,6 @@ export default function PinHandler({
 }) {
   const t = useTranslations("Settings.payment");
   const locale = useLocale();
-  const { data: session } = useSession();
   const closeRef = useRef<HTMLButtonElement>(null);
   const searchParams = useSearchParams();
   const action = searchParams.get("action");
@@ -76,7 +74,6 @@ export default function PinHandler({
   async function createPin(data: TCreatePinSchema) {
     const response = await CreateWithdrawalPin(
       organisation.organisationId,
-      session?.user.accessToken ?? "",
       data,
       locale,
     );
@@ -95,7 +92,6 @@ export default function PinHandler({
     setIsLoading(true);
     const result = await ChangeWithdrawalPin(
       organisation.organisationId,
-      session?.user.accessToken ?? "",
       locale,
     );
     if (result.status === "success") {

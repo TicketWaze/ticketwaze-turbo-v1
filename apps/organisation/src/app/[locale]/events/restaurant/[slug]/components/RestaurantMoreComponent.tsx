@@ -24,7 +24,6 @@ import { DeleteRestaurant } from "@/actions/EventActions";
 import { toast } from "sonner";
 import { ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { useSession } from "next-auth/react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
 
@@ -40,7 +39,6 @@ export default function RestaurantMoreComponent({
   const [isLoading, setIsLoading] = useState(false);
   const locale = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
 
   const slug = slugify(restaurant.name, restaurant.restaurantId);
 
@@ -56,7 +54,6 @@ export default function RestaurantMoreComponent({
     const result = await DeleteRestaurant(
       restaurant.organisationId,
       restaurant.restaurantId,
-      session?.user.accessToken ?? "",
       locale,
     );
     setIsLoading(false);

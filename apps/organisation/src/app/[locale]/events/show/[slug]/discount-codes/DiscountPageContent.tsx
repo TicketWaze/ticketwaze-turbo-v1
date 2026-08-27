@@ -67,7 +67,6 @@ export default function DiscountPageContent({ event }: { event: Event }) {
     const result = await MarkDiscountCodeAsInactive(
       event.eventId,
       discountCodeId,
-      session?.user.accessToken ?? "",
       pathname,
       locale,
     );
@@ -83,7 +82,6 @@ export default function DiscountPageContent({ event }: { event: Event }) {
     const result = await MarkDiscountCodeAsActive(
       event.eventId,
       discountCodeId,
-      session?.user.accessToken ?? "",
       pathname,
       locale,
     );
@@ -936,7 +934,6 @@ function DiscountDrawerContent({ event }: { event: Event }) {
   async function submitHandler(data: TDiscountCodeSchema) {
     const result = await CreateDiscountCode(
       event.eventId,
-      session?.user.accessToken ?? "",
       { ...data },
       pathname,
       locale,

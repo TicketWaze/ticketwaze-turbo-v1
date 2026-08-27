@@ -421,7 +421,6 @@ export default function CreateRestaurantForm() {
 
     const result = await CreateRestaurant(
       organisation.organisationId,
-      session?.user.accessToken ?? "",
       fd,
       locale,
     );

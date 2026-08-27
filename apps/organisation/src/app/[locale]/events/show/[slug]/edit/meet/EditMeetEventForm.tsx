@@ -224,7 +224,6 @@ export default function EditInPersonEventForm({
 
     const result = await UpdateGoogleMeetEvent(
       organisation?.organisationId ?? "",
-      session?.user.accessToken ?? "",
       formData,
       locale,
       event.eventId,

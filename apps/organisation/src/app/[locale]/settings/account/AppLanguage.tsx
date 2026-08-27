@@ -3,7 +3,6 @@ import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
-import { useSession } from "next-auth/react";
 import { UpdateUserPreferences } from "@/actions/userActions";
 import { UserPreference } from "@ticketwaze/typescript-config";
 import { toast } from "sonner";
@@ -17,13 +16,11 @@ export default function AppLanguage({
 }) {
   const t = useTranslations("Settings.account");
   const locale = useLocale();
-  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const pathname = usePathname();
   async function switchLanguagePreference(appLanguage: string) {
     setIsLoading(true);
     const response = await UpdateUserPreferences(
-      session?.user.accessToken ?? "",
       {
         ...userPreferences,
         appLanguage,

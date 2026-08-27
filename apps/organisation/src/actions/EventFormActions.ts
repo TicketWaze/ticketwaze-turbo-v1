@@ -1,5 +1,6 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 import type {
   EventFormQuestion,
   EventFormQuestionType,
@@ -22,9 +23,29 @@ function base(organisationId: string, eventId: string) {
   return `${process.env.NEXT_PUBLIC_API_URL}/events/${organisationId}/${eventId}/form-questions`;
 }
 
+/**
+ * The access token, read at call time rather than taken from the caller.
+ *
+ * These actions used to receive the token the browser was holding, captured by
+ * `useSession()` when the page mounted. Writing a form takes minutes, the
+ * access token lives fifteen, and `SessionProvider` refetches only on mount and
+ * on window focus — so an organiser who sat and composed their questions was
+ * sending an expired token by the time they hit save. The API answered 401
+ * "Unauthorized access", which reached the organiser as a bare "could not add"
+ * toast and #logs as an auth alert.
+ *
+ * `auth()` re-reads the session and refreshes the token if it is close to
+ * expiry, which is the whole point of doing this server-side.
+ */
+async function sessionToken(): Promise<string> {
+  const session = await auth();
+  return session?.user.accessToken ?? "";
+}
+
 function headers(accessToken: string, locale: string) {
   return {
     "Content-Type": "application/json",
+    Accept: "application/json",
     Authorization: `Bearer ${accessToken}`,
     "Accept-Language": locale,
     origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
@@ -58,13 +79,13 @@ export interface QuestionInput {
 export async function ListFormQuestions(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   locale: string,
 ): Promise<
   | { questions: EventFormQuestion[]; canUseForms: boolean; maxQuestions: number }
   | Failure
 > {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(base(organisationId, eventId), {
       method: "GET",
       headers: headers(accessToken, locale),
@@ -87,10 +108,10 @@ export async function ListFormQuestions(
 export async function ListFormResponses(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   locale: string,
 ): Promise<{ responses: EventFormResponse[] } | Failure> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(`${base(organisationId, eventId)}/responses`, {
       method: "GET",
       headers: headers(accessToken, locale),
@@ -109,12 +130,12 @@ export async function ListFormResponses(
 export async function CreateFormQuestion(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   locale: string,
   question: QuestionInput,
   pathname: string,
 ): Promise<{ status: "success" } | Failure> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(base(organisationId, eventId), {
       method: "POST",
       headers: headers(accessToken, locale),
@@ -134,13 +155,13 @@ export async function CreateFormQuestion(
 export async function UpdateFormQuestion(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   locale: string,
   questionId: string,
   question: QuestionInput,
   pathname: string,
 ): Promise<{ status: "success" } | Failure> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(`${base(organisationId, eventId)}/${questionId}`, {
       method: "PUT",
       headers: headers(accessToken, locale),
@@ -160,12 +181,12 @@ export async function UpdateFormQuestion(
 export async function DeleteFormQuestion(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   locale: string,
   questionId: string,
   pathname: string,
 ): Promise<{ status: "success" } | Failure> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(`${base(organisationId, eventId)}/${questionId}`, {
       method: "DELETE",
       headers: headers(accessToken, locale),
@@ -185,13 +206,13 @@ export async function DeleteFormQuestion(
 export async function SetFormQuestionActive(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   locale: string,
   questionId: string,
   isActive: boolean,
   pathname: string,
 ): Promise<{ status: "success" } | Failure> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${base(organisationId, eventId)}/${questionId}/active`,
       {
@@ -214,12 +235,12 @@ export async function SetFormQuestionActive(
 export async function ReorderFormQuestions(
   organisationId: string,
   eventId: string,
-  accessToken: string,
   locale: string,
   questionIds: string[],
   pathname: string,
 ): Promise<{ status: "success" } | Failure> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(`${base(organisationId, eventId)}/order`, {
       method: "PUT",
       headers: headers(accessToken, locale),

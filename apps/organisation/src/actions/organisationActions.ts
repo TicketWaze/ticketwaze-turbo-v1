@@ -1,17 +1,32 @@
 "use server";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
+
+/**
+ * The access token, read from the session at call time.
+ *
+ * These actions used to be handed the token the browser was holding, captured
+ * by `useSession()` when the page mounted. An access token lives fifteen
+ * minutes; a screen someone stays and works in outlives that, and the stale
+ * token came back from the API as 401 "Unauthorized access". Reading it here
+ * means every call carries a token that auth() has just refreshed if needed.
+ */
+async function sessionToken(): Promise<string> {
+  const session = await auth();
+  return session?.user.accessToken ?? "";
+}
 
 export async function UpdateOrganisationProfile(
   organisationId: string,
   organisationName: string,
   organisationDescription: string,
-  accessToken: string,
   locale: string,
   organisationWebsite?: string,
   instagram?: string,
   twitter?: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}`,
       {
@@ -51,11 +66,11 @@ export async function UpdateOrganisationProfile(
 
 export async function UpdateOrganisationProfileImage(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/upload-image`,
       {
@@ -93,10 +108,10 @@ export async function UpdateOrganisationProfileImage(
 export async function UpdateOrganisationBankPaymentInformation(
   organisationId: string,
   payload: unknown,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/payment-informations/bank`,
       {
@@ -130,10 +145,10 @@ export async function UpdateOrganisationBankPaymentInformation(
 export async function UpdateOrganisationMoncashPaymentInformation(
   organisationId: string,
   payload: unknown,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/payment-informations/moncash`,
       {
@@ -167,10 +182,10 @@ export async function UpdateOrganisationMoncashPaymentInformation(
 export async function UpdateOrganisationNotificationPreferences(
   organisationId: string,
   body: unknown,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/notifications-preferences`,
       {
@@ -205,10 +220,10 @@ export async function UpdateOrganisationNotificationPreferences(
 export async function AddMemberAction(
   organisationId: string,
   body: unknown,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/invite-user`,
       {
@@ -242,11 +257,11 @@ export async function AddMemberAction(
 export async function UpdateMemberPermissionsAction(
   organisationId: string,
   userId: string,
-  accessToken: string,
   permissions: string[],
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/member-permissions/${userId}`,
       {
@@ -278,11 +293,11 @@ export async function UpdateMemberPermissionsAction(
 export async function EditMemberAction(
   organisationId: string,
   userId: string,
-  accessToken: string,
   role: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/update-role/${userId}/${role}`,
       {
@@ -314,11 +329,11 @@ export async function EditMemberAction(
 
 export async function RemoveInvitation(
   organisationId: string,
-  accessToken: string,
   email: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/remove-invite/${email}`,
       {
@@ -351,11 +366,11 @@ export async function RemoveInvitation(
 
 export async function RemoveMemberQuery(
   organisationId: string,
-  accessToken: string,
   email: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/remove-member/${email}`,
       {
@@ -387,11 +402,11 @@ export async function RemoveMemberQuery(
 
 export async function TransfertOwnershipQuery(
   organisationId: string,
-  accessToken: string,
   email: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/transfert-ownership/${email}`,
       {
@@ -423,11 +438,11 @@ export async function TransfertOwnershipQuery(
 
 export async function UpdateOrganisationCurrency(
   organisationId: string,
-  accessToken: string,
   body: unknown,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/currency`,
       {
@@ -460,11 +475,11 @@ export async function UpdateOrganisationCurrency(
 
 export async function CreateWithdrawalPin(
   organisationId: string,
-  accessToken: string,
   body: unknown,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/withdrawal-pin`,
       {
@@ -497,10 +512,10 @@ export async function CreateWithdrawalPin(
 
 export async function ChangeWithdrawalPin(
   organisationId: string,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/withdrawal-pin`,
       {
@@ -538,12 +553,12 @@ export async function ChangeWithdrawalPin(
 
 export async function NewWithdrawalPin(
   organisationId: string,
-  accessToken: string,
   locale: string,
   changePinToken: string,
   body: unknown,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/withdrawal-pin/${changePinToken}`,
       {
@@ -576,10 +591,10 @@ export async function NewWithdrawalPin(
 
 export async function DeleteBankingInformations(
   organisationId: string,
-  accessToken: string,
   locale: string,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/banking-informations`,
       {
@@ -626,11 +641,11 @@ export async function DeleteBankingInformations(
  */
 export async function ResolveWiseRecipient(
   organisationId: string,
-  accessToken: string,
   locale: string,
   body: { wiseRecipientValue: string },
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/transactions/withdrawal/wise/resolve`,
       {
@@ -656,11 +671,11 @@ export async function ResolveWiseRecipient(
 
 export async function BankWithdrawalRequest(
   organisationId: string,
-  accessToken: string,
   locale: string,
   body: unknown,
 ) {
   try {
+    const accessToken = await sessionToken();
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/transactions/withdrawal`,
       {

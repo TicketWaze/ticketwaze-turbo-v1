@@ -10,6 +10,7 @@ import {
 import BackButton from "@/components/shared/BackButton";
 import { extractIdFromSlug } from "@/lib/Slugify";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 
 export default async function Page({
   params,
@@ -36,7 +37,17 @@ export default async function Page({
   if (eventRequest.status === 403) {
     return <UnauthorizedView />;
   }
-  const eventResponse = await eventRequest.json();
+  const eventResponse = await eventRequest.json().catch(() => null);
+  // A 403 is answered above. Everything else — an expired session, a 404, a
+  // non-JSON body from a proxy — used to arrive here as a missing `event` key
+  // and throw on the first property read.
+  if (!eventRequest.ok || !eventResponse?.event) {
+    return (
+      <OrganizerLayout title="">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const event: Event = eventResponse.event;
   const tickets = event.tickets;
   const orders = event.orders;
@@ -55,7 +66,16 @@ export default async function Page({
       },
     },
   );
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  // Without this the page rendered with membershipTier undefined, which reads
+  // as "no plan" to every gate downstream — silently, with nothing shown.
+  if (!request.ok || !response?.membershipTier) {
+    return (
+      <OrganizerLayout title="">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const membershipTier = response.membershipTier;
 
   return (

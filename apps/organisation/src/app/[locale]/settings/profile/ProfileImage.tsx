@@ -63,7 +63,6 @@ function ProfileImage() {
     try {
       const response = await UpdateOrganisationProfileImage(
         organisation?.organisationId ?? "",
-        session?.user.accessToken ?? "",
         formData,
         locale,
       );

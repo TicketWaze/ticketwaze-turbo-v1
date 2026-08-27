@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { useSession } from "next-auth/react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { toast } from "sonner";
 import { Restaurant } from "@ticketwaze/typescript-config";
@@ -57,8 +56,6 @@ export default function WorkplaceContent({
   const t = useTranslations("Events.workplace");
   const locale = useLocale();
   const router = useRouter();
-  const { data: session } = useSession();
-  const token = session?.user.accessToken ?? "";
   const orgId = restaurant.organisationId;
   const restId = restaurant.restaurantId;
 
@@ -87,7 +84,7 @@ export default function WorkplaceContent({
       busy={busy}
       onClose={(note) =>
         run(() =>
-          CloseServiceDay(orgId, restId, day.serviceDayId, token, locale, {
+          CloseServiceDay(orgId, restId, day.serviceDayId, locale, {
             note,
           }),
         )
@@ -135,7 +132,7 @@ export default function WorkplaceContent({
       ) : (
         <StartDay
           busy={busy}
-          onStart={() => run(() => OpenServiceDay(orgId, restId, token, locale))}
+          onStart={() => run(() => OpenServiceDay(orgId, restId, locale))}
         />
       )}
     </div>

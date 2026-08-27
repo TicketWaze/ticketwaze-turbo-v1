@@ -6,6 +6,7 @@ import TopBar from "@/components/shared/TopBar";
 import { LinkPrimary } from "@/components/shared/Links";
 import { Link } from "@/i18n/navigation";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import { checkPermission } from "@/lib/role/permission";
 
 export default async function EventPage() {
@@ -27,7 +28,14 @@ export default async function EventPage() {
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
-  const events = await request.json();
+  const events = await request.json().catch(() => null);
+  if (!request.ok || !events) {
+    return (
+      <OrganizerLayout title={t("title")}>
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
 
   // Raffles live in their own table but share the activities list with events.
   let raffles = [];

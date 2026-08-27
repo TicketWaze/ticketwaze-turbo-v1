@@ -339,7 +339,6 @@ export default function CreateRaffleForm() {
     try {
       const result = await CreateRaffle(
         organisation.organisationId,
-        session?.user.accessToken ?? "",
         fd,
         locale,
       );

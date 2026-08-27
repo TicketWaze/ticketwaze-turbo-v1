@@ -2,6 +2,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { Sale, SaleFile } from "@ticketwaze/typescript-config";
+import { auth } from "@/lib/auth";
 
 /**
  * Server actions for the sale module.
@@ -74,13 +75,27 @@ function messageOf(response: any): string {
   return "An unknown error occurred";
 }
 
+/**
+ * The access token, read from the session at call time.
+ *
+ * These actions used to be handed the token the browser was holding, captured
+ * by `useSession()` when the page mounted. An access token lives fifteen
+ * minutes; a screen someone stays and works in outlives that, and the stale
+ * token came back from the API as 401 "Unauthorized access". Reading it here
+ * means every call carries a token that auth() has just refreshed if needed.
+ */
+async function sessionToken(): Promise<string> {
+  const session = await auth();
+  return session?.user.accessToken ?? "";
+}
+
 export async function CreateSale(
   organisationId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ): Promise<SaleResult> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(`${API()}/sales/${organisationId}`, {
       method: "POST",
       headers: headers(accessToken, locale),
@@ -105,11 +120,11 @@ export async function CreateSale(
 export async function UpdateSale(
   organisationId: string,
   saleId: string,
-  accessToken: string,
   body: FormData,
   locale: string,
 ): Promise<SaleResult> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(`${API()}/sales/${organisationId}/${saleId}`, {
       method: "PUT",
       headers: headers(accessToken, locale),
@@ -138,10 +153,10 @@ export async function UpdateSale(
 export async function DeleteSale(
   organisationId: string,
   saleId: string,
-  accessToken: string,
   locale: string,
 ): Promise<DeleteResult> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(`${API()}/sales/${organisationId}/${saleId}`, {
       method: "DELETE",
       headers: headers(accessToken, locale, true),
@@ -170,11 +185,11 @@ export async function DeleteSale(
 export async function GetSaleUploadUrl(
   organisationId: string,
   saleId: string,
-  accessToken: string,
   locale: string,
   file: { filename: string; size: number; contentType: string },
 ): Promise<UploadUrlResult> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${API()}/sales/${organisationId}/${saleId}/files/upload-url`,
       {
@@ -218,11 +233,11 @@ export async function GetSaleUploadUrl(
 export async function CompleteSaleUpload(
   organisationId: string,
   saleId: string,
-  accessToken: string,
   locale: string,
   payload: { key: string; filename: string },
 ): Promise<CompleteResult> {
   try {
+    const accessToken = await sessionToken();
     const request = await fetch(
       `${API()}/sales/${organisationId}/${saleId}/files/complete`,
       {

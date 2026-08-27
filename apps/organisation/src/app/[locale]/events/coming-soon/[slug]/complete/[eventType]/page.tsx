@@ -51,7 +51,14 @@ export default async function CompleteComingSoonEventPage({
       },
     },
   );
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.membershipTier) {
+    return (
+      <OrganizerLayout title="">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const membershipTier = response.membershipTier;
 
   return (

@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { getLocale } from "next-intl/server";
 import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import { redirect } from "next/navigation";
 
 export default async function EditEvent({
@@ -36,9 +37,18 @@ export default async function EditEvent({
       },
     },
   );
-  const eventResponse = await eventRequest.json();
   if (eventRequest.status === 403) {
     return <UnauthorizedView />;
+  }
+  const eventResponse = await eventRequest.json().catch(() => null);
+  // `event.deletionStatus` is read on the next line, so a missing `event` key
+  // was not a degraded page but a thrown TypeError during the server render.
+  if (!eventRequest.ok || !eventResponse?.event) {
+    return (
+      <OrganizerLayout title="Edit Event">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
   }
   const event: Event = eventResponse.event;
   if (event.deletionStatus != null) redirect(`/events/show/${slug}`);
@@ -54,7 +64,14 @@ export default async function EditEvent({
       },
     },
   );
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.membershipTier) {
+    return (
+      <OrganizerLayout title="Edit Event">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const membershipTier = response.membershipTier;
   return (
     <OrganizerLayout title="Edit Event">

@@ -1,4 +1,5 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import TopBar from "@/components/shared/TopBar";
 import { auth } from "@/lib/auth";
@@ -30,7 +31,14 @@ export default async function WithdrawalPage({
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
-  const response = await request.json();
+  const response = await request.json().catch(() => null);
+  if (!request.ok || !response?.withdrawalRequest) {
+    return (
+      <OrganizerLayout title="">
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
   const withdrawalRequest: OrganisationWithdrawalRequest =
     response.withdrawalRequest;
   return (

@@ -10,7 +10,6 @@ import {
 import { Crown } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { UpdateRafflePrizeClaim } from "@/actions/EventActions";
 import type { RaffleWinner } from "@ticketwaze/typescript-config";
@@ -33,7 +32,6 @@ export default function RaffleWinners({
 }) {
   const t = useTranslations("Raffles.single_raffle.winners");
   const locale = useLocale();
-  const { data: session } = useSession();
 
   const [claims, setClaims] = useState<Record<string, ClaimStatus>>(() =>
     Object.fromEntries(winners.map((w) => [w.rafflePrizeId, w.claimStatus])),
@@ -50,7 +48,6 @@ export default function RaffleWinners({
       raffleId,
       prizeId,
       next,
-      session?.user.accessToken ?? "",
       locale,
     );
     setSavingId(null);

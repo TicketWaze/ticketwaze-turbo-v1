@@ -60,7 +60,6 @@ export default function EditMemberDialogContent({
     const result = await UpdateMemberPermissionsAction(
       orgId,
       member.userId,
-      token,
       selectedPermissions,
       locale,
     );
@@ -83,7 +82,6 @@ export default function EditMemberDialogContent({
     const result = await EditMemberAction(
       orgId,
       member.userId,
-      token,
       resetRole,
       locale,
     );

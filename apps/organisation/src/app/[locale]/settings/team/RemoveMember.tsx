@@ -31,7 +31,6 @@ export default function RemoveMember({ email }: { email: string }) {
     }
     const result = await RemoveMemberQuery(
       organisation?.organisationId ?? "",
-      session?.user.accessToken ?? "",
       email,
       locale,
     );

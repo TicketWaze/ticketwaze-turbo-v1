@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { revalidatePath } from "next/cache";
+import { auth } from "@/lib/auth";
 
 /**
  * Menu CRUD for the workplace. Every route is scoped by organisation AND
@@ -20,14 +21,27 @@ function headers(accessToken: string, locale: string, json = true) {
   };
 }
 
+/**
+ * The access token, read from the session at call time.
+ *
+ * Never taken from the caller: the browser's copy is captured by
+ * `useSession()` at mount and an access token only lives fifteen minutes, so a
+ * screen someone stays and works in was sending an expired one. auth() reads
+ * the session fresh and refreshes it if it is close to expiry.
+ */
+async function sessionToken(): Promise<string> {
+  const session = await auth();
+  return session?.user.accessToken ?? "";
+}
+
 async function send(
   url: string,
   method: string,
-  accessToken: string,
   locale: string,
   body?: unknown,
 ) {
   try {
+    const accessToken = await sessionToken();
     const isFormData = body instanceof FormData;
     const request = await fetch(url, {
       method,
@@ -52,7 +66,6 @@ async function send(
 export async function CreateMenu(
   organisationId: string,
   restaurantId: string,
-  accessToken: string,
   locale: string,
   payload: {
     name: string;
@@ -64,7 +77,6 @@ export async function CreateMenu(
   return send(
     base(organisationId, restaurantId),
     "POST",
-    accessToken,
     locale,
     payload,
   );
@@ -74,7 +86,6 @@ export async function UpdateMenu(
   organisationId: string,
   restaurantId: string,
   menuId: string,
-  accessToken: string,
   locale: string,
   payload: {
     name: string;
@@ -87,7 +98,6 @@ export async function UpdateMenu(
   return send(
     `${base(organisationId, restaurantId)}/${menuId}`,
     "PUT",
-    accessToken,
     locale,
     payload,
   );
@@ -97,13 +107,11 @@ export async function DeleteMenu(
   organisationId: string,
   restaurantId: string,
   menuId: string,
-  accessToken: string,
   locale: string,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${menuId}`,
     "DELETE",
-    accessToken,
     locale,
   );
 }
@@ -112,14 +120,12 @@ export async function CreateSection(
   organisationId: string,
   restaurantId: string,
   menuId: string,
-  accessToken: string,
   locale: string,
   payload: { name: string; description?: string },
 ) {
   return send(
     `${base(organisationId, restaurantId)}/${menuId}/sections`,
     "POST",
-    accessToken,
     locale,
     payload,
   );
@@ -129,14 +135,12 @@ export async function UpdateSection(
   organisationId: string,
   restaurantId: string,
   sectionId: string,
-  accessToken: string,
   locale: string,
   payload: { name: string; description?: string },
 ) {
   return send(
     `${base(organisationId, restaurantId)}/sections/${sectionId}`,
     "PUT",
-    accessToken,
     locale,
     payload,
   );
@@ -146,13 +150,11 @@ export async function DeleteSection(
   organisationId: string,
   restaurantId: string,
   sectionId: string,
-  accessToken: string,
   locale: string,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/sections/${sectionId}`,
     "DELETE",
-    accessToken,
     locale,
   );
 }
@@ -180,14 +182,12 @@ export interface CatalogItemPayload {
 export async function CreateCatalogItem(
   organisationId: string,
   restaurantId: string,
-  accessToken: string,
   locale: string,
   payload: CatalogItemPayload,
 ) {
   return send(
     catalogBase(organisationId, restaurantId),
     "POST",
-    accessToken,
     locale,
     payload,
   );
@@ -197,14 +197,12 @@ export async function UpdateCatalogItem(
   organisationId: string,
   restaurantId: string,
   itemId: string,
-  accessToken: string,
   locale: string,
   payload: CatalogItemPayload,
 ) {
   return send(
     `${catalogBase(organisationId, restaurantId)}/${itemId}`,
     "PUT",
-    accessToken,
     locale,
     payload,
   );
@@ -215,14 +213,12 @@ export async function CreateItem(
   organisationId: string,
   restaurantId: string,
   sectionId: string,
-  accessToken: string,
   locale: string,
   body: FormData,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/sections/${sectionId}/items`,
     "POST",
-    accessToken,
     locale,
     body,
   );
@@ -232,14 +228,12 @@ export async function UpdateItem(
   organisationId: string,
   restaurantId: string,
   itemId: string,
-  accessToken: string,
   locale: string,
   body: FormData,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/items/${itemId}`,
     "PUT",
-    accessToken,
     locale,
     body,
   );
@@ -249,13 +243,11 @@ export async function DeleteItem(
   organisationId: string,
   restaurantId: string,
   itemId: string,
-  accessToken: string,
   locale: string,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/items/${itemId}`,
     "DELETE",
-    accessToken,
     locale,
   );
 }
@@ -268,14 +260,12 @@ export async function ToggleItemAvailability(
   organisationId: string,
   restaurantId: string,
   itemId: string,
-  accessToken: string,
   locale: string,
   isAvailable: boolean,
 ) {
   return send(
     `${base(organisationId, restaurantId)}/items/${itemId}/availability`,
     "PATCH",
-    accessToken,
     locale,
     { isAvailable },
   );

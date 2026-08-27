@@ -323,7 +323,6 @@ export default function InitiateWithdrawalPageWrapper({
     setIsVerifyingWise(true);
     const result = await ResolveWiseRecipient(
       organisation.organisationId,
-      session?.user.accessToken ?? "",
       locale,
       { wiseRecipientValue: wiseRecipientValue.trim() },
     );
@@ -365,7 +364,6 @@ export default function InitiateWithdrawalPageWrapper({
         await UpdateOrganisationBankPaymentInformation(
           organisation.organisationId,
           { bankName, bankAccountName, bankAccountNumber },
-          session?.user.accessToken ?? "",
           locale,
         );
       }
@@ -376,14 +374,12 @@ export default function InitiateWithdrawalPageWrapper({
             moncashAccountName: moncashAccountName,
             moncashNumber: moncashNumber,
           },
-          session?.user.accessToken ?? "",
           locale,
         );
       }
 
       const result = await BankWithdrawalRequest(
         organisation.organisationId,
-        session?.user.accessToken ?? "",
         locale,
         accountType === "wise"
           ? {

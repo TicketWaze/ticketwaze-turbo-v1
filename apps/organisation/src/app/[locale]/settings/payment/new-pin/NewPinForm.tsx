@@ -45,7 +45,6 @@ export default function NewPinForm({
   async function submitHandler(data: TCreatePinSchema) {
     const result = await NewWithdrawalPin(
       session?.activeOrganisation.organisationId ?? "",
-      session?.user.accessToken ?? "",
       locale,
       changePinToken,
       data,
