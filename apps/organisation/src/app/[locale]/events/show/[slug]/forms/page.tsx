@@ -67,6 +67,7 @@ export default async function EventFormsPage({
       <BackButton text={t("back")} />
       <FormsPageContent
         eventId={eventId}
+        eventName={questionsResult.eventName}
         organisationId={organisationId}
         questions={questionsResult.questions}
         canUseForms={questionsResult.canUseForms}

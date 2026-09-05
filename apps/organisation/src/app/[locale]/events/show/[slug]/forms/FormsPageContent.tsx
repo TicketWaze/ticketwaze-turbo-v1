@@ -33,6 +33,7 @@ import {
 } from "@/actions/EventFormActions";
 import QuestionEditor from "./QuestionEditor";
 import ResponsesTable from "./ResponsesTable";
+import ExportAnswers from "./ExportAnswers";
 
 /**
  * THE CHECKOUT FORM BUILDER.
@@ -48,6 +49,7 @@ import ResponsesTable from "./ResponsesTable";
  */
 export default function FormsPageContent({
   eventId,
+  eventName,
   organisationId,
   questions,
   canUseForms,
@@ -55,6 +57,7 @@ export default function FormsPageContent({
   responses,
 }: {
   eventId: string;
+  eventName: string;
   organisationId: string;
   questions: EventFormQuestion[];
   canUseForms: boolean;
@@ -418,6 +421,16 @@ export default function FormsPageContent({
         </TabsContent>
 
         <TabsContent value="responses">
+          {/* Only worth offering once there is something to put in the file. */}
+          {responses.length > 0 && (
+            <div className="pt-8">
+              <ExportAnswers
+                responses={responses}
+                questions={questions}
+                eventName={eventName}
+              />
+            </div>
+          )}
           <ResponsesTable responses={responses} questions={questions} />
         </TabsContent>
       </Tabs>

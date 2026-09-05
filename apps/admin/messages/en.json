@@ -231,7 +231,8 @@
         "user_withdrawals": "User Withdrawals",
         "support": "Live Chat",
         "contact": "Contact Messages",
-        "pending_edits": "Pending Edits"
+        "pending_edits": "Pending Edits",
+        "emails": "Emails"
       }
     },
     "topbar": {
@@ -1258,6 +1259,153 @@
       "since": "Suspended on",
       "by": "Suspended by",
       "reason": "Reason"
+    }
+  },
+  "Emails": {
+    "title": "Emails",
+    "subtitle": "Write and send an email to users or organisations.",
+    "status": {
+      "draft": "Draft",
+      "queued": "Queued",
+      "sending": "Sending",
+      "sent": "Sent",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "list": {
+      "new": "New email",
+      "delete": "Delete",
+      "deleted": "Draft deleted",
+      "loadFailed": "We could not load your campaigns. Refresh the page to try again.",
+      "sentOf": "{sent} of {total}",
+      "failedCount": "{count} failed",
+      "tabs": {
+        "all": "All",
+        "drafts": "Drafts",
+        "sent": "Sent"
+      },
+      "columns": {
+        "name": "Campaign",
+        "status": "Status",
+        "recipients": "Recipients",
+        "created": "Created"
+      },
+      "empty": {
+        "title": "No emails yet",
+        "description": "Write your first email to users or organisations. Nothing is sent until you confirm it on the last step."
+      }
+    },
+    "compose": {
+      "title": "New email",
+      "editTitle": "Edit draft",
+      "back": "Back",
+      "backToList": "Back to emails",
+      "next": "Next",
+      "steps": {
+        "content": "Content",
+        "recipients": "Recipients",
+        "preview": "Preview and send"
+      },
+      "language": {
+        "fr": "French",
+        "en": "English",
+        "optional": "optional",
+        "fallbackHint": "Optional. Recipients who read English get this version; everyone else gets the French one. Leave it empty and everybody receives the French version."
+      },
+      "fields": {
+        "name": "Campaign name",
+        "nameHint": "Internal only. Recipients never see this.",
+        "subject": "Subject line",
+        "body": "Message",
+        "bodyPlaceholder": "Write your message. Drag an image in, or use the toolbar to add one."
+      },
+      "errors": {
+        "subjectRequired": "Add a subject line before continuing.",
+        "bodyRequired": "Write a message before continuing.",
+        "audienceRequired": "Choose who should receive this email.",
+        "audienceEmpty": "Nobody matches this selection. Everyone is excluded or unsubscribed."
+      }
+    },
+    "editor": {
+      "bold": "Bold",
+      "italic": "Italic",
+      "underline": "Underline",
+      "heading2": "Heading",
+      "heading3": "Subheading",
+      "bulletList": "Bullet list",
+      "orderedList": "Numbered list",
+      "quote": "Quote",
+      "alignLeft": "Align left",
+      "alignCenter": "Align centre",
+      "alignRight": "Align right",
+      "link": "Add link",
+      "unlink": "Remove link",
+      "button": "Add button",
+      "image": "Add image",
+      "divider": "Add divider",
+      "linkPrompt": "Link address",
+      "buttonLabelPrompt": "Button label",
+      "buttonUrlPrompt": "Button link address",
+      "uploadFailed": "That image could not be uploaded.",
+      "mergeTagsLabel": "Insert:",
+      "mergeTagsHint": "Replaced with the recipient details. Empty for anyone we have no name for."
+    },
+    "recipients": {
+      "groups": "Send to",
+      "allUsers": "All users",
+      "allUsersHint": "Every verified attendee account. Suspended accounts, accounts scheduled for deletion and anyone unsubscribed are left out.",
+      "allOrganisations": "All organisations",
+      "allOrganisationsHint": "The contact address of every published organisation. Suspended organisations and anyone unsubscribed are left out.",
+      "manual": "Specific addresses",
+      "manualPlaceholder": "name@example.com, another@example.com",
+      "manualHint": "Separate addresses with a comma, a semicolon or a new line.",
+      "invalid": "{count, plural, one {# address is not valid} other {# addresses are not valid}}: {emails}",
+      "summary": "This email will reach",
+      "total": "{count, plural, one {# recipient} other {# recipients}}",
+      "breakdown": "{users} users, {organisations} organisations, {manual} typed in",
+      "excluded": "{duplicates} duplicates and {optedOut} unsubscribed addresses removed.",
+      "nothingSelected": "Choose a group or type in some addresses."
+    },
+    "preview": {
+      "aboutToSend": "This will be sent to {count, plural, one {# recipient} other {# recipients}}.",
+      "aboutToSendHint": "It goes out in batches over the next few minutes. Once it starts, sent emails cannot be recalled.",
+      "subjectLabel": "Subject",
+      "iframeTitle": "Email preview",
+      "sendTest": "Send a test to me",
+      "testSent": "Test email sent.",
+      "send": "Send",
+      "confirmSend": "Yes, send to {count}",
+      "cancel": "Cancel",
+      "queued": "Queued for {count, plural, one {# recipient} other {# recipients}}.",
+      "noSendPermission": "You can write and save this campaign, but sending needs the campaigns.send permission."
+    },
+    "report": {
+      "stop": "Stop sending",
+      "cancelled": "Sending stopped. Emails already sent cannot be recalled.",
+      "progress": "{done} of {total} processed",
+      "progressHint": "This page updates on its own. You can close it, the send continues.",
+      "stats": {
+        "recipients": "Recipients",
+        "delivered": "Delivered",
+        "failed": "Failed",
+        "skipped": "Skipped"
+      },
+      "audience": "Audience",
+      "manualCount": "{count, plural, one {# address typed in} other {# addresses typed in}}",
+      "createdAt": "Created",
+      "sentAt": "Sent",
+      "failures": "Failed deliveries",
+      "failuresHint": "The most recent 100. Everything else went out normally.",
+      "columns": {
+        "email": "Address",
+        "source": "From",
+        "reason": "Reason"
+      },
+      "source": {
+        "user": "User",
+        "organisation": "Organisation",
+        "manual": "Typed in"
+      }
     }
   }
 }

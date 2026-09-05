@@ -231,7 +231,8 @@
         "user_withdrawals": "Retraits utilisateurs",
         "support": "Chat en direct",
         "contact": "Messages de contact",
-        "pending_edits": "Modifications en attente"
+        "pending_edits": "Modifications en attente",
+        "emails": "Emails"
       }
     },
     "topbar": {
@@ -1251,6 +1252,153 @@
       "since": "Suspendu le",
       "by": "Suspendu par",
       "reason": "Motif"
+    }
+  },
+  "Emails": {
+    "title": "Emails",
+    "subtitle": "Rédigez et envoyez un email aux utilisateurs ou aux organisations.",
+    "status": {
+      "draft": "Brouillon",
+      "queued": "En attente",
+      "sending": "Envoi en cours",
+      "sent": "Envoyé",
+      "failed": "Échoué",
+      "cancelled": "Annulé"
+    },
+    "list": {
+      "new": "Nouvel email",
+      "delete": "Supprimer",
+      "deleted": "Brouillon supprimé",
+      "loadFailed": "Nous n’avons pas pu charger vos campagnes. Rafraîchissez la page pour réessayer.",
+      "sentOf": "{sent} sur {total}",
+      "failedCount": "{count} échoués",
+      "tabs": {
+        "all": "Tous",
+        "drafts": "Brouillons",
+        "sent": "Envoyés"
+      },
+      "columns": {
+        "name": "Campagne",
+        "status": "Statut",
+        "recipients": "Destinataires",
+        "created": "Créé le"
+      },
+      "empty": {
+        "title": "Aucun email pour le moment",
+        "description": "Rédigez votre premier email aux utilisateurs ou aux organisations. Rien n’est envoyé avant votre confirmation à la dernière étape."
+      }
+    },
+    "compose": {
+      "title": "Nouvel email",
+      "editTitle": "Modifier le brouillon",
+      "back": "Retour",
+      "backToList": "Retour aux emails",
+      "next": "Suivant",
+      "steps": {
+        "content": "Contenu",
+        "recipients": "Destinataires",
+        "preview": "Aperçu et envoi"
+      },
+      "language": {
+        "fr": "Français",
+        "en": "Anglais",
+        "optional": "facultatif",
+        "fallbackHint": "Facultatif. Les destinataires qui lisent l’anglais reçoivent cette version, les autres la version française. Laissez vide et tout le monde reçoit la version française."
+      },
+      "fields": {
+        "name": "Nom de la campagne",
+        "nameHint": "Usage interne uniquement. Les destinataires ne le voient jamais.",
+        "subject": "Objet",
+        "body": "Message",
+        "bodyPlaceholder": "Rédigez votre message. Glissez une image ou ajoutez-en une avec la barre d’outils."
+      },
+      "errors": {
+        "subjectRequired": "Ajoutez un objet avant de continuer.",
+        "bodyRequired": "Rédigez un message avant de continuer.",
+        "audienceRequired": "Choisissez qui doit recevoir cet email.",
+        "audienceEmpty": "Personne ne correspond à cette sélection. Tous sont exclus ou désabonnés."
+      }
+    },
+    "editor": {
+      "bold": "Gras",
+      "italic": "Italique",
+      "underline": "Souligné",
+      "heading2": "Titre",
+      "heading3": "Sous-titre",
+      "bulletList": "Liste à puces",
+      "orderedList": "Liste numérotée",
+      "quote": "Citation",
+      "alignLeft": "Aligner à gauche",
+      "alignCenter": "Centrer",
+      "alignRight": "Aligner à droite",
+      "link": "Ajouter un lien",
+      "unlink": "Retirer le lien",
+      "button": "Ajouter un bouton",
+      "image": "Ajouter une image",
+      "divider": "Ajouter un séparateur",
+      "linkPrompt": "Adresse du lien",
+      "buttonLabelPrompt": "Texte du bouton",
+      "buttonUrlPrompt": "Adresse du bouton",
+      "uploadFailed": "Cette image n’a pas pu être téléversée.",
+      "mergeTagsLabel": "Insérer :",
+      "mergeTagsHint": "Remplacé par les informations du destinataire. Vide si nous n’avons pas son nom."
+    },
+    "recipients": {
+      "groups": "Envoyer à",
+      "allUsers": "Tous les utilisateurs",
+      "allUsersHint": "Tous les comptes participants vérifiés. Les comptes suspendus, ceux en attente de suppression et les désabonnés sont exclus.",
+      "allOrganisations": "Toutes les organisations",
+      "allOrganisationsHint": "L’adresse de contact de chaque organisation publiée. Les organisations suspendues et les désabonnés sont exclus.",
+      "manual": "Adresses précises",
+      "manualPlaceholder": "nom@exemple.com, autre@exemple.com",
+      "manualHint": "Séparez les adresses par une virgule, un point-virgule ou un retour à la ligne.",
+      "invalid": "{count, plural, one {# adresse invalide} other {# adresses invalides}} : {emails}",
+      "summary": "Cet email atteindra",
+      "total": "{count, plural, one {# destinataire} other {# destinataires}}",
+      "breakdown": "{users} utilisateurs, {organisations} organisations, {manual} saisies",
+      "excluded": "{duplicates} doublons et {optedOut} adresses désabonnées retirés.",
+      "nothingSelected": "Choisissez un groupe ou saisissez des adresses."
+    },
+    "preview": {
+      "aboutToSend": "Cet email sera envoyé à {count, plural, one {# destinataire} other {# destinataires}}.",
+      "aboutToSendHint": "L’envoi se fait par lots sur les prochaines minutes. Une fois commencé, les emails partis ne peuvent pas être rappelés.",
+      "subjectLabel": "Objet",
+      "iframeTitle": "Aperçu de l’email",
+      "sendTest": "M’envoyer un test",
+      "testSent": "Email de test envoyé.",
+      "send": "Envoyer",
+      "confirmSend": "Oui, envoyer à {count}",
+      "cancel": "Annuler",
+      "queued": "Mis en file pour {count, plural, one {# destinataire} other {# destinataires}}.",
+      "noSendPermission": "Vous pouvez rédiger et enregistrer cette campagne, mais l’envoi nécessite la permission campaigns.send."
+    },
+    "report": {
+      "stop": "Arrêter l’envoi",
+      "cancelled": "Envoi arrêté. Les emails déjà partis ne peuvent pas être rappelés.",
+      "progress": "{done} sur {total} traités",
+      "progressHint": "Cette page se met à jour toute seule. Vous pouvez la fermer, l’envoi continue.",
+      "stats": {
+        "recipients": "Destinataires",
+        "delivered": "Délivrés",
+        "failed": "Échoués",
+        "skipped": "Ignorés"
+      },
+      "audience": "Audience",
+      "manualCount": "{count, plural, one {# adresse saisie} other {# adresses saisies}}",
+      "createdAt": "Créé le",
+      "sentAt": "Envoyé le",
+      "failures": "Échecs de livraison",
+      "failuresHint": "Les 100 plus récents. Tout le reste est parti normalement.",
+      "columns": {
+        "email": "Adresse",
+        "source": "Provenance",
+        "reason": "Raison"
+      },
+      "source": {
+        "user": "Utilisateur",
+        "organisation": "Organisation",
+        "manual": "Saisie"
+      }
     }
   }
 }
