@@ -23,6 +23,7 @@ import {
 import MoneySend from "@ticketwaze/ui/assets/icons/money-send.svg";
 import { Link, useRouter } from "@/i18n/navigation";
 import PageLoader from "@/components/PageLoader";
+import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 import formatDate from "@/lib/FormatDate";
 import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
 import {
@@ -113,13 +114,13 @@ export default function RequestPageWrapper({
   ];
 
   return (
-    <div className="overflow-y-scroll flex flex-col gap-8">
+    <div className={PAGE_SCROLLER}>
       <PageLoader isLoading={isLoading} />
-      <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
+      <PageTitle>
         {scope === "history"
           ? t("payout_history.title")
           : t("payout_request.title")}
-      </h3>
+      </PageTitle>
 
       <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
         <div className="flex flex-col lg:flex-row gap-4 lg:items-center justify-between">
@@ -131,7 +132,7 @@ export default function RequestPageWrapper({
           </TabsList>
           {showFilter && (
             <Select value={status} onValueChange={handleStatusChange}>
-              <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
+              <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-full lg:w-fit min-w-0 text-[1.4rem] text-neutral-700 leading-8">
                 <SelectValue placeholder="" />
               </SelectTrigger>
               <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
@@ -177,7 +178,14 @@ export default function RequestPageWrapper({
                   onClick={() => nav(`/payouts/${request.withdrawalRequestId}`)}
                   className="cursor-pointer"
                 >
-                  <Td>{request.organisation.organisationName}</Td>
+                  <Td>
+                    <span
+                      title={request.organisation.organisationName}
+                      className="block max-w-[16rem] lg:max-w-[28rem] truncate"
+                    >
+                      {request.organisation.organisationName}
+                    </span>
+                  </Td>
                   <Td className="hidden lg:table-cell">{request.bankName}</Td>
                   <Td className="hidden lg:table-cell">
                     {request.accountNumber}
@@ -205,9 +213,11 @@ export default function RequestPageWrapper({
                   className="cursor-pointer"
                 >
                   <Td>
-                    {request.user
-                      ? `${request.user.firstName} ${request.user.lastName}`
-                      : request.accountName}
+                    <span className="block max-w-[16rem] lg:max-w-[28rem] truncate">
+                      {request.user
+                        ? `${request.user.firstName} ${request.user.lastName}`
+                        : request.accountName}
+                    </span>
                   </Td>
                   <Td className="hidden lg:table-cell">
                     {request.bankName ?? request.accountType}
@@ -236,7 +246,7 @@ export default function RequestPageWrapper({
               <Image src={MoneySend} alt="no requests" width={50} height={50} />
             </div>
           </div>
-          <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+          <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
             {t("payout_request.no_request")}
           </p>
         </div>

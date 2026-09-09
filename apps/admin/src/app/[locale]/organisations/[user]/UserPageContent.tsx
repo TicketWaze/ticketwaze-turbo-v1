@@ -1,6 +1,7 @@
 "use client";
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import BackButton from "@/components/shared/BackButton";
+import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 import { SuspendDialog } from "./SuspendDialog";
 import { ReactivateDialog } from "./ReactivateDialog";
 import { VerifyDialog } from "./VerifyDialog";
@@ -64,13 +65,13 @@ export default function UserPageContent({
 
   return (
     <AdminLayout>
-      <div className="flex flex-col gap-8 lg:h-full lg:overflow-hidden">
+      <div className={PAGE_SCROLLER}>
         <BackButton text={t("back")} />
-        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center">
-          <h2 className="inline-flex items-center gap-2 font-primary leading-12 font-medium text-[2.6rem]">
-            {organisation.organisationName}
-            {organisation.isVerified && <VerifiedOrganisationCheckMark />}
-          </h2>
+        <PageTitle as="h2" className="inline-flex items-center gap-2">
+          {organisation.organisationName}
+          {organisation.isVerified && <VerifiedOrganisationCheckMark />}
+        </PageTitle>
+        <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:justify-end lg:items-center">
           <div className="hidden lg:flex gap-4 items-center h-fit">
             <GrantSubscriptionDialog
               organisationId={organisation.organisationId}
@@ -93,8 +94,8 @@ export default function UserPageContent({
           <SuspensionNotice suspension={organisation.suspension} />
         )}
 
-        <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] lg:grid-rows-1 gap-8 lg:gap-16 lg:flex-1 lg:min-h-0">
-          <div className="w-full flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
+        <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] lg:grid-rows-1 gap-8 lg:gap-16">
+          <div className="w-full flex flex-col gap-8">
             <div className="flex flex-col gap-12 w-full pb-4">
               <form className="flex flex-col gap-12 w-full pb-4 overflow-x-hidden">
                 <div className="flex flex-col gap-6">
@@ -338,7 +339,7 @@ function Finance({
   const locale = useLocale();
   return (
     <TabsContent value="finance">
-      <ul className="flex flex-col pt-4 gap-8 overflow-y-scroll">
+      <ul className="flex flex-col pt-4 gap-8">
         <li className="flex justify-between">
           <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
             {t("finance.total_ticket_sold")}

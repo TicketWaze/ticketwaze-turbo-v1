@@ -255,6 +255,24 @@
       "list": {
         "status": "Tous les statuts",
         "period": "Toute la période"
+      },
+      "all": {
+        "events": "Tous les événements",
+        "raffles": "Toutes les tombolas",
+        "restaurants": "Tous les établissements",
+        "sales": "Tous les produits"
+      },
+      "search": {
+        "events": "Rechercher un événement",
+        "raffles": "Rechercher une tombola",
+        "restaurants": "Rechercher un établissement",
+        "sales": "Rechercher un produit"
+      },
+      "type": {
+        "events": "Événements",
+        "raffles": "Tombolas",
+        "restaurants": "Bar & Restaurant",
+        "sales": "Produits"
       }
     },
     "list": {
@@ -273,7 +291,8 @@
         "upcoming": "À venir",
         "active": "Actives"
       },
-      "noActivities": "Une fois que les organisateurs publient des activités, ils apparaîtront ici pour révision et suivi."
+      "noActivities": "Une fois que les organisateurs publient des activités, ils apparaîtront ici pour révision et suivi.",
+      "noResults": "Aucune activité ne correspond à votre recherche."
     },
     "activity": {
       "back": "Retour",
@@ -752,7 +771,8 @@
       "status_suspended": "Suspendu",
       "time": "Toute la période",
       "last_week": "Semaine dernière",
-      "last_month": "Mois dernier"
+      "last_month": "Mois dernier",
+      "search": "Rechercher une organisation"
     },
     "organisations_list": {
       "title": "Liste des organisations",
@@ -762,7 +782,8 @@
         "activity_count": "Nombre d'activités",
         "joined": "Date d'inscription"
       },
-      "no_history": "Une fois que les organisateurs s'inscrivent et créent des activités, ils apparaîtront ici."
+      "no_history": "Une fois que les organisateurs s'inscrivent et créent des activités, ils apparaîtront ici.",
+      "no_results": "Aucune organisation ne correspond à votre recherche."
     },
     "profile": {
       "title": "Profil",
@@ -1000,7 +1021,8 @@
       "all": "Tous les types",
       "attendee": "Participant",
       "business": "Entreprise",
-      "both": "Les deux"
+      "both": "Les deux",
+      "search": "Rechercher dans la liste d'attente"
     },
     "list": {
       "title": "Utilisateurs en attente",
@@ -1037,7 +1059,8 @@
       "already_invited": "Déjà invité",
       "invited_at": "Invité le",
       "close": "Fermer"
-    }
+    },
+    "no_results": "Aucune entrée ne correspond à votre recherche."
   },
   "Analytics": {
     "title": "Vue d'ensemble de la plateforme",
@@ -1051,12 +1074,6 @@
     "avg_tickets": "Moy. de billets par participant",
     "top_organizer_revenue": "Revenu du meilleur organisateur",
     "noActivity": "Aucune Activité",
-    "filters": {
-      "first": {
-        "all": "Toutes les activités",
-        "date": "Ce mois-ci"
-      }
-    },
     "income": {
       "title": "Performance des revenus",
       "revenue": "Croissance des revenus"

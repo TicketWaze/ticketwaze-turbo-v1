@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import PageLoader from "@/components/PageLoader";
 import { WithdrawalRequest } from "@ticketwaze/typescript-config";
 import PayoutSection from "./PayoutSection";
+import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 import type { PayoutsSummary } from "./page";
 
 const formatUsd = (n: number) =>
@@ -61,11 +62,9 @@ export default function PayoutsPageContent({
   ];
 
   return (
-    <div className="overflow-y-scroll flex flex-col gap-12 pb-8">
+    <div className={`${PAGE_SCROLLER} gap-12 pb-8 overflow-x-hidden min-w-0`}>
       <PageLoader isLoading={isLoading} />
-      <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
-        {t("title")}
-      </h3>
+      <PageTitle className="-mb-12">{t("title")}</PageTitle>
 
       {/* Summary: 3 USD amounts + 3 counts (3 per row desktop, 2 per row mobile) */}
       <div className="grid grid-cols-2 lg:grid-cols-3 divide-x divide-y divide-neutral-100 border-neutral-100 border-y">

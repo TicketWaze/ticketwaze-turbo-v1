@@ -101,11 +101,13 @@ export default function SupportPageContent({
 
   return (
     <AdminLayout>
-      <div className="overflow-y-scroll flex flex-col gap-8">
+      <div className="flex flex-1 min-h-0 flex-col gap-8 overflow-y-auto">
         <PageLoader isLoading={isLoading} />
 
-        {/* Topbar */}
-        <div className="flex items-center justify-between">
+        {/* Topbar. The whole row sticks: the Open/Resolved toggle belongs to
+            the title, and leaving it behind while scrolling would read as a
+            bug. Everything below this row moves. */}
+        <div className="sticky top-0 z-20 bg-white pb-8 -mb-8 flex items-center justify-between">
           <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
             {t("title")}
           </h3>
@@ -192,7 +194,7 @@ export default function SupportPageContent({
 
         {threads.data.length === 0 && (
           <div className="flex flex-col items-center mt-8 gap-4 self-center">
-            <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+            <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
               {t("empty")}
             </p>
           </div>

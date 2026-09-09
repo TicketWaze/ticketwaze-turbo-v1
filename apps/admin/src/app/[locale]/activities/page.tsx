@@ -9,17 +9,27 @@ import {
 } from "@ticketwaze/typescript-config";
 import AdminLayout from "@/components/Layouts/AdminLayout";
 
-const EVENT_STATUSES = ["requested", "review", "approved", "rejected"] as const;
-
+/**
+ * The API now understands `status=all` and orders newest-first, so this is one
+ * request. It used to fire four — one per status — at ten rows each and merge
+ * them, which capped the list at the ten oldest events per status and hid
+ * everything else; that is why recent activities were missing from the page.
+ */
 async function fetchEvents(
   status: string,
   page: string | undefined,
+  search: string | undefined,
   accessToken: string | undefined,
 ): Promise<{ events?: AdminEventsRequest; allEvents?: Event[] }> {
+  const params = new URLSearchParams({ status, limit: "100" });
+  if (page) params.set("page", page);
+  if (search) params.set("search", search);
+
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/admin/events?status=${status}&page=${page}&limit=10`,
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/events?${params.toString()}`,
     {
       method: "GET",
+      cache: "no-store",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${accessToken}`,
@@ -69,10 +79,14 @@ async function fetchRestaurants(
  * should find it here rather than nowhere.
  */
 async function fetchSales(
+  search: string | undefined,
   accessToken: string | undefined,
 ): Promise<{ sales?: { data?: Sale[] } }> {
+  const params = new URLSearchParams({ status: "ALL", limit: "100" });
+  if (search) params.set("search", search);
+
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/admin/sales?status=ALL&limit=100`,
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/sales?${params.toString()}`,
     {
       method: "GET",
       headers: {
@@ -88,36 +102,27 @@ async function fetchSales(
 export default async function ActivitiesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; page: string | undefined }>;
+  searchParams: Promise<{
+    status?: string;
+    page?: string;
+    search?: string;
+  }>;
 }) {
   const session = await auth();
-  const { status, page } = await searchParams;
+  const { status, page, search } = await searchParams;
   const activeStatus = status ?? "all";
   const accessToken = session?.user.accessToken;
 
-  let eventData: Event[] = [];
-  let allEvents: Event[] = [];
-
+  // Events and products are filtered in the database. Raffles and venues are
+  // not: their endpoints return every row already sorted newest-first, so
+  // narrowing them on the client searches the whole set, not just a page of it.
   const rafflesPromise = fetchRaffles(accessToken);
   const restaurantsPromise = fetchRestaurants(accessToken);
-  const salesPromise = fetchSales(accessToken);
+  const salesPromise = fetchSales(search, accessToken);
 
-  if (activeStatus === "all") {
-    // The API filters by a single status, so "all" aggregates every status.
-    const responses = await Promise.all(
-      EVENT_STATUSES.map((s) => fetchEvents(s, page, accessToken)),
-    );
-    eventData = responses.flatMap((r) => r.events?.data ?? []);
-    allEvents = responses.find((r) => r.allEvents)?.allEvents ?? [];
-    eventData.sort(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-    );
-  } else {
-    const response = await fetchEvents(activeStatus, page, accessToken);
-    eventData = response.events?.data ?? [];
-    allEvents = response.allEvents ?? [];
-  }
+  const response = await fetchEvents(activeStatus, page, search, accessToken);
+  const eventData = response.events?.data ?? [];
+  const allEvents = response.allEvents ?? [];
 
   const raffles = (await rafflesPromise).raffles ?? [];
   const restaurants = (await restaurantsPromise).restaurants ?? [];
@@ -130,6 +135,7 @@ export default async function ActivitiesPage({
         eventData={eventData}
         allEvents={allEvents}
         status={activeStatus}
+        search={search}
         raffles={raffles}
         restaurants={restaurants}
         sales={sales}

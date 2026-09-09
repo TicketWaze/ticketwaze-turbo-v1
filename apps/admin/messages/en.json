@@ -290,6 +290,24 @@
       "list": {
         "status": "All status",
         "period": "All time"
+      },
+      "all": {
+        "events": "All events",
+        "raffles": "All raffles",
+        "restaurants": "All venues",
+        "sales": "All products"
+      },
+      "search": {
+        "events": "Search events",
+        "raffles": "Search raffles",
+        "restaurants": "Search venues",
+        "sales": "Search products"
+      },
+      "type": {
+        "events": "Events",
+        "raffles": "Raffles",
+        "restaurants": "Bar & Restaurant",
+        "sales": "Products"
       }
     },
     "list": {
@@ -308,7 +326,8 @@
         "upcoming": "Upcoming",
         "active": "Active"
       },
-      "noActivities": "Once activities are published by organizers, they will appear here for review and tracking."
+      "noActivities": "Once activities are published by organizers, they will appear here for review and tracking.",
+      "noResults": "No activities match your search."
     },
     "activity": {
       "back": "Back",
@@ -759,7 +778,8 @@
       "status_suspended": "Suspended",
       "time": "All time",
       "last_week": "Last week",
-      "last_month": "Last month"
+      "last_month": "Last month",
+      "search": "Search organisations"
     },
     "organisations_list": {
       "title": "Organisations list",
@@ -769,7 +789,8 @@
         "activity_count": "Activity Count",
         "joined": "Date Joined"
       },
-      "no_history": "Once organizers sign up and create activities, they will appear here."
+      "no_history": "Once organizers sign up and create activities, they will appear here.",
+      "no_results": "No organisations match your search."
     },
     "profile": {
       "title": "Profile",
@@ -1007,7 +1028,8 @@
       "all": "All types",
       "attendee": "Attendee",
       "business": "Business",
-      "both": "Both"
+      "both": "Both",
+      "search": "Search waitlist"
     },
     "list": {
       "title": "Waitlist users",
@@ -1044,7 +1066,8 @@
       "already_invited": "Already Invited",
       "invited_at": "Invited On",
       "close": "Close"
-    }
+    },
+    "no_results": "No entries match your search."
   },
   "Analytics": {
     "title": "Platform Overview",
@@ -1058,12 +1081,6 @@
     "avg_tickets": "Avg. Tickets Per Attendee",
     "top_organizer_revenue": "Top Organizer Revenue",
     "noActivity": "No Activity",
-    "filters": {
-      "first": {
-        "all": "All activities",
-        "date": "This month"
-      }
-    },
     "income": {
       "title": "Income Performance",
       "revenue": "Revenue Growth"

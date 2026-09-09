@@ -22,7 +22,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
-import TicketsPageTopbar from "./TicketsPageTopbar";
+import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 import TicketDetails from "./TicketDetails";
 import SearchInput from "@/components/shared/SearchInput";
 import PageLoader from "@/components/PageLoader";
@@ -224,12 +224,9 @@ export default function TicketPageContent({
   };
 
   return (
-    <>
+    <div className={PAGE_SCROLLER}>
       <PageLoader isLoading={isLoading} />
-      <TicketsPageTopbar
-        title={t("title")}
-        filter={t("filters.period.actual")}
-      />
+      <PageTitle>{t("title")}</PageTitle>
       <div
         className={
           "grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b"
@@ -275,7 +272,7 @@ export default function TicketPageContent({
       {/* The list scrolls inside the page rather than the page itself, so the
           topbar and the stat tiles stay put. Same wrapper as the payments
           table. */}
-      <div className="flex flex-col gap-8 overflow-scroll h-full">
+      <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <h4 className="hidden font-medium lg:inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
@@ -551,7 +548,7 @@ export default function TicketPageContent({
                       />
                     </div>
                   </div>
-                  <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+                  <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
                     {t("tickets_list.no_history")}
                   </p>
                 </div>
@@ -559,7 +556,6 @@ export default function TicketPageContent({
           </div>
         </div>
       </div>
-      <div></div>
-    </>
+    </div>
   );
 }

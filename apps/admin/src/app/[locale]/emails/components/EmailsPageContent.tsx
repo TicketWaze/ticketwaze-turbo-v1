@@ -108,9 +108,11 @@ export default function EmailsPageContent({
   }
 
   return (
-    <div className="overflow-y-scroll flex flex-col gap-8">
-      {/* Topbar */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className="flex flex-1 min-h-0 flex-col gap-8 overflow-y-auto">
+      {/* Topbar. Sticks as a block because the heading has a subtitle under it
+          and an action beside it; splitting them apart mid-scroll would read
+          as a bug. */}
+      <div className="sticky top-0 z-20 bg-white pb-8 -mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-col gap-1">
           <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
             {t("title")}

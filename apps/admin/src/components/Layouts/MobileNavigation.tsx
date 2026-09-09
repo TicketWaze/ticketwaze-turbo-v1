@@ -45,11 +45,11 @@ export default function MobileNavigation({
   const primaryLinks = [
     { label: t("links.analytics"), path: "/analytics", Icon: Chart1 },
     { label: t("links.activities"), path: "/activities", Icon: Calendar },
-    { label: t("links.waitlist"), path: "/waitlist", Icon: Note },
+    { label: t("links.attendees"), path: "/attendees", Icon: UserSquare },
   ];
 
   const moreLinks = [
-    { label: t("links.attendees"), path: "/attendees", Icon: UserSquare, badge: 0 },
+    { label: t("links.waitlist"), path: "/waitlist", Icon: Note, badge: 0 },
     { label: t("links.organisations"), path: "/organisations", Icon: Building, badge: 0 },
     { label: t("links.admins"), path: "/admins", Icon: SecurityUser, badge: 0 },
     { label: t("links.tickets"), path: "/tickets", Icon: Ticket, badge: 0 },
