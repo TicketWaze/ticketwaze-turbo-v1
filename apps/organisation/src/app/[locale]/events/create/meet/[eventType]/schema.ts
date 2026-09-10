@@ -268,7 +268,7 @@ export function makeMeetPersonSchema(
       const isUSD = data.eventCurrency === "USD";
       data.ticketTypes.forEach((ticket, index) => {
         const price = parseFloat(ticket.ticketTypePrice);
-        if (isHTG && !isNaN(price) && price < 250) {
+        if (isHTG && !isNaN(price) && price < 100) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: t("errors.ticketClass.priceMinHTG"),

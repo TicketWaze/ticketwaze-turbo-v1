@@ -15,8 +15,31 @@ export const STRIPE_TX_FEE_RATE = 0.03; // 3% Stripe transaction fee
 export const MONCASH_TX_FEE_RATE = 0.025; // 2.5% MonCash transaction fee
 export const NATCASH_TX_FEE_RATE = 0.025; // 2.5% NatCash transaction fee
 export const PER_TICKET_FEE_USD = 1.49; // flat fee per ticket in USD
-export const PER_TICKET_FEE_HTG_LOW = 100; // flat fee for HTG tickets priced <= 500 HTG
-export const HTG_LOW_PRICE_THRESHOLD = 500;
+
+/**
+ * THE HTG PER-TICKET FEE, BY PRICE BAND.
+ *
+ * A flat fee is regressive by construction: the same 100 HTG that is a rounding
+ * error on a 2,000 HTG ticket was 40% of a 250 HTG one. These bands scale the
+ * fee down with the ticket so a small event stays worth running.
+ *
+ * Read as "price <= maxPrice", first match wins, and anything above the last
+ * band falls through to the USD fee at the live rate — the "tarif normal".
+ *
+ *   100 - 299  ->  50 HTG
+ *   300 - 499  ->  75 HTG
+ *   500 - 749  -> 100 HTG
+ *   750 +      -> 1.49 USD at the live rate (~201 HTG)
+ *
+ * Mirrors `HTG_PER_TICKET_FEE_BANDS` in the API's `utils/pricing.ts`, which is
+ * what actually charges. The two must agree or the buyer is quoted a total
+ * they are not charged.
+ */
+export const HTG_PER_TICKET_FEE_BANDS = [
+  { maxPrice: 299, fee: 50 },
+  { maxPrice: 499, fee: 75 },
+  { maxPrice: 749, fee: 100 },
+] as const;
 
 // Last-resort fallback only. The real HTG/USD rate MUST come from the API
 // (GET /currencies) — it is the same value the backend charges with, and any
@@ -29,11 +52,11 @@ export function round2(n: number): number {
 
 /**
  * Per-ticket platform fee for a single ticket, using the live exchange rate.
- * Edge case: HTG event with price <= 500 HTG → 100 HTG flat fee.
+ * HTG follows `HTG_PER_TICKET_FEE_BANDS`; USD is a single flat $1.49.
  *
  * A FREE ticket type (price 0) carries no fee in either currency. Without the
- * first line a 0-price ticket falls into the HTG low-price band and is quoted
- * a 100 HTG flat fee, so the tier labelled "Free" would cost money. Mirrors
+ * first line a 0-price ticket falls into the lowest HTG band and is quoted a
+ * 50 HTG flat fee, so the tier labelled "Free" would cost money. Mirrors
  * `perTicketFeeHTG` / `perTicketFeeUSD` in the API's pricing utils.
  */
 export function getPerTicketFee(
@@ -43,11 +66,35 @@ export function getPerTicketFee(
 ): number {
   if (ticketPrice <= 0) return 0;
   if (currency === "HTG") {
-    return ticketPrice <= HTG_LOW_PRICE_THRESHOLD
-      ? PER_TICKET_FEE_HTG_LOW
-      : PER_TICKET_FEE_USD * htgExchangeRate;
+    const band = HTG_PER_TICKET_FEE_BANDS.find(
+      (b) => ticketPrice <= b.maxPrice,
+    );
+    return band ? band.fee : PER_TICKET_FEE_USD * htgExchangeRate;
   }
   return PER_TICKET_FEE_USD;
+}
+
+/**
+ * THE FLAT FEE FOR AN HTG PRICE INSIDE A BAND, OR NULL ABOVE THEM.
+ *
+ * Below the top band the flat fee is not one line in a stack — it IS the whole
+ * charge on top of the ticket. No 3% service fee, and no payment-processor
+ * percentage on any route, so a 250 HTG ticket costs 300 HTG whether the buyer
+ * pays by MonCash, NatCash, card or wallet. Ticketwaze carries the processor's
+ * cut out of the flat; the organiser is credited the full base either way.
+ *
+ * Mirrors `htgFlatBandFee` in the API's `utils/pricing.ts`.
+ */
+export function htgFlatBandFee(htgPrice: number): number | null {
+  if (!Number.isFinite(htgPrice) || htgPrice <= 0) return null;
+  const band = HTG_PER_TICKET_FEE_BANDS.find((b) => htgPrice <= b.maxPrice);
+  return band ? band.fee : null;
+}
+
+/** The same rule expressed as the all-in total the buyer pays. */
+function htgFlatTotal(htgPrice: number): number | null {
+  const fee = htgFlatBandFee(htgPrice);
+  return fee === null ? null : round2(htgPrice + fee);
 }
 
 /**
@@ -59,6 +106,8 @@ export function calculateMoncashTotalHTG(
   htgPrice: number,
   htgExchangeRate: number,
 ): number {
+  const flat = htgFlatTotal(htgPrice);
+  if (flat !== null) return flat;
   const perFee = getPerTicketFee("HTG", htgPrice, htgExchangeRate);
   const subtotal = htgPrice * (1 + SERVICE_FEE_RATE) + perFee;
   return round2(subtotal * (1 + MONCASH_TX_FEE_RATE));
@@ -73,6 +122,8 @@ export function calculateNatcashTotalHTG(
   htgPrice: number,
   htgExchangeRate: number,
 ): number {
+  const flat = htgFlatTotal(htgPrice);
+  if (flat !== null) return flat;
   const perFee = getPerTicketFee("HTG", htgPrice, htgExchangeRate);
   const subtotal = htgPrice * (1 + SERVICE_FEE_RATE) + perFee;
   return round2(subtotal * (1 + NATCASH_TX_FEE_RATE));
@@ -87,6 +138,8 @@ export function calculateStripeTotalHTG(
   htgPrice: number,
   htgExchangeRate: number,
 ): number {
+  const flat = htgFlatTotal(htgPrice);
+  if (flat !== null) return flat;
   const perFee = getPerTicketFee("HTG", htgPrice, htgExchangeRate);
   const subtotal = htgPrice * (1 + SERVICE_FEE_RATE) + perFee;
   return round2(subtotal * (1 + STRIPE_TX_FEE_RATE));
@@ -240,6 +293,26 @@ export function getUnitPriceBreakdown(
     htgExchangeRate > 0 ? htgExchangeRate : FALLBACK_HTG_EXCHANGE_RATE;
   const basePrice = Number.isFinite(price) && price > 0 ? price : 0;
 
+  /**
+   * Inside an HTG flat band the stack collapses to one line. Showing a 3%
+   * service row and a processor row here would itemise money the buyer is not
+   * charged, and the rows would not add up to the total they pay.
+   */
+  if (currency === "HTG") {
+    const flatFee = htgFlatBandFee(basePrice);
+    if (flatFee !== null) {
+      return {
+        basePrice,
+        serviceFee: 0,
+        platformFee: flatFee,
+        transactionFee: 0,
+        total: round2(basePrice + flatFee),
+        currency,
+        route,
+      };
+    }
+  }
+
   const serviceFee = SERVICE_FEE_RATE * basePrice;
   const platformFee = getPerTicketFee(currency, basePrice, rate);
   const subtotal = basePrice + serviceFee + platformFee;
@@ -313,6 +386,26 @@ export function getAbsorbedFees(
   const rate =
     htgExchangeRate > 0 ? htgExchangeRate : FALLBACK_HTG_EXCHANGE_RATE;
   const buyerPays = Number.isFinite(price) && price > 0 ? price : 0;
+
+  /**
+   * Inside an HTG flat band there are no percentages to take out — the flat fee
+   * is the entire stack. An absorbing organiser gives up exactly that, on every
+   * route. Mirrors the API's `getAbsorbedFees`.
+   */
+  if (currency === "HTG") {
+    const flatFee = htgFlatBandFee(buyerPays);
+    if (flatFee !== null) {
+      return {
+        buyerPays: round2(buyerPays),
+        serviceFee: 0,
+        platformFee: flatFee,
+        transactionFee: 0,
+        fees: flatFee,
+        net: round2(buyerPays - flatFee),
+      };
+    }
+  }
+
   const serviceFee = SERVICE_FEE_RATE * buyerPays;
   const platformFee = getPerTicketFee(currency, buyerPays, rate);
   const transactionFee = getRouteFeeRate(route) * buyerPays;
@@ -359,11 +452,33 @@ export function getMinAbsorbedPrice(
     return Math.ceil((PER_TICKET_FEE_USD / headroom) * 2) / 2;
   }
 
-  // Two flat-fee bands, so the answer must be consistent with the band it
-  // lands in — see the API's copy.
-  const lowBandMin = PER_TICKET_FEE_HTG_LOW / headroom;
-  if (lowBandMin <= HTG_LOW_PRICE_THRESHOLD) return Math.ceil(lowBandMin / 10) * 10;
-  return Math.ceil((PER_TICKET_FEE_USD * rate) / headroom / 10) * 10;
+  /**
+   * HTG has four bands that do not all price the same way, so the floor is
+   * solved per band and the cheapest workable answer wins. Inside a flat band
+   * only the flat fee is deducted, so `price >= fee / (1 - share)`; above the
+   * bands the percentages return and `fee / headroom` applies. See the API's
+   * copy for the full reasoning.
+   */
+  const flatShare = 1 - ABSORBED_MIN_NET_SHARE;
+  const bands: { start: number; end: number; need: number }[] = [];
+  let start = 0;
+  for (const band of HTG_PER_TICKET_FEE_BANDS) {
+    bands.push({ start, end: band.maxPrice, need: band.fee / flatShare });
+    start = band.maxPrice + 1;
+  }
+  bands.push({
+    start,
+    end: Number.POSITIVE_INFINITY,
+    need: (PER_TICKET_FEE_USD * rate) / headroom,
+  });
+
+  let cheapest = Number.POSITIVE_INFINITY;
+  for (const band of bands) {
+    const candidate = Math.max(band.need, band.start);
+    if (candidate <= band.end) cheapest = Math.min(cheapest, candidate);
+  }
+
+  return Math.ceil(cheapest / 10) * 10;
 }
 
 /** Is this price high enough to absorb its own fees? Free is always fine. */
