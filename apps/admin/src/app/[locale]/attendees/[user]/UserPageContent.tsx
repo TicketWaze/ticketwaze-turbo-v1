@@ -1,6 +1,7 @@
 "use client";
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import BackButton from "@/components/shared/BackButton";
+import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 import { SuspendDialog } from "./SuspendDialog";
 import { ReactivateDialog } from "./ReactivateDialog";
 import Separator from "@/components/shared/Separator";
@@ -69,19 +70,15 @@ export default function UserPageContent({
 
   return (
     <AdminLayout>
-      <div className="flex flex-col gap-8 lg:h-full lg:overflow-hidden">
+      <div className={PAGE_SCROLLER}>
         <BackButton text={t("back")} />
-        <div className="mb-6 flex justify-between items-center">
-          <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem]">
-            {t("title")}
-          </h2>
-          <div className="hidden lg:flex gap-4 items-center h-fit">
-            {user.isSuspended ? (
-              <ReactivateDialog userId={user.userId} />
-            ) : (
-              <SuspendDialog userId={user.userId} />
-            )}
-          </div>
+        <PageTitle as="h2">{t("title")}</PageTitle>
+        <div className="mb-6 hidden lg:flex gap-4 items-center h-fit">
+          {user.isSuspended ? (
+            <ReactivateDialog userId={user.userId} />
+          ) : (
+            <SuspendDialog userId={user.userId} />
+          )}
         </div>
         {/* An active suspension is the first thing that explains everything
             else on this page, so it sits above the record — and above the
@@ -91,8 +88,8 @@ export default function UserPageContent({
             is called out above the record rather than only listed inside it. */}
         {user.deletion && <DeletionNotice deletion={user.deletion} />}
 
-        <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] gap-8 lg:gap-16 lg:min-h-0">
-          <div className="w-full flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
+        <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] gap-8 lg:gap-16">
+          <div className="w-full flex flex-col gap-8">
             <form className="flex flex-col gap-12 w-full pb-4 overflow-x-hidden">
               <div className="w-full bg-primary-500 p-6 rounded-[20px] flex gap-10">
                 <div className="w-40 h-40 rounded-[25px] bg-neutral-300 overflow-hidden">
@@ -287,7 +284,7 @@ function ActivitySummary({
   const locale = useLocale();
   return (
     <TabsContent value="summary" className="">
-      <ul className="flex flex-col pt-4 gap-8 overflow-y-scroll">
+      <ul className="flex flex-col pt-4 gap-8">
         <li className="flex justify-between">
           <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
             {t("summary.count")}

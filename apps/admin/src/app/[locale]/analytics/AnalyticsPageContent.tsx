@@ -1,5 +1,4 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
-import AnalyticsPageTopbar from "./AnalyticsPageTopbar";
 import { useLocale, useTranslations } from "next-intl";
 import { formatMoney } from "@ticketwaze/currency";
 import BarChart from "./BarChart";
@@ -84,12 +83,17 @@ export default function AnalyticsPageContent({
   return (
     <AdminLayout>
       <>
-        <AnalyticsPageTopbar
-          title={t("title")}
-          filter1={t("filters.first.all")}
-          filter={t("filters.first.date")}
-          className="pb-16"
-        />
+        {/* On mobile this container is the scroller (AdminLayout drops to
+            overflow-y-auto below lg), so the heading sticks to its top while
+            the charts move under it. On desktop nothing scrolls here and
+            sticky is inert. */}
+        <h3
+          className={
+            "sticky top-0 z-10 bg-white pb-8 lg:pb-16 lg:static font-medium font-primary text-[2.6rem] leading-12 text-black"
+          }
+        >
+          {t("title")}
+        </h3>
         <div
           className={
             "flex flex-col gap-12 overflow-y-scroll overflow-x-hidden lg:gap-16"
@@ -626,8 +630,6 @@ export default function AnalyticsPageContent({
               </div>
             </div>
           </div>
-
-          <div></div>
         </div>
       </>
     </AdminLayout>

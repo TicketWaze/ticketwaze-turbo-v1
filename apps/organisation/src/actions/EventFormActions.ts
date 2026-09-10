@@ -81,7 +81,12 @@ export async function ListFormQuestions(
   eventId: string,
   locale: string,
 ): Promise<
-  | { questions: EventFormQuestion[]; canUseForms: boolean; maxQuestions: number }
+  | {
+      questions: EventFormQuestion[];
+      canUseForms: boolean;
+      maxQuestions: number;
+      eventName: string;
+    }
   | Failure
 > {
   try {
@@ -99,6 +104,7 @@ export async function ListFormQuestions(
       questions: (response.questions ?? []) as EventFormQuestion[],
       canUseForms: response.canUseForms === true,
       maxQuestions: Number(response.maxQuestions ?? 10),
+      eventName: String(response.eventName ?? ""),
     };
   } catch {
     return { error: "Could not load the questions." };

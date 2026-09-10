@@ -24,7 +24,7 @@ import TransactionDetails from "./TransactionDetails";
 import Money from "@ticketwaze/ui/assets/icons/moneys.svg";
 import ArrowUp from "@ticketwaze/ui/assets/icons/arrow-up.svg";
 import Image from "next/image";
-import PaymentsPageTopbar from "./PaymentsPageTopbar";
+import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 import SearchInput from "@/components/shared/SearchInput";
 import PageLoader from "@/components/PageLoader";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -216,12 +216,9 @@ export default function PaymentsPageContent({
   const growthPositive = stats.revenueGrowth >= 0;
 
   return (
-    <>
+    <div className={PAGE_SCROLLER}>
       <PageLoader isLoading={isLoading} />
-      <PaymentsPageTopbar
-        title={t("title")}
-        filter={t("filters.period.actual")}
-      />
+      <PageTitle>{t("title")}</PageTitle>
       <div
         className={
           "grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b"
@@ -276,7 +273,7 @@ export default function PaymentsPageContent({
           </p>
         </div>
       </div>
-      <div className="flex flex-col gap-8 overflow-scroll h-full">
+      <div className="flex flex-col gap-8">
         <div className="flex flex-col gap-8">
           <div className="flex justify-between">
             <h4 className="hidden font-medium lg:inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
@@ -451,7 +448,13 @@ export default function PaymentsPageContent({
                                 "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
                               }
                             >
-                              <span className="cursor-pointer">
+                              {/* Transaction ids run long and are the first
+                                  column, so an untruncated one pushes every
+                                  other column off the row. */}
+                              <span
+                                className="block max-w-[16rem] lg:max-w-[24rem] truncate cursor-pointer"
+                                title={order.orderName}
+                              >
                                 {order.orderName}
                               </span>
                             </TableCell>
@@ -475,7 +478,12 @@ export default function PaymentsPageContent({
                                 "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
                               }
                             >
-                              {order.activity?.name ?? "—"}
+                              <span
+                                className="block max-w-[16rem] lg:max-w-[24rem] truncate"
+                                title={order.activity?.name ?? undefined}
+                              >
+                                {order.activity?.name ?? "—"}
+                              </span>
                             </TableCell>
                             <TableCell
                               className={
@@ -521,7 +529,7 @@ export default function PaymentsPageContent({
                       />
                     </div>
                   </div>
-                  <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+                  <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
                     {t("transactions.no_history")}
                   </p>
                 </div>
@@ -529,7 +537,6 @@ export default function PaymentsPageContent({
           </div>
         </div>
       </div>
-      <div></div>
-    </>
+    </div>
   );
 }

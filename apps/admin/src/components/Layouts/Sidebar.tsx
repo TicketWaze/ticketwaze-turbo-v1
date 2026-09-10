@@ -13,6 +13,7 @@ import {
   MoneyRecive,
   Note,
   SecurityUser,
+  Sms,
   Ticket,
   UserSquare,
 } from "iconsax-reactjs";
@@ -63,6 +64,7 @@ function Sidebar({ className }: { className: string }) {
     { label: t("links.tickets"), path: `/tickets`, Icon: Ticket },
     { label: t("links.payments"), path: `/payments`, Icon: Money },
     { label: t("links.payouts"), path: `/payouts`, Icon: MoneyRecive },
+    { label: t("links.emails"), path: `/emails`, Icon: Sms },
   ];
 
   function isActive(path: string) {

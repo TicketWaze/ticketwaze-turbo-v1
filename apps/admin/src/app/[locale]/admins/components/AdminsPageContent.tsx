@@ -221,7 +221,7 @@ export default function AdminsPageContent({
   const isSelf = (a: AdminRecord) => a.adminId === currentAdminId;
 
   return (
-    <div className="overflow-y-scroll flex flex-col gap-8 pb-12">
+    <div className="flex flex-col gap-8 pb-12">
       {/* ── Table ─────────────────────────────────────────────────────────── */}
       <Table>
         <TableHeader>

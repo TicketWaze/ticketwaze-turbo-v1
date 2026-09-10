@@ -1,6 +1,5 @@
 "use client";
 import AdminLayout from "@/components/Layouts/AdminLayout";
-import OrganisationsPageTopbar from "./OrganisationsPageTopbar";
 import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
 import User from "@ticketwaze/ui/assets/icons/user-square.svg";
@@ -28,7 +27,9 @@ import {
 import formatDate from "@/lib/FormatDate";
 import { useState, useEffect } from "react";
 import PageLoader from "@/components/PageLoader";
+import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
+import SearchInput from "@/components/shared/SearchInput";
 
 export default function OrganisationsPageContent({
   organisations,
@@ -45,7 +46,20 @@ export default function OrganisationsPageContent({
   const locale = useLocale();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const data = organisations.data;
+  const [term, setTerm] = useState("");
+
+  // Same shape as the activities list: the term narrows within whatever the
+  // status and period pills already selected, so the two controls compose
+  // rather than one silently overriding the other.
+  const query = term.trim().toLowerCase();
+  const isSearching = query.length > 0;
+  const data = organisations.data.filter((org) =>
+    !isSearching
+      ? true
+      : [org.organisationName, org.organisationEmail].some((field) =>
+          field?.toLowerCase().includes(query),
+        ),
+  );
 
   useEffect(() => {
     setIsLoading(false);
@@ -70,161 +84,179 @@ export default function OrganisationsPageContent({
   return (
     <AdminLayout>
       <PageLoader isLoading={isLoading} />
-      <OrganisationsPageTopbar
-        title={t("title")}
-        filter={t("filters.period.actual")}
-      />
-      <div className="grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b">
-        <div className="pb-12">
-          <span className="flex justify-between text-[14px] text-neutral-600 leading-8 pb-2">
-            {t("total")}
-          </span>
-          <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
-            {stats.total.toLocaleString()}
-          </p>
+      <div className={PAGE_SCROLLER}>
+        <PageTitle>{t("title")}</PageTitle>
+        <div className="grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b">
+          <div className="pb-12">
+            <span className="flex justify-between text-[14px] text-neutral-600 leading-8 pb-2">
+              {t("total")}
+            </span>
+            <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
+              {stats.total.toLocaleString()}
+            </p>
+          </div>
+          <div className="pl-10">
+            <span className="flex justify-between text-[14px] text-neutral-600 leading-8 pb-2">
+              {t("active")}
+            </span>
+            <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
+              {stats.active.toLocaleString()}
+            </p>
+          </div>
+          <div className="pl-0 lg:pl-10">
+            <span className="flex justify-between text-[14px] text-neutral-600 leading-8 pb-2">
+              {t("new")}
+            </span>
+            <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
+              {stats.new.toLocaleString()}
+            </p>
+          </div>
         </div>
-        <div className="pl-10">
-          <span className="flex justify-between text-[14px] text-neutral-600 leading-8 pb-2">
-            {t("active")}
-          </span>
-          <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
-            {stats.active.toLocaleString()}
-          </p>
-        </div>
-        <div className="pl-0 lg:pl-10">
-          <span className="flex justify-between text-[14px] text-neutral-600 leading-8 pb-2">
-            {t("new")}
-          </span>
-          <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
-            {stats.new.toLocaleString()}
-          </p>
-        </div>
-      </div>
-      <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center">
-        <h4 className="font-medium inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
-          {t("organisations_list.title")}
-        </h4>
-        <div className="flex gap-4">
-          <Select
-            defaultValue={status ?? "all"}
-            onValueChange={handleStatusChange}
-          >
-            <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
-              <SelectValue placeholder="" />
-            </SelectTrigger>
-            <SelectContent className="bg-neutral-100 text-[1.4rem]">
-              <SelectGroup>
-                <SelectItem className="text-[1.4rem] text-deep-100" value="all">
-                  {t("filters.status")}
-                </SelectItem>
-                <SelectItem
-                  className="text-[1.4rem] text-deep-100"
-                  value="active"
-                >
-                  {t("filters.status_active")}
-                </SelectItem>
-                <SelectItem
-                  className="text-[1.4rem] text-deep-100"
-                  value="suspended"
-                >
-                  {t("filters.status_suspended")}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select
-            defaultValue={period ?? "all_period"}
-            onValueChange={handlePeriodChange}
-          >
-            <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
-              <SelectValue placeholder="" />
-            </SelectTrigger>
-            <SelectContent className="bg-neutral-100 text-[1.4rem]">
-              <SelectGroup>
-                <SelectItem
-                  className="text-[1.4rem] text-deep-100"
-                  value="all_period"
-                >
-                  {t("filters.time")}
-                </SelectItem>
-                <SelectItem
-                  className="text-[1.4rem] text-deep-100"
-                  value="last_week"
-                >
-                  {t("filters.last_week")}
-                </SelectItem>
-                <SelectItem
-                  className="text-[1.4rem] text-deep-100"
-                  value="last_month"
-                >
-                  {t("filters.last_month")}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("organisations_list.table.name")}
-            </TableHead>
-            <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("organisations_list.table.email")}
-            </TableHead>
-            <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("organisations_list.table.activity_count")}
-            </TableHead>
-            <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("organisations_list.table.joined")}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        {data.length > 0 ? (
-          <TableBody>
-            {data.map((org) => (
-              <TableRow
-                key={org.organisationId}
-                className="cursor-pointer"
-                onClick={() =>
-                  router.push(`/organisations/${org.organisationId}`)
-                }
+        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center">
+          <h4 className="font-medium inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
+            {t("organisations_list.title")}
+          </h4>
+          <div className="flex flex-col lg:flex-row gap-4 w-full lg:w-auto">
+            <SearchInput
+              value={term}
+              onChange={setTerm}
+              placeholder={t("filters.search")}
+            />
+            <div className="flex flex-row gap-4 w-full lg:w-auto">
+              <Select
+                defaultValue={status ?? "all"}
+                onValueChange={handleStatusChange}
               >
-                <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900">
-                  <span className="cursor-pointer inline-flex items-center gap-2">
-                    {org.organisationName}
-                    {org.isVerified && <VerifiedOrganisationCheckMark />}
-                  </span>
-                </TableCell>
-                <TableCell className="text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900">
-                  <span className="cursor-pointer">
-                    {org.organisationEmail}
-                  </span>
-                </TableCell>
-                <TableCell className="text-[1.5rem] font-medium leading-8 text-neutral-900">
-                  {org.events?.length ?? 0}
-                </TableCell>
-                <TableCell className="text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900">
-                  {formatDate(org.createdAt, locale, "local")}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        ) : null}
-      </Table>
-      {data.length === 0 && (
-        <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">
-          <div className="rounded-full bg-neutral-100 p-6 w-fit">
-            <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
-              <Image src={User} alt="no organisations" width={50} height={50} />
+                <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-100 text-[1.4rem]">
+                  <SelectGroup>
+                    <SelectItem
+                      className="text-[1.4rem] text-deep-100"
+                      value="all"
+                    >
+                      {t("filters.status")}
+                    </SelectItem>
+                    <SelectItem
+                      className="text-[1.4rem] text-deep-100"
+                      value="active"
+                    >
+                      {t("filters.status_active")}
+                    </SelectItem>
+                    <SelectItem
+                      className="text-[1.4rem] text-deep-100"
+                      value="suspended"
+                    >
+                      {t("filters.status_suspended")}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <Select
+                defaultValue={period ?? "all_period"}
+                onValueChange={handlePeriodChange}
+              >
+                <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
+                  <SelectValue placeholder="" />
+                </SelectTrigger>
+                <SelectContent className="bg-neutral-100 text-[1.4rem]">
+                  <SelectGroup>
+                    <SelectItem
+                      className="text-[1.4rem] text-deep-100"
+                      value="all_period"
+                    >
+                      {t("filters.time")}
+                    </SelectItem>
+                    <SelectItem
+                      className="text-[1.4rem] text-deep-100"
+                      value="last_week"
+                    >
+                      {t("filters.last_week")}
+                    </SelectItem>
+                    <SelectItem
+                      className="text-[1.4rem] text-deep-100"
+                      value="last_month"
+                    >
+                      {t("filters.last_month")}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-          <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
-            {t("organisations_list.no_history")}
-          </p>
         </div>
-      )}
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                {t("organisations_list.table.name")}
+              </TableHead>
+              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                {t("organisations_list.table.email")}
+              </TableHead>
+              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                {t("organisations_list.table.activity_count")}
+              </TableHead>
+              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                {t("organisations_list.table.joined")}
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          {data.length > 0 ? (
+            <TableBody>
+              {data.map((org) => (
+                <TableRow
+                  key={org.organisationId}
+                  className="cursor-pointer"
+                  onClick={() =>
+                    router.push(`/organisations/${org.organisationId}`)
+                  }
+                >
+                  <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900">
+                    <span className="cursor-pointer flex items-center gap-2 max-w-[16rem] lg:max-w-[28rem]">
+                      <span className="truncate" title={org.organisationName}>
+                        {org.organisationName}
+                      </span>
+                      {org.isVerified && <VerifiedOrganisationCheckMark />}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900">
+                    <span className="cursor-pointer">
+                      {org.organisationEmail}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-[1.5rem] font-medium leading-8 text-neutral-900">
+                    {org.events?.length ?? 0}
+                  </TableCell>
+                  <TableCell className="text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900">
+                    {formatDate(org.createdAt, locale, "local")}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          ) : null}
+        </Table>
+        {data.length === 0 && (
+          <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">
+            <div className="rounded-full bg-neutral-100 p-6 w-fit">
+              <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
+                <Image
+                  src={User}
+                  alt="no organisations"
+                  width={50}
+                  height={50}
+                />
+              </div>
+            </div>
+            <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+              {isSearching
+                ? t("organisations_list.no_results")
+                : t("organisations_list.no_history")}
+            </p>
+          </div>
+        )}
+      </div>
     </AdminLayout>
   );
 }

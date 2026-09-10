@@ -95,7 +95,14 @@ export default function PayoutSection({
                     }
                     className="cursor-pointer"
                   >
-                    <Td>{request.organisation.organisationName}</Td>
+                    <Td>
+                      <span
+                        title={request.organisation.organisationName}
+                        className="block max-w-[16rem] lg:max-w-[28rem] truncate"
+                      >
+                        {request.organisation.organisationName}
+                      </span>
+                    </Td>
                     <Td className="hidden lg:table-cell">{request.bankName}</Td>
                     <Td className="hidden lg:table-cell">
                       {request.accountNumber}
@@ -337,7 +344,7 @@ function EmptyState({ text }: { text: string }) {
           <Image src={MoneySend} alt="no requests" width={50} height={50} />
         </div>
       </div>
-      <p className="w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
+      <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
         {text}
       </p>
     </div>

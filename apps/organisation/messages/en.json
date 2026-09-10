@@ -929,7 +929,11 @@
           "label": "Write a question of at least 3 characters.",
           "options_min": "A multiple-choice question needs at least two choices.",
           "options_unique": "Each choice must be different."
-        }
+        },
+        "export_csv": "Export CSV",
+        "export_pdf": "Export PDF",
+        "export_error": "Could not build the file. Please try again.",
+        "generated": "Generated on {date}"
       }
     },
     "create_event": {

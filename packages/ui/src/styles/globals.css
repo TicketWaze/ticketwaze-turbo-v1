@@ -445,3 +445,97 @@ input:not(:placeholder-shown) + label {
   pointer-events: none;
   cursor: default;
 }
+
+/* ── Campaign composer (admin > Operations > Emails) ──────────────────────────
+   Its own class rather than an extension of `.rich-text`, because the two are
+   showing different things. `.rich-text` renders an activity description inside
+   a page that supplies the surrounding type scale, and it deliberately makes
+   links inert. The campaign editor is a WYSIWYG for an email: the sizes here
+   approximate what the MJML template will actually produce, so what the admin
+   arranges on screen is roughly what lands in the inbox. */
+.campaign-rich-text h2 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 3rem;
+  margin-bottom: 1rem;
+  color: #2e3237;
+}
+.campaign-rich-text h3 {
+  font-size: 1.9rem;
+  font-weight: 700;
+  line-height: 2.6rem;
+  margin-bottom: 0.8rem;
+  color: #2e3237;
+}
+.campaign-rich-text p {
+  margin-bottom: 1.2rem;
+  color: #2e3237;
+}
+.campaign-rich-text p:last-child {
+  margin-bottom: 0;
+}
+.campaign-rich-text strong {
+  font-weight: 600;
+}
+.campaign-rich-text em {
+  font-style: italic;
+}
+.campaign-rich-text u {
+  text-decoration: underline;
+}
+.campaign-rich-text ul {
+  list-style-type: disc;
+  padding-left: 2.2rem;
+  margin-bottom: 1.2rem;
+}
+.campaign-rich-text ol {
+  list-style-type: decimal;
+  padding-left: 2.2rem;
+  margin-bottom: 1.2rem;
+}
+.campaign-rich-text li {
+  margin-bottom: 0.4rem;
+}
+.campaign-rich-text blockquote {
+  border-left: 3px solid #e45b00;
+  padding: 0.2rem 0 0.2rem 1.6rem;
+  margin-bottom: 1.2rem;
+  color: #454a53;
+}
+.campaign-rich-text a {
+  color: #e45b00;
+  text-decoration: underline;
+}
+.campaign-rich-text hr {
+  border: 0;
+  border-top: 1px solid #e5e5e5;
+  margin: 2rem 0;
+}
+.campaign-rich-text img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+/* Selected atoms (image, button) get a visible ring — without one there is no
+   way to tell what Backspace is about to delete. */
+.campaign-rich-text img.ProseMirror-selectednode,
+.campaign-rich-text .tw-campaign-button.ProseMirror-selectednode {
+  outline: 2px solid #e45b00;
+  outline-offset: 2px;
+}
+/* Mirrors the pill the sanitiser renders for `a[data-tw-button]`. */
+.campaign-rich-text .tw-campaign-button {
+  display: inline-block;
+  padding: 1.2rem 3rem;
+  margin: 0.8rem 0 1.6rem;
+  border-radius: 5rem;
+  background-color: #e45b00;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 2rem;
+  text-decoration: none;
+  cursor: default;
+}

@@ -32,6 +32,8 @@ import {
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import formatDate from "@/lib/FormatDate";
 import { InviteUsersAction } from "@/actions/Waitlist";
+import SearchInput from "@/components/shared/SearchInput";
+import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 
 export type WaitlistEntry = {
   waitlistUserId: string;
@@ -72,6 +74,7 @@ export default function WaitlistPageContent({
   const [entityFilter, setEntityFilter] = useState<
     "all" | "attendee" | "business" | "both"
   >("all");
+  const [term, setTerm] = useState("");
   const [isInvitingSelected, setIsInvitingSelected] = useState(false);
   const [invitingOneId, setInvitingOneId] = useState<string | null>(null);
 
@@ -83,10 +86,14 @@ export default function WaitlistPageContent({
       : tab === "pending"
         ? users.filter((u) => !u.invitedAt)
         : users;
-  const displayedUsers =
-    entityFilter === "all"
-      ? tabUsers
-      : tabUsers.filter((u) => u.entity === entityFilter);
+  // Email is the only identifying field on an entry, so it is the only thing
+  // worth matching on. Narrows within the tab and entity pill rather than
+  // replacing them.
+  const query = term.trim().toLowerCase();
+  const isSearching = query.length > 0;
+  const displayedUsers = tabUsers
+    .filter((u) => entityFilter === "all" || u.entity === entityFilter)
+    .filter((u) => !isSearching || u.email.toLowerCase().includes(query));
 
   // Selection applies everywhere except the "Invited" tab (nothing to re-invite).
   const showSelection = tab !== "invited";
@@ -102,6 +109,14 @@ export default function WaitlistPageContent({
 
   function handleTabChange(value: string) {
     setTab(value as Tab);
+    setSelectedIds(new Set());
+  }
+
+  // Invite sends every id in the set, not just the visible ones, so narrowing
+  // the list has to drop the selection — otherwise "select all, then search"
+  // silently invites the people the search just hid. Same reason the tabs do it.
+  function handleTermChange(value: string) {
+    setTerm(value);
     setSelectedIds(new Set());
   }
 
@@ -168,9 +183,11 @@ export default function WaitlistPageContent({
   }
 
   return (
-    <div className="overflow-y-scroll flex flex-col gap-8">
-      {/* Topbar */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div className={PAGE_SCROLLER}>
+      {/* Topbar. The whole row sticks, not just the heading: the bulk-invite
+          action belongs to the title and detaching the two while scrolling
+          would read as a bug. */}
+      <div className="sticky top-0 z-20 bg-white pb-8 -mb-8 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
           {t("title")}
         </h3>
@@ -249,7 +266,12 @@ export default function WaitlistPageContent({
           </TabsList>
         </Tabs>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-4 w-full lg:w-auto">
+          <SearchInput
+            value={term}
+            onChange={handleTermChange}
+            placeholder={t("filters.search")}
+          />
           {showSelection && someChecked && (
             <span className="text-[1.4rem] text-neutral-500 font-normal hidden lg:inline">
               {selectedIds.size} {t("list.selected")}
@@ -511,7 +533,7 @@ export default function WaitlistPageContent({
             </div>
           </div>
           <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
-            {t("list.empty")}
+            {isSearching ? t("no_results") : t("list.empty")}
           </p>
         </div>
       )}

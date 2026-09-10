@@ -6,37 +6,12 @@ import { DateTime } from "luxon";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { toast } from "sonner";
+import { loadPdfLogo } from "@/lib/pdfLogo";
 
 // Turns the tiptap HTML description into plain text for the PDF.
 function stripHtml(html: string) {
   const parsed = new DOMParser().parseFromString(html, "text/html");
   return (parsed.body.textContent ?? "").replace(/\n{3,}/g, "\n\n").trim();
-}
-
-// Rasterizes the Ticketwaze wordmark (vector SVG in /public) to a PNG data
-// URL, since jsPDF cannot embed SVG directly.
-async function loadLogo(): Promise<{
-  data: string;
-  width: number;
-  height: number;
-} | null> {
-  const img = await new Promise<HTMLImageElement | null>((resolve) => {
-    const el = new Image();
-    el.onload = () => resolve(el);
-    el.onerror = () => resolve(null);
-    el.src = "/logo-horizontal-orange.svg";
-  });
-  if (!img) return null;
-  // 2x the display size in the PDF, for crisp print output
-  const width = 600;
-  const height = Math.round(width * (172.53 / 893.37));
-  const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return null;
-  ctx.drawImage(img, 0, 0, width, height);
-  return { data: canvas.toDataURL("image/png"), width, height };
 }
 
 export default function DownloadReport({
@@ -93,7 +68,7 @@ export default function DownloadReport({
               .join(", ");
 
       // Header
-      const logo = await loadLogo();
+      const logo = await loadPdfLogo();
       if (logo) {
         const logoWidth = 120;
         const logoHeight = (logo.height / logo.width) * logoWidth;

@@ -1,7 +1,7 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import { auth } from "@/lib/auth";
 import BackButton from "@/components/shared/BackButton";
-import TopBar from "@/components/shared/TopBar";
+import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 import UnauthorizedView from "@/components/shared/UnauthorizedView";
 import { getTranslations } from "next-intl/server";
 import AdminsPageContent, { type AdminRecord } from "./components/AdminsPageContent";
@@ -32,11 +32,11 @@ export default async function AdminsPage() {
 
   return (
     <AdminLayout>
-      <div className="flex flex-col gap-8 shrink-0">
+      <div className={PAGE_SCROLLER}>
         <BackButton text={t("back")} />
-        <TopBar title={t("title")} />
+        <PageTitle>{t("title")}</PageTitle>
+        {canView ? <AdminsPageContent admins={admins} /> : <UnauthorizedView />}
       </div>
-      {canView ? <AdminsPageContent admins={admins} /> : <UnauthorizedView />}
     </AdminLayout>
   );
 }

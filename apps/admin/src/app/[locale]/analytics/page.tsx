@@ -1,17 +1,11 @@
 import { auth } from "@/lib/auth";
 import AnalyticsPageContent, { AnalyticsData } from "./AnalyticsPageContent";
 
-export default async function AnalyticsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ period?: string; activities?: string }>;
-}) {
+export default async function AnalyticsPage() {
   const session = await auth();
-  const { period = "this_month", activities = "all" } = await searchParams;
 
-  const params = new URLSearchParams({ period, activities });
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/admin/analytics?${params.toString()}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/analytics`,
     {
       method: "GET",
       cache: "no-store",
@@ -53,7 +47,11 @@ export default async function AnalyticsPage({
     topEvents: response.topEvents ?? [],
     topOrganizers: response.topOrganizers ?? [],
     paymentMethods: response.paymentMethods ?? [],
-    activityStatus: response.activityStatus ?? { approved: 0, inReview: 0, rejected: 0 },
+    activityStatus: response.activityStatus ?? {
+      approved: 0,
+      inReview: 0,
+      rejected: 0,
+    },
   };
 
   return <AnalyticsPageContent data={data} />;

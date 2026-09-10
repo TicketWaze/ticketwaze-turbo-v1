@@ -928,7 +928,11 @@
           "label": "Écrivez une question d’au moins 3 caractères.",
           "options_min": "Une question à choix multiple nécessite au moins deux options.",
           "options_unique": "Chaque option doit être différente."
-        }
+        },
+        "export_csv": "Exporter en CSV",
+        "export_pdf": "Exporter en PDF",
+        "export_error": "Impossible de générer le fichier. Veuillez réessayer.",
+        "generated": "Généré le {date}"
       }
     },
     "create_event": {
