@@ -11,11 +11,9 @@ import { getActivityCardPrice } from "@/lib/activityCardPrice";
 function EventCard({
   event,
   aside,
-  htgExchangeRate,
 }: {
   event: Event;
   aside?: boolean;
-  htgExchangeRate?: number;
 }) {
   const now = new Date();
   // A teaser has no eventDays and no ticket types, so `date` is undefined here
@@ -31,9 +29,9 @@ function EventCard({
   const locale = useLocale();
   const t = useTranslations("Event");
   const ticketTypes = event.eventTicketTypes ?? [];
-  // The all-in price the buyer actually pays, fees included — MonCash for HTG
-  // activities, Stripe for USD ones.
-  const cardPrice = getActivityCardPrice(event, htgExchangeRate);
+  // The organiser's price, with no fees added — the fee stack belongs to the
+  // checkout summary, where each line can be explained.
+  const cardPrice = getActivityCardPrice(event);
   const isSoldOut =
     ticketTypes.length > 0 &&
     ticketTypes.every(

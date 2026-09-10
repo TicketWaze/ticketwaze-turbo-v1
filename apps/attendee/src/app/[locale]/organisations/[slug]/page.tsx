@@ -9,7 +9,6 @@ import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
 import EventCard from "@/components/shared/EventCard";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
-import { getHtgExchangeRate } from "@/lib/getHtgExchangeRate";
 import ShareEvent from "@/components/shared/ShareEvent";
 import { getOrganisation } from "@/lib/getOrganisation";
 import { slugify } from "@/lib/Slugify";
@@ -104,7 +103,6 @@ export default async function OrganizerProfile({
   params: Promise<{ slug: string; locale: string }>;
 }) {
   const { slug, locale } = await params;
-  const htgExchangeRate = await getHtgExchangeRate();
   const t = await getTranslations("Organizers");
   // Same call generateMetadata made — Next dedupes it into one request.
   const organisation = await getOrganisation(slug);
@@ -240,11 +238,7 @@ export default async function OrganizerProfile({
                   {upcomingEvents.map((event) => {
                     return (
                       <li key={event.eventId} className="lg:pr-4">
-                        <EventCard
-                          aside={true}
-                          event={event}
-                          htgExchangeRate={htgExchangeRate}
-                        />
+                        <EventCard aside={true} event={event} />
                       </li>
                     );
                   })}
@@ -282,11 +276,7 @@ export default async function OrganizerProfile({
                 {pastEvents.map((event) => {
                   return (
                     <li key={event.eventId} className="lg:pr-4">
-                      <EventCard
-                        aside={true}
-                        event={event}
-                        htgExchangeRate={htgExchangeRate}
-                      />
+                      <EventCard aside={true} event={event} />
                     </li>
                   );
                 })}
@@ -312,11 +302,7 @@ export default async function OrganizerProfile({
                 {upcomingEvents.map((event) => {
                   return (
                     <li key={event.eventId} className="lg:pr-4">
-                      <EventCard
-                        aside={true}
-                        event={event}
-                        htgExchangeRate={htgExchangeRate}
-                      />
+                      <EventCard aside={true} event={event} />
                     </li>
                   );
                 })}
@@ -346,11 +332,7 @@ export default async function OrganizerProfile({
                 {pastEvents.map((event) => {
                   return (
                     <li key={event.eventId} className="lg:pr-4">
-                      <EventCard
-                        aside={true}
-                        event={event}
-                        htgExchangeRate={htgExchangeRate}
-                      />
+                      <EventCard aside={true} event={event} />
                     </li>
                   );
                 })}

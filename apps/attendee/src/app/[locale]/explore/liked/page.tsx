@@ -6,10 +6,8 @@ import { auth } from "@/lib/auth";
 import { Event } from "@ticketwaze/typescript-config";
 import { Heart } from "iconsax-reactjs";
 import { getLocale, getTranslations } from "next-intl/server";
-import { getHtgExchangeRate } from "@/lib/getHtgExchangeRate";
 
 export default async function LikedPage() {
-  const htgExchangeRate = await getHtgExchangeRate();
   const locale = await getLocale();
   const session = await auth();
   if (!session?.user) {
@@ -40,7 +38,7 @@ export default async function LikedPage() {
         {events.map((event) => {
           return (
             <li key={event.eventId}>
-              <EventCard event={event} htgExchangeRate={htgExchangeRate} />
+              <EventCard event={event} />
             </li>
           );
         })}

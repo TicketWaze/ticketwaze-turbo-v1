@@ -35,7 +35,6 @@ export default function ExplorePageContent({
   raffles = [],
   restaurants = [],
   sales = [],
-  htgExchangeRate,
 }: {
   events: Event[];
   pastEvents?: Event[];
@@ -43,9 +42,6 @@ export default function ExplorePageContent({
   restaurants?: Restaurant[];
   sales?: PublicSale[];
   wallet: null;
-  // The rate the cards price HTG activities with. Fetched once on the server
-  // rather than per card.
-  htgExchangeRate?: number;
 }) {
   const t = useTranslations("Explore");
   const [query, setQuery] = useState("");
@@ -218,7 +214,7 @@ export default function ExplorePageContent({
                   }}
                   className="h-full flex"
                 >
-                  <EventCard event={event} htgExchangeRate={htgExchangeRate} />
+                  <EventCard event={event} />
                 </motion.li>
               ))}
             </ul>
@@ -313,10 +309,7 @@ export default function ExplorePageContent({
                       delay: Math.min(index * 0.06, 0.3),
                     }}
                   >
-                    <EventCard
-                      event={event}
-                      htgExchangeRate={htgExchangeRate}
-                    />
+                    <EventCard event={event} />
                   </motion.li>
                 ))}
               </ul>
