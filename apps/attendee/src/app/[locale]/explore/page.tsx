@@ -6,7 +6,6 @@ import {
   Raffle,
   Restaurant,
 } from "@ticketwaze/typescript-config";
-import { getHtgExchangeRate } from "@/lib/getHtgExchangeRate";
 
 export default async function Explore({
   searchParams,
@@ -17,7 +16,6 @@ export default async function Explore({
   // open, so it is on screen the moment /explore paints instead of after a
   // client round trip the user could outrun on a slow connection.
   const { welcome } = await searchParams;
-  const htgExchangeRate = await getHtgExchangeRate();
   const [request, rafflesRequest, restaurantsRequest, salesRequest] =
     await Promise.all([
       fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
@@ -84,7 +82,6 @@ export default async function Explore({
         restaurants={restaurants}
         sales={sales}
         wallet={null}
-        htgExchangeRate={htgExchangeRate}
       />
     </AttendeeLayout>
   );

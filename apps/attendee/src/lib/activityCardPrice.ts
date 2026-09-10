@@ -1,9 +1,4 @@
 import { Event } from "@ticketwaze/typescript-config";
-import {
-  calculateMoncashTotalHTG,
-  calculateStripeTotalUSD,
-  FALLBACK_HTG_EXCHANGE_RATE,
-} from "@/lib/pricing";
 
 export type ActivityCardPrice =
   | { kind: "teaser" }
@@ -11,28 +6,25 @@ export type ActivityCardPrice =
   | { kind: "priced"; amount: number; currency: string };
 
 /**
- * The all-in price to advertise on an activity card — what the buyer actually
- * pays, not the organiser's base price.
+ * The price to advertise on an activity card — the ORGANISER'S price, with no
+ * fees added.
  *
- * Which processor's fees apply follows the activity's own currency, because
- * that is the only payment route the price can be quoted in honestly:
- *   HTG activity → MonCash  (price + 3% + flat per-ticket fee) × 1.025
- *   USD activity → Stripe   (price + 3% + $1.49) × 1.03
+ * Cards used to quote the all-in total instead, which meant a listing shouted a
+ * number 20% above the one the organiser set and the one every other surface
+ * shows. `TicketSelectionStep` renders `ticketTypePrice` / `usdPrice`,
+ * `structuredData` publishes the same, and `RaffleCard` never marked anything
+ * up — the event card was alone in disagreeing with all of them.
  *
- * Unless the organiser has taken the fees on themselves, in which case there is
- * no arithmetic to do: the price they set IS what the buyer pays, on every
- * route. That is the whole point of the mode, and quoting a marked-up figure
- * here would advertise a price no buyer would ever be charged.
+ * So the fee stack now appears in exactly one place, `SummaryStep`, where the
+ * buyer can see what each line is for. A card is a browsing surface; an
+ * itemisable total belongs where it can actually be itemised.
  *
- * The waitlist first-purchase fee waiver is deliberately ignored. It is
- * per-user state, and cards render in public listings that are the same for
- * everyone; a waived buyer simply sees a lower total at checkout than the card
- * promised, which errs toward under-promising rather than over.
+ * NOTHING CHANGES WHEN THE ORGANISER ABSORBS THE FEES, which is why this
+ * function no longer asks. In absorb mode the price they set already IS what
+ * the buyer pays, so base price was always the right answer there; in pass-on
+ * mode it is now the right answer too. One rule, no branch.
  */
-export function getActivityCardPrice(
-  event: Event,
-  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
-): ActivityCardPrice {
+export function getActivityCardPrice(event: Event): ActivityCardPrice {
   // A teaser has no ticket types at all, so there is no price to quote — not
   // even a free one.
   if (event.isComingSoon === true) return { kind: "teaser" };
@@ -41,45 +33,38 @@ export function getActivityCardPrice(
   if (ticketTypes.length === 0) return { kind: "free" };
 
   const currency = event.currency === "USD" ? "USD" : "HTG";
-  const rate =
-    htgExchangeRate > 0 ? htgExchangeRate : FALLBACK_HTG_EXCHANGE_RATE;
 
   /**
-   * The all-in total of each type, then the lowest — rather than the lowest
-   * base price fed through the fee formula. The flat per-ticket fee steps at
-   * the 500 HTG threshold, so deriving the cheapest total from the cheapest
-   * base assumes a monotonicity the fee curve does not owe us.
+   * The cheapest base price, taken directly.
+   *
+   * This used to have to total every tier and then take the minimum, because
+   * the flat per-ticket fee steps at the 500 HTG threshold and the cheapest
+   * base was therefore not guaranteed to produce the cheapest total. With no
+   * fee curve in the way, cheapest base is simply cheapest.
    */
-  const absorbFees = event.absorbFees === true;
-
-  const totals = ticketTypes
-    .map((ticketType) => {
-      const base = Number(
+  const prices = ticketTypes
+    .map((ticketType) =>
+      Number(
         currency === "USD"
           ? (ticketType.usdPrice ?? 0)
           : (ticketType.ticketTypePrice ?? 0),
-      );
-      if (!Number.isFinite(base) || base <= 0) return null;
-      if (absorbFees) return base;
-      return currency === "USD"
-        ? calculateStripeTotalUSD(base)
-        : calculateMoncashTotalHTG(base, rate);
-    })
-    .filter((total): total is number => total !== null);
+      ),
+    )
+    .filter((price) => Number.isFinite(price) && price > 0);
 
   // Every type priced at zero — a genuinely free activity, and no fee is
   // charged on a free checkout.
-  if (totals.length === 0) return { kind: "free" };
+  if (prices.length === 0) return { kind: "free" };
 
   /**
    * An activity that MIXES a free tier with paid ones lands here, and quotes
    * the cheapest PAID tier rather than "Free".
    *
-   * Deliberate, and the same direction of error as the fee waiver above: the
-   * card is rendered with a "from" prefix, so quoting the cheapest paid tier
-   * understates how cheaply someone can get in — they discover a free option on
-   * the activity page — whereas "Free" would promise a price the food ticket
-   * does not honour. Under-promising beats over-promising on a public listing.
+   * Deliberate: the card is rendered with a "from" prefix, so quoting the
+   * cheapest paid tier understates how cheaply someone can get in — they
+   * discover a free option on the activity page — whereas "Free" would promise
+   * a price the food ticket does not honour. Under-promising beats
+   * over-promising on a public listing.
    */
-  return { kind: "priced", amount: Math.min(...totals), currency };
+  return { kind: "priced", amount: Math.min(...prices), currency };
 }
