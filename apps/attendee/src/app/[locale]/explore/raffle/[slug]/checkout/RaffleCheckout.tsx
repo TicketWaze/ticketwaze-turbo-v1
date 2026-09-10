@@ -21,6 +21,7 @@ import { formatMoney } from "@ticketwaze/currency";
 import { useSession } from "next-auth/react";
 import { useRouter, Link } from "@/i18n/navigation";
 import { isSuspendedResponse } from "@/lib/suspension";
+import { getPerTicketFee } from "@/lib/pricing";
 import {
   BuyRaffleEntriesWallet,
   StartRaffleStripe,
@@ -45,15 +46,15 @@ import {
 import Logo from "../../../[slug]/checkout/Logo.svg";
 
 // Mirrors app/controllers/utils/raffle_pricing.ts so shown totals match the
-// charge. Raffle tiers: <500 HTG → +25 flat, 500–1000 HTG → +50 flat, then
-// provider %; above 1000 HTG the standard event pricing applies.
+// charge. Raffle tiers: <500 HTG → +25 flat, 500–1000 HTG → +50 flat, and
+// NOTHING on top — inside a tier the flat fee is the whole charge, on every
+// route, with Ticketwaze carrying the processor cut out of it. Above 1000 HTG
+// the standard event pricing applies, percentages and all.
 //
 // None of it is charged to the entrant on a raffle whose organiser has taken
 // the fees on — there the entry price is the whole of it, on every route.
 const SERVICE_FEE_RATE = 0.03;
 const PER_TICKET_FEE_USD = 1.49;
-const PER_TICKET_FEE_HTG_LOW = 100;
-const HTG_LOW_THRESHOLD = 500;
 const STRIPE_TX_FEE_RATE = 0.03;
 const MONCASH_TX_FEE_RATE = 0.025;
 const NATCASH_TX_FEE_RATE = 0.025;
@@ -151,10 +152,10 @@ export default function RaffleCheckout({
         : htgBase <= RAFFLE_MID_THRESHOLD_HTG
           ? RAFFLE_FLAT_FEE_MID_HTG
           : null;
-    const perFeeHtg =
-      htgBase <= HTG_LOW_THRESHOLD
-        ? PER_TICKET_FEE_HTG_LOW
-        : PER_TICKET_FEE_USD * rate;
+    // Above the raffle tiers, entries fall through to event pricing, whose HTG
+    // fee is banded. Imported rather than restated — a local copy of this rule
+    // is exactly how the two drifted apart before.
+    const perFeeHtg = getPerTicketFee("HTG", htgBase, rate);
 
     // Wallet — no processor fee, shown in the raffle currency.
     let walletPerEntry: number;
@@ -178,9 +179,7 @@ export default function RaffleCheckout({
           rate,
       );
     else
-      stripePerEntryUsd = round2(
-        (usdBase + flat / rate) * (1 + STRIPE_TX_FEE_RATE),
-      );
+      stripePerEntryUsd = round2(usdBase + flat / rate);
 
     // MonCash — charged in HTG.
     let moncashPerEntryHtg: number;
@@ -191,7 +190,7 @@ export default function RaffleCheckout({
           (1 + MONCASH_TX_FEE_RATE),
       );
     else
-      moncashPerEntryHtg = round2((htgBase + flat) * (1 + MONCASH_TX_FEE_RATE));
+      moncashPerEntryHtg = round2(htgBase + flat);
 
     // NatCash — charged in HTG. Same shape as MonCash, on its own rate.
     let natcashPerEntryHtg: number;
@@ -202,7 +201,7 @@ export default function RaffleCheckout({
           (1 + NATCASH_TX_FEE_RATE),
       );
     else
-      natcashPerEntryHtg = round2((htgBase + flat) * (1 + NATCASH_TX_FEE_RATE));
+      natcashPerEntryHtg = round2(htgBase + flat);
 
     return {
       base,

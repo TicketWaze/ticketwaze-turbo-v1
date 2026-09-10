@@ -203,7 +203,7 @@ export function makeCreateInPersonSchema(
       }
 
       const price = parseFloat(ticket.ticketTypePrice);
-      if (isHTG && (!isNaN(price) && price < 250)) {
+      if (isHTG && (!isNaN(price) && price < 100)) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: t("errors.ticketClass.priceMinHTG"),

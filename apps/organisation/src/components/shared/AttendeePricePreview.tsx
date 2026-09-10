@@ -7,6 +7,7 @@ import {
   getAbsorbedFees,
   getOrganiserNetRange,
   getUnitPriceBreakdown,
+  htgFlatBandFee,
 } from "@ticketwaze/pricing";
 import useHtgExchangeRate from "@/hooks/useHtgExchangeRate";
 
@@ -48,6 +49,11 @@ function toNumber(value: unknown): number {
  * a wallet purchase costs the organiser nothing beyond Ticketwaze's own fee,
  * a card purchase costs 3% more. Quoting a single number would mean quoting one
  * the organiser will only sometimes be paid.
+ *
+ * Except inside an HTG flat band, where there is no processor percentage to
+ * absorb and every route pays the same. The range collapses on its own there —
+ * `getOrganiserNetRange` reports `isFixed` and one number is rendered — so this
+ * needs no branch of its own, only the note beneath it does.
  */
 export default function AttendeePricePreview({
   price,
@@ -64,6 +70,21 @@ export default function AttendeePricePreview({
 
   const money = (amount: number) =>
     `${formatAmount(amount, locale)} ${currency}`;
+
+  /**
+   * IS THIS PRICE INSIDE AN HTG FLAT BAND?
+   *
+   * Only the explanatory notes turn on this, not the fee line — that stays
+   * "transaction fees" throughout, matching what the buyer sees at checkout.
+   *
+   * The notes cannot stay put, because both make claims that a flat band
+   * falsifies. The pass-on note describes fees "added on top", which is right
+   * either way, but misses the thing worth saying here: the total is identical
+   * on every payment method. The absorbed note goes further and promises that
+   * what the organiser receives "depends on how they pay" — inside a band it
+   * does not, because no processor percentage is deducted at all.
+   */
+  const isFlatBand = htgFlatBandFee(numericPrice) !== null && currency === "HTG";
 
   if (absorbFees) {
     const net = getOrganiserNetRange(
@@ -137,7 +158,7 @@ export default function AttendeePricePreview({
         </div>
 
         <p className="text-[1.2rem] leading-6 text-neutral-600">
-          {t("note_absorbed")}
+          {t(isFlatBand ? "note_absorbed_flat" : "note_absorbed")}
         </p>
       </div>
     );
@@ -147,8 +168,10 @@ export default function AttendeePricePreview({
     getUnitPriceBreakdown(currency, numericPrice, htgExchangeRate);
 
   // The organiser needs to know what the fees cost them, not how they split
-  // three ways internally — so the service fee, the flat per-ticket fee and the
-  // payment processor's cut are summed into a single line.
+  // internally — so whatever applies is summed into a single line. Above the
+  // HTG bands that is three things; inside one it is the platform fee alone,
+  // the other two being zero, so the same sum gives the flat amount unchanged
+  // and the line needs no special case.
   const fees = serviceFee + platformFee + transactionFee;
 
   return (
@@ -190,7 +213,9 @@ export default function AttendeePricePreview({
         <span className="font-medium text-success">{money(basePrice)}</span>
       </div>
 
-      <p className="text-[1.2rem] leading-6 text-neutral-600">{t("note")}</p>
+      <p className="text-[1.2rem] leading-6 text-neutral-600">
+        {t(isFlatBand ? "note_flat" : "note")}
+      </p>
     </div>
   );
 }

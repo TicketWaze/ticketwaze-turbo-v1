@@ -171,7 +171,22 @@ export default function SummaryStep({
             </div>
             <div className="flex items-center justify-between text-[1.4rem]">
               <span className="text-neutral-500">
-                Ticketwaze fee ({serviceFeeLabel} + {t("summary.tax_label")})
+                {/*
+                  ONE ROW, AND THE RATE ONLY WHEN A RATE WAS CHARGED.
+
+                  HTG tiers inside a flat band carry a single flat fee and no
+                  percentage at all, so "3% + VAT" would name arithmetic that
+                  did not happen — and the processor row below is zero, so it
+                  hides itself. That leaves exactly one fee line, which reads as
+                  the transaction fee to the buyer.
+
+                  A mixed basket keeps the full label: a percentage genuinely
+                  applies to the tiers above the bands, and the processor row
+                  reappears beside this one with its own figure.
+                */}
+                {serviceFee > 0
+                  ? `Ticketwaze fee (${serviceFeeLabel} + ${t("summary.tax_label")})`
+                  : t("summary.transaction_fee")}
               </span>
               {feeWaived ? (
                 <span className="flex items-center gap-2">

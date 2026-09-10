@@ -1279,7 +1279,7 @@
           "name": "Le nom de la catégorie de billet doit comporter au moins 3 caractères",
           "description": "La description de la catégorie de billet doit comporter au moins 20 caractères",
           "price": "Le prix ne peut pas être vide",
-          "priceMinHTG": "Le prix doit être d'au moins 250 HTG",
+          "priceMinHTG": "Le prix doit être d'au moins 100 HTG",
           "priceMinUSD": "Le prix doit être d'au moins 5 USD",
           "quantity": {
             "empty": "La quantité ne peut pas être vide",
@@ -1488,7 +1488,9 @@
       "attendee_pays_absorbed": "Le participant paie",
       "you_receive_range": "Vous recevez",
       "note_absorbed": "Votre participant paie exactement le prix que vous avez fixé. Ce que vous recevez dépend de son moyen de paiement, chacun appliquant son propre taux.",
-      "range_hint": "Portefeuille au mieux, carte au pire"
+      "range_hint": "Portefeuille au mieux, carte au pire",
+      "note_flat": "Des frais fixes, identiques quel que soit le moyen de paiement : vos participants paient donc un seul prix. Vous recevez l’intégralité du montant que vous avez fixé.",
+      "note_absorbed_flat": "Votre participant paie exactement le prix que vous avez fixé, quel que soit son moyen de paiement. Des frais Ticketwaze fixes en sont déduits, ce que vous recevez ne dépend donc pas de son mode de paiement."
     },
     "filters": {
       "first": {

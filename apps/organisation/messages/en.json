@@ -1280,7 +1280,7 @@
           "name": "Ticket class description should be at least 3 characters",
           "description": "Ticket class description should be at least 20 characters",
           "price": "Price cannot be empty",
-          "priceMinHTG": "Price must be at least 250 HTG",
+          "priceMinHTG": "Price must be at least 100 HTG",
           "priceMinUSD": "Price must be at least $5 USD",
           "general": {
             "name": "General",
@@ -1486,7 +1486,9 @@
       "attendee_pays_absorbed": "Attendee pays",
       "you_receive_range": "You receive",
       "note_absorbed": "Your attendee pays exactly the price you set. What you receive depends on how they pay, because each payment method charges its own rate.",
-      "range_hint": "Wallet at best, card at worst"
+      "range_hint": "Wallet at best, card at worst",
+      "note_flat": "A flat fee, identical on every payment method, so your attendees pay one price however they buy. You receive the full amount you set.",
+      "note_absorbed_flat": "Your attendee pays exactly the price you set, on every payment method. A flat Ticketwaze fee is deducted from it, so what you receive does not change with how they pay."
     },
     "sale_price_preview": {
       "title": "What your buyers will pay",
