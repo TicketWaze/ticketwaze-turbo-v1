@@ -638,7 +638,10 @@
       "approve": "Approve payout",
       "wise_resolved_name": "Wise Recipient Name",
       "wise_identifier": "Wisetag",
-      "wise_approved_at": "Recipient approved"
+      "wise_approved_at": "Recipient approved",
+      "cash_collector_name": "Collector Name",
+      "cash_phone": "Phone Number",
+      "cash_note": "Paid in cash, by hand"
     },
     "withdrawal_details": {
       "title": "Withdrawal Details",

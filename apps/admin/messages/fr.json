@@ -631,7 +631,10 @@
       "approve": "Approuver le virement",
       "wise_resolved_name": "Nom du bénéficiaire Wise",
       "wise_identifier": "Wisetag",
-      "wise_approved_at": "Bénéficiaire approuvé"
+      "wise_approved_at": "Bénéficiaire approuvé",
+      "cash_collector_name": "Nom du bénéficiaire",
+      "cash_phone": "Numéro de téléphone",
+      "cash_note": "Payé en espèces, en main propre"
     },
     "withdrawal_details": {
       "title": "Détails du retrait",

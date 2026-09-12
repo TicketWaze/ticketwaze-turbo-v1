@@ -3,6 +3,7 @@ import BackButton from "@/components/shared/BackButton";
 import { ButtonBlack } from "@/components/shared/buttons";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
+import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar2, Location, Clock } from "iconsax-reactjs";
@@ -131,6 +132,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         </h2>
         <div className="hidden lg:flex flex-wrap items-center gap-4">
           <EventStatusDialog event={event} />
+          <GiveawayTicketsDialog event={event} />
           <RefundActivityDialog
             activityKind="event"
             activityId={event.eventId}
@@ -144,6 +146,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         <div className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
           <div className="lg:hidden flex flex-col gap-4">
             <EventStatusDialog event={event} />
+            <GiveawayTicketsDialog event={event} />
             <RefundActivityDialog
               activityKind="event"
               activityId={event.eventId}

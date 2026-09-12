@@ -142,6 +142,43 @@ export async function UpdateOrganisationBankPaymentInformation(
   }
 }
 
+export async function UpdateOrganisationNatcashPaymentInformation(
+  organisationId: string,
+  payload: unknown,
+  locale: string,
+) {
+  try {
+    const accessToken = await sessionToken();
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/payment-informations/natcash`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify(payload),
+      },
+    );
+    const response = await request.json();
+    if (response.status === "success") {
+      revalidatePath("/settings/payment");
+      return {
+        status: "success",
+      };
+    } else {
+      throw new Error(response.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
 export async function UpdateOrganisationMoncashPaymentInformation(
   organisationId: string,
   payload: unknown,
