@@ -786,11 +786,13 @@
         "errors": {
           "code": {
             "min": "Le code de réduction ne peut pas contenir moins de 6 caractères",
-            "max": "Le code de réduction ne peut pas dépasser 10 caractères"
+            "max": "Le code de réduction ne peut pas dépasser 10 caractères",
+            "format": "Utilisez uniquement des lettres et des chiffres"
           },
           "value": {
             "min": "La valeur doit être d'au moins 1",
-            "negative": "La valeur ne peut pas être négative"
+            "negative": "La valeur ne peut pas être négative",
+            "percentage": "Un pourcentage ne peut pas dépasser 100%"
           },
           "quantity": {
             "min": "La quantité doit être d'au moins 1",
@@ -800,7 +802,24 @@
             "min": "1 heure est le minimum",
             "negative": "L'heure ne peut pas être négative"
           }
-        }
+        },
+        "actions": "Actions",
+        "activate": "Activer",
+        "deactivate": "Désactiver",
+        "delete": "Supprimer",
+        "activated": "Code activé",
+        "deactivated": "Code désactivé",
+        "deleted": "Code supprimé",
+        "created": "Code de réduction créé",
+        "expired": "Expiré",
+        "limit_reached": "Limite atteinte",
+        "empty": "Aucun code de réduction pour le moment.",
+        "empty_active": "Aucun code de réduction actif.",
+        "empty_inactive": "Aucun code de réduction inactif.",
+        "generate": "Générer un code",
+        "per_user_limit": "Utilisations par client (facultatif)",
+        "min_purchase": "Commande minimum (facultatif)",
+        "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze restent calculés sur votre prix affiché : la réduction et la différence de frais qui en découle sont toutes deux déduites de ce que vous recevez."
       },
       "attendees": {
         "back": "Retour",

@@ -76,4 +76,67 @@ export interface FeeBreakdown {
    * never going to be charged.
    */
   absorbedByOrganiser: boolean;
+
+  /**
+   * THE ORGANISER'S DISCOUNT CODE, off the base price.
+   *
+   * Applied BEFORE the fees, which is why it is part of this breakdown rather
+   * than subtracted from the total afterwards: the fee rows above are already
+   * computed on the reduced subtotal, so the bill falls by more than this
+   * figure. `totalSaved` is what actually came off.
+   */
+  discount: number;
+
+  /**
+   * TICKETWAZE TOKENS, off the grand total.
+   *
+   * After the fees, because this is Ticketwaze's own credit rather than the
+   * organiser charging less — there is no margin of ours to protect from our
+   * own promotion.
+   */
+  tokenValue: number;
+  tokensSpent: number;
+
+  /**
+   * How much less the buyer pays than they would have at face price.
+   *
+   * Not `discount + tokenValue`: discounting the base shrinks the fees too, so
+   * a 200-off code takes more than 200 off a fee-bearing cart. Shown as the
+   * single "you saved" figure, because that is the one the buyer can check
+   * against the total.
+   */
+  totalSaved: number;
+}
+
+/**
+ * A discount code the buyer has entered and the API has accepted.
+ *
+ * Held on the client only to quote a figure and render the row. The payment
+ * handler re-resolves the code against prices it reads itself, so nothing
+ * here is trusted with money — a tampered `amount` produces a wrong preview
+ * and the correct charge.
+ */
+export interface AppliedDiscount {
+  code: string;
+  type: "fixed" | "percentage";
+  value: number;
+  currency: string | null;
+  /** What the API says it takes off the current subtotal. */
+  amount: number;
+}
+
+/** Why a code was refused, as the API classifies it. */
+export type DiscountRefusalReason =
+  | "not_found"
+  | "inactive"
+  | "expired"
+  | "usage_limit_reached"
+  | "per_user_limit_reached"
+  | "below_min_purchase";
+
+/** The signed-in buyer's token balance and what it is worth here. */
+export interface TokenBalance {
+  tokens: number;
+  exchangeRate: number;
+  value: { htg: number; usd: number };
 }

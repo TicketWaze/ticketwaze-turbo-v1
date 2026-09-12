@@ -1078,7 +1078,10 @@
       "confirm_free": "Obtenir les billets",
       "secured": "Sécurisé par Ticketwaze",
       "fees_waived_banner": "Avantage liste d’attente appliqué. Ce premier achat ne comporte aucun frais Ticketwaze ni frais de transaction.",
-      "waived": "Offert"
+      "waived": "Offert",
+      "discount": "Réduction",
+      "tokens": "Jetons Ticketwaze ({tokens})",
+      "you_saved": "Vous avez économisé {amount}"
     },
     "footer": {
       "ticket": "Billet",
@@ -1108,6 +1111,23 @@
       "other_placeholder": "Précisez",
       "missing": "Veuillez répondre à : {question}",
       "missing_for_seat": "Billet {number} — veuillez répondre à : {question}"
+    },
+    "discount": {
+      "title": "Code de réduction",
+      "placeholder": "Saisir un code",
+      "apply": "Appliquer",
+      "checking": "Vérification…",
+      "remove": "Retirer le code de réduction",
+      "applied_percentage": "{value}% de réduction sur vos billets",
+      "applied_fixed": "{amount} de réduction sur votre commande"
+    },
+    "tokens": {
+      "title": "Jetons Ticketwaze",
+      "balance": "{tokens} disponibles",
+      "using": "Utilisation de {tokens} jetons",
+      "max": "Tout utiliser",
+      "none": "Ne rien utiliser",
+      "nothing_to_apply": "Vos jetons ne peuvent pas être appliqués à cette commande."
     }
   },
   "Liked": {

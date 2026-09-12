@@ -572,3 +572,145 @@ export function getBuyerUnitTotal(
   }
   return getUnitPriceBreakdown(currency, price, htgExchangeRate, route).total;
 }
+
+// ── Discount codes and Ticketwaze tokens ──────────────────────────────────────
+
+/**
+ * TWO REDUCTIONS, FUNDED BY DIFFERENT PEOPLE — the browser's copy of the rule.
+ *
+ * Mirrors `app/services/checkout_discounts.ts` and
+ * `app/controllers/utils/discounted_pricing.ts` in the API, which is what
+ * actually charges the buyer. Everything here exists only so the checkout can
+ * quote a figure before the payment handler recomputes it; a divergence means
+ * the buyer is shown a total they are not charged.
+ *
+ *   A DISCOUNT CODE is the ORGANISER'S. It comes off the base price, so the
+ *   fee stack is then charged on the reduced base — which means the buyer's
+ *   bill drops by MORE than the headline discount.
+ *
+ *   TICKETWAZE TOKENS are OURS. They come off the grand total after fees.
+ *
+ * The order matters and is not interchangeable.
+ */
+
+/** 200 tokens = 100 HTG, so a token is worth half a gourde. */
+export const TOKENS_PER_HTG = 2;
+
+/**
+ * What one token is worth, UNROUNDED, in the currency asked for.
+ *
+ * Unrounded because a single token is worth about $0.0037 and rounding it to
+ * the cent gives zero — which would make the clamp below conclude that no
+ * number of tokens can be spent on a USD-priced activity.
+ */
+export function unitTokenValue(
+  currency: string,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+): number {
+  if (currency !== "USD") return 1 / TOKENS_PER_HTG;
+  const rate =
+    htgExchangeRate > 0 ? htgExchangeRate : FALLBACK_HTG_EXCHANGE_RATE;
+  return 1 / TOKENS_PER_HTG / rate;
+}
+
+/** What a whole number of tokens is worth as money, rounded to the cent. */
+export function tokenValue(
+  tokens: number,
+  currency: string,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+): number {
+  return round2(
+    Math.max(0, Math.floor(tokens)) * unitTokenValue(currency, htgExchangeRate),
+  );
+}
+
+/**
+ * The most tokens worth spending on a bill of `billAmount`.
+ *
+ * Clamped at the bill as well as the balance, because the excess is not
+ * refundable as money — spending 400 tokens to clear a 300-token bill would
+ * quietly destroy the difference. The slider in the checkout uses this as its
+ * maximum, so a buyer cannot even drag past the point of waste.
+ */
+export function maxSpendableTokens(
+  availableTokens: number,
+  billAmount: number,
+  currency: string,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+): number {
+  const available = Math.max(0, Math.floor(availableTokens));
+  const unit = unitTokenValue(currency, htgExchangeRate);
+  if (available <= 0 || !(billAmount > 0) || !(unit > 0)) return 0;
+  return Math.min(available, Math.floor(billAmount / unit));
+}
+
+export interface DiscountQuote {
+  /** The code's headline reduction, off the BASE price. */
+  discount: number;
+  /** The subtotal after the discount — what fees are then charged on. */
+  discountedSubtotal: number;
+  /** Fees on the discounted subtotal: what the buyer is actually charged. */
+  fees: number;
+  /** Total after the discount, before tokens. */
+  totalBeforeTokens: number;
+  /** Money taken off by tokens. */
+  tokenValue: number;
+  /** What the buyer pays. */
+  total: number;
+  /**
+   * HOW MUCH THE BILL FELL, which is NOT the same as `discount`.
+   *
+   * A 200-off code on a fee-bearing ticket takes more than 200 off the bill,
+   * because the fees shrink with the base. Worth surfacing separately: a buyer
+   * who is told "200 off" and sees 226 disappear should be able to see why.
+   */
+  totalSaved: number;
+}
+
+/**
+ * What a cart comes to once a discount and some tokens are applied.
+ *
+ * `feesFor` is the caller's own fee function — events, raffles, sales and
+ * reservations each have their own schedule, and passing it in is what keeps
+ * this from having to know which is which. It receives the DISCOUNTED
+ * subtotal and returns the all-in total for it.
+ */
+export function quoteWithReductions(options: {
+  subtotal: number;
+  discount?: number;
+  tokens?: number;
+  currency: string;
+  htgExchangeRate?: number;
+  /** Discounted subtotal in, all-in charge out. */
+  totalFor: (discountedSubtotal: number) => number;
+}): DiscountQuote {
+  const subtotal = Math.max(0, Number(options.subtotal) || 0);
+  const rate = options.htgExchangeRate ?? FALLBACK_HTG_EXCHANGE_RATE;
+
+  // A discount can zero a cart but never invert it.
+  const discount = Math.min(subtotal, Math.max(0, Number(options.discount) || 0));
+  const discountedSubtotal = round2(subtotal - discount);
+
+  const totalBeforeTokens = round2(options.totalFor(discountedSubtotal));
+  const undiscountedTotal = round2(options.totalFor(subtotal));
+
+  const tokens = maxSpendableTokens(
+    Number(options.tokens) || 0,
+    totalBeforeTokens,
+    options.currency,
+    rate,
+  );
+  const applied = tokenValue(tokens, options.currency, rate);
+
+  const total = Math.max(0, round2(totalBeforeTokens - applied));
+
+  return {
+    discount,
+    discountedSubtotal,
+    fees: round2(totalBeforeTokens - discountedSubtotal),
+    totalBeforeTokens,
+    tokenValue: applied,
+    total,
+    totalSaved: round2(undiscountedTotal - total),
+  };
+}

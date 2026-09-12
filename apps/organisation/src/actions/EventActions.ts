@@ -550,44 +550,6 @@ export async function UpdateTicketTypes(
   }
 }
 
-export async function CreateDiscountCode(
-  eventId: string,
-  data: unknown,
-  pathname: string,
-  locale: string,
-) {
-  try {
-    const accessToken = await sessionToken();
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/discount-code`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-        },
-        body: JSON.stringify(data),
-      },
-    );
-    const response = await request.json();
-
-    if (response.status === "success") {
-      revalidatePath(pathname);
-      return {
-        status: "success",
-      };
-    } else {
-      throw new Error(response.message);
-    }
-  } catch (error: any) {
-    return {
-      error: error?.message ?? "An unknown error occurred",
-    };
-  }
-}
-
 export async function AddAttendee(
   eventId: string,
   data: unknown,
@@ -638,80 +600,6 @@ export async function RemoveAttendeeAccess(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/attendees/${eventAttendeeId}`,
       {
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-        },
-      },
-    );
-    const response = await request.json();
-
-    if (response.status === "success") {
-      revalidatePath(pathname);
-      return {
-        status: "success",
-      };
-    } else {
-      throw new Error(response.message);
-    }
-  } catch (error: any) {
-    return {
-      error: error?.message ?? "An unknown error occurred",
-    };
-  }
-}
-
-export async function MarkDiscountCodeAsInactive(
-  eventId: string,
-  discountCodeId: string,
-  pathname: string,
-  locale: string,
-) {
-  try {
-    const accessToken = await sessionToken();
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/discount-code/${discountCodeId}/mark-as-inactive`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-        },
-      },
-    );
-    const response = await request.json();
-
-    if (response.status === "success") {
-      revalidatePath(pathname);
-      return {
-        status: "success",
-      };
-    } else {
-      throw new Error(response.message);
-    }
-  } catch (error: any) {
-    return {
-      error: error?.message ?? "An unknown error occurred",
-    };
-  }
-}
-
-export async function MarkDiscountCodeAsActive(
-  eventId: string,
-  discountCodeId: string,
-  pathname: string,
-  locale: string,
-) {
-  try {
-    const accessToken = await sessionToken();
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}/discount-code/${discountCodeId}/mark-as-active`,
-      {
-        method: "GET",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${accessToken}`,

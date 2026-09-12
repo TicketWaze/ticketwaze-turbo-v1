@@ -300,6 +300,26 @@ export interface Order {
   lastName: string | null;
   email: string | null;
   tickets: Ticket[];
+  /**
+   * THE ORGANISER'S PROMOTION, if a code applied.
+   *
+   * Comes off the base price, so the organisation is credited less — and
+   * because Ticketwaze's margin stays pinned to the FACE price, the
+   * organisation also carries the fee shortfall the discount causes.
+   */
+  discountCodeId?: string | null;
+  discountHtgAmount?: number;
+  discountUsdAmount?: number;
+  /**
+   * TICKETWAZE'S OWN PROMOTIONAL CURRENCY, if any was spent.
+   *
+   * Unlike the discount, this costs Ticketwaze rather than the organiser:
+   * tokens come off the grand total after fees, and the organisation is
+   * credited as though the buyer had paid in full.
+   */
+  tokensSpent?: number;
+  tokenHtgAmount?: number;
+  tokenUsdAmount?: number;
   /** Present on the finance endpoints; absent wherever orders are returned raw. */
   activity?: OrderActivitySummary;
   createdAt: DateTime;
@@ -1032,13 +1052,58 @@ export interface Currency {
 export interface DiscountCode {
   discountCodeId: string;
   code: string;
-  eventId: string;
+  /**
+   * The activity this code belongs to.
+   *
+   * Was `eventId`, and is the same value: events, raffles, sales and
+   * restaurants all share their primary key with `activities`, so the column
+   * was renamed rather than re-pointed when codes moved off events.
+   */
+  activityId: string;
   type: "fixed" | "percentage";
   value: number;
+  /**
+   * Which money a `fixed` value is in, stamped from the activity at creation
+   * so re-pricing cannot re-scale a code already in circulation. Null on
+   * percentage codes and on rows created before the column existed.
+   */
+  currency: string | null;
+  /** Minimum pre-discount subtotal, in `currency`. Null means no floor. */
+  minPurchase: number | null;
+  /** Uses allowed per signed-in buyer. Null means no per-buyer cap. */
+  perUserLimit: number | null;
   expiresAt: Date;
   usageLimit: number;
+  /** Reservations plus confirmations. A released redemption does not count. */
   usageCount: number;
   isActive: boolean;
+  createdByUserId: string | null;
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
+
+/** RESERVED and CONFIRMED both occupy a slot; RELEASED hands it back. */
+export type DiscountRedemptionStatus = "RESERVED" | "CONFIRMED" | "RELEASED";
+
+/**
+ * One use of a discount code.
+ *
+ * Snapshots the code's terms rather than pointing at them, so an organiser
+ * editing a code afterwards cannot rewrite what an earlier buyer was given.
+ */
+export interface DiscountRedemption {
+  discountRedemptionId: string;
+  discountCodeId: string;
+  orderId: string;
+  activityId: string;
+  userId: string | null;
+  guestEmail: string | null;
+  code: string;
+  type: "fixed" | "percentage";
+  value: number;
+  discountHtg: number;
+  discountUsd: number;
+  status: DiscountRedemptionStatus;
   createdAt: DateTime;
   updatedAt: DateTime;
 }

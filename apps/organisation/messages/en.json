@@ -787,11 +787,13 @@
         "errors": {
           "code": {
             "min": "Discount code cannot be less than 6 characters",
-            "max": "Discount code cannot exceed 10 characters"
+            "max": "Discount code cannot exceed 10 characters",
+            "format": "Use letters and numbers only"
           },
           "value": {
             "min": "Value should be at least 1",
-            "negative": "Value cannot be negative"
+            "negative": "Value cannot be negative",
+            "percentage": "A percentage cannot exceed 100%"
           },
           "quantity": {
             "min": "Quantity should be at least 1",
@@ -801,7 +803,24 @@
             "min": "1 hour is the minimum",
             "negative": "Hour cannot be negative"
           }
-        }
+        },
+        "actions": "Actions",
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "delete": "Delete",
+        "activated": "Code activated",
+        "deactivated": "Code deactivated",
+        "deleted": "Code deleted",
+        "created": "Discount code created",
+        "expired": "Expired",
+        "limit_reached": "Limit reached",
+        "empty": "No discount codes yet.",
+        "empty_active": "No active discount codes.",
+        "empty_inactive": "No inactive discount codes.",
+        "generate": "Generate a code",
+        "per_user_limit": "Uses per customer (optional)",
+        "min_purchase": "Minimum order (optional)",
+        "cost_notice": "Discounts come out of your proceeds. Ticketwaze fees are still calculated on your listed price, so the discount and the resulting fee difference are both deducted from what you receive."
       },
       "attendees": {
         "back": "Back",

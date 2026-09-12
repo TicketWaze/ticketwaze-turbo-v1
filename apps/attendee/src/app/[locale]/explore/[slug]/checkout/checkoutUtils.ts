@@ -24,6 +24,8 @@ import {
   getPerTicketFee,
   htgFlatBandFee,
   round2,
+  maxSpendableTokens,
+  tokenValue,
 } from "@/lib/pricing";
 
 /**
@@ -86,6 +88,22 @@ export function calculateFeeBreakdown(
   feeWaived: boolean = false,
   htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
   absorbFees: boolean = false,
+  /**
+   * THE TWO REDUCTIONS, APPLIED AT DIFFERENT POINTS IN THE STACK.
+   *
+   * `discountTotal` is the organiser's code and comes off the BASE prices,
+   * apportioned across the lines by value, so every fee below is computed on
+   * what the buyer actually pays for the ticket. `tokens` is Ticketwaze's own
+   * credit and comes off the GRAND TOTAL at the end.
+   *
+   * Getting the order wrong is not a rounding difference — a discount applied
+   * after the fees would quote a total the API does not charge, and an
+   * organiser would be credited for a promotion they did not fund.
+   *
+   * Mirrors `discounted_pricing.ts` and `checkout_discounts.ts` in the API.
+   */
+  discountTotal: number = 0,
+  tokens: number = 0,
 ): FeeBreakdown {
   let subtotal = 0;
   let platformFee = 0;
@@ -117,16 +135,49 @@ export function calculateFeeBreakdown(
    * This also matches how the backend adds up: `payments_controller` computes a
    * per-ticket total and sums those, rather than pricing the basket as a whole.
    */
+  /**
+   * THE DISCOUNT, SPREAD ACROSS THE LINES BEFORE ANY OF THEM IS PRICED.
+   *
+   * Apportioned by value — a 2,000 HTG ticket carries more of the cut than a
+   * 500 HTG one beside it — because the fee schedule is per ticket and banded:
+   * splitting a cart's discount evenly could push a cheap line negative while
+   * barely moving an expensive one, and would land a different line in a
+   * different HTG fee band than the API does.
+   *
+   * The fraction is computed once here and applied per line below, which is
+   * the same proportional split `spreadDiscount` performs on the server.
+   */
+  const faceSubtotal = selectedTickets.reduce((sum, ticket) => {
+    const ticketType = ticketTypes.find(
+      (tt) => tt.eventTicketTypeId === ticket.ticketTypeId,
+    );
+    if (!ticketType) return sum;
+    const price = Number(
+      currency === "USD" ? ticketType.usdPrice : ticketType.ticketTypePrice,
+    );
+    return sum + price * ticket.quantity;
+  }, 0);
+
+  const appliedDiscount = Math.min(
+    Math.max(0, Number(discountTotal) || 0),
+    faceSubtotal,
+  );
+  const discountFraction =
+    faceSubtotal > 0 ? appliedDiscount / faceSubtotal : 0;
+
   selectedTickets.forEach((ticket) => {
     const ticketType = ticketTypes.find(
       (tt) => tt.eventTicketTypeId === ticket.ticketTypeId,
     );
     if (!ticketType) return;
-    const price = Number(
+    const facePrice = Number(
       currency === "USD" ? ticketType.usdPrice : ticketType.ticketTypePrice,
     );
+    // Every fee below is charged on the DISCOUNTED price, which is what the
+    // buyer is actually paying for the ticket.
+    const price = Math.max(0, facePrice * (1 - discountFraction));
     const quantity = ticket.quantity;
-    subtotal += price * quantity;
+    subtotal += facePrice * quantity;
 
     const flatFee = currency === "HTG" ? htgFlatBandFee(price) : null;
     if (flatFee !== null) {
@@ -144,33 +195,79 @@ export function calculateFeeBreakdown(
       round2((price + lineService + perTicket) * (1 + txRate)) * quantity;
   });
 
+  /**
+   * TOKENS COME OFF LAST, once the total exists.
+   *
+   * Clamped at the bill as well as at the balance: the excess is not
+   * refundable as money, so letting a buyer spend 400 tokens to clear a bill
+   * 300 would cover would quietly destroy the difference. `maxSpendableTokens`
+   * is the same clamp the API applies.
+   */
+  const applyTokens = (billTotal: number) => {
+    const spendable = maxSpendableTokens(tokens, billTotal, currency, rate);
+    const value = tokenValue(spendable, currency, rate);
+    return { spendable, value, total: Math.max(0, round2(billTotal - value)) };
+  };
+
   // The organiser is paying these, so as far as this buyer is concerned they do
   // not exist. Zeroed rather than merely excluded from the total, so no surface
   // downstream can render a fee the buyer was never going to be charged.
   if (absorbFees) {
+    // On an absorbing activity the buyer pays the face price and nothing else,
+    // so the discounted subtotal IS the bill.
+    const beforeTokens = round2(subtotal - appliedDiscount);
+    const withTokens = applyTokens(beforeTokens);
     return {
       subtotal,
       serviceFee: 0,
       platformFee: 0,
       transactionFee: 0,
-      total: subtotal,
+      total: withTokens.total,
       feeWaived: false,
       absorbedByOrganiser: true,
+      discount: appliedDiscount,
+      tokenValue: withTokens.value,
+      tokensSpent: withTokens.spendable,
+      totalSaved: round2(subtotal - withTokens.total),
     };
   }
 
   // Waitlist first-purchase perk: the buyer pays only the subtotal. The fee
   // amounts are still returned so the UI can show them struck-through, but they
   // are excluded from the total — mirroring the backend's fee waiver exactly.
-  const total = feeWaived ? subtotal : round2(chargedTotal);
+  const beforeTokens = feeWaived
+    ? round2(subtotal - appliedDiscount)
+    : round2(chargedTotal);
+  const withTokens = applyTokens(beforeTokens);
+
+  /**
+   * What the cart would have cost at face price, so "you saved" can be an
+   * honest single number. Recomputed rather than tracked through the loop
+   * because the loop only ever priced the discounted lines.
+   */
+  const undiscountedTotal = appliedDiscount
+    ? calculateFeeBreakdown(
+        selectedTickets,
+        ticketTypes,
+        currency,
+        paymentType,
+        feeWaived,
+        htgExchangeRate,
+        absorbFees,
+      ).total
+    : beforeTokens;
 
   return {
     subtotal,
     serviceFee,
     platformFee,
     transactionFee,
-    total,
+    total: withTokens.total,
     feeWaived,
     absorbedByOrganiser: false,
+    discount: appliedDiscount,
+    tokenValue: withTokens.value,
+    tokensSpent: withTokens.spendable,
+    totalSaved: round2(undiscountedTotal - withTokens.total),
   };
 }

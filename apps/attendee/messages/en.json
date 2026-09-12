@@ -1034,7 +1034,10 @@
       "confirm_free": "Get Tickets",
       "secured": "Secured by Ticketwaze",
       "fees_waived_banner": "Waitlist perk applied. This first purchase carries no Ticketwaze fees and no transaction fees.",
-      "waived": "Waived"
+      "waived": "Waived",
+      "discount": "Discount",
+      "tokens": "Ticketwaze tokens ({tokens})",
+      "you_saved": "You saved {amount}"
     },
     "footer": {
       "ticket": "Ticket",
@@ -1064,6 +1067,23 @@
       "other_placeholder": "Tell us more",
       "missing": "Please answer: {question}",
       "missing_for_seat": "Ticket {number} — please answer: {question}"
+    },
+    "discount": {
+      "title": "Discount code",
+      "placeholder": "Enter a code",
+      "apply": "Apply",
+      "checking": "Checking…",
+      "remove": "Remove discount code",
+      "applied_percentage": "{value}% off your tickets",
+      "applied_fixed": "{amount} off your order"
+    },
+    "tokens": {
+      "title": "Ticketwaze tokens",
+      "balance": "{tokens} available",
+      "using": "Using {tokens} tokens",
+      "max": "Use all",
+      "none": "Use none",
+      "nothing_to_apply": "Your tokens cannot be applied to this order."
     }
   },
   "Liked": {

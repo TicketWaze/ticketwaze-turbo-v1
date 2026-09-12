@@ -1,6 +1,14 @@
 "use client";
 import { motion } from "framer-motion";
-import { Card, Gift, MoneyRecive, ShieldSecurity, Warning2 } from "iconsax-reactjs";
+import {
+  Card,
+  Coin1,
+  Gift,
+  MoneyRecive,
+  ShieldSecurity,
+  TicketDiscount,
+  Warning2,
+} from "iconsax-reactjs";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Event, EventTicketType } from "@ticketwaze/typescript-config";
@@ -63,6 +71,10 @@ export default function SummaryStep({
     total,
     feeWaived,
     absorbedByOrganiser,
+    discount,
+    tokenValue,
+    tokensSpent,
+    totalSaved,
   } = feeBreakdown;
   const ticketwazeFee = serviceFee + platformFee;
   const serviceFeeLabel = `${(SERVICE_FEE_RATE * 100).toFixed(0)}%`;
@@ -227,6 +239,46 @@ export default function SummaryStep({
           </div>
         )}
 
+        {/*
+          THE TWO REDUCTIONS, ITEMISED SEPARATELY AND AFTER THE FEES.
+
+          Printed here rather than folded into the subtotal because the buyer
+          needs to be able to check the arithmetic, and because the two are not
+          the same kind of thing — the code is the organiser charging less, the
+          tokens are Ticketwaze paying part of the bill.
+
+          The discount row reads as smaller than the drop in the total, and
+          that is correct: the fee rows above were already computed on the
+          reduced price. `totalSaved` below is what actually came off, and it
+          is the figure to trust.
+        */}
+        {!isFree && (discount > 0 || tokenValue > 0) && (
+          <div className="px-8 py-[1.8rem] flex flex-col gap-4 border-b border-dashed border-neutral-200">
+            {discount > 0 && (
+              <div className="flex items-center justify-between text-[1.4rem]">
+                <span className="flex items-center gap-2 text-[#1a7a43]">
+                  <TicketDiscount size="16" color="#1F9D55" variant="Bulk" />
+                  {t("summary.discount")}
+                </span>
+                <span className="font-medium text-[#1a7a43]">
+                  −{formatAmount(discount)} {event.currency}
+                </span>
+              </div>
+            )}
+            {tokenValue > 0 && (
+              <div className="flex items-center justify-between text-[1.4rem]">
+                <span className="flex items-center gap-2 text-[#1a7a43]">
+                  <Coin1 size="16" color="#1F9D55" variant="Bulk" />
+                  {t("summary.tokens", { tokens: tokensSpent })}
+                </span>
+                <span className="font-medium text-[#1a7a43]">
+                  −{formatAmount(tokenValue)} {event.currency}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Total */}
         <div className="px-8 py-8 flex items-center justify-between border-b border-neutral-100">
           <span className="font-primary font-semibold text-[1.8rem] text-deep-100">
@@ -241,6 +293,20 @@ export default function SummaryStep({
               <span className="font-primary font-bold text-[3rem] leading-none text-primary-500">
                 {formatAmount(total)} {event.currency}
               </span>
+              {/*
+                THE ONE FIGURE THAT IS WORTH TRUSTING over the rows above.
+
+                A discount off the base also shrinks the fees charged on it, so
+                the rows never add up to what the buyer feels they saved. This
+                is the difference between this total and the face-price one.
+              */}
+              {totalSaved > 0 && (
+                <span className="text-[1.2rem] font-medium text-[#1a7a43]">
+                  {t("summary.you_saved", {
+                    amount: `${formatAmount(totalSaved)} ${event.currency}`,
+                  })}
+                </span>
+              )}
               <span className="text-[1.1rem] text-neutral-400 font-normal">
                 {t("summary.tca")}
               </span>

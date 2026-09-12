@@ -26,6 +26,15 @@ interface Props {
   ticketTypes: EventTicketType[];
   event: Event;
   feeBreakdown: FeeBreakdown;
+  /**
+   * The discount-code and token controls, passed in rather than built here.
+   *
+   * They belong on this step — the buyer should reach the summary already
+   * looking at the number they will be charged — but they own network state
+   * and a balance fetch, which has no business inside a presentational step.
+   * Absent on a free claim, where there is nothing to reduce.
+   */
+  reductions?: React.ReactNode;
 }
 
 export default function PaymentStep({
@@ -38,6 +47,7 @@ export default function PaymentStep({
   ticketTypes,
   event,
   feeBreakdown,
+  reductions,
 }: Props) {
   const t = useTranslations("Checkout");
 
@@ -123,6 +133,8 @@ export default function PaymentStep({
                 <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
               </button>
             )}
+
+            {reductions}
 
             <div className="flex flex-col items-start gap-4 p-6 rounded-[15px] border border-neutral-100 text-[1.2rem] leading-8 text-neutral-700">
               <ShieldSecurity size="20" color="#E45B00" />
