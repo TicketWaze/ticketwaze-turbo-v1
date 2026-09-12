@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Clock, Location } from "iconsax-reactjs";
 import { RestaurantStatusDialog, StatusBadge } from "./RestaurantStatusDialog";
 import { RestaurantSuspensionDialog } from "./RestaurantSuspensionDialog";
+import EditActivityLink from "@/components/shared/EditActivityLink";
 
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 const DAY_NAMES: Record<number, string> = {
@@ -108,6 +109,9 @@ export default function RestaurantReviewComponent({
           )}
         </div>
         <div className="flex items-center gap-4">
+          <EditActivityLink
+            href={`/activities/restaurant/${restaurant.restaurantId}/edit`}
+          />
           <RestaurantStatusDialog restaurant={restaurant} />
           <RestaurantSuspensionDialog restaurant={restaurant} />
         </div>

@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import {
   ArrowLeft2,
   InfoCircle,
+  Money,
   MoneyRecive,
   TickCircle,
 } from "iconsax-reactjs";
@@ -15,6 +16,7 @@ import { Organisation } from "@ticketwaze/typescript-config";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import moncashIcon from "@/assets/images/moncash-icon.svg";
+import natcashIcon from "@/assets/images/natcash.png";
 import wiseIcon from "@/assets/images/wise-icon.svg";
 import { toast } from "sonner";
 import {
@@ -28,6 +30,7 @@ import {
   ResolveWiseRecipient,
   UpdateOrganisationBankPaymentInformation,
   UpdateOrganisationMoncashPaymentInformation,
+  UpdateOrganisationNatcashPaymentInformation,
 } from "@/actions/organisationActions";
 import PageLoader from "@/components/PageLoader";
 import { useRouter } from "@/i18n/navigation";
@@ -35,6 +38,18 @@ import { Input } from "@/components/shared/Inputs";
 
 /** The screens this wizard can show. Which apply depends on the payout method. */
 type StepKey = "summary" | "method" | "amount" | "details" | "pin";
+
+/**
+ * How the organiser wants the money.
+ *
+ * `cash` is a handover in person — Ticketwaze pays in notes, so there is no
+ * account to send to and the "details" it collects are who is collecting and
+ * the number to reach them on.
+ */
+type PayoutMethod = "bank" | "moncash" | "natcash" | "cash" | "wise";
+
+/** Every method that settles in gourdes. Only a bank payout may choose. */
+const HTG_ONLY_METHODS: PayoutMethod[] = ["moncash", "natcash", "cash"];
 
 /* ─── Animation helpers ──────────────────────────────────────────── */
 
@@ -171,6 +186,110 @@ function AnimatedCheckbox({ checked }: { checked: boolean }) {
   );
 }
 
+/* ─── No-fee notice ──────────────────────────────────────────────── */
+
+/**
+ * What the organiser actually receives, stated before they commit.
+ *
+ * The figure on screen is the whole available balance and Ticketwaze takes
+ * nothing further out of it — the platform fee was already accounted for on
+ * each sale, long before this screen. Saying so here answers the question
+ * every organiser asks of a payout form, and answering it up front is cheaper
+ * than answering it in support afterwards.
+ */
+function NoFeeNotice({ text }: { text: string }) {
+  return (
+    <div className="flex items-start gap-3 p-4 rounded-[12px] border border-emerald-200 bg-emerald-50 text-[1.3rem] leading-7 text-emerald-800">
+      <div className="shrink-0 mt-[2px]">
+        <TickCircle size="18" color="#047857" variant="Bulk" />
+      </div>
+      <span>{text}</span>
+    </div>
+  );
+}
+
+/* ─── Payout method row ──────────────────────────────────────────── */
+
+/**
+ * One selectable payout method.
+ *
+ * Extracted because there are now five of them and the markup is forty lines
+ * each — written out one per method, adding one meant copying the selected
+ * state, the tick animation and the hover border, and the copies had already
+ * started to drift apart.
+ *
+ * `badge` marks a method that exists but cannot be picked (Wise, while it is
+ * withdrawn). A badged row is rendered dimmed and inert rather than hidden, so
+ * an organiser who used it last month can see it is coming back instead of
+ * wondering where it went.
+ */
+function MethodOption({
+  icon,
+  label,
+  hint,
+  selected,
+  onSelect,
+  badge,
+}: {
+  icon: (active: boolean) => React.ReactNode;
+  label: string;
+  hint: string;
+  selected: boolean;
+  onSelect: () => void;
+  badge?: string;
+}) {
+  const disabled = Boolean(badge);
+
+  return (
+    <motion.button
+      type="button"
+      whileTap={disabled ? undefined : { scale: 0.985 }}
+      onClick={disabled ? undefined : onSelect}
+      disabled={disabled}
+      aria-disabled={disabled}
+      className={`flex items-center w-full justify-between p-5 rounded-[16px] border-2 transition-colors duration-200 ${
+        disabled
+          ? "border-neutral-100 bg-neutral-50 opacity-60 cursor-not-allowed"
+          : selected
+            ? "border-primary-500 bg-primary-50 cursor-pointer"
+            : "border-neutral-100 hover:border-neutral-200 cursor-pointer"
+      }`}
+    >
+      <div className="flex items-center gap-4">
+        <div
+          className={`w-[46px] h-[46px] rounded-[12px] flex items-center justify-center transition-colors duration-200 ${
+            selected && !disabled ? "bg-primary-100" : "bg-neutral-100"
+          }`}
+        >
+          {icon(selected && !disabled)}
+        </div>
+        <div className="flex flex-col items-start gap-[3px]">
+          <span className="font-semibold text-[1.5rem] leading-6 text-deep-100">
+            {label}
+          </span>
+          <span className="text-[1.2rem] leading-5 text-neutral-500 text-left">
+            {hint}
+          </span>
+        </div>
+      </div>
+
+      {disabled ? (
+        <span className="shrink-0 rounded-[100px] bg-neutral-100 px-4 py-[5px] text-[1.15rem] font-medium text-neutral-500">
+          {badge}
+        </span>
+      ) : (
+        <motion.div
+          animate={{ scale: selected ? 1 : 0.4, opacity: selected ? 1 : 0 }}
+          transition={{ type: "spring", stiffness: 420, damping: 22 }}
+          className="w-[22px] h-[22px] rounded-full bg-primary-500 flex items-center justify-center shrink-0"
+        >
+          <TickCircle size="14" color="#fff" variant="Bold" />
+        </motion.div>
+      )}
+    </motion.button>
+  );
+}
+
 /* ─── Main component ─────────────────────────────────────────────── */
 
 export default function InitiateWithdrawalPageWrapper({
@@ -200,9 +319,7 @@ export default function InitiateWithdrawalPageWrapper({
 
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
-  const [accountType, setAccountType] = useState<
-    "bank" | "moncash" | "wise" | null
-  >(null);
+  const [accountType, setAccountType] = useState<PayoutMethod | null>(null);
   const [bankCurrency, setBankCurrency] = useState<"HTG" | "USD">("HTG");
 
   /* Wise state.
@@ -238,6 +355,25 @@ export default function InitiateWithdrawalPageWrapper({
     hasSavedMoncash || !!organisation.moncashNumber,
   );
 
+  // Natcash state. Same shape as MonCash — both wallets take an 8-digit local
+  // number — and saved on the organisation the same way.
+  const [natcashAccountName, setNatcashAccountName] = useState(
+    organisation.natcashAccountName ?? "",
+  );
+  const [natcashNumber, setNatcashNumber] = useState(
+    organisation.natcashNumber ?? "",
+  );
+  const [saveNatcashInfo, setSaveNatcashInfo] = useState(
+    !!organisation.natcashNumber,
+  );
+
+  /* Cash state.
+     Never saved back to the organisation: unlike an account number, "who is
+     collecting" is a decision about one specific handover, and silently
+     reusing last month's answer is how money ends up with the wrong person. */
+  const [cashCollectorName, setCashCollectorName] = useState("");
+  const [cashPhone, setCashPhone] = useState("");
+
   // PIN state
   const [pin, setPin] = useState("");
   const [pinConfirmation, setPinConfirmation] = useState("");
@@ -252,10 +388,11 @@ export default function InitiateWithdrawalPageWrapper({
       ? organisation.availableBalance
       : organisation.usdAvailableBalance;
 
-  // Amount step: bank uses the selected currency, moncash is always HTG, and
-  // Wise is always USD — a Wise payout is USD on both sides by design.
+  // Amount step: bank uses the selected currency, the wallets and cash are
+  // always HTG, and Wise is always USD — a Wise payout is USD on both sides by
+  // design. Mirrored server-side, which is the authority.
   const activeCurrency: "HTG" | "USD" =
-    accountType === "moncash"
+    accountType && HTG_ONLY_METHODS.includes(accountType)
       ? "HTG"
       : accountType === "wise"
         ? "USD"
@@ -284,12 +421,37 @@ export default function InitiateWithdrawalPageWrapper({
   const step = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
 
-  const detailsLabel =
-    accountType === "moncash"
-      ? t("moncash_details")
-      : accountType === "wise"
-        ? t("wise_details")
-        : t("bank_details");
+  /**
+   * Where the money is going, per method, as the two fields every payout
+   * records: a name and a number.
+   *
+   * A cash payout has no account, so those two carry who collects the money and
+   * the phone number to arrange it on. Reusing the same pair rather than giving
+   * cash a shape of its own is what lets the admin payout screen, the Discord
+   * notice and the settlement emails handle it without knowing it exists.
+   *
+   * Derived once and read by both the submission and the confirmation summary —
+   * written out separately, the summary showed the MonCash name for every
+   * method that was not bank or Wise.
+   */
+  const DESTINATIONS: Record<PayoutMethod, { name: string; number: string }> = {
+    bank: { name: bankAccountName, number: bankAccountNumber },
+    moncash: { name: moncashAccountName, number: moncashNumber },
+    natcash: { name: natcashAccountName, number: natcashNumber },
+    cash: { name: cashCollectorName, number: cashPhone },
+    // Both come from Wise's own resolution, never from a typed field.
+    wise: { name: wiseResolvedName ?? "", number: wiseRecipientValue },
+  };
+  const destination = DESTINATIONS[accountType ?? "bank"];
+
+  const DETAILS_LABEL_KEY: Record<PayoutMethod, string> = {
+    bank: "bank_details",
+    moncash: "moncash_details",
+    natcash: "natcash_details",
+    cash: "cash_details",
+    wise: "wise_details",
+  };
+  const detailsLabel = t(DETAILS_LABEL_KEY[accountType ?? "bank"]);
   const stepLabels = steps.map((key) =>
     key === "summary"
       ? t("summary")
@@ -354,12 +516,11 @@ export default function InitiateWithdrawalPageWrapper({
   async function handleWithdrawal() {
     setIsLoading(true);
     try {
-      const accountName =
-        accountType === "bank" ? bankAccountName : moncashAccountName;
-      const accountNumber =
-        accountType === "bank" ? bankAccountNumber : moncashNumber;
+      const accountName = destination.name;
+      const accountNumber = destination.number;
 
-      // Optionally persist account details to profile
+      // Optionally persist account details to profile. Cash is deliberately
+      // absent — see the cash state above.
       if (accountType === "bank" && saveBankInfo) {
         await UpdateOrganisationBankPaymentInformation(
           organisation.organisationId,
@@ -373,6 +534,16 @@ export default function InitiateWithdrawalPageWrapper({
           {
             moncashAccountName: moncashAccountName,
             moncashNumber: moncashNumber,
+          },
+          locale,
+        );
+      }
+      if (accountType === "natcash" && saveNatcashInfo) {
+        await UpdateOrganisationNatcashPaymentInformation(
+          organisation.organisationId,
+          {
+            natcashAccountName: natcashAccountName,
+            natcashNumber: natcashNumber,
           },
           locale,
         );
@@ -400,10 +571,12 @@ export default function InitiateWithdrawalPageWrapper({
               pin_confirmation: pinConfirmation,
               accountName,
               accountNumber,
-              // No amount — the full available balance is withdrawn. MonCash is
-              // always HTG; bank uses the chosen currency.
+              // No amount — the full available balance is withdrawn. Only a
+              // bank payout chooses a currency; the rest are HTG.
               currency: activeCurrency,
-              bankName: accountType === "bank" ? bankName : "Moncash",
+              // The server sets its own label for every non-bank method, so
+              // this only has to carry the one it cannot know.
+              ...(accountType === "bank" ? { bankName } : {}),
             },
       );
 
@@ -508,6 +681,32 @@ export default function InitiateWithdrawalPageWrapper({
         }
         if (!bankAccountNumber.trim()) {
           toast.error(t("errors.bank_account_number"));
+          return;
+        }
+      } else if (accountType === "natcash") {
+        if (!natcashAccountName.trim()) {
+          toast.error(t("errors.natcash_account_name"));
+          return;
+        }
+        if (!natcashNumber.trim()) {
+          toast.error(t("errors.natcash_number"));
+          return;
+        }
+        if (!/^\d{8}$/.test(natcashNumber.trim())) {
+          toast.error(t("errors.natcash_number_invalid"));
+          return;
+        }
+      } else if (accountType === "cash") {
+        if (!cashCollectorName.trim()) {
+          toast.error(t("errors.cash_collector_name"));
+          return;
+        }
+        if (!cashPhone.trim()) {
+          toast.error(t("errors.cash_phone"));
+          return;
+        }
+        if (!/^\d{8}$/.test(cashPhone.trim())) {
+          toast.error(t("errors.cash_phone_invalid"));
           return;
         }
       } else {
@@ -697,134 +896,68 @@ export default function InitiateWithdrawalPageWrapper({
                 </div>
 
                 <div className="flex flex-col gap-4">
-                  {/* Bank */}
-                  <motion.button
-                    whileTap={{ scale: 0.985 }}
-                    onClick={() => setAccountType("bank")}
-                    className={`flex items-center w-full justify-between cursor-pointer p-5 rounded-[16px] border-2 transition-colors duration-200 ${
-                      accountType === "bank"
-                        ? "border-primary-500 bg-primary-50"
-                        : "border-neutral-100 hover:border-neutral-200"
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`w-[46px] h-[46px] rounded-[12px] flex items-center justify-center transition-colors duration-200 ${accountType === "bank" ? "bg-primary-100" : "bg-neutral-100"}`}
-                      >
-                        <MoneyRecive
-                          size="22"
-                          color={accountType === "bank" ? "#e45b00" : "#737c8a"}
-                          variant="Bulk"
-                        />
-                      </div>
-                      <div className="flex flex-col items-start gap-[3px]">
-                        <span className="font-semibold text-[1.5rem] leading-6 text-deep-100">
-                          {t("bank")}
-                        </span>
-                        <span className="text-[1.2rem] leading-5 text-neutral-500">
-                          {t("bank_hint")}
-                        </span>
-                      </div>
-                    </div>
-                    <motion.div
-                      animate={{
-                        scale: accountType === "bank" ? 1 : 0.4,
-                        opacity: accountType === "bank" ? 1 : 0,
-                      }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 420,
-                        damping: 22,
-                      }}
-                      className="w-[22px] h-[22px] rounded-full bg-primary-500 flex items-center justify-center shrink-0"
-                    >
-                      <TickCircle size="14" color="#fff" variant="Bold" />
-                    </motion.div>
-                  </motion.button>
+                  <MethodOption
+                    label={t("bank")}
+                    hint={t("bank_hint")}
+                    selected={accountType === "bank"}
+                    onSelect={() => setAccountType("bank")}
+                    icon={(active) => (
+                      <MoneyRecive
+                        size="22"
+                        color={active ? "#e45b00" : "#737c8a"}
+                        variant="Bulk"
+                      />
+                    )}
+                  />
 
-                  {/* Moncash */}
-                  <motion.button
-                    whileTap={{ scale: 0.985 }}
-                    onClick={() => setAccountType("moncash")}
-                    className={`flex items-center w-full justify-between cursor-pointer p-5 rounded-[16px] border-2 transition-colors duration-200 ${
-                      accountType === "moncash"
-                        ? "border-primary-500 bg-primary-50"
-                        : "border-neutral-100 hover:border-neutral-200"
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div
-                        className={`w-[46px] h-[46px] rounded-[12px] flex items-center justify-center transition-colors duration-200 ${accountType === "moncash" ? "bg-primary-100" : "bg-neutral-100"}`}
-                      >
-                        <Image src={moncashIcon} width={26} alt="MonCash" />
-                      </div>
-                      <div className="flex flex-col items-start gap-[3px]">
-                        <span className="font-semibold text-[1.5rem] leading-6 text-deep-100">
-                          {t("moncash")}
-                        </span>
-                        <span className="text-[1.2rem] leading-5 text-neutral-500">
-                          {t("moncash_hint")}
-                        </span>
-                      </div>
-                    </div>
-                    <motion.div
-                      animate={{
-                        scale: accountType === "moncash" ? 1 : 0.4,
-                        opacity: accountType === "moncash" ? 1 : 0,
-                      }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 420,
-                        damping: 22,
-                      }}
-                      className="w-[22px] h-[22px] rounded-full bg-primary-500 flex items-center justify-center shrink-0"
-                    >
-                      <TickCircle size="14" color="#fff" variant="Bold" />
-                    </motion.div>
-                  </motion.button>
+                  <MethodOption
+                    label={t("moncash")}
+                    hint={t("moncash_hint")}
+                    selected={accountType === "moncash"}
+                    onSelect={() => setAccountType("moncash")}
+                    icon={() => (
+                      <Image src={moncashIcon} width={26} alt="MonCash" />
+                    )}
+                  />
 
-                  {/* Wise. Only where the environment has credentials for it. */}
-                  {wiseAvailable && (
-                    <motion.button
-                      whileTap={{ scale: 0.985 }}
-                      onClick={() => setAccountType("wise")}
-                      className={`flex items-center w-full justify-between cursor-pointer p-5 rounded-[16px] border-2 transition-colors duration-200 ${
-                        accountType === "wise"
-                          ? "border-primary-500 bg-primary-50"
-                          : "border-neutral-100 hover:border-neutral-200"
-                      }`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className={`w-[46px] h-[46px] rounded-[12px] flex items-center justify-center transition-colors duration-200 ${accountType === "wise" ? "bg-primary-100" : "bg-neutral-100"}`}
-                        >
-                          <Image src={wiseIcon} width={26} alt="Wise" />
-                        </div>
-                        <div className="flex flex-col items-start gap-[3px]">
-                          <span className="font-semibold text-[1.5rem] leading-6 text-deep-100">
-                            {t("wise")}
-                          </span>
-                          <span className="text-[1.2rem] leading-5 text-neutral-500">
-                            {t("wise_hint")}
-                          </span>
-                        </div>
-                      </div>
-                      <motion.div
-                        animate={{
-                          scale: accountType === "wise" ? 1 : 0.4,
-                          opacity: accountType === "wise" ? 1 : 0,
-                        }}
-                        transition={{
-                          type: "spring",
-                          stiffness: 420,
-                          damping: 22,
-                        }}
-                        className="w-[22px] h-[22px] rounded-full bg-primary-500 flex items-center justify-center shrink-0"
-                      >
-                        <TickCircle size="14" color="#fff" variant="Bold" />
-                      </motion.div>
-                    </motion.button>
-                  )}
+                  <MethodOption
+                    label={t("natcash")}
+                    hint={t("natcash_hint")}
+                    selected={accountType === "natcash"}
+                    onSelect={() => setAccountType("natcash")}
+                    icon={() => (
+                      <Image src={natcashIcon} width={26} alt="Natcash" />
+                    )}
+                  />
+
+                  {/* Cash. No account behind it — Ticketwaze hands the money
+                      over in person, so the icon is notes rather than a logo. */}
+                  <MethodOption
+                    label={t("cash")}
+                    hint={t("cash_hint")}
+                    selected={accountType === "cash"}
+                    onSelect={() => setAccountType("cash")}
+                    icon={(active) => (
+                      <Money
+                        size="22"
+                        color={active ? "#e45b00" : "#737c8a"}
+                        variant="Bulk"
+                      />
+                    )}
+                  />
+
+                  {/* Wise. Selectable only where the environment has
+                      credentials AND the method is switched on; otherwise it
+                      stays listed as coming soon rather than disappearing, so
+                      an organiser who used it before knows it is returning. */}
+                  <MethodOption
+                    label={t("wise")}
+                    hint={t("wise_hint")}
+                    selected={accountType === "wise"}
+                    onSelect={() => setAccountType("wise")}
+                    badge={wiseAvailable ? undefined : t("soon")}
+                    icon={() => <Image src={wiseIcon} width={26} alt="Wise" />}
+                  />
                 </div>
               </motion.div>
             )}
@@ -885,6 +1018,8 @@ export default function InitiateWithdrawalPageWrapper({
                     </span>
                   </p>
                 </div>
+
+                <NoFeeNotice text={t("no_fee_note")} />
 
                 <div className="flex items-start gap-3 p-4 rounded-[12px] border border-amber-200 bg-amber-50 text-[1.3rem] leading-7 text-amber-800">
                   <div className="shrink-0 mt-[2px]">
@@ -1063,6 +1198,114 @@ export default function InitiateWithdrawalPageWrapper({
                       </div>
                     </motion.button>
                   </>
+                ) : accountType === "natcash" ? (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
+                        {t("natcash_details")}
+                      </h2>
+                      <p className="text-[1.4rem] leading-7 text-neutral-500">
+                        {t("natcash_details_hint")}
+                      </p>
+                    </div>
+                    <div className="border border-neutral-100 rounded-[16px] p-6 flex flex-col gap-8">
+                      <Input
+                        value={natcashAccountName}
+                        onChange={(e) => setNatcashAccountName(e.target.value)}
+                        type="text"
+                      >
+                        {t("natcash_account_name")}
+                      </Input>
+                      <div className="flex flex-col gap-2">
+                        <Input
+                          value={natcashNumber}
+                          onChange={(e) => {
+                            const val = e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 8);
+                            setNatcashNumber(val);
+                          }}
+                          type="tel"
+                          inputMode="numeric"
+                          maxLength={8}
+                        >
+                          {t("natcash_number")}
+                        </Input>
+                        <p className="flex items-center gap-[6px] text-[1.2rem] leading-5 text-neutral-400 px-1">
+                          <InfoCircle size="14" color="#9ca3af" />
+                          {t("natcash_number_hint")}
+                        </p>
+                      </div>
+                    </div>
+                    <motion.button
+                      whileTap={{ scale: 0.985 }}
+                      onClick={() => setSaveNatcashInfo((v) => !v)}
+                      className={`flex items-start gap-4 p-5 rounded-[14px] border-2 w-full text-left transition-colors duration-200 ${
+                        saveNatcashInfo
+                          ? "border-primary-500 bg-primary-50"
+                          : "border-neutral-100 hover:border-neutral-200"
+                      }`}
+                    >
+                      <AnimatedCheckbox checked={saveNatcashInfo} />
+                      <div className="flex flex-col gap-[4px]">
+                        <span className="font-semibold text-[1.4rem] leading-6 text-deep-100">
+                          {t("saveNatcashInfo")}
+                        </span>
+                        <span className="text-[1.2rem] leading-5 text-neutral-500">
+                          {t("saveNatcashInfo_hint")}
+                        </span>
+                      </div>
+                    </motion.button>
+                  </>
+                ) : accountType === "cash" ? (
+                  <>
+                    <div className="flex flex-col gap-2">
+                      <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
+                        {t("cash_details")}
+                      </h2>
+                      <p className="text-[1.4rem] leading-7 text-neutral-500">
+                        {t("cash_details_hint")}
+                      </p>
+                    </div>
+                    <div className="border border-neutral-100 rounded-[16px] p-6 flex flex-col gap-8">
+                      <Input
+                        value={cashCollectorName}
+                        onChange={(e) => setCashCollectorName(e.target.value)}
+                        type="text"
+                      >
+                        {t("cash_collector_name")}
+                      </Input>
+                      <div className="flex flex-col gap-2">
+                        <Input
+                          value={cashPhone}
+                          onChange={(e) => {
+                            const val = e.target.value
+                              .replace(/\D/g, "")
+                              .slice(0, 8);
+                            setCashPhone(val);
+                          }}
+                          type="tel"
+                          inputMode="numeric"
+                          maxLength={8}
+                        >
+                          {t("cash_phone")}
+                        </Input>
+                        <p className="flex items-center gap-[6px] text-[1.2rem] leading-5 text-neutral-400 px-1">
+                          <InfoCircle size="14" color="#9ca3af" />
+                          {t("cash_phone_hint")}
+                        </p>
+                      </div>
+                    </div>
+                    {/* Nothing is saved for a cash payout, and nothing happens
+                        automatically either — somebody has to call. Said here
+                        so the organiser is not left watching for a transfer. */}
+                    <div className="flex items-start gap-3 p-4 rounded-[12px] border border-neutral-200 bg-neutral-50 text-[1.3rem] leading-7 text-neutral-600">
+                      <div className="shrink-0 mt-[2px]">
+                        <InfoCircle size="18" color="#737c8a" />
+                      </div>
+                      <span>{t("cash_handover_note")}</span>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <div className="flex flex-col gap-2">
@@ -1123,6 +1366,13 @@ export default function InitiateWithdrawalPageWrapper({
                     </motion.button>
                   </>
                 )}
+                {/* The notice normally lives on the amount step. A method that
+                    skips that step (Wise) would otherwise never show it, so it
+                    follows the step list rather than being written twice. */}
+                {!steps.includes("amount") && (
+                  <NoFeeNotice text={t("no_fee_note")} />
+                )}
+
                 <div className="flex items-start gap-3 p-4 rounded-[12px] border border-amber-200 bg-amber-50 text-[1.3rem] leading-7 text-amber-800">
                   <div className="shrink-0 mt-[2px]">
                     <InfoCircle size="18" color="#b45309" />
@@ -1168,18 +1418,10 @@ export default function InitiateWithdrawalPageWrapper({
                   </div>
                   <div className="text-right flex flex-col gap-[2px]">
                     <span className="text-[1.3rem] font-medium text-deep-100">
-                      {accountType === "wise"
-                        ? (wiseResolvedName ?? "")
-                        : accountType === "bank"
-                          ? bankAccountName
-                          : moncashAccountName}
+                      {destination.name}
                     </span>
                     <span className="text-[1.2rem] text-neutral-400">
-                      {accountType === "wise"
-                        ? wiseRecipientValue
-                        : accountType === "bank"
-                          ? bankAccountNumber
-                          : moncashNumber}
+                      {destination.number}
                     </span>
                   </div>
                 </div>

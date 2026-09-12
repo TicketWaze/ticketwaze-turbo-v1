@@ -32,6 +32,9 @@ const MIN_REASON_LENGTH = 10;
  * here exist to explain a refusal before it happens rather than to enforce it.
  */
 export default function RefundActivityDialog({
+  open: openProp,
+  onOpenChange,
+  hideTrigger,
   activityKind,
   activityId,
   activityName,
@@ -46,8 +49,19 @@ export default function RefundActivityDialog({
   /** When set, the action is unavailable and this says why. */
   disabledReason?: string | null;
   className?: string;
+  /** See the note on EventStatusDialog — the menu renders this as a sibling. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = openProp ?? internalOpen;
+
+  /** Writes to whichever owns the state — the parent when it passed `open`. */
+  function setOpenState(next: boolean) {
+    setInternalOpen(next);
+    onOpenChange?.(next);
+  }
   const [step, setStep] = useState<"warn" | "reason">("warn");
   const [reason, setReason] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -57,7 +71,7 @@ export default function RefundActivityDialog({
   const noun = activityKind === "raffle" ? "raffle" : "event";
 
   function handleOpenChange(next: boolean) {
-    setOpen(next);
+    setOpenState(next);
     if (!next) {
       setStep("warn");
       setReason("");
@@ -103,11 +117,13 @@ export default function RefundActivityDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <ButtonRed className={cn("py-[7.5px]", className)}>
-          Refund &amp; cancel
-        </ButtonRed>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <ButtonRed className={cn("py-[7.5px]", className)}>
+            Refund &amp; cancel
+          </ButtonRed>
+        </DialogTrigger>
+      )}
       <DialogContent className="overflow-hidden">
         <AnimatePresence mode="wait" initial={false}>
           {step === "warn" ? (

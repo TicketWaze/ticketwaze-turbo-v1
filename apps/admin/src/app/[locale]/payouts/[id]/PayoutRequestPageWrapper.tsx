@@ -37,6 +37,8 @@ export default function PayoutRequestPageWrapper({
    * and a dialog that leads with the recipient name.
    */
   const isWise = request.accountType === "wise";
+  // Handed over in person, so the destination fields mean something different.
+  const isCash = request.accountType === "cash";
   // APPROVED is still open work — it is a payout somebody has yet to send.
   const isOpen = request.status === "PENDING" || request.status === "APPROVED";
 
@@ -147,8 +149,24 @@ export default function PayoutRequestPageWrapper({
                   ],
                   [t("request_details.account_type"), request.accountType],
                   [t("request_details.bank_name"), request.bankName],
-                  [t("request_details.account_name"), request.accountName],
-                  [t("request_details.account"), request.accountNumber],
+                  /*
+                   * A cash payout has no account: the two columns carry who is
+                   * collecting the money and the number to call them on. Same
+                   * data, relabelled — an admin about to hand over notes needs
+                   * to read "Collector name", not "Account name".
+                   */
+                  [
+                    isCash
+                      ? t("request_details.cash_collector_name")
+                      : t("request_details.account_name"),
+                    request.accountName,
+                  ],
+                  [
+                    isCash
+                      ? t("request_details.cash_phone")
+                      : t("request_details.account"),
+                    request.accountNumber,
+                  ],
                   [t("request_details.currency"), request.currency],
                   [
                     t("request_details.amount"),

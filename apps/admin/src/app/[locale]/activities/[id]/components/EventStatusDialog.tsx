@@ -69,11 +69,31 @@ export function StatusBadge({ status }: { status: AdminStatus }) {
 export function EventStatusDialog({
   event,
   className,
+  open: openProp,
+  onOpenChange,
+  hideTrigger,
 }: {
   event: Event;
   className?: string;
+  /**
+   * Drives the dialog from outside. Needed because the actions menu renders
+   * this as a SIBLING of the popover rather than inside it: a Radix dialog
+   * mounted within a popover unmounts the moment the popover closes, which is
+   * the same click that was supposed to open it.
+   */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Suppresses the built-in button when the menu supplies the trigger. */
+  hideTrigger?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = openProp ?? internalOpen;
+
+  /** Writes to whichever owns the state — the parent when it passed `open`. */
+  function setOpenState(next: boolean) {
+    setInternalOpen(next);
+    onOpenChange?.(next);
+  }
   const [selected, setSelected] = useState<AdminStatus>(event.adminStatus);
   const [step, setStep] = useState<"select" | "reason">("select");
   const [rejectionReason, setRejectionReason] = useState("");
@@ -82,7 +102,7 @@ export function EventStatusDialog({
   const locale = useLocale();
 
   function handleOpenChange(next: boolean) {
-    setOpen(next);
+    setOpenState(next);
     if (!next) {
       setSelected(event.adminStatus);
       setRejectionReason("");
@@ -104,7 +124,7 @@ export function EventStatusDialog({
 
   async function handleConfirm() {
     if (selected === event.adminStatus && step === "select") {
-      setOpen(false);
+      setOpenState(false);
       return;
     }
     setIsLoading(true);
@@ -117,7 +137,7 @@ export function EventStatusDialog({
     );
     if (result.status === "success") {
       toast.success("Event status updated successfully");
-      setOpen(false);
+      setOpenState(false);
     } else {
       toast.error(result.error ?? "Failed to update status");
     }
@@ -159,17 +179,19 @@ export function EventStatusDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <ButtonNeutral
-          className={cn(`py-[7.5px] flex items-center gap-3`, className)}
-        >
-          <span
-            className="w-[0.8rem] h-[0.8rem] rounded-full shrink-0"
-            style={{ backgroundColor: currentConfig.color }}
-          />
-          Change Status
-        </ButtonNeutral>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <ButtonNeutral
+            className={cn(`py-[7.5px] flex items-center gap-3`, className)}
+          >
+            <span
+              className="w-[0.8rem] h-[0.8rem] rounded-full shrink-0"
+              style={{ backgroundColor: currentConfig.color }}
+            />
+            Change Status
+          </ButtonNeutral>
+        </DialogTrigger>
+      )}
       <DialogContent className="overflow-hidden">
         <AnimatePresence mode="wait" initial={false}>
           {step === "select" ? (

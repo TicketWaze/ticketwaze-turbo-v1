@@ -18,6 +18,16 @@ export default function HTicket({
   const t = useTranslations("Event");
   const locale = useLocale();
   const isFree = ticket.ticketPrice === 0 || ticket.ticketUsdPrice === 0;
+  /**
+   * A giveaway is priced at 0 too, so it must be checked BEFORE `isFree` —
+   * otherwise the holder is told their ticket was free when Ticketwaze bought
+   * it for them.
+   */
+  const priceLabel = ticket.isGiveaway
+    ? t("giveaway")
+    : isFree
+      ? t("free")
+      : null;
   return (
     <div className="flex flex-col gap-8 h-200 bg-linear-to-b from-neutral-50/10 to-neutral-100/50  lg:h-[68.1rem] relative shadow-[0_15px_25px_0_rgba(0,0,0,0.05)]">
       <Image src={ticketBG} alt={"ticket bg"} className="h-full w-full" />
@@ -52,8 +62,8 @@ export default function HTicket({
             <span className="text-neutral-600">
               1x {Capitalize(ticket.ticketType)}
             </span>
-            {isFree ? (
-              <span className="text-deep-100 font-medium">{t("free")}</span>
+            {priceLabel ? (
+              <span className="text-deep-100 font-medium">{priceLabel}</span>
             ) : (
               `${event.currency === "USD" ? ticket.ticketUsdPrice : ticket.ticketPrice} ${event.currency}`
             )}
@@ -127,13 +137,13 @@ export default function HTicket({
           >
             {Capitalize(ticket.ticketType)}
           </span>
-          {isFree ? (
+          {priceLabel ? (
             <span
               className={
                 "font-primary text-center font-medium text-[28px] leading-[3.2rem] text-[#000]"
               }
             >
-              {t("free")}
+              {priceLabel}
             </span>
           ) : null}
         </div>

@@ -11,6 +11,7 @@ import { ArrowLeft, DocumentDownload, Warning2 } from "iconsax-reactjs";
 import { SaleStatusBadge, SaleStatusDialog } from "./SaleStatusDialog";
 import { InspectSaleFileAction } from "@/actions/Sale";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import EditActivityLink from "@/components/shared/EditActivityLink";
 
 function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
@@ -158,6 +159,7 @@ export default function SaleReviewComponent({
           </h3>
           <SaleStatusBadge status={sale.status} />
         </div>
+        <EditActivityLink href={`/activities/sale/${sale.saleId}/edit`} />
         <SaleStatusDialog sale={sale} hasFile={Boolean(currentFile)} />
       </div>
 

@@ -1,13 +1,18 @@
 "use client";
+import { useState } from "react";
 import BackButton from "@/components/shared/BackButton";
 import { ButtonBlack } from "@/components/shared/buttons";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
+import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar2, Location, Clock } from "iconsax-reactjs";
+import { Calendar2, Location, Clock, Edit2, Gift, Trash, Status } from "iconsax-reactjs";
 import Separator from "@/components/shared/Separator";
 import { useLocale, useTranslations } from "next-intl";
+import ActivityActionsMenu from "@/components/shared/ActivityActionsMenu";
+import useAdminCan from "@/lib/useAdminCan";
+import Image from "next/image";
 import Link from "next/link";
 import { ActivityAttendances } from "./ActivityAttendances";
 import { Event } from "@ticketwaze/typescript-config";
@@ -122,6 +127,55 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         ? "Event passed"
         : `${daysLeft} days to go`;
 
+  const canManage = useAdminCan("activity.manage");
+
+  /**
+   * Which action dialog is open. Held here rather than inside each dialog
+   * because the menu that opens them is a popover, and a dialog mounted inside
+   * a popover is unmounted by the same click that opens it.
+   */
+  const [openDialog, setOpenDialog] = useState<
+    null | "status" | "giveaway" | "refund"
+  >(null);
+
+  const editBlockedReason = event.cancelledAt
+    ? "This activity has been cancelled and can no longer be edited."
+    : event.deletionStatus
+      ? "This activity is scheduled for deletion."
+      : null;
+
+  const refundBlockedReason = eventRefundBlockedReason(event, eventStart);
+
+  const actions = [
+    canManage && {
+      key: "edit",
+      label: t("activity.edit"),
+      href: `/activities/${event.eventId}/edit`,
+      icon: <Edit2 size="20" variant="Bulk" color="#2E3237" />,
+      disabledReason: editBlockedReason,
+    },
+    {
+      key: "status",
+      label: t("activity.actions.status"),
+      onSelect: () => setOpenDialog("status"),
+      icon: <Status size="20" variant="Bulk" color="#2E3237" />,
+    },
+    {
+      key: "giveaway",
+      label: t("activity.actions.giveaway"),
+      onSelect: () => setOpenDialog("giveaway"),
+      icon: <Gift size="20" variant="Bulk" color="#2E3237" />,
+    },
+    {
+      key: "refund",
+      label: t("activity.actions.refund"),
+      onSelect: () => setOpenDialog("refund"),
+      icon: <Trash size="20" variant="Bulk" color="#DE0028" />,
+      danger: true,
+      disabledReason: refundBlockedReason,
+    },
+  ];
+
   return (
     <div className="flex flex-col gap-8 h-full overflow-hidden">
       <BackButton text={t("activity.back")}></BackButton>
@@ -129,29 +183,12 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem]">
           {event.eventName}
         </h2>
-        <div className="hidden lg:flex flex-wrap items-center gap-4">
-          <EventStatusDialog event={event} />
-          <RefundActivityDialog
-            activityKind="event"
-            activityId={event.eventId}
-            activityName={event.eventName}
-            ticketsSold={soldTickets.length}
-            disabledReason={eventRefundBlockedReason(event, eventStart)}
-          />
-        </div>
+        {/* One menu at every width — the four pills used to wrap onto a
+            second line below a wide desktop. */}
+        <ActivityActionsMenu actions={actions} label={t("activity.actions.title")} />
       </div>
       <main className="w-full gap-16 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden flex flex-col lg:grid lg:grid-cols-[15fr_21fr]">
         <div className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
-          <div className="lg:hidden flex flex-col gap-4">
-            <EventStatusDialog event={event} />
-            <RefundActivityDialog
-              activityKind="event"
-              activityId={event.eventId}
-              activityName={event.eventName}
-              ticketsSold={soldTickets.length}
-              disabledReason={eventRefundBlockedReason(event, eventStart)}
-            />
-          </div>
           <EventImageLightbox
             src={event.eventImageUrl}
             width={400}
@@ -180,11 +217,24 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
                   href={`/organisations/${event.organisationId}`}
                   className="flex items-center gap-4"
                 >
-                  <div className="flex rounded-full w-14 h-14 bg-black justify-center items-center">
-                    <p className="font-medium text-white leading-12 text-[2.2rem] font-primary">
-                      {orgInitial}
-                    </p>
-                  </div>
+                  {/* The initial is the FALLBACK, not the default — the raffle,
+                      venue and product pages have shown the real logo all
+                      along, and this was the one activity page that did not. */}
+                  {event.organisation.profileImageUrl ? (
+                    <Image
+                      src={event.organisation.profileImageUrl}
+                      width={56}
+                      height={56}
+                      alt={event.organisation.organisationName}
+                      className="rounded-full w-14 h-14 object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="flex shrink-0 rounded-full w-14 h-14 bg-black justify-center items-center">
+                      <p className="font-medium text-white leading-12 text-[2.2rem] font-primary">
+                        {orgInitial}
+                      </p>
+                    </div>
+                  )}
                   <div className="flex flex-col">
                     <span className="font-normal text-[1.4rem] leading-8 text-deep-200">
                       {event.organisation.organisationName}
@@ -313,6 +363,33 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         </div>
         <div className="lg:hidden"></div>
       </main>
+
+      {/*
+        Siblings of the menu, never children of it. `hideTrigger` drops each
+        dialog's own button — the menu row is the trigger now.
+      */}
+      <EventStatusDialog
+        event={event}
+        hideTrigger
+        open={openDialog === "status"}
+        onOpenChange={(next) => setOpenDialog(next ? "status" : null)}
+      />
+      <GiveawayTicketsDialog
+        event={event}
+        hideTrigger
+        open={openDialog === "giveaway"}
+        onOpenChange={(next) => setOpenDialog(next ? "giveaway" : null)}
+      />
+      <RefundActivityDialog
+        activityKind="event"
+        activityId={event.eventId}
+        activityName={event.eventName}
+        ticketsSold={soldTickets.length}
+        disabledReason={refundBlockedReason}
+        hideTrigger
+        open={openDialog === "refund"}
+        onOpenChange={(next) => setOpenDialog(next ? "refund" : null)}
+      />
     </div>
   );
 }

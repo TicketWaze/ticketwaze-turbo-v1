@@ -345,3 +345,104 @@ export async function RefundActivityAction(
     };
   }
 }
+
+/** One account an admin can hand a ticket to. */
+export interface GiveawayRecipient {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  /** They already hold a ticket for this event. Shown, never used to exclude. */
+  holdsTicket: boolean;
+}
+
+/**
+ * Accounts matching a name or email, for the giveaway picker.
+ *
+ * Returns a bare list rather than the usual `{status}` envelope: it is called on
+ * every keystroke (debounced) and a failed lookup should leave the list empty
+ * rather than raise a toast at someone who is still typing.
+ */
+export async function SearchGiveawayRecipientsAction(
+  eventId: string,
+  query: string,
+  accessToken: string,
+  locale: string,
+): Promise<GiveawayRecipient[]> {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/event/${eventId}/giveaway/recipients?q=${encodeURIComponent(
+        query,
+      )}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        cache: "no-store",
+      },
+    );
+    const data = await request.json();
+    return data.status === "success" ? (data.users as GiveawayRecipient[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Give free tickets of one tier to a set of accounts.
+ *
+ * Ticketwaze pays for these: the organisation is credited the tier's face value
+ * in both currencies. The API is the sole judge of whether it is allowed —
+ * inventory, event state and each recipient's eligibility are all decided there
+ * — and a refusal comes back as a 422 with a message worth showing, so it is
+ * surfaced rather than replaced with a generic failure.
+ */
+export async function GiveawayTicketsAction(
+  eventId: string,
+  ticketTypeId: string,
+  userIds: string[],
+  note: string,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/event/${eventId}/giveaway`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({
+          ticketTypeId,
+          userIds,
+          ...(note.trim() ? { note: note.trim() } : {}),
+        }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath(`/activities/${eventId}`);
+      return {
+        status: "success" as const,
+        ticketsIssued: data.ticketsIssued as number,
+        ticketTypeName: data.ticketTypeName as string,
+        creditedHtg: data.creditedHtg as number,
+        creditedUsd: data.creditedUsd as number,
+      };
+    }
+    throw new Error(data.message);
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
