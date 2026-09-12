@@ -385,6 +385,13 @@
             "check-in": "Check-in"
           }
         }
+      },
+      "edit": "Edit",
+      "actions": {
+        "title": "Actions",
+        "status": "Change status",
+        "giveaway": "Give away tickets",
+        "refund": "Refund & cancel"
       }
     },
     "Ticket": {
@@ -447,6 +454,269 @@
       "events_heading": "Events",
       "raffles_heading": "Raffles",
       "reason_label": "Reason"
+    },
+    "edit": {
+      "back": "Back to activity",
+      "title": "Edit activity",
+      "subtitle": "You are editing {name}.",
+      "saved": "Activity updated.",
+      "saved_with_refund_window": "Activity updated. Ticket holders have been notified and can request a refund.",
+      "calendar_sync_failed": "Saved, but the online meeting could not be resynced. Check the calendar entry.",
+      "superseded": "{count} pending organiser edit(s) were retired — they were written against the old version.",
+      "tickets_frozen": "Tickets have already sold, so the currency ({currency}) and the free/paid mix are locked. Capacity cannot go below what is already sold.",
+      "notice": {
+        "title": "This goes live immediately",
+        "no_sales": "Nothing has sold yet, so no buyer is affected. The organiser will still be emailed about the change.",
+        "with_sales": "{count} ticket(s) have been sold. Changing the name, date, venue or poster emails every buyer and opens a refund window they can act on."
+      },
+      "sections": {
+        "details": "Details",
+        "venue": "Venue and map",
+        "schedule": "Schedule",
+        "tickets": "Tickets ({currency})"
+      },
+      "fields": {
+        "name": "Activity name",
+        "description": "Description",
+        "description_hint": "{count} characters. Between 150 and 3000.",
+        "tags": "Tags",
+        "tags_placeholder": "concert, live music, outdoor",
+        "image": "Poster",
+        "image_keep": "Leave empty to keep the current poster.",
+        "image_new": "The current poster will be replaced when you save.",
+        "is_private": "Private — hidden from Explore, reachable by direct link only",
+        "absorb_fees": "Organiser absorbs the fees (the price is what the buyer pays)",
+        "address": "Address",
+        "city": "City",
+        "state": "State / department",
+        "country": "Country",
+        "map": "Map pin",
+        "day": "Day {number}",
+        "date": "Date",
+        "start_time": "Start",
+        "end_time": "End",
+        "timezone": "Timezone",
+        "tier_sold": "{sold} sold — cannot be removed",
+        "tier_unsold": "Nothing sold yet",
+        "tier_name": "Ticket name",
+        "tier_price": "Price ({currency})",
+        "tier_description": "Ticket description",
+        "tier_description_hint": "{count} characters. Between 20 and 150.",
+        "tier_quantity": "Capacity",
+        "sales_end": "Stop selling at",
+        "sales_end_hint": "Optional. Leave empty to keep selling until the activity ends.",
+        "is_refundable": "Refundable — buyers may request a refund on these tickets",
+        "description_placeholder": "Describe the activity — what it is, who it is for, what to expect."
+      },
+      "changes": {
+        "name": "the activity name",
+        "description": "the description",
+        "image": "the poster",
+        "venue": "the venue",
+        "date": "the date or start time"
+      },
+      "actions": {
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "add_day": "+ Add a day",
+        "add_tier": "+ Add a ticket",
+        "remove": "Remove"
+      },
+      "confirm": {
+        "title": "Apply these changes?",
+        "body": "This rewrites {name} straight away. There is no review step behind an admin edit.",
+        "changing": "You are changing:",
+        "buyers": "{count} ticket holder(s) will be emailed and given a window to request a refund.",
+        "cta": "Apply changes"
+      },
+      "location": {
+        "none": "No map pin set",
+        "pick": "Pick on map",
+        "update": "Move pin",
+        "hide": "Hide map",
+        "clear": "Clear pin",
+        "hint": "Click anywhere on the map to drop a pin",
+        "no_api_key": "The map cannot load because no Google Maps key is configured for this environment."
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again.",
+        "name": "The activity name must be at least 3 characters.",
+        "description": "The description needs at least 150 characters (it has {count}).",
+        "address": "An in-person activity needs an address.",
+        "days": "An activity needs at least one day.",
+        "day_incomplete": "Every day needs a date, a start time and an end time.",
+        "tiers": "An activity needs at least one ticket type.",
+        "tier_name": "Every ticket type needs a name.",
+        "tier_description": "The description for \"{name}\" needs at least 20 characters.",
+        "tier_quantity": "The capacity for \"{name}\" must be a positive number.",
+        "tier_below_sold": "The capacity for \"{name}\" cannot be below the {sold} already sold."
+      },
+      "raffle": {
+        "title": "Edit raffle",
+        "frozen": "Entries have already sold, so the price, currency ({currency}) and supply are locked.",
+        "prizes_hint": "The order here is the prize rank — prize 1 is what entrants are playing for first. Moving one counts as a change.",
+        "notice": {
+          "no_sales": "No entries sold yet, so nobody is affected. The organiser will still be emailed about the change.",
+          "with_sales": "{count} entr(y/ies) sold. Entrants are emailed when the name, draw date or prizes change — but a raffle has no entry refund, so they cannot opt out."
+        },
+        "sections": {
+          "entries": "Entries",
+          "schedule": "Sales and draw",
+          "prizes": "Prizes"
+        },
+        "fields": {
+          "title": "Raffle title",
+          "cover": "Cover image",
+          "price": "Entry price ({currency})",
+          "currency": "Currency",
+          "absorb_fees": "Organiser absorbs the fees",
+          "unlimited": "Unlimited entries",
+          "total_tickets": "Total entries",
+          "sales_start": "Sales open",
+          "sales_end": "Sales close",
+          "draw_at": "Draw date",
+          "timezone_hint": "Leave empty to keep the raffle’s current zone.",
+          "draw_mode": "Draw mode",
+          "draw_automatic": "Automatic",
+          "draw_manual": "Manual",
+          "prize": "Prize {number}",
+          "prize_title": "Prize name",
+          "prize_description": "Prize description",
+          "prize_image": "Prize picture",
+          "prize_image_keep": "Leave empty to keep the current picture.",
+          "prize_image_required": "This prize needs a picture."
+        },
+        "changes": {
+          "draw_date": "the draw date"
+        },
+        "actions": {
+          "add_prize": "+ Add a prize"
+        },
+        "confirm": {
+          "entrants": "{count} entrant(s) will be emailed. Raffles have no entry refund, so this tells them — it does not give them a way out."
+        },
+        "errors": {
+          "title": "The raffle title must be at least 10 characters.",
+          "dates": "Sales open, sales close and the draw date are all required.",
+          "sales_after_draw": "Sales must close on or before the draw date.",
+          "prizes": "A raffle needs at least one prize.",
+          "total_tickets": "Total entries must be a positive number.",
+          "total_below_prizes": "Total entries cannot be fewer than the number of prizes.",
+          "prize_title": "Prize {number} needs a name.",
+          "prize_image": "Prize {number} needs a picture."
+        }
+      },
+      "venue": {
+        "title": "Edit venue",
+        "notice": {
+          "body": "Changes are live immediately. The public URL never changes — printed QR codes and table tents encode it — so renaming the venue is safe."
+        },
+        "sections": {
+          "contact": "Contact",
+          "services": "Services",
+          "reservations": "Reservation policy",
+          "hours": "Opening hours",
+          "extras": "Amenities and details"
+        },
+        "establishment": {
+          "restaurant": "Restaurant",
+          "bar": "Bar",
+          "cafe": "Café",
+          "lounge": "Lounge",
+          "club": "Club",
+          "bakery": "Bakery",
+          "food_truck": "Food truck"
+        },
+        "days": {
+          "sunday": "Sunday",
+          "monday": "Monday",
+          "tuesday": "Tuesday",
+          "wednesday": "Wednesday",
+          "thursday": "Thursday",
+          "friday": "Friday",
+          "saturday": "Saturday"
+        },
+        "fields": {
+          "name": "Venue name",
+          "name_hint": "Renaming does not move the public URL.",
+          "establishment_type": "Type",
+          "price_range": "Price range",
+          "cuisine_types": "Cuisines",
+          "cuisine_placeholder": "creole, seafood, grill",
+          "cover": "Cover image",
+          "gallery": "Gallery",
+          "gallery_keep": "Leave empty to keep the current gallery.",
+          "gallery_replace": "{count} file(s) selected — this replaces the whole gallery. Between 3 and 5.",
+          "location_notes": "Directions",
+          "location_notes_hint": "Anything a map pin cannot say — floor, landmark, gate.",
+          "phone": "Phone",
+          "whatsapp": "WhatsApp",
+          "email": "Email",
+          "website": "Website",
+          "accepts_reservations": "Accepts reservations",
+          "accepts_online_payment": "Accepts online payment",
+          "offers_delivery": "Offers delivery",
+          "offers_takeout": "Offers takeout",
+          "serves_alcohol": "Serves alcohol",
+          "absorb_fees": "Venue absorbs the fees",
+          "delivery_phone": "Delivery phone",
+          "delivery_fee": "Delivery fee",
+          "minimum_order": "Minimum order",
+          "delivery_minutes": "Estimated delivery (minutes)",
+          "delivery_zones": "Delivery zones",
+          "reservation_fee": "Reservation fee",
+          "reservation_fee_currency": "Fee currency",
+          "min_party": "Minimum party size",
+          "max_party": "Maximum party size",
+          "slot_interval": "Slot interval (minutes)",
+          "default_duration": "Default duration (minutes)",
+          "lead_time": "Lead time (minutes)",
+          "max_advance_days": "Bookable up to (days ahead)",
+          "max_covers": "Max covers per slot",
+          "hold_minutes": "Hold time (minutes)",
+          "always_open": "Open 24/7",
+          "opens_at": "Opens",
+          "closes_at": "Closes",
+          "amenities": "Amenities",
+          "dietary_options": "Dietary options",
+          "languages": "Languages spoken",
+          "payment_methods": "In-person payment methods",
+          "dress_code": "Dress code",
+          "seating_capacity": "Seating capacity"
+        },
+        "confirm": {
+          "gallery": "The {count} selected image(s) will replace the entire gallery. The current images are deleted."
+        },
+        "errors": {
+          "name": "The venue name must be at least 2 characters.",
+          "party_size": "Minimum party size cannot exceed the maximum.",
+          "reservation_fee": "Set a reservation fee before accepting reservations.",
+          "hours": "Set both an opening and a closing time for {day}.",
+          "gallery": "A replacement gallery needs between 3 and 5 images."
+        }
+      },
+      "sale": {
+        "title": "Edit product",
+        "frozen": "{count} cop(y/ies) sold, so the currency ({currency}) is locked and the public URL no longer follows the title.",
+        "notice": {
+          "file": "The downloadable file cannot be changed here. Replacing it re-opens review, and that path is deliberately separate."
+        },
+        "sections": {
+          "pricing": "Pricing"
+        },
+        "fields": {
+          "title": "Product title",
+          "title_slug_frozen": "The public URL stays as it is — a buyer’s receipt links to it.",
+          "cover": "Cover image",
+          "price": "Price ({currency})",
+          "currency": "Currency",
+          "absorb_fees": "Seller absorbs the fees"
+        },
+        "errors": {
+          "title": "The product title must be at least 10 characters.",
+          "price": "The price must be a positive number."
+        }
+      }
     }
   },
   "Payouts": {
@@ -1018,14 +1288,16 @@
     "tabs": {
       "all": "All",
       "pending": "Not invited",
-      "invited": "Invited"
+      "invited": "Invited",
+      "no_account": "No account"
     },
     "stats": {
       "total": "Total Users",
       "pending": "Pending",
       "attendee": "Attendees",
       "business": "Businesses",
-      "both": "Both"
+      "both": "Both",
+      "no_account": "No Account"
     },
     "filters": {
       "all": "All types",
@@ -1043,12 +1315,15 @@
         "email": "Email",
         "entity": "Type",
         "joined": "Date Joined",
-        "status": "Status"
+        "status": "Status",
+        "account": "Account"
       }
     },
     "status": {
       "pending": "Pending",
-      "invited": "Invited"
+      "invited": "Invited",
+      "has_account": "Signed up",
+      "no_account": "No account"
     },
     "invite": {
       "all": "Invite All",
@@ -1068,9 +1343,28 @@
       "invite": "Invite",
       "already_invited": "Already Invited",
       "invited_at": "Invited On",
-      "close": "Close"
+      "close": "Close",
+      "account": "Account",
+      "has_account": "Signed up",
+      "no_account": "Not signed up",
+      "reminded_at": "Last reminder",
+      "reminder_count": "Reminders sent",
+      "remind": "Send reminder",
+      "remind_again": "Send another reminder",
+      "cannot_remind": "Already signed up"
     },
-    "no_results": "No entries match your search."
+    "no_results": "No entries match your search.",
+    "remind": {
+      "selected": "Send Reminder ({count})",
+      "success": "Reminder sent successfully.",
+      "partial": "Reminder sent to {sent}. {skipped} skipped — already signed up or unsubscribed.",
+      "error": "Failed to send the reminder. Please try again.",
+      "confirm_title": "Send the reminder?",
+      "confirm_body": "This emails {count} waitlist members who never created an account, telling them what their 200 Ticketwaze tokens and fee-free first purchase are worth. Anyone who has since signed up or unsubscribed is skipped automatically.",
+      "confirm_cta": "Send it",
+      "cancel": "Cancel"
+    },
+    "no_account_empty": "Everyone on the waitlist has created an account."
   },
   "Analytics": {
     "title": "Platform Overview",

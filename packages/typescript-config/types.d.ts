@@ -150,6 +150,16 @@ export interface Ticket {
   organisationAmount?: number | null;
   organisationUsdAmount?: number | null;
   organisationId: string;
+  /**
+   * An admin gave this ticket to the holder and Ticketwaze paid for it.
+   *
+   * Computed by the API from the price/credit split — the holder paid nothing
+   * while the organisation was still credited the face value. Anywhere that
+   * would otherwise print "Free" must check this FIRST: a giveaway is priced at
+   * zero too, and telling the holder their ticket was free is both wrong and
+   * the opposite of the point.
+   */
+  isGiveaway?: boolean;
   isRefundable: boolean;
   status: "PENDING" | "CHECKED" | "RETURNED";
   /**

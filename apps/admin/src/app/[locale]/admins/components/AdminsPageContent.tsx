@@ -55,21 +55,56 @@ const ROLE_OPTIONS = [
   { value: 4, label: "Admin" },
 ];
 
-const PERMISSION_GROUPS = [
-  { resource: "analytics", label: "Analytics" },
-  { resource: "support_chat", label: "Live Chat" },
-  { resource: "contact_message", label: "Contact Messages" },
-  { resource: "waitlist", label: "Waitlist" },
-  { resource: "attendees", label: "Attendees" },
-  { resource: "organisations", label: "Organisations" },
-  { resource: "admins", label: "Administrators" },
-  { resource: "activity", label: "Activities" },
-  { resource: "tickets", label: "Tickets" },
-  { resource: "payouts", label: "Payouts" },
-  { resource: "payments", label: "Payments" },
+const ACTIONS = ["view", "create", "edit", "delete"];
+
+/**
+ * The grid in the permissions modal, one row per resource.
+ *
+ * `actions` is per-group rather than the shared ACTIONS list because the
+ * permission set is not a clean CRUD matrix and never was: `payouts.send`,
+ * `campaigns.send` and now `activity.manage` and `tickets.giveaway` are powers
+ * in their own right, and campaigns has no `edit` at all. While this was
+ * hardcoded to the four CRUD verbs those keys existed in the API and could be
+ * granted over the wire, but no admin could see or tick them here.
+ */
+const PERMISSION_GROUPS: {
+  resource: string;
+  label: string;
+  actions: string[];
+}[] = [
+  { resource: "analytics", label: "Analytics", actions: ACTIONS },
+  { resource: "support_chat", label: "Live Chat", actions: ACTIONS },
+  { resource: "contact_message", label: "Contact Messages", actions: ACTIONS },
+  { resource: "waitlist", label: "Waitlist", actions: ACTIONS },
+  { resource: "attendees", label: "Attendees", actions: ACTIONS },
+  { resource: "organisations", label: "Organisations", actions: ACTIONS },
+  { resource: "admins", label: "Administrators", actions: ACTIONS },
+  {
+    resource: "activity",
+    label: "Activities",
+    actions: [...ACTIONS, "manage"],
+  },
+  { resource: "tickets", label: "Tickets", actions: [...ACTIONS, "giveaway"] },
+  { resource: "payouts", label: "Payouts", actions: [...ACTIONS, "send"] },
+  { resource: "payments", label: "Payments", actions: ACTIONS },
+  {
+    resource: "campaigns",
+    label: "Email Campaigns",
+    actions: ["view", "create", "delete", "send"],
+  },
 ];
 
-const ACTIONS = ["view", "create", "edit", "delete"];
+/**
+ * Actions that spend money or reach every account, and cannot be undone once
+ * pressed. Called out in the grid so granting one is a decision rather than a
+ * tick alongside four harmless ones — these are the keys deliberately held out
+ * of the Admin role bundle on the API side.
+ */
+const IRREVERSIBLE_ACTIONS = new Set([
+  "payouts.send",
+  "campaigns.send",
+  "tickets.giveaway",
+]);
 
 function roleBadgeClass(role: number): string {
   switch (role) {
@@ -154,7 +189,8 @@ export default function AdminsPageContent({
   }
 
   function toggleGroup(resource: string) {
-    const groupKeys = ACTIONS.map((a) => `${resource}.${a}`);
+    const group = PERMISSION_GROUPS.find((g) => g.resource === resource);
+    const groupKeys = (group?.actions ?? ACTIONS).map((a) => `${resource}.${a}`);
     const allChecked = groupKeys.every((k) => draftPermissions.includes(k));
     if (allChecked) {
       setDraftPermissions((prev) => prev.filter((p) => !groupKeys.includes(p)));
@@ -468,8 +504,8 @@ export default function AdminsPageContent({
           </p>
 
           <div className="flex flex-col gap-6">
-            {PERMISSION_GROUPS.map(({ resource, label }) => {
-              const groupKeys = ACTIONS.map((a) => `${resource}.${a}`);
+            {PERMISSION_GROUPS.map(({ resource, label, actions }) => {
+              const groupKeys = actions.map((a) => `${resource}.${a}`);
               const allChecked = groupKeys.every((k) => draftPermissions.includes(k));
               const someChecked = groupKeys.some((k) => draftPermissions.includes(k));
 
@@ -488,8 +524,9 @@ export default function AdminsPageContent({
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-1 pl-9">
-                    {ACTIONS.map((action) => {
+                    {actions.map((action) => {
                       const key = `${resource}.${action}`;
+                      const isIrreversible = IRREVERSIBLE_ACTIONS.has(key);
                       return (
                         <label
                           key={key}
@@ -501,7 +538,15 @@ export default function AdminsPageContent({
                             onChange={() => togglePermission(key)}
                             className="w-[1.4rem] h-[1.4rem] accent-primary-500 cursor-pointer"
                           />
-                          <span className="text-[1.3rem] text-neutral-600 capitalize">{action}</span>
+                          <span
+                            className={`text-[1.3rem] capitalize ${
+                              isIrreversible
+                                ? "text-orange-600 font-medium"
+                                : "text-neutral-600"
+                            }`}
+                          >
+                            {action}
+                          </span>
                         </label>
                       );
                     })}

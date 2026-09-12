@@ -687,6 +687,12 @@ export default function ActivitiesPageContent({
                           "text-[1.5rem] font-medium hidden lg:table-cell leading-8 text-neutral-900"
                         }
                       >
+                        {/* A plain length, and it has to stay one: the API
+                            scopes this preload to settled sales. Counting rows
+                            here without that scope is what reported sales
+                            against activities that had sold nothing — a
+                            redirect checkout writes the rows before the buyer
+                            pays. See utils/sold_tickets on the API. */}
                         <span className={"cursor-pointer py-6"}>
                           {event.tickets?.length ?? 0}
                         </span>

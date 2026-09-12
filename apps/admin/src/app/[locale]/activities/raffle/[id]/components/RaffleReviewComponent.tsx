@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Award } from "iconsax-reactjs";
 import { RaffleStatusDialog, StatusBadge } from "./RaffleStatusDialog";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
+import EditActivityLink from "@/components/shared/EditActivityLink";
 
 /**
  * Why the refund action is unavailable, or null when it is offered. Mirrors the
@@ -61,6 +62,14 @@ export default function RaffleReviewComponent({
           <StatusBadge status={raffle.adminStatus} />
         </div>
         <div className="flex flex-wrap items-center gap-4">
+          <EditActivityLink
+            href={`/activities/raffle/${raffle.raffleId}/edit`}
+            disabledReason={
+              raffle.drawnAt
+                ? "This raffle has already been drawn and can no longer be edited."
+                : null
+            }
+          />
           <RaffleStatusDialog raffle={raffle} />
           <RefundActivityDialog
             activityKind="raffle"

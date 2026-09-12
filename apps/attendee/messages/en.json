@@ -963,7 +963,8 @@
       "download": "Download document",
       "lockedHint": "Available from {date}, when the event starts.",
       "failed": "The document could not be downloaded. Please try again."
-    }
+    },
+    "giveaway": "Paid by Ticketwaze"
   },
   "Checkout": {
     "back": "Back",

@@ -76,11 +76,25 @@ function giveawayBlockedReason(event: Event): string | null {
 export default function GiveawayTicketsDialog({
   event,
   className,
+  open: openProp,
+  onOpenChange,
+  hideTrigger,
 }: {
   event: Event;
   className?: string;
+  /** See the note on EventStatusDialog — the menu renders this as a sibling. */
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = openProp ?? internalOpen;
+
+  /** Writes to whichever owns the state — the parent when it passed `open`. */
+  function setOpenState(next: boolean) {
+    setInternalOpen(next);
+    onOpenChange?.(next);
+  }
   const [query, setQuery] = useState("");
   /**
    * The last search that came back, tagged with the term it answers.
@@ -153,7 +167,7 @@ export default function GiveawayTicketsDialog({
   );
 
   function handleOpenChange(next: boolean) {
-    setOpen(next);
+    setOpenState(next);
     if (!next) {
       setQuery("");
       setLoaded({ term: "", users: [] });
@@ -218,12 +232,14 @@ export default function GiveawayTicketsDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <ButtonBlack className={cn("py-[7.5px] gap-3", className)}>
-          <Gift size="18" color="#ffffff" variant="Bulk" />
-          Giveaway
-        </ButtonBlack>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <ButtonBlack className={cn("py-[7.5px] gap-3", className)}>
+            <Gift size="18" color="#ffffff" variant="Bulk" />
+            Giveaway
+          </ButtonBlack>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">

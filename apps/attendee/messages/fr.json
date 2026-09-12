@@ -1007,7 +1007,8 @@
       "download": "Télécharger le document",
       "lockedHint": "Disponible à partir du {date}, au début de l’activité.",
       "failed": "Le document n’a pas pu être téléchargé. Veuillez réessayer."
-    }
+    },
+    "giveaway": "Offert par Ticketwaze"
   },
   "Checkout": {
     "back": "Retour",

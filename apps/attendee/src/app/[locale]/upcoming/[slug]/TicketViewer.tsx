@@ -32,6 +32,16 @@ export default function TicketViewer({
   const isFree =
     tickets[currentIndex].ticketPrice === 0 ||
     tickets[currentIndex].ticketUsdPrice === 0;
+  /**
+   * A giveaway is priced at 0 too, so it must be checked BEFORE `isFree` —
+   * otherwise the holder is told their ticket was free when Ticketwaze bought
+   * it for them.
+   */
+  const priceLabel = tickets[currentIndex].isGiveaway
+    ? t("giveaway")
+    : isFree
+      ? t("free")
+      : null;
 
   const mockTickets = tickets;
 
@@ -188,8 +198,8 @@ export default function TicketViewer({
               <span className="text-neutral-600">
                 1x {Capitalize(tickets[currentIndex].ticketType)}
               </span>
-              {isFree ? (
-                <span className="text-deep-100 font-medium">{t("free")}</span>
+              {priceLabel ? (
+                <span className="text-deep-100 font-medium">{priceLabel}</span>
               ) : (
                 `${event.currency === "USD" ? tickets[currentIndex].ticketUsdPrice : tickets[currentIndex].ticketPrice} ${event.currency}`
               )}

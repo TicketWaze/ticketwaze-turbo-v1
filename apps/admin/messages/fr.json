@@ -343,6 +343,13 @@
             "check-in": "Enregistré"
           }
         }
+      },
+      "edit": "Modifier",
+      "actions": {
+        "title": "Actions",
+        "status": "Changer le statut",
+        "giveaway": "Offrir des billets",
+        "refund": "Rembourser et annuler"
       }
     },
     "Ticket": {
@@ -405,6 +412,269 @@
       "events_heading": "Événements",
       "raffles_heading": "Tirages",
       "reason_label": "Motif"
+    },
+    "edit": {
+      "back": "Retour à l'activité",
+      "title": "Modifier l'activité",
+      "subtitle": "Vous modifiez {name}.",
+      "saved": "Activité mise à jour.",
+      "saved_with_refund_window": "Activité mise à jour. Les détenteurs de billets ont été prévenus et peuvent demander un remboursement.",
+      "calendar_sync_failed": "Enregistré, mais la réunion en ligne n'a pas pu être resynchronisée. Vérifiez l'entrée d'agenda.",
+      "superseded": "{count} modification(s) en attente de l'organisateur ont été retirées — elles portaient sur l'ancienne version.",
+      "tickets_frozen": "Des billets ont déjà été vendus : la devise ({currency}) et la répartition gratuit/payant sont verrouillées. La capacité ne peut pas descendre sous le nombre déjà vendu.",
+      "notice": {
+        "title": "Cette modification est appliquée immédiatement",
+        "no_sales": "Aucune vente pour l'instant, aucun acheteur n'est concerné. L'organisateur sera tout de même prévenu par email.",
+        "with_sales": "{count} billet(s) vendu(s). Modifier le nom, la date, le lieu ou l'affiche envoie un email à chaque acheteur et ouvre une fenêtre de remboursement."
+      },
+      "sections": {
+        "details": "Détails",
+        "venue": "Lieu et carte",
+        "schedule": "Horaires",
+        "tickets": "Billets ({currency})"
+      },
+      "fields": {
+        "name": "Nom de l'activité",
+        "description": "Description",
+        "description_hint": "{count} caractères. Entre 150 et 3000.",
+        "tags": "Étiquettes",
+        "tags_placeholder": "concert, musique live, plein air",
+        "image": "Affiche",
+        "image_keep": "Laissez vide pour conserver l'affiche actuelle.",
+        "image_new": "L'affiche actuelle sera remplacée à l'enregistrement.",
+        "is_private": "Privée — masquée dans Explorer, accessible uniquement par lien direct",
+        "absorb_fees": "L'organisateur absorbe les frais (le prix affiché est ce que paie l'acheteur)",
+        "address": "Adresse",
+        "city": "Ville",
+        "state": "Département",
+        "country": "Pays",
+        "map": "Point sur la carte",
+        "day": "Jour {number}",
+        "date": "Date",
+        "start_time": "Début",
+        "end_time": "Fin",
+        "timezone": "Fuseau horaire",
+        "tier_sold": "{sold} vendu(s) — suppression impossible",
+        "tier_unsold": "Aucune vente",
+        "tier_name": "Nom du billet",
+        "tier_price": "Prix ({currency})",
+        "tier_description": "Description du billet",
+        "tier_description_hint": "{count} caractères. Entre 20 et 150.",
+        "tier_quantity": "Capacité",
+        "sales_end": "Arrêter la vente le",
+        "sales_end_hint": "Facultatif. Laissez vide pour vendre jusqu'à la fin de l'activité.",
+        "is_refundable": "Remboursable — les acheteurs peuvent demander un remboursement",
+        "description_placeholder": "Décrivez l’activité — ce que c’est, pour qui, à quoi s’attendre."
+      },
+      "changes": {
+        "name": "le nom de l'activité",
+        "description": "la description",
+        "image": "l'affiche",
+        "venue": "le lieu",
+        "date": "la date ou l’heure de début"
+      },
+      "actions": {
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "add_day": "+ Ajouter un jour",
+        "add_tier": "+ Ajouter un billet",
+        "remove": "Supprimer"
+      },
+      "confirm": {
+        "title": "Appliquer ces modifications ?",
+        "body": "Cela réécrit {name} immédiatement. Une modification par un administrateur ne passe par aucune revue.",
+        "changing": "Vous modifiez :",
+        "buyers": "{count} détenteur(s) de billet recevront un email et une fenêtre pour demander un remboursement.",
+        "cta": "Appliquer"
+      },
+      "location": {
+        "none": "Aucun point défini",
+        "pick": "Choisir sur la carte",
+        "update": "Déplacer le point",
+        "hide": "Masquer la carte",
+        "clear": "Effacer le point",
+        "hint": "Cliquez n'importe où sur la carte pour placer un point",
+        "no_api_key": "La carte ne peut pas se charger : aucune clé Google Maps n'est configurée pour cet environnement."
+      },
+      "errors": {
+        "generic": "Une erreur est survenue. Veuillez réessayer.",
+        "name": "Le nom de l'activité doit contenir au moins 3 caractères.",
+        "description": "La description doit contenir au moins 150 caractères (elle en a {count}).",
+        "address": "Une activité en présentiel doit avoir une adresse.",
+        "days": "Une activité doit comporter au moins un jour.",
+        "day_incomplete": "Chaque jour doit avoir une date, une heure de début et une heure de fin.",
+        "tiers": "Une activité doit comporter au moins un type de billet.",
+        "tier_name": "Chaque type de billet doit avoir un nom.",
+        "tier_description": "La description de « {name} » doit contenir au moins 20 caractères.",
+        "tier_quantity": "La capacité de « {name} » doit être un nombre positif.",
+        "tier_below_sold": "La capacité de « {name} » ne peut pas être inférieure aux {sold} déjà vendus."
+      },
+      "raffle": {
+        "title": "Modifier le tirage",
+        "frozen": "Des participations ont déjà été vendues : le prix, la devise ({currency}) et le nombre total sont verrouillés.",
+        "prizes_hint": "L’ordre ici est le rang des lots — le lot 1 est celui que les participants visent en premier. Déplacer un lot compte comme une modification.",
+        "notice": {
+          "no_sales": "Aucune participation vendue, personne n’est concerné. L’organisateur sera tout de même prévenu par email.",
+          "with_sales": "{count} participation(s) vendue(s). Les participants sont prévenus si le nom, la date du tirage ou les lots changent — mais un tirage ne permet aucun remboursement, ils ne peuvent donc pas se retirer."
+        },
+        "sections": {
+          "entries": "Participations",
+          "schedule": "Vente et tirage",
+          "prizes": "Lots"
+        },
+        "fields": {
+          "title": "Titre du tirage",
+          "cover": "Image de couverture",
+          "price": "Prix de la participation ({currency})",
+          "currency": "Devise",
+          "absorb_fees": "L'organisateur absorbe les frais",
+          "unlimited": "Participations illimitées",
+          "total_tickets": "Nombre total de participations",
+          "sales_start": "Ouverture des ventes",
+          "sales_end": "Clôture des ventes",
+          "draw_at": "Date du tirage",
+          "timezone_hint": "Laissez vide pour conserver le fuseau actuel du tirage.",
+          "draw_mode": "Mode de tirage",
+          "draw_automatic": "Automatique",
+          "draw_manual": "Manuel",
+          "prize": "Lot {number}",
+          "prize_title": "Nom du lot",
+          "prize_description": "Description du lot",
+          "prize_image": "Photo du lot",
+          "prize_image_keep": "Laissez vide pour conserver la photo actuelle.",
+          "prize_image_required": "Ce lot doit avoir une photo."
+        },
+        "changes": {
+          "draw_date": "la date du tirage"
+        },
+        "actions": {
+          "add_prize": "+ Ajouter un lot"
+        },
+        "confirm": {
+          "entrants": "{count} participant(s) recevront un email. Les tirages ne permettent aucun remboursement : cela les informe, sans leur offrir de porte de sortie."
+        },
+        "errors": {
+          "title": "Le titre du tirage doit contenir au moins 10 caractères.",
+          "dates": "L'ouverture des ventes, la clôture et la date du tirage sont toutes obligatoires.",
+          "sales_after_draw": "Les ventes doivent se clôturer au plus tard à la date du tirage.",
+          "prizes": "Un tirage doit comporter au moins un lot.",
+          "total_tickets": "Le nombre total de participations doit être un nombre positif.",
+          "total_below_prizes": "Le nombre total de participations ne peut pas être inférieur au nombre de lots.",
+          "prize_title": "Le lot {number} doit avoir un nom.",
+          "prize_image": "Le lot {number} doit avoir une photo."
+        }
+      },
+      "venue": {
+        "title": "Modifier l'établissement",
+        "notice": {
+          "body": "Les modifications sont appliquées immédiatement. L'URL publique ne change jamais — les QR codes imprimés et les chevalets de table l'encodent — renommer l'établissement est donc sans risque."
+        },
+        "sections": {
+          "contact": "Contact",
+          "services": "Services",
+          "reservations": "Politique de réservation",
+          "hours": "Heures d'ouverture",
+          "extras": "Équipements et détails"
+        },
+        "establishment": {
+          "restaurant": "Restaurant",
+          "bar": "Bar",
+          "cafe": "Café",
+          "lounge": "Lounge",
+          "club": "Club",
+          "bakery": "Boulangerie",
+          "food_truck": "Food truck"
+        },
+        "days": {
+          "sunday": "Dimanche",
+          "monday": "Lundi",
+          "tuesday": "Mardi",
+          "wednesday": "Mercredi",
+          "thursday": "Jeudi",
+          "friday": "Vendredi",
+          "saturday": "Samedi"
+        },
+        "fields": {
+          "name": "Nom de l'établissement",
+          "name_hint": "Renommer ne modifie pas l'URL publique.",
+          "establishment_type": "Type",
+          "price_range": "Gamme de prix",
+          "cuisine_types": "Cuisines",
+          "cuisine_placeholder": "créole, fruits de mer, grillades",
+          "cover": "Image de couverture",
+          "gallery": "Galerie",
+          "gallery_keep": "Laissez vide pour conserver la galerie actuelle.",
+          "gallery_replace": "{count} fichier(s) sélectionné(s) — cela remplace toute la galerie. Entre 3 et 5.",
+          "location_notes": "Indications",
+          "location_notes_hint": "Ce qu'un point sur la carte ne peut pas dire — étage, repère, portail.",
+          "phone": "Téléphone",
+          "whatsapp": "WhatsApp",
+          "email": "Email",
+          "website": "Site web",
+          "accepts_reservations": "Accepte les réservations",
+          "accepts_online_payment": "Accepte le paiement en ligne",
+          "offers_delivery": "Propose la livraison",
+          "offers_takeout": "Propose la vente à emporter",
+          "serves_alcohol": "Sert de l'alcool",
+          "absorb_fees": "L'établissement absorbe les frais",
+          "delivery_phone": "Téléphone livraison",
+          "delivery_fee": "Frais de livraison",
+          "minimum_order": "Commande minimum",
+          "delivery_minutes": "Livraison estimée (minutes)",
+          "delivery_zones": "Zones de livraison",
+          "reservation_fee": "Frais de réservation",
+          "reservation_fee_currency": "Devise des frais",
+          "min_party": "Taille de groupe minimum",
+          "max_party": "Taille de groupe maximum",
+          "slot_interval": "Intervalle des créneaux (minutes)",
+          "default_duration": "Durée par défaut (minutes)",
+          "lead_time": "Délai de prévenance (minutes)",
+          "max_advance_days": "Réservable jusqu'à (jours à l'avance)",
+          "max_covers": "Couverts max par créneau",
+          "hold_minutes": "Durée de blocage (minutes)",
+          "always_open": "Ouvert 24h/24",
+          "opens_at": "Ouvre",
+          "closes_at": "Ferme",
+          "amenities": "Équipements",
+          "dietary_options": "Options alimentaires",
+          "languages": "Langues parlées",
+          "payment_methods": "Moyens de paiement sur place",
+          "dress_code": "Code vestimentaire",
+          "seating_capacity": "Capacité"
+        },
+        "confirm": {
+          "gallery": "Les {count} image(s) sélectionnée(s) remplaceront toute la galerie. Les images actuelles seront supprimées."
+        },
+        "errors": {
+          "name": "Le nom de l'établissement doit contenir au moins 2 caractères.",
+          "party_size": "La taille de groupe minimum ne peut pas dépasser le maximum.",
+          "reservation_fee": "Définissez des frais de réservation avant de les accepter.",
+          "hours": "Indiquez une heure d'ouverture et de fermeture pour {day}.",
+          "gallery": "Une galerie de remplacement doit contenir entre 3 et 5 images."
+        }
+      },
+      "sale": {
+        "title": "Modifier le produit",
+        "frozen": "{count} exemplaire(s) vendu(s) : la devise ({currency}) est verrouillée et l'URL publique ne suit plus le titre.",
+        "notice": {
+          "file": "Le fichier téléchargeable ne peut pas être modifié ici. Le remplacer relance la revue, et ce parcours est volontairement séparé."
+        },
+        "sections": {
+          "pricing": "Tarification"
+        },
+        "fields": {
+          "title": "Titre du produit",
+          "title_slug_frozen": "L'URL publique reste inchangée — le reçu d'un acheteur y renvoie.",
+          "cover": "Image de couverture",
+          "price": "Prix ({currency})",
+          "currency": "Devise",
+          "absorb_fees": "Le vendeur absorbe les frais"
+        },
+        "errors": {
+          "title": "Le titre du produit doit contenir au moins 10 caractères.",
+          "price": "Le prix doit être un nombre positif."
+        }
+      }
     }
   },
   "Admins": {
@@ -1011,14 +1281,16 @@
     "tabs": {
       "all": "Tous",
       "pending": "Non invités",
-      "invited": "Invités"
+      "invited": "Invités",
+      "no_account": "Sans compte"
     },
     "stats": {
       "total": "Total utilisateurs",
       "pending": "En attente",
       "attendee": "Participants",
       "business": "Entreprises",
-      "both": "Les deux"
+      "both": "Les deux",
+      "no_account": "Sans compte"
     },
     "filters": {
       "all": "Tous les types",
@@ -1036,12 +1308,15 @@
         "email": "Email",
         "entity": "Type",
         "joined": "Date d'inscription",
-        "status": "Statut"
+        "status": "Statut",
+        "account": "Compte"
       }
     },
     "status": {
       "pending": "En attente",
-      "invited": "Invité"
+      "invited": "Invité",
+      "has_account": "Inscrit",
+      "no_account": "Sans compte"
     },
     "invite": {
       "all": "Inviter tous",
@@ -1061,9 +1336,28 @@
       "invite": "Inviter",
       "already_invited": "Déjà invité",
       "invited_at": "Invité le",
-      "close": "Fermer"
+      "close": "Fermer",
+      "account": "Compte",
+      "has_account": "Inscrit",
+      "no_account": "Pas inscrit",
+      "reminded_at": "Dernier rappel",
+      "reminder_count": "Rappels envoyés",
+      "remind": "Envoyer un rappel",
+      "remind_again": "Envoyer un nouveau rappel",
+      "cannot_remind": "Déjà inscrit"
     },
-    "no_results": "Aucune entrée ne correspond à votre recherche."
+    "no_results": "Aucune entrée ne correspond à votre recherche.",
+    "remind": {
+      "selected": "Envoyer un rappel ({count})",
+      "success": "Rappel envoyé avec succès.",
+      "partial": "Rappel envoyé à {sent}. {skipped} ignoré(s) — déjà inscrit(s) ou désabonné(s).",
+      "error": "Échec de l'envoi du rappel. Veuillez réessayer.",
+      "confirm_title": "Envoyer le rappel ?",
+      "confirm_body": "Ceci envoie un email à {count} membres de la liste d'attente qui n'ont jamais créé de compte, pour leur rappeler la valeur de leurs 200 jetons Ticketwaze et de leur premier achat sans frais. Les personnes déjà inscrites ou désabonnées sont ignorées automatiquement.",
+      "confirm_cta": "Envoyer",
+      "cancel": "Annuler"
+    },
+    "no_account_empty": "Tous les membres de la liste d'attente ont créé un compte."
   },
   "Analytics": {
     "title": "Vue d'ensemble de la plateforme",

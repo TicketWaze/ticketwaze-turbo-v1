@@ -3,11 +3,32 @@
 import { cn } from "@/lib/utils";
 import * as React from "react";
 
-function Table({ className, ...props }: React.ComponentProps<"table">) {
+/**
+ * `containerClassName` styles the scroll wrapper around the table, not the
+ * table itself — `className` still goes to `<table>`.
+ *
+ * It exists for one specific trap. The wrapper is `overflow-x-auto`, and a box
+ * that is not `overflow: visible` on one axis computes to `auto` on the other,
+ * so it is a scroll container vertically too. A flex item that is a scroll
+ * container has its automatic minimum size resolve to ZERO rather than to its
+ * content height — so dropped into a flex column that scrolls (PAGE_SCROLLER),
+ * this wrapper collapses to whatever space is left over and takes the page's
+ * scrolling with it: the table scrolls inside its own box while the heading,
+ * stats and filters above it never move. Pass `shrink-0` to opt out and let the
+ * page scroll as one.
+ */
+function Table({
+  className,
+  containerClassName,
+  ...props
+}: React.ComponentProps<"table"> & { containerClassName?: string }) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto select-none"
+      className={cn(
+        "relative w-full overflow-x-auto select-none",
+        containerClassName,
+      )}
     >
       <table
         data-slot="table"
