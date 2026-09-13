@@ -303,9 +303,8 @@ export interface Order {
   /**
    * THE ORGANISER'S PROMOTION, if a code applied.
    *
-   * Comes off the base price, so the organisation is credited less — and
-   * because Ticketwaze's margin stays pinned to the FACE price, the
-   * organisation also carries the fee shortfall the discount causes.
+   * Comes off the base price, so the organisation is credited that much
+   * less. Fees stay on the FACE price, so the discount never changes them.
    */
   discountCodeId?: string | null;
   discountHtgAmount?: number;

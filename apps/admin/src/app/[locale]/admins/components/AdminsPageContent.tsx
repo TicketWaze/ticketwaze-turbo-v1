@@ -62,10 +62,11 @@ const ACTIONS = ["view", "create", "edit", "delete"];
  *
  * `actions` is per-group rather than the shared ACTIONS list because the
  * permission set is not a clean CRUD matrix and never was: `payouts.send`,
- * `campaigns.send` and now `activity.manage` and `tickets.giveaway` are powers
- * in their own right, and campaigns has no `edit` at all. While this was
- * hardcoded to the four CRUD verbs those keys existed in the API and could be
- * granted over the wire, but no admin could see or tick them here.
+ * `campaigns.send`, `activity.manage`, `tickets.giveaway` and now
+ * `attendees.credit` are powers in their own right, and campaigns has no
+ * `edit` at all. While this was hardcoded to the four CRUD verbs those keys
+ * existed in the API and could be granted over the wire, but no admin could
+ * see or tick them here.
  */
 const PERMISSION_GROUPS: {
   resource: string;
@@ -76,7 +77,11 @@ const PERMISSION_GROUPS: {
   { resource: "support_chat", label: "Live Chat", actions: ACTIONS },
   { resource: "contact_message", label: "Contact Messages", actions: ACTIONS },
   { resource: "waitlist", label: "Waitlist", actions: ACTIONS },
-  { resource: "attendees", label: "Attendees", actions: ACTIONS },
+  {
+    resource: "attendees",
+    label: "Attendees",
+    actions: [...ACTIONS, "credit"],
+  },
   { resource: "organisations", label: "Organisations", actions: ACTIONS },
   { resource: "admins", label: "Administrators", actions: ACTIONS },
   {
@@ -104,6 +109,7 @@ const IRREVERSIBLE_ACTIONS = new Set([
   "payouts.send",
   "campaigns.send",
   "tickets.giveaway",
+  "attendees.credit",
 ]);
 
 function roleBadgeClass(role: number): string {

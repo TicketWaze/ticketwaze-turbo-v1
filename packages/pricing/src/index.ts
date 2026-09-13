@@ -584,9 +584,9 @@ export function getBuyerUnitTotal(
  * quote a figure before the payment handler recomputes it; a divergence means
  * the buyer is shown a total they are not charged.
  *
- *   A DISCOUNT CODE is the ORGANISER'S. It comes off the base price, so the
- *   fee stack is then charged on the reduced base — which means the buyer's
- *   bill drops by MORE than the headline discount.
+ *   A DISCOUNT CODE is the ORGANISER'S. It comes off the base price, while the
+ *   fee stack stays pinned to the FACE price — so the buyer's bill drops by
+ *   exactly the headline discount and the fee category never changes.
  *
  *   TICKETWAZE TOKENS are OURS. They come off the grand total after fees.
  *
@@ -647,9 +647,9 @@ export function maxSpendableTokens(
 export interface DiscountQuote {
   /** The code's headline reduction, off the BASE price. */
   discount: number;
-  /** The subtotal after the discount — what fees are then charged on. */
+  /** The subtotal after the discount. */
   discountedSubtotal: number;
-  /** Fees on the discounted subtotal: what the buyer is actually charged. */
+  /** Fees on the FACE subtotal: what the buyer is actually charged. */
   fees: number;
   /** Total after the discount, before tokens. */
   totalBeforeTokens: number;
@@ -657,13 +657,7 @@ export interface DiscountQuote {
   tokenValue: number;
   /** What the buyer pays. */
   total: number;
-  /**
-   * HOW MUCH THE BILL FELL, which is NOT the same as `discount`.
-   *
-   * A 200-off code on a fee-bearing ticket takes more than 200 off the bill,
-   * because the fees shrink with the base. Worth surfacing separately: a buyer
-   * who is told "200 off" and sees 226 disappear should be able to see why.
-   */
+  /** How much the bill fell: the discount plus any tokens. */
   totalSaved: number;
 }
 
@@ -672,8 +666,8 @@ export interface DiscountQuote {
  *
  * `feesFor` is the caller's own fee function — events, raffles, sales and
  * reservations each have their own schedule, and passing it in is what keeps
- * this from having to know which is which. It receives the DISCOUNTED
- * subtotal and returns the all-in total for it.
+ * this from having to know which is which. It is only ever called with the
+ * FACE subtotal; its fees are then added to the discounted one.
  */
 export function quoteWithReductions(options: {
   subtotal: number;
@@ -681,8 +675,8 @@ export function quoteWithReductions(options: {
   tokens?: number;
   currency: string;
   htgExchangeRate?: number;
-  /** Discounted subtotal in, all-in charge out. */
-  totalFor: (discountedSubtotal: number) => number;
+  /** Face subtotal in, all-in charge out. */
+  totalFor: (subtotal: number) => number;
 }): DiscountQuote {
   const subtotal = Math.max(0, Number(options.subtotal) || 0);
   const rate = options.htgExchangeRate ?? FALLBACK_HTG_EXCHANGE_RATE;
@@ -691,8 +685,12 @@ export function quoteWithReductions(options: {
   const discount = Math.min(subtotal, Math.max(0, Number(options.discount) || 0));
   const discountedSubtotal = round2(subtotal - discount);
 
-  const totalBeforeTokens = round2(options.totalFor(discountedSubtotal));
+  // Fees are taken on the FACE subtotal and never re-quoted on the discounted
+  // one, so a code cannot move a cart into a cheaper fee band.
   const undiscountedTotal = round2(options.totalFor(subtotal));
+  const totalBeforeTokens = round2(
+    discountedSubtotal + (undiscountedTotal - subtotal),
+  );
 
   const tokens = maxSpendableTokens(
     Number(options.tokens) || 0,

@@ -591,7 +591,7 @@
     "invitedUser": "Invited User",
     "user": "user(s)",
     "referralTitle": "Invite Friends",
-    "referralDescription": "Grow Our Community Together Help your friends discover amazing tickets and experiences, and earn 50 Ticketwaze tokens for each successful referral!",
+    "referralDescription": "Grow Our Community Together Help your friends discover amazing tickets and experiences, and earn 20 Ticketwaze tokens for each successful referral!",
     "copy": "Copy",
     "filters": {
       "all": "All status",
@@ -1105,7 +1105,7 @@
     "invitedUser": "Invited User",
     "user": "user(s)",
     "referralTitle": "Invite Friends",
-    "referralDescription": "Grow Our Community Together Help your friends discover amazing tickets and experiences, and earn 50 Ticketwaze tokens for each successful referral!",
+    "referralDescription": "Grow Our Community Together Help your friends discover amazing tickets and experiences, and earn 20 Ticketwaze tokens for each successful referral!",
     "copy": "Copy",
     "placeholders": {
       "firstname": "Firstname",

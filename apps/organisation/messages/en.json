@@ -820,7 +820,7 @@
         "generate": "Generate a code",
         "per_user_limit": "Uses per customer (optional)",
         "min_purchase": "Minimum order (optional)",
-        "cost_notice": "Discounts come out of your proceeds. Ticketwaze fees are still calculated on your listed price, so the discount and the resulting fee difference are both deducted from what you receive."
+        "cost_notice": "Discounts come out of your proceeds. Ticketwaze fees are always calculated on your listed price, so a discount never changes the fees: you receive the discounted price."
       },
       "attendees": {
         "back": "Back",

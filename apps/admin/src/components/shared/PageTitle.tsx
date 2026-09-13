@@ -15,25 +15,65 @@ import { cn } from "@/lib/utils";
  * `pb-8 -mb-8` is deliberate: the padding paints an opaque band so rows do not
  * show through the flex gap underneath the text, and the negative margin takes
  * back the space that padding would otherwise add on top of the parent's gap.
+ *
+ * Pass `actions` to put page-level controls on the heading's own line — see
+ * the prop, and note that it is a slot precisely BECAUSE of rule 1.
  */
 export default function PageTitle({
   children,
   className,
   as: Tag = "h3",
+  actions,
 }: {
   children: React.ReactNode;
   className?: string;
   as?: "h2" | "h3";
+  /**
+   * Page-level actions, shown on the title's own line at the right.
+   *
+   * Taken as a slot rather than left to the caller to place beside the
+   * heading, because of rule 1 above: a heading wrapped in a flex row is no
+   * longer a direct child of the scroller and stops sticking. When actions
+   * are given, the sticky element becomes the ROW — so the heading and its
+   * actions stay together at the top while the page scrolls, which is the
+   * behaviour you want anyway.
+   */
+  actions?: React.ReactNode;
 }) {
+  /**
+   * WITHOUT ACTIONS, THE MARKUP IS EXACTLY WHAT IT ALWAYS WAS.
+   *
+   * Ten other pages render this and none of them pass actions; wrapping them
+   * all in a flex row to serve one page that does would be a layout change
+   * applied blind. The branch keeps them byte-identical.
+   */
+  if (!actions) {
+    return (
+      <Tag
+        className={cn(
+          "sticky top-0 z-20 bg-white pb-8 -mb-8 font-medium font-primary text-[2.6rem] leading-12 text-black",
+          className,
+        )}
+      >
+        {children}
+      </Tag>
+    );
+  }
+
+  // The sticky band moves to the row; the heading keeps only its typography.
   return (
-    <Tag
+    <div
       className={cn(
-        "sticky top-0 z-20 bg-white pb-8 -mb-8 font-medium font-primary text-[2.6rem] leading-12 text-black",
+        "sticky top-0 z-20 bg-white pb-8 -mb-8 flex items-center justify-between gap-6",
         className,
       )}
     >
-      {children}
-    </Tag>
+      <Tag className="font-medium font-primary text-[2.6rem] leading-12 text-black">
+        {children}
+      </Tag>
+      {/* `shrink-0` so a long title never squeezes the actions to nothing. */}
+      <div className="shrink-0 flex items-center gap-4">{actions}</div>
+    </div>
   );
 }
 
@@ -41,6 +81,18 @@ export default function PageTitle({
  * AdminLayout's shared container only scrolls below `lg`, so a page that wants
  * to scroll at every width brings its own scroller. `flex-1 min-h-0` is what
  * makes it scroll rather than grow past the bottom of the flex column.
+ *
+ * `pb-8` closes a gap the layout leaves open on purpose. AdminLayout's card
+ * carries `pb-0` so the scroll area reaches the card's edge — but on mobile
+ * the bottom navigation sits immediately under that edge, so the last row of
+ * every page ended flush against it with nothing between them. The trailing
+ * space belongs INSIDE the scroller (it scrolls away with the content) rather
+ * than on the card, which would shorten the scroll viewport instead.
+ *
+ * `overflow-x-hidden` is the other half. This is a scroll container, so any
+ * child wider than it — a long unbroken email address, a wide table — makes
+ * the whole PAGE scroll sideways on a narrow screen. Anything that genuinely
+ * needs to scroll horizontally should say so on its own wrapper.
  */
 export const PAGE_SCROLLER =
-  "flex flex-1 min-h-0 flex-col gap-8 overflow-y-auto";
+  "flex flex-1 min-h-0 flex-col gap-8 overflow-y-auto overflow-x-hidden pb-8";

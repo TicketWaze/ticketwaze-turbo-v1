@@ -247,10 +247,8 @@ export default function SummaryStep({
           the same kind of thing — the code is the organiser charging less, the
           tokens are Ticketwaze paying part of the bill.
 
-          The discount row reads as smaller than the drop in the total, and
-          that is correct: the fee rows above were already computed on the
-          reduced price. `totalSaved` below is what actually came off, and it
-          is the figure to trust.
+          The fee rows above are computed on the face price, so the discount
+          row is exactly what the code takes off the total.
         */}
         {!isFree && (discount > 0 || tokenValue > 0) && (
           <div className="px-8 py-[1.8rem] flex flex-col gap-4 border-b border-dashed border-neutral-200">
@@ -294,11 +292,8 @@ export default function SummaryStep({
                 {formatAmount(total)} {event.currency}
               </span>
               {/*
-                THE ONE FIGURE THAT IS WORTH TRUSTING over the rows above.
-
-                A discount off the base also shrinks the fees charged on it, so
-                the rows never add up to what the buyer feels they saved. This
-                is the difference between this total and the face-price one.
+                The difference between this total and the face-price one: the
+                discount plus any tokens spent.
               */}
               {totalSaved > 0 && (
                 <span className="text-[1.2rem] font-medium text-[#1a7a43]">

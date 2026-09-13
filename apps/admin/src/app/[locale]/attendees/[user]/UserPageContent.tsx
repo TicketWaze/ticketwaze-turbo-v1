@@ -2,8 +2,7 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import BackButton from "@/components/shared/BackButton";
 import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
-import { SuspendDialog } from "./SuspendDialog";
-import { ReactivateDialog } from "./ReactivateDialog";
+import MoreComponent from "./MoreComponent";
 import Separator from "@/components/shared/Separator";
 import Image from "next/image";
 import {
@@ -72,14 +71,22 @@ export default function UserPageContent({
     <AdminLayout>
       <div className={PAGE_SCROLLER}>
         <BackButton text={t("back")} />
-        <PageTitle as="h2">{t("title")}</PageTitle>
-        <div className="mb-6 hidden lg:flex gap-4 items-center h-fit">
-          {user.isSuspended ? (
-            <ReactivateDialog userId={user.userId} />
-          ) : (
-            <SuspendDialog userId={user.userId} />
-          )}
-        </div>
+        {/*
+          Every action on this attendee lives behind one menu rather than as a
+          row of coloured buttons — see `MoreComponent`. Passed as the title's
+          `actions` slot so it shares the heading line at every width and stays
+          reachable while the page scrolls. Crediting stays offered on a
+          suspended account: refunding somebody is not the same decision as
+          letting them back in, and the two are often settled in that order.
+        */}
+        <PageTitle
+          as="h2"
+          actions={
+            <MoreComponent userId={user.userId} isSuspended={user.isSuspended} />
+          }
+        >
+          {t("title")}
+        </PageTitle>
         {/* An active suspension is the first thing that explains everything
             else on this page, so it sits above the record — and above the
             deletion notice, since it is the stronger state. */}
@@ -88,11 +95,19 @@ export default function UserPageContent({
             is called out above the record rather than only listed inside it. */}
         {user.deletion && <DeletionNotice deletion={user.deletion} />}
 
+        {/*
+          `min-w-0` on both columns: a grid item defaults to `min-width:auto`,
+          which means it refuses to shrink below its content and widens its
+          own track instead of being contained by it. One long word — an
+          email, an activity name — is enough to push the page sideways
+          without it.
+        */}
         <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] gap-8 lg:gap-16">
-          <div className="w-full flex flex-col gap-8">
+          <div className="w-full min-w-0 flex flex-col gap-8">
             <form className="flex flex-col gap-12 w-full pb-4 overflow-x-hidden">
-              <div className="w-full bg-primary-500 p-6 rounded-[20px] flex gap-10">
-                <div className="w-40 h-40 rounded-[25px] bg-neutral-300 overflow-hidden">
+              <div className="w-full min-w-0 bg-primary-500 p-6 rounded-[20px] flex gap-10">
+                {/* `shrink-0` keeps the avatar square when the name is long. */}
+                <div className="w-40 h-40 shrink-0 rounded-[25px] bg-neutral-300 overflow-hidden">
                   {user.profileImageUrl && (
                     <Image
                       src={user.profileImageUrl}
@@ -103,8 +118,10 @@ export default function UserPageContent({
                     />
                   )}
                 </div>
-                <div className="flex flex-col justify-center">
-                  <span className="text-[2.6rem] text-white font-medium leading-12 capitalize">
+                <div className="flex flex-col justify-center min-w-0">
+                  {/* `break-words`: a single long surname has no break
+                      opportunity, so without it the card grows to fit it. */}
+                  <span className="text-[2.6rem] text-white font-medium leading-12 capitalize break-words">
                     {user.firstName} <br /> {user.lastName}
                   </span>
                   {/* <div className="bg-deep-100 flex gap-2 p-4 rounded-[100px] text-center text-white font-semibold text-[1.4rem]">
@@ -118,11 +135,21 @@ export default function UserPageContent({
                   {t("information")}
                 </h3>
 
-                <div className={"flex gap-6"}>
-                  <Input type="text" disabled readOnly>
+                {/*
+                  STACKED BELOW `sm`, and each half allowed to shrink.
+                  An `<input>` has an intrinsic width of about twenty
+                  characters and `Input` adds 4rem of padding, so two of them
+                  side by side need roughly 415px of room. On a phone the
+                  form's `overflow-x-hidden` was quietly CLIPPING the second
+                  one rather than overflowing — the field was simply not
+                  there to read. `min-w-0` is what lets a flex child shrink
+                  past its content at all.
+                */}
+                <div className={"flex flex-col sm:flex-row gap-6"}>
+                  <Input className="min-w-0 flex-1" type="text" disabled readOnly>
                     {user.firstName}
                   </Input>
-                  <Input type="text" disabled readOnly>
+                  <Input className="min-w-0 flex-1" type="text" disabled readOnly>
                     {user.lastName}
                   </Input>
                 </div>
@@ -135,9 +162,10 @@ export default function UserPageContent({
                   {user.referralCode}
                 </Input>
 
-                <div className={"flex gap-6"}>
+                {/* Same as the name pair above. */}
+                <div className={"flex flex-col sm:flex-row gap-6"}>
                   <Select defaultValue={user.state ?? "unknown"} disabled>
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full text-[1.4rem] text-neutral-700 leading-8">
+                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full min-w-0 flex-1 text-[1.4rem] text-neutral-700 leading-8">
                       <SelectValue placeholder={user.state ?? "—"} />
                     </SelectTrigger>
                     <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
@@ -152,7 +180,7 @@ export default function UserPageContent({
                     </SelectContent>
                   </Select>
                   <Select defaultValue={user.city ?? "unknown"} disabled>
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full text-[1.4rem] text-neutral-700 leading-8">
+                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full min-w-0 flex-1 text-[1.4rem] text-neutral-700 leading-8">
                       <SelectValue placeholder={user.city ?? "—"} />
                     </SelectTrigger>
                     <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
@@ -179,7 +207,7 @@ export default function UserPageContent({
                 )}
 
                 <Select defaultValue={user.gender ?? "unknown"} disabled>
-                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full text-[1.4rem] text-neutral-700 leading-8">
+                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full min-w-0 flex-1 text-[1.4rem] text-neutral-700 leading-8">
                     <SelectValue placeholder={user.gender ?? "—"} />
                   </SelectTrigger>
                   <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
@@ -197,11 +225,31 @@ export default function UserPageContent({
             </form>
           </div>
 
-          <div className="lg:min-h-[75vh]">
+          <div className="min-w-0 lg:min-h-[75vh]">
             <Tabs defaultValue="summary" className="w-full h-full">
-              <TabsList className={"w-full lg:w-fit mx-auto lg:mx-0 mb-8"}>
-                <TabsTrigger value="summary">{t("summary.title")}</TabsTrigger>
-                <TabsTrigger value="ticket_history">
+              {/*
+                `whitespace-normal` below `lg` is what stops this row pushing
+                the page sideways. `TabsTrigger` ships `whitespace-nowrap`,
+                and these two labels together ("Résumé des activités" +
+                "Historique des billets" in French) are wider than a phone —
+                with nowrap the list cannot shrink to fit, so it overflows the
+                viewport and the whole page scrolls on the x axis. Letting the
+                labels wrap to two lines costs a few pixels of height and
+                keeps them fully readable, which truncating would not.
+              */}
+              <TabsList
+                className={"w-full min-w-0 lg:w-fit mx-auto lg:mx-0 mb-8"}
+              >
+                <TabsTrigger
+                  value="summary"
+                  className="whitespace-normal lg:whitespace-nowrap"
+                >
+                  {t("summary.title")}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="ticket_history"
+                  className="whitespace-normal lg:whitespace-nowrap"
+                >
                   {t("ticket_history.title")}
                 </TabsTrigger>
               </TabsList>
@@ -216,13 +264,7 @@ export default function UserPageContent({
           </div>
         </main>
 
-        <div className="lg:hidden flex pb-6">
-          {user.isSuspended ? (
-            <ReactivateDialog userId={user.userId} />
-          ) : (
-            <SuspendDialog userId={user.userId} />
-          )}
-        </div>
+
       </div>
     </AdminLayout>
   );

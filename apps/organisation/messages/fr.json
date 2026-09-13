@@ -819,7 +819,7 @@
         "generate": "Générer un code",
         "per_user_limit": "Utilisations par client (facultatif)",
         "min_purchase": "Commande minimum (facultatif)",
-        "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze restent calculés sur votre prix affiché : la réduction et la différence de frais qui en découle sont toutes deux déduites de ce que vous recevez."
+        "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze sont toujours calculés sur votre prix affiché : une réduction ne modifie jamais les frais, et vous recevez le prix réduit."
       },
       "attendees": {
         "back": "Retour",

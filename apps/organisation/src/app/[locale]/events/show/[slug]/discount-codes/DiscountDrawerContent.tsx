@@ -140,10 +140,9 @@ export default function DiscountDrawerContent({ event }: { event: Event }) {
           {/*
             WHO PAYS FOR THIS, said before the organiser commits to it.
 
-            A discount comes out of the organisation's proceeds, and so does
-            the fee shortfall it causes — Ticketwaze's margin is pinned to the
-            price they listed. That is a reasonable rule and a surprising one,
-            so it is stated on the form rather than discovered on a payout.
+            A discount comes out of the organisation's proceeds. Fees stay on
+            the price they listed, so the discount is the only thing deducted —
+            stated on the form rather than discovered on a payout.
           */}
           <div className="flex items-start gap-3 rounded-[15px] bg-[#FFF7ED] border border-[#FDBA74] px-[1.5rem] py-[1.2rem]">
             <Warning2

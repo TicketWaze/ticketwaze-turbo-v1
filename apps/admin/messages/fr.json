@@ -1273,6 +1273,34 @@
         "scheduled_for": "Anonymisation le",
         "reason": "Motif indiqué",
         "no_reason": "Aucun motif indiqué"
+      },
+      "credit": {
+        "trigger": "Créditer le portefeuille",
+        "title": "Créditer ce portefeuille",
+        "money_tab": "Argent",
+        "tokens_tab": "Jetons",
+        "money_description": "Ajoutez de l'argent à ce compte. L'utilisateur reçoit un e-mail et peut le dépenser immédiatement.",
+        "tokens_description": "Ajoutez des jetons Ticketwaze à ce compte. Les jetons ne sont pas de l'argent : ils ne s'utilisent que sur Ticketwaze.",
+        "amount_label": "Montant",
+        "rate_note": "Liés au taux actuel : 1 USD = {rate} HTG. Saisissez l'un ou l'autre champ.",
+        "rate_unavailable": "Le taux de change est indisponible, les deux champs ne peuvent donc pas être liés. Saisissez le montant dans une seule devise.",
+        "tokens_label": "Jetons Ticketwaze",
+        "tokens_note": "200 jetons = 100 HTG.",
+        "tokens_worth": "Équivaut à {amount} HTG.",
+        "reason_label": "Motif",
+        "reason_placeholder": "Pourquoi ce crédit est-il accordé ?",
+        "cancel": "Annuler",
+        "confirm_money": "Créditer l'argent",
+        "confirm_tokens": "Créditer les jetons",
+        "success": "Le portefeuille a été crédité.",
+        "error": "Le portefeuille n'a pas pu être crédité."
+      },
+      "more": {
+        "title": "Plus",
+        "credit": "Créditer le portefeuille",
+        "credit_denied": "Créditer un portefeuille requiert l'autorisation attendees.credit.",
+        "suspend": "Suspendre le compte",
+        "reactivate": "Réactiver le compte"
       }
     }
   },

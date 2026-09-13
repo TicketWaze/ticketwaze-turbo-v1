@@ -1280,6 +1280,34 @@
         "scheduled_for": "Anonymized on",
         "reason": "Reason given",
         "no_reason": "No reason given"
+      },
+      "credit": {
+        "trigger": "Credit wallet",
+        "title": "Credit this wallet",
+        "money_tab": "Money",
+        "tokens_tab": "Tokens",
+        "money_description": "Add money to this account. The user is emailed and can spend it right away.",
+        "tokens_description": "Add Ticketwaze tokens to this account. Tokens are not money — they can only be spent inside Ticketwaze.",
+        "amount_label": "Amount",
+        "rate_note": "Linked at the current rate: 1 USD = {rate} HTG. Enter either field.",
+        "rate_unavailable": "The exchange rate is unavailable, so the two fields cannot be linked. Enter the amount in one currency.",
+        "tokens_label": "Ticketwaze tokens",
+        "tokens_note": "200 tokens = 100 HTG.",
+        "tokens_worth": "Worth {amount} HTG.",
+        "reason_label": "Reason",
+        "reason_placeholder": "Why is this credit being made?",
+        "cancel": "Cancel",
+        "confirm_money": "Credit money",
+        "confirm_tokens": "Credit tokens",
+        "success": "The wallet has been credited.",
+        "error": "The wallet could not be credited."
+      },
+      "more": {
+        "title": "More",
+        "credit": "Credit wallet",
+        "credit_denied": "Crediting a wallet needs the attendees.credit permission.",
+        "suspend": "Suspend account",
+        "reactivate": "Reactivate account"
       }
     }
   },

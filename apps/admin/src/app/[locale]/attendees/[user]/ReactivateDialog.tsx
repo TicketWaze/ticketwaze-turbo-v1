@@ -15,10 +15,18 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { ReactivateAttendeeAction } from "@/actions/Attendee";
+import type { DialogControl } from "./dialogControl";
 
-export function ReactivateDialog({ userId }: { userId: string }) {
+export function ReactivateDialog({
+  userId,
+  hideTrigger,
+  open: controlledOpen,
+  onOpenChange,
+}: { userId: string } & DialogControl) {
   const t = useTranslations("Attendees.profile.reactivate");
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = onOpenChange ?? setUncontrolledOpen;
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
   const locale = useLocale();
@@ -41,11 +49,13 @@ export function ReactivateDialog({ userId }: { userId: string }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <ButtonPrimary className="py-[7.5px] w-full lg:w-auto">
-          {t("trigger")}
-        </ButtonPrimary>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <ButtonPrimary className="py-[7.5px] w-full lg:w-auto">
+            {t("trigger")}
+          </ButtonPrimary>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">

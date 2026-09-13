@@ -92,9 +92,9 @@ export function calculateFeeBreakdown(
    * THE TWO REDUCTIONS, APPLIED AT DIFFERENT POINTS IN THE STACK.
    *
    * `discountTotal` is the organiser's code and comes off the BASE prices,
-   * apportioned across the lines by value, so every fee below is computed on
-   * what the buyer actually pays for the ticket. `tokens` is Ticketwaze's own
-   * credit and comes off the GRAND TOTAL at the end.
+   * apportioned across the lines by value, while every fee stays on the face
+   * price. `tokens` is Ticketwaze's own credit and comes off the GRAND TOTAL
+   * at the end.
    *
    * Getting the order wrong is not a rounding difference — a discount applied
    * after the fees would quote a total the API does not charge, and an
@@ -112,11 +112,11 @@ export function calculateFeeBreakdown(
   /**
    * THE TOTAL, ACCUMULATED THE WAY THE BACKEND CHARGES IT.
    *
-   * `payments_controller` rounds each ticket to the cent and sums those,
-   * so summing the unrounded component rows and rounding once at the end can
-   * land a cent apart — it did, on a two-ticket basket above the bands. The
-   * rows stay unrounded for display and may therefore not add up on screen to
-   * the cent; quoting a total the buyer is actually charged matters more.
+   * Each ticket's face-price quote is rounded to the cent (as the API's
+   * calculators do), the discounted price is added to its fees, and the cart
+   * is rounded once at the end (`sumCharges`). The fee rows stay unrounded for
+   * display and may not add up on screen to the cent; quoting a total the
+   * buyer is actually charged matters more.
    */
   let chargedTotal = 0;
   const rate =
@@ -139,10 +139,8 @@ export function calculateFeeBreakdown(
    * THE DISCOUNT, SPREAD ACROSS THE LINES BEFORE ANY OF THEM IS PRICED.
    *
    * Apportioned by value — a 2,000 HTG ticket carries more of the cut than a
-   * 500 HTG one beside it — because the fee schedule is per ticket and banded:
-   * splitting a cart's discount evenly could push a cheap line negative while
-   * barely moving an expensive one, and would land a different line in a
-   * different HTG fee band than the API does.
+   * 500 HTG one beside it — because splitting a cart's discount evenly could
+   * push a cheap line negative while barely moving an expensive one.
    *
    * The fraction is computed once here and applied per line below, which is
    * the same proportional split `spreadDiscount` performs on the server.
@@ -173,26 +171,31 @@ export function calculateFeeBreakdown(
     const facePrice = Number(
       currency === "USD" ? ticketType.usdPrice : ticketType.ticketTypePrice,
     );
-    // Every fee below is charged on the DISCOUNTED price, which is what the
-    // buyer is actually paying for the ticket.
-    const price = Math.max(0, facePrice * (1 - discountFraction));
+    /**
+     * EVERY FEE BELOW IS CHARGED ON THE FACE PRICE, and the discount only
+     * comes off the ticket itself. Pricing fees on the discounted price used
+     * to drop a 1,000 HTG ticket with 30% off into the 100 HTG flat band.
+     * Mirrors `assemble` in the API's `discounted_pricing.ts`.
+     */
+    const discountedPrice = Math.max(0, facePrice * (1 - discountFraction));
     const quantity = ticket.quantity;
     subtotal += facePrice * quantity;
 
-    const flatFee = currency === "HTG" ? htgFlatBandFee(price) : null;
+    const flatFee = currency === "HTG" ? htgFlatBandFee(facePrice) : null;
     if (flatFee !== null) {
       platformFee += flatFee * quantity;
-      chargedTotal += round2(price + flatFee) * quantity;
+      chargedTotal += (discountedPrice + flatFee) * quantity;
       return;
     }
 
-    const perTicket = getPerTicketFee(currency, price, rate);
-    const lineService = SERVICE_FEE_RATE * price;
+    const perTicket = getPerTicketFee(currency, facePrice, rate);
+    const lineService = SERVICE_FEE_RATE * facePrice;
     platformFee += perTicket * quantity;
     serviceFee += lineService * quantity;
-    transactionFee += txRate * (price + lineService + perTicket) * quantity;
-    chargedTotal +=
-      round2((price + lineService + perTicket) * (1 + txRate)) * quantity;
+    transactionFee += txRate * (facePrice + lineService + perTicket) * quantity;
+    const faceFees =
+      round2((facePrice + lineService + perTicket) * (1 + txRate)) - facePrice;
+    chargedTotal += (discountedPrice + faceFees) * quantity;
   });
 
   /**
