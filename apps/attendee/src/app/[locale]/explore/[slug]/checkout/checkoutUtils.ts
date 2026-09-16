@@ -1,4 +1,5 @@
-import { EventTicketType } from "@ticketwaze/typescript-config";
+import { EventTicketType, FeeOverride } from "@ticketwaze/typescript-config";
+import { getOverrideUnitFees, type PaymentRoute } from "@ticketwaze/pricing";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "./checkout.types";
 
 // The fee constants and the per-ticket fee rule live in one place now, shared
@@ -104,7 +105,18 @@ export function calculateFeeBreakdown(
    */
   discountTotal: number = 0,
   tokens: number = 0,
+  /**
+   * An admin's override of this event's fees. When active it replaces the
+   * band/percentage schedule below, line by line — see `getOverrideUnitFees`.
+   * Ignored when the organiser absorbs the fees, like the API.
+   */
+  feeOverride: FeeOverride | null = null,
 ): FeeBreakdown {
+  const override = absorbFees ? null : feeOverride;
+  // No method picked yet quotes the wallet route: it is the one with no
+  // processor cut, which is what this function has always shown before a
+  // method exists.
+  const overrideRoute: PaymentRoute = paymentType || "wallet";
   let subtotal = 0;
   let platformFee = 0;
   let serviceFee = 0;
@@ -181,6 +193,15 @@ export function calculateFeeBreakdown(
     const quantity = ticket.quantity;
     subtotal += facePrice * quantity;
 
+    if (override) {
+      const fees = getOverrideUnitFees(override, overrideRoute, facePrice);
+      serviceFee += fees.serviceFee * quantity;
+      platformFee += fees.flatFee * quantity;
+      transactionFee += fees.processorFee * quantity;
+      chargedTotal += (discountedPrice + (fees.total - facePrice)) * quantity;
+      return;
+    }
+
     const flatFee = currency === "HTG" ? htgFlatBandFee(facePrice) : null;
     if (flatFee !== null) {
       platformFee += flatFee * quantity;
@@ -228,6 +249,8 @@ export function calculateFeeBreakdown(
       total: withTokens.total,
       feeWaived: false,
       absorbedByOrganiser: true,
+      feesCancelled: false,
+      customFees: false,
       discount: appliedDiscount,
       tokenValue: withTokens.value,
       tokensSpent: withTokens.spendable,
@@ -257,6 +280,9 @@ export function calculateFeeBreakdown(
         feeWaived,
         htgExchangeRate,
         absorbFees,
+        0,
+        0,
+        feeOverride,
       ).total
     : beforeTokens;
 
@@ -268,6 +294,8 @@ export function calculateFeeBreakdown(
     total: withTokens.total,
     feeWaived,
     absorbedByOrganiser: false,
+    feesCancelled: override?.mode === "cancelled",
+    customFees: override?.mode === "custom",
     discount: appliedDiscount,
     tokenValue: withTokens.value,
     tokensSpent: withTokens.spendable,

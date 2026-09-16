@@ -78,6 +78,18 @@ export interface FeeBreakdown {
   absorbedByOrganiser: boolean;
 
   /**
+   * True when an admin cancelled every fee on this activity. Like an absorbed
+   * fee there is nothing to itemise, so the fee rows are hidden rather than
+   * shown as zeros.
+   */
+  feesCancelled: boolean;
+  /**
+   * True when an admin set custom fees on this activity. The rows are real
+   * fees, but no longer the standard 3% — so the label must not quote it.
+   */
+  customFees: boolean;
+
+  /**
    * THE ORGANISER'S DISCOUNT CODE, off the base price.
    *
    * Applied BEFORE the fees, which is why it is part of this breakdown rather

@@ -37,6 +37,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@ticketwaze/client-logging": "*",
+    "@ticketwaze/pricing": "*",
     "@ticketwaze/security-headers": "*",
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",

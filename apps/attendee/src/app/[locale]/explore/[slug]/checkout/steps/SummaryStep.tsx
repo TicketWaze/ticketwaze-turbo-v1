@@ -71,6 +71,8 @@ export default function SummaryStep({
     total,
     feeWaived,
     absorbedByOrganiser,
+    feesCancelled,
+    customFees,
     discount,
     tokenValue,
     tokensSpent,
@@ -172,8 +174,12 @@ export default function SummaryStep({
             the one paying the fees. When the organiser has taken them on there
             is nothing to itemise: the ticket lines above already add up to the
             total below, and showing a subtotal identical to the total only
-            raises a question with no answer. */}
-        {!isFree && !absorbedByOrganiser && selectedWithIndex.length > 0 && (
+            raises a question with no answer. The same holds when an admin
+            cancelled the fees on this event. */}
+        {!isFree &&
+          !absorbedByOrganiser &&
+          !feesCancelled &&
+          selectedWithIndex.length > 0 && (
           <div className="px-8 py-[1.8rem] flex flex-col gap-4 border-b border-dashed border-neutral-200">
             <div className="flex items-center justify-between text-[1.4rem]">
               <span className="text-neutral-500">{t("summary.subtotal")}</span>
@@ -196,9 +202,13 @@ export default function SummaryStep({
                   applies to the tiers above the bands, and the processor row
                   reappears beside this one with its own figure.
                 */}
-                {serviceFee > 0
+                {/* Custom admin fees are not the standard 3%, so no rate is
+                    quoted for them. */}
+                {serviceFee > 0 && !customFees
                   ? `Ticketwaze fee (${serviceFeeLabel} + ${t("summary.tax_label")})`
-                  : t("summary.transaction_fee")}
+                  : serviceFee > 0
+                    ? "Ticketwaze fee"
+                    : t("summary.transaction_fee")}
               </span>
               {feeWaived ? (
                 <span className="flex items-center gap-2">

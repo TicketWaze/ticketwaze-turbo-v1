@@ -10,6 +10,10 @@ import {
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
 import { Restaurant } from "@ticketwaze/typescript-config";
+import {
+  getActiveFeeOverride,
+  getOverrideUnitMargin,
+} from "@ticketwaze/pricing";
 import { formatMoney } from "@ticketwaze/currency";
 import { useRouter } from "@/i18n/navigation";
 import {
@@ -207,6 +211,33 @@ export default function ReserveForm({
 
   const pricing = useMemo(() => {
     const base = currency === "USD" ? usdFee : htgFee;
+
+    /**
+     * An admin fee override replaces the percentage schedule on every route.
+     * The rate is the one the API priced this quote at (its two fee columns),
+     * which is also the rate the booking will settle at.
+     */
+    const override = guestPaysBase ? null : getActiveFeeOverride(restaurant);
+    if (override) {
+      const margin = (route: "wallet" | "card" | "moncash") =>
+        getOverrideUnitMargin(override, {
+          currency,
+          faceHtg: htgFee,
+          faceUsd: usdFee,
+          route,
+          htgExchangeRate: usdFee > 0 ? htgFee / usdFee : 0,
+        });
+      const wallet = margin("wallet");
+      return {
+        base,
+        walletTotal: round2(base + (currency === "USD" ? wallet.usd : wallet.htg)),
+        walletTotalUsd: round2(usdFee + wallet.usd),
+        stripeUsd: round2(usdFee + margin("card").usd),
+        moncashHtg: round2(htgFee + margin("moncash").htg),
+        walletBalance: currency === "USD" ? walletUsd : walletHtg,
+      };
+    }
+
     return {
       base,
       walletTotal: guestPaysBase ? base : round2(base * (1 + SERVICE_FEE_RATE)),
@@ -224,7 +255,7 @@ export default function ReserveForm({
         : round2(htgFee * (1 + SERVICE_FEE_RATE) * (1 + MONCASH_TX_FEE_RATE)),
       walletBalance: currency === "USD" ? walletUsd : walletHtg,
     };
-  }, [currency, htgFee, usdFee, guestPaysBase, walletHtg, walletUsd]);
+  }, [currency, htgFee, usdFee, guestPaysBase, walletHtg, walletUsd, restaurant]);
 
   const subtotal = isCard ? usdFee : isMoncash ? htgFee : pricing.base;
   const total = isCard

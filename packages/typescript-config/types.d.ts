@@ -335,6 +335,33 @@ export interface NotificationPreference {
   updatedAt: DateTime;
 }
 
+/** How a buyer pays. `wallet` carries no payment-processor fee. */
+export type FeeRoute = "moncash" | "natcash" | "card" | "wallet";
+
+/** One payment provider's fee components under an admin override. */
+export interface RouteFeeComponents {
+  /** Fraction of the price, e.g. 0.03 for 3%. */
+  serviceRate: number;
+  /** Per unit, in the activity's own currency. */
+  flatFee: number;
+  /** Fraction of (price + service + flat), e.g. 0.025 for 2.5%. */
+  processorRate: number;
+}
+
+/**
+ * An admin's override of an activity's fee schedule — set from the admin
+ * dashboard's fees handler. `cancelled` means the buyer pays no fees;
+ * `custom` prices each provider from its own components. Mirrors
+ * `utils/fee_override.ts` in the API.
+ */
+export interface FeeOverride {
+  mode: "cancelled" | "custom";
+  sameForAllProviders: boolean;
+  routes: Record<FeeRoute, RouteFeeComponents>;
+  updatedAt: string;
+  updatedBy: string;
+}
+
 export interface EventTicketType {
   eventTicketTypeId: string;
   eventId: string;
@@ -435,6 +462,12 @@ export interface Event {
    * the activity rather than anywhere cleverer.
    */
   absorbFees: boolean;
+  /**
+   * An admin override of the fee schedule, or null for the ordinary one.
+   * Ignored while `absorbFees` is true. Quote with `getActiveFeeOverride`
+   * from @ticketwaze/pricing rather than reading it directly.
+   */
+  feeOverride?: FeeOverride | null;
   activityTags: string[];
   ticketSalesEndAt: string | null;
   /**
@@ -594,6 +627,12 @@ export interface Raffle {
    * the activity rather than anywhere cleverer.
    */
   absorbFees: boolean;
+  /**
+   * An admin override of the fee schedule, or null for the ordinary one.
+   * Ignored while `absorbFees` is true. Quote with `getActiveFeeOverride`
+   * from @ticketwaze/pricing rather than reading it directly.
+   */
+  feeOverride?: FeeOverride | null;
   totalTicketsLimit: number | null;
   activityTags: string[];
   location: { lat: number; lng: number } | null;
@@ -720,6 +759,12 @@ export interface Restaurant {
    * the activity rather than anywhere cleverer.
    */
   absorbFees: boolean;
+  /**
+   * An admin override of the fee schedule, or null for the ordinary one.
+   * Ignored while `absorbFees` is true. Quote with `getActiveFeeOverride`
+   * from @ticketwaze/pricing rather than reading it directly.
+   */
+  feeOverride?: FeeOverride | null;
   offersDelivery: boolean;
   offersTakeout: boolean;
   deliveryPhone: string | null;
@@ -907,6 +952,12 @@ export interface Sale {
    * the activity rather than anywhere cleverer.
    */
   absorbFees: boolean;
+  /**
+   * An admin override of the fee schedule, or null for the ordinary one.
+   * Ignored while `absorbFees` is true. Quote with `getActiveFeeOverride`
+   * from @ticketwaze/pricing rather than reading it directly.
+   */
+  feeOverride?: FeeOverride | null;
   status:
     | "draft"
     | "scanning"
@@ -966,6 +1017,11 @@ export interface PublicSale {
   createdAt: string;
   /** The single all-in number a buyer pays. The fee is never itemised. */
   pricing: SalePricing;
+  /**
+   * Set only when an admin fee override prices the providers differently.
+   * `pricing` is then the cheapest of them; quote the chosen method from here.
+   */
+  pricingByRoute?: Record<FeeRoute, SalePricing> | null;
   /** Enough to judge the product; nothing that locates the object in S3. */
   file: {
     originalFilename: string;

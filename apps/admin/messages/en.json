@@ -391,7 +391,8 @@
         "title": "Actions",
         "status": "Change status",
         "giveaway": "Give away tickets",
-        "refund": "Refund & cancel"
+        "refund": "Refund & cancel",
+        "fees": "Fees handler"
       }
     },
     "Ticket": {

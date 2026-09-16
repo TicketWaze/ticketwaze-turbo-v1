@@ -712,3 +712,104 @@ export function quoteWithReductions(options: {
     totalSaved: round2(undiscountedTotal - total),
   };
 }
+
+// ── Admin fee overrides ───────────────────────────────────────────────────────
+
+/**
+ * AN ADMIN'S OVERRIDE OF AN ACTIVITY'S FEE SCHEDULE — the browser's copy.
+ *
+ * Mirrors `app/controllers/utils/fee_override.ts` in the API, which is what
+ * charges. An override replaces whichever schedule the activity kind normally
+ * uses (event bands, raffle flats, the sale surcharge, the reservation
+ * percentage) with one formula per payment route:
+ *
+ *   fees      = serviceRate × price + flatFee
+ *   processor = processorRate × (price + fees)
+ *   total     = price + fees + processor
+ *
+ * `cancelled` zeroes all of it. Never applied when the organiser absorbs the
+ * fees — there is no buyer-side fee to override.
+ */
+export type { FeeOverride, RouteFeeComponents } from "@ticketwaze/typescript-config";
+import type { FeeOverride } from "@ticketwaze/typescript-config";
+
+export const FEE_ROUTES: PaymentRoute[] = ["moncash", "natcash", "card", "wallet"];
+
+/** The override that applies to a checkout on this activity, or null. */
+export function getActiveFeeOverride(activity: {
+  feeOverride?: FeeOverride | null;
+  absorbFees?: boolean | null;
+}): FeeOverride | null {
+  if (activity.absorbFees === true) return null;
+  const override = activity.feeOverride;
+  if (!override || (override.mode !== "cancelled" && override.mode !== "custom")) {
+    return null;
+  }
+  return override;
+}
+
+export interface OverrideUnitFees {
+  serviceFee: number;
+  flatFee: number;
+  processorFee: number;
+  /** What the buyer pays for one unit, rounded once like the API. */
+  total: number;
+}
+
+/**
+ * One unit's fees at `price` (in the activity's currency) under an override.
+ * A free unit carries nothing. Mirrors `overrideUnitFees` in the API.
+ */
+export function getOverrideUnitFees(
+  override: FeeOverride,
+  route: PaymentRoute,
+  price: number,
+): OverrideUnitFees {
+  const base = Number.isFinite(price) && price > 0 ? price : 0;
+  if (override.mode === "cancelled" || base <= 0) {
+    return { serviceFee: 0, flatFee: 0, processorFee: 0, total: round2(base) };
+  }
+  const c = override.routes?.[route] ?? {
+    serviceRate: 0,
+    flatFee: 0,
+    processorRate: 0,
+  };
+  const serviceRate = Math.max(0, Number(c.serviceRate) || 0);
+  const flatFee = Math.max(0, Number(c.flatFee) || 0);
+  const processorRate = Math.max(0, Number(c.processorRate) || 0);
+  const serviceFee = serviceRate * base;
+  const processorFee = processorRate * (base + serviceFee + flatFee);
+  return {
+    serviceFee,
+    flatFee,
+    processorFee,
+    total: round2(base + serviceFee + flatFee + processorFee),
+  };
+}
+
+/**
+ * The fee on one unit in BOTH currencies, for surfaces that display a route in
+ * a currency other than the activity's (a card payment on an HTG raffle is
+ * shown in USD). Computed in the activity's own currency — the one the flat
+ * fee was typed in — and converted at the day's rate. Mirrors
+ * `overrideUnitMargin` in the API.
+ */
+export function getOverrideUnitMargin(
+  override: FeeOverride,
+  input: {
+    currency: string;
+    faceHtg: number;
+    faceUsd: number;
+    route: PaymentRoute;
+    htgExchangeRate: number;
+  },
+): { htg: number; usd: number } {
+  const isUsd = input.currency === "USD";
+  const face = Math.max(0, Number(isUsd ? input.faceUsd : input.faceHtg) || 0);
+  const margin = getOverrideUnitFees(override, input.route, face).total - round2(face);
+  const rate =
+    input.htgExchangeRate > 0 ? input.htgExchangeRate : FALLBACK_HTG_EXCHANGE_RATE;
+  return isUsd
+    ? { htg: margin * rate, usd: margin }
+    : { htg: margin, usd: margin / rate };
+}

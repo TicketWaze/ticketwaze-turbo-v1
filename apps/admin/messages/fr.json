@@ -349,7 +349,8 @@
         "title": "Actions",
         "status": "Changer le statut",
         "giveaway": "Offrir des billets",
-        "refund": "Rembourser et annuler"
+        "refund": "Rembourser et annuler",
+        "fees": "Gestion des frais"
       }
     },
     "Ticket": {

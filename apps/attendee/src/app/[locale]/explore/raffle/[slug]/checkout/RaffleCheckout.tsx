@@ -23,6 +23,10 @@ import { useRouter, Link } from "@/i18n/navigation";
 import { isSuspendedResponse } from "@/lib/suspension";
 import { getPerTicketFee } from "@/lib/pricing";
 import {
+  getActiveFeeOverride,
+  getOverrideUnitMargin,
+} from "@ticketwaze/pricing";
+import {
   BuyRaffleEntriesWallet,
   StartRaffleStripe,
   StartRaffleMoncash,
@@ -144,6 +148,36 @@ export default function RaffleCheckout({
     const htgBase = Number(raffle.ticketPrice);
     const usdBase = Number(raffle.usdPrice);
     const base = isUsd ? usdBase : htgBase;
+
+    /**
+     * An admin fee override replaces the raffle schedule below on every route.
+     * Each route's fee is computed in the raffle's own currency and converted
+     * for the routes shown in the other one — the API's `overrideUnitMargin`.
+     */
+    const override = buyerPaysBase ? null : getActiveFeeOverride(raffle);
+    if (override) {
+      const margin = (route: "wallet" | "card" | "moncash" | "natcash") =>
+        getOverrideUnitMargin(override, {
+          currency: raffle.currency,
+          faceHtg: htgBase,
+          faceUsd: usdBase,
+          route,
+          htgExchangeRate: rate,
+        });
+      return {
+        base,
+        usdBase,
+        htgBase,
+        currency: raffle.currency as "HTG" | "USD",
+        walletPerEntry: round2(
+          base + (isUsd ? margin("wallet").usd : margin("wallet").htg),
+        ),
+        stripePerEntryUsd: round2(usdBase + margin("card").usd),
+        moncashPerEntryHtg: round2(htgBase + margin("moncash").htg),
+        natcashPerEntryHtg: round2(htgBase + margin("natcash").htg),
+        walletBalance: isUsd ? walletUsd : walletHtg,
+      };
+    }
 
     // Raffle flat Ticketwaze fee (HTG). null => event pricing (> 1000 HTG).
     const flat =

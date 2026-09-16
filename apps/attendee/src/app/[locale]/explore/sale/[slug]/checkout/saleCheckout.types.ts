@@ -23,3 +23,15 @@ export interface RecipientCheck {
 }
 
 export type { PublicSale };
+
+/**
+ * The quote for the method the buyer picked.
+ *
+ * Every provider normally pays the same all-in price, so this is `pricing`.
+ * An admin fee override can price providers differently, and then the API
+ * sends `pricingByRoute` — which is what the chosen method is actually
+ * charged. Before a method is picked, `pricing` is the cheapest of them.
+ */
+export function salePricingFor(sale: PublicSale, method: SalePaymentMethod) {
+  return (method && sale.pricingByRoute?.[method]) || sale.pricing;
+}

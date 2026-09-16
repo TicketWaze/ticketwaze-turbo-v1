@@ -24,6 +24,7 @@ import {
   PublicEventFormQuestion,
   User,
 } from "@ticketwaze/typescript-config";
+import { getActiveFeeOverride } from "@ticketwaze/pricing";
 import { useSession } from "next-auth/react";
 import PageLoader from "@/components/PageLoader";
 import BackButton from "@/components/shared/BackButton";
@@ -462,6 +463,7 @@ export default function CheckoutFlow({
     // A free claim has no price to discount and no bill to spend tokens on.
     selectionIsFree ? 0 : (reductions.discount?.amount ?? 0),
     selectionIsFree ? 0 : reductions.tokens,
+    getActiveFeeOverride(event),
   );
 
   /**

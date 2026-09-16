@@ -7,7 +7,17 @@ import { EventStatusDialog } from "./EventStatusDialog";
 import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar2, Location, Clock, Edit2, Gift, Trash, Status } from "iconsax-reactjs";
+import {
+  Calendar2,
+  Location,
+  Clock,
+  Edit2,
+  Gift,
+  Trash,
+  Status,
+  ReceiptDiscount,
+} from "iconsax-reactjs";
+import FeesHandlerDialog from "@/components/shared/FeesHandlerDialog";
 import Separator from "@/components/shared/Separator";
 import { useLocale, useTranslations } from "next-intl";
 import ActivityActionsMenu from "@/components/shared/ActivityActionsMenu";
@@ -135,7 +145,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
    * a popover is unmounted by the same click that opens it.
    */
   const [openDialog, setOpenDialog] = useState<
-    null | "status" | "giveaway" | "refund"
+    null | "status" | "giveaway" | "fees" | "refund"
   >(null);
 
   const editBlockedReason = event.cancelledAt
@@ -165,6 +175,12 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
       label: t("activity.actions.giveaway"),
       onSelect: () => setOpenDialog("giveaway"),
       icon: <Gift size="20" variant="Bulk" color="#2E3237" />,
+    },
+    canManage && {
+      key: "fees",
+      label: t("activity.actions.fees"),
+      onSelect: () => setOpenDialog("fees"),
+      icon: <ReceiptDiscount size="20" variant="Bulk" color="#2E3237" />,
     },
     {
       key: "refund",
@@ -379,6 +395,13 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         hideTrigger
         open={openDialog === "giveaway"}
         onOpenChange={(next) => setOpenDialog(next ? "giveaway" : null)}
+      />
+      <FeesHandlerDialog
+        kind="event"
+        activityId={event.eventId}
+        hideTrigger
+        open={openDialog === "fees"}
+        onOpenChange={(next) => setOpenDialog(next ? "fees" : null)}
       />
       <RefundActivityDialog
         activityKind="event"

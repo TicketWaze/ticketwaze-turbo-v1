@@ -8,6 +8,7 @@ import { ArrowLeft, Clock, Location } from "iconsax-reactjs";
 import { RestaurantStatusDialog, StatusBadge } from "./RestaurantStatusDialog";
 import { RestaurantSuspensionDialog } from "./RestaurantSuspensionDialog";
 import EditActivityLink from "@/components/shared/EditActivityLink";
+import FeesHandlerDialog from "@/components/shared/FeesHandlerDialog";
 
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
 const DAY_NAMES: Record<number, string> = {
@@ -111,6 +112,10 @@ export default function RestaurantReviewComponent({
         <div className="flex items-center gap-4">
           <EditActivityLink
             href={`/activities/restaurant/${restaurant.restaurantId}/edit`}
+          />
+          <FeesHandlerDialog
+            kind="restaurant"
+            activityId={restaurant.restaurantId}
           />
           <RestaurantStatusDialog restaurant={restaurant} />
           <RestaurantSuspensionDialog restaurant={restaurant} />
