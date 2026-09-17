@@ -20,6 +20,7 @@
     "@vis.gl/react-google-maps": "^1.7.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "html5-qrcode": "^2.3.8",
     "iconsax-reactjs": "^0.0.8",
     "lucide-react": "^0.562.0",
     "motion": "^12.24.7",

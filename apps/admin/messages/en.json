@@ -392,7 +392,31 @@
         "status": "Change status",
         "giveaway": "Give away tickets",
         "refund": "Refund & cancel",
-        "fees": "Fees handler"
+        "fees": "Fees handler",
+        "scan": "Scan ticket"
+      },
+      "scanner": {
+        "ready": "Ready to scan",
+        "start": "Start scanning",
+        "stop": "Stop scanning",
+        "scan_next": "Scan next",
+        "validate": "Validate",
+        "failed": "Invalid ticket",
+        "too_early": "Scanning is not open yet. It opens at {time}.",
+        "closed": "The check-in window for this event has closed.",
+        "tab_qr": "QR Code",
+        "tab_ticket_id": "Ticket ID",
+        "ticket_id_placeholder": "Enter ticket ID...",
+        "check_in": "Check in",
+        "check_out": "Check out",
+        "checked_in": "Checked in!",
+        "checked_out": "Checked out!",
+        "inside": "Inside",
+        "outside": "Not inside",
+        "time_inside": "Time inside",
+        "entries": "Entries",
+        "stayed": "Stayed",
+        "since": "Inside since {time}"
       }
     },
     "Ticket": {

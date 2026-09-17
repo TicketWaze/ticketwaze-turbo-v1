@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import BackButton from "@/components/shared/BackButton";
-import { ButtonBlack } from "@/components/shared/buttons";
+import { ButtonBlack, ButtonNeutral } from "@/components/shared/buttons";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
 import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
@@ -16,8 +16,12 @@ import {
   Trash,
   Status,
   ReceiptDiscount,
+  Scanner as ScannerIcon,
 } from "iconsax-reactjs";
 import FeesHandlerDialog from "@/components/shared/FeesHandlerDialog";
+import CheckingDialog, {
+  canCheckActivity,
+} from "@/components/shared/CheckingDialog";
 import Separator from "@/components/shared/Separator";
 import { useLocale, useTranslations } from "next-intl";
 import ActivityActionsMenu from "@/components/shared/ActivityActionsMenu";
@@ -145,8 +149,16 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
    * a popover is unmounted by the same click that opens it.
    */
   const [openDialog, setOpenDialog] = useState<
-    null | "status" | "giveaway" | "fees" | "refund"
+    null | "status" | "giveaway" | "fees" | "refund" | "checking"
   >(null);
+
+  /**
+   * The scanner is offered only to an admin holding `tickets.checking`, and
+   * only where a scan would actually be accepted — the same conditions the API
+   * enforces. Its two triggers below (the desktop header and the end of the
+   * mobile page) drive ONE dialog, so the camera is never mounted twice.
+   */
+  const canCheck = useAdminCan("tickets.checking") && canCheckActivity(event);
 
   const editBlockedReason = event.cancelledAt
     ? "This activity has been cancelled and can no longer be edited."
@@ -195,13 +207,25 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
   return (
     <div className="flex flex-col gap-8 h-full overflow-hidden">
       <BackButton text={t("activity.back")}></BackButton>
-      <div className="flex justify-between items-center">
-        <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem]">
+      <div className="flex justify-between items-center gap-6">
+        <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem] min-w-0">
           {event.eventName}
         </h2>
-        {/* One menu at every width — the four pills used to wrap onto a
-            second line below a wide desktop. */}
-        <ActivityActionsMenu actions={actions} label={t("activity.actions.title")} />
+        <div className="flex items-center gap-4 shrink-0">
+          {/* Desktop: the scanner sits between the title and the menu. On a
+              phone the header row has no space for it, so it gets the
+              full-width row below instead. */}
+          {canCheck && (
+            <ScanTriggerButton
+              className="hidden lg:flex"
+              label={t("activity.actions.scan")}
+              onClick={() => setOpenDialog("checking")}
+            />
+          )}
+          {/* One menu at every width — the four pills used to wrap onto a
+              second line below a wide desktop. */}
+          <ActivityActionsMenu actions={actions} label={t("activity.actions.title")} />
+        </div>
       </div>
       <main className="w-full gap-16 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden flex flex-col lg:grid lg:grid-cols-[15fr_21fr]">
         <div className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
@@ -377,6 +401,17 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
             <ActivityAttendances event={event} />
           </Tabs>
         </div>
+        {/* Mobile: the scanner lands at the END of the page, below the
+            performance figures. The header row has no space for it on a
+            phone, and the door staff scrolling here are looking for it last,
+            not first. On desktop it sits in the header instead. */}
+        {canCheck && (
+          <ScanTriggerButton
+            className="flex lg:hidden w-full"
+            label={t("activity.actions.scan")}
+            onClick={() => setOpenDialog("checking")}
+          />
+        )}
         <div className="lg:hidden"></div>
       </main>
 
@@ -384,6 +419,12 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         Siblings of the menu, never children of it. `hideTrigger` drops each
         dialog's own button — the menu row is the trigger now.
       */}
+      <CheckingDialog
+        event={event}
+        hideTrigger
+        open={openDialog === "checking"}
+        onOpenChange={(next) => setOpenDialog(next ? "checking" : null)}
+      />
       <EventStatusDialog
         event={event}
         hideTrigger
@@ -414,5 +455,38 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         onOpenChange={(next) => setOpenDialog(next ? "refund" : null)}
       />
     </div>
+  );
+}
+
+/**
+ * The scanner's button, drawn twice — inline in the header on desktop, as its
+ * own full-width row under the title on a phone — and opening the one dialog
+ * mounted at the bottom of the page.
+ *
+ * On desktop it is sized to the actions menu's circle (h-14) beside it rather
+ * than to the app's full-height pill, which would stand a head taller than
+ * everything else in that row.
+ *
+ * Neutral grey, the same `bg-neutral-100 / text-neutral-700` the organisation
+ * dashboard's grey button uses. Black would read as the page's primary action,
+ * which scanning is not — it is one of several things to do from here.
+ */
+function ScanTriggerButton({
+  className,
+  label,
+  onClick,
+}: {
+  className?: string;
+  label: string;
+  onClick: () => void;
+}) {
+  return (
+    <ButtonNeutral
+      className={`gap-3 lg:h-14 lg:w-fit lg:px-8 lg:py-0 ${className ?? ""}`}
+      onClick={onClick}
+    >
+      <ScannerIcon size="18" color="#737c8a" variant="Bulk" />
+      {label}
+    </ButtonNeutral>
   );
 }

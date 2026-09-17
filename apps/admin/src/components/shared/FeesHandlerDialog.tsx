@@ -10,7 +10,15 @@ import type {
   FeeRoute,
   RouteFeeComponents,
 } from "@ticketwaze/typescript-config";
-import { FEE_ROUTES, getOverrideUnitFees, round2 } from "@ticketwaze/pricing";
+import {
+  FEE_GROUPS,
+  FEE_GROUP_ROUTE,
+  FEE_ROUTES,
+  getOverrideUnitFees,
+  normalizeFeeRoutes,
+  round2,
+  type FeeGroup,
+} from "@ticketwaze/pricing";
 import { formatMoney } from "@ticketwaze/currency";
 import {
   Dialog,
@@ -36,11 +44,40 @@ type Mode = "standard" | "cancelled" | "custom";
 /** What the admin is typing: percentages and amounts, as the inputs hold them. */
 type ComponentInputs = { service: string; flat: string; processor: string };
 
-const ROUTE_LABELS: Record<FeeRoute, string> = {
-  moncash: "MonCash",
-  natcash: "NatCash",
+/**
+ * THREE SCHEDULES, NOT FOUR PROVIDERS.
+ *
+ * MonCash and NatCash charge the same 2.5% through the same flow and are
+ * priced identically by every ordinary schedule, so the handler sets them as
+ * one mobile-money group instead of asking for the same three numbers twice.
+ * The wallet is its own group because it has no processor fee at all — see
+ * `GROUPS_WITH_PROCESSOR`.
+ */
+const GROUP_LABELS: Record<FeeGroup, string> = {
+  mobile: "MonCash / NatCash",
   card: "Card",
   wallet: "Wallet",
+};
+
+const GROUP_HINTS: Record<FeeGroup, string> = {
+  mobile: "Both mobile-money providers charge these values.",
+  card: "Stripe card payments.",
+  wallet:
+    "A wallet payment moves a Ticketwaze balance, so no processor takes a cut.",
+};
+
+/**
+ * A WALLET PAYMENT HAS NO PROCESSOR FEE.
+ *
+ * It moves a balance that is already inside Ticketwaze — there is no MonCash,
+ * NatCash or Stripe on the other side to pay. So the wallet group offers a
+ * service fee and a flat fee only, and its processor rate is always zero,
+ * including when one set of values is shared across every provider.
+ */
+const GROUPS_WITH_PROCESSOR: Record<FeeGroup, boolean> = {
+  mobile: true,
+  card: true,
+  wallet: false,
 };
 
 /** 0.025 → "2.5". Trimmed so a stored fraction does not show as 2.4999999. */
@@ -63,10 +100,16 @@ function parseAmount(value: string): number | null {
   return Number.isFinite(n) && n >= 0 ? n : null;
 }
 
-function toComponents(inputs: ComponentInputs): RouteFeeComponents | null {
+/** A group's typed values as components. The wallet's processor is always 0. */
+function toComponents(
+  inputs: ComponentInputs,
+  group: FeeGroup,
+): RouteFeeComponents | null {
   const service = parseAmount(inputs.service);
   const flat = parseAmount(inputs.flat);
-  const processor = parseAmount(inputs.processor);
+  const processor = GROUPS_WITH_PROCESSOR[group]
+    ? parseAmount(inputs.processor)
+    : 0;
   if (service === null || flat === null || processor === null) return null;
   if (service > 100 || processor > 100) return null;
   return {
@@ -76,11 +119,10 @@ function toComponents(inputs: ComponentInputs): RouteFeeComponents | null {
   };
 }
 
-function eachRoute<T>(make: (route: FeeRoute) => T): Record<FeeRoute, T> {
-  return Object.fromEntries(FEE_ROUTES.map((route) => [route, make(route)])) as Record<
-    FeeRoute,
-    T
-  >;
+function eachGroup<T>(make: (group: FeeGroup) => T): Record<FeeGroup, T> {
+  return Object.fromEntries(
+    FEE_GROUPS.map((group) => [group, make(group)]),
+  ) as Record<FeeGroup, T>;
 }
 
 /**
@@ -93,6 +135,10 @@ function eachRoute<T>(make: (route: FeeRoute) => T): Record<FeeRoute, T> {
  *   cancelled — buyers pay the bare price; Ticketwaze forgoes its margin
  *   custom    — a service %, a flat fee and a processor % per provider, or one
  *               set for every provider when the toggle is on
+ *
+ * Providers are handled in the three groups that actually price differently:
+ * mobile money (MonCash and NatCash together), card, and wallet — which has no
+ * processor fee to set. See `GROUP_LABELS` and `GROUPS_WITH_PROCESSOR`.
  *
  * The preview below the form is computed with the same function the attendee
  * checkout quotes with, so what the admin sees before saving is what buyers
@@ -141,8 +187,8 @@ export default function FeesHandlerDialog({
     flat: "0",
     processor: "0",
   });
-  const [routeInputs, setRouteInputs] = useState<Record<FeeRoute, ComponentInputs>>(
-    eachRoute(() => ({ service: "0", flat: "0", processor: "0" })),
+  const [groupInputs, setGroupInputs] = useState<Record<FeeGroup, ComponentInputs>>(
+    eachGroup(() => ({ service: "0", flat: "0", processor: "0" })),
   );
 
   /** Seeds the form from what is saved, or from today's schedule if nothing is. */
@@ -151,8 +197,8 @@ export default function FeesHandlerDialog({
     setMode(saved?.mode ?? "standard");
     const source = saved?.mode === "custom" ? saved.routes : fees.suggested;
     setSameForAll(saved ? saved.sameForAllProviders : true);
-    setAllInputs(toInputs(source.moncash));
-    setRouteInputs(eachRoute((route) => toInputs(source[route])));
+    setAllInputs(toInputs(source[FEE_GROUP_ROUTE.mobile]));
+    setGroupInputs(eachGroup((group) => toInputs(source[FEE_GROUP_ROUTE[group]])));
   }
 
   useEffect(() => {
@@ -189,25 +235,39 @@ export default function FeesHandlerDialog({
 
   function toggleSameForAll() {
     if (sameForAll) {
-      // Splitting: every provider starts from the shared set.
-      setRouteInputs(eachRoute(() => ({ ...allInputs })));
+      // Splitting: every group starts from the shared set.
+      setGroupInputs(eachGroup(() => ({ ...allInputs })));
     } else {
-      // Merging: MonCash's values become everyone's.
-      setAllInputs({ ...routeInputs.moncash });
+      // Merging: mobile money's values become everyone's.
+      setAllInputs({ ...groupInputs.mobile });
     }
     setSameForAll(!sameForAll);
   }
 
-  /** The components that would be saved, or null while any field is invalid. */
+  /**
+   * The components that would be saved, or null while any field is invalid.
+   *
+   * Typed per group and expanded to the four routes the API stores against —
+   * NatCash takes MonCash's values, and the wallet's processor rate stays zero
+   * even when one set is shared across every provider.
+   */
   const draftRoutes = useMemo(() => {
-    const routes = {} as Record<FeeRoute, RouteFeeComponents>;
-    for (const route of FEE_ROUTES) {
-      const parsed = toComponents(sameForAll ? allInputs : routeInputs[route]);
+    const byGroup = {} as Record<FeeGroup, RouteFeeComponents>;
+    for (const group of FEE_GROUPS) {
+      const parsed = toComponents(
+        sameForAll ? allInputs : groupInputs[group],
+        group,
+      );
       if (!parsed) return null;
-      routes[route] = parsed;
+      byGroup[group] = parsed;
     }
-    return routes;
-  }, [sameForAll, allInputs, routeInputs]);
+    return normalizeFeeRoutes({
+      moncash: byGroup.mobile,
+      natcash: byGroup.mobile,
+      card: byGroup.card,
+      wallet: byGroup.wallet,
+    });
+  }, [sameForAll, allInputs, groupInputs]);
 
   /** What each unit would cost after saving, per route. */
   function previewQuote(price: number, standard: RouteQuote, route: FeeRoute): RouteQuote | null {
@@ -373,8 +433,8 @@ export default function FeesHandlerDialog({
                           </span>
                           <span className="text-[1.25rem] text-neutral-500">
                             {sameForAll
-                              ? "MonCash, NatCash, card and wallet all charge the values below."
-                              : "Each payment provider has its own values."}
+                              ? "Mobile money, card and wallet all charge the values below."
+                              : "Each payment method has its own values."}
                           </span>
                         </span>
                         <span
@@ -394,20 +454,24 @@ export default function FeesHandlerDialog({
 
                       {sameForAll ? (
                         <ComponentFields
-                          title="All providers"
+                          title="All payment methods"
+                          hint="Wallet payments take the service and flat fee only — they have no processor fee."
                           currency={currency}
+                          showProcessor
                           value={allInputs}
                           onChange={setAllInputs}
                         />
                       ) : (
-                        FEE_ROUTES.map((route) => (
+                        FEE_GROUPS.map((group) => (
                           <ComponentFields
-                            key={route}
-                            title={ROUTE_LABELS[route]}
+                            key={group}
+                            title={GROUP_LABELS[group]}
+                            hint={GROUP_HINTS[group]}
                             currency={currency}
-                            value={routeInputs[route]}
+                            showProcessor={GROUPS_WITH_PROCESSOR[group]}
+                            value={groupInputs[group]}
                             onChange={(next) =>
-                              setRouteInputs((current) => ({ ...current, [route]: next }))
+                              setGroupInputs((current) => ({ ...current, [group]: next }))
                             }
                           />
                         ))
@@ -415,7 +479,8 @@ export default function FeesHandlerDialog({
 
                       <p className="text-[1.25rem] leading-6 text-neutral-500">
                         Buyer total = price + service % of price + flat fee, then
-                        the processor % on top. Free tickets stay free.
+                        the processor % on top. Free tickets stay free, and a
+                        wallet payment never carries a processor fee.
                       </p>
                     </section>
                   )}
@@ -435,11 +500,13 @@ export default function FeesHandlerDialog({
                         units={data.units.map((unit) => ({
                           label: unit.label,
                           price: unit.price,
-                          quotes: eachRoute(
-                            (route) =>
+                          quotes: Object.fromEntries(
+                            FEE_ROUTES.map((route) => [
+                              route,
                               previewQuote(unit.price, unit.standard[route], route) ??
-                              unit.standard[route],
-                          ),
+                                unit.standard[route],
+                            ]),
+                          ) as Record<FeeRoute, RouteQuote>,
                         }))}
                         money={money}
                       />
@@ -524,12 +591,17 @@ function ModeOption({
 
 function ComponentFields({
   title,
+  hint,
   currency,
+  showProcessor,
   value,
   onChange,
 }: {
   title: string;
+  hint?: string;
   currency: string;
+  /** False on the wallet, which no processor charges. */
+  showProcessor: boolean;
   value: ComponentInputs;
   onChange: (next: ComponentInputs) => void;
 }) {
@@ -553,11 +625,19 @@ function ComponentFields({
 
   return (
     <div className="flex flex-col gap-3 rounded-[15px] border border-neutral-200 p-5">
-      <span className="text-[1.4rem] font-medium text-black">{title}</span>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <span className="flex flex-col">
+        <span className="text-[1.4rem] font-medium text-black">{title}</span>
+        {hint && <span className="text-[1.2rem] text-neutral-500">{hint}</span>}
+      </span>
+      <div
+        className={cn(
+          "grid grid-cols-1 gap-3",
+          showProcessor ? "sm:grid-cols-3" : "sm:grid-cols-2",
+        )}
+      >
         {field("service", "Service fee", "%")}
         {field("flat", "Flat fee per unit", currency)}
-        {field("processor", "Processor fee", "%")}
+        {showProcessor && field("processor", "Processor fee", "%")}
       </div>
     </div>
   );
@@ -578,16 +658,18 @@ function PricingTable({
     );
   }
 
+  // One column per group: MonCash and NatCash are always quoted the same, so a
+  // NatCash column beside MonCash would only ever repeat it.
   return (
     <div className="overflow-x-auto rounded-[12px] border border-neutral-200">
-      <table className="w-full min-w-[56rem] text-[1.3rem]">
+      <table className="w-full min-w-[48rem] text-[1.3rem]">
         <thead>
           <tr className="bg-neutral-100 text-neutral-600">
             <th className="px-4 py-3 text-left font-medium">Item</th>
             <th className="px-4 py-3 text-right font-medium">Price</th>
-            {FEE_ROUTES.map((route) => (
-              <th key={route} className="px-4 py-3 text-right font-medium">
-                {ROUTE_LABELS[route]}
+            {FEE_GROUPS.map((group) => (
+              <th key={group} className="px-4 py-3 text-right font-medium">
+                {GROUP_LABELS[group]}
               </th>
             ))}
           </tr>
@@ -597,10 +679,10 @@ function PricingTable({
             <tr key={`${unit.label}-${index}`} className="border-t border-neutral-200">
               <td className="px-4 py-3 text-black">{unit.label}</td>
               <td className="px-4 py-3 text-right text-black">{money(unit.price)}</td>
-              {FEE_ROUTES.map((route) => {
-                const quote = unit.quotes[route];
+              {FEE_GROUPS.map((group) => {
+                const quote = unit.quotes[FEE_GROUP_ROUTE[group]];
                 return (
-                  <td key={route} className="px-4 py-3 text-right">
+                  <td key={group} className="px-4 py-3 text-right">
                     <span className="flex flex-col items-end">
                       <span className="text-black font-medium">{money(quote.total)}</span>
                       <span className="text-[1.1rem] text-neutral-500">

@@ -62,11 +62,15 @@ const ACTIONS = ["view", "create", "edit", "delete"];
  *
  * `actions` is per-group rather than the shared ACTIONS list because the
  * permission set is not a clean CRUD matrix and never was: `payouts.send`,
- * `campaigns.send`, `activity.manage`, `tickets.giveaway` and now
- * `attendees.credit` are powers in their own right, and campaigns has no
+ * `campaigns.send`, `activity.manage`, `tickets.giveaway`, `attendees.credit`
+ * and `tickets.checking` are powers in their own right, and campaigns has no
  * `edit` at all. While this was hardcoded to the four CRUD verbs those keys
  * existed in the API and could be granted over the wire, but no admin could
  * see or tick them here.
+ *
+ * `tickets.checking` is the door scanner. It is the one key here that is
+ * usually granted DOWNWARD — to a Support or Moderator admin working an event
+ * — rather than held back, so it deliberately reads as an ordinary tick.
  */
 const PERMISSION_GROUPS: {
   resource: string;
@@ -89,7 +93,11 @@ const PERMISSION_GROUPS: {
     label: "Activities",
     actions: [...ACTIONS, "manage"],
   },
-  { resource: "tickets", label: "Tickets", actions: [...ACTIONS, "giveaway"] },
+  {
+    resource: "tickets",
+    label: "Tickets",
+    actions: [...ACTIONS, "giveaway", "checking"],
+  },
   { resource: "payouts", label: "Payouts", actions: [...ACTIONS, "send"] },
   { resource: "payments", label: "Payments", actions: ACTIONS },
   {

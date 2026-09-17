@@ -350,7 +350,31 @@
         "status": "Changer le statut",
         "giveaway": "Offrir des billets",
         "refund": "Rembourser et annuler",
-        "fees": "Gestion des frais"
+        "fees": "Gestion des frais",
+        "scan": "Scanner le billet"
+      },
+      "scanner": {
+        "ready": "Prêt à scanner",
+        "start": "Démarrer le scan",
+        "stop": "Arrêter le scan",
+        "scan_next": "Scanner suivant",
+        "validate": "Valider",
+        "failed": "Billet invalide",
+        "too_early": "Le scan n'est pas encore ouvert. Il ouvre à {time}.",
+        "closed": "La fenêtre d'enregistrement pour cet événement est fermée.",
+        "tab_qr": "QR Code",
+        "tab_ticket_id": "ID du billet",
+        "ticket_id_placeholder": "Saisir l'ID du billet...",
+        "check_in": "Enregistrer",
+        "check_out": "Sortie",
+        "checked_in": "Enregistré !",
+        "checked_out": "Sorti !",
+        "inside": "À l'intérieur",
+        "outside": "Pas à l'intérieur",
+        "time_inside": "Temps à l'intérieur",
+        "entries": "Entrées",
+        "stayed": "Durée",
+        "since": "À l'intérieur depuis {time}"
       }
     },
     "Ticket": {

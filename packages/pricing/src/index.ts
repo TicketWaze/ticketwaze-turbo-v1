@@ -731,9 +731,68 @@ export function quoteWithReductions(options: {
  * fees — there is no buyer-side fee to override.
  */
 export type { FeeOverride, RouteFeeComponents } from "@ticketwaze/typescript-config";
-import type { FeeOverride } from "@ticketwaze/typescript-config";
+import type {
+  FeeOverride,
+  RouteFeeComponents,
+} from "@ticketwaze/typescript-config";
 
+/** Every route an override is stored against. */
 export const FEE_ROUTES: PaymentRoute[] = ["moncash", "natcash", "card", "wallet"];
+
+/**
+ * WHAT AN ADMIN ACTUALLY SETS — three schedules, not four routes.
+ *
+ * MonCash and NatCash are one mobile-money schedule: the same 2.5% cut, the
+ * same flow, priced identically by every kind's ordinary schedule, so they are
+ * set together rather than typed twice. The wallet moves a balance that is
+ * already inside Ticketwaze, so no processor takes a cut of it — it carries a
+ * service fee and a flat fee, never a processor rate.
+ *
+ * Storage stays four routes, since every pricing path looks a route up by
+ * name; `normalizeFeeRoutes` expands the three groups back out.
+ *
+ * Mirrors `FEE_GROUPS` in the API's `utils/fee_override.ts`.
+ */
+export const FEE_GROUPS = ["mobile", "card", "wallet"] as const;
+
+export type FeeGroup = (typeof FEE_GROUPS)[number];
+
+/** The schedule a route is priced by. */
+export function getRouteFeeGroup(route: PaymentRoute): FeeGroup {
+  if (route === "card") return "card";
+  if (route === "wallet") return "wallet";
+  return "mobile";
+}
+
+/** The route whose stored components ARE the group's. */
+export const FEE_GROUP_ROUTE: Record<FeeGroup, PaymentRoute> = {
+  mobile: "moncash",
+  card: "card",
+  wallet: "wallet",
+};
+
+/** Which routes a group sets. */
+export const FEE_GROUP_ROUTES: Record<FeeGroup, PaymentRoute[]> = {
+  mobile: ["moncash", "natcash"],
+  card: ["card"],
+  wallet: ["wallet"],
+};
+
+/**
+ * The four stored routes as the groups require them: NatCash carries MonCash's
+ * components, and the wallet carries no processor rate. Mirrors
+ * `normalizeFeeRoutes` in the API, which normalizes on both read and write.
+ */
+export function normalizeFeeRoutes(
+  routes: Record<PaymentRoute, RouteFeeComponents>,
+): Record<PaymentRoute, RouteFeeComponents> {
+  return {
+    moncash: { ...routes.moncash },
+    natcash: { ...routes.moncash },
+    card: { ...routes.card },
+    wallet: { ...routes.wallet, processorRate: 0 },
+  };
+}
 
 /** The override that applies to a checkout on this activity, or null. */
 export function getActiveFeeOverride(activity: {
@@ -776,7 +835,11 @@ export function getOverrideUnitFees(
   };
   const serviceRate = Math.max(0, Number(c.serviceRate) || 0);
   const flatFee = Math.max(0, Number(c.flatFee) || 0);
-  const processorRate = Math.max(0, Number(c.processorRate) || 0);
+  // No processor is involved in a wallet payment, so none of its cut can be
+  // quoted — even when an override written before the fee groups existed still
+  // carries a rate against the route. The API zeroes it the same way.
+  const processorRate =
+    route === "wallet" ? 0 : Math.max(0, Number(c.processorRate) || 0);
   const serviceFee = serviceRate * base;
   const processorFee = processorRate * (base + serviceFee + flatFee);
   return {
