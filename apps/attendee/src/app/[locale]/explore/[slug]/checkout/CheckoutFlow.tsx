@@ -495,9 +495,7 @@ export default function CheckoutFlow({
   async function BuyFreeTicket() {
     setIsLoading(true);
     const values = getValues();
-    const validAttendees = keepCompleteAttendees(
-      attendeesWithAnswers(values.attendees),
-    );
+    const validAttendees = attendeesWithAnswers(values.attendees);
     const result = await FreeEventTicket(
       accessToken,
       event.eventId,
@@ -515,22 +513,21 @@ export default function CheckoutFlow({
   /**
    * The attendee list with each seat's answers attached.
    *
-   * ATTACHED BEFORE ANY FILTERING, and that ordering is the whole point.
-   * `seatAnswers` is held by position, and the paid paths below drop incomplete
-   * "for someone else" rows before posting — pairing answers to attendees after
-   * that filter would shift every answer onto the wrong seat. Doing it here
-   * means the pair travels together through whatever happens next.
+   * `seatAnswers` is held by position, so the pair is made here and travels
+   * together through whatever happens next.
+   *
+   * EVERY SEAT GOES, including a half-filled one. The paid paths used to drop
+   * any "for someone else" row missing a name or an email before posting, which
+   * quietly removed a seat the buyer had chosen and charged them for one ticket
+   * fewer than they were looking at. `handleNext` refuses to leave the recipient
+   * step in that state and the API refuses the checkout outright, so an
+   * incomplete row now produces a message rather than a smaller order.
    */
   function attendeesWithAnswers(attendees: AttendeeFormData[]) {
     return attendees.map((attendee, index) => ({
       ...attendee,
       answers: answersForSeat(index),
     }));
-  }
-
-  /** The same rule every paid path applies, kept in one place. */
-  function keepCompleteAttendees<T extends AttendeeFormData>(attendees: T[]) {
-    return attendees.filter((a) => !a.isForSomeoneElse || (a.name && a.email));
   }
 
   function buildGuestTickets(attendees: AttendeeFormData[]) {
@@ -576,9 +573,7 @@ export default function CheckoutFlow({
       return;
     }
 
-    const validAttendees = keepCompleteAttendees(
-      attendeesWithAnswers(values.attendees),
-    );
+    const validAttendees = attendeesWithAnswers(values.attendees);
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/${provider}`,
       {
@@ -626,9 +621,7 @@ export default function CheckoutFlow({
       return;
     }
 
-    const validAttendees = keepCompleteAttendees(
-      attendeesWithAnswers(values.attendees),
-    );
+    const validAttendees = attendeesWithAnswers(values.attendees);
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/stripe`,
       {
@@ -654,9 +647,7 @@ export default function CheckoutFlow({
   async function WalletPayment() {
     setIsLoading(true);
     const values = getValues();
-    const validAttendees = keepCompleteAttendees(
-      attendeesWithAnswers(values.attendees),
-    );
+    const validAttendees = attendeesWithAnswers(values.attendees);
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/wallet`,
       {

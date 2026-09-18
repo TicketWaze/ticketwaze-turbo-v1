@@ -998,7 +998,7 @@
     "recipient": {
       "title": "Recipient",
       "someone": "I’m purchasing this ticket for someone else",
-      "error": "Please fill in attendee information for all tickets marked for someone else",
+      "error": "Add the name and email for every ticket you are buying for someone else. The name goes on their ticket and is checked at the entrance.",
       "warning": "Please double-check the information before submitting. If these details are incorrect, the person may not be able to access their ticket.",
       "email": "Email Address",
       "name": "Full Name",

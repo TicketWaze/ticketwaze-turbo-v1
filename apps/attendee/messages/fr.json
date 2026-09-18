@@ -1042,8 +1042,8 @@
     "recipient": {
       "title": "Destinataire",
       "someone": "J'achète ce billet pour quelqu'un d'autre",
-      "error": "Veuillez renseigner les informations relatives aux participants pour tous les billets marqués pour quelqu'un d'autre",
-      "warning": "Veuillez vérifier les informations avant de soumettre votre demande. Si elles sont incorrectes, la personne pourrait ne pas pouvoir accéder à son ticket.",
+      "error": "Indiquez le nom et l’adresse e-mail pour chaque billet acheté pour quelqu’un d’autre. Le nom figure sur le billet et est contrôlé à l’entrée.",
+      "warning": "Veuillez vérifier les informations avant de soumettre votre demande. Si elles sont incorrectes, la personne pourrait ne pas pouvoir accéder à son billet.",
       "email": "Adresse e-mail",
       "name": "Nom complet",
       "your_info": "Vos informations",
