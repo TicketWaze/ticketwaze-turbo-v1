@@ -22,6 +22,7 @@ import {
   Event,
   EventTicketType,
   PublicEventFormQuestion,
+  PublicRewardSummary,
   User,
 } from "@ticketwaze/typescript-config";
 import { getActiveFeeOverride } from "@ticketwaze/pricing";
@@ -58,6 +59,7 @@ const stripePromise = loadStripe(
 export default function CheckoutFlow({
   event,
   ticketTypes,
+  reward = null,
   user,
   feeWaiverEligible = false,
   htgExchangeRate = 0,
@@ -65,6 +67,8 @@ export default function CheckoutFlow({
 }: {
   event: Event;
   ticketTypes: EventTicketType[];
+  /** The organiser's "buy N, get one free" offer, when there is one. */
+  reward?: PublicRewardSummary | null;
   user?: User;
   feeWaiverEligible?: boolean;
   htgExchangeRate?: number;
@@ -883,6 +887,7 @@ export default function CheckoutFlow({
               watchedTickets={watchedTickets}
               ticketTypes={ticketTypes}
               event={event}
+              reward={reward}
               eventIsAllFree={eventIsAllFree}
               selectedWithIndex={selectedWithIndex}
               feeBreakdown={feeBreakdown}

@@ -822,6 +822,63 @@
         "min_purchase": "Minimum order (optional)",
         "cost_notice": "Discounts come out of your proceeds. Ticketwaze fees are always calculated on your listed price, so a discount never changes the fees: you receive the discounted price."
       },
+      "rewards": {
+        "title": "Rewards",
+        "subtitle": "Reward",
+        "back": "Back",
+        "intro": "Give buyers a free ticket when they buy several at once. Name the reward, say how many tickets earn it, and it is handed out automatically the moment a purchase clears.",
+        "empty": "No reward yet. Create one and buyers start earning it straight away.",
+        "create": "Create a reward",
+        "edit": "Edit reward",
+        "name": "Reward name",
+        "name_hint": "This is printed on the ticket, for example \"Golden Ticket\".",
+        "required_quantity": "Tickets to buy",
+        "required_quantity_hint": "Bought in a single order. It repeats: buying twice as many earns two rewards.",
+        "stock": "Reward tickets available",
+        "stock_hint": "Leave this empty for unlimited reward tickets.",
+        "unlimited": "Unlimited",
+        "unlimited_stock": "Unlimited",
+        "rule": "Buy {quantity} tickets, get 1 \"{name}\" free",
+        "given_out": "Given out",
+        "remaining": "Remaining",
+        "status": "Status",
+        "active": "Active",
+        "inactive": "Off",
+        "cost_notice": "Reward tickets are your gift: the buyer pays nothing for them and they add nothing to your proceeds. They take a place at your activity like any other ticket, so set a stock if your venue has a limit.",
+        "free_event_notice": "Rewards are only available on paid events.",
+        "grants_title": "Buyers who earned it",
+        "grants_empty": "Nobody has earned this reward yet.",
+        "buyer": "Buyer",
+        "tickets": "Reward tickets",
+        "earned_on": "Earned on",
+        "quantity": "Quantity",
+        "revoked": "Taken back",
+        "actions": "Actions",
+        "activate": "Activate",
+        "deactivate": "Switch off",
+        "delete": "Delete",
+        "close": "Close",
+        "save": "Save",
+        "add": "Create",
+        "created": "Reward created",
+        "updated": "Reward updated",
+        "activated": "Reward activated",
+        "deactivated": "Reward switched off",
+        "deleted": "Reward deleted",
+        "errors": {
+          "name": {
+            "min": "Give the reward a name of at least 2 characters",
+            "max": "The name cannot exceed 40 characters"
+          },
+          "required_quantity": {
+            "min": "A reward needs at least 2 tickets bought",
+            "max": "That is more tickets than one order can hold"
+          },
+          "stock": {
+            "min": "Make at least 1 reward ticket available"
+          }
+        }
+      },
       "attendees": {
         "back": "Back",
         "subtitle": "Add Attendee",

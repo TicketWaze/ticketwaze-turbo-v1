@@ -33,6 +33,7 @@ import Capitalize from "@/lib/Capitalize";
 import { ticketsOrganisationTotal } from "@/lib/ticketEarnings";
 import ShareEvent from "./ShareEvent";
 import ReturnedTicketsSection from "./ReturnedTicketsSection";
+import { eventStartsAt, isEventPast } from "@/lib/eventTime";
 
 export default function EventPageDetails({
   event,
@@ -58,36 +59,20 @@ export default function EventPageDetails({
     return a.ticketTypeName.localeCompare(b.ticketTypeName);
   });
   const today = DateTime.now();
-  const firstDay = event.eventDays.find((d) => d.dayNumber === 1)!;
-  const firstDate = DateTime.fromISO(firstDay.eventDate, { zone: "utc" })
-    .setZone(firstDay.timezone, { keepLocalTime: true })
-    .toISODate();
-  const eventStart = DateTime.fromISO(`${firstDate}T${firstDay.startTime}`, {
-    zone: firstDay.timezone,
-  });
-  const daysLeft = eventStart.isValid
-    ? eventStart.diff(today, "days").days
-    : null;
+  /**
+   * Start, end, and the countdown between them — all through the shared helper
+   * so that this screen, the drawer beside it and the admin dashboard cannot
+   * answer "has it started?" and "is it over?" differently. The start is the
+   * EARLIEST day's, not day 1's, and the end is the LAST day's end time read in
+   * that day's own timezone.
+   */
+  const eventStart = eventStartsAt(event.eventDays);
+  const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
   const roundedDays = Math.ceil(daysLeft && daysLeft > 0 ? daysLeft : 0);
-  const isUpcoming = eventStart.isValid && today < eventStart;
+  const isUpcoming = eventStart !== null && today < eventStart;
 
-  // The report is only available once the activity is fully over (after the
-  // last day's end time, in the event's timezone).
-  const sortedDays = [...event.eventDays].sort(
-    (a, b) => a.dayNumber - b.dayNumber,
-  );
-  const lastDay = sortedDays[sortedDays.length - 1];
-  const lastDate = lastDay
-    ? DateTime.fromISO(lastDay.eventDate, { zone: "utc" })
-        .setZone(lastDay.timezone, { keepLocalTime: true })
-        .toISODate()
-    : null;
-  const eventEnd = lastDay
-    ? DateTime.fromISO(`${lastDate}T${lastDay.endTime}`, {
-        zone: lastDay.timezone,
-      })
-    : null;
-  const isPast = !!eventEnd?.isValid && today > eventEnd;
+  // The report is only available once the activity is fully over.
+  const isPast = isEventPast(event.eventDays, today);
 
   const [deletionStatus, setDeletionStatus] = useState(
     event.deletionStatus ?? null,

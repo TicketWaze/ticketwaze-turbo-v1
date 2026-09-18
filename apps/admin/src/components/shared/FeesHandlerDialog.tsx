@@ -126,7 +126,7 @@ function eachGroup<T>(make: (group: FeeGroup) => T): Record<FeeGroup, T> {
 }
 
 /**
- * THE FEES HANDLER — cancel or rewrite what buyers pay in fees on one activity.
+ * THE FEES HANDLER — cancel or rewrite the fees on one activity.
  *
  * Shows what each unit costs on each payment provider today, then lets an
  * admin pick one of three:
@@ -144,9 +144,13 @@ function eachGroup<T>(make: (group: FeeGroup) => T): Record<FeeGroup, T> {
  * checkout quotes with, so what the admin sees before saving is what buyers
  * will be shown after.
  *
- * READ-ONLY WHEN THE ORGANISER ABSORBS THE FEES. Buyers on such an activity
- * pay the listed price and nothing else, so there is no fee to change; the
- * API refuses the write too.
+ * EDITABLE WHEN THE ORGANISER ABSORBS THE FEES TOO, and this screen used to be
+ * read-only there. The reasoning was that buyers on such an activity pay the
+ * listed price and nothing else — true, and beside the point: the fee still
+ * exists, the ORGANISER pays it, and an admin cutting it is deciding what the
+ * organisation takes home. So the form stays live and every figure switches to
+ * the organisation's side, because the buyer's total is the listed price on
+ * every route and would tell an admin nothing.
  *
  * Rendered as a sibling of the actions menu on the event page (`hideTrigger`),
  * and with its own trigger button on the raffle, product and venue pages.
@@ -177,6 +181,14 @@ export default function FeesHandlerDialog({
   }
 
   const [data, setData] = useState<ActivityFees | null>(null);
+  /**
+   * Does the ORGANISER carry the fees on this activity?
+   *
+   * Not a reason to refuse the edit any more — it decides whose side the change
+   * lands on. Buyers on an absorbing activity always pay the listed price, so
+   * everything below reads the organisation's column instead of the buyer's.
+   */
+  const absorbs = data?.activity.absorbFees === true;
   const [loadError, setLoadError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -187,9 +199,9 @@ export default function FeesHandlerDialog({
     flat: "0",
     processor: "0",
   });
-  const [groupInputs, setGroupInputs] = useState<Record<FeeGroup, ComponentInputs>>(
-    eachGroup(() => ({ service: "0", flat: "0", processor: "0" })),
-  );
+  const [groupInputs, setGroupInputs] = useState<
+    Record<FeeGroup, ComponentInputs>
+  >(eachGroup(() => ({ service: "0", flat: "0", processor: "0" })));
 
   /** Seeds the form from what is saved, or from today's schedule if nothing is. */
   function seedForm(fees: ActivityFees) {
@@ -198,7 +210,9 @@ export default function FeesHandlerDialog({
     const source = saved?.mode === "custom" ? saved.routes : fees.suggested;
     setSameForAll(saved ? saved.sameForAllProviders : true);
     setAllInputs(toInputs(source[FEE_GROUP_ROUTE.mobile]));
-    setGroupInputs(eachGroup((group) => toInputs(source[FEE_GROUP_ROUTE[group]])));
+    setGroupInputs(
+      eachGroup((group) => toInputs(source[FEE_GROUP_ROUTE[group]])),
+    );
   }
 
   useEffect(() => {
@@ -269,10 +283,22 @@ export default function FeesHandlerDialog({
     });
   }, [sameForAll, allInputs, groupInputs]);
 
-  /** What each unit would cost after saving, per route. */
-  function previewQuote(price: number, standard: RouteQuote, route: FeeRoute): RouteQuote | null {
+  /**
+   * What each unit would cost after saving, per route.
+   *
+   * `organisation` is carried through because an absorbing activity is read
+   * from that column rather than from the buyer's total: there, the fee comes
+   * off the organiser's side and the buyer pays the listed price whatever is
+   * typed here.
+   */
+  function previewQuote(
+    price: number,
+    standard: RouteQuote,
+    route: FeeRoute,
+  ): RouteQuote | null {
     if (mode === "standard") return standard;
-    if (mode === "cancelled") return { fees: 0, total: round2(price) };
+    if (mode === "cancelled")
+      return { fees: 0, total: round2(price), organisation: round2(price) };
     if (!draftRoutes) return null;
     const draft: FeeOverride = {
       mode: "custom",
@@ -282,7 +308,14 @@ export default function FeesHandlerDialog({
       updatedBy: "",
     };
     const { total } = getOverrideUnitFees(draft, route, price);
-    return { fees: round2(total - price), total };
+    const fees = round2(total - price);
+    return {
+      fees,
+      // On an absorbing activity the buyer keeps paying the listed price; it is
+      // the organiser's net that the fee comes out of.
+      total: absorbs ? round2(price) : total,
+      organisation: round2(price - fees),
+    };
   }
 
   async function handleSave() {
@@ -320,7 +353,6 @@ export default function FeesHandlerDialog({
   const currency = data?.activity.currency ?? "HTG";
   const money = (amount: number) => formatMoney(amount, currency, locale);
   const saved = data?.feeOverride ?? null;
-  const readOnly = data?.activity.absorbFees === true;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -351,14 +383,28 @@ export default function FeesHandlerDialog({
             </div>
           ) : (
             <>
-              {readOnly && (
+              {/*
+                Informational, not a refusal. This used to say there was
+                nothing to change here and made the whole screen read-only —
+                but the fee exists on an absorbing activity too, it is simply
+                the organiser who pays it, so changing it changes what they
+                take home.
+              */}
+              {absorbs && (
                 <div className="flex items-start gap-3 rounded-[15px] border border-warning bg-warning/10 p-5">
-                  <InfoCircle size="20" color="#0d0d0d" variant="Bulk" className="shrink-0 mt-[2px]" />
+                  <InfoCircle
+                    size="20"
+                    color="#0d0d0d"
+                    variant="Bulk"
+                    className="shrink-0 mt-[2px]"
+                  />
                   <p className="text-[1.35rem] leading-7 text-neutral-700">
-                    The organisation absorbs the fees on this activity: buyers pay
-                    the listed price and nothing else, and the fees come out of
-                    the organisation&apos;s earnings. There are no buyer fees to
-                    cancel or change here.
+                    The organisation absorbs the fees on this activity: buyers
+                    pay the listed price and nothing else, and the fees come out
+                    of the organisation&apos;s earnings. Anything you change
+                    here therefore changes what the ORGANISER takes home, never
+                    what a buyer is charged &mdash; so the figures below are
+                    what the organiser nets per ticket.
                   </p>
                 </div>
               )}
@@ -369,7 +415,7 @@ export default function FeesHandlerDialog({
                   <span className="text-[1.5rem] font-semibold text-black">
                     Current pricing
                   </span>
-                  {!readOnly && <OverrideBadge override={saved} />}
+                  <OverrideBadge override={saved} />
                 </div>
                 <PricingTable
                   units={data.units.map((unit) => ({
@@ -378,8 +424,9 @@ export default function FeesHandlerDialog({
                     quotes: unit.current,
                   }))}
                   money={money}
+                  absorbs={absorbs}
                 />
-                {saved && !readOnly && saved.updatedBy && (
+                {saved && saved.updatedBy && (
                   <span className="text-[1.2rem] text-neutral-500">
                     Last changed by {saved.updatedBy}
                     {saved.updatedAt
@@ -389,144 +436,154 @@ export default function FeesHandlerDialog({
                 )}
               </section>
 
-              {!readOnly && (
-                <>
-                  {/* Choice */}
-                  <section className="flex flex-col gap-4">
-                    <span className="text-[1.5rem] font-semibold text-black">
-                      Change fees
+              {/* Choice */}
+              <section className="flex flex-col gap-4">
+                <span className="text-[1.5rem] font-semibold text-black">
+                  Change fees
+                </span>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+                  <ModeOption
+                    active={mode === "standard"}
+                    onClick={() => setMode("standard")}
+                    title="Standard fees"
+                    description="The normal Ticketwaze schedule for this activity."
+                  />
+                  <ModeOption
+                    active={mode === "cancelled"}
+                    onClick={() => setMode("cancelled")}
+                    title="Cancel all fees"
+                    description={
+                      absorbs
+                        ? "The organisation keeps the whole listed price. Ticketwaze earns nothing."
+                        : "Buyers pay the listed price only. Ticketwaze earns nothing."
+                    }
+                  />
+                  <ModeOption
+                    active={mode === "custom"}
+                    onClick={() => setMode("custom")}
+                    title="Custom fees"
+                    description="Set the service, flat and processor fees yourself."
+                  />
+                </div>
+              </section>
+
+              {mode === "custom" && (
+                <section className="flex flex-col gap-5">
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={sameForAll}
+                    onClick={toggleSameForAll}
+                    className="flex items-center justify-between gap-4 rounded-[15px] bg-neutral-100 px-5 py-4 cursor-pointer text-left"
+                  >
+                    <span className="flex flex-col">
+                      <span className="text-[1.4rem] font-medium text-black">
+                        Same fees for all providers
+                      </span>
+                      <span className="text-[1.25rem] text-neutral-500">
+                        {sameForAll
+                          ? "Mobile money, card and wallet all charge the values below."
+                          : "Each payment method has its own values."}
+                      </span>
                     </span>
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
-                      <ModeOption
-                        active={mode === "standard"}
-                        onClick={() => setMode("standard")}
-                        title="Standard fees"
-                        description="The normal Ticketwaze schedule for this activity."
-                      />
-                      <ModeOption
-                        active={mode === "cancelled"}
-                        onClick={() => setMode("cancelled")}
-                        title="Cancel all fees"
-                        description="Buyers pay the listed price only. Ticketwaze earns nothing."
-                      />
-                      <ModeOption
-                        active={mode === "custom"}
-                        onClick={() => setMode("custom")}
-                        title="Custom fees"
-                        description="Set the service, flat and processor fees yourself."
-                      />
-                    </div>
-                  </section>
-
-                  {mode === "custom" && (
-                    <section className="flex flex-col gap-5">
-                      <button
-                        type="button"
-                        role="switch"
-                        aria-checked={sameForAll}
-                        onClick={toggleSameForAll}
-                        className="flex items-center justify-between gap-4 rounded-[15px] bg-neutral-100 px-5 py-4 cursor-pointer text-left"
-                      >
-                        <span className="flex flex-col">
-                          <span className="text-[1.4rem] font-medium text-black">
-                            Same fees for all providers
-                          </span>
-                          <span className="text-[1.25rem] text-neutral-500">
-                            {sameForAll
-                              ? "Mobile money, card and wallet all charge the values below."
-                              : "Each payment method has its own values."}
-                          </span>
-                        </span>
-                        <span
-                          className={cn(
-                            "relative h-8 w-14 shrink-0 rounded-full transition-colors",
-                            sameForAll ? "bg-black" : "bg-neutral-300",
-                          )}
-                        >
-                          <span
-                            className={cn(
-                              "absolute top-1 h-6 w-6 rounded-full bg-white transition-all",
-                              sameForAll ? "left-7" : "left-1",
-                            )}
-                          />
-                        </span>
-                      </button>
-
-                      {sameForAll ? (
-                        <ComponentFields
-                          title="All payment methods"
-                          hint="Wallet payments take the service and flat fee only — they have no processor fee."
-                          currency={currency}
-                          showProcessor
-                          value={allInputs}
-                          onChange={setAllInputs}
-                        />
-                      ) : (
-                        FEE_GROUPS.map((group) => (
-                          <ComponentFields
-                            key={group}
-                            title={GROUP_LABELS[group]}
-                            hint={GROUP_HINTS[group]}
-                            currency={currency}
-                            showProcessor={GROUPS_WITH_PROCESSOR[group]}
-                            value={groupInputs[group]}
-                            onChange={(next) =>
-                              setGroupInputs((current) => ({ ...current, [group]: next }))
-                            }
-                          />
-                        ))
+                    <span
+                      className={cn(
+                        "relative h-8 w-14 shrink-0 rounded-full transition-colors",
+                        sameForAll ? "bg-black" : "bg-neutral-300",
                       )}
+                    >
+                      <span
+                        className={cn(
+                          "absolute top-1 h-6 w-6 rounded-full bg-white transition-all",
+                          sameForAll ? "left-7" : "left-1",
+                        )}
+                      />
+                    </span>
+                  </button>
 
-                      <p className="text-[1.25rem] leading-6 text-neutral-500">
-                        Buyer total = price + service % of price + flat fee, then
-                        the processor % on top. Free tickets stay free, and a
-                        wallet payment never carries a processor fee.
-                      </p>
-                    </section>
+                  {sameForAll ? (
+                    <ComponentFields
+                      title="All payment methods"
+                      hint="Wallet payments take the service and flat fee only — they have no processor fee."
+                      currency={currency}
+                      showProcessor
+                      value={allInputs}
+                      onChange={setAllInputs}
+                    />
+                  ) : (
+                    FEE_GROUPS.map((group) => (
+                      <ComponentFields
+                        key={group}
+                        title={GROUP_LABELS[group]}
+                        hint={GROUP_HINTS[group]}
+                        currency={currency}
+                        showProcessor={GROUPS_WITH_PROCESSOR[group]}
+                        value={groupInputs[group]}
+                        onChange={(next) =>
+                          setGroupInputs((current) => ({
+                            ...current,
+                            [group]: next,
+                          }))
+                        }
+                      />
+                    ))
                   )}
 
-                  {/* Preview */}
-                  <section className="flex flex-col gap-4">
-                    <span className="text-[1.5rem] font-semibold text-black">
-                      After saving
-                    </span>
-                    {mode === "custom" && !draftRoutes ? (
-                      <p className="text-[1.3rem] text-failure">
-                        Percentages must be between 0 and 100, and amounts cannot
-                        be negative.
-                      </p>
-                    ) : (
-                      <PricingTable
-                        units={data.units.map((unit) => ({
-                          label: unit.label,
-                          price: unit.price,
-                          quotes: Object.fromEntries(
-                            FEE_ROUTES.map((route) => [
-                              route,
-                              previewQuote(unit.price, unit.standard[route], route) ??
-                                unit.standard[route],
-                            ]),
-                          ) as Record<FeeRoute, RouteQuote>,
-                        }))}
-                        money={money}
-                      />
-                    )}
-                    <p className="text-[1.25rem] leading-6 text-neutral-500">
-                      Applies to purchases from now on. The organisation is
-                      credited the same amount whatever the fees are; only what
-                      buyers pay and what Ticketwaze keeps changes.
-                    </p>
-                  </section>
-                </>
+                  <p className="text-[1.25rem] leading-6 text-neutral-500">
+                    Buyer total = price + service % of price + flat fee, then
+                    the processor % on top. Free tickets stay free, and a wallet
+                    payment never carries a processor fee.
+                  </p>
+                </section>
               )}
+
+              {/* Preview */}
+              <section className="flex flex-col gap-4">
+                <span className="text-[1.5rem] font-semibold text-black">
+                  After saving
+                </span>
+                {mode === "custom" && !draftRoutes ? (
+                  <p className="text-[1.3rem] text-failure">
+                    Percentages must be between 0 and 100, and amounts cannot be
+                    negative.
+                  </p>
+                ) : (
+                  <PricingTable
+                    units={data.units.map((unit) => ({
+                      label: unit.label,
+                      price: unit.price,
+                      quotes: Object.fromEntries(
+                        FEE_ROUTES.map((route) => [
+                          route,
+                          previewQuote(
+                            unit.price,
+                            unit.standard[route],
+                            route,
+                          ) ?? unit.standard[route],
+                        ]),
+                      ) as Record<FeeRoute, RouteQuote>,
+                    }))}
+                    money={money}
+                    absorbs={absorbs}
+                  />
+                )}
+                <p className="text-[1.25rem] leading-6 text-neutral-500">
+                  {absorbs
+                    ? "Applies to purchases from now on. Buyers keep paying the listed price whatever you set here; what changes is how much of it the organisation keeps and how much Ticketwaze does."
+                    : "Applies to purchases from now on. The organisation is credited the same amount whatever the fees are; only what buyers pay and what Ticketwaze keeps changes."}
+                </p>
+              </section>
             </>
           )}
 
           <DialogFooter>
-            <ButtonNeutral className="flex-1" onClick={() => handleOpenChange(false)}>
-              {readOnly || loadError ? "Close" : "Cancel"}
+            <ButtonNeutral
+              className="flex-1"
+              onClick={() => handleOpenChange(false)}
+            >
+              {loadError ? "Close" : "Cancel"}
             </ButtonNeutral>
-            {data && !readOnly && (
+            {data && (
               <ButtonBlack
                 className="flex-1"
                 disabled={isSaving || (mode === "custom" && !draftRoutes)}
@@ -580,11 +637,15 @@ function ModeOption({
       aria-pressed={active}
       className={cn(
         "flex flex-col gap-1 rounded-2xl border-2 px-5 py-4 text-left transition-colors cursor-pointer",
-        active ? "border-black bg-neutral-100" : "border-neutral-200 hover:border-neutral-400",
+        active
+          ? "border-black bg-neutral-100"
+          : "border-neutral-200 hover:border-neutral-400",
       )}
     >
       <span className="text-[1.4rem] font-medium text-black">{title}</span>
-      <span className="text-[1.2rem] leading-5 text-neutral-500">{description}</span>
+      <span className="text-[1.2rem] leading-5 text-neutral-500">
+        {description}
+      </span>
     </button>
   );
 }
@@ -646,9 +707,20 @@ function ComponentFields({
 function PricingTable({
   units,
   money,
+  absorbs,
 }: {
-  units: { label: string; price: number; quotes: Record<FeeRoute, RouteQuote> }[];
+  units: {
+    label: string;
+    price: number;
+    quotes: Record<FeeRoute, RouteQuote>;
+  }[];
   money: (amount: number) => string;
+  /**
+   * The organiser carries the fees, so the buyer's total is the listed price on
+   * every route and says nothing. The cells show what the ORGANISER nets
+   * instead — the figure the fees actually move here.
+   */
+  absorbs?: boolean;
 }) {
   if (units.length === 0) {
     return (
@@ -676,17 +748,33 @@ function PricingTable({
         </thead>
         <tbody>
           {units.map((unit, index) => (
-            <tr key={`${unit.label}-${index}`} className="border-t border-neutral-200">
+            <tr
+              key={`${unit.label}-${index}`}
+              className="border-t border-neutral-200"
+            >
               <td className="px-4 py-3 text-black">{unit.label}</td>
-              <td className="px-4 py-3 text-right text-black">{money(unit.price)}</td>
+              <td className="px-4 py-3 text-right text-black">
+                {money(unit.price)}
+              </td>
               {FEE_GROUPS.map((group) => {
                 const quote = unit.quotes[FEE_GROUP_ROUTE[group]];
+                // Absorbing: the organiser's net, and the fee that came out of
+                // it. Falls back to the price when a preview quote carries no
+                // organisation figure, which is the same thing when fees are 0.
+                const net =
+                  quote.organisation ?? round2(unit.price - quote.fees);
                 return (
                   <td key={group} className="px-4 py-3 text-right">
                     <span className="flex flex-col items-end">
-                      <span className="text-black font-medium">{money(quote.total)}</span>
+                      <span className="text-black font-medium">
+                        {money(absorbs ? net : quote.total)}
+                      </span>
                       <span className="text-[1.1rem] text-neutral-500">
-                        {quote.fees > 0 ? `+${money(quote.fees)} fees` : "no fees"}
+                        {quote.fees > 0
+                          ? absorbs
+                            ? `−${money(quote.fees)} fees`
+                            : `+${money(quote.fees)} fees`
+                          : "no fees"}
                       </span>
                     </span>
                   </td>

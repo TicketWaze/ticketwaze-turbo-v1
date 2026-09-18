@@ -5,6 +5,7 @@ import {
   Event,
   EventTicketType,
   PublicEventFormQuestion,
+  PublicRewardSummary,
   User,
 } from "@ticketwaze/typescript-config";
 import { extractIdFromSlug } from "@/lib/Slugify";
@@ -37,6 +38,12 @@ export default async function CheckoutPage({
 
   const event: Event = eventResponse.event;
   const ticketTypes: EventTicketType[] = eventResponse.ticketTypes ?? [];
+  /**
+   * The organiser's reward, when one is on offer: "buy N, get one free". Comes
+   * with the event payload, and is null once its stock has run out — so the
+   * checkout never promises a bonus that can no longer be earned.
+   */
+  const reward: PublicRewardSummary | null = eventResponse.reward ?? null;
 
   // The HTG/USD rate the backend will charge with. The displayed total must be
   // computed from this same value or checkout and gateway amounts diverge.
@@ -105,6 +112,7 @@ export default async function CheckoutPage({
       <CheckoutFlow
         event={event}
         ticketTypes={ticketTypes}
+        reward={reward}
         user={session?.user as User | undefined}
         feeWaiverEligible={feeWaiverEligible}
         htgExchangeRate={htgExchangeRate}

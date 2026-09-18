@@ -964,11 +964,17 @@
       "lockedHint": "Available from {date}, when the event starts.",
       "failed": "The document could not be downloaded. Please try again."
     },
-    "giveaway": "Paid by Ticketwaze"
+    "giveaway": "Paid by Ticketwaze",
+    "reward": "Reward from the organiser"
   },
   "Checkout": {
     "back": "Back",
     "free": "Free",
+    "reward": {
+      "offer": "Buy {quantity} tickets and get 1 \"{name}\" free",
+      "to_next": "Add {count} more ticket(s) to earn it.",
+      "earned": "You have earned {count} free ticket(s). They arrive with your order."
+    },
     "private_login_required": "This is a private activity. Please sign in with your invited email to purchase tickets.",
     "purchased": "Ticket purchased",
     "purchased_cta": "Opening upcoming activities ...",

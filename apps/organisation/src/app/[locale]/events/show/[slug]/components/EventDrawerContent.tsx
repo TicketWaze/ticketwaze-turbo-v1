@@ -13,6 +13,7 @@ import Image from "next/image";
 import { LinkPrimary } from "@/components/shared/Links";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
+import { eventStartsAt } from "@/lib/eventTime";
 import { DateTime } from "luxon";
 
 export default function EventDrawerContent({ event }: { event: Event }) {
@@ -20,10 +21,18 @@ export default function EventDrawerContent({ event }: { event: Event }) {
   const date = event.eventDays;
   const locale = useLocale();
   const today = DateTime.now();
-  const eventStart = event.eventDays?.[0]?.eventDate
-    ? DateTime.fromISO(event.eventDays[0].eventDate)
-    : null;
-  const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
+  /**
+   * Whether the event is still to start, which is what gates the Edit button.
+   *
+   * Read through the shared helper: this used to be
+   * `DateTime.fromISO(eventDays[0].eventDate)`, which took the stored
+   * UTC-midnight timestamp, reinterpreted it in the BROWSER's zone and dropped
+   * the start time — so west of Greenwich the Edit button disappeared the
+   * evening BEFORE the event, and the first day in the array was used rather
+   * than the earliest one.
+   */
+  const eventStart = eventStartsAt(event.eventDays);
+  const isUpcoming = eventStart !== null && today < eventStart;
   return (
     <DrawerContent className={"my-6 p-6 lg:p-12 rounded-[30px]  lg:w-[580px]"}>
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
@@ -153,7 +162,7 @@ export default function EventDrawerContent({ event }: { event: Event }) {
             <span>This event is pending deletion and cannot be edited.</span>
           </div>
         ) : (
-          daysLeft !== null && daysLeft > 0 && (
+          isUpcoming && (
             <LinkPrimary
               href={`/events/show/${slugify(event.eventName, event.eventId)}/edit/${event.eventCategory}`}
               className="flex-1 gap-4"

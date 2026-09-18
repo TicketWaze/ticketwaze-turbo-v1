@@ -12,7 +12,17 @@ export type FeeActivityKind = "event" | "raffle" | "sale" | "restaurant";
 /** One route's quote for one unit, in the activity's own currency. */
 export interface RouteQuote {
   fees: number;
+  /** What the buyer pays. The listed price on an absorbing activity. */
   total: number;
+  /**
+   * What the organisation keeps out of it.
+   *
+   * The price itself where the buyer carries the fees, so the dashboard only
+   * shows it on an absorbing activity — where it is the one figure an admin's
+   * fee change actually moves. Optional because the preview builds quotes of
+   * its own before anything is saved.
+   */
+  organisation?: number;
 }
 
 /** Everything the fees handler shows about an activity. */

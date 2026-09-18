@@ -103,7 +103,19 @@ export default function RefundActivityDialog({
     handleOpenChange(false);
   }
 
+  /**
+   * Blocked, so there is nothing to open — but `hideTrigger` still decides
+   * whether this component draws anything at all.
+   *
+   * Without that check this returned a button even when the caller had asked
+   * for none, and on the activity page — where the dialog is mounted as a
+   * sibling near the end of the markup so the actions popover cannot unmount it
+   * — that stray "Refund & cancel" appeared at the BOTTOM OF THE PAGE, detached
+   * from the menu it belongs to. The menu already lists the action greyed out
+   * with the same reason on hover, so nothing is lost by drawing nothing here.
+   */
   if (disabledReason) {
+    if (hideTrigger) return null;
     return (
       <ButtonNeutral
         disabled
@@ -151,8 +163,8 @@ export default function RefundActivityDialog({
                 </div>
                 <ul className="flex flex-col gap-2 text-[1.35rem] leading-7 text-neutral-700">
                   <li>
-                    {ticketsSold} ticket(s) will be voided and the {noun} will be
-                    cancelled.
+                    {ticketsSold} ticket(s) will be voided and the {noun} will
+                    be cancelled.
                   </li>
                   <li>
                     Buyers with an account are refunded to their Ticketwaze

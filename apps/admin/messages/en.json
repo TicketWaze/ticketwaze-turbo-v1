@@ -359,7 +359,8 @@
           "total": "Total revenue",
           "tickets": {
             "sold": "Tickets sold",
-            "left": "Tickets left"
+            "left": "Tickets left",
+            "reward": "Reward tickets"
           },
           "counter": "Activity count down"
         },
@@ -430,6 +431,8 @@
         "location": "Location",
         "class": "Ticket Class",
         "price": "Price",
+        "comped": "Comped by Ticketwaze",
+        "reward": "Organiser reward",
         "id": "Ticket ID",
         "total": "Total",
         "transaction_id": "Transaction ID",

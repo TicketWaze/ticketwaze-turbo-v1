@@ -1008,9 +1008,15 @@
       "lockedHint": "Disponible à partir du {date}, au début de l’activité.",
       "failed": "Le document n’a pas pu être téléchargé. Veuillez réessayer."
     },
-    "giveaway": "Offert par Ticketwaze"
+    "giveaway": "Offert par Ticketwaze",
+    "reward": "Offert par l'organisateur"
   },
   "Checkout": {
+    "reward": {
+      "offer": "{quantity} billets achetés = 1 « {name} » offert",
+      "to_next": "Ajoutez {count} billet(s) pour l'obtenir.",
+      "earned": "Vous avez gagné {count} billet(s) gratuit(s). Ils arrivent avec votre commande."
+    },
     "back": "Retour",
     "free": "Gratuit",
     "private_login_required": "Ceci est une activité privée. Veuillez vous connecter avec l’adresse e-mail avec laquelle vous avez été invité pour acheter des billets.",

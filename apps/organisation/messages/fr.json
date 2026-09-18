@@ -821,6 +821,63 @@
         "min_purchase": "Commande minimum (facultatif)",
         "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze sont toujours calculés sur votre prix affiché : une réduction ne modifie jamais les frais, et vous recevez le prix réduit."
       },
+      "rewards": {
+        "title": "Récompenses",
+        "subtitle": "Récompense",
+        "back": "Retour",
+        "intro": "Offrez un billet gratuit aux acheteurs qui en prennent plusieurs d'un coup. Donnez un nom à la récompense, indiquez combien de billets il faut acheter, et elle est remise automatiquement dès qu'un paiement est confirmé.",
+        "empty": "Aucune récompense pour l'instant. Créez-en une et vos acheteurs peuvent la gagner immédiatement.",
+        "create": "Créer une récompense",
+        "edit": "Modifier la récompense",
+        "name": "Nom de la récompense",
+        "name_hint": "Il est imprimé sur le billet, par exemple « Billet en or ».",
+        "required_quantity": "Billets à acheter",
+        "required_quantity_hint": "Dans une seule commande. La règle se répète : deux fois plus de billets achetés donnent deux récompenses.",
+        "stock": "Billets récompense disponibles",
+        "stock_hint": "Laissez vide pour un nombre illimité de billets récompense.",
+        "unlimited": "Illimité",
+        "unlimited_stock": "Illimité",
+        "rule": "{quantity} billets achetés = 1 « {name} » offert",
+        "given_out": "Attribués",
+        "remaining": "Restants",
+        "status": "Statut",
+        "active": "Active",
+        "inactive": "Désactivée",
+        "cost_notice": "Les billets récompense sont votre cadeau : l'acheteur ne paie rien et ils n'ajoutent rien à vos recettes. Ils occupent une place comme n'importe quel billet : prévoyez un stock si votre lieu a une capacité limitée.",
+        "free_event_notice": "Les récompenses sont réservées aux activités payantes.",
+        "grants_title": "Acheteurs qui l'ont gagnée",
+        "grants_empty": "Personne n'a encore gagné cette récompense.",
+        "buyer": "Acheteur",
+        "tickets": "Billets récompense",
+        "earned_on": "Gagnée le",
+        "quantity": "Quantité",
+        "revoked": "Reprise",
+        "actions": "Actions",
+        "activate": "Activer",
+        "deactivate": "Désactiver",
+        "delete": "Supprimer",
+        "close": "Fermer",
+        "save": "Enregistrer",
+        "add": "Créer",
+        "created": "Récompense créée",
+        "updated": "Récompense mise à jour",
+        "activated": "Récompense activée",
+        "deactivated": "Récompense désactivée",
+        "deleted": "Récompense supprimée",
+        "errors": {
+          "name": {
+            "min": "Donnez un nom d'au moins 2 caractères",
+            "max": "Le nom ne peut pas dépasser 40 caractères"
+          },
+          "required_quantity": {
+            "min": "Il faut au moins 2 billets achetés",
+            "max": "Cela dépasse ce qu'une commande peut contenir"
+          },
+          "stock": {
+            "min": "Rendez au moins 1 billet récompense disponible"
+          }
+        }
+      },
       "attendees": {
         "back": "Retour",
         "subtitle": "Ajouter un participant",

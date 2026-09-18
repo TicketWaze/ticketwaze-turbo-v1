@@ -317,7 +317,8 @@
           "total": "Revenu total",
           "tickets": {
             "sold": "Billets vendus",
-            "left": "Billets restants"
+            "left": "Billets restants",
+            "reward": "Billets récompense"
           },
           "counter": "Compte à rebours"
         },
@@ -388,6 +389,8 @@
         "location": "Lieu",
         "class": "Classe du billet",
         "price": "Prix",
+        "comped": "Offert par Ticketwaze",
+        "reward": "Récompense de l'organisateur",
         "id": "ID du billet",
         "total": "Total",
         "transaction_id": "ID de transaction",

@@ -85,14 +85,18 @@ export function getCheckingWindowStatus(event: Event): {
 }
 
 /**
- * Whether the scanner is offered on this activity at all.
+ * Whether this activity can be scanned AT ALL — the structural conditions from
+ * the API's `loadEventForChecking`: approved, in person, not cancelled (its
+ * buyers have been refunded), not being deleted.
  *
- * The same conditions the API's `loadEventForChecking` enforces — approved,
- * not an online meet, not being deleted, not already over — so the button is
- * only drawn where a scan would actually be accepted. Cancellation is checked
- * here too: a cancelled event's buyers have been refunded.
+ * DELIBERATELY NOT THE TIME WINDOW. This used to return false once the window
+ * had closed, which took the scanner button off the page entirely — and an
+ * admin looking for a control that is simply absent has no way to tell whether
+ * it moved, whether they lack the permission, or whether the event is the
+ * reason. The button is now always drawn where scanning is conceivable, and
+ * `getCheckingWindowStatus` is what greys it out and says why.
  */
-export function canCheckActivity(event: Event): boolean {
+export function canOfferChecking(event: Event): boolean {
   if (event.adminStatus !== "approved") return false;
   if (event.eventCategory === "meet") return false;
   if (event.cancelledAt) return false;
@@ -101,7 +105,7 @@ export function canCheckActivity(event: Event): boolean {
     event.deletionStatus === "deleted"
   )
     return false;
-  return getCheckingWindowStatus(event).status !== "closed";
+  return (event.eventDays?.length ?? 0) > 0;
 }
 
 function formatDuration(totalMinutes: number) {

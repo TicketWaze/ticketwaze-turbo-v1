@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/popover";
 import {
   ClipboardText,
+  Gift,
   HamburgerMenu,
   MoreCircle,
   Profile2User,
@@ -57,6 +58,7 @@ export default function MoreComponent({
   onDeletionScheduled: (scheduledAt: string, reason: string) => void;
 }) {
   const t = useTranslations("Events.single_event");
+  const tRewards = useTranslations("Events.single_event.rewards");
   const closeRef = useRef<HTMLButtonElement>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [reason, setReason] = useState("");
@@ -163,6 +165,27 @@ export default function MoreComponent({
                   >
                     <span>{t("forms.title")}</span>
                     <ClipboardText size="20" variant="Bulk" color={"#2E3237"} />
+                  </Link>
+                </li>
+              )}
+            {/*
+              REWARDS, ON EVERY PLAN INCLUDING FREE. Unlike a discount code,
+              this costs Ticketwaze nothing — it is the organiser's own gift to
+              their buyers — so there is nothing to gate on a membership tier.
+              Paid activities only: a reward is earned by buying.
+            */}
+            {daysLeft !== null &&
+              daysLeft > 0 &&
+              !isFree &&
+              !isPendingDeletion &&
+              !isDeleted && (
+                <li>
+                  <Link
+                    href={`${slug}/rewards`}
+                    className={`cursor-pointer font-normal group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
+                  >
+                    <span>{tRewards("title")}</span>
+                    <Gift size="20" variant="Bulk" color={"#2E3237"} />
                   </Link>
                 </li>
               )}

@@ -218,7 +218,12 @@ export default function GiveawayTicketsDialog({
     handleOpenChange(false);
   }
 
+  // Blocked AND the caller asked for no trigger: draw nothing. Ignoring
+  // `hideTrigger` here put a stray "Giveaway" button at the bottom of the
+  // activity page, where this dialog is mounted as a sibling of the actions
+  // menu — which already lists the action greyed out with its reason.
   if (disabledReason) {
+    if (hideTrigger) return null;
     return (
       <ButtonNeutral
         disabled

@@ -25,9 +25,13 @@ export default function UpcomingTicket({
    */
   const priceLabel = ticket.isGiveaway
     ? t("giveaway")
-    : isFree
-      ? t("free")
-      : null;
+    : // A reward the ORGANISER gave for buying several tickets. Priced at 0 as
+      // well, and checked before `isFree` for the same reason.
+      ticket.source === "reward"
+      ? t("reward")
+      : isFree
+        ? t("free")
+        : null;
   return (
     <div className="flex flex-col gap-8 h-[500px] bg-linear-to-b from-neutral-50/10 to-neutral-100/50  lg:h-[681px] relative shadow-[0_15px_25px_0_rgba(0,0,0,0.05)]">
       <Image src={ticketBG} alt={"ticket bg"} className="h-full w-full" />

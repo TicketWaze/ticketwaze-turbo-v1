@@ -1,9 +1,13 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { AddCircle, MinusCirlce } from "iconsax-reactjs";
+import { AddCircle, Gift, MinusCirlce } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
-import { Event, EventTicketType } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  EventTicketType,
+  PublicRewardSummary,
+} from "@ticketwaze/typescript-config";
 import { FieldArrayWithId } from "react-hook-form";
 import Capitalize from "@/lib/Capitalize";
 import {
@@ -22,6 +26,8 @@ interface Props {
   watchedTickets: TicketFormData[];
   ticketTypes: EventTicketType[];
   event: Event;
+  /** The organiser's "buy N, get one free" offer, when there is one. */
+  reward?: PublicRewardSummary | null;
   /**
    * EVERY tier on this activity is free.
    *
@@ -45,6 +51,7 @@ export default function TicketSelectionStep({
   watchedTickets,
   ticketTypes,
   event,
+  reward = null,
   eventIsAllFree,
   selectedWithIndex,
   feeBreakdown,
@@ -72,6 +79,22 @@ export default function TicketSelectionStep({
       return ticketType ? isFreeTicketType(ticketType) : false;
     });
 
+  /**
+   * WHERE THIS CART STANDS AGAINST THE ORGANISER'S REWARD.
+   *
+   * Counts the whole cart, because the API counts the whole order: the reward
+   * asks for a number of tickets bought at once, not for a particular tier.
+   * `earned` repeats — twice the threshold earns two — and `toNext` is what the
+   * buyer would have to add, which is the only number worth putting on screen.
+   */
+  const rewardProgress = (() => {
+    if (!reward) return null;
+    const inCart = quantities.reduce((total, quantity) => total + quantity, 0);
+    const earned = Math.floor(inCart / reward.requiredQuantity);
+    const toNext = reward.requiredQuantity - (inCart % reward.requiredQuantity);
+    return { earned, toNext };
+  })();
+
   const increment = (index: number, ticketLeft: number) => {
     const current = quantities[index] ?? 0;
     if (current >= ticketLeft) return;
@@ -96,6 +119,33 @@ export default function TicketSelectionStep({
       className="flex flex-col gap-8 lg:h-full lg:min-h-0 lg:overflow-y-auto"
     >
       <TicketSalesCountdown endsAt={event.ticketSalesEndAt} variant="full" />
+
+      {reward && rewardProgress && (
+        <div className="flex items-start gap-4 rounded-[15px] bg-[#FFF7ED] border border-[#FDBA74] px-6 py-5">
+          <Gift
+            size="20"
+            color="#ea961c"
+            variant="Bulk"
+            className="shrink-0 mt-[2px]"
+          />
+          <div className="flex flex-col gap-1">
+            <span className="text-[1.4rem] leading-8 text-[#9a5b00] font-medium">
+              {t("reward.offer", {
+                quantity: reward.requiredQuantity,
+                name: reward.name,
+              })}
+            </span>
+            {/* Two different messages, because "2 more to go" is useless to
+                someone who has already earned one and wants to know it. */}
+            <span className="text-[1.3rem] leading-7 text-[#9a5b00]">
+              {rewardProgress.earned > 0
+                ? t("reward.earned", { count: rewardProgress.earned })
+                : t("reward.to_next", { count: rewardProgress.toNext })}
+            </span>
+          </div>
+        </div>
+      )}
+
       <ul className="flex flex-col gap-8">
         {[...fields.map((field, index) => ({ field, index, ticketType: ticketTypes[index] }))]
           .sort((a, b) => {
