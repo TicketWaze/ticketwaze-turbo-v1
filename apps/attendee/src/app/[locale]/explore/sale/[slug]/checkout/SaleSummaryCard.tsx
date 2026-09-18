@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { PublicSale } from "@ticketwaze/typescript-config";
 import { formatMoney } from "@ticketwaze/currency";
 import { fileKind, formatFileSize } from "@/lib/saleFile";
+import { salePricingFor, type SalePaymentMethod } from "./saleCheckout.types";
 
 /**
  * WHAT IS BEING BOUGHT, visible at every step.
@@ -19,13 +20,17 @@ import { fileKind, formatFileSize } from "@/lib/saleFile";
 export default function SaleSummaryCard({
   sale,
   recipientName,
+  method = "",
 }: {
   sale: PublicSale;
+  /** The method picked so far — an admin fee override can price them apart. */
+  method?: SalePaymentMethod;
   /** Set once a gift recipient has been confirmed, so the card can say so. */
   recipientName?: string | null;
 }) {
   const t = useTranslations("Sale");
   const locale = useLocale();
+  const pricing = salePricingFor(sale, method);
 
   return (
     <div className="flex flex-col gap-6 rounded-[15px] border border-neutral-100 p-6 w-full">
@@ -75,7 +80,7 @@ export default function SaleSummaryCard({
           {t("total")}
         </span>
         <span className="font-primary font-medium text-[2.2rem] leading-10 text-primary-500">
-          {formatMoney(sale.pricing.buyerPays, sale.pricing.currency, locale)}
+          {formatMoney(pricing.buyerPays, pricing.currency, locale)}
         </span>
       </div>
 

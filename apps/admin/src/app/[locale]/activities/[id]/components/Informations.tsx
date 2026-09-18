@@ -175,13 +175,23 @@ export default function Informations({
               <p className="flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600">
                 {t("Ticket.details.price")}
                 <span className="text-deep-100 font-medium leading-8">
-                  {formatMoney(
-                    event.currency === "USD"
-                      ? ticket.ticketUsdPrice
-                      : ticket.ticketPrice,
-                    event.currency,
-                    locale,
-                  )}
+                  {/*
+                    A comped or reward ticket is priced at 0 because nobody paid
+                    for it, so the bare "0.00" reads as a mistake. Both are named
+                    instead — and both are checked BEFORE the amount, exactly as
+                    the buyer-facing ticket does.
+                  */}
+                  {ticket.isGiveaway
+                    ? t("Ticket.details.comped")
+                    : ticket.source === "reward"
+                      ? t("Ticket.details.reward")
+                      : formatMoney(
+                          event.currency === "USD"
+                            ? ticket.ticketUsdPrice
+                            : ticket.ticketPrice,
+                          event.currency,
+                          locale,
+                        )}
                 </span>
               </p>
               <p className="flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600">

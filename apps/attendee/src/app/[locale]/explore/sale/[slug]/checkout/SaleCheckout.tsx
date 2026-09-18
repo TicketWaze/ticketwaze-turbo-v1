@@ -33,7 +33,11 @@ import ProductStep from "./steps/ProductStep";
 import SaleRecipientStep from "./steps/SaleRecipientStep";
 import SalePaymentStep from "./steps/SalePaymentStep";
 import SaleSummaryStep from "./steps/SaleSummaryStep";
-import type { RecipientCheck, SalePaymentMethod } from "./saleCheckout.types";
+import {
+  salePricingFor,
+  type RecipientCheck,
+  type SalePaymentMethod,
+} from "./saleCheckout.types";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string,
@@ -105,7 +109,8 @@ export default function SaleCheckout({
     isGift && recipientCheck?.canReceive ? recipientCheck : null;
 
   const walletShort =
-    walletUsd < sale.pricing.buyerPays && sale.currencyCode === "USD";
+    walletUsd < salePricingFor(sale, "wallet").buyerPays &&
+    sale.currencyCode === "USD";
 
   const goToStep = (step: number) => {
     setPreviousStep(currentStep);
@@ -383,6 +388,7 @@ export default function SaleCheckout({
           <div className="hidden lg:flex lg:flex-col overflow-y-auto min-h-0 p-4 pt-0">
             <SaleSummaryCard
               sale={sale}
+              method={method}
               recipientName={confirmedRecipient?.firstName}
             />
           </div>

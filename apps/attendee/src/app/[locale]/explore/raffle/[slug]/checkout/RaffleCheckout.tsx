@@ -23,6 +23,10 @@ import { useRouter, Link } from "@/i18n/navigation";
 import { isSuspendedResponse } from "@/lib/suspension";
 import { getPerTicketFee } from "@/lib/pricing";
 import {
+  getActiveFeeOverride,
+  getOverrideUnitMargin,
+} from "@ticketwaze/pricing";
+import {
   BuyRaffleEntriesWallet,
   StartRaffleStripe,
   StartRaffleMoncash,
@@ -56,8 +60,8 @@ import Logo from "../../../[slug]/checkout/Logo.svg";
 const SERVICE_FEE_RATE = 0.03;
 const PER_TICKET_FEE_USD = 1.49;
 const STRIPE_TX_FEE_RATE = 0.03;
-const MONCASH_TX_FEE_RATE = 0.025;
-const NATCASH_TX_FEE_RATE = 0.025;
+// MonCash and NatCash both take 2.5% — one mobile-money rate, not two.
+const MOBILE_MONEY_TX_FEE_RATE = 0.025;
 const RAFFLE_LOW_THRESHOLD_HTG = 500;
 const RAFFLE_MID_THRESHOLD_HTG = 1000;
 const RAFFLE_FLAT_FEE_LOW_HTG = 25;
@@ -145,6 +149,35 @@ export default function RaffleCheckout({
     const usdBase = Number(raffle.usdPrice);
     const base = isUsd ? usdBase : htgBase;
 
+    /**
+     * An admin fee override replaces the raffle schedule below on every route.
+     * Each route's fee is computed in the raffle's own currency and converted
+     * for the routes shown in the other one — the API's `overrideUnitMargin`.
+     */
+    const override = buyerPaysBase ? null : getActiveFeeOverride(raffle);
+    if (override) {
+      const margin = (route: "wallet" | "card" | "moncash" | "natcash") =>
+        getOverrideUnitMargin(override, {
+          currency: raffle.currency,
+          faceHtg: htgBase,
+          faceUsd: usdBase,
+          route,
+          htgExchangeRate: rate,
+        });
+      return {
+        base,
+        usdBase,
+        htgBase,
+        currency: raffle.currency as "HTG" | "USD",
+        walletPerEntry: round2(
+          base + (isUsd ? margin("wallet").usd : margin("wallet").htg),
+        ),
+        stripePerEntryUsd: round2(usdBase + margin("card").usd),
+        mobileMoneyPerEntryHtg: round2(htgBase + margin("moncash").htg),
+        walletBalance: isUsd ? walletUsd : walletHtg,
+      };
+    }
+
     // Raffle flat Ticketwaze fee (HTG). null => event pricing (> 1000 HTG).
     const flat =
       htgBase < RAFFLE_LOW_THRESHOLD_HTG
@@ -181,27 +214,24 @@ export default function RaffleCheckout({
     else
       stripePerEntryUsd = round2(usdBase + flat / rate);
 
-    // MonCash — charged in HTG.
-    let moncashPerEntryHtg: number;
-    if (buyerPaysBase) moncashPerEntryHtg = htgBase;
+    /**
+     * MOBILE MONEY — charged in HTG, one figure for MonCash and NatCash.
+     *
+     * The two carry the same 2.5% cut through the same flow, and every
+     * schedule prices them identically, so an entry costs the same whichever
+     * the buyer picks. They were computed twice here and drifting apart would
+     * have been silent; the gateway the buyer is sent to is still chosen by
+     * their pick, further down.
+     */
+    let mobileMoneyPerEntryHtg: number;
+    if (buyerPaysBase) mobileMoneyPerEntryHtg = htgBase;
     else if (flat === null)
-      moncashPerEntryHtg = round2(
+      mobileMoneyPerEntryHtg = round2(
         (htgBase * (1 + SERVICE_FEE_RATE) + perFeeHtg) *
-          (1 + MONCASH_TX_FEE_RATE),
+          (1 + MOBILE_MONEY_TX_FEE_RATE),
       );
     else
-      moncashPerEntryHtg = round2(htgBase + flat);
-
-    // NatCash — charged in HTG. Same shape as MonCash, on its own rate.
-    let natcashPerEntryHtg: number;
-    if (buyerPaysBase) natcashPerEntryHtg = htgBase;
-    else if (flat === null)
-      natcashPerEntryHtg = round2(
-        (htgBase * (1 + SERVICE_FEE_RATE) + perFeeHtg) *
-          (1 + NATCASH_TX_FEE_RATE),
-      );
-    else
-      natcashPerEntryHtg = round2(htgBase + flat);
+      mobileMoneyPerEntryHtg = round2(htgBase + flat);
 
     return {
       base,
@@ -210,8 +240,7 @@ export default function RaffleCheckout({
       currency: raffle.currency as "HTG" | "USD",
       walletPerEntry,
       stripePerEntryUsd,
-      moncashPerEntryHtg,
-      natcashPerEntryHtg,
+      mobileMoneyPerEntryHtg,
       walletBalance: isUsd ? walletUsd : walletHtg,
     };
   }, [raffle, htgExchangeRate, walletHtg, walletUsd, buyerPaysBase]);
@@ -219,16 +248,15 @@ export default function RaffleCheckout({
   const isCard = method === "card";
   const isMoncash = method === "moncash";
   const isNatcash = method === "natcash";
-  // Both wallets charge in HTG, so they share the display currency and base.
+  // Both mobile wallets charge in HTG, at the same rate, so they share the
+  // display currency, the base and the per-entry total.
   const isGateway = isMoncash || isNatcash;
   const displayCurrency = isCard ? "USD" : isGateway ? "HTG" : pricing.currency;
   const perEntry = isCard
     ? pricing.stripePerEntryUsd
-    : isMoncash
-      ? pricing.moncashPerEntryHtg
-      : isNatcash
-        ? pricing.natcashPerEntryHtg
-        : pricing.walletPerEntry;
+    : isGateway
+      ? pricing.mobileMoneyPerEntryHtg
+      : pricing.walletPerEntry;
   const baseForDisplay = isCard
     ? pricing.usdBase
     : isGateway

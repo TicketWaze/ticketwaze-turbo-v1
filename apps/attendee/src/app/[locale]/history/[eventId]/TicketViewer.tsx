@@ -37,9 +37,13 @@ export default function TicketViewer({
    */
   const priceLabel = tickets[currentIndex].isGiveaway
     ? t("giveaway")
-    : isFree
-      ? t("free")
-      : null;
+    : // A reward the ORGANISER gave for buying several tickets. Priced at 0 as
+      // well, and checked before `isFree` for the same reason.
+      tickets[currentIndex].source === "reward"
+      ? t("reward")
+      : isFree
+        ? t("free")
+        : null;
 
   const mockTickets = tickets;
 

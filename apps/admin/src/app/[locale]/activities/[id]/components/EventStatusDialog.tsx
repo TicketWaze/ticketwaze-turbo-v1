@@ -20,7 +20,7 @@ import { Event } from "@ticketwaze/typescript-config";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft2 } from "iconsax-reactjs";
 import { cn } from "@/lib/utils";
-import { DateTime } from "luxon";
+import { isEventPast } from "@/lib/eventTime";
 
 type AdminStatus = Event["adminStatus"];
 
@@ -147,18 +147,15 @@ export function EventStatusDialog({
   const currentConfig = STATUS_CONFIG[event.adminStatus];
 
   // A passed activity's status is frozen (the API rejects it too). Passed =
-  // every day's local end time, interpreted in the day's own timezone, is over.
-  const isPastEvent =
-    event.eventDays.length > 0 &&
-    event.eventDays.every((day) => {
-      const end = DateTime.fromISO(
-        `${day.eventDate.slice(0, 10)}T${day.endTime}`,
-        { zone: day.timezone },
-      );
-      return end.isValid && end < DateTime.now();
-    });
+  // the last day's local end time, interpreted in the day's own timezone, has
+  // gone by. One shared helper, so this and the countdown cannot drift apart.
+  const isPastEvent = isEventPast(event.eventDays);
 
+  // Frozen AND no trigger asked for: draw nothing, for the same reason as the
+  // refund dialog — otherwise a stray "Change Status" button lands at the
+  // bottom of the activity page, away from the menu that owns the action.
   if (isPastEvent) {
+    if (hideTrigger) return null;
     return (
       <ButtonNeutral
         disabled

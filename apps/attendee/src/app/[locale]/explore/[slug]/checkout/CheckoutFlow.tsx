@@ -22,8 +22,10 @@ import {
   Event,
   EventTicketType,
   PublicEventFormQuestion,
+  PublicRewardSummary,
   User,
 } from "@ticketwaze/typescript-config";
+import { getActiveFeeOverride } from "@ticketwaze/pricing";
 import { useSession } from "next-auth/react";
 import PageLoader from "@/components/PageLoader";
 import BackButton from "@/components/shared/BackButton";
@@ -41,6 +43,8 @@ import {
   TicketFormData,
 } from "./checkout.types";
 import { calculateFeeBreakdown, isFreeTicketType } from "./checkoutUtils";
+import { useCheckoutReductions } from "./useCheckoutReductions";
+import ReductionsPanel from "./ReductionsPanel";
 import TicketSummaryCard from "./TicketSummaryCard";
 import TicketSelectionStep from "./steps/TicketSelectionStep";
 import RecipientStep from "./steps/RecipientStep";
@@ -55,6 +59,7 @@ const stripePromise = loadStripe(
 export default function CheckoutFlow({
   event,
   ticketTypes,
+  reward = null,
   user,
   feeWaiverEligible = false,
   htgExchangeRate = 0,
@@ -62,6 +67,8 @@ export default function CheckoutFlow({
 }: {
   event: Event;
   ticketTypes: EventTicketType[];
+  /** The organiser's "buy N, get one free" offer, when there is one. */
+  reward?: PublicRewardSummary | null;
   user?: User;
   feeWaiverEligible?: boolean;
   htgExchangeRate?: number;
@@ -422,6 +429,33 @@ export default function CheckoutFlow({
 
   // The fee waiver only applies to paid orders (free tickets carry no fees).
   const feeWaived = feeWaiverEligible && !selectionIsFree;
+
+  /**
+   * The pre-discount subtotal, which is what a code is measured against.
+   *
+   * Computed here rather than read off the breakdown because the breakdown
+   * needs the discount to compute itself — the subtotal has to exist first.
+   */
+  const faceSubtotal = selectedWithIndex.reduce((sum, ticket) => {
+    const ticketType = ticketTypes.find(
+      (type) => type.eventTicketTypeId === ticket.ticketTypeId,
+    );
+    if (!ticketType) return sum;
+    const price = Number(
+      event.currency === "USD"
+        ? ticketType.usdPrice
+        : ticketType.ticketTypePrice,
+    );
+    return sum + price * ticket.quantity;
+  }, 0);
+
+  const reductions = useCheckoutReductions({
+    activityId: event.eventId,
+    subtotal: faceSubtotal,
+    accessToken,
+    isGuest,
+  });
+
   const feeBreakdown = calculateFeeBreakdown(
     selectedWithIndex,
     ticketTypes,
@@ -430,16 +464,38 @@ export default function CheckoutFlow({
     feeWaived,
     htgExchangeRate,
     event.absorbFees === true,
+    // A free claim has no price to discount and no bill to spend tokens on.
+    selectionIsFree ? 0 : (reductions.discount?.amount ?? 0),
+    selectionIsFree ? 0 : reductions.tokens,
+    getActiveFeeOverride(event),
   );
+
+  /**
+   * WHAT THE PAYMENT ROUTES SEND.
+   *
+   * The event endpoints take a BARE ARRAY of attendees and have since they
+   * were written, so there is nowhere in the body to put a code — these go as
+   * headers instead of reshaping a payload three clients already agree on.
+   * `readReductionRequest` on the API accepts either shape.
+   *
+   * Sent as a REQUEST, never as an amount: the API re-resolves the code
+   * against prices it reads itself and re-clamps the tokens against the real
+   * balance. Nothing the browser says about money is believed.
+   */
+  const reductionHeaders: Record<string, string> = {};
+  if (reductions.discount) {
+    reductionHeaders["X-Discount-Code"] = reductions.discount.code;
+  }
+  if (feeBreakdown.tokensSpent > 0) {
+    reductionHeaders["X-Ticketwaze-Tokens"] = String(feeBreakdown.tokensSpent);
+  }
 
   // --- Payment actions ---
 
   async function BuyFreeTicket() {
     setIsLoading(true);
     const values = getValues();
-    const validAttendees = keepCompleteAttendees(
-      attendeesWithAnswers(values.attendees),
-    );
+    const validAttendees = attendeesWithAnswers(values.attendees);
     const result = await FreeEventTicket(
       accessToken,
       event.eventId,
@@ -457,22 +513,21 @@ export default function CheckoutFlow({
   /**
    * The attendee list with each seat's answers attached.
    *
-   * ATTACHED BEFORE ANY FILTERING, and that ordering is the whole point.
-   * `seatAnswers` is held by position, and the paid paths below drop incomplete
-   * "for someone else" rows before posting — pairing answers to attendees after
-   * that filter would shift every answer onto the wrong seat. Doing it here
-   * means the pair travels together through whatever happens next.
+   * `seatAnswers` is held by position, so the pair is made here and travels
+   * together through whatever happens next.
+   *
+   * EVERY SEAT GOES, including a half-filled one. The paid paths used to drop
+   * any "for someone else" row missing a name or an email before posting, which
+   * quietly removed a seat the buyer had chosen and charged them for one ticket
+   * fewer than they were looking at. `handleNext` refuses to leave the recipient
+   * step in that state and the API refuses the checkout outright, so an
+   * incomplete row now produces a message rather than a smaller order.
    */
   function attendeesWithAnswers(attendees: AttendeeFormData[]) {
     return attendees.map((attendee, index) => ({
       ...attendee,
       answers: answersForSeat(index),
     }));
-  }
-
-  /** The same rule every paid path applies, kept in one place. */
-  function keepCompleteAttendees<T extends AttendeeFormData>(attendees: T[]) {
-    return attendees.filter((a) => !a.isForSomeoneElse || (a.name && a.email));
   }
 
   function buildGuestTickets(attendees: AttendeeFormData[]) {
@@ -503,6 +558,7 @@ export default function CheckoutFlow({
           headers: {
             "Content-Type": "application/json",
             "X-Idempotency-Key": idempotencyKey.current,
+            ...reductionHeaders,
           },
           body: JSON.stringify({ guest: guestInfo, tickets }),
         },
@@ -517,9 +573,7 @@ export default function CheckoutFlow({
       return;
     }
 
-    const validAttendees = keepCompleteAttendees(
-      attendeesWithAnswers(values.attendees),
-    );
+    const validAttendees = attendeesWithAnswers(values.attendees);
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/${provider}`,
       {
@@ -528,6 +582,7 @@ export default function CheckoutFlow({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
           "X-Idempotency-Key": idempotencyKey.current,
+          ...reductionHeaders,
         },
         body: JSON.stringify(validAttendees),
       },
@@ -551,7 +606,7 @@ export default function CheckoutFlow({
         `${process.env.NEXT_PUBLIC_API_URL}/guest/events/${event.eventId}/payments/stripe`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...reductionHeaders },
           body: JSON.stringify({ guest: guestInfo, tickets }),
         },
       );
@@ -566,9 +621,7 @@ export default function CheckoutFlow({
       return;
     }
 
-    const validAttendees = keepCompleteAttendees(
-      attendeesWithAnswers(values.attendees),
-    );
+    const validAttendees = attendeesWithAnswers(values.attendees);
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/stripe`,
       {
@@ -576,6 +629,7 @@ export default function CheckoutFlow({
         headers: {
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
+          ...reductionHeaders,
         },
         body: JSON.stringify(validAttendees),
       },
@@ -593,9 +647,7 @@ export default function CheckoutFlow({
   async function WalletPayment() {
     setIsLoading(true);
     const values = getValues();
-    const validAttendees = keepCompleteAttendees(
-      attendeesWithAnswers(values.attendees),
-    );
+    const validAttendees = attendeesWithAnswers(values.attendees);
     const request = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/events/${event.eventId}/payments/wallet`,
       {
@@ -604,6 +656,7 @@ export default function CheckoutFlow({
           Authorization: `Bearer ${accessToken}`,
           "Content-Type": "application/json",
           "X-Idempotency-Key": idempotencyKey.current,
+          ...reductionHeaders,
         },
         body: JSON.stringify(validAttendees),
       },
@@ -825,6 +878,7 @@ export default function CheckoutFlow({
               watchedTickets={watchedTickets}
               ticketTypes={ticketTypes}
               event={event}
+              reward={reward}
               eventIsAllFree={eventIsAllFree}
               selectedWithIndex={selectedWithIndex}
               feeBreakdown={feeBreakdown}
@@ -883,6 +937,21 @@ export default function CheckoutFlow({
               ticketTypes={ticketTypes}
               event={event}
               feeBreakdown={feeBreakdown}
+              reductions={
+                <ReductionsPanel
+                  currency={event.currency}
+                  exchangeRate={htgExchangeRate}
+                  billTotal={feeBreakdown.total + feeBreakdown.tokenValue}
+                  discount={reductions.discount}
+                  discountError={reductions.discountError}
+                  isChecking={reductions.isChecking}
+                  onCheck={reductions.checkDiscount}
+                  onClear={reductions.clearDiscount}
+                  availableTokens={reductions.availableTokens}
+                  tokens={reductions.tokens}
+                  onTokensChange={reductions.setTokens}
+                />
+              }
             />
           )}
 

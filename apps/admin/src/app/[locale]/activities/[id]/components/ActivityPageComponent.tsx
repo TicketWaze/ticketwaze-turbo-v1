@@ -1,17 +1,34 @@
 "use client";
 import { useState } from "react";
 import BackButton from "@/components/shared/BackButton";
-import { ButtonBlack } from "@/components/shared/buttons";
+import { ButtonBlack, ButtonNeutral } from "@/components/shared/buttons";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
 import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar2, Location, Clock, Edit2, Gift, Trash, Status } from "iconsax-reactjs";
+import {
+  Calendar2,
+  Location,
+  Clock,
+  Edit2,
+  Gift,
+  Trash,
+  Status,
+  ReceiptDiscount,
+  Scanner as ScannerIcon,
+} from "iconsax-reactjs";
+import FeesHandlerDialog from "@/components/shared/FeesHandlerDialog";
+import CheckingDialog, {
+  canOfferChecking,
+  getCheckingWindowStatus,
+} from "@/components/shared/CheckingDialog";
 import Separator from "@/components/shared/Separator";
 import { useLocale, useTranslations } from "next-intl";
 import ActivityActionsMenu from "@/components/shared/ActivityActionsMenu";
 import useAdminCan from "@/lib/useAdminCan";
+import { eventStartsAt, isEventInProgress, isEventPast } from "@/lib/eventTime";
+import { ticketsOrganisationTotal } from "@/lib/ticketEarnings";
 import Image from "next/image";
 import Link from "next/link";
 import { ActivityAttendances } from "./ActivityAttendances";
@@ -26,10 +43,11 @@ import { DateTime } from "luxon";
  * API's guards in services/activity_refund.ts — the API decides, this only
  * explains the answer without a round trip.
  *
- * `eventStart` is the first day's date, which is all this component has; the
- * API compares the day's start TIME in the event's own zone, so it can still
- * refuse an event this check lets through. That asymmetry is deliberate — the
- * looser of the two is the one that only draws a button.
+ * `eventStart` is now the earliest day's start as a real instant, read in that
+ * day's own timezone, which is exactly what the API compares against — so the
+ * two agree. It used to be compared against the start of TODAY, which offered
+ * the button for the rest of the day after an event had begun and handed the
+ * admin an error from the server instead of an explanation.
  */
 function eventRefundBlockedReason(
   event: Event,
@@ -37,7 +55,11 @@ function eventRefundBlockedReason(
 ): string | null {
   if (event.cancelledAt) return "This event has already been cancelled.";
   if (event.deletionStatus) return "This event is being deleted.";
-  if (eventStart && eventStart < DateTime.now().startOf("day"))
+  // Scheduled days only, exactly as the API has it: a teaser's `comingSoonDate`
+  // is not a start time, and reading it as one would block a refund at midnight
+  // on a date nothing is actually happening on.
+  const hasDays = (event.eventDays?.length ?? 0) > 0;
+  if (hasDays && eventStart && eventStart <= DateTime.now())
     return "This event has already started and cannot be refunded.";
   return null;
 }
@@ -95,10 +117,27 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
   const soldTickets = (event.tickets ?? []).filter(
     (o) => o.status !== "RETURNED",
   );
-  const totalRevenue =
-    event.currency === "HTG"
-      ? soldTickets.reduce((sum, o) => sum + o.ticketPrice, 0)
-      : soldTickets.reduce((sum, o) => sum + o.ticketUsdPrice, 0);
+  /**
+   * SALES, WHICH IS NARROWER THAN TICKETS.
+   *
+   * A bonus reward ticket is not a sale: nobody paid for it, the organisation
+   * was credited nothing, and it takes no tier inventory — so counting it here
+   * would push this figure above the tier counters in the tile below and add a
+   * row that can never contribute to revenue. An admin giveaway stays counted:
+   * the organisation WAS credited the face value and the seat does come out of
+   * the tier, so on both counts it behaves like a sale.
+   */
+  const rewardTickets = soldTickets.filter((o) => o.source === "reward");
+  const purchasedTickets = soldTickets.filter((o) => o.source !== "reward");
+  /**
+   * Revenue is what the ORGANISATION EARNED, not what buyers paid — the two
+   * differ on a giveaway (price 0, face value credited) and on a fee-absorbing
+   * activity (price higher than the earnings). See lib/ticketEarnings.
+   */
+  const totalRevenue = ticketsOrganisationTotal(
+    purchasedTickets,
+    event.currency,
+  );
 
   const ticketTypes = event.eventTicketTypes ?? [];
   const totalSold = ticketTypes.reduce(
@@ -111,21 +150,43 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
   );
   const ticketsLeft = totalCapacity - totalSold;
 
+  /**
+   * THE COUNTDOWN, WHICH USED TO CALL AN EVENT PASSED ON ITS OWN DAY.
+   *
+   * It read `DateTime.fromISO(firstDay.eventDate)` — the stored date in the
+   * browser's zone, with the hours discarded — so from midnight onwards the
+   * start was "in the past" and an event running that evening was announced as
+   * over. An event is over when its LAST day's end time has gone by, read in
+   * the day's own timezone, and while it is between those two it is happening
+   * now rather than either.
+   *
+   * A teaser has no days, only a bare `comingSoonDate`, so it counts down to
+   * that date and is only past once the whole day has gone.
+   */
   const today = DateTime.now();
   const eventStart = firstDay
-    ? DateTime.fromISO(firstDay.eventDate)
+    ? eventStartsAt(event.eventDays)
     : teaserDate
       ? DateTime.fromJSDate(teaserDate)
       : null;
+  const hasEnded = firstDay
+    ? isEventPast(event.eventDays, today)
+    : teaserDate
+      ? DateTime.fromJSDate(teaserDate).endOf("day") < today
+      : false;
+  const inProgress = firstDay && isEventInProgress(event.eventDays, today);
   const daysLeft = eventStart
     ? Math.ceil(Math.max(eventStart.diff(today, "days").days, 0))
     : null;
-  const countdownText =
-    daysLeft === null
-      ? "-"
-      : daysLeft <= 0
-        ? "Event passed"
-        : `${daysLeft} days to go`;
+  const countdownText = hasEnded
+    ? "Event passed"
+    : inProgress
+      ? "Happening now"
+      : daysLeft === null
+        ? "-"
+        : daysLeft <= 0
+          ? "Starting today"
+          : `${daysLeft} days to go`;
 
   const canManage = useAdminCan("activity.manage");
 
@@ -135,8 +196,28 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
    * a popover is unmounted by the same click that opens it.
    */
   const [openDialog, setOpenDialog] = useState<
-    null | "status" | "giveaway" | "refund"
+    null | "status" | "giveaway" | "fees" | "refund" | "checking"
   >(null);
+
+  /**
+   * THE SCANNER, WHICH HAS TO BE FINDABLE.
+   *
+   * Gated on `tickets.checking` and on the activity being scannable at all
+   * (approved, in person, not cancelled, not being deleted) — but NOT on the
+   * time window any more. Hiding it outside the window is what made it
+   * disappear from finished events, leaving an admin unable to tell whether the
+   * button had moved or they lacked the permission. Outside the window it is
+   * drawn greyed out with the reason instead, which is also what the API
+   * answers.
+   *
+   * Its two triggers — the desktop header and the mobile footer — drive ONE
+   * dialog, so the camera is never mounted twice.
+   */
+  const canCheck = useAdminCan("tickets.checking") && canOfferChecking(event);
+  const scanClosedReason =
+    getCheckingWindowStatus(event).status === "closed"
+      ? "This activity has ended — ticket checking is closed."
+      : null;
 
   const editBlockedReason = event.cancelledAt
     ? "This activity has been cancelled and can no longer be edited."
@@ -166,6 +247,12 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
       onSelect: () => setOpenDialog("giveaway"),
       icon: <Gift size="20" variant="Bulk" color="#2E3237" />,
     },
+    canManage && {
+      key: "fees",
+      label: t("activity.actions.fees"),
+      onSelect: () => setOpenDialog("fees"),
+      icon: <ReceiptDiscount size="20" variant="Bulk" color="#2E3237" />,
+    },
     {
       key: "refund",
       label: t("activity.actions.refund"),
@@ -179,13 +266,29 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
   return (
     <div className="flex flex-col gap-8 h-full overflow-hidden">
       <BackButton text={t("activity.back")}></BackButton>
-      <div className="flex justify-between items-center">
-        <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem]">
+      <div className="flex justify-between items-center gap-6">
+        <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem] min-w-0">
           {event.eventName}
         </h2>
-        {/* One menu at every width — the four pills used to wrap onto a
-            second line below a wide desktop. */}
-        <ActivityActionsMenu actions={actions} label={t("activity.actions.title")} />
+        <div className="flex items-center gap-4 shrink-0">
+          {/* Desktop: the scanner sits between the title and the actions menu,
+              so it reads before it. On a phone the header row has no space for
+              it, so it gets the pinned footer at the bottom of the page. */}
+          {canCheck && (
+            <ScanTriggerButton
+              className="hidden lg:flex"
+              label={t("activity.actions.scan")}
+              disabledReason={scanClosedReason}
+              onClick={() => setOpenDialog("checking")}
+            />
+          )}
+          {/* One menu at every width — the four pills used to wrap onto a
+              second line below a wide desktop. */}
+          <ActivityActionsMenu
+            actions={actions}
+            label={t("activity.actions.title")}
+          />
+        </div>
       </div>
       <main className="w-full gap-16 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden flex flex-col lg:grid lg:grid-cols-[15fr_21fr]">
         <div className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
@@ -339,6 +442,18 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
                     {totalCapacity.toLocaleString()}
                   </span>
                 </li>
+                {/* Only when there are any: it explains why the ticket list is
+                    longer than the sold count, and is noise otherwise. */}
+                {rewardTickets.length > 0 && (
+                  <li className="flex justify-between">
+                    <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
+                      {t("activity.resume.performance.tickets.reward")}
+                    </span>
+                    <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
+                      {rewardTickets.length.toLocaleString()}
+                    </span>
+                  </li>
+                )}
                 <li className="flex justify-between">
                   <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
                     {t("activity.resume.performance.tickets.left")}
@@ -361,13 +476,39 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
             <ActivityAttendances event={event} />
           </Tabs>
         </div>
-        <div className="lg:hidden"></div>
       </main>
+
+      {/*
+        MOBILE: THE SCANNER PINNED TO THE BOTTOM OF THE PAGE.
+
+        Outside `main` on purpose. Inside it, the button was the last thing in
+        the scroller — reachable only after scrolling past the whole page, and
+        flush against the card's edge (the layout card carries `pb-0`), so it
+        read as cut off. As a sibling of the scroller it is a footer: it stays
+        put while the page moves under it and is visible from the moment the
+        page opens. Desktop keeps it in the header beside the actions menu.
+      */}
+      {canCheck && (
+        <div className="lg:hidden shrink-0 bg-white pb-6">
+          <ScanTriggerButton
+            className="flex w-full"
+            label={t("activity.actions.scan")}
+            disabledReason={scanClosedReason}
+            onClick={() => setOpenDialog("checking")}
+          />
+        </div>
+      )}
 
       {/*
         Siblings of the menu, never children of it. `hideTrigger` drops each
         dialog's own button — the menu row is the trigger now.
       */}
+      <CheckingDialog
+        event={event}
+        hideTrigger
+        open={openDialog === "checking"}
+        onOpenChange={(next) => setOpenDialog(next ? "checking" : null)}
+      />
       <EventStatusDialog
         event={event}
         hideTrigger
@@ -380,6 +521,13 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         open={openDialog === "giveaway"}
         onOpenChange={(next) => setOpenDialog(next ? "giveaway" : null)}
       />
+      <FeesHandlerDialog
+        kind="event"
+        activityId={event.eventId}
+        hideTrigger
+        open={openDialog === "fees"}
+        onOpenChange={(next) => setOpenDialog(next ? "fees" : null)}
+      />
       <RefundActivityDialog
         activityKind="event"
         activityId={event.eventId}
@@ -391,5 +539,45 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         onOpenChange={(next) => setOpenDialog(next ? "refund" : null)}
       />
     </div>
+  );
+}
+
+/**
+ * The scanner's button, drawn twice — inline in the header on desktop, as its
+ * own full-width row under the title on a phone — and opening the one dialog
+ * mounted at the bottom of the page.
+ *
+ * On desktop it is sized to the actions menu's circle (h-14) beside it rather
+ * than to the app's full-height pill, which would stand a head taller than
+ * everything else in that row.
+ *
+ * Neutral grey, the same `bg-neutral-100 / text-neutral-700` the organisation
+ * dashboard's grey button uses. Black would read as the page's primary action,
+ * which scanning is not — it is one of several things to do from here.
+ */
+function ScanTriggerButton({
+  className,
+  label,
+  disabledReason,
+  onClick,
+}: {
+  className?: string;
+  label: string;
+  /** Set outside the scanning window: the button stays, greyed, and says why. */
+  disabledReason?: string | null;
+  onClick: () => void;
+}) {
+  return (
+    <ButtonNeutral
+      disabled={Boolean(disabledReason)}
+      title={disabledReason ?? undefined}
+      className={`gap-3 lg:h-14 lg:w-fit lg:px-8 lg:py-0 ${
+        disabledReason ? "opacity-50 cursor-not-allowed" : ""
+      } ${className ?? ""}`}
+      onClick={disabledReason ? undefined : onClick}
+    >
+      <ScannerIcon size="18" color="#737c8a" variant="Bulk" />
+      {label}
+    </ButtonNeutral>
   );
 }

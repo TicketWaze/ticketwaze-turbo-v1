@@ -572,3 +572,307 @@ export function getBuyerUnitTotal(
   }
   return getUnitPriceBreakdown(currency, price, htgExchangeRate, route).total;
 }
+
+// ── Discount codes and Ticketwaze tokens ──────────────────────────────────────
+
+/**
+ * TWO REDUCTIONS, FUNDED BY DIFFERENT PEOPLE — the browser's copy of the rule.
+ *
+ * Mirrors `app/services/checkout_discounts.ts` and
+ * `app/controllers/utils/discounted_pricing.ts` in the API, which is what
+ * actually charges the buyer. Everything here exists only so the checkout can
+ * quote a figure before the payment handler recomputes it; a divergence means
+ * the buyer is shown a total they are not charged.
+ *
+ *   A DISCOUNT CODE is the ORGANISER'S. It comes off the base price, while the
+ *   fee stack stays pinned to the FACE price — so the buyer's bill drops by
+ *   exactly the headline discount and the fee category never changes.
+ *
+ *   TICKETWAZE TOKENS are OURS. They come off the grand total after fees.
+ *
+ * The order matters and is not interchangeable.
+ */
+
+/** 200 tokens = 100 HTG, so a token is worth half a gourde. */
+export const TOKENS_PER_HTG = 2;
+
+/**
+ * What one token is worth, UNROUNDED, in the currency asked for.
+ *
+ * Unrounded because a single token is worth about $0.0037 and rounding it to
+ * the cent gives zero — which would make the clamp below conclude that no
+ * number of tokens can be spent on a USD-priced activity.
+ */
+export function unitTokenValue(
+  currency: string,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+): number {
+  if (currency !== "USD") return 1 / TOKENS_PER_HTG;
+  const rate =
+    htgExchangeRate > 0 ? htgExchangeRate : FALLBACK_HTG_EXCHANGE_RATE;
+  return 1 / TOKENS_PER_HTG / rate;
+}
+
+/** What a whole number of tokens is worth as money, rounded to the cent. */
+export function tokenValue(
+  tokens: number,
+  currency: string,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+): number {
+  return round2(
+    Math.max(0, Math.floor(tokens)) * unitTokenValue(currency, htgExchangeRate),
+  );
+}
+
+/**
+ * The most tokens worth spending on a bill of `billAmount`.
+ *
+ * Clamped at the bill as well as the balance, because the excess is not
+ * refundable as money — spending 400 tokens to clear a 300-token bill would
+ * quietly destroy the difference. The slider in the checkout uses this as its
+ * maximum, so a buyer cannot even drag past the point of waste.
+ */
+export function maxSpendableTokens(
+  availableTokens: number,
+  billAmount: number,
+  currency: string,
+  htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
+): number {
+  const available = Math.max(0, Math.floor(availableTokens));
+  const unit = unitTokenValue(currency, htgExchangeRate);
+  if (available <= 0 || !(billAmount > 0) || !(unit > 0)) return 0;
+  return Math.min(available, Math.floor(billAmount / unit));
+}
+
+export interface DiscountQuote {
+  /** The code's headline reduction, off the BASE price. */
+  discount: number;
+  /** The subtotal after the discount. */
+  discountedSubtotal: number;
+  /** Fees on the FACE subtotal: what the buyer is actually charged. */
+  fees: number;
+  /** Total after the discount, before tokens. */
+  totalBeforeTokens: number;
+  /** Money taken off by tokens. */
+  tokenValue: number;
+  /** What the buyer pays. */
+  total: number;
+  /** How much the bill fell: the discount plus any tokens. */
+  totalSaved: number;
+}
+
+/**
+ * What a cart comes to once a discount and some tokens are applied.
+ *
+ * `feesFor` is the caller's own fee function — events, raffles, sales and
+ * reservations each have their own schedule, and passing it in is what keeps
+ * this from having to know which is which. It is only ever called with the
+ * FACE subtotal; its fees are then added to the discounted one.
+ */
+export function quoteWithReductions(options: {
+  subtotal: number;
+  discount?: number;
+  tokens?: number;
+  currency: string;
+  htgExchangeRate?: number;
+  /** Face subtotal in, all-in charge out. */
+  totalFor: (subtotal: number) => number;
+}): DiscountQuote {
+  const subtotal = Math.max(0, Number(options.subtotal) || 0);
+  const rate = options.htgExchangeRate ?? FALLBACK_HTG_EXCHANGE_RATE;
+
+  // A discount can zero a cart but never invert it.
+  const discount = Math.min(subtotal, Math.max(0, Number(options.discount) || 0));
+  const discountedSubtotal = round2(subtotal - discount);
+
+  // Fees are taken on the FACE subtotal and never re-quoted on the discounted
+  // one, so a code cannot move a cart into a cheaper fee band.
+  const undiscountedTotal = round2(options.totalFor(subtotal));
+  const totalBeforeTokens = round2(
+    discountedSubtotal + (undiscountedTotal - subtotal),
+  );
+
+  const tokens = maxSpendableTokens(
+    Number(options.tokens) || 0,
+    totalBeforeTokens,
+    options.currency,
+    rate,
+  );
+  const applied = tokenValue(tokens, options.currency, rate);
+
+  const total = Math.max(0, round2(totalBeforeTokens - applied));
+
+  return {
+    discount,
+    discountedSubtotal,
+    fees: round2(totalBeforeTokens - discountedSubtotal),
+    totalBeforeTokens,
+    tokenValue: applied,
+    total,
+    totalSaved: round2(undiscountedTotal - total),
+  };
+}
+
+// ── Admin fee overrides ───────────────────────────────────────────────────────
+
+/**
+ * AN ADMIN'S OVERRIDE OF AN ACTIVITY'S FEE SCHEDULE — the browser's copy.
+ *
+ * Mirrors `app/controllers/utils/fee_override.ts` in the API, which is what
+ * charges. An override replaces whichever schedule the activity kind normally
+ * uses (event bands, raffle flats, the sale surcharge, the reservation
+ * percentage) with one formula per payment route:
+ *
+ *   fees      = serviceRate × price + flatFee
+ *   processor = processorRate × (price + fees)
+ *   total     = price + fees + processor
+ *
+ * `cancelled` zeroes all of it. Never applied when the organiser absorbs the
+ * fees — there is no buyer-side fee to override.
+ */
+export type { FeeOverride, RouteFeeComponents } from "@ticketwaze/typescript-config";
+import type {
+  FeeOverride,
+  RouteFeeComponents,
+} from "@ticketwaze/typescript-config";
+
+/** Every route an override is stored against. */
+export const FEE_ROUTES: PaymentRoute[] = ["moncash", "natcash", "card", "wallet"];
+
+/**
+ * WHAT AN ADMIN ACTUALLY SETS — three schedules, not four routes.
+ *
+ * MonCash and NatCash are one mobile-money schedule: the same 2.5% cut, the
+ * same flow, priced identically by every kind's ordinary schedule, so they are
+ * set together rather than typed twice. The wallet moves a balance that is
+ * already inside Ticketwaze, so no processor takes a cut of it — it carries a
+ * service fee and a flat fee, never a processor rate.
+ *
+ * Storage stays four routes, since every pricing path looks a route up by
+ * name; `normalizeFeeRoutes` expands the three groups back out.
+ *
+ * Mirrors `FEE_GROUPS` in the API's `utils/fee_override.ts`.
+ */
+export const FEE_GROUPS = ["mobile", "card", "wallet"] as const;
+
+export type FeeGroup = (typeof FEE_GROUPS)[number];
+
+/** The schedule a route is priced by. */
+export function getRouteFeeGroup(route: PaymentRoute): FeeGroup {
+  if (route === "card") return "card";
+  if (route === "wallet") return "wallet";
+  return "mobile";
+}
+
+/** The route whose stored components ARE the group's. */
+export const FEE_GROUP_ROUTE: Record<FeeGroup, PaymentRoute> = {
+  mobile: "moncash",
+  card: "card",
+  wallet: "wallet",
+};
+
+/** Which routes a group sets. */
+export const FEE_GROUP_ROUTES: Record<FeeGroup, PaymentRoute[]> = {
+  mobile: ["moncash", "natcash"],
+  card: ["card"],
+  wallet: ["wallet"],
+};
+
+/**
+ * The four stored routes as the groups require them: NatCash carries MonCash's
+ * components, and the wallet carries no processor rate. Mirrors
+ * `normalizeFeeRoutes` in the API, which normalizes on both read and write.
+ */
+export function normalizeFeeRoutes(
+  routes: Record<PaymentRoute, RouteFeeComponents>,
+): Record<PaymentRoute, RouteFeeComponents> {
+  return {
+    moncash: { ...routes.moncash },
+    natcash: { ...routes.moncash },
+    card: { ...routes.card },
+    wallet: { ...routes.wallet, processorRate: 0 },
+  };
+}
+
+/** The override that applies to a checkout on this activity, or null. */
+export function getActiveFeeOverride(activity: {
+  feeOverride?: FeeOverride | null;
+  absorbFees?: boolean | null;
+}): FeeOverride | null {
+  if (activity.absorbFees === true) return null;
+  const override = activity.feeOverride;
+  if (!override || (override.mode !== "cancelled" && override.mode !== "custom")) {
+    return null;
+  }
+  return override;
+}
+
+export interface OverrideUnitFees {
+  serviceFee: number;
+  flatFee: number;
+  processorFee: number;
+  /** What the buyer pays for one unit, rounded once like the API. */
+  total: number;
+}
+
+/**
+ * One unit's fees at `price` (in the activity's currency) under an override.
+ * A free unit carries nothing. Mirrors `overrideUnitFees` in the API.
+ */
+export function getOverrideUnitFees(
+  override: FeeOverride,
+  route: PaymentRoute,
+  price: number,
+): OverrideUnitFees {
+  const base = Number.isFinite(price) && price > 0 ? price : 0;
+  if (override.mode === "cancelled" || base <= 0) {
+    return { serviceFee: 0, flatFee: 0, processorFee: 0, total: round2(base) };
+  }
+  const c = override.routes?.[route] ?? {
+    serviceRate: 0,
+    flatFee: 0,
+    processorRate: 0,
+  };
+  const serviceRate = Math.max(0, Number(c.serviceRate) || 0);
+  const flatFee = Math.max(0, Number(c.flatFee) || 0);
+  // No processor is involved in a wallet payment, so none of its cut can be
+  // quoted — even when an override written before the fee groups existed still
+  // carries a rate against the route. The API zeroes it the same way.
+  const processorRate =
+    route === "wallet" ? 0 : Math.max(0, Number(c.processorRate) || 0);
+  const serviceFee = serviceRate * base;
+  const processorFee = processorRate * (base + serviceFee + flatFee);
+  return {
+    serviceFee,
+    flatFee,
+    processorFee,
+    total: round2(base + serviceFee + flatFee + processorFee),
+  };
+}
+
+/**
+ * The fee on one unit in BOTH currencies, for surfaces that display a route in
+ * a currency other than the activity's (a card payment on an HTG raffle is
+ * shown in USD). Computed in the activity's own currency — the one the flat
+ * fee was typed in — and converted at the day's rate. Mirrors
+ * `overrideUnitMargin` in the API.
+ */
+export function getOverrideUnitMargin(
+  override: FeeOverride,
+  input: {
+    currency: string;
+    faceHtg: number;
+    faceUsd: number;
+    route: PaymentRoute;
+    htgExchangeRate: number;
+  },
+): { htg: number; usd: number } {
+  const isUsd = input.currency === "USD";
+  const face = Math.max(0, Number(isUsd ? input.faceUsd : input.faceHtg) || 0);
+  const margin = getOverrideUnitFees(override, input.route, face).total - round2(face);
+  const rate =
+    input.htgExchangeRate > 0 ? input.htgExchangeRate : FALLBACK_HTG_EXCHANGE_RATE;
+  return isUsd
+    ? { htg: margin * rate, usd: margin }
+    : { htg: margin, usd: margin / rate };
+}

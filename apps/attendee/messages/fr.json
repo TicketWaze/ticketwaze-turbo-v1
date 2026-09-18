@@ -635,7 +635,7 @@
     "invitedUser": "Utilisateur invité",
     "user": "utilisateur(s)",
     "referralTitle": "Invitez des amis",
-    "referralDescription": "Faisons grandir notre communauté ensemble. Aidez vos amis à découvrir des billets et des expériences exceptionnels, et gagnez 50 jetons Ticketwaze pour chaque recommandation réussie !",
+    "referralDescription": "Faisons grandir notre communauté ensemble. Aidez vos amis à découvrir des billets et des expériences exceptionnels, et gagnez 20 jetons Ticketwaze pour chaque recommandation réussie !",
     "copy": "Copier",
     "filters": {
       "all": "Tous les statuts",
@@ -1008,9 +1008,15 @@
       "lockedHint": "Disponible à partir du {date}, au début de l’activité.",
       "failed": "Le document n’a pas pu être téléchargé. Veuillez réessayer."
     },
-    "giveaway": "Offert par Ticketwaze"
+    "giveaway": "Offert par Ticketwaze",
+    "reward": "Offert par l'organisateur"
   },
   "Checkout": {
+    "reward": {
+      "offer": "{quantity} billets achetés = 1 « {name} » offert",
+      "to_next": "Ajoutez {count} billet(s) pour l'obtenir.",
+      "earned": "Vous avez gagné {count} billet(s) gratuit(s). Ils arrivent avec votre commande."
+    },
     "back": "Retour",
     "free": "Gratuit",
     "private_login_required": "Ceci est une activité privée. Veuillez vous connecter avec l’adresse e-mail avec laquelle vous avez été invité pour acheter des billets.",
@@ -1036,8 +1042,8 @@
     "recipient": {
       "title": "Destinataire",
       "someone": "J'achète ce billet pour quelqu'un d'autre",
-      "error": "Veuillez renseigner les informations relatives aux participants pour tous les billets marqués pour quelqu'un d'autre",
-      "warning": "Veuillez vérifier les informations avant de soumettre votre demande. Si elles sont incorrectes, la personne pourrait ne pas pouvoir accéder à son ticket.",
+      "error": "Indiquez le nom et l’adresse e-mail pour chaque billet acheté pour quelqu’un d’autre. Le nom figure sur le billet et est contrôlé à l’entrée.",
+      "warning": "Veuillez vérifier les informations avant de soumettre votre demande. Si elles sont incorrectes, la personne pourrait ne pas pouvoir accéder à son billet.",
       "email": "Adresse e-mail",
       "name": "Nom complet",
       "your_info": "Vos informations",
@@ -1078,7 +1084,10 @@
       "confirm_free": "Obtenir les billets",
       "secured": "Sécurisé par Ticketwaze",
       "fees_waived_banner": "Avantage liste d’attente appliqué. Ce premier achat ne comporte aucun frais Ticketwaze ni frais de transaction.",
-      "waived": "Offert"
+      "waived": "Offert",
+      "discount": "Réduction",
+      "tokens": "Jetons Ticketwaze ({tokens})",
+      "you_saved": "Vous avez économisé {amount}"
     },
     "footer": {
       "ticket": "Billet",
@@ -1108,6 +1117,23 @@
       "other_placeholder": "Précisez",
       "missing": "Veuillez répondre à : {question}",
       "missing_for_seat": "Billet {number} — veuillez répondre à : {question}"
+    },
+    "discount": {
+      "title": "Code de réduction",
+      "placeholder": "Saisir un code",
+      "apply": "Appliquer",
+      "checking": "Vérification…",
+      "remove": "Retirer le code de réduction",
+      "applied_percentage": "{value}% de réduction sur vos billets",
+      "applied_fixed": "{amount} de réduction sur votre commande"
+    },
+    "tokens": {
+      "title": "Jetons Ticketwaze",
+      "balance": "{tokens} disponibles",
+      "using": "Utilisation de {tokens} jetons",
+      "max": "Tout utiliser",
+      "none": "Ne rien utiliser",
+      "nothing_to_apply": "Vos jetons ne peuvent pas être appliqués à cette commande."
     }
   },
   "Liked": {
@@ -1129,7 +1155,7 @@
     "invitedUser": "Utilisateur invité",
     "user": "utilisateur(s)",
     "referralTitle": "Invitez des amis",
-    "referralDescription": "Faisons grandir notre communauté ensemble. Aidez vos amis à découvrir des billets et des expériences exceptionnels, et gagnez 50 jetons Ticketwaze pour chaque recommandation réussie !",
+    "referralDescription": "Faisons grandir notre communauté ensemble. Aidez vos amis à découvrir des billets et des expériences exceptionnels, et gagnez 20 jetons Ticketwaze pour chaque recommandation réussie !",
     "copy": "Copier",
     "placeholders": {
       "firstname": "Prénom",

@@ -1,4 +1,5 @@
-import { EventTicketType } from "@ticketwaze/typescript-config";
+import { EventTicketType, FeeOverride } from "@ticketwaze/typescript-config";
+import { getOverrideUnitFees, type PaymentRoute } from "@ticketwaze/pricing";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "./checkout.types";
 
 // The fee constants and the per-ticket fee rule live in one place now, shared
@@ -24,6 +25,8 @@ import {
   getPerTicketFee,
   htgFlatBandFee,
   round2,
+  maxSpendableTokens,
+  tokenValue,
 } from "@/lib/pricing";
 
 /**
@@ -86,7 +89,34 @@ export function calculateFeeBreakdown(
   feeWaived: boolean = false,
   htgExchangeRate: number = FALLBACK_HTG_EXCHANGE_RATE,
   absorbFees: boolean = false,
+  /**
+   * THE TWO REDUCTIONS, APPLIED AT DIFFERENT POINTS IN THE STACK.
+   *
+   * `discountTotal` is the organiser's code and comes off the BASE prices,
+   * apportioned across the lines by value, while every fee stays on the face
+   * price. `tokens` is Ticketwaze's own credit and comes off the GRAND TOTAL
+   * at the end.
+   *
+   * Getting the order wrong is not a rounding difference — a discount applied
+   * after the fees would quote a total the API does not charge, and an
+   * organiser would be credited for a promotion they did not fund.
+   *
+   * Mirrors `discounted_pricing.ts` and `checkout_discounts.ts` in the API.
+   */
+  discountTotal: number = 0,
+  tokens: number = 0,
+  /**
+   * An admin's override of this event's fees. When active it replaces the
+   * band/percentage schedule below, line by line — see `getOverrideUnitFees`.
+   * Ignored when the organiser absorbs the fees, like the API.
+   */
+  feeOverride: FeeOverride | null = null,
 ): FeeBreakdown {
+  const override = absorbFees ? null : feeOverride;
+  // No method picked yet quotes the wallet route: it is the one with no
+  // processor cut, which is what this function has always shown before a
+  // method exists.
+  const overrideRoute: PaymentRoute = paymentType || "wallet";
   let subtotal = 0;
   let platformFee = 0;
   let serviceFee = 0;
@@ -94,11 +124,11 @@ export function calculateFeeBreakdown(
   /**
    * THE TOTAL, ACCUMULATED THE WAY THE BACKEND CHARGES IT.
    *
-   * `payments_controller` rounds each ticket to the cent and sums those,
-   * so summing the unrounded component rows and rounding once at the end can
-   * land a cent apart — it did, on a two-ticket basket above the bands. The
-   * rows stay unrounded for display and may therefore not add up on screen to
-   * the cent; quoting a total the buyer is actually charged matters more.
+   * Each ticket's face-price quote is rounded to the cent (as the API's
+   * calculators do), the discounted price is added to its fees, and the cart
+   * is rounded once at the end (`sumCharges`). The fee rows stay unrounded for
+   * display and may not add up on screen to the cent; quoting a total the
+   * buyer is actually charged matters more.
    */
   let chargedTotal = 0;
   const rate =
@@ -117,60 +147,158 @@ export function calculateFeeBreakdown(
    * This also matches how the backend adds up: `payments_controller` computes a
    * per-ticket total and sums those, rather than pricing the basket as a whole.
    */
+  /**
+   * THE DISCOUNT, SPREAD ACROSS THE LINES BEFORE ANY OF THEM IS PRICED.
+   *
+   * Apportioned by value — a 2,000 HTG ticket carries more of the cut than a
+   * 500 HTG one beside it — because splitting a cart's discount evenly could
+   * push a cheap line negative while barely moving an expensive one.
+   *
+   * The fraction is computed once here and applied per line below, which is
+   * the same proportional split `spreadDiscount` performs on the server.
+   */
+  const faceSubtotal = selectedTickets.reduce((sum, ticket) => {
+    const ticketType = ticketTypes.find(
+      (tt) => tt.eventTicketTypeId === ticket.ticketTypeId,
+    );
+    if (!ticketType) return sum;
+    const price = Number(
+      currency === "USD" ? ticketType.usdPrice : ticketType.ticketTypePrice,
+    );
+    return sum + price * ticket.quantity;
+  }, 0);
+
+  const appliedDiscount = Math.min(
+    Math.max(0, Number(discountTotal) || 0),
+    faceSubtotal,
+  );
+  const discountFraction =
+    faceSubtotal > 0 ? appliedDiscount / faceSubtotal : 0;
+
   selectedTickets.forEach((ticket) => {
     const ticketType = ticketTypes.find(
       (tt) => tt.eventTicketTypeId === ticket.ticketTypeId,
     );
     if (!ticketType) return;
-    const price = Number(
+    const facePrice = Number(
       currency === "USD" ? ticketType.usdPrice : ticketType.ticketTypePrice,
     );
+    /**
+     * EVERY FEE BELOW IS CHARGED ON THE FACE PRICE, and the discount only
+     * comes off the ticket itself. Pricing fees on the discounted price used
+     * to drop a 1,000 HTG ticket with 30% off into the 100 HTG flat band.
+     * Mirrors `assemble` in the API's `discounted_pricing.ts`.
+     */
+    const discountedPrice = Math.max(0, facePrice * (1 - discountFraction));
     const quantity = ticket.quantity;
-    subtotal += price * quantity;
+    subtotal += facePrice * quantity;
 
-    const flatFee = currency === "HTG" ? htgFlatBandFee(price) : null;
-    if (flatFee !== null) {
-      platformFee += flatFee * quantity;
-      chargedTotal += round2(price + flatFee) * quantity;
+    if (override) {
+      const fees = getOverrideUnitFees(override, overrideRoute, facePrice);
+      serviceFee += fees.serviceFee * quantity;
+      platformFee += fees.flatFee * quantity;
+      transactionFee += fees.processorFee * quantity;
+      chargedTotal += (discountedPrice + (fees.total - facePrice)) * quantity;
       return;
     }
 
-    const perTicket = getPerTicketFee(currency, price, rate);
-    const lineService = SERVICE_FEE_RATE * price;
+    const flatFee = currency === "HTG" ? htgFlatBandFee(facePrice) : null;
+    if (flatFee !== null) {
+      platformFee += flatFee * quantity;
+      chargedTotal += (discountedPrice + flatFee) * quantity;
+      return;
+    }
+
+    const perTicket = getPerTicketFee(currency, facePrice, rate);
+    const lineService = SERVICE_FEE_RATE * facePrice;
     platformFee += perTicket * quantity;
     serviceFee += lineService * quantity;
-    transactionFee += txRate * (price + lineService + perTicket) * quantity;
-    chargedTotal +=
-      round2((price + lineService + perTicket) * (1 + txRate)) * quantity;
+    transactionFee += txRate * (facePrice + lineService + perTicket) * quantity;
+    const faceFees =
+      round2((facePrice + lineService + perTicket) * (1 + txRate)) - facePrice;
+    chargedTotal += (discountedPrice + faceFees) * quantity;
   });
+
+  /**
+   * TOKENS COME OFF LAST, once the total exists.
+   *
+   * Clamped at the bill as well as at the balance: the excess is not
+   * refundable as money, so letting a buyer spend 400 tokens to clear a bill
+   * 300 would cover would quietly destroy the difference. `maxSpendableTokens`
+   * is the same clamp the API applies.
+   */
+  const applyTokens = (billTotal: number) => {
+    const spendable = maxSpendableTokens(tokens, billTotal, currency, rate);
+    const value = tokenValue(spendable, currency, rate);
+    return { spendable, value, total: Math.max(0, round2(billTotal - value)) };
+  };
 
   // The organiser is paying these, so as far as this buyer is concerned they do
   // not exist. Zeroed rather than merely excluded from the total, so no surface
   // downstream can render a fee the buyer was never going to be charged.
   if (absorbFees) {
+    // On an absorbing activity the buyer pays the face price and nothing else,
+    // so the discounted subtotal IS the bill.
+    const beforeTokens = round2(subtotal - appliedDiscount);
+    const withTokens = applyTokens(beforeTokens);
     return {
       subtotal,
       serviceFee: 0,
       platformFee: 0,
       transactionFee: 0,
-      total: subtotal,
+      total: withTokens.total,
       feeWaived: false,
       absorbedByOrganiser: true,
+      feesCancelled: false,
+      customFees: false,
+      discount: appliedDiscount,
+      tokenValue: withTokens.value,
+      tokensSpent: withTokens.spendable,
+      totalSaved: round2(subtotal - withTokens.total),
     };
   }
 
   // Waitlist first-purchase perk: the buyer pays only the subtotal. The fee
   // amounts are still returned so the UI can show them struck-through, but they
   // are excluded from the total — mirroring the backend's fee waiver exactly.
-  const total = feeWaived ? subtotal : round2(chargedTotal);
+  const beforeTokens = feeWaived
+    ? round2(subtotal - appliedDiscount)
+    : round2(chargedTotal);
+  const withTokens = applyTokens(beforeTokens);
+
+  /**
+   * What the cart would have cost at face price, so "you saved" can be an
+   * honest single number. Recomputed rather than tracked through the loop
+   * because the loop only ever priced the discounted lines.
+   */
+  const undiscountedTotal = appliedDiscount
+    ? calculateFeeBreakdown(
+        selectedTickets,
+        ticketTypes,
+        currency,
+        paymentType,
+        feeWaived,
+        htgExchangeRate,
+        absorbFees,
+        0,
+        0,
+        feeOverride,
+      ).total
+    : beforeTokens;
 
   return {
     subtotal,
     serviceFee,
     platformFee,
     transactionFee,
-    total,
+    total: withTokens.total,
     feeWaived,
     absorbedByOrganiser: false,
+    feesCancelled: override?.mode === "cancelled",
+    customFees: override?.mode === "custom",
+    discount: appliedDiscount,
+    tokenValue: withTokens.value,
+    tokensSpent: withTokens.spendable,
+    totalSaved: round2(undiscountedTotal - withTokens.total),
   };
 }

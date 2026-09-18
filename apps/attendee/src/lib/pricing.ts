@@ -22,4 +22,11 @@ export {
   calculateNatcashTotalHTG,
   calculateStripeTotalHTG,
   calculateStripeTotalUSD,
+  // Discount codes and Ticketwaze tokens — the browser"s copy of the rules
+  // the API charges by. See the package for why the order of the two matters.
+  TOKENS_PER_HTG,
+  unitTokenValue,
+  tokenValue,
+  maxSpendableTokens,
+  quoteWithReductions,
 } from "@ticketwaze/pricing";

@@ -160,6 +160,17 @@ export interface Ticket {
    * the opposite of the point.
    */
   isGiveaway?: boolean;
+  /**
+   * How the holder came to have this ticket.
+   *
+   * "reward" is a bonus ticket the ORGANISER gave for buying enough in one
+   * order (see the Rewards screen). It is priced at 0 like a free ticket, so
+   * anywhere that would print "Free" must check this first — and it can never
+   * be returned on its own.
+   */
+  source?: "purchase" | "reward";
+  /** The grant a "reward" ticket belongs to. Null on every other ticket. */
+  rewardGrantId?: string | null;
   isRefundable: boolean;
   status: "PENDING" | "CHECKED" | "RETURNED";
   /**
@@ -300,6 +311,25 @@ export interface Order {
   lastName: string | null;
   email: string | null;
   tickets: Ticket[];
+  /**
+   * THE ORGANISER'S PROMOTION, if a code applied.
+   *
+   * Comes off the base price, so the organisation is credited that much
+   * less. Fees stay on the FACE price, so the discount never changes them.
+   */
+  discountCodeId?: string | null;
+  discountHtgAmount?: number;
+  discountUsdAmount?: number;
+  /**
+   * TICKETWAZE'S OWN PROMOTIONAL CURRENCY, if any was spent.
+   *
+   * Unlike the discount, this costs Ticketwaze rather than the organiser:
+   * tokens come off the grand total after fees, and the organisation is
+   * credited as though the buyer had paid in full.
+   */
+  tokensSpent?: number;
+  tokenHtgAmount?: number;
+  tokenUsdAmount?: number;
   /** Present on the finance endpoints; absent wherever orders are returned raw. */
   activity?: OrderActivitySummary;
   createdAt: DateTime;
@@ -314,6 +344,33 @@ export interface NotificationPreference {
   emailPlatformAnnouncements: boolean;
   createdAt: DateTime;
   updatedAt: DateTime;
+}
+
+/** How a buyer pays. `wallet` carries no payment-processor fee. */
+export type FeeRoute = "moncash" | "natcash" | "card" | "wallet";
+
+/** One payment provider's fee components under an admin override. */
+export interface RouteFeeComponents {
+  /** Fraction of the price, e.g. 0.03 for 3%. */
+  serviceRate: number;
+  /** Per unit, in the activity's own currency. */
+  flatFee: number;
+  /** Fraction of (price + service + flat), e.g. 0.025 for 2.5%. */
+  processorRate: number;
+}
+
+/**
+ * An admin's override of an activity's fee schedule — set from the admin
+ * dashboard's fees handler. `cancelled` means the buyer pays no fees;
+ * `custom` prices each provider from its own components. Mirrors
+ * `utils/fee_override.ts` in the API.
+ */
+export interface FeeOverride {
+  mode: "cancelled" | "custom";
+  sameForAllProviders: boolean;
+  routes: Record<FeeRoute, RouteFeeComponents>;
+  updatedAt: string;
+  updatedBy: string;
 }
 
 export interface EventTicketType {
@@ -416,6 +473,12 @@ export interface Event {
    * the activity rather than anywhere cleverer.
    */
   absorbFees: boolean;
+  /**
+   * An admin override of the fee schedule, or null for the ordinary one.
+   * Ignored while `absorbFees` is true. Quote with `getActiveFeeOverride`
+   * from @ticketwaze/pricing rather than reading it directly.
+   */
+  feeOverride?: FeeOverride | null;
   activityTags: string[];
   ticketSalesEndAt: string | null;
   /**
@@ -575,6 +638,12 @@ export interface Raffle {
    * the activity rather than anywhere cleverer.
    */
   absorbFees: boolean;
+  /**
+   * An admin override of the fee schedule, or null for the ordinary one.
+   * Ignored while `absorbFees` is true. Quote with `getActiveFeeOverride`
+   * from @ticketwaze/pricing rather than reading it directly.
+   */
+  feeOverride?: FeeOverride | null;
   totalTicketsLimit: number | null;
   activityTags: string[];
   location: { lat: number; lng: number } | null;
@@ -701,6 +770,12 @@ export interface Restaurant {
    * the activity rather than anywhere cleverer.
    */
   absorbFees: boolean;
+  /**
+   * An admin override of the fee schedule, or null for the ordinary one.
+   * Ignored while `absorbFees` is true. Quote with `getActiveFeeOverride`
+   * from @ticketwaze/pricing rather than reading it directly.
+   */
+  feeOverride?: FeeOverride | null;
   offersDelivery: boolean;
   offersTakeout: boolean;
   deliveryPhone: string | null;
@@ -888,6 +963,12 @@ export interface Sale {
    * the activity rather than anywhere cleverer.
    */
   absorbFees: boolean;
+  /**
+   * An admin override of the fee schedule, or null for the ordinary one.
+   * Ignored while `absorbFees` is true. Quote with `getActiveFeeOverride`
+   * from @ticketwaze/pricing rather than reading it directly.
+   */
+  feeOverride?: FeeOverride | null;
   status:
     | "draft"
     | "scanning"
@@ -947,6 +1028,11 @@ export interface PublicSale {
   createdAt: string;
   /** The single all-in number a buyer pays. The fee is never itemised. */
   pricing: SalePricing;
+  /**
+   * Set only when an admin fee override prices the providers differently.
+   * `pricing` is then the cheapest of them; quote the chosen method from here.
+   */
+  pricingByRoute?: Record<FeeRoute, SalePricing> | null;
   /** Enough to judge the product; nothing that locates the object in S3. */
   file: {
     originalFilename: string;
@@ -1032,13 +1118,126 @@ export interface Currency {
 export interface DiscountCode {
   discountCodeId: string;
   code: string;
-  eventId: string;
+  /**
+   * The activity this code belongs to.
+   *
+   * Was `eventId`, and is the same value: events, raffles, sales and
+   * restaurants all share their primary key with `activities`, so the column
+   * was renamed rather than re-pointed when codes moved off events.
+   */
+  activityId: string;
   type: "fixed" | "percentage";
   value: number;
+  /**
+   * Which money a `fixed` value is in, stamped from the activity at creation
+   * so re-pricing cannot re-scale a code already in circulation. Null on
+   * percentage codes and on rows created before the column existed.
+   */
+  currency: string | null;
+  /** Minimum pre-discount subtotal, in `currency`. Null means no floor. */
+  minPurchase: number | null;
+  /** Uses allowed per signed-in buyer. Null means no per-buyer cap. */
+  perUserLimit: number | null;
   expiresAt: Date;
   usageLimit: number;
+  /** Reservations plus confirmations. A released redemption does not count. */
   usageCount: number;
   isActive: boolean;
+  createdByUserId: string | null;
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
+
+/**
+ * THE ORGANISER'S REWARD: "buy N tickets in one order, get a free one".
+ *
+ * At most one per activity. It repeats — an order of 2N earns two — and the
+ * bonus ticket costs the buyer nothing and credits the organisation nothing.
+ * Paid events only.
+ */
+export interface ActivityReward {
+  rewardId: string;
+  activityId: string;
+  organisationId: string;
+  /** Also the bonus ticket's type name, printed on the ticket. */
+  name: string;
+  /** Tickets to buy in a SINGLE order to earn one bonus ticket. */
+  requiredQuantity: number;
+  /** Bonus tickets in total. Null means unlimited. */
+  stock: number | null;
+  grantedCount: number;
+  /** Bonus tickets still available. Null when stock is unlimited. */
+  remaining: number | null;
+  isActive: boolean;
+  createdByUserId: string | null;
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
+
+/** GRANTED: the order holds its bonus tickets. REVOKED: returns took them back. */
+export type RewardGrantStatus = "GRANTED" | "REVOKED";
+
+/**
+ * One order that earned a reward.
+ *
+ * Snapshots the reward's name and threshold, so editing the reward afterwards
+ * cannot change what an earlier buyer was given.
+ */
+export interface RewardGrant {
+  rewardGrantId: string;
+  rewardId: string;
+  orderId: string;
+  activityId: string;
+  userId: string | null;
+  guestEmail: string | null;
+  rewardName: string;
+  requiredQuantity: number;
+  /** Bonus tickets the order currently holds. */
+  quantity: number;
+  status: RewardGrantStatus;
+  user?: Pick<User, "userId" | "firstName" | "lastName" | "email"> | null;
+  /** The bonus tickets themselves, on the grants endpoint. */
+  tickets?: Pick<
+    Ticket,
+    "ticketId" | "ticketName" | "ticketType" | "email" | "status"
+  >[];
+  createdAt: DateTime;
+  updatedAt: DateTime;
+}
+
+/**
+ * What the public event page says about the reward on offer. Null when there is
+ * none, it is switched off, or its stock has run out.
+ */
+export interface PublicRewardSummary {
+  name: string;
+  requiredQuantity: number;
+  /** Null means unlimited. */
+  remaining: number | null;
+}
+
+/** RESERVED and CONFIRMED both occupy a slot; RELEASED hands it back. */
+export type DiscountRedemptionStatus = "RESERVED" | "CONFIRMED" | "RELEASED";
+
+/**
+ * One use of a discount code.
+ *
+ * Snapshots the code's terms rather than pointing at them, so an organiser
+ * editing a code afterwards cannot rewrite what an earlier buyer was given.
+ */
+export interface DiscountRedemption {
+  discountRedemptionId: string;
+  discountCodeId: string;
+  orderId: string;
+  activityId: string;
+  userId: string | null;
+  guestEmail: string | null;
+  code: string;
+  type: "fixed" | "percentage";
+  value: number;
+  discountHtg: number;
+  discountUsd: number;
+  status: DiscountRedemptionStatus;
   createdAt: DateTime;
   updatedAt: DateTime;
 }

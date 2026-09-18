@@ -10,6 +10,11 @@ import {
   EmbeddedCheckout,
 } from "@stripe/react-stripe-js";
 import { formatMoney } from "@ticketwaze/currency";
+import type { FeeOverride } from "@ticketwaze/typescript-config";
+import {
+  getActiveFeeOverride,
+  getOverrideUnitMargin,
+} from "@ticketwaze/pricing";
 import { useRouter } from "@/i18n/navigation";
 import {
   PayReservationWallet,
@@ -55,7 +60,12 @@ export interface HeldReservation {
   status: "pending" | "confirmed" | "seated" | "cancelled" | "no_show";
   holdExpiresAt: string | null;
   guestName: string;
-  restaurant?: { name: string; slug: string; absorbFees?: boolean };
+  restaurant?: {
+    name: string;
+    slug: string;
+    absorbFees?: boolean;
+    feeOverride?: FeeOverride | null;
+  };
 }
 
 export default function ReservationCheckout({
@@ -125,6 +135,38 @@ export default function ReservationCheckout({
     const htgBase = Number(reservation.fee);
     const usdBase = Number(reservation.usdFee);
     const base = isUsd ? usdBase : htgBase;
+
+    /**
+     * An admin fee override replaces the percentage schedule on every route,
+     * converted at the rate implied by the booking's own two fee columns — the
+     * same `reservationExchangeRate` the API settles it at.
+     */
+    const override = guestPaysBase
+      ? null
+      : getActiveFeeOverride(reservation.restaurant ?? {});
+    if (override) {
+      const margin = (route: "wallet" | "card" | "moncash") =>
+        getOverrideUnitMargin(override, {
+          currency: reservation.currency,
+          faceHtg: htgBase,
+          faceUsd: usdBase,
+          route,
+          htgExchangeRate: usdBase > 0 ? htgBase / usdBase : 0,
+        });
+      const wallet = margin("wallet");
+      return {
+        isUsd,
+        base,
+        htgBase,
+        usdBase,
+        currency: reservation.currency,
+        walletTotal: round2(base + (isUsd ? wallet.usd : wallet.htg)),
+        walletTotalUsd: round2(usdBase + wallet.usd),
+        stripeUsd: round2(usdBase + margin("card").usd),
+        moncashHtg: round2(htgBase + margin("moncash").htg),
+        walletBalance: isUsd ? walletUsd : walletHtg,
+      };
+    }
 
     const walletTotal = guestPaysBase
       ? base

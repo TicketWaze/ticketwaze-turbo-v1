@@ -9,6 +9,7 @@ import { ArrowLeft, Award } from "iconsax-reactjs";
 import { RaffleStatusDialog, StatusBadge } from "./RaffleStatusDialog";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import EditActivityLink from "@/components/shared/EditActivityLink";
+import FeesHandlerDialog from "@/components/shared/FeesHandlerDialog";
 
 /**
  * Why the refund action is unavailable, or null when it is offered. Mirrors the
@@ -70,6 +71,7 @@ export default function RaffleReviewComponent({
                 : null
             }
           />
+          <FeesHandlerDialog kind="raffle" activityId={raffle.raffleId} />
           <RaffleStatusDialog raffle={raffle} />
           <RefundActivityDialog
             activityKind="raffle"

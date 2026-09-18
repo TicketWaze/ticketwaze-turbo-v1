@@ -15,7 +15,10 @@ import { formatMoney } from "@ticketwaze/currency";
 import { fileKind, formatFileSize } from "@/lib/saleFile";
 import moncash from "../../../../[slug]/checkout/moncash.svg";
 import natcash from "@/assets/images/natcash.png";
-import type { SalePaymentMethod } from "../saleCheckout.types";
+import {
+  salePricingFor,
+  type SalePaymentMethod,
+} from "../saleCheckout.types";
 
 /**
  * The payment chip, identical to the event summary's.
@@ -96,6 +99,8 @@ export default function SaleSummaryStep({
             : "";
 
   const isGift = Boolean(recipientName || recipientEmail);
+  // The chosen method's quote — they can differ under an admin fee override.
+  const pricing = salePricingFor(sale, method);
 
   return (
     <motion.div
@@ -137,8 +142,8 @@ export default function SaleSummaryStep({
             </div>
             <span className="text-[1.5rem] font-medium text-deep-100 shrink-0">
               {formatMoney(
-                sale.pricing.buyerPays,
-                sale.pricing.currency,
+                pricing.buyerPays,
+                pricing.currency,
                 locale,
               )}
             </span>
@@ -177,8 +182,8 @@ export default function SaleSummaryStep({
           <div className="flex flex-col items-end gap-[0.2rem]">
             <span className="font-primary font-bold text-[3rem] leading-none text-primary-500">
               {formatMoney(
-                sale.pricing.buyerPays,
-                sale.pricing.currency,
+                pricing.buyerPays,
+                pricing.currency,
                 locale,
               )}
             </span>

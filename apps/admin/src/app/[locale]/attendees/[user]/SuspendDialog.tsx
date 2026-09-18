@@ -15,10 +15,17 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { SuspendAttendeeAction } from "@/actions/Attendee";
+import type { DialogControl } from "./dialogControl";
 
-export function SuspendDialog({ userId }: { userId: string }) {
+export function SuspendDialog({
+  userId,
+  hideTrigger,
+  open: controlledOpen,
+  onOpenChange,
+}: { userId: string } & DialogControl) {
   const t = useTranslations("Attendees.profile.suspend");
-  const [open, setOpen] = useState(false);
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
   const [reason, setReason] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
@@ -26,7 +33,8 @@ export function SuspendDialog({ userId }: { userId: string }) {
 
   function handleOpenChange(next: boolean) {
     if (!next) setReason("");
-    setOpen(next);
+    if (onOpenChange) onOpenChange(next);
+    else setUncontrolledOpen(next);
   }
 
   async function handleConfirm() {
@@ -40,8 +48,7 @@ export function SuspendDialog({ userId }: { userId: string }) {
     );
     if ("status" in result && result.status === "success") {
       toast.success(t("success"));
-      setOpen(false);
-      setReason("");
+      handleOpenChange(false);
     } else {
       toast.error("error" in result ? result.error : t("error"));
     }
@@ -50,11 +57,13 @@ export function SuspendDialog({ userId }: { userId: string }) {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <ButtonRed className="py-[7.5px] w-full lg:w-auto">
-          {t("trigger")}
-        </ButtonRed>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <ButtonRed className="py-[7.5px] w-full lg:w-auto">
+            {t("trigger")}
+          </ButtonRed>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
