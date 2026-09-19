@@ -263,16 +263,20 @@ export default function StepTicket({
                   placeholder={t("class_description")}
                   maxLength={100}
                   minLength={20}
+                  // The counter rides on register's own onChange. A separate onChange prop
+                  // REPLACED the form's handler, so an edited description never reached the
+                  // form: the edit reported "No changes were made" and the old text was kept.
                   {...register(
                     `ticketTypes.${index}.ticketTypeDescription` as const,
+                    {
+                      onChange: (e) =>
+                        setWordCounts((prev) => {
+                          const next = [...prev];
+                          next[index] = e.target.value.length;
+                          return next;
+                        }),
+                    },
                   )}
-                  onChange={(e) =>
-                    setWordCounts((prev) => {
-                      const next = [...prev];
-                      next[index] = e.target.value.length;
-                      return next;
-                    })
-                  }
                   disabled={!membershipTier.customTicketTypes}
                 />
                 <div className="flex items-center justify-between">
