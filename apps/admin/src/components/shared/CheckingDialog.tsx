@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { DateTime } from "luxon";
+import { isOvernight } from "@/lib/eventTime";
 import { Html5QrcodeScanner } from "html5-qrcode";
 import {
   CloseCircle,
@@ -69,9 +70,10 @@ export function getCheckingWindowStatus(event: Event): {
     zone: firstDay.timezone,
   }).minus({ hours: 1 });
 
+  // An overnight last day (20:00 → 02:00) closes the next morning.
   const checkingCloses = DateTime.fromISO(`${lastDate}T${lastDay.endTime}`, {
     zone: lastDay.timezone,
-  });
+  }).plus({ days: isOvernight(lastDay.startTime, lastDay.endTime) ? 1 : 0 });
 
   if (!checkingOpens.isValid || !checkingCloses.isValid)
     return { status: "closed" };

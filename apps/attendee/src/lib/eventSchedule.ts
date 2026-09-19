@@ -22,6 +22,20 @@ import type { EventDay } from "@ticketwaze/typescript-config";
  * `events/EventPageContent.tsx`, deliberately, because the two apps were
  * disagreeing about the same event.
  */
+/**
+ * An end time that is not after the start time finishes the NEXT morning:
+ * 20:00 → 02:00 is one evening past midnight. There is no end date stored —
+ * this comparison is the rule, mirroring `isOvernight` in the API's
+ * utils/event_time and the dashboards' lib/eventTime.
+ */
+export function isOvernight(startTime: string, endTime: string): boolean {
+  const minutes = (time: string) => {
+    const [hour, minute] = time.split(":").map(Number);
+    return hour * 60 + (minute || 0);
+  };
+  return minutes(endTime) <= minutes(startTime);
+}
+
 export function dayWindow(
   day: EventDay,
 ): { start: DateTime; end: DateTime } | null {
@@ -37,7 +51,9 @@ export function dayWindow(
   if (!date) return null;
 
   const start = DateTime.fromISO(`${date}T${day.startTime}`, { zone });
-  const end = DateTime.fromISO(`${date}T${day.endTime}`, { zone });
+  const end = DateTime.fromISO(`${date}T${day.endTime}`, { zone }).plus({
+    days: isOvernight(day.startTime, day.endTime) ? 1 : 0,
+  });
   return start.isValid && end.isValid ? { start, end } : null;
 }
 

@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { Event, Organisation } from "@ticketwaze/typescript-config";
 import StripHtml from "./StripHtml";
+import { isOvernight } from "./eventSchedule";
 import { slugify } from "./Slugify";
 import Capitalize from "./Capitalize";
 
@@ -30,12 +31,16 @@ function toIsoWithOffset(
   eventDate: string,
   time: string,
   timezone: string,
+  /** Days to add — 1 for the end of an overnight day (20:00 → 02:00). */
+  plusDays = 0,
 ): string | undefined {
   const datePart = DateTime.fromISO(String(eventDate), {
     zone: "utc",
   }).toISODate();
   if (!datePart) return undefined;
-  const dt = DateTime.fromISO(`${datePart}T${time}`, { zone: timezone });
+  const dt = DateTime.fromISO(`${datePart}T${time}`, { zone: timezone }).plus({
+    days: plusDays,
+  });
   return dt.isValid
     ? (dt.toISO({ suppressMilliseconds: true }) ?? undefined)
     : undefined;
@@ -79,6 +84,7 @@ export function buildEventJsonLd({
         lastDay.eventDate,
         lastDay.endTime,
         lastDay.timezone,
+        isOvernight(lastDay.startTime, lastDay.endTime) ? 1 : 0,
       ),
     }),
     eventStatus: "https://schema.org/EventScheduled",

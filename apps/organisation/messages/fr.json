@@ -1340,6 +1340,7 @@
         "description": "Vivez une expérience unique et mémorable avec votre billet Ticketwaze!"
       },
       "errors": {
+        "reviewStep": "Un champ est à corriger dans « {step} ». Nous vous y avons ramené.",
         "basicDetails": {
           "name": "Le nom de l’activité doit comporter au moins 10 caractères",
           "nameTaken": "Ce nom d’activité est déjà utilisé",
@@ -1369,7 +1370,8 @@
           "invalidTime": "Format d’heure invalide (HH:mm ou HH:mm:ss attendu)",
           "timezone": "Le fuseau horaire est requis",
           "invalidTimezone": "Fuseau horaire invalide",
-          "endBeforeStart": "L’heure de fin doit être postérieure à l’heure de début",
+          "endSameAsStart": "L’heure de fin doit être différente de l’heure de début. Une heure de fin plus tôt signifie que l’événement se termine le lendemain.",
+          "endsNextDay": "Se termine le lendemain",
           "exceedsZoomDuration": "Cet événement dure plus longtemps que les {hours} heures autorisées par votre forfait Zoom : Zoom y mettrait fin avant la fin. Raccourcissez-le ou répartissez-le sur plusieurs jours.",
           "exceedsGoogleDuration": "Cet événement dure plus longtemps que les {hours} heures autorisées par Google Meet sur votre forfait : Google y mettrait fin avant la fin. Raccourcissez-le ou répartissez-le sur plusieurs jours.",
           "exceedsGoogleDurationMinutes": "Votre forfait Google met fin à tout appel Meet de trois personnes ou plus après {minutes} minutes : Google interromprait donc cet événement en cours de route. Raccourcissez-le, répartissez-le sur plusieurs jours, ou connectez un compte Google Workspace."

@@ -31,9 +31,24 @@ export function dayStartsAt(day: DayLike): DateTime {
   return dayMoment(day, day.startTime);
 }
 
-/** One day's local end, as an absolute instant. */
+/**
+ * An end time that is not after the start time finishes the NEXT morning:
+ * 20:00 → 02:00 is one evening past midnight, not a day that ends before it
+ * begins. There is no end date stored — this comparison is the rule, and it
+ * mirrors `isOvernight` in the API's utils/event_time.
+ */
+export function isOvernight(startTime: string, endTime: string): boolean {
+  const minutes = (time: string) => {
+    const [hour, minute] = time.split(":").map(Number);
+    return hour * 60 + (minute || 0);
+  };
+  return minutes(endTime) <= minutes(startTime);
+}
+
+/** One day's local end, as an absolute instant — the next morning when overnight. */
 export function dayEndsAt(day: DayLike): DateTime {
-  return dayMoment(day, day.endTime);
+  const end = dayMoment(day, day.endTime);
+  return isOvernight(day.startTime, day.endTime) ? end.plus({ days: 1 }) : end;
 }
 
 /**

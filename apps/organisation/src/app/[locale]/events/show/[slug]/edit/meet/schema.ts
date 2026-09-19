@@ -114,8 +114,11 @@ export function makeEditMeetSchema(
                 { message: t("errors.dateAndTime.invalidTimezone") },
               ),
           })
-          .refine((day) => day.startTime < day.endTime, {
-            message: t("errors.dateAndTime.endBeforeStart"),
+          // An end EARLIER than the start is an overnight day (20:00 → 02:00 finishes
+          // the next morning), so only an identical time is refused. Compared on
+          // HH:MM because edit forms load "HH:mm:ss" from the API.
+          .refine((day) => day.startTime.slice(0, 5) !== day.endTime.slice(0, 5), {
+            message: t("errors.dateAndTime.endSameAsStart"),
             path: ["endTime"],
           }),
       ),

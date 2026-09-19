@@ -1,9 +1,10 @@
 import { DateTime } from "luxon";
 import { Event } from "@ticketwaze/typescript-config";
+import { isOvernight } from "./eventSchedule";
 
 // An event is past when none of its days still end now or later. Each day's end
 // is its local wall-clock end (eventDate's date + endTime) interpreted in the
-// day's own timezone. Mirrors the API `List` upcoming/past filter so the two
+// day's own timezone — the next morning for an overnight day (20:00 → 02:00). Mirrors the API `List` upcoming/past filter so the two
 // stay in sync.
 export default function isEventPast(event: Event): boolean {
   const days = event.eventDays ?? [];
@@ -16,7 +17,7 @@ export default function isEventPast(event: Event): boolean {
     if (!datePart) return false;
     const end = DateTime.fromISO(`${datePart}T${day.endTime}`, {
       zone: day.timezone,
-    });
+    }).plus({ days: isOvernight(day.startTime, day.endTime) ? 1 : 0 });
     if (!end.isValid) return false;
     return end >= now;
   });

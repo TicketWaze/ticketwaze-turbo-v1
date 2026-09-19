@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React from "react";
-import { UseFormRegister, UseFormSetValue } from "react-hook-form";
+import { Control, UseFormRegister, UseFormSetValue } from "react-hook-form";
+import NextDayHint from "@/components/shared/NextDayHint";
 import type { CreateMeetFormValues, EventDay } from "./types";
 import { Trash } from "iconsax-reactjs";
 import { toast } from "sonner";
@@ -14,6 +15,8 @@ type Props = {
   setEventDays: React.Dispatch<React.SetStateAction<EventDay[]>>;
   setValue: UseFormSetValue<CreateMeetFormValues>;
   t: (s: string) => string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  control: Control<any>;
   membershipTier: MembershipTier;
 };
 
@@ -24,6 +27,7 @@ export default function StepDateTime({
   setEventDays,
   setValue,
   t,
+  control,
   membershipTier,
 }: Props) {
   const addDay = () => {
@@ -134,6 +138,11 @@ export default function StepDateTime({
               <span className="text-[1.2rem] px-8 py-2 text-failure">
                 {errors.eventDays?.[index]?.endTime?.message}
               </span>
+              <NextDayHint
+                control={control}
+                index={index}
+                label={t("errors.dateAndTime.endsNextDay")}
+              />
             </div>
           </div>
 
