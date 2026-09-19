@@ -720,6 +720,7 @@
       "type": "Saisissez le nom de l’activité pour confirmer",
       "check_in_description": "Scanner le code Qr ou saisissez l'ID du ticket ci-dessous pour vérifier et enregistrer un participant.",
       "scanner": {
+        "not_a_ticket": "Ce code n’est pas un billet Ticketwaze. Scannez le QR code du billet, ou saisissez son identifiant.",
         "ready": "Prêt à scanner",
         "start": "Démarrer le scan",
         "stop": "Arrêter le scan",

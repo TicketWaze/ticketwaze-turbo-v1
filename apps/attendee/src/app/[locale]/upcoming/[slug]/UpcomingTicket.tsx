@@ -49,7 +49,7 @@ export default function UpcomingTicket({
         </span>
         <div
           className={
-            "w-full h-[250px] lg:h-[296px] relative  bg-neutral-100 p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center "
+            `w-full h-[250px] lg:h-[296px] relative  ${ticket.source === "reward" ? "perk-border" : "bg-neutral-100"} p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center `
           }
         >
           <Image

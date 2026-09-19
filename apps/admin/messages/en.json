@@ -397,6 +397,7 @@
         "scan": "Scan ticket"
       },
       "scanner": {
+        "not_a_ticket": "This code is not a Ticketwaze ticket. Scan the QR code on the ticket, or type its ID.",
         "ready": "Ready to scan",
         "start": "Start scanning",
         "stop": "Stop scanning",
