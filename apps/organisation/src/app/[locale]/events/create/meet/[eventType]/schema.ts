@@ -2,11 +2,12 @@ import z from "zod";
 import type { TranslateFn } from "./types";
 
 /**
- * Minutes between two "HH:MM" times on the same date.
+ * Minutes between a day's start and end.
  *
- * Same date is the whole model here: an event day carries one date with a start
- * and an end, and the schema requires the end to be later, so this cannot go
- * negative or wrap past midnight.
+ * An end that is not after the start is an OVERNIGHT day finishing the next
+ * morning (20:00 → 02:00 is 6 hours), so it wraps past midnight rather than
+ * going negative — the same rule as `isOvernight` in lib/eventTime and the
+ * API. The schema refuses end === start, so this never has to read that as 24h.
  */
 export function minutesBetween(
   startTime: string,
@@ -19,7 +20,7 @@ export function minutesBetween(
   const start = parse(startTime);
   const end = parse(endTime);
   if (start === null || end === null) return null;
-  return end - start;
+  return end > start ? end - start : end + 24 * 60 - start;
 }
 
 /** Which platform hosts the call. Both have plan limits; they differ in wording. */
@@ -180,8 +181,11 @@ export function makeMeetPersonSchema(
                 { message: t("errors.dateAndTime.invalidTimezone") },
               ),
           })
-          .refine((day) => day.startTime < day.endTime, {
-            message: t("errors.dateAndTime.endBeforeStart"),
+          // An end EARLIER than the start is an overnight day (20:00 → 02:00 finishes
+          // the next morning), so only an identical time is refused. Compared on
+          // HH:MM because edit forms load "HH:mm:ss" from the API.
+          .refine((day) => day.startTime.slice(0, 5) !== day.endTime.slice(0, 5), {
+            message: t("errors.dateAndTime.endSameAsStart"),
             path: ["endTime"],
           }),
       ),

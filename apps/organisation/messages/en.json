@@ -1341,6 +1341,7 @@
         "description": "Live a unique and memorable experience with your Ticketwaze ticket!"
       },
       "errors": {
+        "reviewStep": "Something needs fixing in \"{step}\". We took you back there.",
         "basicDetails": {
           "name": "Activity name should be at leat 10 characters",
           "nameTaken": "This activity name is already taken",
@@ -1370,7 +1371,8 @@
           "invalidTime": "Invalid time format (HH:mm or HH:mm:ss expected)",
           "timezone": "Timezone is required",
           "invalidTimezone": "Invalid timezone",
-          "endBeforeStart": "End time must be after start time",
+          "endSameAsStart": "End time must be different from start time. An earlier end time means the event finishes the next day.",
+          "endsNextDay": "Ends the next day",
           "exceedsZoomDuration": "This event runs longer than the {hours} hours your Zoom plan allows, so Zoom would end it early. Shorten it or split it across days.",
           "exceedsGoogleDuration": "This event runs longer than the {hours} hours Google Meet allows on your plan, so Google would end it early. Shorten it or split it across days.",
           "exceedsGoogleDurationMinutes": "Your Google plan ends any Meet call with three or more people after {minutes} minutes, so Google would cut this event off partway through. Shorten it, split it across days, or connect a Google Workspace account."

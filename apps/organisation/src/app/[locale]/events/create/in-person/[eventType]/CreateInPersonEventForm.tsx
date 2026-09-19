@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, FieldErrors } from "react-hook-form";
 import {
   CreateInPersonEvent,
   PublishComingSoonEvent,
@@ -100,6 +100,11 @@ export default function CreateInPersonEventForm({
     getValues,
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
+    // Steps are gated with `trigger`, which never marks the form submitted, so
+    // under the default onSubmit mode an error stayed on screen after the
+    // field was corrected ("Price cannot be empty" beside a typed price). Once
+    // a field has been touched it now re-validates as it changes.
+    mode: "onTouched",
     defaultValues: {
       // A teaser answered the "what and where" questions already; the wizard
       // exists to collect what it could not: dates, tickets and a precise venue.
@@ -238,15 +243,38 @@ export default function CreateInPersonEventForm({
   // shouldFocus only scrolls focusable native inputs, so custom fields (map,
   // tags, image) are missed — scroll to the first rendered error message
   // instead, which every field type shares (.text-failure).
-  const scrollToFirstError = () => {
-    requestAnimationFrame(() => {
-      const container = formRef.current;
-      if (!container) return;
-      const firstError = Array.from(
-        container.querySelectorAll<HTMLElement>(".text-failure"),
-      ).find((el) => (el.textContent ?? "").trim().length > 0);
-      firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
+  const scrollToFirstError = (delay = 0) => {
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        const container = formRef.current;
+        if (!container) return;
+        const firstError = Array.from(
+          container.querySelectorAll<HTMLElement>(".text-failure"),
+        ).find((el) => (el.textContent ?? "").trim().length > 0);
+        firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }, delay);
+  };
+
+  /**
+   * The final submit validates EVERY step, not just the one on screen. A field
+   * passed on an earlier step can be invalid by then (the state select used to
+   * get emptied behind the organiser's back), and its error only renders on its
+   * own step — so the button appeared to do nothing. Take them to it instead.
+   */
+  const showFirstInvalidStep = (formErrors: FieldErrors<TForm>) => {
+    const invalid = Object.keys(formErrors);
+    const stepIndex = steps.findIndex((step) =>
+      step.fields.some((field) => invalid.includes(field)),
+    );
+    if (stepIndex >= 0 && stepIndex !== currentStep) {
+      setPreviousStep(currentStep);
+      setCurrentStep(stepIndex);
+      toast.error(t("errors.reviewStep", { step: steps[stepIndex]!.name }));
+      scrollToFirstError(350);
+      return;
+    }
+    scrollToFirstError();
   };
 
   const next = async () => {
@@ -284,7 +312,7 @@ export default function CreateInPersonEventForm({
       return;
     }
     if (currentStep === steps.length - 1) {
-      await handleSubmit(processForm)();
+      await handleSubmit(processForm, showFirstInvalidStep)();
       return;
     }
     setPreviousStep(currentStep);
@@ -452,6 +480,7 @@ export default function CreateInPersonEventForm({
           >
             <StepDateTime
               register={register}
+              control={control}
               errors={errors}
               eventDays={eventDays as EventDay[]}
               setEventDays={

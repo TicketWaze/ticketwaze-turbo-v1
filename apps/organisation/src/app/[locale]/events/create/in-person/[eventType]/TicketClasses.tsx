@@ -47,7 +47,12 @@ export default function StepTicket({
     control,
     name: "ticketTypes",
   });
-  const [currency, setCurrency] = useState("HTG");
+  // Read from the form, not held locally. Local state reset to HTG every time
+  // this step remounted (Back, then Proceed), while the form kept and submitted
+  // the organiser's real choice: the labels and fee preview then quoted HTG on
+  // an activity that would be created in USD.
+  const currency = useWatch({ control, name: "eventCurrency" }) || "HTG";
+  const setCurrency = (next: string) => setValue("eventCurrency", next);
   const [wordCounts, setWordCounts] = useState<number[]>(fields.map(() => 0));
   const absorbFees = Boolean(useWatch({ control, name: "absorbFees" }));
   const canEditFreeQuantity = membershipTier.membershipName !== "free";
@@ -244,11 +249,8 @@ export default function StepTicket({
             {t("currency")}
           </span>
           <RadioGroup
-            defaultValue="HTG"
-            onValueChange={(e) => {
-              setValue("eventCurrency", e);
-              setCurrency(e);
-            }}
+            value={currency}
+            onValueChange={setCurrency}
             className="flex gap-6 w-full justify-around"
           >
             <div className="flex items-center justify-between gap-3">

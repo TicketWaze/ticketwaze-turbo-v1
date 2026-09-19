@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, FieldErrors } from "react-hook-form";
 import { CreateGoogleMeetEvent } from "@/actions/EventActions";
 import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { useSession } from "next-auth/react";
@@ -113,6 +113,10 @@ export default function CreateMeetEventForm({
     getValues,
   } = useForm<TForm>({
     resolver: zodResolver(FormDataSchema),
+    // Steps are gated with `trigger`, which never marks the form submitted, so
+    // under the default onSubmit mode an error stayed on screen after the
+    // field was corrected. Once touched, a field re-validates as it changes.
+    mode: "onTouched",
     defaultValues: {
       eventName: "",
       eventDescription: "",
@@ -222,15 +226,37 @@ export default function CreateMeetEventForm({
   // shouldFocus only scrolls focusable native inputs, so custom fields (map,
   // tags, image) are missed — scroll to the first rendered error message
   // instead, which every field type shares (.text-failure).
-  const scrollToFirstError = () => {
-    requestAnimationFrame(() => {
-      const container = formRef.current;
-      if (!container) return;
-      const firstError = Array.from(
-        container.querySelectorAll<HTMLElement>(".text-failure"),
-      ).find((el) => (el.textContent ?? "").trim().length > 0);
-      firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
+  const scrollToFirstError = (delay = 0) => {
+    setTimeout(() => {
+      requestAnimationFrame(() => {
+        const container = formRef.current;
+        if (!container) return;
+        const firstError = Array.from(
+          container.querySelectorAll<HTMLElement>(".text-failure"),
+        ).find((el) => (el.textContent ?? "").trim().length > 0);
+        firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }, delay);
+  };
+
+  /**
+   * The final submit validates EVERY step, not just the one on screen, and an
+   * earlier step's error only renders on that step — so the button appeared to
+   * do nothing. Take the organiser to the step that needs fixing instead.
+   */
+  const showFirstInvalidStep = (formErrors: FieldErrors<TForm>) => {
+    const invalid = Object.keys(formErrors);
+    const stepIndex = steps.findIndex((step) =>
+      step.fields.some((field) => invalid.includes(field)),
+    );
+    if (stepIndex >= 0 && stepIndex !== currentStep) {
+      setPreviousStep(currentStep);
+      setCurrentStep(stepIndex);
+      toast.error(t("errors.reviewStep", { step: steps[stepIndex]!.name }));
+      scrollToFirstError(350);
+      return;
+    }
+    scrollToFirstError();
   };
 
   const next = async () => {
@@ -268,7 +294,7 @@ export default function CreateMeetEventForm({
       return;
     }
     if (currentStep === steps.length - 1) {
-      await handleSubmit(processForm)();
+      await handleSubmit(processForm, showFirstInvalidStep)();
       return;
     }
     setPreviousStep(currentStep);
@@ -431,6 +457,7 @@ export default function CreateMeetEventForm({
           >
             <StepDateTime
               register={register}
+              control={control}
               errors={errors}
               eventDays={eventDays as EventDay[]}
               setEventDays={

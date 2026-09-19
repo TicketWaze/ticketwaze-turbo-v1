@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { DateTime } from "luxon";
+import { isOvernight } from "@/lib/eventTime";
 import { Category, Clock, Money3 } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import { Event, Raffle, Restaurant, Sale } from "@ticketwaze/typescript-config";
@@ -101,9 +102,10 @@ function categorizeEvent(event: Event): Category {
   const eventStart = DateTime.fromISO(`${firstDate}T${first.startTime}`, {
     zone: first.timezone,
   });
+  // An overnight last day (20:00 → 02:00) ends the next morning.
   const eventEnd = DateTime.fromISO(`${lastDate}T${last.endTime}`, {
     zone: last.timezone,
-  });
+  }).plus({ days: isOvernight(last.startTime, last.endTime) ? 1 : 0 });
 
   if (!eventStart.isValid || !eventEnd.isValid) return "past";
   if (now < eventStart) return "upcoming";

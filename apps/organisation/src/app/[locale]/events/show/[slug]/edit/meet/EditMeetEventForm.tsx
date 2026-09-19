@@ -560,6 +560,7 @@ export default function EditInPersonEventForm({
           >
             <StepDateTime
               register={register}
+              control={control}
               errors={errors}
               eventDays={eventDays as EventDay[]}
               setEventDays={

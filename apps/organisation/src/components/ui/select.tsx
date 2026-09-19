@@ -6,10 +6,38 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 import { ArrowDown2 } from "iconsax-reactjs";
 import { cn } from "@/lib/utils";
 
+/**
+ * Radix Select with one guard: an empty `onValueChange` is dropped.
+ *
+ * Inside a <form>, Radix mirrors the value into a hidden native <select> and
+ * reads that element back through its change event. Whenever the native
+ * <option> for the value is not registered yet (the step remounts after
+ * "Back", a dependent list such as states is rebuilding) or the browser
+ * autofills the hidden element, it reads back as "" and Radix reports that as
+ * a selection. On the create form this silently emptied `state` and `city`,
+ * so the final submit failed on a step that was no longer on screen.
+ *
+ * Radix forbids "" as an item value, so it is never a real choice. Clearing a
+ * select is still done from outside, by passing `value=""`.
+ */
 function Select({
+  onValueChange,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />;
+  const handleValueChange = React.useCallback(
+    (value: string) => {
+      if (value === "") return;
+      onValueChange?.(value);
+    },
+    [onValueChange],
+  );
+  return (
+    <SelectPrimitive.Root
+      data-slot="select"
+      onValueChange={onValueChange ? handleValueChange : undefined}
+      {...props}
+    />
+  );
 }
 
 function SelectGroup({

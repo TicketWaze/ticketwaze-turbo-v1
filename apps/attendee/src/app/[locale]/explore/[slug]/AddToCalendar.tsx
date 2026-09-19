@@ -1,6 +1,7 @@
 import { Event } from "@ticketwaze/typescript-config";
 import { Google } from "iconsax-reactjs";
 import { DateTime } from "luxon";
+import { isOvernight } from "@/lib/eventSchedule";
 
 export default function AddToCalendar({ event }: { event: Event }) {
   const firstDay = event.eventDays.find((day) => day.dayNumber === 1);
@@ -18,10 +19,12 @@ export default function AddToCalendar({ event }: { event: Event }) {
     { zone: firstDay.timezone },
   );
 
+  // An overnight day (20:00 → 02:00) ends the next morning; without this the
+  // calendar entry would end before it starts.
   const end = DateTime.fromObject(
     { year, month, day, hour: endHour, minute: endMinute },
     { zone: firstDay.timezone },
-  );
+  ).plus({ days: isOvernight(firstDay.startTime, firstDay.endTime) ? 1 : 0 });
 
   if (!start.isValid || !end.isValid) return null;
 
