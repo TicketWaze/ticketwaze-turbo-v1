@@ -70,8 +70,7 @@ export default function StepTicket({
 
   // Live tier values, so the sections below can react to a tier being switched
   // to free without waiting for a submit.
-  const watchedTicketTypes =
-    useWatch({ control, name: "ticketTypes" }) ?? [];
+  const watchedTicketTypes = useWatch({ control, name: "ticketTypes" }) ?? [];
   const isTierFree = (index: number) =>
     Boolean(watchedTicketTypes[index]?.isFree);
   const hasPaidTier = perTicketFreeToggle
@@ -309,7 +308,11 @@ export default function StepTicket({
                 </span>
               </div>
             ) : (
-              <Input defaultValue={membershipTier.freeTickets} readOnly disabled>
+              <Input
+                defaultValue={membershipTier.freeTickets}
+                readOnly
+                disabled
+              >
                 {t("quantity")}
               </Input>
             )}
@@ -382,16 +385,20 @@ export default function StepTicket({
                     placeholder={t("class_description")}
                     maxLength={100}
                     minLength={20}
+                    // The counter rides on register's own onChange. A separate onChange prop
+                    // REPLACED the form's handler, so an edited description never reached the
+                    // form: the edit reported "No changes were made" and the old text was kept.
                     {...register(
                       `ticketTypes.${index}.ticketTypeDescription` as const,
+                      {
+                        onChange: (e) =>
+                          setWordCounts((prev) => {
+                            const next = [...prev];
+                            next[index] = e.target.value.length;
+                            return next;
+                          }),
+                      },
                     )}
-                    onChange={(e) =>
-                      setWordCounts((prev) => {
-                        const next = [...prev];
-                        next[index] = e.target.value.length;
-                        return next;
-                      })
-                    }
                     disabled={!membershipTier.customTicketTypes}
                   />
                   <div className="flex items-center justify-between">
@@ -460,7 +467,10 @@ export default function StepTicket({
                       )}
                     />
                     <span className="text-[1.2rem] px-8 py-2 text-failure">
-                      {errors?.ticketTypes?.[index]?.ticketTypeQuantity?.message}
+                      {
+                        errors?.ticketTypes?.[index]?.ticketTypeQuantity
+                          ?.message
+                      }
                     </span>
                   </div>
                 </div>
@@ -499,7 +509,9 @@ export default function StepTicket({
       <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-4 border border-neutral-100">
         <span className="font-semibold text-[16px] leading-8 text-deep-100">
           {t("sales_end_at")}{" "}
-          <span className="text-neutral-600 font-normal">({t("optional")})</span>
+          <span className="text-neutral-600 font-normal">
+            ({t("optional")})
+          </span>
         </span>
         <input
           type="datetime-local"
