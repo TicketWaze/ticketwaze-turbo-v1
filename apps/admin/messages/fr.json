@@ -355,6 +355,7 @@
         "scan": "Scanner le billet"
       },
       "scanner": {
+        "not_a_ticket": "Ce code n’est pas un billet Ticketwaze. Scannez le QR code du billet, ou saisissez son identifiant.",
         "ready": "Prêt à scanner",
         "start": "Démarrer le scan",
         "stop": "Arrêter le scan",

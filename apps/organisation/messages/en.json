@@ -721,6 +721,7 @@
       "type": "Type the name of the activity to confirm",
       "check_in_description": "Scan Qr code or enter the ticket ID below to verify and check in an attendee.",
       "scanner": {
+        "not_a_ticket": "This code is not a Ticketwaze ticket. Scan the QR code on the ticket, or type its ID.",
         "ready": "Ready to scan",
         "start": "Start Scanning",
         "stop": "Stop Scanning",

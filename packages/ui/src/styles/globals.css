@@ -539,3 +539,20 @@ input:not(:placeholder-shown) + label {
   text-decoration: none;
   cursor: default;
 }
+
+/*
+ * PERK BORDER — the Pro+ gradient ring (primary-500 → #E752AE → #DD068B, the
+ * same stops as the Pro organisation card in the sidebar and the upgrade
+ * banners), drawn as a border on the element itself rather than a wrapper.
+ *
+ * The padding-box layer repaints the panel's own grey inside, the border-box
+ * layer shows through the transparent border as the ring. Use it INSTEAD of
+ * `bg-neutral-100`, not alongside it — both set the background.
+ */
+@utility perk-border {
+  border: 0.2rem solid transparent;
+  border-radius: 1rem;
+  background:
+    linear-gradient(var(--color-neutral-100), var(--color-neutral-100)) padding-box,
+    linear-gradient(to right, var(--color-primary-500), #e752ae, #dd068b) border-box;
+}
