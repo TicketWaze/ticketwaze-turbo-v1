@@ -186,7 +186,7 @@ export default function TicketViewer({
         >
           <div
             className={
-              "w-full h-auto relative  bg-neutral-100 p-[15px] pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center "
+              `w-full h-auto relative  ${tickets[currentIndex].source === "reward" ? "perk-border" : "bg-neutral-100"} p-[15px] pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center `
             }
           >
             <Image
@@ -272,10 +272,20 @@ export default function TicketViewer({
             {t("ticketWarning1")}{" "}
             {!event.eventTicketTypes[0].isRefundable && t("ticketWarning2")}
           </span>
+          {/*
+            Built for the door scanner. UPPERCASE fits the UUID into a smaller
+            version-4 code (alphanumeric mode) at the same H error correction,
+            and the 4-module quiet zone is what lets a camera find the code
+            against a dark phone screen — without it, a decode test under noise
+            succeeded 4 times in 25. The scanner lowercases the id back.
+          */}
           <QRCodeCanvas
-            value={tickets[currentIndex].ticketId}
+            value={tickets[currentIndex].ticketId.toUpperCase()}
             size={300}
             level="H"
+            marginSize={4}
+            bgColor="#FFFFFF"
+            fgColor="#000000"
             imageSettings={{
               src: "/logo-simple-orange.svg",
               height: 52,

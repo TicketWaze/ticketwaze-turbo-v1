@@ -1,5 +1,6 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import ExplorePageContent from "./ExplorePageContent";
+import { getActivityCardTime } from "@/lib/activityCardDate";
 import {
   Event,
   PublicSale,
@@ -38,9 +39,17 @@ export default async function Explore({
   // alongside upcoming activities rather than in a section of their own, so
   // merge them here and re-sort — both queries order by created_at desc, and
   // concatenating alone would strand every teaser at the end of the list.
+  //
+  // The re-sort is CHRONOLOGICAL, not newest-first: the feed reads 21 Sept, 22,
+  // 23 straight down, whatever type each activity is and whenever it was
+  // published. Sorting by created_at put a teaser announced this morning above
+  // an event happening tonight, so the dates printed on the cards ran in no
+  // order a reader could follow. The key is the day each card actually shows,
+  // so the list agrees with what is written on it — see getActivityCardTime.
   const comingSoon: Event[] = response.comingSoon ?? [];
+  const now = new Date();
   const events: Event[] = [...response.events, ...comingSoon].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    (a, b) => getActivityCardTime(a, now) - getActivityCardTime(b, now),
   );
 
   let raffles: Raffle[] = [];

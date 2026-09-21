@@ -7,6 +7,7 @@ import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 import formatDate from "@/lib/FormatDate";
 import { getActivityCardPrice } from "@/lib/activityCardPrice";
+import { getActivityCardDay } from "@/lib/activityCardDate";
 
 function EventCard({
   event,
@@ -15,16 +16,12 @@ function EventCard({
   event: Event;
   aside?: boolean;
 }) {
-  const now = new Date();
   // A teaser has no eventDays and no ticket types, so `date` is undefined here
   // and every read below has to tolerate that.
   const isTeaser = event.isComingSoon === true;
-  const sortedDays = [...(event.eventDays ?? [])].sort(
-    (a, b) => new Date(a.eventDate).getTime() - new Date(b.eventDate).getTime(),
-  );
-  const date =
-    sortedDays.find((eventDay) => new Date(eventDay.eventDate) >= now) ??
-    sortedDays[sortedDays.length - 1];
+  // The same pick the explore feed sorts on, so a card never prints a date
+  // that disagrees with where the card sits in the list.
+  const date = getActivityCardDay(event);
   const slug = slugify(event.eventName, event.eventId);
   const locale = useLocale();
   const t = useTranslations("Event");

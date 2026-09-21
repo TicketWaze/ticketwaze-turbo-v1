@@ -49,7 +49,7 @@ export default function HTicket({
         </span>
         <div
           className={
-            "w-full h-110 lg:h-136 relative rounded-[5px]  bg-neutral-100 p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center "
+            `w-full h-110 lg:h-136 relative rounded-[5px]  ${ticket.source === "reward" ? "perk-border" : "bg-neutral-100"} p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center `
           }
         >
           <Image

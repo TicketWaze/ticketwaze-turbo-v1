@@ -125,7 +125,7 @@ export default function TicketViewer({
         >
           <div
             className={
-              "w-full h-auto relative  bg-neutral-100 p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center"
+              `w-full h-auto relative  ${tickets[currentIndex].source === "reward" ? "perk-border" : "bg-neutral-100"} p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center`
             }
           >
             <Image
@@ -206,10 +206,14 @@ export default function TicketViewer({
             {t("ticketWarning1")}{" "}
             {!event.eventTicketTypes[0].isRefundable && t("ticketWarning2")}
           </span>
+          {/* Same scanner-friendly settings as the upcoming ticket. */}
           <QRCodeCanvas
-            value={tickets[currentIndex].ticketId}
+            value={tickets[currentIndex].ticketId.toUpperCase()}
             size={300}
             level="H"
+            marginSize={4}
+            bgColor="#FFFFFF"
+            fgColor="#000000"
           />
         </div>
       </div>

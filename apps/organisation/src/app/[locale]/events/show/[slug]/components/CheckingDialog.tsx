@@ -22,6 +22,7 @@ import {
 import { useLocale, useTranslations } from "next-intl";
 import { useRef, useState, useEffect } from "react";
 import { Html5QrcodeScanner } from "html5-qrcode";
+import { extractTicketCode, TICKET_SCANNER_CONFIG } from "@/lib/ticketScanner";
 import {
   ScanTicketAction,
   CheckInTicketAction,
@@ -103,9 +104,16 @@ export default function CheckingDialog({ event }: { event: Event }) {
   const locale = useLocale();
   // while the scanner stays open.
 
-  async function scan(id: string) {
-    setIsLoading(true);
+  async function scan(raw: string) {
     setIsScanning(false);
+    // Camera and keyboard input alike: pull out the ticket UUID, or say plainly
+    // that this is not a ticket instead of sending junk into the request path.
+    const id = extractTicketCode(raw);
+    if (!id) {
+      setScanResult({ status: "failed", message: t("scanner.not_a_ticket") });
+      return;
+    }
+    setIsLoading(true);
     const response = await ScanTicketAction(event.eventId, id, locale);
     setScanResult(response);
     setIsLoading(false);
@@ -206,14 +214,7 @@ export default function CheckingDialog({ event }: { event: Event }) {
 
       const scanner = new Html5QrcodeScanner(
         "reader",
-        {
-          qrbox: { width: 250, height: 250 },
-          fps: 5,
-          aspectRatio: 1.0,
-          videoConstraints: {
-            facingMode: { ideal: "environment" },
-          },
-        },
+        TICKET_SCANNER_CONFIG,
         false,
       );
 
