@@ -483,6 +483,7 @@
   "Layout": {
     "sidebar": {
       "more": "Plus",
+      "login": "Se connecter",
       "help": "Aide",
       "logout": "Déconnexion",
       "verified": "Ceci est une organisation vérifiée",
@@ -1007,6 +1008,11 @@
       "download": "Télécharger le document",
       "lockedHint": "Disponible à partir du {date}, au début de l’activité.",
       "failed": "Le document n’a pas pu être téléchargé. Veuillez réessayer."
+    },
+    "ticketDownload": {
+      "title": "Votre billet",
+      "hint": "Appuyez longuement sur l’image, puis choisissez « Enregistrer dans Photos » (ou « Télécharger l’image »).",
+      "failed": "Votre billet n’a pas pu être généré. Veuillez réessayer."
     },
     "giveaway": "Offert par Ticketwaze",
     "reward": "Offert"

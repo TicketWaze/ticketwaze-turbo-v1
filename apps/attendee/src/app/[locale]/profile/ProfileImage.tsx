@@ -26,7 +26,7 @@ import { useSession } from "next-auth/react";
 function ProfileImage({ user }: { user: User }) {
   const t = useTranslations("Profile");
   const locale = useLocale();
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [isUploading, setIsUploading] = useState(false);
   const triggerRef = useRef<HTMLSpanElement>(null);
   const CloseRef = useRef<HTMLSpanElement>(null);
@@ -70,6 +70,12 @@ function ProfileImage({ user }: { user: User }) {
         locale,
       );
       if (response.status === "success") {
+        // The session is shared with the website and the organisation app, and
+        // the old photo's file has just been deleted: without this their
+        // navbars would show a broken image until the next token refresh.
+        if ("profileImageUrl" in response && response.profileImageUrl) {
+          await update({ user: { profileImageUrl: response.profileImageUrl } });
+        }
         toast.success(response.message);
       } else {
         toast.error(response.message);

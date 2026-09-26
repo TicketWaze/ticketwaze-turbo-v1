@@ -6,8 +6,8 @@ import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { DateTime } from "luxon";
 import { isOvernight } from "@/lib/eventTime";
-import { Html5QrcodeScanner } from "html5-qrcode";
-import { extractTicketCode, TICKET_SCANNER_CONFIG } from "@/lib/ticketScanner";
+import { extractTicketCode } from "@/lib/ticketScanner";
+import TicketCamera from "@/components/shared/TicketCamera";
 import {
   CloseCircle,
   LoginCurve,
@@ -171,8 +171,6 @@ export default function CheckingDialog({
   const [scanResult, setScanResult] = useState<ScanResult | null>(null);
   const [actionResult, setActionResult] = useState<ActionResult | null>(null);
   const [ticketIdInput, setTicketIdInput] = useState("");
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null);
-  const isCleaningRef = useRef(false);
 
   async function scan(raw: string) {
     setIsScanning(false);
@@ -241,74 +239,17 @@ export default function CheckingDialog({
     setIsLoading(false);
   }
 
-  const cleanupScanner = async () => {
-    if (isCleaningRef.current) return;
-    isCleaningRef.current = true;
-
-    if (scannerRef.current) {
-      try {
-        await scannerRef.current.clear();
-      } catch (error) {
-        if (
-          !(error instanceof Error && error.toString().includes("transition"))
-        ) {
-          console.error("Error clearing scanner:", error);
-        }
-      }
-      scannerRef.current = null;
-    }
-
-    setTimeout(() => {
-      const readerContainer = document.getElementById("reader-container");
-      if (readerContainer) readerContainer.innerHTML = "";
-      isCleaningRef.current = false;
-    }, 100);
-  };
-
+  // The camera itself lives in <TicketCamera>, which stops it on unmount —
+  // closing the dialog or leaving scan mode is enough to release it.
   useEffect(() => {
-    if (!isDialogOpen) {
-      cleanupScanner();
-      setIsScanning(false);
-      setScanResult(null);
-      setActionResult(null);
-      setMode("qr");
-      setTicketIdInput("");
-      return;
-    }
-
-    if (!isScanning) {
-      cleanupScanner();
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      if (scannerRef.current) return;
-
-      const scanner = new Html5QrcodeScanner(
-        "reader",
-        TICKET_SCANNER_CONFIG,
-        false,
-      );
-
-      scannerRef.current = scanner;
-
-      async function success(result: string) {
-        setIsScanning(false);
-        await scan(result);
-        setScannerKey((prev) => prev + 1);
-      }
-
-      function error() {}
-
-      scanner.render(success, error);
-    }, 150);
-
-    return () => {
-      clearTimeout(timer);
-      cleanupScanner();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDialogOpen, isScanning, scannerKey]);
+    if (isDialogOpen) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsScanning(false);
+    setScanResult(null);
+    setActionResult(null);
+    setMode("qr");
+    setTicketIdInput("");
+  }, [isDialogOpen]);
 
   function switchMode(newMode: Mode) {
     if (newMode === mode) return;
@@ -435,31 +376,17 @@ export default function CheckingDialog({
                 </div>
               </div>
             ) : (
-              <div id="reader-container" key={scannerKey} className="w-full">
-                <div
-                  id="reader"
-                  className="w-full
-                    [&>div]:!border-0
-                    [&>div]:!shadow-none
-                    [&_video]:!rounded-lg
-                    [&_#qr-shaded-region]:!border-2
-                    [&_#qr-shaded-region]:!border-neutral-300
-                    [&_#qr-shaded-region]:!rounded-lg
-                    [&_button]:!bg-neutral-700
-                    [&_button]:!text-white
-                    [&_button]:!rounded-lg
-                    [&_button]:!px-4
-                    [&_button]:!py-2
-                    [&_button]:!font-medium
-                    [&_button]:hover:!bg-neutral-800
-                    [&_button]:!transition-colors
-                    [&_select]:!rounded-lg
-                    [&_select]:!border-neutral-300
-                    [&_select]:!px-3
-                    [&_select]:!py-2
-                  "
-                />
-              </div>
+              <TicketCamera
+                key={scannerKey}
+                onScan={scan}
+                messages={{
+                  denied: t("scanner.camera_denied"),
+                  unavailable: t("scanner.camera_unavailable"),
+                  insecure: t("scanner.camera_insecure"),
+                  failed: t("scanner.camera_failed"),
+                  retry: t("scanner.camera_retry"),
+                }}
+              />
             )}
           </div>
         </div>

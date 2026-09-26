@@ -443,6 +443,11 @@ export interface Event {
   comingSoonDate?: string | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
   /**
+   * When an admin featured this event on the website's landing page, or null.
+   * It shows there only while it is also public, approved and not over.
+   */
+  sponsoredAt?: string | null;
+  /**
    * An organiser edited something worth a second look. A separate axis from
    * adminStatus, which edits deliberately leave alone: this gates nothing, so
    * the event keeps selling and scanning while it waits in the admin queue.

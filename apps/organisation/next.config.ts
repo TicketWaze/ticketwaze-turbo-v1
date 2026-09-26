@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
     },
   },
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders({ csp }) }];
+    return [{ source: "/(.*)", headers: securityHeaders({ csp, allow: ["camera"] }) }];
   },
   images: {
     remotePatterns: [

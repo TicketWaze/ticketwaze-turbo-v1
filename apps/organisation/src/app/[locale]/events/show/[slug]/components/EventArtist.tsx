@@ -76,12 +76,7 @@ export default function EventArtist({
     formData.append("performerName", data.performerName);
     formData.append("performerLink", data.performerLink);
     formData.append("performerImage", data.performerImage);
-    const result = await AddArtist(
-      event.eventId,
-      pathname,
-      formData,
-      locale,
-    );
+    const result = await AddArtist(event.eventId, pathname, formData, locale);
     if (result.status === "success") {
       toast.success("success");
       closeRef.current?.click();
@@ -231,39 +226,49 @@ export default function EventArtist({
         </DialogContent>
       </Dialog>
       {eventPerformers.length > 0 ? (
-        <ul className="flex items-center gap-8 overflow-x-auto scroll-smooth scrollbar-hide px-4 py-2">
+        <ul className="grid grid-cols-[repeat(auto-fill,120px)] justify-center lg:justify-start items-start gap-8 shrink-0 px-4 py-2">
           {eventPerformers.map((eventPerformer) => (
             <li
               key={eventPerformer.eventPerformerId}
-              className="flex items-center justify-center w-[120px] h-[120px] overflow-hidden rounded-full flex-shrink-0"
+              className="flex flex-col items-center gap-3 w-[120px] flex-shrink-0"
             >
-              <Popover>
-                <PopoverTrigger>
-                  <Image
-                    src={eventPerformer.performerProfileUrl}
-                    width={120}
-                    height={120}
-                    loading="eager"
-                    alt={eventPerformer.performerName}
-                    className="cursor-pointer"
-                  />
-                </PopoverTrigger>
-                <PopoverContent
-                  side="top"
-                  className={
-                    "w-[50px] p-0 m-0 bg-none cursor-pointer shadow-none border-none -mx-8 -mb-12"
-                  }
-                >
-                  <Trash
-                    size="32"
-                    variant="Bulk"
-                    color={"#DE0028"}
-                    onClick={() =>
-                      removeArtistFunction(eventPerformer.eventPerformerId)
+              <div className="flex items-center justify-center w-[120px] h-[120px] overflow-hidden rounded-full">
+                <Popover>
+                  <PopoverTrigger>
+                    <Image
+                      src={eventPerformer.performerProfileUrl}
+                      width={120}
+                      height={120}
+                      loading="eager"
+                      alt={eventPerformer.performerName}
+                      className="cursor-pointer"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent
+                    side="top"
+                    className={
+                      "w-[50px] p-0 m-0 bg-none cursor-pointer shadow-none border-none -mx-8 -mb-12"
                     }
-                  />
-                </PopoverContent>
-              </Popover>
+                  >
+                    <Trash
+                      size="32"
+                      variant="Bulk"
+                      color={"#DE0028"}
+                      onClick={() =>
+                        removeArtistFunction(eventPerformer.eventPerformerId)
+                      }
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              {/* Same as the attendee page: circle-wide, cut with an ellipsis,
+                  the full name on hover. */}
+              <span
+                title={eventPerformer.performerName}
+                className="block w-full truncate text-center text-[1.4rem] font-medium leading-8 text-deep-100"
+              >
+                {eventPerformer.performerName}
+              </span>
             </li>
           ))}
         </ul>

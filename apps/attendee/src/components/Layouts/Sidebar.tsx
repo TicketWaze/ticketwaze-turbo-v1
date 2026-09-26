@@ -5,6 +5,7 @@ import {
   Building,
   Clock,
   I24Support,
+  LoginCurve,
   Logout,
   MoneyRecive,
   Setting5,
@@ -21,17 +22,68 @@ import { useAuthInterceptor } from "@/hooks/useAuthInterceptor";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogTrigger } from "../ui/dialog";
 
+type NavLink = {
+  label: string;
+  path: string;
+  Icon: typeof Ticket;
+};
+
+/**
+ * One sidebar row. Signed out, a row that needs an account opens the sign-in
+ * dialog instead of navigating to a page that would only bounce the visitor.
+ */
+function NavItem({
+  link: { path, label, Icon },
+  active,
+  requiresAuth,
+  isLoggedIn,
+}: {
+  link: NavLink;
+  active: boolean;
+  requiresAuth: boolean;
+  isLoggedIn: boolean;
+}) {
+  const className = `group flex w-full items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${active ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`;
+  const content = (
+    <>
+      <Icon
+        size="20"
+        className={`transition-all duration-500 ${active ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
+        variant="Bulk"
+      />
+      <span>{label}</span>
+      <div
+        className={
+          "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[2px] h-full"
+        }
+      ></div>
+    </>
+  );
+
+  if (requiresAuth && !isLoggedIn) {
+    return (
+      <Dialog>
+        <DialogTrigger className={cn(className, "cursor-pointer")}>
+          {content}
+        </DialogTrigger>
+        <NoAuthDialog callbackUrl={path} />
+      </Dialog>
+    );
+  }
+
+  return (
+    <Link href={path} className={className}>
+      {content}
+    </Link>
+  );
+}
+
 function Sidebar({ className }: { className: string }) {
   const t = useTranslations("Layout.sidebar");
   const pathname = usePathname();
   useAuthInterceptor();
 
-  const eventsLinks = [
-    // {
-    //   label: t("links.explore"),
-    //   path: `/explore`,
-    //   Icon: Ticket,
-    // },
+  const eventsLinks: NavLink[] = [
     {
       label: t("links.upcoming"),
       path: `/upcoming`,
@@ -42,13 +94,8 @@ function Sidebar({ className }: { className: string }) {
       path: `/history`,
       Icon: Clock,
     },
-    // {
-    //   label: t("links.organizers"),
-    //   path: `/organisations`,
-    //   Icon: Building,
-    // },
   ];
-  const userLinks = [
+  const userLinks: NavLink[] = [
     {
       label: t("links.wallet"),
       path: `/wallet`,
@@ -64,11 +111,6 @@ function Sidebar({ className }: { className: string }) {
       path: `/preferences`,
       Icon: Setting5,
     },
-    // {
-    //   label: t("links.settings"),
-    //   path: `/settings`,
-    //   Icon: Setting,
-    // },
   ];
 
   function isActive(path: string) {
@@ -86,13 +128,17 @@ function Sidebar({ className }: { className: string }) {
 
   function isUserGroupActive() {
     return (
+      pathname.startsWith(`/wallet`) ||
       pathname.startsWith(`/profile`) ||
       pathname.startsWith(`/preferences`) ||
       pathname.startsWith(`/settings`)
     );
   }
   const locale = useLocale();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const isLoggedIn = Boolean(session?.user);
+  // Not while the session loads, or a signed-in user sees "Log in" flash.
+  const isSignedOut = status === "unauthenticated";
 
   return (
     <aside
@@ -113,93 +159,38 @@ function Sidebar({ className }: { className: string }) {
           </div>
           <ul className="flex flex-col gap-4">
             <li>
-              <Link
-                href={"/explore"}
-                className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive("/explore") ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
-              >
-                <Ticket
-                  size="20"
-                  className={`transition-all duration-500 ${isActive("/explore") ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                  // className={`${isActive(path) ? "fill-icon-active" : "fill-icon"} group-hover:fill-icon-active`}
-                  variant="Bulk"
-                />
-                <span>{t("links.explore")}</span>
-                <div
-                  className={
-                    "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[2px] h-full"
-                  }
-                ></div>
-              </Link>
+              <NavItem
+                link={{ label: t("links.explore"), path: "/explore", Icon: Ticket }}
+                active={isActive("/explore")}
+                requiresAuth={false}
+                isLoggedIn={isLoggedIn}
+              />
             </li>
-            {eventsLinks.map(({ path, Icon, label }) => {
-              return (
-                <li key={label}>
-                  {session?.user ? (
-                    <Link
-                      href={path}
-                      className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
-                    >
-                      <Icon
-                        size="20"
-                        className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                        // className={`${isActive(path) ? "fill-icon-active" : "fill-icon"} group-hover:fill-icon-active`}
-                        variant="Bulk"
-                      />
-                      <span>{label}</span>
-                      <div
-                        className={
-                          "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[2px] h-full"
-                        }
-                      ></div>
-                    </Link>
-                  ) : (
-                    <Dialog>
-                      <DialogTrigger>
-                        <div
-                          className={`group flex cursor-pointer items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
-                        >
-                          <Icon
-                            size="20"
-                            className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                            // className={`${isActive(path) ? "fill-icon-active" : "fill-icon"} group-hover:fill-icon-active`}
-                            variant="Bulk"
-                          />
-                          <span>{label}</span>
-                          <div
-                            className={
-                              "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[2px] h-full"
-                            }
-                          ></div>
-                        </div>
-                      </DialogTrigger>
-                      <NoAuthDialog callbackUrl={path} />
-                    </Dialog>
-                  )}
-                </li>
-              );
-            })}
-            <li>
-              <Link
-                href={"/organisations"}
-                className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive("/organisations") ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
-              >
-                <Building
-                  size="20"
-                  className={`transition-all duration-500 ${isActive("/organisations") ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                  // className={`${isActive(path) ? "fill-icon-active" : "fill-icon"} group-hover:fill-icon-active`}
-                  variant="Bulk"
+            {eventsLinks.map((link) => (
+              <li key={link.path}>
+                <NavItem
+                  link={link}
+                  active={isActive(link.path)}
+                  requiresAuth
+                  isLoggedIn={isLoggedIn}
                 />
-                <span>{t("links.organizers")}</span>
-                <div
-                  className={
-                    "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[2px] h-full"
-                  }
-                ></div>
-              </Link>
+              </li>
+            ))}
+            <li>
+              <NavItem
+                link={{
+                  label: t("links.organizers"),
+                  path: "/organisations",
+                  Icon: Building,
+                }}
+                active={isActive("/organisations")}
+                requiresAuth={false}
+                isLoggedIn={isLoggedIn}
+              />
             </li>
           </ul>
         </nav>
-        {session?.user && (
+        {isLoggedIn && (
           <nav>
             <div
               className={`mb-4 uppercase font-medium text-[1.4rem] leading-8 ${isUserGroupActive() ? "text-neutral-900" : "text-neutral-600"}`}
@@ -207,64 +198,63 @@ function Sidebar({ className }: { className: string }) {
               {t("links.title2")}
             </div>
             <ul className="flex flex-col gap-4">
-              {userLinks.map(({ path, Icon, label }) => {
-                return (
-                  <li key={label}>
-                    <Link
-                      href={path}
-                      className={`group flex items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${isActive(path) ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`}
-                    >
-                      <Icon
-                        size="20"
-                        className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                        // className={`${isActive(path) ? "fill-icon-active" : "fill-icon"} group-hover:fill-icon-active`}
-                        variant="Bulk"
-                      />
-                      <span>{label}</span>
-                      <div
-                        className={
-                          "absolute right-0  opacity-0 group-[.is-active]:translate-x-0 group-[.is-active]:opacity-100 transition-all duration-500 bg-primary-500 w-[2px] h-full"
-                        }
-                      ></div>
-                    </Link>
-                  </li>
-                );
-              })}
-              <li>
-                <Link
-                  target="_blank"
-                  href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/contact`}
-                  className="flex items-center gap-4 py-4"
-                >
-                  <I24Support size="20" color="#737C8A" variant="Bulk" />
-                  <span className={`text-[1.5rem] leading-4 text-neutral-700`}>
-                    {t("help")}
-                  </span>
-                </Link>
-              </li>
-              <button
-                onClick={() =>
-                  signOut({
-                    redirect: true,
-                    redirectTo: process.env.NEXT_PUBLIC_ATTENDEE_URL,
-                  })
-                }
-                className="flex items-center gap-4 py-2"
-              >
-                <Logout size="20" color="#737c8a" variant="Bulk" />
-                <span
-                  className={`text-[1.5rem] leading-4 text-neutral-700 cursor-pointer`}
-                >
-                  {t("logout")}
-                </span>
-              </button>
+              {userLinks.map((link) => (
+                <li key={link.path}>
+                  <NavItem
+                    link={link}
+                    active={isActive(link.path)}
+                    requiresAuth
+                    isLoggedIn={isLoggedIn}
+                  />
+                </li>
+              ))}
             </ul>
           </nav>
         )}
       </div>
-      {/* <div className="bg-neutral-300 rounded-[12.5px] p-[2.5px]">
-        test
-      </div> */}
+      {/* Pinned to the bottom: help, and the way in or out of an account. */}
+      <ul className="flex flex-col gap-4 pt-8 pb-12">
+        <li>
+          <Link
+            target="_blank"
+            href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/contact`}
+            className="flex items-center gap-4 py-4"
+          >
+            <I24Support size="20" color="#737C8A" variant="Bulk" />
+            <span className={`text-[1.5rem] leading-4 text-neutral-700`}>
+              {t("help")}
+            </span>
+          </Link>
+        </li>
+        <li>
+          {isLoggedIn && (
+            <button
+              onClick={() =>
+                signOut({
+                  redirect: true,
+                  redirectTo: process.env.NEXT_PUBLIC_ATTENDEE_URL,
+                })
+              }
+              className="flex items-center gap-4 py-4 cursor-pointer"
+            >
+              <Logout size="20" color="#737c8a" variant="Bulk" />
+              <span className={`text-[1.5rem] leading-4 text-neutral-700`}>
+                {t("logout")}
+              </span>
+            </button>
+          )}
+          {isSignedOut && (
+            <Link href="/auth/login" className="flex items-center gap-4 py-4">
+              <LoginCurve size="20" color="#E45B00" variant="Bulk" />
+              <span
+                className={`text-[1.5rem] leading-4 text-primary-500 font-medium`}
+              >
+                {t("login")}
+              </span>
+            </Link>
+          )}
+        </li>
+      </ul>
     </aside>
   );
 }

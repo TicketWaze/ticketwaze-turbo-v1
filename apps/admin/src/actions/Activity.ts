@@ -446,3 +446,43 @@ export async function GiveawayTicketsAction(
     };
   }
 }
+
+/**
+ * Feature an event on the website's landing page, or take it off. The API
+ * refuses a fourth, and anything the landing page could not show; its message
+ * is passed through for the admin to read.
+ */
+export async function SetEventSponsoredAction(
+  eventId: string,
+  sponsored: boolean,
+  accessToken: string,
+  locale: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/event/${eventId}/sponsored`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({ sponsored }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath(`/activities/${eventId}`);
+      revalidatePath(`/activities`);
+      return { status: "success" as const };
+    }
+    throw new Error(data.message);
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}

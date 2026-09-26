@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import UpcomingTicket from "./UpcomingTicket";
 import {
   ArrowLeft2,
@@ -12,13 +12,46 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { QRCodeCanvas } from "qrcode.react";
-import { domToPng } from "modern-screenshot";
+import { domToBlob } from "modern-screenshot";
 import FormatDate from "@/lib/FormatDate";
 import Image from "next/image";
 import Logo from "@ticketwaze/ui/assets/images/logo-simple-orange.svg";
 import { Event, Ticket } from "@ticketwaze/typescript-config";
 import Capitalize from "@/lib/Capitalize";
 import formatTime from "@/lib/formatTime";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+/**
+ * How the rendered ticket reaches the phone. A web page cannot write to the
+ * iOS Photos library by itself, so each platform gets the closest thing:
+ *
+ * - iOS: the share sheet, whose "Save Image" puts it straight into Photos.
+ *   `<a download>` there lands in the Files app — which is where "I downloaded
+ *   it and see nothing" came from.
+ * - In-app browsers (Instagram, Facebook, TikTok…): downloads of blob/data
+ *   URLs are dropped silently, so the image is shown instead, to press-and-hold.
+ * - Everything else: a normal file download.
+ */
+function isIOS() {
+  const ua = navigator.userAgent;
+  return (
+    /iPad|iPhone|iPod/.test(ua) ||
+    // iPadOS reports itself as a Mac.
+    (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)
+  );
+}
+
+function isInAppBrowser() {
+  return /FBAN|FBAV|FB_IAB|Instagram|Line\/|Snapchat|TikTok|musical_ly|Twitter|MicroMessenger|; wv\)/i.test(
+    navigator.userAgent,
+  );
+}
 
 export default function TicketViewer({
   tickets,
@@ -48,6 +81,55 @@ export default function TicketViewer({
         : null;
 
   const mockTickets = tickets;
+
+  const ticketRef = useRef<HTMLDivElement>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [preview, setPreview] = useState<{
+    url: string;
+    filename: string;
+  } | null>(null);
+  /*
+   * The PNG for the ticket on screen, started as soon as it is shown. Rendering
+   * takes a second or two on a phone, and Safari only lets `navigator.share`
+   * run shortly after the tap — rendering on click would lose that window and
+   * the share would be refused.
+   */
+  const rendered = useRef<{ index: number; blob: Promise<Blob> } | null>(null);
+
+  const renderTicket = useCallback((index: number) => {
+    if (rendered.current?.index === index) return rendered.current.blob;
+    const blob = (async () => {
+      if (!ticketRef.current) throw new Error("Ticket not mounted");
+      await document.fonts?.ready;
+      const result = await domToBlob(ticketRef.current, {
+        scale: 2,
+        type: "image/png",
+        backgroundColor: "#FFFFFF",
+      });
+      if (!result || result.size === 0) throw new Error("Empty render");
+      return result;
+    })();
+    rendered.current = { index, blob };
+    // A failed render must not be cached, or every later tap fails the same way.
+    blob.catch(() => {
+      if (rendered.current?.blob === blob) rendered.current = null;
+    });
+    return blob;
+  }, []);
+
+  useEffect(() => {
+    // Wait a frame so the hidden ticket shows the new index before capture.
+    const id = requestAnimationFrame(() => {
+      renderTicket(currentIndex).catch(() => {});
+    });
+    return () => cancelAnimationFrame(id);
+  }, [currentIndex, renderTicket]);
+
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview.url);
+    };
+  }, [preview]);
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : mockTickets.length - 1));
@@ -125,53 +207,50 @@ export default function TicketViewer({
     }
   };
 
-  const ticketRef = useRef<HTMLDivElement>(null);
-
   const downloadImage = async () => {
-    if (!ticketRef.current) return;
+    if (isSaving) return;
+    setIsSaving(true);
+    const ticketName = tickets[currentIndex].ticketName || "ticket";
+    const eventName = event.eventName?.replace(/[^a-z0-9]/gi, "_") || "event";
+    const filename = `${eventName}_${ticketName}.png`;
 
     try {
-      const element = ticketRef.current;
-      const parent = element.parentElement;
+      const blob = await renderTicket(currentIndex);
+      const file = new File([blob], filename, { type: "image/png" });
 
-      // Temporarily make visible for capture
-      if (parent) {
-        parent.style.position = "fixed";
-        parent.style.left = "0";
-        parent.style.top = "0";
-        parent.style.opacity = "1";
-        parent.style.zIndex = "9999";
+      if (isInAppBrowser()) {
+        setPreview({ url: URL.createObjectURL(blob), filename });
+        return;
       }
 
-      // Wait for rendering
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      // Convert to PNG using modern-screenshot
-      const dataUrl = await domToPng(element, {
-        scale: 2,
-        quality: 1,
-      });
-
-      // Hide element again
-      if (parent) {
-        parent.style.position = "absolute";
-        parent.style.left = "-9999px";
-        parent.style.opacity = "0";
-        parent.style.zIndex = "auto";
+      if (isIOS()) {
+        if (navigator.canShare?.({ files: [file] })) {
+          try {
+            await navigator.share({ files: [file] });
+            return;
+          } catch (error) {
+            // The holder closed the sheet: nothing to do.
+            if ((error as DOMException)?.name === "AbortError") return;
+            // Anything else (e.g. the tap expired): fall back to the preview.
+          }
+        }
+        setPreview({ url: URL.createObjectURL(blob), filename });
+        return;
       }
 
-      // Generate filename and download
-      const ticketName = tickets[currentIndex].ticketName || "ticket";
-      const eventName = event.eventName?.replace(/[^a-z0-9]/gi, "_") || "event";
-      const filename = `${eventName}_${ticketName}.png`;
-
+      const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.download = filename;
-      link.href = dataUrl;
+      link.href = url;
+      document.body.appendChild(link);
       link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
     } catch (error) {
       console.error("Error generating PNG:", error);
-      alert("Failed to download ticket. Please try again.");
+      toast.error(t("ticketDownload.failed"));
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -179,10 +258,15 @@ export default function TicketViewer({
     <>
       <UpcomingTicket ticket={tickets[currentIndex]} event={event} />
 
-      <div className="absolute -left-[9999px] opacity-0 pointer-events-none">
+      {/*
+        Parked off-screen and always rendered, so nothing is toggled at capture
+        time — the old toggle left the ticket pinned over the page whenever a
+        capture threw. Fixed width so every phone gets the same image.
+      */}
+      <div aria-hidden className="fixed -left-[9999px] top-0 pointer-events-none">
         <div
           ref={ticketRef}
-          className="bg-white shadow-lg p-6 rounded-xl w-full text-center flex flex-col gap-8 items-center"
+          className="bg-white p-6 rounded-xl w-[400px] text-center flex flex-col gap-8 items-center"
         >
           <div
             className={
@@ -192,6 +276,8 @@ export default function TicketViewer({
             <Image
               src={Logo}
               alt="Ticketwaze"
+              // Off-screen, a lazy image never loads — and never shows in the PNG.
+              loading="eager"
               className="absolute w-full h-full opacity-10"
             />
             <div
@@ -327,7 +413,7 @@ export default function TicketViewer({
         */}
         <button
           onClick={isOnline ? downloadDocument : downloadImage}
-          disabled={isOnline ? !documentReady || isFetchingDocument : false}
+          disabled={isOnline ? !documentReady || isFetchingDocument : isSaving}
           title={
             isOnline && hasDocument && !documentUnlocked
               ? t("document.lockedHint", { date: availableAtLabel })
@@ -346,6 +432,27 @@ export default function TicketViewer({
           </span>
         </button>
       </div>
+
+      <Dialog
+        open={preview !== null}
+        onOpenChange={(open) => !open && setPreview(null)}
+      >
+        <DialogContent className="w-[96vw] max-w-[440px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{t("ticketDownload.title")}</DialogTitle>
+            <DialogDescription>{t("ticketDownload.hint")}</DialogDescription>
+          </DialogHeader>
+          {preview && (
+            // A plain <img>: long-press "Save to Photos" needs a real image.
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={preview.url}
+              alt={preview.filename}
+              className="w-full h-auto rounded-xl"
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

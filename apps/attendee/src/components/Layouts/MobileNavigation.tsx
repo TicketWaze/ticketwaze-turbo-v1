@@ -11,6 +11,7 @@ import {
   Logout,
   MoneyRecive,
   Building,
+  LoginCurve,
 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { signOut, useSession } from "next-auth/react";
@@ -29,23 +30,31 @@ export default function MobileNavigation({
   const pathname = usePathname();
   useAuthInterceptor();
   const locale = useLocale();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  // "loading" counts as neither, so a signed-in user never sees the Log in tab flash.
+  const isSignedOut = status === "unauthenticated";
+  /*
+   * Signed out: Explore · Upcoming · Profile · Log in, and no More menu —
+   * everything in it needs an account. Upcoming and Profile open the sign-in
+   * dialog, so they show a visitor what an account gives them.
+   */
   const links = [
-    // {
-    //   label: t("links.explore"),
-    //   path: `/explore`,
-    //   Icon: Ticket,
-    // },
     {
       label: t("links.upcoming"),
       path: `/upcoming`,
       Icon: Star,
     },
-    {
-      label: t("links.organizers"),
-      path: `/organisations`,
-      Icon: Building,
-    },
+    isSignedOut
+      ? {
+          label: t("links.profile"),
+          path: `/profile`,
+          Icon: User,
+        }
+      : {
+          label: t("links.organizers"),
+          path: `/organisations`,
+          Icon: Building,
+        },
   ];
   const moreLinks = session?.user
     ? [
@@ -150,95 +159,111 @@ export default function MobileNavigation({
             </li>
           );
         })}
-        <li>
-          <Popover>
-            <PopoverTrigger>
-              <div
-                className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isMoreLinkActive(pathname) && "font-semibold text-primary-500 is-active"}`}
-              >
-                <HamburgerMenu
-                  size="20"
-                  className={`transition-all duration-500 ${isMoreLinkActive(pathname) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                  variant="Bulk"
-                />
-                <span className={""}>{t("more")}</span>
-              </div>
-            </PopoverTrigger>
-            <PopoverContent
-              className={
-                "w-[250px] p-0 m-0 bg-none shadow-none border-none mx-4"
-              }
-            >
-              <div
+        {isSignedOut && (
+          <li>
+            <Dialog>
+              <DialogTrigger>
+                <div className="group font-semibold text-[1.5rem] leading-8 text-primary-500 flex flex-col items-center gap-4 cursor-pointer">
+                  <LoginCurve size="20" color="#E45B00" variant="Bulk" />
+                  <span>{t("login")}</span>
+                </div>
+              </DialogTrigger>
+              {/* Back to the page they were on once signed in. */}
+              <NoAuthDialog callbackUrl={pathname} />
+            </Dialog>
+          </li>
+        )}
+        {!isSignedOut && (
+          <li>
+            <Popover>
+              <PopoverTrigger>
+                <div
+                  className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isMoreLinkActive(pathname) && "font-semibold text-primary-500 is-active"}`}
+                >
+                  <HamburgerMenu
+                    size="20"
+                    className={`transition-all duration-500 ${isMoreLinkActive(pathname) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
+                    variant="Bulk"
+                  />
+                  <span className={""}>{t("more")}</span>
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
                 className={
-                  "bg-neutral-100 border border-neutral-200 right-8 p-4  mb-8 rounded-[1rem] shadow-xl bottom-full flex flex-col gap-4"
+                  "w-[250px] p-0 m-0 bg-none shadow-none border-none mx-4"
                 }
               >
-                <span
+                <div
                   className={
-                    "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
+                    "bg-neutral-100 border border-neutral-200 right-8 p-4  mb-8 rounded-[1rem] shadow-xl bottom-full flex flex-col gap-4"
                   }
                 >
-                  {t("more")}
-                </span>
-                <ul className={"flex flex-col gap-4"}>
-                  {moreLinks.map(({ Icon, label, path }) => {
-                    return (
-                      <li key={path}>
-                        <Link
-                          href={path}
-                          className="flex items-center gap-4 py-4"
-                        >
-                          <Icon
-                            size="20"
-                            className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                            variant="Bulk"
-                          />
-                          <span
-                            className={`text-[1.5rem] leading-4  ${isActive(path) ? "text-primary-500" : "text-neutral-700"}`}
-                          >
-                            {label}
-                          </span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                  <div className="bg-neutral-200 h-[1px] w-full"></div>
-                  <Link
-                    target="_blank"
-                    href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/contact`}
-                    className="flex items-center gap-4 py-4"
+                  <span
+                    className={
+                      "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
+                    }
                   >
-                    <I24Support size="20" color="#737C8A" variant="Bulk" />
-                    <span
-                      className={`text-[1.5rem] leading-4 text-neutral-700`}
-                    >
-                      {t("help")}
-                    </span>
-                  </Link>
-                  {session?.user && (
-                    <button
-                      onClick={() =>
-                        signOut({
-                          redirect: true,
-                          redirectTo: process.env.NEXT_PUBLIC_ATTENDEE_URL,
-                        })
-                      }
+                    {t("more")}
+                  </span>
+                  <ul className={"flex flex-col gap-4"}>
+                    {moreLinks.map(({ Icon, label, path }) => {
+                      return (
+                        <li key={path}>
+                          <Link
+                            href={path}
+                            className="flex items-center gap-4 py-4"
+                          >
+                            <Icon
+                              size="20"
+                              className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
+                              variant="Bulk"
+                            />
+                            <span
+                              className={`text-[1.5rem] leading-4  ${isActive(path) ? "text-primary-500" : "text-neutral-700"}`}
+                            >
+                              {label}
+                            </span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                    <div className="bg-neutral-200 h-[1px] w-full"></div>
+                    <Link
+                      target="_blank"
+                      href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/contact`}
                       className="flex items-center gap-4 py-4"
                     >
-                      <Logout size="20" color="#737c8a" variant="Bulk" />
+                      <I24Support size="20" color="#737C8A" variant="Bulk" />
                       <span
                         className={`text-[1.5rem] leading-4 text-neutral-700`}
                       >
-                        {t("logout")}
+                        {t("help")}
                       </span>
-                    </button>
-                  )}
-                </ul>
-              </div>
-            </PopoverContent>
-          </Popover>
-        </li>
+                    </Link>
+                    {session?.user && (
+                      <button
+                        onClick={() =>
+                          signOut({
+                            redirect: true,
+                            redirectTo: process.env.NEXT_PUBLIC_ATTENDEE_URL,
+                          })
+                        }
+                        className="flex items-center gap-4 py-4"
+                      >
+                        <Logout size="20" color="#737c8a" variant="Bulk" />
+                        <span
+                          className={`text-[1.5rem] leading-4 text-neutral-700`}
+                        >
+                          {t("logout")}
+                        </span>
+                      </button>
+                    )}
+                  </ul>
+                </div>
+              </PopoverContent>
+            </Popover>
+          </li>
+        )}
       </ul>
     </nav>
   );

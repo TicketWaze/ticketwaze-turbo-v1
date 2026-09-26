@@ -394,10 +394,24 @@
         "giveaway": "Give away tickets",
         "refund": "Refund & cancel",
         "fees": "Fees handler",
-        "scan": "Scan ticket"
+        "scan": "Scan ticket",
+        "sponsor": "Feature on landing page",
+        "unsponsor": "Remove from landing page"
+      },
+      "sponsor": {
+        "added": "Featured on the landing page.",
+        "removed": "Removed from the landing page.",
+        "saving": "Saving…",
+        "badge": "Sponsored",
+        "badgeHint": "Featured on the website's landing page while it is approved and not over."
       },
       "scanner": {
         "not_a_ticket": "This code is not a Ticketwaze ticket. Scan the QR code on the ticket, or type its ID.",
+        "camera_denied": "Camera access is blocked for this site. Allow it in your browser’s site settings (the icon next to the address), then tap Try again.",
+        "camera_unavailable": "No camera could be opened. Close any other app using the camera, then try again.",
+        "camera_insecure": "The camera only works over a secure (https) connection.",
+        "camera_failed": "The camera could not be started. Please try again.",
+        "camera_retry": "Try again",
         "ready": "Ready to scan",
         "start": "Start scanning",
         "stop": "Stop scanning",
