@@ -102,14 +102,36 @@ export function buildContentSecurityPolicy(
   };
 }
 
+/** Powerful features an app may opt back into, for its own origin only. */
+export type AllowedFeature = "camera" | "microphone" | "geolocation";
+
 /**
  * Returns the full header list for a `headers()` entry: the baseline headers,
  * plus a CSP header when `csp` options are supplied.
+ *
+ * `allow` re-enables a feature the baseline denies. It must be passed by any
+ * app that uses it: `camera=()` makes the browser refuse `getUserMedia` before
+ * it ever shows a permission prompt — the door scanner in the organisation
+ * and admin apps reported "no permission" without asking, because of it.
  */
 export function securityHeaders(
-  options: { csp?: CspOptions } = {}
+  options: { csp?: CspOptions; allow?: AllowedFeature[] } = {}
 ): SecurityHeader[] {
-  const headers = [...baselineSecurityHeaders];
+  const allowed = new Set(options.allow ?? []);
+  const headers = baselineSecurityHeaders.map((header) =>
+    header.key === "Permissions-Policy" && allowed.size > 0
+      ? {
+          key: header.key,
+          value: header.value
+            .split(", ")
+            .map((rule) => {
+              const feature = rule.split("=")[0] as AllowedFeature;
+              return allowed.has(feature) ? `${feature}=(self)` : rule;
+            })
+            .join(", "),
+        }
+      : header
+  );
   if (options.csp) headers.push(buildContentSecurityPolicy(options.csp));
   return headers;
 }

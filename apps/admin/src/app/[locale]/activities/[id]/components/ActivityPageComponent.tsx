@@ -5,6 +5,7 @@ import { ButtonBlack, ButtonNeutral } from "@/components/shared/buttons";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
 import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
+import PrintTicketsDialog from "./PrintTicketsDialog";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -17,7 +18,12 @@ import {
   Status,
   ReceiptDiscount,
   Scanner as ScannerIcon,
+  Star1,
+  Printer,
 } from "iconsax-reactjs";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { SetEventSponsoredAction } from "@/actions/Activity";
 import FeesHandlerDialog from "@/components/shared/FeesHandlerDialog";
 import CheckingDialog, {
   canOfferChecking,
@@ -196,7 +202,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
    * a popover is unmounted by the same click that opens it.
    */
   const [openDialog, setOpenDialog] = useState<
-    null | "status" | "giveaway" | "fees" | "refund" | "checking"
+    null | "status" | "giveaway" | "fees" | "refund" | "checking" | "print"
   >(null);
 
   /**
@@ -227,6 +233,62 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
 
   const refundBlockedReason = eventRefundBlockedReason(event, eventStart);
 
+  /**
+   * THE LANDING PAGE'S SPONSORED SECTION. Mirrors the API's `showableEvents`
+   * so the reason is shown up front rather than as an error after the click;
+   * the API still decides, including the three-at-once limit. Removing is
+   * always allowed, so an event that has since ended can be cleared.
+   */
+  const { data: session } = useSession();
+  const canSponsor = useAdminCan("activity.edit");
+  const isSponsored = Boolean(event.sponsoredAt);
+  const [isSponsoring, setIsSponsoring] = useState(false);
+  const sponsorBlockedReason = isSponsored
+    ? null
+    : event.eventType === "private"
+      ? "A private activity cannot be featured on the landing page."
+      : event.adminStatus !== "approved"
+        ? "Only an approved activity can be featured on the landing page."
+        : event.cancelledAt || event.deletionStatus
+          ? "This activity is cancelled or being deleted."
+          : !firstDay
+            ? "A teaser has no dates yet, so it cannot be featured."
+            : hasEnded
+              ? "This activity has ended."
+              : null;
+
+  /**
+   * Printing needs a door and a date: an online activity has neither to put on
+   * paper, and a teaser has no day yet. The API re-checks, including that a new
+   * print run is only made for an approved activity that has not ended.
+   */
+  const canPrint = useAdminCan("activity.edit");
+  const printBlockedReason =
+    event.eventCategory === "meet"
+      ? "An online activity has no tickets to print."
+      : !firstDay
+        ? "A teaser has no date to print yet."
+        : null;
+
+  async function toggleSponsored() {
+    if (isSponsoring) return;
+    setIsSponsoring(true);
+    const result = await SetEventSponsoredAction(
+      event.eventId,
+      !isSponsored,
+      session?.user.accessToken ?? "",
+      locale,
+    );
+    setIsSponsoring(false);
+    if ("error" in result) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success(
+      isSponsored ? t("activity.sponsor.removed") : t("activity.sponsor.added"),
+    );
+  }
+
   const actions = [
     canManage && {
       key: "edit",
@@ -253,6 +315,30 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
       onSelect: () => setOpenDialog("fees"),
       icon: <ReceiptDiscount size="20" variant="Bulk" color="#2E3237" />,
     },
+    canPrint && {
+      key: "print",
+      label: t("activity.actions.print"),
+      onSelect: () => setOpenDialog("print"),
+      icon: <Printer size="20" variant="Bulk" color="#2E3237" />,
+      disabledReason: printBlockedReason,
+    },
+    canSponsor && {
+      key: "sponsor",
+      label: isSponsored
+        ? t("activity.actions.unsponsor")
+        : t("activity.actions.sponsor"),
+      onSelect: toggleSponsored,
+      icon: (
+        <Star1
+          size="20"
+          variant={isSponsored ? "Bold" : "Bulk"}
+          color={isSponsored ? "#E45B00" : "#2E3237"}
+        />
+      ),
+      disabledReason: isSponsoring
+        ? t("activity.sponsor.saving")
+        : sponsorBlockedReason,
+    },
     {
       key: "refund",
       label: t("activity.actions.refund"),
@@ -267,9 +353,19 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
     <div className="flex flex-col gap-8 h-full overflow-hidden">
       <BackButton text={t("activity.back")}></BackButton>
       <div className="flex justify-between items-center gap-6">
-        <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem] min-w-0">
-          {event.eventName}
-        </h2>
+        <div className="flex items-center gap-4 min-w-0">
+          <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem] min-w-0">
+            {event.eventName}
+          </h2>
+          {isSponsored && (
+            <span
+              title={t("activity.sponsor.badgeHint")}
+              className="shrink-0 py-[0.3rem] px-3 rounded-[30px] bg-[#FFEFE2] text-primary-500 text-[1.1rem] font-bold uppercase leading-6"
+            >
+              {t("activity.sponsor.badge")}
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-4 shrink-0">
           {/* Desktop: the scanner sits between the title and the actions menu,
               so it reads before it. On a phone the header row has no space for
@@ -514,6 +610,11 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         hideTrigger
         open={openDialog === "status"}
         onOpenChange={(next) => setOpenDialog(next ? "status" : null)}
+      />
+      <PrintTicketsDialog
+        event={event}
+        open={openDialog === "print"}
+        onOpenChange={(next) => setOpenDialog(next ? "print" : null)}
       />
       <GiveawayTicketsDialog
         event={event}

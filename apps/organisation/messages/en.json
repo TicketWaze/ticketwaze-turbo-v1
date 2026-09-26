@@ -128,6 +128,12 @@
         "description": "Your organisation dashboard is almost ready. First, complete your Ticketwaze profile on the attendee platform. It only takes a minute.",
         "action": "Complete my profile",
         "back": "Sign out"
+      },
+      "suspended": {
+        "title": "This organisation is suspended",
+        "description": "{name} has been suspended, so its dashboard is unavailable. Your Ticketwaze account and tickets are not affected.",
+        "support": "Contact support",
+        "back": "Go to my tickets"
       }
     },
     "register": {
@@ -722,6 +728,11 @@
       "check_in_description": "Scan Qr code or enter the ticket ID below to verify and check in an attendee.",
       "scanner": {
         "not_a_ticket": "This code is not a Ticketwaze ticket. Scan the QR code on the ticket, or type its ID.",
+        "camera_denied": "Camera access is blocked for this site. Allow it in your browser’s site settings (the icon next to the address), then tap Try again.",
+        "camera_unavailable": "No camera could be opened. Close any other app using the camera, then try again.",
+        "camera_insecure": "The camera only works over a secure (https) connection.",
+        "camera_failed": "The camera could not be started. Please try again.",
+        "camera_retry": "Try again",
         "ready": "Ready to scan",
         "start": "Start Scanning",
         "stop": "Stop Scanning",
@@ -931,6 +942,19 @@
         "entries": "Entries",
         "date_purchased": "Date purchased",
         "description": "Once attendees start purchasing tickets, the details will appear here. Promote your activity to drive sales!"
+      },
+      "printed_tickets": {
+        "title": "Printed tickets",
+        "summary": "{printed} printed · {scanned} scanned",
+        "cancelled": "{count} cancelled",
+        "note": "Printed by Ticketwaze to be sold by hand. They are separate from your online tickets and are not counted in your sales or revenue.",
+        "table": {
+          "date": "Printed on",
+          "ticket_type": "Ticket type",
+          "quantity": "Quantity",
+          "face_value": "Face value",
+          "scanned": "Scanned"
+        }
       },
       "ticket_returns": {
         "title": "Returned Tickets",

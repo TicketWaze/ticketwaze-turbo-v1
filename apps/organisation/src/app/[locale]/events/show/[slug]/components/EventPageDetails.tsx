@@ -21,6 +21,7 @@ import {
   Order,
   Ticket,
   TicketReturn,
+  PhysicalTicketBatch,
 } from "@ticketwaze/typescript-config";
 import MoreComponent from "./MoreComponent";
 import CheckingDialog from "./CheckingDialog";
@@ -33,6 +34,7 @@ import Capitalize from "@/lib/Capitalize";
 import { ticketsOrganisationTotal } from "@/lib/ticketEarnings";
 import ShareEvent from "./ShareEvent";
 import ReturnedTicketsSection from "./ReturnedTicketsSection";
+import PrintedTicketsSection from "./PrintedTicketsSection";
 import { eventStartsAt, isEventPast } from "@/lib/eventTime";
 
 export default function EventPageDetails({
@@ -43,6 +45,7 @@ export default function EventPageDetails({
   eventPerformers,
   membershipTier,
   ticketReturns,
+  physicalTicketBatches = [],
 }: {
   event: Event;
   tickets: Ticket[];
@@ -51,6 +54,7 @@ export default function EventPageDetails({
   eventPerformers: EventPerformer[];
   membershipTier: MembershipTier;
   ticketReturns: TicketReturn[];
+  physicalTicketBatches?: PhysicalTicketBatch[];
 }) {
   const t = useTranslations("Events.single_event");
   const locale = useLocale();
@@ -829,6 +833,7 @@ export default function EventPageDetails({
         </Tabs>
       )}
 
+      <PrintedTicketsSection event={event} batches={physicalTicketBatches} />
       <ReturnedTicketsSection event={event} ticketReturns={ticketReturns} />
     </div>
   );

@@ -28,8 +28,16 @@ export function extractTicketCode(raw: string | null | undefined): string | null
  * - 10 frames a second instead of 5, so a code held up briefly is caught.
  * - A scan box sized to the camera view (70% of its shorter side) rather than
  *   a fixed 250px, which was too small on a tablet and cramped on a phone.
+ * - The back camera on a phone, asked for directly. `ideal` rather than `exact`
+ *   so a laptop, which only has a front camera, still gets its webcam.
  */
-export const TICKET_SCANNER_CONFIG = {
+export const TICKET_DECODER_CONFIG = {
+  verbose: false,
+  formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
+  experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+};
+
+export const TICKET_CAMERA_CONFIG = {
   fps: 10,
   qrbox: (viewfinderWidth: number, viewfinderHeight: number) => {
     const side = Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.7);
@@ -37,8 +45,5 @@ export const TICKET_SCANNER_CONFIG = {
     return { width: clamped, height: clamped };
   },
   aspectRatio: 1.0,
-  formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE],
-  experimentalFeatures: { useBarCodeDetectorIfSupported: true },
-  rememberLastUsedCamera: true,
   videoConstraints: { facingMode: { ideal: "environment" } },
 };

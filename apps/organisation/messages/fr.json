@@ -127,6 +127,12 @@
         "description": "Votre tableau de bord organisation est presque prêt. Complétez d'abord votre profil Ticketwaze sur la plateforme participant. Cela ne prend qu'une minute.",
         "action": "Compléter mon profil",
         "back": "Se déconnecter"
+      },
+      "suspended": {
+        "title": "Cette organisation est suspendue",
+        "description": "{name} a été suspendue : son tableau de bord n’est donc pas accessible. Votre compte Ticketwaze et vos billets ne sont pas concernés.",
+        "support": "Contacter le support",
+        "back": "Voir mes billets"
       }
     },
     "register": {
@@ -721,6 +727,11 @@
       "check_in_description": "Scanner le code Qr ou saisissez l'ID du ticket ci-dessous pour vérifier et enregistrer un participant.",
       "scanner": {
         "not_a_ticket": "Ce code n’est pas un billet Ticketwaze. Scannez le QR code du billet, ou saisissez son identifiant.",
+        "camera_denied": "L’accès à la caméra est bloqué pour ce site. Autorisez-le dans les paramètres du site de votre navigateur (l’icône à côté de l’adresse), puis appuyez sur Réessayer.",
+        "camera_unavailable": "Aucune caméra n’a pu être ouverte. Fermez toute autre application qui l’utilise, puis réessayez.",
+        "camera_insecure": "La caméra ne fonctionne que sur une connexion sécurisée (https).",
+        "camera_failed": "La caméra n’a pas pu démarrer. Veuillez réessayer.",
+        "camera_retry": "Réessayer",
         "ready": "Prêt à scanner",
         "start": "Démarrer le scan",
         "stop": "Arrêter le scan",
@@ -930,6 +941,19 @@
         "entries": "Entrées",
         "date_purchased": "Date d'achat",
         "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !"
+      },
+      "printed_tickets": {
+        "title": "Billets imprimés",
+        "summary": "{printed} imprimés · {scanned} scannés",
+        "cancelled": "{count} annulés",
+        "note": "Imprimés par Ticketwaze pour être vendus en main propre. Ils sont distincts de vos billets en ligne et ne sont pas comptés dans vos ventes ni vos revenus.",
+        "table": {
+          "date": "Imprimés le",
+          "ticket_type": "Type de billet",
+          "quantity": "Quantité",
+          "face_value": "Valeur faciale",
+          "scanned": "Scannés"
+        }
       },
       "ticket_returns": {
         "title": "Billets retournés",

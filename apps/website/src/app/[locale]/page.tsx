@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import HeroSection from "./components/Hero";
 import Details1 from "./components/Details1";
+import SponsoredActivities from "./components/SponsoredActivities";
 import Details2 from "./components/Details2";
 import Details3 from "./components/Details3";
 import FrequentlyAskedQuestions from "./components/FrequentlyAskedQuestions";
@@ -124,6 +125,7 @@ export default async function Home({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <HeroSection />
+      <SponsoredActivities />
       <Details1 />
       <Details2 />
       <Details3 />

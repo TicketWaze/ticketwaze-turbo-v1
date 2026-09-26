@@ -21,7 +21,7 @@ const csp = mergeCsp(CSP_SOURCES.googleAuth, {
 const nextConfig: NextConfig = {
   reactCompiler: true,
   async headers() {
-    return [{ source: "/(.*)", headers: securityHeaders({ csp }) }];
+    return [{ source: "/(.*)", headers: securityHeaders({ csp, allow: ["camera"] }) }];
   },
   images: {
     remotePatterns: [
