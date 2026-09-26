@@ -353,6 +353,7 @@
         "refund": "Rembourser et annuler",
         "fees": "Gestion des frais",
         "scan": "Scanner le billet",
+        "print": "Imprimer des billets",
         "sponsor": "Mettre en avant sur la page d’accueil",
         "unsponsor": "Retirer de la page d’accueil"
       },

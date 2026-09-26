@@ -943,6 +943,19 @@
         "date_purchased": "Date purchased",
         "description": "Once attendees start purchasing tickets, the details will appear here. Promote your activity to drive sales!"
       },
+      "printed_tickets": {
+        "title": "Printed tickets",
+        "summary": "{printed} printed · {scanned} scanned",
+        "cancelled": "{count} cancelled",
+        "note": "Printed by Ticketwaze to be sold by hand. They are separate from your online tickets and are not counted in your sales or revenue.",
+        "table": {
+          "date": "Printed on",
+          "ticket_type": "Ticket type",
+          "quantity": "Quantity",
+          "face_value": "Face value",
+          "scanned": "Scanned"
+        }
+      },
       "ticket_returns": {
         "title": "Returned Tickets",
         "badge_suffix": "ticket(s) returned",

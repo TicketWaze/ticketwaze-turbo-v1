@@ -5,6 +5,7 @@ import { ButtonBlack, ButtonNeutral } from "@/components/shared/buttons";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
 import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
+import PrintTicketsDialog from "./PrintTicketsDialog";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -18,6 +19,7 @@ import {
   ReceiptDiscount,
   Scanner as ScannerIcon,
   Star1,
+  Printer,
 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -200,7 +202,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
    * a popover is unmounted by the same click that opens it.
    */
   const [openDialog, setOpenDialog] = useState<
-    null | "status" | "giveaway" | "fees" | "refund" | "checking"
+    null | "status" | "giveaway" | "fees" | "refund" | "checking" | "print"
   >(null);
 
   /**
@@ -255,6 +257,19 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
               ? "This activity has ended."
               : null;
 
+  /**
+   * Printing needs a door and a date: an online activity has neither to put on
+   * paper, and a teaser has no day yet. The API re-checks, including that a new
+   * print run is only made for an approved activity that has not ended.
+   */
+  const canPrint = useAdminCan("activity.edit");
+  const printBlockedReason =
+    event.eventCategory === "meet"
+      ? "An online activity has no tickets to print."
+      : !firstDay
+        ? "A teaser has no date to print yet."
+        : null;
+
   async function toggleSponsored() {
     if (isSponsoring) return;
     setIsSponsoring(true);
@@ -299,6 +314,13 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
       label: t("activity.actions.fees"),
       onSelect: () => setOpenDialog("fees"),
       icon: <ReceiptDiscount size="20" variant="Bulk" color="#2E3237" />,
+    },
+    canPrint && {
+      key: "print",
+      label: t("activity.actions.print"),
+      onSelect: () => setOpenDialog("print"),
+      icon: <Printer size="20" variant="Bulk" color="#2E3237" />,
+      disabledReason: printBlockedReason,
     },
     canSponsor && {
       key: "sponsor",
@@ -588,6 +610,11 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         hideTrigger
         open={openDialog === "status"}
         onOpenChange={(next) => setOpenDialog(next ? "status" : null)}
+      />
+      <PrintTicketsDialog
+        event={event}
+        open={openDialog === "print"}
+        onOpenChange={(next) => setOpenDialog(next ? "print" : null)}
       />
       <GiveawayTicketsDialog
         event={event}

@@ -942,6 +942,19 @@
         "date_purchased": "Date d'achat",
         "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !"
       },
+      "printed_tickets": {
+        "title": "Billets imprimés",
+        "summary": "{printed} imprimés · {scanned} scannés",
+        "cancelled": "{count} annulés",
+        "note": "Imprimés par Ticketwaze pour être vendus en main propre. Ils sont distincts de vos billets en ligne et ne sont pas comptés dans vos ventes ni vos revenus.",
+        "table": {
+          "date": "Imprimés le",
+          "ticket_type": "Type de billet",
+          "quantity": "Quantité",
+          "face_value": "Valeur faciale",
+          "scanned": "Scannés"
+        }
+      },
       "ticket_returns": {
         "title": "Billets retournés",
         "badge_suffix": "billet(s) retourné(s)",

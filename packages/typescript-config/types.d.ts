@@ -37,6 +37,23 @@ export interface UserWallet {
   updatedAt: DateTime;
 }
 
+/**
+ * One print run of physical tickets — printed by an admin, sold by hand.
+ * A record only: outside the online stock and every sales figure.
+ */
+export interface PhysicalTicketBatch {
+  batchId: string;
+  ticketType: string;
+  ticketPrice: number;
+  ticketUsdPrice: number;
+  currency: string;
+  quantity: number;
+  /** Scanned in at the door at least once. */
+  checked: number;
+  void: number;
+  createdAt: string;
+}
+
 export interface EventPerformer {
   eventPerformerId: string;
   performerName: string;
