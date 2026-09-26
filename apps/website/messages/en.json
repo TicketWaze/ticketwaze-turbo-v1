@@ -41,6 +41,9 @@
   "HomePage": {
     "navbar": {
       "close": "Close",
+      "login": "Log in",
+      "dashboard": "Dashboard",
+      "profile": "My profile",
       "select": "Select a languague",
       "personal": "Personal",
       "business": "Business",
@@ -68,6 +71,15 @@
         "3": "Sessions & Services",
         "4": "Experiences & Activities"
       }
+    },
+    "sponsored": {
+      "tag": "Sponsored",
+      "title": "Our latest activities",
+      "seeAll": "See all activities",
+      "soldOut": "Sold out",
+      "comingSoon": "Coming soon",
+      "from": "From",
+      "free": "Free"
     },
     "details1": {
       "title": "Everything Ticketing, Made Simple",

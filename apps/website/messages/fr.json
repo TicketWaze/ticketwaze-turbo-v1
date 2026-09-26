@@ -41,6 +41,9 @@
   "HomePage": {
     "navbar": {
       "close": "Fermer",
+      "login": "Se connecter",
+      "dashboard": "Tableau de bord",
+      "profile": "Mon profil",
       "select": "Choisir une langue",
       "personal": "Particuliers",
       "business": "Professionnels",
@@ -68,6 +71,15 @@
         "3": "Sessions & services",
         "4": "Expériences & activités"
       }
+    },
+    "sponsored": {
+      "tag": "Sponsorisé",
+      "title": "Nos dernières activités",
+      "seeAll": "Voir toutes les activités",
+      "soldOut": "Complet",
+      "comingSoon": "Bientôt",
+      "from": "À partir de",
+      "free": "Gratuit"
     },
     "details1": {
       "title": "La billetterie simplifiée",

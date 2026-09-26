@@ -8,7 +8,28 @@ function nextMidnightUnix(): number {
   return Math.floor(midnight.getTime() / 1000);
 }
 
+/**
+ * The admin session is deliberately NOT the shared Ticketwaze session (see
+ * @ticketwaze/auth): an attendee or organiser sign-in must never open the
+ * admin dashboard. Its own cookie name keeps it apart — Auth.js derives the
+ * encryption key from the name, so neither cookie can be read as the other —
+ * and it stays host-only, with no parent domain. Give this app its own
+ * AUTH_SECRET as well, so the separation does not rest on the name alone.
+ */
+const useSecureCookies = (process.env.AUTH_URL ?? "").startsWith("https://");
+
 const nextAuthResult = NextAuth({
+  cookies: {
+    sessionToken: {
+      name: `${useSecureCookies ? "__Secure-" : ""}ticketwaze.admin.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: useSecureCookies,
+      },
+    },
+  },
   session: {
     strategy: "jwt",
     maxAge: 24 * 60 * 60,

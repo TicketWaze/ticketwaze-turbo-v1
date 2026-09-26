@@ -1,0 +1,18 @@
+{
+  "name": "@ticketwaze/auth",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "next-auth": "^5.0.0-beta.30"
+  },
+  "devDependencies": {
+    "@ticketwaze/typescript-config": "*",
+    "typescript": "5.9.2"
+  }
+}

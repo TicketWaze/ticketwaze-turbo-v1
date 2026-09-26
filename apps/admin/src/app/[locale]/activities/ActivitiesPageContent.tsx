@@ -43,7 +43,8 @@ type StatusFilter =
   | "review"
   | "approved"
   | "rejected"
-  | "pending_edit";
+  | "pending_edit"
+  | "sponsored";
 
 /**
  * Shared by every tab's pill so the four filters are one control with one set
@@ -57,6 +58,7 @@ function StatusFilterSelect({
   value,
   onChange,
   allLabel,
+  withSponsored = false,
 }: {
   value: StatusFilter;
   onChange: (value: StatusFilter) => void;
@@ -66,6 +68,8 @@ function StatusFilterSelect({
    * only other thing on the row that says which activity is on screen.
    */
   allLabel: string;
+  /** Events only: the ones featured on the website's landing page. */
+  withSponsored?: boolean;
 }) {
   return (
     <Select value={value} onValueChange={(e) => onChange(e as StatusFilter)}>
@@ -104,6 +108,14 @@ function StatusFilterSelect({
           >
             Pending Edits
           </SelectItem>
+          {withSponsored && (
+            <SelectItem
+              className={"text-[1.4rem] text-deep-100"}
+              value="sponsored"
+            >
+              Sponsored
+            </SelectItem>
+          )}
         </SelectGroup>
       </SelectContent>
     </Select>
@@ -255,6 +267,19 @@ function PendingEditBadge({ fields }: { fields: string[] | null }) {
       className="py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-[#f5f5f5] text-warning"
     >
       edited
+    </span>
+  );
+}
+
+/**
+ * Featured on the website's landing page. Same shape as the status badge,
+ * in the brand colour, since it is the one badge that is a promotion rather
+ * than a review state.
+ */
+function SponsoredBadge() {
+  return (
+    <span className="py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-[#FFEFE2] text-primary-500">
+      sponsored
     </span>
   );
 }
@@ -556,6 +581,7 @@ export default function ActivitiesPageContent({
                   value={(status as StatusFilter) ?? "all"}
                   onChange={handleEventStatusChange}
                   allLabel={t("filters.all.events")}
+                  withSponsored
                 />
               ) : tab === "restaurants" ? (
                 <StatusFilterSelect
@@ -705,6 +731,7 @@ export default function ActivitiesPageContent({
                               fields={event.pendingReviewReason}
                             />
                           )}
+                          {event.sponsoredAt && <SponsoredBadge />}
                         </div>
                       </TableCell>
                       <TableCell

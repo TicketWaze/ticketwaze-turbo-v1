@@ -2,6 +2,12 @@
 import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import {
+  needsRefresh,
+  readJsonBody,
+  refreshApiTokens,
+  sharedSessionCookies,
+} from "@ticketwaze/auth";
 
 /**
  * Every login request from this app announces which door it is knocking on.
@@ -22,37 +28,6 @@ class OrganisationSuspendedError extends CredentialsSignin {
   code = "organisation_suspended";
 }
 
-/**
- * Read a response body as JSON without trusting it to BE JSON.
- *
- * POST /auth/refresh does not always answer in JSON. When the throttle on that
- * route trips, AdonisJS content-negotiates the ThrottleException, and for a
- * request that asks for no particular content type it replies with the
- * plain-text body "Too many requests". Calling res.json() on that threw, which
- * dropped the refresh into its catch clause and kept the EXPIRED access token
- * in the session. Every server component then sent that dead token as a real
- * bearer credential: a silently broken page for the user, and a 401
- * "Authentication Failed" alert that read as a session fault rather than as
- * the rate limit it actually was.
- */
-async function readJsonBody<T>(res: Response): Promise<T | null> {
-  try {
-    return (await res.json()) as T;
-  } catch {
-    return null;
-  }
-}
-
-type RefreshResponse = {
-  status?: string;
-  accessToken?: string;
-  refreshToken?: string;
-  accessTokenExpires?: number;
-  isOnboarded?: boolean;
-  isSuspended?: boolean;
-  suspensionReason?: string | null;
-};
-
 type MembershipContextResponse = {
   status?: string;
   organisation?: {
@@ -61,105 +36,67 @@ type MembershipContextResponse = {
     myPermissions?: unknown;
   };
 };
+
 async function refreshAccessToken(token: Record<string, unknown>) {
+  const refreshed = await refreshApiTokens(token);
+  if (!refreshed || refreshed.error) return refreshed;
+
+  /**
+   * Re-read the active organisation's membership context.
+   *
+   * myRole/myPermissions are seeded once at login and otherwise only change
+   * when the user switches organisation, so granting someone a permission had
+   * no effect on their session until they logged out — for up to the 30-day
+   * refresh-token lifetime. Refreshing here bounds that to one access-token
+   * period. The endpoint is Redis-cached server-side, and this runs only when
+   * the access token is close to expiry, so it is not a per-request cost.
+   *
+   * Failure is non-fatal: a refreshed access token is worth keeping even if
+   * the permission re-read fails, so the previous context carries over.
+   */
+  const activeOrganisation = token.activeOrganisation as
+    | (Record<string, unknown> & { organisationId?: string })
+    | null
+    | undefined;
+  if (!activeOrganisation?.organisationId) return refreshed;
+
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token.refreshToken}`,
-        // Ask for JSON explicitly. Without it the API picks a representation by
-        // content negotiation and renders its errors as plain text.
-        Accept: "application/json",
+    const meRes = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${activeOrganisation.organisationId}/me`,
+      {
+        headers: {
+          Authorization: `Bearer ${refreshed.accessToken}`,
+          Accept: "application/json",
+        },
       },
-    });
-
-    const data = await readJsonBody<RefreshResponse>(res);
-
-    // A 401 is the one answer that means the refresh token itself is gone:
-    // revoked, expired, or rotated past its grace window. Clearing the session
-    // belongs here, and only here.
-    if (res.status === 401) {
-      return null;
-    }
-
-    // Everything else that is not a success is transient — a 429 from the
-    // refresh throttle, a 5xx, or a body that did not parse. None of those mean
-    // the refresh token is bad, so none of them may sign the user out. Keep the
-    // session and let the next call retry; the error flag marks the attempt as
-    // failed for anything that wants to inspect it.
-    if (!res.ok || data?.status !== "success") {
-      return { ...token, error: "RefreshAccessTokenError" as const };
-    }
-
-    /**
-     * Re-read the active organisation's membership context.
-     *
-     * myRole/myPermissions are seeded once at login and otherwise only change
-     * when the user switches organisation, so granting someone a permission had
-     * no effect on their session until they logged out — for up to the 30-day
-     * refresh-token lifetime. Refreshing here bounds that to one access-token
-     * period. The endpoint is Redis-cached server-side, and this runs only when
-     * the access token is close to expiry, so it is not a per-request cost.
-     *
-     * Failure is non-fatal: a refreshed access token is worth keeping even if
-     * the permission re-read fails, so the previous context carries over.
-     */
-    const activeOrganisation = token.activeOrganisation as
-      | (Record<string, unknown> & { organisationId?: string })
-      | null
-      | undefined;
-    let refreshedOrganisation: typeof activeOrganisation = activeOrganisation;
-
-    if (activeOrganisation?.organisationId) {
-      try {
-        const meRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/organisations/${activeOrganisation.organisationId}/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${data.accessToken}`,
-              Accept: "application/json",
-            },
-          },
-        );
-        const meData = await readJsonBody<MembershipContextResponse>(meRes);
-        if (meData?.status === "success" && meData.organisation) {
-          // Suspension can land mid-session. Clearing the token drops the user
-          // at the login page, where the API explains the refusal — far better
-          // than leaving them in a dashboard whose every button now fails.
-          if (meData.organisation.isSuspended) {
-            return null;
-          }
-          refreshedOrganisation = {
-            ...activeOrganisation,
-            myRole: meData.organisation.myRole ?? null,
-            myPermissions: meData.organisation.myPermissions ?? [],
-          };
-        }
-      } catch {
-        // Keep the context we already have.
+    );
+    const meData = await readJsonBody<MembershipContextResponse>(meRes);
+    if (meData?.status === "success" && meData.organisation) {
+      // Suspension can land mid-session. The session is shared with the
+      // website and the attendee app now, so it is NOT cleared — that would
+      // sign the user out of all three. Dropping the organisation instead
+      // sends the proxy to onboarding, which explains the suspension.
+      if (meData.organisation.isSuspended) {
+        return { ...refreshed, activeOrganisation: null };
       }
+      return {
+        ...refreshed,
+        activeOrganisation: {
+          ...activeOrganisation,
+          myRole: meData.organisation.myRole ?? null,
+          myPermissions: meData.organisation.myPermissions ?? [],
+        },
+      };
     }
-
-    return {
-      ...token,
-      accessToken: data.accessToken,
-      refreshToken: data.refreshToken,
-      accessTokenExpires: data.accessTokenExpires,
-      activeOrganisation: refreshedOrganisation,
-      // Self-heal stale sessions: tokens seeded before the user completed
-      // onboarding carry isOnboarded=false for up to 30 days otherwise.
-      ...(typeof data.isOnboarded === "boolean"
-        ? { isOnboarded: data.isOnboarded }
-        : {}),
-      error: undefined,
-    };
   } catch {
-    // Network/server error — keep the existing token and retry next time
-    return { ...token, error: "RefreshAccessTokenError" as const };
+    // Keep the context we already have.
   }
+  return refreshed;
 }
 
 const nextAuthResult = NextAuth({
+  // Shared with the website and the attendee app: see @ticketwaze/auth.
+  cookies: sharedSessionCookies(),
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
@@ -294,18 +231,29 @@ const nextAuthResult = NextAuth({
         return token;
       }
 
+      /**
+       * A session started on the website or the attendee app (they share it)
+       * never chose an organisation. Pick one the way this app's own login
+       * does — the first that is not suspended — from the organisations every
+       * login already returns with their role and permissions. `undefined` is
+       * the only trigger: `null` means "looked, found none", and the proxy then
+       * sends the user to onboarding to create, join or be told why.
+       */
+      if (token.activeOrganisation === undefined) {
+        const organisations = Array.isArray(token.organisations)
+          ? (token.organisations as { isSuspended?: boolean }[])
+          : [];
+        token.activeOrganisation =
+          organisations.find((organisation) => !organisation.isSuspended) ??
+          null;
+      }
+
       // Old session (before this update) has no accessTokenExpires — leave it alone
       if (!token.accessTokenExpires) {
         return token;
       }
 
-      // Token still has more than 1 minute of life left
-      if (Date.now() < (token.accessTokenExpires as number) - 60_000) {
-        return token;
-      }
-
-      // No refresh token available (shouldn't happen after a fresh login)
-      if (!token.refreshToken) {
+      if (!needsRefresh(token)) {
         return token;
       }
 

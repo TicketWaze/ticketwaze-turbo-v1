@@ -6,6 +6,7 @@ import {
   Event,
   EventPerformer,
   TicketReturn,
+  PhysicalTicketBatch,
 } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import { extractIdFromSlug } from "@/lib/Slugify";
@@ -53,6 +54,8 @@ export default async function Page({
   const orders = event.orders;
   const eventPerformers: EventPerformer[] = event.eventPerformers;
   const ticketReturns: TicketReturn[] = eventResponse.ticketReturns ?? [];
+  const physicalTicketBatches: PhysicalTicketBatch[] =
+    eventResponse.physicalTicketBatches ?? [];
 
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,
@@ -89,6 +92,7 @@ export default async function Page({
         eventPerformers={eventPerformers}
         membershipTier={membershipTier}
         ticketReturns={ticketReturns}
+        physicalTicketBatches={physicalTicketBatches}
       />
     </OrganizerLayout>
   );

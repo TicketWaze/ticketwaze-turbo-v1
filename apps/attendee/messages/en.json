@@ -440,6 +440,7 @@
   "Layout": {
     "sidebar": {
       "more": "More",
+      "login": "Log in",
       "help": "Help",
       "logout": "Logout",
       "verified": "This is a verified organisation",
@@ -963,6 +964,11 @@
       "download": "Download document",
       "lockedHint": "Available from {date}, when the event starts.",
       "failed": "The document could not be downloaded. Please try again."
+    },
+    "ticketDownload": {
+      "title": "Your ticket",
+      "hint": "Press and hold the image, then choose “Save to Photos” (or “Download image”).",
+      "failed": "Your ticket could not be generated. Please try again."
     },
     "giveaway": "Paid by Ticketwaze",
     "reward": "Offered"

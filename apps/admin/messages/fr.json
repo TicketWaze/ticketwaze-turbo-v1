@@ -352,10 +352,25 @@
         "giveaway": "Offrir des billets",
         "refund": "Rembourser et annuler",
         "fees": "Gestion des frais",
-        "scan": "Scanner le billet"
+        "scan": "Scanner le billet",
+        "print": "Imprimer des billets",
+        "sponsor": "Mettre en avant sur la page d’accueil",
+        "unsponsor": "Retirer de la page d’accueil"
+      },
+      "sponsor": {
+        "added": "Mise en avant sur la page d’accueil.",
+        "removed": "Retirée de la page d’accueil.",
+        "saving": "Enregistrement…",
+        "badge": "Sponsorisé",
+        "badgeHint": "Affichée sur la page d’accueil du site tant qu’elle est approuvée et pas terminée."
       },
       "scanner": {
         "not_a_ticket": "Ce code n’est pas un billet Ticketwaze. Scannez le QR code du billet, ou saisissez son identifiant.",
+        "camera_denied": "L’accès à la caméra est bloqué pour ce site. Autorisez-le dans les paramètres du site de votre navigateur (l’icône à côté de l’adresse), puis appuyez sur Réessayer.",
+        "camera_unavailable": "Aucune caméra n’a pu être ouverte. Fermez toute autre application qui l’utilise, puis réessayez.",
+        "camera_insecure": "La caméra ne fonctionne que sur une connexion sécurisée (https).",
+        "camera_failed": "La caméra n’a pas pu démarrer. Veuillez réessayer.",
+        "camera_retry": "Réessayer",
         "ready": "Prêt à scanner",
         "start": "Démarrer le scan",
         "stop": "Arrêter le scan",

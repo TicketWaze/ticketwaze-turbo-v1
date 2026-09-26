@@ -16,6 +16,7 @@ import {
 import { CloseCircle, HamburgerMenu } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import SwitchLocale from "./SwitchLocale";
+import AccountLinks from "./AccountLinks";
 
 export default function Navbar() {
   const t = useTranslations("HomePage.navbar");
@@ -144,14 +145,14 @@ export default function Navbar() {
               <Link href="/contact">{t("contact")}</Link>
             </li>
           </ul>
-          <SheetFooter>
-            <div>
-              <SwitchLocale />
-            </div>
+          <SheetFooter className="flex flex-row flex-wrap items-center justify-between gap-4">
+            <SwitchLocale />
+            <AccountLinks className="flex-wrap" />
           </SheetFooter>
         </SheetContent>
       </Sheet>
-      <div className="hidden lg:block">
+      <div className="hidden lg:flex items-center gap-6">
+        <AccountLinks compact />
         <SwitchLocale />
       </div>
     </motion.header>

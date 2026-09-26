@@ -21,6 +21,10 @@ export default function OnboardingLogic({ response }: { response: any }) {
   >();
   const [createOrganisation, setCreateOrganisation] = useState(false);
   const [needsUserOnboarding, setNeedsUserOnboarding] = useState(false);
+  const [suspended, setSuspended] = useState<{
+    organisationName?: string;
+    supportUrl?: string;
+  } | null>(null);
   const { data: session, update } = useSession();
   const locale = useLocale();
   const [isLoading, setIsloading] = useState(false);
@@ -31,6 +35,14 @@ export default function OnboardingLogic({ response }: { response: any }) {
         // The user has a Ticketwaze account but never completed the attendee
         // onboarding. They must finish it before the dashboard opens up.
         setNeedsUserOnboarding(true);
+      } else if (response.type === "suspended") {
+        // Every organisation this person belongs to is suspended. They may
+        // well have arrived signed in from the attendee app, so they are not
+        // signed out — that would end their session everywhere.
+        setSuspended({
+          organisationName: response.organisationName,
+          supportUrl: response.supportUrl,
+        });
       } else if (response.type === "invite") {
         setInvitedOrganisation(response.organisations);
       } else if (response.type === "create") {
@@ -164,6 +176,48 @@ export default function OnboardingLogic({ response }: { response: any }) {
                   {t("userOnboarding.back")}
                 </LinkSecondary>
               </motion.div>
+            </div>
+          </div>
+        </div>
+      )}
+      {suspended && (
+        <div className="flex flex-col items-center justify-between h-full pb-12">
+          <div className="flex flex-col justify-between h-full gap-15 pt-16 w-full">
+            <div className="flex flex-col gap-8 items-center">
+              <motion.h3
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="font-medium font-primary text-center text-[3.2rem] leading-14 text-black"
+              >
+                {t("suspended.title")}
+              </motion.h3>
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="text-[1.8rem] text-center leading-10 text-neutral-700"
+              >
+                {t("suspended.description", {
+                  name: suspended.organisationName ?? "",
+                })}
+              </motion.p>
+            </div>
+            <div className="flex flex-col gap-8">
+              {suspended.supportUrl && (
+                <LinkPrimary
+                  href={suspended.supportUrl}
+                  className="w-full flex justify-center items-center"
+                >
+                  {t("suspended.support")}
+                </LinkPrimary>
+              )}
+              <LinkSecondary
+                href={`${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore`}
+                className="w-full flex justify-center items-center"
+              >
+                {t("suspended.back")}
+              </LinkSecondary>
             </div>
           </div>
         </div>
@@ -346,7 +400,10 @@ export default function OnboardingLogic({ response }: { response: any }) {
         </div>
       )}
 
-      {!createOrganisation && !invitedOrganisations && !needsUserOnboarding && (
+      {!createOrganisation &&
+        !invitedOrganisations &&
+        !needsUserOnboarding &&
+        !suspended && (
         <LoadingCircleSmall />
       )}
     </div>

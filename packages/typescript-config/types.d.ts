@@ -37,6 +37,23 @@ export interface UserWallet {
   updatedAt: DateTime;
 }
 
+/**
+ * One print run of physical tickets — printed by an admin, sold by hand.
+ * A record only: outside the online stock and every sales figure.
+ */
+export interface PhysicalTicketBatch {
+  batchId: string;
+  ticketType: string;
+  ticketPrice: number;
+  ticketUsdPrice: number;
+  currency: string;
+  quantity: number;
+  /** Scanned in at the door at least once. */
+  checked: number;
+  void: number;
+  createdAt: string;
+}
+
 export interface EventPerformer {
   eventPerformerId: string;
   performerName: string;
@@ -442,6 +459,11 @@ export interface Event {
    */
   comingSoonDate?: string | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
+  /**
+   * When an admin featured this event on the website's landing page, or null.
+   * It shows there only while it is also public, approved and not over.
+   */
+  sponsoredAt?: string | null;
   /**
    * An organiser edited something worth a second look. A separate axis from
    * adminStatus, which edits deliberately leave alone: this gates nothing, so

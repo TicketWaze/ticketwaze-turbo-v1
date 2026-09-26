@@ -66,6 +66,7 @@ export async function UpdateUserProfileImage(
       return {
         status: "success",
         message: "Image Uploaded",
+        profileImageUrl: data.profileImageUrl as string | undefined,
       };
     } else {
       return {

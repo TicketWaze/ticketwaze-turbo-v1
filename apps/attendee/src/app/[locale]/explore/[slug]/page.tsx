@@ -249,7 +249,6 @@ export default async function EventPage({
     }
   }
 
-
   const isFollowing = organisation.followers.filter(
     (follower: any) => follower.userId === session?.user.userId,
   );
@@ -304,22 +303,36 @@ export default async function EventPage({
             {eventPerformers.length > 0 && (
               <>
                 <Separator />
-                <ul className=" flex items-center gap-8 overflow-x-auto scroll-smooth scrollbar-hide w-full min-h-48">
+                <ul className=" grid grid-cols-[repeat(auto-fill,12rem)] justify-center lg:justify-start items-start gap-8 w-full shrink-0">
                   {eventPerformers.map((eventPerformer) => (
-                    <Link
-                      href={eventPerformer.performerLink}
-                      target="_blank"
+                    <li
                       key={eventPerformer.eventPerformerId}
-                      className="flex items-center justify-center w-48 h-48 overflow-hidden rounded-full shrink-0"
+                      className="shrink-0"
                     >
-                      <Image
-                        src={eventPerformer.performerProfileUrl}
-                        width={120}
-                        height={120}
-                        loading="eager"
-                        alt={eventPerformer.performerName}
-                      />
-                    </Link>
+                      <Link
+                        href={eventPerformer.performerLink}
+                        target="_blank"
+                        className="group flex flex-col items-center gap-3 w-48"
+                      >
+                        <span className="flex items-center justify-center w-48 h-48 overflow-hidden rounded-full">
+                          <Image
+                            src={eventPerformer.performerProfileUrl}
+                            width={120}
+                            height={120}
+                            loading="eager"
+                            alt={eventPerformer.performerName}
+                          />
+                        </span>
+                        {/* Circle-wide and cut with an ellipsis, so a long name
+                            cannot push the row apart; the full name on hover. */}
+                        <span
+                          title={eventPerformer.performerName}
+                          className="block w-full truncate text-center text-[1.4rem] font-medium leading-8 text-deep-100 group-hover:text-primary-500 transition-colors"
+                        >
+                          {eventPerformer.performerName}
+                        </span>
+                      </Link>
+                    </li>
                   ))}
                 </ul>
               </>

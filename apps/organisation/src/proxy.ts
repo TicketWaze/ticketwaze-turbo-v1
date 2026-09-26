@@ -36,6 +36,34 @@ export default auth((req) => {
     return Response.redirect(newUrl);
   }
 
+  // Already signed in (possibly on the website or the attendee app): the login
+  // page has nothing to do. Skipped when it carries a sign-in error to report.
+  if (
+    req.auth &&
+    pathWithoutLocale.startsWith("/auth/login") &&
+    !req.nextUrl.searchParams.has("error")
+  ) {
+    return Response.redirect(
+      new URL(
+        req.auth.activeOrganisation
+          ? `/${locale}/analytics`
+          : `/${locale}/auth/onboarding`,
+        req.nextUrl.origin,
+      ),
+    );
+  }
+
+  // Signed in, but with no organisation chosen. The session is shared with the
+  // website and the attendee app, so this is someone who signed in over there
+  // — or whose organisation was suspended mid-session. Onboarding sorts out
+  // which: pick an organisation, accept an invite, create one, or be told the
+  // organisation is suspended.
+  if (req.auth && !req.auth.activeOrganisation && !isAuthPath) {
+    return Response.redirect(
+      new URL(`/${locale}/auth/onboarding`, req.nextUrl.origin),
+    );
+  }
+
   return intlResponse;
 });
 

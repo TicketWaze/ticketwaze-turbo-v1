@@ -28,6 +28,17 @@ const middleware = auth(async (req) => {
     return Response.redirect(newUrl);
   }
 
+  // Already signed in — possibly on the website or the organisation app, which
+  // share this session. The login and register pages have nothing to do.
+  if (
+    req.auth &&
+    (req.nextUrl.pathname.startsWith(`/${locale}/auth/login`) ||
+      req.nextUrl.pathname.startsWith(`/${locale}/auth/register`)) &&
+    !req.nextUrl.searchParams.has("error")
+  ) {
+    return Response.redirect(new URL(`/${locale}/explore`, req.nextUrl.origin));
+  }
+
   // Authenticated users who never completed onboarding are sent there before
   // anything else (covers Google sign-ups mid-browse and abandoned flows).
   // Auth pages stay reachable so the onboarding flow itself is not blocked.
