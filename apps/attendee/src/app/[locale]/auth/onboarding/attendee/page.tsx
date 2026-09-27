@@ -1,5 +1,8 @@
 import { auth } from "@/lib/auth";
-import AttendeeOnboardingPageComponent from "./AttendeeOnboardingPageComponent";
+// The current onboarding, the same one /auth/onboarding renders. Login still
+// sends organisation members here, and the old six-step flow that lived beside
+// this page asked for keys that no longer exist in either locale.
+import AttendeeOnboardingPageComponent from "../AttendeeOnboardingPageComponent";
 import { getLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 

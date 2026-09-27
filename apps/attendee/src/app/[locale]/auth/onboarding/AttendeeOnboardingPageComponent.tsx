@@ -197,8 +197,8 @@ export default function AttendeeOnboardingPageComponent() {
       // isSubmitting stays true so the setup loader covers the navigation
       // rather than flashing the last step back at the user.
       router.push("/explore?welcome=1");
-    } catch (err) {
-      toast.error(`Failed to save onboarding data: ${err}`);
+    } catch {
+      toast.error(t("saveError"));
       setIsSubmitting(false);
     }
   }

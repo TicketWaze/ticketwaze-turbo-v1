@@ -5,7 +5,6 @@ import {
   Coin1,
   Gift,
   MoneyRecive,
-  ShieldSecurity,
   TicketDiscount,
   Warning2,
 } from "iconsax-reactjs";
@@ -343,14 +342,6 @@ export default function SummaryStep({
             </div>
           </div>
         )}
-
-        {/* Security */}
-        <div className="px-8 py-6 flex items-center gap-[0.8rem]">
-          <ShieldSecurity size="15" color="#9ca3af" />
-          <span className="text-[1.2rem] text-neutral-400">
-            {t("summary.secured")}
-          </span>
-        </div>
       </div>
     </motion.div>
   );

@@ -5,7 +5,6 @@ import {
   Card,
   InfoCircle,
   MoneyRecive,
-  ShieldSecurity,
 } from "iconsax-reactjs";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
@@ -135,11 +134,6 @@ export default function PaymentStep({
             )}
 
             {reductions}
-
-            <div className="flex flex-col items-start gap-4 p-6 rounded-[15px] border border-neutral-100 text-[1.2rem] leading-8 text-neutral-700">
-              <ShieldSecurity size="20" color="#E45B00" />
-              {t("payment.secured")}
-            </div>
           </>
         )}
       </div>

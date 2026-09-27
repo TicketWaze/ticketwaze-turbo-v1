@@ -58,10 +58,10 @@ export default function OnboardingLogic({ response }: { response: any }) {
             });
             window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/analytics`;
           } catch {
-            toast.error("Failed to load organisation");
+            toast.error(t("loadOrganisationError"));
           }
         } else {
-          toast.error("No organisation found");
+          toast.error(t("noOrganisation"));
         }
       }
     };
@@ -89,13 +89,13 @@ export default function OnboardingLogic({ response }: { response: any }) {
           activeOrganisation: organisation,
         });
         if (!updated?.activeOrganisation?.organisationId) {
-          toast.error("Failed to load organisation");
+          toast.error(t("loadOrganisationError"));
           return;
         }
         window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/analytics`;
       }
-    } catch (error) {
-      toast.error(`Failed to Join Organisation : ${(error as Error).message}`);
+    } catch {
+      toast.error(t("joinError"));
     }
     setIsloading(false);
   }

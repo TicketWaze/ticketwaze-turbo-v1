@@ -217,6 +217,7 @@
       "started": "Let's begin",
       "finish": "Explore Ticketwaze",
       "error": "Please select an option",
+      "saveError": "We couldn't save your answers. Please try again.",
       "onboarded": "User already onboarded",
       "attendee": {
         "title": "Discovering",

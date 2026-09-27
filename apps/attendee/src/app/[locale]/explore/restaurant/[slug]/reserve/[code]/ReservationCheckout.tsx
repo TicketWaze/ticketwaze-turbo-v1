@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Card, MoneyRecive, ShieldSecurity } from "iconsax-reactjs";
+import { Card, MoneyRecive } from "iconsax-reactjs";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   EmbeddedCheckoutProvider,
@@ -429,11 +429,6 @@ export default function ReservationCheckout({
       >
         {paying ? <LoadingCircleSmall /> : t("pay_now")}
       </ButtonPrimary>
-
-      <div className="flex items-center gap-3 text-[1.3rem] text-neutral-600">
-        <ShieldSecurity size="18" color="#737C8A" variant="Bulk" />
-        <span>{ct("payment.secured")}</span>
-      </div>
 
       <Dialog open={stripeOpen} onOpenChange={setStripeOpen}>
         <DialogContent className="w-xl lg:w-208 max-h-[90vh] overflow-y-auto">

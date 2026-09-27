@@ -223,6 +223,7 @@
       "started": "Commençons",
       "finish": "Explorer Ticketwaze",
       "error": "Veuillez sélectionner une option",
+      "saveError": "Impossible d'enregistrer vos réponses. Veuillez réessayer.",
       "onboarded": "Utilisateur déjà enregistré",
       "attendee": {
         "title": "Découverte",

@@ -54,6 +54,15 @@ export default function OnboardingOrganisationPageComponent() {
   const [goal, setGoal] = useState("");
   const [actError, setActError] = useState(false);
 
+  /**
+   * The API sends its option lists as English strings, and those strings are
+   * also the stored values — so they go back unchanged and only the label is
+   * translated. An option added on the API before its translation exists shows
+   * as-is rather than as a raw message key.
+   */
+  const optionLabel = (value: string) =>
+    t.has(`options.${value}`) ? t(`options.${value}`) : value;
+
   const token = session?.user?.accessToken;
   const sessionOrgId =
     session?.activeOrganisation?.organisationId ??
@@ -233,11 +242,11 @@ export default function OnboardingOrganisationPageComponent() {
           window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/analytics`;
         }, 1800);
       } else {
-        toast.error(t("error"));
+        toast.error(t("saveError"));
         setSubmitState("idle");
       }
     } catch {
-      toast.error(t("error"));
+      toast.error(t("saveError"));
       setSubmitState("idle");
     }
   }
@@ -260,7 +269,7 @@ export default function OnboardingOrganisationPageComponent() {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center gap-6">
         <p className="text-[1.5rem] text-neutral-500 text-center">
-          {t("error")}
+          {t("loadError")}
         </p>
         <ButtonSecondary onClick={() => router.push("/auth/onboarding")}>
           {t("previous")}
@@ -381,7 +390,7 @@ export default function OnboardingOrganisationPageComponent() {
                 {options.organisationTypes.map((opt) => (
                   <OptionCard
                     key={opt}
-                    label={opt}
+                    label={optionLabel(opt)}
                     selected={orgType === opt}
                     onClick={() =>
                       autoAdvance(setOrgType, opt, { organisationType: opt })
@@ -403,7 +412,7 @@ export default function OnboardingOrganisationPageComponent() {
                 {options.activitiesPerYear.map((opt) => (
                   <OptionCard
                     key={opt}
-                    label={opt}
+                    label={optionLabel(opt)}
                     selected={volume === opt}
                     onClick={() =>
                       autoAdvance(setVolume, opt, { activitiesPerYear: opt })
@@ -440,7 +449,7 @@ export default function OnboardingOrganisationPageComponent() {
                         : "border-neutral-200 bg-white text-neutral-700 hover:border-neutral-300",
                     )}
                   >
-                    {opt}
+                    {optionLabel(opt)}
                   </button>
                 ))}
               </div>
@@ -467,7 +476,7 @@ export default function OnboardingOrganisationPageComponent() {
                 {options.businessTypes.map((opt) => (
                   <OptionCard
                     key={opt}
-                    label={opt}
+                    label={optionLabel(opt)}
                     selected={businessType === opt}
                     onClick={() =>
                       autoAdvance(setBusinessType, opt, { businessType: opt })
@@ -486,7 +495,7 @@ export default function OnboardingOrganisationPageComponent() {
                 {options.goals.map((opt) => (
                   <OptionCard
                     key={opt}
-                    label={opt}
+                    label={optionLabel(opt)}
                     selected={goal === opt}
                     onClick={() => setGoal(opt)}
                   />
