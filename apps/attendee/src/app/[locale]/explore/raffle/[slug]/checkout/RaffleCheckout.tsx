@@ -9,7 +9,6 @@ import {
   Card,
   Minus,
   MoneyRecive,
-  ShieldSecurity,
 } from "iconsax-reactjs";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -523,10 +522,6 @@ export default function RaffleCheckout({
                 <ArrowRight2 size="20" color="#0d0d0d" variant="Bulk" />
               </button>
             )}
-            <div className="flex flex-col items-start gap-4 p-6 rounded-[15px] border border-neutral-100 text-[1.2rem] leading-8 text-neutral-700">
-              <ShieldSecurity size="20" color="#E45B00" />
-              {ct("payment.secured")}
-            </div>
           </div>
 
           {/* Summary */}

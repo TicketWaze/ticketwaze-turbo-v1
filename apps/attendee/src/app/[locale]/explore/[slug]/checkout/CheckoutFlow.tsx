@@ -870,7 +870,7 @@ export default function CheckoutFlow({
           </div>
         )}
 
-        <main className="flex-1 min-h-0 w-full flex flex-col overflow-y-auto pb-4 lg:pb-0 lg:overflow-hidden lg:grid lg:grid-cols-[29fr_23fr] lg:grid-rows-1 gap-8">
+        <main className="flex-1 min-h-0 w-full flex flex-col overflow-y-auto pb-[9rem] lg:pb-0 lg:overflow-hidden lg:grid lg:grid-cols-[29fr_23fr] lg:grid-rows-1 gap-8">
           {step === "tickets" && (
             <TicketSelectionStep
               delta={delta}
@@ -980,8 +980,12 @@ export default function CheckoutFlow({
           </div>
         </main>
 
-        {/* Footer */}
-        <div className="shrink-0 mt-3 py-4 px-6 border border-neutral-100 bg-white rounded-[40px] flex items-center w-full justify-between mb-4">
+        {/*
+          Footer — pinned above MobileNavigation on mobile, in flow on desktop.
+          `fixed` rather than `sticky` for the reason given in SaleCheckout:
+          the layout's `overflow-x-hidden` ancestors defeat sticky.
+        */}
+        <div className="fixed left-[3rem] right-[3rem] bottom-[calc(9rem+env(safe-area-inset-bottom))] z-40 lg:static lg:z-auto lg:shrink-0 mt-3 py-4 px-6 border border-neutral-100 bg-white rounded-[40px] flex items-center w-auto lg:w-full justify-between mb-4 shadow-lg lg:shadow-none">
           {/* Desktop step progress */}
           <div className="hidden lg:flex gap-3 items-center">
             {stepLabels.map((label, i) => (

@@ -424,7 +424,7 @@ export default function ReserveForm({
           </span>
         </div>
 
-        <main className="flex-1 min-h-0 w-full flex flex-col overflow-y-auto pb-4 gap-10">
+        <main className="flex-1 min-h-0 w-full flex flex-col overflow-y-auto pb-[9rem] lg:pb-4 gap-10">
           {step === 0 && (
             <>
               <section className="flex flex-col gap-4">
@@ -681,7 +681,8 @@ export default function ReserveForm({
           )}
         </main>
 
-        <div className="shrink-0 mt-3 py-4 px-6 border border-neutral-100 bg-white rounded-[40px] flex items-center w-full justify-between mb-4">
+        {/* Pinned on mobile, in flow on desktop — see SaleCheckout's footer. */}
+        <div className="fixed left-[3rem] right-[3rem] bottom-[calc(9rem+env(safe-area-inset-bottom))] z-40 lg:static lg:z-auto lg:shrink-0 mt-3 py-4 px-6 border border-neutral-100 bg-white rounded-[40px] flex items-center w-auto lg:w-full justify-between mb-4 shadow-lg lg:shadow-none">
           <div className="hidden lg:flex gap-3 items-center">
             {stepTitles.map((label, i) => (
               <div key={label} className="flex items-center gap-3">
