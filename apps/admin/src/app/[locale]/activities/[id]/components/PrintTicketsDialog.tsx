@@ -33,7 +33,7 @@ type Batch = {
 const MAX_BATCH = 500;
 
 /**
- * PRINT TICKETS — Letter sheets, four horizontal tickets each, as a PDF.
+ * PRINT TICKETS — landscape Letter sheets, ten tickets each (2 × 5), as a PDF.
  *
  * Two jobs, one per tab:
  * - "To sell by hand": a new print run of physical tickets. A SIDE STOCK — it
@@ -219,7 +219,7 @@ export default function PrintTicketsDialog({
           <div className="flex flex-col gap-2">
             <DialogTitle>Print tickets</DialogTitle>
             <DialogDescription className="text-[1.3rem] leading-6 text-neutral-500">
-              {event.eventName} · Letter (8.5&quot; × 11&quot;), 4 tickets per
+              {event.eventName} · Letter landscape (11&quot; × 8.5&quot;), 10 tickets per
               sheet
             </DialogDescription>
           </div>
@@ -311,7 +311,7 @@ export default function PrintTicketsDialog({
                 />
                 <span className="text-[1.2rem] text-neutral-500">
                   {qtyValid
-                    ? `${Math.ceil(qty / 4)} sheet(s) to print.`
+                    ? `${Math.ceil(qty / 10)} sheet(s) to print.`
                     : `Between 1 and ${MAX_BATCH} per run.`}
                 </span>
               </div>
