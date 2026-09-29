@@ -13,12 +13,15 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 export default function RatingDialog({
   onRatingSubmit,
+  initialRating = 0,
 }: {
   onRatingSubmit: (val: number) => void;
+  /** Pre-selected stars — the star tapped in the feedback email. Still confirmed here. */
+  initialRating?: number;
 }) {
   const t = useTranslations("History.activity.rating");
 
-  const [rating, setRating] = useState(0);
+  const [rating, setRating] = useState(initialRating);
   const [hover, setHover] = useState(0); // Stoke hover a pou yon ti stil
   const [isLoading, setIsLoading] = useState(false);
 

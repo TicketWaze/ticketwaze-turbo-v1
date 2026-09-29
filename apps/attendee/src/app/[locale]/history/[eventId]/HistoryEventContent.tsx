@@ -21,6 +21,7 @@ import RatingDialog from "./RatingDialog";
 import Separator from "@/components/shared/Separator";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
 import { SubmitReviewAction } from "@/actions/eventActions";
 
 type HistoryEvent = Event & {
@@ -51,7 +52,16 @@ export default function HistoryEventContent({
   const [rating, setRating] = useState(review?.rating ?? 0);
   const [feedback, setFeedback] = useState(review?.reviewText ?? "");
   const [comment, setComment] = useState("");
-  const [showRating, setShowRating] = useState(false);
+  // Where the day-after feedback email lands: `?rate=1..5` from one of its
+  // stars (that many pre-selected), `?rate=open` from its button. The rating
+  // opens straight away, unless it is already done; the tap is still
+  // confirmed in the dialog, so a mis-tap in the email never counts on its own.
+  const searchParams = useSearchParams();
+  const rateParam = searchParams.get("rate");
+  const emailStars = /^[1-5]$/.test(rateParam ?? "") ? Number(rateParam) : 0;
+  const [showRating, setShowRating] = useState(
+    () => rateParam !== null && !review?.rating,
+  );
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -182,7 +192,10 @@ export default function HistoryEventContent({
                       {t("rate")}
                     </ButtonBlack>
                   </DialogTrigger>
-                  <RatingDialog onRatingSubmit={handleRatingComplete} />
+                  <RatingDialog
+                    onRatingSubmit={handleRatingComplete}
+                    initialRating={emailStars}
+                  />
                 </Dialog>
               )}
               {/* <div className=" h-fit p-3 bg-neutral-100 rounded-[3rem]">
