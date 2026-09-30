@@ -228,6 +228,7 @@
         "tickets": "Billets",
         "payments": "Paiements",
         "payouts": "Versements",
+        "finance": "Finances",
         "user_withdrawals": "Retraits utilisateurs",
         "support": "Chat en direct",
         "contact": "Messages de contact",
@@ -963,6 +964,110 @@
     },
     "settle": "Traiter le virement",
     "confirm_sent": "Marquer comme envoyé"
+  },
+  "Finance": {
+    "title": "Finances",
+    "periods": {
+      "all": "Depuis le début",
+      "this_month": "Ce mois-ci",
+      "last_month": "Le mois dernier",
+      "this_year": "Cette année"
+    },
+    "summary": {
+      "total_earned": "Total gagné",
+      "moncash_earned": "Gagné via MonCash",
+      "stripe_earned": "Gagné via Stripe",
+      "total_net": "Gain net (est.)",
+      "moncash_net": "Net MonCash (est.)",
+      "stripe_net": "Net Stripe (est.)",
+      "includes_subscriptions": "Dont {amount} USD d'abonnements"
+    },
+    "activities": {
+      "title": "Activités",
+      "search": "Rechercher une activité ou une organisation",
+      "no_results": "Aucune activité ne correspond à « {term} ».",
+      "empty": "Aucune vente sur cette période.",
+      "table": {
+        "activity": "Activité",
+        "type": "Type",
+        "organisation": "Organisation",
+        "sold": "Vendus",
+        "collected": "Encaissé",
+        "earned": "Nos frais",
+        "net": "Net (est.)"
+      }
+    },
+    "types": {
+      "event": "Événement",
+      "raffle": "Tombola",
+      "sale": "Vente numérique",
+      "restaurant": "Restaurant"
+    },
+    "drawer": {
+      "title": "Finances de l'activité",
+      "loading_error": "Impossible de charger les finances de cette activité.",
+      "close": "Fermer",
+      "organisation": "Organisation",
+      "type": "Type",
+      "currency": "Devise",
+      "period": "Période",
+      "fee_mode": "Frais",
+      "fee_mode_pass": "Payés par l'acheteur",
+      "fee_mode_absorb": "Absorbés par l'organisateur",
+      "fee_override": "Grille de frais personnalisée",
+      "balance_released": "Solde de l'organisateur libéré",
+      "not_released": "Pas encore",
+      "cancelled": "Annulée",
+      "yes": "Oui",
+      "no": "Non",
+      "sales": {
+        "title": "Ventes",
+        "units_sold": "Billets / unités vendus",
+        "orders": "Commandes payées",
+        "returned_orders": "Commandes retournées",
+        "giveaway_tickets": "Billets offerts",
+        "reward_tickets": "Billets de récompense",
+        "refunded_tickets": "Billets remboursés",
+        "first_sale": "Première vente",
+        "last_sale": "Dernière vente"
+      },
+      "money": {
+        "title": "Argent",
+        "collected": "Encaissé auprès des acheteurs",
+        "organiser_credit": "Crédité à l'organisateur",
+        "fees": "Nos frais (brut)",
+        "processing": "Frais de traitement (est.)",
+        "tokens": "Jetons utilisés (à notre charge)",
+        "giveaways": "Billets offerts (à notre charge)",
+        "refunds": "Coût des remboursements",
+        "refunds_hint": "Remboursé {paid} · organisateur débité {debited}",
+        "net": "Gain net (est.)"
+      },
+      "providers": {
+        "title": "Par moyen de paiement",
+        "provider": "Moyen",
+        "orders": "Commandes",
+        "collected": "Encaissé",
+        "fees": "Nos frais",
+        "net": "Net (est.)"
+      },
+      "pricing": {
+        "title": "Tarifs enregistrés",
+        "sold_of": "{sold} / {quantity} vendus",
+        "sold": "{sold} vendus",
+        "unlimited": "Illimité",
+        "empty": "Aucun tarif enregistré."
+      },
+      "items": {
+        "title": "Vendu au prix",
+        "empty": "Aucune vente détaillée."
+      },
+      "orders": {
+        "title": "Dernières commandes",
+        "empty": "Aucune commande sur cette période.",
+        "tokens": "dont {amount} en jetons"
+      }
+    }
   },
   "Payments": {
     "title": "Paiements",
@@ -1783,7 +1888,9 @@
       "source": {
         "user": "Utilisateur",
         "organisation": "Organisation",
-        "manual": "Saisie"
+        "manual": "Saisie",
+        "waitlist": "Liste d'attente",
+        "guest": "Acheteur invité"
       }
     }
   }

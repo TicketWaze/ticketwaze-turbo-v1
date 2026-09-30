@@ -10,6 +10,7 @@ import {
   Message,
   Money,
   MoneyRecive,
+  WalletMoney,
   Note,
   SecurityUser,
   Ticket,
@@ -55,6 +56,7 @@ export default function MobileNavigation({
     { label: t("links.tickets"), path: "/tickets", Icon: Ticket, badge: 0 },
     { label: t("links.payments"), path: "/payments", Icon: Money, badge: 0 },
     { label: t("links.payouts"), path: "/payouts", Icon: MoneyRecive, badge: 0 },
+    { label: t("links.finance"), path: "/finance", Icon: WalletMoney, badge: 0 },
     { label: t("links.support"), path: "/support", Icon: Headphone, badge: liveThreadBadge },
     { label: t("links.contact"), path: "/contact", Icon: Message, badge: contactBadge },
   ];

@@ -11,6 +11,7 @@ import {
   Message,
   Money,
   MoneyRecive,
+  WalletMoney,
   Note,
   SecurityUser,
   Sms,
@@ -64,6 +65,7 @@ function Sidebar({ className }: { className: string }) {
     { label: t("links.tickets"), path: `/tickets`, Icon: Ticket },
     { label: t("links.payments"), path: `/payments`, Icon: Money },
     { label: t("links.payouts"), path: `/payouts`, Icon: MoneyRecive },
+    { label: t("links.finance"), path: `/finance`, Icon: WalletMoney },
     { label: t("links.emails"), path: `/emails`, Icon: Sms },
   ];
 

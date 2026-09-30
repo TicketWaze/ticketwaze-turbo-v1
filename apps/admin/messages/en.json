@@ -228,6 +228,7 @@
         "tickets": "Tickets",
         "payments": "Payments",
         "payouts": "Payouts",
+        "finance": "Finance",
         "user_withdrawals": "User Withdrawals",
         "support": "Live Chat",
         "contact": "Contact Messages",
@@ -970,6 +971,110 @@
     },
     "settle": "Settle Payout",
     "confirm_sent": "Mark as sent"
+  },
+  "Finance": {
+    "title": "Finance",
+    "periods": {
+      "all": "All time",
+      "this_month": "This month",
+      "last_month": "Last month",
+      "this_year": "This year"
+    },
+    "summary": {
+      "total_earned": "Total earned",
+      "moncash_earned": "Earned via MonCash",
+      "stripe_earned": "Earned via Stripe",
+      "total_net": "Net earned (est.)",
+      "moncash_net": "MonCash net (est.)",
+      "stripe_net": "Stripe net (est.)",
+      "includes_subscriptions": "Incl. {amount} USD from subscriptions"
+    },
+    "activities": {
+      "title": "Activities",
+      "search": "Search activity or organisation",
+      "no_results": "No activity matches “{term}”.",
+      "empty": "No sales in this period yet.",
+      "table": {
+        "activity": "Activity",
+        "type": "Type",
+        "organisation": "Organisation",
+        "sold": "Sold",
+        "collected": "Collected",
+        "earned": "Our fees",
+        "net": "Net (est.)"
+      }
+    },
+    "types": {
+      "event": "Event",
+      "raffle": "Raffle",
+      "sale": "Digital sale",
+      "restaurant": "Restaurant"
+    },
+    "drawer": {
+      "title": "Activity finance",
+      "loading_error": "Couldn't load this activity's finances.",
+      "close": "Close",
+      "organisation": "Organisation",
+      "type": "Type",
+      "currency": "Currency",
+      "period": "Period",
+      "fee_mode": "Fees",
+      "fee_mode_pass": "Paid by buyer",
+      "fee_mode_absorb": "Absorbed by organiser",
+      "fee_override": "Custom fee schedule",
+      "balance_released": "Organiser balance released",
+      "not_released": "Not yet",
+      "cancelled": "Cancelled",
+      "yes": "Yes",
+      "no": "No",
+      "sales": {
+        "title": "Sales",
+        "units_sold": "Tickets / units sold",
+        "orders": "Paid orders",
+        "returned_orders": "Returned orders",
+        "giveaway_tickets": "Giveaway tickets",
+        "reward_tickets": "Reward tickets",
+        "refunded_tickets": "Refunded tickets",
+        "first_sale": "First sale",
+        "last_sale": "Last sale"
+      },
+      "money": {
+        "title": "Money",
+        "collected": "Collected from buyers",
+        "organiser_credit": "Credited to organiser",
+        "fees": "Our fees (gross)",
+        "processing": "Processor fees (est.)",
+        "tokens": "Tokens spent (our cost)",
+        "giveaways": "Giveaways (our cost)",
+        "refunds": "Refund cost",
+        "refunds_hint": "Refunded {paid} · organiser debited {debited}",
+        "net": "Net earned (est.)"
+      },
+      "providers": {
+        "title": "By payment method",
+        "provider": "Method",
+        "orders": "Orders",
+        "collected": "Collected",
+        "fees": "Our fees",
+        "net": "Net (est.)"
+      },
+      "pricing": {
+        "title": "Registered pricing",
+        "sold_of": "{sold} / {quantity} sold",
+        "sold": "{sold} sold",
+        "unlimited": "Unlimited",
+        "empty": "No pricing registered."
+      },
+      "items": {
+        "title": "Sold at price",
+        "empty": "No itemised sales."
+      },
+      "orders": {
+        "title": "Latest orders",
+        "empty": "No orders in this period.",
+        "tokens": "incl. {amount} tokens"
+      }
+    }
   },
   "Payments": {
     "title": "Payments",
@@ -1790,7 +1895,9 @@
       "source": {
         "user": "User",
         "organisation": "Organisation",
-        "manual": "Typed in"
+        "manual": "Typed in",
+        "waitlist": "Waitlist",
+        "guest": "Guest buyer"
       }
     }
   }
