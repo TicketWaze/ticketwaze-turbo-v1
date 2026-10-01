@@ -1407,5 +1407,17 @@
     "summaryTitle": "Your order",
     "continue": "Continue",
     "cardPayment": "Card payment"
+  },
+  "Metadata": {
+    "siteTitle": "Ticketwaze | Events & Tickets in Haiti",
+    "siteDescription": "Discover concerts, parties, festivals, conferences and activities in Haiti, and buy your tickets online by card or MonCash on Ticketwaze.",
+    "explore": {
+      "title": "Events & Tickets in Haiti: Concerts, Parties, Festivals",
+      "description": "Find what’s on in Port-au-Prince, Cap-Haïtien, Les Cayes and across Haiti. Browse upcoming events and buy tickets online in seconds, by card or MonCash."
+    },
+    "event": {
+      "tickets": "Tickets",
+      "fallbackDescription": "Get your tickets for {name} on Ticketwaze. Secure payment by card or MonCash, tickets on your phone."
+    }
   }
 }

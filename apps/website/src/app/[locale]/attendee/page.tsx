@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { pageMetadata } from "@/lib/seo";
 import Hero from "./components/Hero";
 import Footer from "@/components/Footer";
 import Details1 from "./components/Details1";
@@ -16,29 +17,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
-  const localePath = locale === "fr" ? "" : `/${locale}`;
 
-  return {
+  return pageMetadata({
+    locale,
+    path: "/attendee",
     title: t("attendee.title"),
     description: t("attendee.description"),
-    openGraph: {
-      title: `${t("attendee.title")} | Ticketwaze`,
-      description: t("attendee.description"),
-      url: `${siteUrl}${localePath}/attendee`,
-    },
-    twitter: {
-      title: `${t("attendee.title")} | Ticketwaze`,
-      description: t("attendee.description"),
-    },
-    alternates: {
-      canonical: `${siteUrl}${localePath}/attendee`,
-      languages: {
-        en: `${siteUrl}/en/attendee`,
-        fr: `${siteUrl}/attendee`,
-        "x-default": `${siteUrl}/attendee`,
-      },
-    },
-  };
+  });
 }
 
 export default async function PersonalPage({

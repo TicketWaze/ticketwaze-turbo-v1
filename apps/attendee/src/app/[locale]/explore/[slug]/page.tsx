@@ -23,7 +23,6 @@ import { Metadata } from "next";
 import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Capitalize from "@/lib/Capitalize";
-import StripHtml from "@/lib/StripHtml";
 import { extractIdFromSlug, slugify } from "@/lib/Slugify";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
@@ -31,6 +30,8 @@ import AnimatedEventPage from "./AnimatedEventPage";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import isEventPast from "@/lib/isEventPast";
 import isEventSalesEnded from "@/lib/isEventSalesEnded";
+import { DateTime } from "luxon";
+import { publicPageMetadata, snippet } from "@/lib/seoMetadata";
 import {
   JsonLd,
   buildEventJsonLd,
@@ -40,9 +41,9 @@ import {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const eventId = extractIdFromSlug(slug);
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
@@ -58,36 +59,39 @@ export async function generateMetadata({
   // Metadata must not throw. The API omits `event` for an event that is
   // deleted, cancelled or unapproved, and the page below answers that with
   // notFound() — but generateMetadata runs first, so it needs its own answer.
-  if (!event) return { title: "Ticketwaze" };
+  if (!event)
+    return { title: { absolute: "Ticketwaze" }, robots: { index: false } };
 
-  // Descriptions are rich text (HTML); strip tags so they don't leak into
-  // meta/OpenGraph previews, and trim to a sensible preview length.
-  const plainDescription = StripHtml(event.eventDescription).slice(0, 200);
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  // Where and when, the two things people scan a search result for. A teaser
+  // has neither yet, so both are optional.
+  const firstDay = [...(event.eventDays ?? [])].sort(
+    (a, b) => a.dayNumber - b.dayNumber,
+  )[0];
+  const date = firstDay
+    ? DateTime.fromISO(String(firstDay.eventDate), { zone: "utc" })
+        .setLocale(locale)
+        .toFormat("d LLL yyyy")
+    : null;
+  const where = [event.city, date].filter(Boolean).join(", ");
+  const title = `${event.eventName} – ${t("event.tickets")}${where ? ` · ${where}` : ""}`;
+  const body = snippet(
+    event.eventDescription,
+    t("event.fallbackDescription", { name: event.eventName }),
+  );
+  const description = where ? `${where}. ${body}` : body;
+
   return {
-    title: event.eventName,
-    description: plainDescription,
-    openGraph: {
-      title: event.eventName,
-      description: plainDescription,
-      type: "website",
-      images: event.eventImageUrl
-        ? [
-            {
-              url: event.eventImageUrl,
-              secureUrl: event.eventImageUrl,
-              width: 1200,
-              height: 630,
-              alt: event.eventName,
-            },
-          ]
-        : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: event.eventName,
-      description: plainDescription,
-      images: event.eventImageUrl ? [event.eventImageUrl] : undefined,
-    },
+    ...publicPageMetadata({
+      locale,
+      // The canonical slug, whatever spelling the visitor arrived on.
+      path: `/explore/${slugify(event.eventName, event.eventId)}`,
+      title,
+      description,
+      image: event.eventImageUrl,
+    }),
+    // Private events are reachable by link only; keep them out of search.
+    ...(event.isPrivate && { robots: { index: false, follow: false } }),
   };
 }
 

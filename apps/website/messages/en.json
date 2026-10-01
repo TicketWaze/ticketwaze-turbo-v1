@@ -7,19 +7,19 @@
   },
   "Metadata": {
     "home": "Home",
-    "title": "Ticketwaze | Every Ticket, Every Activity, One Platform",
-    "description": "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",
+    "title": "Ticketwaze | Event Tickets in Haiti: Concerts, Parties & Activities",
+    "description": "Find concerts, parties, festivals and activities in Haiti and buy tickets online by card or MonCash. Organisers: sell tickets, scan QR codes and get paid fast.",
     "about": {
       "title": "About Us",
-      "description": "Learn how Ticketwaze is reimagining ticketing and access, bringing payments, tickets, and management into one simple, secure platform."
+      "description": "Ticketwaze is the ticketing platform built for Haiti: events, activities and payments in one simple, secure place for attendees and organisers."
     },
     "attendee": {
-      "title": "Buy Tickets Your Way",
-      "description": "From concerts to classes, buy tickets securely and manage everything in one place with Ticketwaze. Pay by card or MonCash."
+      "title": "Buy Event Tickets Online: Concerts, Parties & Festivals",
+      "description": "Buy tickets for concerts, parties, festivals, classes and trips in Haiti in seconds. Pay by card or MonCash and keep every ticket on your phone."
     },
     "business": {
-      "title": "Sell Tickets Online for Your Business",
-      "description": "Everything businesses need to create activities, sell tickets, manage teams, and track performance, all in one platform."
+      "title": "Sell Tickets Online & Manage Your Events",
+      "description": "Create your event, sell tickets online with card and MonCash payments, scan QR tickets at the door and track sales in real time. Start for free."
     },
     "contact": {
       "title": "Contact Us",
@@ -86,12 +86,16 @@
       "personal": {
         "title": "Personal",
         "item1": "Buy tickets in seconds",
-        "item2": "Pay with card or MonCash"
+        "item2": "Pay with card or MonCash",
+        "item3": "Save tickets & activities",
+        "item4": "Share and invite friends"
       },
       "business": {
         "title": "Business",
         "item1": "Create and sell tickets",
-        "item2": "Track sales & payouts"
+        "item2": "Track sales & payouts",
+        "item3": "Manage teams and permissions",
+        "item4": "Scale with Pro & Premium tools"
       }
     },
     "details2": {
@@ -360,7 +364,7 @@
       "simple": "Simple",
       "global": "Global-Ready",
       "accessible": "Accessible",
-      "secured": "Secured"
+      "secured": "Secure"
     },
     "details1": {
       "title1": "Built on principles that guide every",

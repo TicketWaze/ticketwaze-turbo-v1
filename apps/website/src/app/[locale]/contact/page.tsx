@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { pageMetadata } from "@/lib/seo";
 import Footer from "@/components/Footer";
 import Hero from "./components/Hero";
 import ContactSection from "./components/ContactSection";
@@ -14,29 +15,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
-  const localePath = locale === "fr" ? "" : `/${locale}`;
 
-  return {
+  return pageMetadata({
+    locale,
+    path: "/contact",
     title: t("contact.title"),
     description: t("contact.description"),
-    openGraph: {
-      title: `${t("contact.title")} | Ticketwaze`,
-      description: t("contact.description"),
-      url: `${siteUrl}${localePath}/contact`,
-    },
-    twitter: {
-      title: `${t("contact.title")} | Ticketwaze`,
-      description: t("contact.description"),
-    },
-    alternates: {
-      canonical: `${siteUrl}${localePath}/contact`,
-      languages: {
-        en: `${siteUrl}/en/contact`,
-        fr: `${siteUrl}/contact`,
-        "x-default": `${siteUrl}/contact`,
-      },
-    },
-  };
+  });
 }
 
 export default async function ContactPage({

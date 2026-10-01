@@ -25,17 +25,17 @@ export default function Hero() {
       name: t("accessible"),
     },
     {
-      name: "blank",
-    },
-    {
-      name: "blank",
-    },
-    {
       name: t("secured"),
+    },
+    {
+      name: "blank",
+    },
+    {
+      name: "blank",
     },
   ];
   return (
-    <section className="bg-white py-[2.5rem] px-4 lg:px-0 rounded-[3rem] flex flex-col gap-[6.5rem] lg:gap-[15.6rem] items-center overflow-hidden">
+    <section className="bg-white pt-[2.5rem] pb-[2.5rem] lg:pb-[5rem] px-4 lg:px-0 rounded-[3rem] flex flex-col gap-[6.5rem] lg:gap-[15.6rem] items-center overflow-hidden">
       <Navbar />
       <div className="flex flex-col gap-8 max-w-[950px]">
         <motion.h1
@@ -46,7 +46,7 @@ export default function Hero() {
           className="font-bold text-[3.8rem] text-neutral-900 lg:text-[7.8rem] font-primary leading-[45px] lg:leading-[90px] text-center"
         >
           {t("title-1")}{" "}
-          <span className="text-primary-500">{t("title-2")}</span>{" "}
+          <span className="text-primary-500">{t("title-2")}</span>
           {t("title-3")}{" "}
           <span className="text-primary-500">{t("title-4")}</span>
         </motion.h1>
@@ -56,7 +56,7 @@ export default function Hero() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className=" flex flex-col gap-0 lg:gap-8 items-center justify-center relative overflow-hidden"
+        className="flex flex-col gap-[13.5px] lg:gap-[21px] items-center justify-center relative overflow-hidden"
       >
         <InfiniteMovingCards items={slide1} direction="right" speed="fast" />
         <InfiniteMovingCards items={slide2} direction="left" speed="fast" />

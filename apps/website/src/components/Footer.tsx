@@ -84,7 +84,7 @@ function Footer() {
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.5, delay: 0.2 }}
       className={
-        "bg-primary-900 text-white p-[15px] lg:p-[25px] flex flex-col gap-20 rounded-[3rem]"
+        "bg-primary-900 text-white p-[15px] lg:p-[25px] flex flex-col gap-20 lg:gap-[80px] rounded-[3rem]"
       }
     >
       <div
@@ -146,7 +146,7 @@ function Footer() {
           <button
             type="submit"
             disabled={isSubmitting || !turnstileToken}
-            className="px-12 py-8 cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.4rem] leading-8 disabled:cursor-not-allowed disabled:bg-primary-500/50 "
+            className="h-[45px] px-[30px] cursor-pointer rounded-[10rem] border-2 border-primary-500 bg-primary-500 text-white font-medium text-[1.5rem] leading-8 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? <LoadingCircleSmall /> : t("sub")}
           </button>
@@ -165,7 +165,7 @@ function Footer() {
         </form>
         <Image src={FooterImg} alt={"footer image"} className={"flex-1"} />
       </div>
-      <div className={"px-[15px] "}>
+      <div className={"px-[15px] lg:px-[75px]"}>
         <div
           className={
             "flex flex-col lg:flex-row items-start gap-8 lg:justify-between"

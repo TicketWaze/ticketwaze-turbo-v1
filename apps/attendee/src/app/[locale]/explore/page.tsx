@@ -1,5 +1,8 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import ExplorePageContent from "./ExplorePageContent";
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { publicPageMetadata } from "@/lib/seoMetadata";
 import { getActivityCardTime } from "@/lib/activityCardDate";
 import {
   Event,
@@ -7,6 +10,26 @@ import {
   Raffle,
   Restaurant,
 } from "@ticketwaze/typescript-config";
+
+/**
+ * The explore feed is the page most likely to rank for "events in Haiti" style
+ * searches, so it carries its own keyword title and description rather than
+ * the site default.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  return publicPageMetadata({
+    locale,
+    path: "/explore",
+    title: t("explore.title"),
+    description: t("explore.description"),
+  });
+}
 
 export default async function Explore({
   searchParams,

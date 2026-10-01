@@ -2,6 +2,7 @@ import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import PublicMenu from "./PublicMenu";
+import { OG_IMAGE, pageMetadata } from "@/lib/seo";
 
 interface MenuItem {
   itemId: string;
@@ -55,7 +56,10 @@ export interface PublicRestaurant {
   deliveryPhone: string | null;
   deliveryZones: string[] | null;
   isPermanentlyClosed: boolean;
-  openState?: { isOpen: boolean; today: { opensAt: string; closesAt: string } | null };
+  openState?: {
+    isOpen: boolean;
+    today: { opensAt: string; closesAt: string } | null;
+  };
 }
 
 async function fetchRestaurant(slug: string, locale: string) {
@@ -87,16 +91,26 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug, locale } = await params;
   const data = await fetchRestaurant(slug, locale);
-  if (!data) return { title: "Ticketwaze" };
+  if (!data)
+    return { title: { absolute: "Ticketwaze" }, robots: { index: false } };
 
   const { restaurant } = data;
-  return {
+  const description =
+    restaurant.description?.replace(/<[^>]*>/g, "").slice(0, 160) ||
+    `${restaurant.name} — Menu`;
+  // The restaurant's cover when it has one, otherwise the Ticketwaze card, so
+  // a shared menu link always shows a large preview.
+  const image = restaurant.coverImageUrl ?? OG_IMAGE.url;
+  const base = pageMetadata({
+    locale,
+    path: `/r/${slug}`,
     title: `${restaurant.name} — Menu`,
-    description: restaurant.description?.replace(/<[^>]*>/g, "").slice(0, 160),
-    openGraph: {
-      title: restaurant.name,
-      images: restaurant.coverImageUrl ? [restaurant.coverImageUrl] : undefined,
-    },
+    description,
+  });
+  return {
+    ...base,
+    openGraph: { ...base.openGraph, images: [image] },
+    twitter: { ...base.twitter, images: [image] },
   };
 }
 

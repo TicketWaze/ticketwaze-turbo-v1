@@ -38,7 +38,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "  transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 outline-none bg-gray-200 flex items-center gap-[5px] px-4 py-[7.5px] rounded-[50px]",
+        "  transition-[color,box-shadow] disabled:cursor-not-allowed disabled:opacity-50 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 outline-none bg-neutral-100 flex items-center gap-[5px] px-4 py-[7.5px] rounded-[50px] cursor-pointer",
         className,
       )}
       {...props}

@@ -105,9 +105,9 @@ export default function HeroSection() {
   }, [isMobileDragging, items.length]);
 
   return (
-    <section className="bg-white py-[2.5rem] px-4 rounded-[3rem] flex flex-col gap-[6.5rem] items-center">
+    <section className="bg-white pt-[2.5rem] pb-[2.5rem] lg:pb-[6.4rem] px-4 rounded-[3rem] flex flex-col gap-[6.5rem] items-center">
       <Navbar />
-      <div className="flex flex-col gap-8 max-w-[890px]">
+      <div className="flex flex-col items-center gap-8 max-w-[890px]">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -127,7 +127,7 @@ export default function HeroSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-[1.6rem] lg:text-[2.6rem] leading-[22.5px] lg:leading-[35px] text-neutral-700 font-sans text-center"
+          className="text-[1.6rem] lg:text-[2.6rem] leading-[22.5px] lg:leading-[35px] lg:tracking-[-0.78px] text-neutral-700 font-sans text-center max-w-[780px]"
         >
           {t("description")}
         </motion.p>
@@ -136,9 +136,10 @@ export default function HeroSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex items-center justify-center"
+          className="flex flex-col sm:flex-row w-full sm:w-auto items-center justify-center gap-4"
         >
-          <AppCta />
+          <AppCta className="w-full sm:w-auto" />
+          <AppCta variant="create" className="w-full sm:w-auto" />
         </motion.div>
       </div>
 
@@ -157,7 +158,7 @@ export default function HeroSection() {
           width={360}
           className="w-[360px]"
         />
-        <div className=" relative overflow-hidden">
+        <div className="relative overflow-hidden rounded-[30px] bg-white">
           <Image
             src={ScrollBg}
             height={400}
@@ -206,22 +207,23 @@ export default function HeroSection() {
                 >
                   <Image src={Icon} alt={title} />
 
-                  <div className="bg-white/70 rounded-[50px] uppercase text-primary-500 font-semibold text-[1.8rem] p-4 font-sans text-center flex items-center justify-center w-full max-w-[260px] min-h-[80px] leading-tight">
+                  <div className="bg-white/47 rounded-[50px] uppercase text-primary-500 font-semibold text-[1.8rem] leading-[25px] tracking-[-0.36px] p-4 font-sans text-center flex items-center justify-center w-[265px]">
                     {title}
                   </div>
                 </div>
               ))}
             </motion.div>
             {/* Progress Indicator */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            <div className="absolute bottom-[25px] left-1/2 -translate-x-1/2 flex gap-[5px]">
               {items.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setDesktopIndex(i)}
-                  className={`h-2 rounded-full transition-all ${
+                  aria-label={`Slide ${i + 1}`}
+                  className={`h-[7.5px] rounded-full transition-all duration-300 cursor-pointer ${
                     i === desktopIndex
-                      ? "w-8 bg-primary-500"
-                      : "w-2 bg-primary-300"
+                      ? "w-[61px] bg-primary-500"
+                      : "w-[7.5px] bg-primary-300"
                   }`}
                 />
               ))}
@@ -246,7 +248,7 @@ export default function HeroSection() {
           width={35}
           className="w-[35px]"
         />
-        <div className=" relative overflow-hidden">
+        <div className="relative overflow-hidden rounded-[30px] bg-white">
           <Image
             src={ScrollBg}
             height={250}
@@ -294,22 +296,23 @@ export default function HeroSection() {
                   className="shrink-0 w-[280px] flex flex-col items-center gap-[2.5rem]"
                 >
                   <Image src={Icon} alt={title} />
-                  <div className="bg-white/70 rounded-[50px] uppercase text-primary-500 font-semibold text-[1.8rem] leading-[25px] p-4 font-sans">
+                  <div className="bg-white/47 rounded-[50px] uppercase text-primary-500 font-semibold text-[1.8rem] leading-[25px] tracking-[-0.36px] p-4 font-sans text-center w-[265px]">
                     {title}
                   </div>
                 </div>
               ))}
             </motion.div>
             {/* Progress Indicator */}
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+            <div className="absolute bottom-[25px] left-1/2 -translate-x-1/2 flex gap-[5px]">
               {items.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setMobileIndex(i)}
-                  className={`h-2 rounded-full transition-all ${
+                  aria-label={`Slide ${i + 1}`}
+                  className={`h-[7.5px] rounded-full transition-all duration-300 cursor-pointer ${
                     i === mobileIndex
-                      ? "w-8 bg-primary-500"
-                      : "w-2 bg-primary-300"
+                      ? "w-[61px] bg-primary-500"
+                      : "w-[7.5px] bg-primary-300"
                   }`}
                 />
               ))}

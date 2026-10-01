@@ -1451,5 +1451,17 @@
     "summaryTitle": "Votre commande",
     "continue": "Continuer",
     "cardPayment": "Paiement par carte"
+  },
+  "Metadata": {
+    "siteTitle": "Ticketwaze | Événements et billets en Haïti",
+    "siteDescription": "Découvrez concerts, soirées, festivals, conférences et activités en Haïti, et achetez vos billets en ligne par carte ou MonCash sur Ticketwaze.",
+    "explore": {
+      "title": "Événements et billets en Haïti : concerts, soirées, festivals",
+      "description": "Découvrez ce qui se passe à Port-au-Prince, au Cap-Haïtien, aux Cayes et partout en Haïti. Parcourez les événements à venir et achetez vos billets en ligne en quelques secondes, par carte ou MonCash."
+    },
+    "event": {
+      "tickets": "Billets",
+      "fallbackDescription": "Prenez vos billets pour {name} sur Ticketwaze. Paiement sécurisé par carte ou MonCash, billets sur votre téléphone."
+    }
   }
 }

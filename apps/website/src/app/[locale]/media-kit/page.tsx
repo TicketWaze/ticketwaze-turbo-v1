@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { pageMetadata } from "@/lib/seo";
 import Details from "./components/Details";
 import Hero from "./components/Hero";
 import Kit from "./components/Kit";
@@ -15,29 +16,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
-  const localePath = locale === "fr" ? "" : `/${locale}`;
 
-  return {
+  return pageMetadata({
+    locale,
+    path: "/media-kit",
     title: t("mediaKit.title"),
     description: t("mediaKit.description"),
-    openGraph: {
-      title: `${t("mediaKit.title")} | Ticketwaze`,
-      description: t("mediaKit.description"),
-      url: `${siteUrl}${localePath}/media-kit`,
-    },
-    twitter: {
-      title: `${t("mediaKit.title")} | Ticketwaze`,
-      description: t("mediaKit.description"),
-    },
-    alternates: {
-      canonical: `${siteUrl}${localePath}/media-kit`,
-      languages: {
-        en: `${siteUrl}/en/media-kit`,
-        fr: `${siteUrl}/media-kit`,
-        "x-default": `${siteUrl}/media-kit`,
-      },
-    },
-  };
+  });
 }
 
 export default async function MediaKitPage({
