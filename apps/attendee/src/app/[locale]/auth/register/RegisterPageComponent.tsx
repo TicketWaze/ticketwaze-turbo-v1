@@ -140,12 +140,14 @@ export default function RegisterPageComponent({
   const { update } = useSession();
 
   // A prefilled email (language switch, invite links) lands straight on the
-  // form, and so does a prompt sign-up, which is attendee-only.
+  // form, and so does a prompt sign-up, which is attendee-only, or the
+  // organisation app's "Attendee" choice (?role=attendee).
+  const roleChosen = searchParams.get("role") === "attendee";
   const [step, setStep] = useState<RegisterStep>(
-    email || callbackUrl ? "register" : "role",
+    email || callbackUrl || roleChosen ? "register" : "role",
   );
   const [splashDone, setSplashDone] = useState(
-    Boolean(email) || searchParams.has("start"),
+    Boolean(email) || roleChosen || searchParams.has("start"),
   );
   const [role, setRole] = useState<AuthRole>("attendee");
   const [savedFormData, setSavedFormData] = useState<TRegisterSchema | null>(
@@ -157,10 +159,17 @@ export default function RegisterPageComponent({
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
 
-  // Organizers finish on the organisation onboarding; attendees on the
-  // "Complete Account Set-up" step (2/2).
-  const nextRoute =
-    role === "organizer" ? "/auth/onboarding/organisation" : "/auth/onboarding";
+  // Attendees finish on the "Complete Account Set-up" step (2/2). Organizers
+  // never get here: their sign-up lives in the organisation app.
+  const nextRoute = "/auth/onboarding";
+
+  function continueWithRole() {
+    if (role === "organizer") {
+      window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/register?role=organizer`;
+      return;
+    }
+    setStep("register");
+  }
 
   // ── Handlers ───────────────────────────────────────────────────────────────
 
@@ -186,9 +195,12 @@ export default function RegisterPageComponent({
     }
   }
 
-  async function handleVerifyOtp() {
-    const otpString = otp.join("");
-    if (otpString.length < 6) return;
+  async function handleVerifyOtp(entered?: string | React.SyntheticEvent) {
+    // OtpCodeInput passes the code it just completed; the Verify button
+    // passes its click event, so fall back to state then.
+    const otpString =
+      typeof entered === "string" ? entered : otp.join("");
+    if (otpString.length < 6 || isVerifying) return;
     setIsVerifying(true);
     setOtpError("");
     try {
@@ -219,7 +231,7 @@ export default function RegisterPageComponent({
           toast.error("Login failed. Please try signing in manually.");
         } else {
           if (referralCode) await deleteReferralCookie();
-          if (callbackUrl && role === "attendee") {
+          if (callbackUrl) {
             await finishWithoutSetup(callbackUrl);
           } else {
             router.push(nextRoute);
@@ -383,7 +395,7 @@ export default function RegisterPageComponent({
                   <RoleCards value={role} onChange={setRole} />
                   <AuthItem>
                     <ButtonPrimary
-                      onClick={() => setStep("register")}
+                      onClick={continueWithRole}
                       className="w-full h-[6rem] active:scale-[0.98]"
                     >
                       {tFlow("role.continue")}
@@ -410,9 +422,7 @@ export default function RegisterPageComponent({
                   className="flex flex-col gap-16 items-center w-full"
                 >
                   <AuthHeading
-                    title={
-                      role === "organizer" ? t("organizer") : t("attendee")
-                    }
+                    title={t("attendee")}
                     description={t("description")}
                   />
                   {referralBanner}
@@ -515,9 +525,7 @@ export default function RegisterPageComponent({
                       <GoogleSignInButton
                         referralCode={referralCode}
                         callbackUrl={`${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}${
-                          callbackUrl && role === "attendee"
-                            ? callbackUrl
-                            : nextRoute
+                          callbackUrl ?? nextRoute
                         }`}
                       />
                     </AuthItem>

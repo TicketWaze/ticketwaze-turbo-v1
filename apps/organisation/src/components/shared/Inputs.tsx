@@ -72,6 +72,51 @@ export function Input({
   );
 }
 
+interface TextAreaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  children: React.ReactNode;
+  error?: string;
+  className?: string;
+  charCount?: number;
+  minChars?: number;
+  maxChars?: number;
+}
+
+/** Multi-line twin of Input: grey field, floating label, optional counter. */
+export function TextArea({
+  children,
+  className,
+  error,
+  charCount,
+  minChars,
+  maxChars,
+  ...props
+}: TextAreaProps) {
+  return (
+    <div className={cn("relative group", className)}>
+      <textarea
+        {...props}
+        placeholder=" "
+        className="peer transition-all duration-300 delay-200 bg-neutral-100 w-full rounded-[2rem] px-8 pt-10 pb-6 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus:border-primary-500 disabled:text-neutral-600 disabled:cursor-not-allowed min-h-[15rem] resize-none"
+      />
+      <label className="absolute left-8 top-8 text-[1.5rem] text-neutral-600 transition-all duration-200 ease-in-out peer-[:not(:placeholder-shown)]:top-3 peer-[:not(:placeholder-shown)]:text-[1.2rem] peer-focus:top-3 peer-focus:text-[1.2rem] cursor-text pointer-events-none">
+        {children}
+      </label>
+      <div className="flex items-center justify-between">
+        <span className="text-[1.2rem] px-8 py-2 text-failure">{error}</span>
+        {maxChars !== undefined && (
+          <CharCounter
+            count={charCount ?? 0}
+            min={minChars ?? 0}
+            max={maxChars}
+            className="px-8 py-2"
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function PasswordInput({
   children,
   isLoading,

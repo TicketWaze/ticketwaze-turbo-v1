@@ -58,11 +58,13 @@ export default function LoginPageContent({
   // A prefilled email means the visitor already chose to sign in elsewhere
   // (e.g. "Already own an account?"), and a prompt is attendee-only, so both
   // skip the splash and role steps.
+  // The organisation app's "Attendee" choice (?role=attendee) skips them too.
+  const roleChosen = searchParams.get("role") === "attendee";
   const [view, setView] = useState<View>(
-    email || callbackUrl ? "credentials" : "role",
+    email || callbackUrl || roleChosen ? "credentials" : "role",
   );
   const [splashDone, setSplashDone] = useState(
-    Boolean(email) || searchParams.has("start"),
+    Boolean(email) || roleChosen || searchParams.has("start"),
   );
   const [role, setRole] = useState<AuthRole>("attendee");
 
@@ -112,8 +114,11 @@ export default function LoginPageContent({
     return t("mfa.errors.restart");
   }
 
-  async function handleVerifyCode() {
-    const code = otp.join("");
+  async function handleVerifyCode(entered?: string | React.SyntheticEvent) {
+    // OtpCodeInput passes the code it just completed; the Verify button
+    // passes its click event, so fall back to state then.
+    const code =
+      typeof entered === "string" ? entered : otp.join("");
     if (!challenge || code.length < 6 || isVerifying) return;
     setIsVerifying(true);
     const result = await signIn("credentials", {
@@ -185,7 +190,7 @@ export default function LoginPageContent({
 
   function continueWithRole() {
     if (role === "organizer") {
-      window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/login`;
+      window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/login?role=organizer`;
       return;
     }
     setView("credentials");

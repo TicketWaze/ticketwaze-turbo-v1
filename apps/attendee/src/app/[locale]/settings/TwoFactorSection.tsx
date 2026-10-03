@@ -103,8 +103,11 @@ export default function TwoFactorSection({
     }
   }
 
-  async function confirm() {
-    const code = otp.join("");
+  async function confirm(entered?: string | React.SyntheticEvent) {
+    // OtpCodeInput passes the code it just completed; the Verify button
+    // passes its click event, so fall back to state then.
+    const code =
+      typeof entered === "string" ? entered : otp.join("");
     if (!pending || code.length < 6 || isConfirming) return;
     setIsConfirming(true);
     const data = await call("/users/me/mfa/confirm", {

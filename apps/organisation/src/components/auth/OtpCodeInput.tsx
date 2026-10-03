@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-import { motion, useAnimationControls } from "framer-motion";
+import { motion, useAnimationControls } from "motion/react";
 import { cn } from "@/lib/utils";
 
 export const OTP_LENGTH = 6;

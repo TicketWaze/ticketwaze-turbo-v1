@@ -49,9 +49,12 @@ function getServerSnapshot() {
 export default function SidebarShell({
   children,
   className,
+  banner,
 }: {
   children: React.ReactNode;
   className?: string;
+  /** Shown above the page, inside the white card (e.g. the KYC notice). */
+  banner?: React.ReactNode;
 }) {
   const collapsed = useSyncExternalStore(
     subscribe,
@@ -89,6 +92,7 @@ export default function SidebarShell({
             className,
           )}
         >
+          {banner}
           {children}
         </div>
         <MobileNavigation className="w-full h-auto bg-neutral-200 p-6" />

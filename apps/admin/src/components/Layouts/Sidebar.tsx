@@ -2,6 +2,7 @@
 import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-orange.svg";
 import Image from "next/image";
 import {
+  ShieldSecurity,
   Building,
   Calendar,
   Chart1,
@@ -52,6 +53,7 @@ function Sidebar({ className }: { className: string }) {
     { label: t("links.waitlist"), path: `/waitlist`, Icon: Note },
     { label: t("links.attendees"), path: `/attendees`, Icon: UserSquare },
     { label: t("links.organisations"), path: `/organisations`, Icon: Building },
+    { label: t("links.kyc"), path: `/kyc`, Icon: ShieldSecurity },
     { label: t("links.admins"), path: `/admins`, Icon: SecurityUser },
   ];
 

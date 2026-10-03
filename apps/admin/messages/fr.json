@@ -233,7 +233,8 @@
         "support": "Chat en direct",
         "contact": "Messages de contact",
         "pending_edits": "Modifications en attente",
-        "emails": "Emails"
+        "emails": "Emails",
+        "kyc": "KYC"
       }
     },
     "topbar": {
@@ -1892,6 +1893,80 @@
         "waitlist": "Liste d'attente",
         "guest": "Acheteur invité"
       }
+    }
+  },
+  "Kyc": {
+    "link": "KYC",
+    "title": "KYC des organisations",
+    "pending_count": "{count, plural, =0 {Rien en attente} one {# dossier en attente} other {# dossiers en attente}}",
+    "filters": {
+      "pending": "En attente",
+      "approved": "Approuvés",
+      "rejected": "Refusés",
+      "all": "Tous"
+    },
+    "table": {
+      "organisation": "Organisation",
+      "type": "Type",
+      "document": "Pièce d’identité",
+      "submitted": "Envoyé",
+      "status": "Statut"
+    },
+    "empty": "Aucun dossier ici.",
+    "status": {
+      "unverified": "Non vérifiée",
+      "pending": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Refusé"
+    },
+    "types": {
+      "individual": "Individuel",
+      "business": "Entreprise enregistrée",
+      "ngo": "ONG / Association",
+      "public": "Institution publique"
+    },
+    "documents": {
+      "passport": "Passeport",
+      "id_card": "Carte d’identité nationale",
+      "drivers_licence": "Permis de conduire"
+    },
+    "kinds": {
+      "id_front": "Pièce — recto / page photo",
+      "id_back": "Pièce — verso",
+      "selfie": "Selfie",
+      "business_registration": "Enregistrement de l’entreprise",
+      "tax_id": "NIF",
+      "authority_proof": "Preuve d’habilitation",
+      "ngo_registration": "Certificat d’enregistrement / de reconnaissance",
+      "statutes": "Statuts",
+      "board_letter": "Lettre d’autorisation du conseil",
+      "official_letter": "Lettre officielle"
+    },
+    "review": {
+      "back": "Retour au KYC",
+      "owner": "Propriétaire",
+      "contact": "Contact",
+      "location": "Localisation",
+      "current": "Dossier actuel",
+      "history": "Dossiers précédents",
+      "submitted_on": "Envoyé le {date}",
+      "reviewed_on": "Examiné le {date}",
+      "reason": "Motif : {reason}",
+      "open": "Ouvrir",
+      "links_expire": "Les liens des documents expirent après 10 minutes. Rechargez la page pour les renouveler.",
+      "none": "Cette organisation n’a encore envoyé aucun document.",
+      "checklist": "Vérifiez que le visage du selfie correspond à la photo de la pièce, que le document est valide et que les papiers correspondent au type d’organisation.",
+      "approve": "Approuver",
+      "approved": "KYC approuvé. L’organisation peut maintenant créer des activités et retirer.",
+      "reject": "Refuser",
+      "reject_title": "Refuser ce dossier",
+      "reject_description": "L’organisateur reçoit ce motif par e-mail et peut envoyer de nouveaux documents.",
+      "reject_label": "Motif",
+      "reject_placeholder": "ex. La photo de la pièce est floue ; le nom sur l’enregistrement ne correspond pas.",
+      "reject_confirm": "Refuser le dossier",
+      "rejected": "Dossier refusé. L’organisateur a été prévenu par e-mail.",
+      "cancel": "Annuler",
+      "error": "Une erreur s’est produite. Veuillez réessayer."
     }
   }
 }

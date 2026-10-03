@@ -171,7 +171,7 @@
     },
     "register": {
       "title": "Create an Account",
-      "organizer": "Create an Account",
+      "organizer": "Organizer Account",
       "description": "Please complete the form below to continue.",
       "invalidToken": "This invitation link is no longer valid. It may have expired or already been used. Please request a new invite from the organisation to continue.",
       "login": "Log in",
@@ -189,15 +189,15 @@
         "cta": "Continue",
         "footer": {
           "text": "Already own an account?",
-          "cta": "Log in"
+          "cta": "Sign in"
         }
       },
       "placeholders": {
         "firstname": "First Name",
         "lastname": "Last Name",
         "email": "Email Address",
-        "organisation_name": "Organisation Name",
-        "organisation_email": "Organisation Email",
+        "organisation_name": "Organization Name",
+        "organisation_email": "Organization Email Address",
         "password": "Create Password",
         "confirm": "Confirm Password"
       },
@@ -208,13 +208,31 @@
         "lastname_length": "Last name must be at least 2 characters",
         "firstname_validation": "First name must contain only letters, spaces, or hyphens",
         "lastname_validation": "Last name must contain only letters, spaces, or hyphens",
-        "email": "Email field cannot be blank"
+        "email": "Enter a valid email address.",
+        "organisation_name": "Organization name must be 3–30 characters.",
+        "organisation_name_taken": "An organisation with this name already exists.",
+        "exists": "An account already exists for this email. Sign in instead.",
+        "generic": "Something went wrong. Please try again.",
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number"
       },
       "cta": {
         "submit": "Create account",
         "google": "Continue with Google"
       },
-      "footer": "Back"
+      "footer": "Back",
+      "otp": {
+        "submit": "Verify",
+        "resending": "Sending...",
+        "sent": "A new code has been sent to your email.",
+        "errors": {
+          "invalid": "Incorrect code. Please try again.",
+          "expired": "This code has expired. Request a new one below.",
+          "notFound": "No code found. Request a new one below."
+        }
+      }
     },
     "verify": {
       "title": "Verify Account",
@@ -320,7 +338,7 @@
         "google": "Continue with Google"
       },
       "footer": {
-        "text": "Don’t own an account ?",
+        "text": "Don’t own an account?",
         "cta": "Sign up"
       },
       "mfa": {
@@ -339,7 +357,9 @@
           "too_many": "Too many wrong codes. Go back and sign in again.",
           "restart": "This sign-in has expired. Go back and sign in again."
         }
-      }
+      },
+      "organizer_title": "Organizer Account",
+      "reset": "Reset password"
     },
     "forgot": {
       "title": "Reset Password",
@@ -389,13 +409,295 @@
       "errors": {
         "password_length": "Password should be at least 8 Characters",
         "password_match": "Password doesn't match",
-        "sameError": "You used this password in the past. You cannot reuse past passwords."
+        "sameError": "You used this password in the past. You cannot reuse past passwords.",
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number"
       },
       "cta": "Create"
     },
     "footer": {
       "text": "Didn't get a mail?",
       "cta": "Resend"
+    },
+    "flow": {
+      "splash": {
+        "create": "Create account",
+        "login": "Log in"
+      },
+      "role": {
+        "login_title": "Welcome back",
+        "login_description": "Choose an option to access your account.",
+        "register_title": "Create Account",
+        "register_description": "Choose an option to continue and set up your account.",
+        "attendee_title": "Attendee",
+        "attendee_description": "Easily browse, discover, and purchase tickets for a wide variety of events.",
+        "organizer_title": "Organizer",
+        "organizer_description": "Create and manage events effortlessly. Track ticket sales & monitor attendee data.",
+        "continue": "Continue"
+      },
+      "back": "Back",
+      "or": "Or",
+      "verify": {
+        "title": "Verify Account",
+        "description": "A verification mail has been sent to the email address you signed up with.",
+        "resend_text": "Didn’t get a mail?",
+        "resend": "Resend"
+      },
+      "reset_sent": {
+        "title": "Reset Password",
+        "description": "A password reset mail has been sent to the email address you provided"
+      },
+      "created": {
+        "title": "Account Created",
+        "description": "You’ve successfully created an account. We’re now signing you in."
+      },
+      "password_created": {
+        "title": "Password Created",
+        "description": "You’ve successfully created a new password. We’re now signing you in."
+      },
+      "signing_in": "Signing you in...",
+      "verified": {
+        "title": "Account Verified",
+        "description": "You’ve successfully verified your email. We’re now signing you in."
+      },
+      "setup": {
+        "title": "Complete Account Set-up",
+        "description": "Please fill the form below to complete your account set-up.",
+        "organisation_name": "Organization Name",
+        "address": "Address",
+        "state": "State",
+        "city": "City",
+        "about": "About organizer",
+        "contact_email": "Contact Email Address",
+        "contact_phone": "Contact Phone Number",
+        "submit": "Complete",
+        "errors": {
+          "organisation_name": "3–30 characters.",
+          "organisation_name_taken": "An organisation with this name already exists.",
+          "address": "Please enter your address.",
+          "state": "Please select your state.",
+          "city": "Please select your city.",
+          "about": "Tell attendees about you in 150–350 characters.",
+          "contact_email": "Please enter a valid email address.",
+          "contact_phone": "Please enter a valid phone number.",
+          "already_owned": "You already own an organisation.",
+          "generic": "We couldn't save your organisation. Please try again."
+        },
+        "links": {
+          "title": "Links",
+          "add": "Add link",
+          "optional": "optional",
+          "remove": "Remove {platform}",
+          "platforms": {
+            "instagram": "Instagram",
+            "website": "Website",
+            "tiktok": "TikTok"
+          },
+          "placeholders": {
+            "instagram": "yourusername",
+            "website": "yourwebsite.com",
+            "tiktok": "yourusername"
+          },
+          "errors": {
+            "instagram": "Enter a valid Instagram username.",
+            "website": "Enter a valid website address.",
+            "tiktok": "Enter a valid TikTok username."
+          }
+        }
+      },
+      "invitation": {
+        "title": "Join {name}",
+        "description": "Hello {email}, Fill in your profile details to unlock your workspace experience.",
+        "description_existing": "Hello {email}, sign in with this email address to join the workspace.",
+        "choose": "Choose Password",
+        "confirm": "Confirm Password",
+        "join": "Join",
+        "sign_in": "Sign in to join",
+        "accepted_title": "Invitation Accepted!",
+        "accepted_description": "Your account is now set up. Get started!",
+        "invalid_title": "Invitation unavailable",
+        "invalid_description": "This invitation link is invalid, already used or expired. Ask the organisation to send you a new one.",
+        "wrong_account": "You're signed in with another account. Sign out, then open the invitation link again.",
+        "sign_out": "Sign out",
+        "decline": "Decline",
+        "errors": {
+          "exists": "An account already exists for this email. Sign in to join.",
+          "generic": "We couldn't add you to this organisation. Please try again."
+        },
+        "description_signed_in": "You’ve been invited to join this organisation’s workspace on Ticketwaze."
+      }
+    },
+    "kyc": {
+      "skip": "Skip for now",
+      "not_now": "Not now",
+      "continue": "Continue",
+      "submit": "Submit for review",
+      "type": {
+        "title": "Verify your organisation",
+        "description": "Tell us what kind of organisation you run. It decides which documents we need.",
+        "individual": {
+          "title": "Individual organizer",
+          "description": "You organise activities in your own name."
+        },
+        "business": {
+          "title": "Registered business",
+          "description": "A company or sole proprietorship (SA, SARL, entreprise individuelle)."
+        },
+        "ngo": {
+          "title": "NGO / Non-profit",
+          "description": "An association, a foundation or an NGO."
+        },
+        "public": {
+          "title": "Public institution",
+          "description": "A ministry, municipality, public school or university."
+        }
+      },
+      "id": {
+        "title": "Representative’s ID",
+        "description": "Choose the identity document of the person managing this organisation.",
+        "passport": {
+          "title": "Passport",
+          "description": "Photo page only."
+        },
+        "id_card": {
+          "title": "National ID card",
+          "description": "Front and back."
+        },
+        "drivers_licence": {
+          "title": "Driver’s licence",
+          "description": "Front and back."
+        }
+      },
+      "identity": {
+        "title": "Upload your ID",
+        "description": "Clear photos with all four corners visible and no glare."
+      },
+      "documents": {
+        "title": "Organisation documents",
+        "description": "Scans or photos of your official papers. PDF is accepted."
+      },
+      "kinds": {
+        "passport_front": {
+          "label": "Passport photo page"
+        },
+        "id_front": {
+          "label": "Front of the document"
+        },
+        "id_back": {
+          "label": "Back of the document"
+        },
+        "selfie": {
+          "label": "Selfie",
+          "hint": "Just your face, looking at the camera, in good light. No ID in the photo."
+        },
+        "business_registration": {
+          "label": "Business registration (Patente / MCI certificate)"
+        },
+        "tax_id": {
+          "label": "NIF / tax ID document"
+        },
+        "authority_proof": {
+          "label": "Proof you may act for the business",
+          "hint": "Only if you are not the owner named on the registration."
+        },
+        "ngo_registration": {
+          "label": "Registration or recognition certificate",
+          "hint": "MPCE, MAST, or publication in Le Moniteur."
+        },
+        "statutes": {
+          "label": "Statutes (bylaws)"
+        },
+        "board_letter": {
+          "label": "Board letter authorising you"
+        },
+        "official_letter": {
+          "label": "Official letter on letterhead",
+          "hint": "Signed, authorising you to manage this account."
+        }
+      },
+      "upload": {
+        "cta": "Drop a file or",
+        "browse": "Browse",
+        "photo_hint": "JPG, PNG, WEBP or HEIC · 10 MB max",
+        "doc_hint": "PDF, JPG or PNG · 10 MB max",
+        "uploading": "Uploading...",
+        "uploaded": "Uploaded",
+        "replace": "Replace",
+        "retry": "Try again",
+        "optional": "Optional",
+        "errors": {
+          "type": "This file type isn’t accepted.",
+          "size": "Files must be 10 MB or smaller.",
+          "failed": "Upload failed. Please try again.",
+          "storage": "Uploads aren’t available right now. Please try again later."
+        }
+      },
+      "skip_dialog": {
+        "title": "Skip verification?",
+        "description": "You can verify later from your dashboard. Until then, you won’t be able to:",
+        "create": "Create activities",
+        "withdraw": "Withdraw money",
+        "verify": "Verify now",
+        "skip": "Skip for now"
+      },
+      "submitted": {
+        "title": "Documents submitted",
+        "description": "We’ll review them within 2 business days and email you the result.",
+        "dashboard": "Go to my dashboard"
+      },
+      "pending": {
+        "title": "Verification under review",
+        "description": "We received your documents. We’ll email you as soon as they’re reviewed."
+      },
+      "approved": {
+        "title": "Organisation verified",
+        "description": "You can create activities and withdraw money."
+      },
+      "rejected": {
+        "title": "Verification rejected",
+        "reason": "Reason: {reason}",
+        "description": "Please submit new documents."
+      },
+      "owner_only": {
+        "title": "Only the owner can verify",
+        "description": "Ask the owner of this organisation to complete the verification."
+      },
+      "errors": {
+        "generic": "We couldn’t submit your documents. Please try again.",
+        "already": "Your verification is already under review.",
+        "missing": "Upload every required document to continue."
+      },
+      "banner": {
+        "unverified": "Creating activities and withdrawing money are locked until your organisation is verified.",
+        "pending": "Your verification is under review. We’ll email you once it’s done.",
+        "rejected": "Your verification was rejected: {reason}",
+        "member": "Ask the owner to verify the organisation to create activities and withdraw money.",
+        "verify": "Verify now",
+        "resubmit": "Submit new documents"
+      },
+      "gate": {
+        "create_title": "Verify your organisation to create activities",
+        "withdraw_title": "Verify your organisation to withdraw money",
+        "description": "It takes a few minutes: an ID, a selfie and, for registered organisations, their official papers.",
+        "pending_description": "Your documents are under review. You’ll be able to continue once they’re approved.",
+        "verify": "Verify now",
+        "back": "Back to dashboard"
+      },
+      "selfie": {
+        "open": "Open camera",
+        "take": "Take photo",
+        "retake": "Retake",
+        "cancel": "Cancel",
+        "retry": "Try the camera again",
+        "upload": "Upload a photo",
+        "starting": "Starting camera...",
+        "uploading": "Uploading...",
+        "done": "Photo saved",
+        "denied": "Camera access is blocked. Allow it in your browser settings, or upload a photo instead.",
+        "unavailable": "No camera found on this device. Upload a photo instead."
+      }
     }
   },
   "Layout": {
@@ -2365,7 +2667,7 @@
         "role": "Role",
         "status": "Status"
       },
-      "requiresAccount": "The person you're inviting must already have a Ticketwaze account.",
+      "requiresAccount": "They’ll get an email link to join. No Ticketwaze account needed: newcomers just choose a password.",
       "permissions": "Permissions",
       "customPermissions": "Custom",
       "preset": "Quick presets",

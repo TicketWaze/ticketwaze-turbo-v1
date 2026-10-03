@@ -233,7 +233,8 @@
         "support": "Live Chat",
         "contact": "Contact Messages",
         "pending_edits": "Pending Edits",
-        "emails": "Emails"
+        "emails": "Emails",
+        "kyc": "KYC"
       }
     },
     "topbar": {
@@ -1899,6 +1900,80 @@
         "waitlist": "Waitlist",
         "guest": "Guest buyer"
       }
+    }
+  },
+  "Kyc": {
+    "link": "KYC",
+    "title": "Organisation KYC",
+    "pending_count": "{count, plural, =0 {Nothing waiting} one {# submission waiting} other {# submissions waiting}}",
+    "filters": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "all": "All"
+    },
+    "table": {
+      "organisation": "Organisation",
+      "type": "Type",
+      "document": "ID document",
+      "submitted": "Submitted",
+      "status": "Status"
+    },
+    "empty": "No submissions here.",
+    "status": {
+      "unverified": "Unverified",
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "types": {
+      "individual": "Individual",
+      "business": "Registered business",
+      "ngo": "NGO / Non-profit",
+      "public": "Public institution"
+    },
+    "documents": {
+      "passport": "Passport",
+      "id_card": "National ID card",
+      "drivers_licence": "Driver's licence"
+    },
+    "kinds": {
+      "id_front": "ID — front / photo page",
+      "id_back": "ID — back",
+      "selfie": "Selfie",
+      "business_registration": "Business registration",
+      "tax_id": "NIF / tax ID",
+      "authority_proof": "Proof of authority",
+      "ngo_registration": "Registration / recognition certificate",
+      "statutes": "Statutes",
+      "board_letter": "Board authorisation letter",
+      "official_letter": "Official letter"
+    },
+    "review": {
+      "back": "Back to KYC",
+      "owner": "Owner",
+      "contact": "Contact",
+      "location": "Location",
+      "current": "Current submission",
+      "history": "Previous submissions",
+      "submitted_on": "Submitted {date}",
+      "reviewed_on": "Reviewed {date}",
+      "reason": "Reason: {reason}",
+      "open": "Open",
+      "links_expire": "Document links expire after 10 minutes. Reload the page to refresh them.",
+      "none": "This organisation hasn't submitted any documents yet.",
+      "checklist": "Check that the face in the selfie matches the ID photo, the document is valid, and the papers match the organisation type.",
+      "approve": "Approve",
+      "approved": "KYC approved. The organisation can now create activities and withdraw.",
+      "reject": "Reject",
+      "reject_title": "Reject this submission",
+      "reject_description": "The organizer receives this reason by email and can submit new documents.",
+      "reject_label": "Reason",
+      "reject_placeholder": "e.g. The ID photo is blurry; the name on the registration doesn't match.",
+      "reject_confirm": "Reject submission",
+      "rejected": "Submission rejected. The organizer has been emailed.",
+      "cancel": "Cancel",
+      "error": "Something went wrong. Please try again."
     }
   }
 }

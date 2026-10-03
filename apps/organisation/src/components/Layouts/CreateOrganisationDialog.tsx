@@ -13,8 +13,6 @@ import {
 import { Add } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { ButtonPrimary } from "../shared/buttons";
-import { useSession } from "next-auth/react";
-import { toast } from "sonner";
 import LoadingCircleSmall from "../shared/LoadingCircleSmall";
 import PageLoader from "../PageLoader";
 
@@ -27,38 +25,13 @@ export default function CreateOrganisationDialog({
   const closeRef = useRef<HTMLButtonElement>(null);
   const t = useTranslations("Layout.sidebar");
   const locale = useLocale();
-  const { data: session, update } = useSession();
   const [isLoading, setIsLoading] = useState(false);
-  async function CreateOrganisation() {
+  // The organizer set-up form ("Complete Account Set-up") creates the
+  // organisation with its real details; the API still refuses a second
+  // owned organisation there.
+  function CreateOrganisation() {
     setIsLoading(true);
-    try {
-      const req = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/onboarding/createOrganisation`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${session?.user.accessToken}`,
-            "Accept-Language": locale,
-            Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-          },
-        },
-      );
-      const res = await req.json();
-      if (res.status === "success") {
-        await update({
-          activeOrganisation: res.organisation,
-        });
-        window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/auth/onboarding/organisation`;
-      } else {
-        // The API refuses a second organisation per account, among other things —
-        // its message says which, so it beats a generic failure string.
-        toast.error(res.message ?? "Failed to create organisation");
-      }
-    } catch (error) {
-      toast.error("Failed to create organisation: " + error);
-    }
-    setIsLoading(false);
+    window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding/organisation`;
   }
   return (
     <>

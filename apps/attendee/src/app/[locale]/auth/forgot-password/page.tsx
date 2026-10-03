@@ -96,9 +96,12 @@ export default function ForgotPasswordPage() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
 
-  async function handleVerifyOtp() {
-    const otpString = otp.join("");
-    if (otpString.length < 6) return;
+  async function handleVerifyOtp(entered?: string | React.SyntheticEvent) {
+    // OtpCodeInput passes the code it just completed; the Verify button
+    // passes its click event, so fall back to state then.
+    const otpString =
+      typeof entered === "string" ? entered : otp.join("");
+    if (otpString.length < 6 || isVerifying) return;
     setIsVerifying(true);
     setOtpError("");
     try {
