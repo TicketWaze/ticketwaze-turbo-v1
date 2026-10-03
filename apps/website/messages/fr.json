@@ -7,19 +7,19 @@
   },
   "Metadata": {
     "home": "Accueil",
-    "title": "Ticketwaze | Chaque billet, chaque activité, une seule plateforme",
-    "description": "Achetez, vendez et gérez vos billets pour activités et expériences, en ligne ou en personne, sur une plateforme sécurisée et unique.",
+    "title": "Ticketwaze | Billetterie en ligne en Haïti : concerts, soirées, activités",
+    "description": "Trouvez concerts, soirées, festivals et activités en Haïti et achetez vos billets en ligne par carte ou MonCash. Organisateurs : vendez vos billets et soyez payés vite.",
     "about": {
       "title": "À propos",
-      "description": "Découvrez comment Ticketwaze réinvente la billetterie et l'accès, en réunissant paiements, billets et gestion sur une plateforme simple et sécurisée."
+      "description": "Ticketwaze est la plateforme de billetterie pensée pour Haïti : événements, activités et paiements réunis dans un espace simple et sécurisé."
     },
     "attendee": {
-      "title": "Achetez vos billets à votre façon",
-      "description": "Concerts, cours, voyages ou ateliers : achetez vos billets en toute sécurité et gérez tout depuis un seul espace avec Ticketwaze."
+      "title": "Achetez vos billets en ligne : concerts, soirées, festivals",
+      "description": "Achetez en quelques secondes vos billets de concerts, soirées, festivals, cours et sorties en Haïti. Payez par carte ou MonCash, billets sur votre téléphone."
     },
     "business": {
-      "title": "Vendez vos billets en ligne",
-      "description": "Tout ce dont les entreprises ont besoin pour créer des activités, vendre des billets, gérer leurs équipes et suivre leurs performances sur Ticketwaze."
+      "title": "Vendez vos billets en ligne et gérez vos événements",
+      "description": "Créez votre événement, vendez vos billets en ligne par carte et MonCash, scannez les billets QR à l'entrée et suivez vos ventes en temps réel. Gratuit pour commencer."
     },
     "contact": {
       "title": "Nous contacter",
@@ -86,12 +86,16 @@
       "personal": {
         "title": "Particuliers",
         "item1": "Achetez vos billets en quelques secondes",
-        "item2": "Payez par carte ou via MonCash"
+        "item2": "Payez par carte ou via MonCash",
+        "item3": "Enregistrez vos billets et activités",
+        "item4": "Partagez et invitez vos amis"
       },
       "business": {
         "title": "Professionnels",
         "item1": "Créez et vendez vos billets",
-        "item2": "Suivez vos ventes et vos paiements"
+        "item2": "Suivez vos ventes et vos paiements",
+        "item3": "Gérez vos équipes et leurs permissions",
+        "item4": "Évoluez avec les outils Pro et Premium"
       }
     },
     "details2": {

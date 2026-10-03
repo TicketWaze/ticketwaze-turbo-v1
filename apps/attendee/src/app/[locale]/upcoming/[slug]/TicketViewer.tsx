@@ -17,7 +17,6 @@ import FormatDate from "@/lib/FormatDate";
 import Image from "next/image";
 import Logo from "@ticketwaze/ui/assets/images/logo-simple-orange.svg";
 import { Event, Ticket } from "@ticketwaze/typescript-config";
-import Capitalize from "@/lib/Capitalize";
 import formatTime from "@/lib/formatTime";
 import {
   Dialog,
@@ -263,15 +262,16 @@ export default function TicketViewer({
         time — the old toggle left the ticket pinned over the page whenever a
         capture threw. Fixed width so every phone gets the same image.
       */}
-      <div aria-hidden className="fixed -left-[9999px] top-0 pointer-events-none">
+      <div
+        aria-hidden
+        className="fixed -left-[9999px] top-0 pointer-events-none"
+      >
         <div
           ref={ticketRef}
           className="bg-white p-6 rounded-xl w-[400px] text-center flex flex-col gap-8 items-center"
         >
           <div
-            className={
-              `w-full h-auto relative  ${tickets[currentIndex].source === "reward" ? "perk-border" : "bg-neutral-100"} p-[15px] pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center `
-            }
+            className={`w-full h-auto relative  ${tickets[currentIndex].source === "reward" ? "perk-border" : "bg-neutral-100"} p-[15px] pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center `}
           >
             <Image
               src={Logo}
@@ -286,7 +286,7 @@ export default function TicketViewer({
               }
             >
               <span className="text-neutral-600">
-                1x {Capitalize(tickets[currentIndex].ticketType)}
+                1x {tickets[currentIndex].ticketType}
               </span>
               {priceLabel ? (
                 <span className="text-deep-100 font-medium">{priceLabel}</span>

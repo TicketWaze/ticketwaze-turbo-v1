@@ -222,3 +222,12 @@ export async function readSharedSession(
   }
   return null;
 }
+
+// Email 2FA (server side). The browser-safe half is "@ticketwaze/auth/mfa".
+export {
+  MfaRequiredError,
+  MfaCodeError,
+  assertNoMfa,
+  verifyMfaLogin,
+  resendMfaLogin,
+} from "./mfa";

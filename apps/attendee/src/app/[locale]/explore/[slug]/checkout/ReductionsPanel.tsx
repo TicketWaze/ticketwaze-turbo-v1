@@ -1,19 +1,29 @@
 "use client";
 import { useState } from "react";
-import { CloseCircle, Coin1, TicketDiscount, TickCircle } from "iconsax-reactjs";
+import {
+  CloseCircle,
+  Coin1,
+  TicketDiscount,
+  TickCircle,
+} from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import { formatAmount } from "@ticketwaze/currency";
 import { maxSpendableTokens, tokenValue } from "@/lib/pricing";
 import type { AppliedDiscount, DiscountRefusalReason } from "./checkout.types";
 
 interface Props {
+  /** False when the code is entered on the Summary ticket instead. */
+  showDiscount?: boolean;
   currency: string;
   exchangeRate: number;
   /** The bill tokens are put against: after the discount and after fees. */
   billTotal: number;
 
   discount: AppliedDiscount | null;
-  discountError: { reason: DiscountRefusalReason | "network"; message: string } | null;
+  discountError: {
+    reason: DiscountRefusalReason | "network";
+    message: string;
+  } | null;
   isChecking: boolean;
   onCheck: (code: string) => void;
   onClear: () => void;
@@ -38,6 +48,7 @@ interface Props {
  * and then watching it change is the thing to avoid at the last step.
  */
 export default function ReductionsPanel({
+  showDiscount = true,
   currency,
   exchangeRate,
   billTotal,
@@ -72,85 +83,91 @@ export default function ReductionsPanel({
   return (
     <div className="flex flex-col gap-4">
       {/* ── Discount code ─────────────────────────────────────────────── */}
-      <div className="rounded-[15px] border border-neutral-100 p-6 flex flex-col gap-4">
-        <div className="flex items-center gap-3">
-          <TicketDiscount size="20" color="#E45B00" variant="Bulk" />
-          <span className="text-[1.5rem] font-medium text-deep-100">
-            {t("discount.title")}
-          </span>
-        </div>
-
-        {discount ? (
-          <div className="flex items-center justify-between gap-4 rounded-[12px] bg-[#EAF7EE] border border-[#BFE6CB] px-[1.5rem] py-[1.2rem]">
-            <div className="flex items-center gap-3 min-w-0">
-              <TickCircle
-                size="18"
-                color="#1F9D55"
-                variant="Bulk"
-                className="shrink-0"
-              />
-              <div className="flex flex-col min-w-0">
-                <span className="text-[1.4rem] font-semibold text-[#1a7a43] uppercase truncate">
-                  {discount.code}
-                </span>
-                <span className="text-[1.2rem] text-[#1a7a43]">
-                  {discount.type === "percentage"
-                    ? t("discount.applied_percentage", { value: discount.value })
-                    : t("discount.applied_fixed", {
-                        amount: `${formatAmount(discount.value)} ${currency}`,
-                      })}
-                </span>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => {
-                setInput("");
-                onClear();
-              }}
-              aria-label={t("discount.remove")}
-              className="shrink-0 cursor-pointer"
-            >
-              <CloseCircle size="20" color="#1a7a43" />
-            </button>
+      {showDiscount && (
+        <div className="rounded-[15px] border border-neutral-100 p-6 flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <TicketDiscount size="20" color="#E45B00" variant="Bulk" />
+            <span className="text-[1.5rem] font-medium text-deep-100">
+              {t("discount.title")}
+            </span>
           </div>
-        ) : (
-          <>
-            <div className="flex items-center gap-3">
-              <input
-                value={input}
-                onChange={(event) => setInput(event.target.value.toUpperCase())}
-                // Enter submits the code rather than the checkout — pressing
-                // it here should do the obvious local thing.
-                onKeyDown={(event) => {
-                  if (event.key !== "Enter") return;
-                  event.preventDefault();
-                  onCheck(input);
-                }}
-                placeholder={t("discount.placeholder")}
-                aria-label={t("discount.title")}
-                autoCapitalize="characters"
-                autoCorrect="off"
-                spellCheck={false}
-                className="flex-1 min-w-0 bg-neutral-50 rounded-[12px] px-6 py-[1.2rem] text-[1.5rem] tracking-[0.08em] uppercase text-deep-100 outline-none border border-transparent focus:border-primary-500 placeholder:normal-case placeholder:tracking-normal placeholder:text-neutral-400"
-              />
+
+          {discount ? (
+            <div className="flex items-center justify-between gap-4 rounded-[12px] bg-[#EAF7EE] border border-[#BFE6CB] px-[1.5rem] py-[1.2rem]">
+              <div className="flex items-center gap-3 min-w-0">
+                <TickCircle
+                  size="18"
+                  color="#1F9D55"
+                  variant="Bulk"
+                  className="shrink-0"
+                />
+                <div className="flex flex-col min-w-0">
+                  <span className="text-[1.4rem] font-semibold text-[#1a7a43] uppercase truncate">
+                    {discount.code}
+                  </span>
+                  <span className="text-[1.2rem] text-[#1a7a43]">
+                    {discount.type === "percentage"
+                      ? t("discount.applied_percentage", {
+                          value: discount.value,
+                        })
+                      : t("discount.applied_fixed", {
+                          amount: `${formatAmount(discount.value)} ${currency}`,
+                        })}
+                  </span>
+                </div>
+              </div>
               <button
                 type="button"
-                disabled={!input.trim() || isChecking}
-                onClick={() => onCheck(input)}
-                className="shrink-0 rounded-[12px] border-2 border-primary-500 text-primary-500 bg-primary-50 px-[2rem] py-[1.1rem] text-[1.4rem] font-medium cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={() => {
+                  setInput("");
+                  onClear();
+                }}
+                aria-label={t("discount.remove")}
+                className="shrink-0 cursor-pointer"
               >
-                {isChecking ? t("discount.checking") : t("discount.apply")}
+                <CloseCircle size="20" color="#1a7a43" />
               </button>
             </div>
-            {discountError && (
-              <span role="alert" className="text-[1.3rem] text-failure">
-                {discountError.message}
-              </span>
-            )}
-          </>
-        )}
-      </div>
+          ) : (
+            <>
+              <div className="flex items-center gap-3">
+                <input
+                  value={input}
+                  onChange={(event) =>
+                    setInput(event.target.value.toUpperCase())
+                  }
+                  // Enter submits the code rather than the checkout — pressing
+                  // it here should do the obvious local thing.
+                  onKeyDown={(event) => {
+                    if (event.key !== "Enter") return;
+                    event.preventDefault();
+                    onCheck(input);
+                  }}
+                  placeholder={t("discount.placeholder")}
+                  aria-label={t("discount.title")}
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  className="flex-1 min-w-0 bg-neutral-50 rounded-[12px] px-6 py-[1.2rem] text-[1.5rem] tracking-[0.08em] uppercase text-deep-100 outline-none border border-transparent focus:border-primary-500 placeholder:normal-case placeholder:tracking-normal placeholder:text-neutral-400"
+                />
+                <button
+                  type="button"
+                  disabled={!input.trim() || isChecking}
+                  onClick={() => onCheck(input)}
+                  className="shrink-0 rounded-[12px] border-2 border-primary-500 text-primary-500 bg-primary-50 px-[2rem] py-[1.1rem] text-[1.4rem] font-medium cursor-pointer transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isChecking ? t("discount.checking") : t("discount.apply")}
+                </button>
+              </div>
+              {discountError && (
+                <span role="alert" className="text-[1.3rem] text-failure">
+                  {discountError.message}
+                </span>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {/* ── Ticketwaze tokens ─────────────────────────────────────────────
           Only for signed-in buyers with a balance. A guest has no wallet, and
@@ -193,7 +210,9 @@ export default function ReductionsPanel({
                       rather than a drag to the end of the track. */}
                   <button
                     type="button"
-                    onClick={() => onTokensChange(tokens >= maxTokens ? 0 : maxTokens)}
+                    onClick={() =>
+                      onTokensChange(tokens >= maxTokens ? 0 : maxTokens)
+                    }
                     className="text-[1.3rem] text-primary-500 font-medium cursor-pointer"
                   >
                     {tokens >= maxTokens ? t("tokens.none") : t("tokens.max")}

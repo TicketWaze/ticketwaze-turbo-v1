@@ -79,45 +79,45 @@
         "error": "Veuillez sélectionner une option",
         "onboarded": "Utilisateur déjà enregistré",
         "success": {
-          "title": "Tout est prêt !",
+          "title": "Tout est prêt !",
           "description": "Vous allez être redirigé vers votre tableau de bord..."
         },
         "steps": {
           "name": {
-            "title": "Comment s'appelle votre organisation ?",
+            "title": "Comment s'appelle votre organisation ?",
             "description": "Vous pouvez le modifier à tout moment depuis vos paramètres.",
             "placeholder": "Nom de l'organisation"
           },
           "type": {
-            "title": "Quel type d'organisation êtes-vous ?"
+            "title": "Quel type d'organisation êtes-vous ?"
           },
           "volume": {
-            "title": "Combien d'événements organisez-vous par an ?",
+            "title": "Combien d'événements organisez-vous par an ?",
             "description": "Cela nous aide à personnaliser votre expérience."
           },
           "activities": {
-            "title": "Quels types d'activités organisez-vous ?",
+            "title": "Quels types d'activités organisez-vous ?",
             "description": "Sélectionnez tout ce qui s'applique.",
             "error": "Veuillez sélectionner au moins un type d'activité."
           },
           "business": {
-            "title": "Quelle est votre structure juridique ?"
+            "title": "Quelle est votre structure juridique ?"
           },
           "goal": {
-            "title": "Quel est votre principal objectif pour les 12 prochains mois ?"
+            "title": "Quel est votre principal objectif pour les 12 prochains mois ?"
           }
         },
         "first": {
-          "question": "Quel est le nom de votre organisation ?"
+          "question": "Quel est le nom de votre organisation ?"
         },
         "second": {
-          "question": "Quel type d’organisation souhaitez-vous créer ?",
+          "question": "Quel type d’organisation souhaitez-vous créer ?",
           "single": "Je suis un entrepreneur solo, DJ ou formateur.",
           "agency": "J’ai une équipe qui gère plusieurs activités.",
           "entreprise": "Je représente un lieu, un stade ou une grande entreprise."
         },
         "third": {
-          "question": "Quels types de services proposez-vous principalement ?",
+          "question": "Quels types de services proposez-vous principalement ?",
           "musics": "Musique",
           "theater": "Théâtre",
           "arts": "Arts",
@@ -130,21 +130,21 @@
           "booking": "Réservation"
         },
         "fourth": {
-          "question": "Quelle est la taille de votre organisation ?",
+          "question": "Quelle est la taille de votre organisation ?",
           "solo": "Juste moi (1 personne)",
           "small": "Petite équipe (2 à 10 personnes)",
           "large": "Grande équipe (10+ personnes)"
         },
         "fifth": {
-          "question": "Comment avez-vous entendu parler de nous ?",
+          "question": "Comment avez-vous entendu parler de nous ?",
           "media": "Réseaux sociaux",
           "friend": "Ami/Collègue",
           "advertisement": "Publicité"
         },
         "last": {
           "1": "Merci d’avoir terminé la configuration. Le profil de votre organisation sera paramétré en fonction des services choisis, de la structure de votre équipe et de vos préférences. Vous pouvez désormais commencer à créer des activités, gérer des réservations et inviter des membres de votre équipe à collaborer.",
-          "2": "Important : nous allons maintenant vous rediriger vers le tableau de bord de l’organisation. Pour des raisons de sécurité, vous devrez vous reconnecter avec vos identifiants Ticketwaze fraîchement créés avant d’accéder à votre tableau de bord.",
-          "3": "Veuillez noter : Ticketwaze ne partage pas les données ou informations de vente de votre organisation avec des tiers sans votre consentement explicite. Les paiements seront traités selon vos besoins, sous réserve de vérification et des délais de traitement applicables. Vous pouvez consulter ou modifier les paramètres de votre organisation et les rôles de votre équipe à tout moment depuis votre tableau de bord.",
+          "2": "Important : nous allons maintenant vous rediriger vers le tableau de bord de l’organisation. Pour des raisons de sécurité, vous devrez vous reconnecter avec vos identifiants Ticketwaze fraîchement créés avant d’accéder à votre tableau de bord.",
+          "3": "Veuillez noter : Ticketwaze ne partage pas les données ou informations de vente de votre organisation avec des tiers sans votre consentement explicite. Les paiements seront traités selon vos besoins, sous réserve de vérification et des délais de traitement applicables. Vous pouvez consulter ou modifier les paramètres de votre organisation et les rôles de votre équipe à tout moment depuis votre tableau de bord.",
           "4": {
             "1": "En continuant, vous reconnaissez avoir lu et accepté nos Conditions d’utilisation et nos ",
             "2": "Conditions d'utilisation et politique de confidentialité",
@@ -163,15 +163,15 @@
       },
       "suspended": {
         "title": "Cette organisation est suspendue",
-        "description": "{name} a été suspendue : son tableau de bord n’est donc pas accessible. Votre compte Ticketwaze et vos billets ne sont pas concernés.",
+        "description": "{name} a été suspendue : son tableau de bord n’est donc pas accessible. Votre compte Ticketwaze et vos billets ne sont pas concernés.",
         "support": "Contacter le support",
         "back": "Voir mes billets"
       }
     },
     "register": {
       "title": "Créer un compte",
-      "organizer": "Créer un compte",
-      "description": "Veuillez compléter le formulaire ci-dessous pour continuer.",
+      "organizer": "Compte organisateur",
+      "description": "Veuillez remplir le formulaire ci-dessous pour continuer.",
       "invalidToken": "Ce lien d’invitation n’est plus valide. Il a peut-être expiré ou déjà été utilisé. Veuillez demander une nouvelle invitation à l’organisateur de l’activité pour continuer.",
       "login": "Se connecter",
       "choice": {
@@ -187,16 +187,16 @@
         },
         "cta": "Continuer",
         "footer": {
-          "text": "Vous avez déjà un compte ?",
+          "text": "Déjà un compte ?",
           "cta": "Se connecter"
         }
       },
       "placeholders": {
         "firstname": "Prénom",
-        "lastname": "Nom de famille",
+        "lastname": "Nom",
         "email": "Adresse e-mail",
-        "organisation_name": "Nom de l'organisation",
-        "organisation_email": "E-mail de l'organisation",
+        "organisation_name": "Nom de l’organisation",
+        "organisation_email": "E-mail de l’organisation",
         "password": "Créer un mot de passe",
         "confirm": "Confirmer le mot de passe"
       },
@@ -207,20 +207,38 @@
         "lastname_length": "Le nom de famille doit contenir au moins 2 caractères",
         "firstname_validation": "Le prénom ne doit contenir que des lettres, espaces ou traits d'union",
         "lastname_validation": "Le nom de famille ne doit contenir que des lettres, espaces ou traits d'union",
-        "email": "Le champ e-mail ne peut pas être vide"
+        "email": "Saisissez une adresse e-mail valide.",
+        "organisation_name": "Le nom de l’organisation doit contenir 3 à 30 caractères.",
+        "organisation_name_taken": "Une organisation porte déjà ce nom.",
+        "exists": "Un compte existe déjà pour cet e-mail. Connectez-vous plutôt.",
+        "generic": "Une erreur s’est produite. Veuillez réessayer.",
+        "characters": "Au moins 8 caractères",
+        "capital": "Au moins une lettre majuscule",
+        "special": "Au moins un caractère spécial",
+        "number": "Au moins un chiffre"
       },
       "cta": {
         "submit": "Créer un compte",
         "google": "Continuer avec Google"
       },
-      "footer": "Retour"
+      "footer": "Retour",
+      "otp": {
+        "submit": "Vérifier",
+        "resending": "Envoi...",
+        "sent": "Un nouveau code a été envoyé à votre e-mail.",
+        "errors": {
+          "invalid": "Code incorrect. Veuillez réessayer.",
+          "expired": "Ce code a expiré. Demandez-en un nouveau ci-dessous.",
+          "notFound": "Aucun code trouvé. Demandez-en un nouveau ci-dessous."
+        }
+      }
     },
     "verify": {
       "title": "Vérifier le compte",
       "description": "Un e-mail de vérification a été envoyé à",
       "wrong": "Email incorrect?",
       "footer": {
-        "text": "Vous n'avez pas reçu d'e-mail ?",
+        "text": "Vous n'avez pas reçu d'e-mail ?",
         "cta": "Renvoyer"
       }
     },
@@ -319,9 +337,28 @@
         "google": "Continuer avec Google"
       },
       "footer": {
-        "text": "Pas de compte ?",
-        "cta": "S'inscrire"
-      }
+        "text": "Pas encore de compte ?",
+        "cta": "S’inscrire"
+      },
+      "mfa": {
+        "title": "Saisissez votre code de connexion",
+        "description": "La vérification en deux étapes est activée. Nous avons envoyé un code à 6 chiffres à",
+        "submit": "Vérifier et se connecter",
+        "resend": "Renvoyer le code",
+        "resent": "Un nouveau code est en route",
+        "resend_in": "Renvoyer dans {seconds}s",
+        "back": "Retour",
+        "digit": "Chiffre",
+        "errors": {
+          "invalid": "Ce code est incorrect.",
+          "invalid_left": "Ce code est incorrect. {count, plural, one {# essai restant} other {# essais restants}}.",
+          "expired": "Ce code a expiré. Demandez-en un nouveau.",
+          "too_many": "Trop de codes incorrects. Revenez en arrière et reconnectez-vous.",
+          "restart": "Cette connexion a expiré. Revenez en arrière et reconnectez-vous."
+        }
+      },
+      "organizer_title": "Compte organisateur",
+      "reset": "Réinitialiser le mot de passe"
     },
     "forgot": {
       "title": "Réinitialiser le mot de passe",
@@ -342,7 +379,7 @@
         "submit": "Vérifier",
         "resend": "Renvoyer le code",
         "resending": "Envoi en cours...",
-        "wrong": "Mauvais email ?",
+        "wrong": "Mauvais email ?",
         "sent": "Un nouveau code a été envoyé à votre adresse e-mail.",
         "errors": {
           "invalid": "Code incorrect. Veuillez réessayer.",
@@ -356,7 +393,7 @@
       "title": "Réinitialiser le mot de passe",
       "description": "Un e-mail de réinitialisation du mot de passe a été envoyé à",
       "footer": {
-        "text": "Vous n'avez pas reçu d'e-mail ?",
+        "text": "Vous n'avez pas reçu d'e-mail ?",
         "cta": "Renvoyer"
       }
     },
@@ -371,13 +408,295 @@
       "errors": {
         "password_length": "Le mot de passe doit contenir au moins 8 caractères",
         "password_match": "Le mot de passe ne correspond pas",
-        "sameError": "Vous avez déjà utilisé ce mot de passe. Vous ne pouvez pas réutiliser un ancien mot de passe."
+        "sameError": "Vous avez déjà utilisé ce mot de passe. Vous ne pouvez pas réutiliser un ancien mot de passe.",
+        "characters": "Au moins 8 caractères",
+        "capital": "Au moins une lettre majuscule",
+        "special": "Au moins un caractère spécial",
+        "number": "Au moins un chiffre"
       },
       "cta": "Créer"
     },
     "footer": {
-      "text": "Vous n'avez pas reçu d'e-mail ?",
+      "text": "Vous n'avez pas reçu d'e-mail ?",
       "cta": "Renvoyer"
+    },
+    "flow": {
+      "splash": {
+        "create": "Créer un compte",
+        "login": "Se connecter"
+      },
+      "role": {
+        "login_title": "Bon retour",
+        "login_description": "Choisissez une option pour accéder à votre compte.",
+        "register_title": "Créer un compte",
+        "register_description": "Choisissez une option pour continuer et configurer votre compte.",
+        "attendee_title": "Participant",
+        "attendee_description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d’événements.",
+        "organizer_title": "Organisateur",
+        "organizer_description": "Créez et gérez vos événements sans effort. Suivez les ventes de billets et les données des participants.",
+        "continue": "Continuer"
+      },
+      "back": "Retour",
+      "or": "Ou",
+      "verify": {
+        "title": "Vérifier le compte",
+        "description": "Un e-mail de vérification a été envoyé à l’adresse avec laquelle vous vous êtes inscrit.",
+        "resend_text": "Vous n’avez pas reçu d’e-mail ?",
+        "resend": "Renvoyer"
+      },
+      "reset_sent": {
+        "title": "Réinitialiser le mot de passe",
+        "description": "Un e-mail de réinitialisation a été envoyé à l’adresse e-mail indiquée"
+      },
+      "created": {
+        "title": "Compte créé",
+        "description": "Votre compte a été créé avec succès. Nous vous connectons maintenant."
+      },
+      "password_created": {
+        "title": "Mot de passe créé",
+        "description": "Votre nouveau mot de passe a été créé avec succès. Nous vous connectons maintenant."
+      },
+      "signing_in": "Connexion en cours...",
+      "verified": {
+        "title": "Compte vérifié",
+        "description": "Votre e-mail a bien été vérifié. Nous vous connectons maintenant."
+      },
+      "setup": {
+        "title": "Finaliser le compte",
+        "description": "Veuillez remplir le formulaire ci-dessous pour finaliser votre compte.",
+        "organisation_name": "Nom de l’organisation",
+        "address": "Adresse",
+        "state": "Département",
+        "city": "Ville",
+        "about": "À propos de l’organisateur",
+        "contact_email": "E-mail de contact",
+        "contact_phone": "Téléphone de contact",
+        "submit": "Terminer",
+        "errors": {
+          "organisation_name": "3 à 30 caractères.",
+          "organisation_name_taken": "Une organisation porte déjà ce nom.",
+          "address": "Veuillez saisir votre adresse.",
+          "state": "Veuillez choisir votre département.",
+          "city": "Veuillez choisir votre ville.",
+          "about": "Présentez-vous aux participants en 150 à 350 caractères.",
+          "contact_email": "Veuillez saisir une adresse e-mail valide.",
+          "contact_phone": "Veuillez saisir un numéro de téléphone valide.",
+          "already_owned": "Vous possédez déjà une organisation.",
+          "generic": "Impossible d’enregistrer votre organisation. Veuillez réessayer."
+        },
+        "links": {
+          "title": "Liens",
+          "add": "Ajouter un lien",
+          "optional": "facultatif",
+          "remove": "Retirer {platform}",
+          "platforms": {
+            "instagram": "Instagram",
+            "website": "Site web",
+            "tiktok": "TikTok"
+          },
+          "placeholders": {
+            "instagram": "votrenom",
+            "website": "votresite.com",
+            "tiktok": "votrenom"
+          },
+          "errors": {
+            "instagram": "Saisissez un nom d’utilisateur Instagram valide.",
+            "website": "Saisissez une adresse de site web valide.",
+            "tiktok": "Saisissez un nom d’utilisateur TikTok valide."
+          }
+        }
+      },
+      "invitation": {
+        "title": "Rejoindre {name}",
+        "description": "Bonjour {email}, complétez votre profil pour accéder à votre espace de travail.",
+        "description_existing": "Bonjour {email}, connectez-vous avec cette adresse e-mail pour rejoindre l’espace de travail.",
+        "choose": "Choisir un mot de passe",
+        "confirm": "Confirmer le mot de passe",
+        "join": "Rejoindre",
+        "sign_in": "Se connecter pour rejoindre",
+        "accepted_title": "Invitation acceptée !",
+        "accepted_description": "Votre compte est prêt. C’est parti !",
+        "invalid_title": "Invitation indisponible",
+        "invalid_description": "Ce lien d’invitation est invalide, déjà utilisé ou expiré. Demandez à l’organisation de vous en envoyer un nouveau.",
+        "wrong_account": "Vous êtes connecté avec un autre compte. Déconnectez-vous, puis rouvrez le lien d’invitation.",
+        "sign_out": "Se déconnecter",
+        "decline": "Refuser",
+        "errors": {
+          "exists": "Un compte existe déjà pour cet e-mail. Connectez-vous pour rejoindre.",
+          "generic": "Impossible de vous ajouter à cette organisation. Veuillez réessayer."
+        },
+        "description_signed_in": "Vous avez été invité à rejoindre l’espace de travail de cette organisation sur Ticketwaze."
+      }
+    },
+    "kyc": {
+      "skip": "Passer pour l’instant",
+      "not_now": "Plus tard",
+      "continue": "Continuer",
+      "submit": "Envoyer pour vérification",
+      "type": {
+        "title": "Vérifiez votre organisation",
+        "description": "Indiquez le type d’organisation que vous gérez. Il détermine les documents demandés.",
+        "individual": {
+          "title": "Organisateur individuel",
+          "description": "Vous organisez des activités en votre nom."
+        },
+        "business": {
+          "title": "Entreprise enregistrée",
+          "description": "Une société ou une entreprise individuelle (SA, SARL…)."
+        },
+        "ngo": {
+          "title": "ONG / Association",
+          "description": "Une association, une fondation ou une ONG."
+        },
+        "public": {
+          "title": "Institution publique",
+          "description": "Un ministère, une mairie, une école ou une université publique."
+        }
+      },
+      "id": {
+        "title": "Pièce d’identité du représentant",
+        "description": "Choisissez la pièce d’identité de la personne qui gère cette organisation.",
+        "passport": {
+          "title": "Passeport",
+          "description": "Page photo uniquement."
+        },
+        "id_card": {
+          "title": "Carte d’identité nationale",
+          "description": "Recto et verso."
+        },
+        "drivers_licence": {
+          "title": "Permis de conduire",
+          "description": "Recto et verso."
+        }
+      },
+      "identity": {
+        "title": "Envoyez votre pièce d’identité",
+        "description": "Photos nettes, les quatre coins visibles, sans reflet."
+      },
+      "documents": {
+        "title": "Documents de l’organisation",
+        "description": "Scans ou photos de vos documents officiels. Le PDF est accepté."
+      },
+      "kinds": {
+        "passport_front": {
+          "label": "Page photo du passeport"
+        },
+        "id_front": {
+          "label": "Recto du document"
+        },
+        "id_back": {
+          "label": "Verso du document"
+        },
+        "selfie": {
+          "label": "Selfie",
+          "hint": "Uniquement votre visage, face à la caméra, avec un bon éclairage. Pas de pièce d’identité sur la photo."
+        },
+        "business_registration": {
+          "label": "Enregistrement de l’entreprise (Patente / certificat MCI)"
+        },
+        "tax_id": {
+          "label": "Document NIF"
+        },
+        "authority_proof": {
+          "label": "Preuve que vous pouvez agir pour l’entreprise",
+          "hint": "Seulement si vous n’êtes pas le propriétaire inscrit à l’enregistrement."
+        },
+        "ngo_registration": {
+          "label": "Certificat d’enregistrement ou de reconnaissance",
+          "hint": "MPCE, MAST, ou publication au Moniteur."
+        },
+        "statutes": {
+          "label": "Statuts"
+        },
+        "board_letter": {
+          "label": "Lettre du conseil vous autorisant"
+        },
+        "official_letter": {
+          "label": "Lettre officielle sur papier à en-tête",
+          "hint": "Signée, vous autorisant à gérer ce compte."
+        }
+      },
+      "upload": {
+        "cta": "Déposez un fichier ou",
+        "browse": "Parcourir",
+        "photo_hint": "JPG, PNG, WEBP ou HEIC · 10 Mo max",
+        "doc_hint": "PDF, JPG ou PNG · 10 Mo max",
+        "uploading": "Envoi...",
+        "uploaded": "Envoyé",
+        "replace": "Remplacer",
+        "retry": "Réessayer",
+        "optional": "Facultatif",
+        "errors": {
+          "type": "Ce type de fichier n’est pas accepté.",
+          "size": "Les fichiers doivent faire 10 Mo maximum.",
+          "failed": "L’envoi a échoué. Veuillez réessayer.",
+          "storage": "Les envois ne sont pas disponibles pour le moment. Veuillez réessayer plus tard."
+        }
+      },
+      "skip_dialog": {
+        "title": "Passer la vérification ?",
+        "description": "Vous pourrez la faire plus tard depuis votre tableau de bord. D’ici là, vous ne pourrez pas :",
+        "create": "Créer des activités",
+        "withdraw": "Retirer de l’argent",
+        "verify": "Vérifier maintenant",
+        "skip": "Passer pour l’instant"
+      },
+      "submitted": {
+        "title": "Documents envoyés",
+        "description": "Nous les examinerons sous 2 jours ouvrables et vous enverrons le résultat par e-mail.",
+        "dashboard": "Aller au tableau de bord"
+      },
+      "pending": {
+        "title": "Vérification en cours",
+        "description": "Nous avons reçu vos documents. Vous recevrez un e-mail dès qu’ils seront examinés."
+      },
+      "approved": {
+        "title": "Organisation vérifiée",
+        "description": "Vous pouvez créer des activités et retirer de l’argent."
+      },
+      "rejected": {
+        "title": "Vérification refusée",
+        "reason": "Motif : {reason}",
+        "description": "Veuillez envoyer de nouveaux documents."
+      },
+      "owner_only": {
+        "title": "Seul le propriétaire peut vérifier",
+        "description": "Demandez au propriétaire de cette organisation de compléter la vérification."
+      },
+      "errors": {
+        "generic": "Impossible d’envoyer vos documents. Veuillez réessayer.",
+        "already": "Votre vérification est déjà en cours d’examen.",
+        "missing": "Envoyez tous les documents requis pour continuer."
+      },
+      "banner": {
+        "unverified": "La création d’activités et les retraits sont bloqués tant que votre organisation n’est pas vérifiée.",
+        "pending": "Votre vérification est en cours. Vous recevrez un e-mail une fois terminée.",
+        "rejected": "Votre vérification a été refusée : {reason}",
+        "member": "Demandez au propriétaire de vérifier l’organisation pour créer des activités et retirer de l’argent.",
+        "verify": "Vérifier maintenant",
+        "resubmit": "Envoyer de nouveaux documents"
+      },
+      "gate": {
+        "create_title": "Vérifiez votre organisation pour créer des activités",
+        "withdraw_title": "Vérifiez votre organisation pour retirer de l’argent",
+        "description": "Quelques minutes suffisent : une pièce d’identité, un selfie et, pour les organisations enregistrées, leurs documents officiels.",
+        "pending_description": "Vos documents sont en cours d’examen. Vous pourrez continuer dès leur approbation.",
+        "verify": "Vérifier maintenant",
+        "back": "Retour au tableau de bord"
+      },
+      "selfie": {
+        "open": "Ouvrir la caméra",
+        "take": "Prendre la photo",
+        "retake": "Reprendre",
+        "cancel": "Annuler",
+        "retry": "Réessayer la caméra",
+        "upload": "Importer une photo",
+        "starting": "Démarrage de la caméra...",
+        "uploading": "Envoi...",
+        "done": "Photo enregistrée",
+        "denied": "L’accès à la caméra est bloqué. Autorisez-le dans les réglages du navigateur, ou importez une photo.",
+        "unavailable": "Aucune caméra trouvée sur cet appareil. Importez une photo à la place."
+      }
     }
   },
   "Layout": {
@@ -864,7 +1183,9 @@
         "generate": "Générer un code",
         "per_user_limit": "Utilisations par client (facultatif)",
         "min_purchase": "Commande minimum (facultatif)",
-        "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze sont toujours calculés sur votre prix affiché : une réduction ne modifie jamais les frais, et vous recevez le prix réduit."
+        "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze sont toujours calculés sur votre prix affiché : une réduction ne modifie jamais les frais, et vous recevez le prix réduit.",
+        "notify_followers": "Prévenir mes abonnés",
+        "notify_followers_description": "Envoyer ce code à toutes les personnes qui suivent votre organisation, dans leurs notifications Ticketwaze."
       },
       "rewards": {
         "title": "Récompenses",
@@ -2341,7 +2662,7 @@
         "role": "Rôle",
         "status": "Statut"
       },
-      "requiresAccount": "La personne que vous invitez doit déjà posséder un compte Ticketwaze.",
+      "requiresAccount": "La personne recevra un lien par e-mail pour rejoindre l’équipe. Pas besoin de compte Ticketwaze : il suffit de choisir un mot de passe.",
       "permissions": "Permissions",
       "customPermissions": "Personnalisé",
       "preset": "Préréglages rapides",

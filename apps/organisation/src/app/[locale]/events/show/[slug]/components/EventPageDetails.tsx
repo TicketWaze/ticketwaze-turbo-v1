@@ -376,9 +376,11 @@ export default function EventPageDetails({
                           >
                             {ticket.ticketName}
                           </TableCell>
+                          {/* Carries the row padding too: the ID cell that
+                              sets it on desktop is hidden on a phone. */}
                           <TableCell
                             className={
-                              "text-[1.5rem] leading-8 text-neutral-900"
+                              "text-[1.5rem] py-6 leading-8 text-neutral-900"
                             }
                           >
                             {ticket.fullName}
@@ -631,9 +633,11 @@ export default function EventPageDetails({
                               >
                                 {ticket.ticketName}
                               </TableCell>
+                              {/* Carries the row padding too: the ID cell that
+                                  sets it on desktop is hidden on a phone. */}
                               <TableCell
                                 className={
-                                  "text-[1.5rem] leading-8 text-neutral-900"
+                                  "text-[1.5rem] py-6 leading-8 text-neutral-900"
                                 }
                               >
                                 {ticket.fullName}
@@ -660,7 +664,7 @@ export default function EventPageDetails({
                                 {ticket.ticketType === "vvip" && (
                                   <span
                                     className={
-                                      "py-[p.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-deep-100  px-2 rounded-[30px] bg-[#f5f5f5]"
+                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-deep-100  px-2 rounded-[30px] bg-[#f5f5f5]"
                                     }
                                   >
                                     Premium vip

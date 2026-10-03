@@ -1,6 +1,7 @@
 import ClientErrorReporter from "@/components/ClientErrorReporter";
 import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
 import type { Metadata, Viewport } from "next";
+import { getTranslations } from "next-intl/server";
 import "@ticketwaze/ui/styles/globals.css";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
@@ -33,13 +34,51 @@ const dmSans = DM_Sans({
   weight: ["300", "400", "500"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_ATTENDEE_URL ?? ""),
-  title: "Ticketwaze - Discover Events, Connect with Culture.",
-  description:
-    "Easily explore, share, and enjoy the best events your country has to offer. Join us today and start your journey!",
-  // "Empowering events across your country and reaching beyond borders to connect people, ideas, and experiences.",
-};
+/**
+ * Site-wide defaults. Pages override title and description; the template
+ * brands every page title ("Event name | Ticketwaze"), and the Open Graph and
+ * Twitter defaults keep a large preview card on any shared link. The image
+ * itself comes from the sibling opengraph-image.png file convention.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_ATTENDEE_URL ?? ""),
+    title: { default: t("siteTitle"), template: "%s | Ticketwaze" },
+    description: t("siteDescription"),
+    applicationName: "Ticketwaze",
+    keywords: [
+      "Ticketwaze",
+      "events Haiti",
+      "tickets Haiti",
+      "concerts Haiti",
+      "événements Haïti",
+      "billets Haïti",
+      "billetterie en ligne",
+      "Port-au-Prince",
+      "Cap-Haïtien",
+      "MonCash",
+    ],
+    openGraph: {
+      type: "website",
+      siteName: "Ticketwaze",
+      locale: locale === "fr" ? "fr_FR" : "en_US",
+      title: t("siteTitle"),
+      description: t("siteDescription"),
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@ticketwaze",
+      title: t("siteTitle"),
+      description: t("siteDescription"),
+    },
+  };
+}
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,

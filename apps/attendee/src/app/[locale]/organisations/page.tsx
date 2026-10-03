@@ -2,9 +2,20 @@ import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import OrganizersContents from "./OrganizersContents";
 import { auth } from "@/lib/auth";
 import { Organisation } from "@ticketwaze/typescript-config";
+import { getTranslations } from "next-intl/server";
+import SignedOutState from "@/components/SignedOutState";
 
 export default async function OrganizersPage() {
   const session = await auth();
+  const title = (await getTranslations("Organizers"))("title");
+  // Organisation pages are for account holders only.
+  if (!session?.user) {
+    return (
+      <AttendeeLayout title={title}>
+        <SignedOutState page="organisations" title={title} />
+      </AttendeeLayout>
+    );
+  }
   const organisationRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations`,
   );
@@ -13,13 +24,8 @@ export default async function OrganizersPage() {
     .json()
     .catch(() => null);
 
-  /**
-   * Only a signed-in user has follows. The request is skipped entirely for
-   * guests rather than sent with an undefined token: it would be a guaranteed
-   * 401, and the page has to render without it either way.
-   */
   let followedOrganisations: Organisation[] = [];
-  if (session?.user?.accessToken) {
+  if (session.user.accessToken) {
     const userRequest = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/users/me/followed-organisations`,
       {
@@ -35,7 +41,7 @@ export default async function OrganizersPage() {
   }
 
   return (
-    <AttendeeLayout title="OrganizersPage">
+    <AttendeeLayout title={title}>
       <OrganizersContents
         organisations={organisationResponse?.organisations ?? []}
         followedOrganisations={followedOrganisations}

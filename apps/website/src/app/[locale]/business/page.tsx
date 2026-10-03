@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { pageMetadata } from "@/lib/seo";
 import Hero from "./components/Hero";
 import Footer from "@/components/Footer";
 import Details1 from "./components/Details1";
@@ -17,29 +18,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
-  const localePath = locale === "fr" ? "" : `/${locale}`;
 
-  return {
+  return pageMetadata({
+    locale,
+    path: "/business",
     title: t("business.title"),
     description: t("business.description"),
-    openGraph: {
-      title: `${t("business.title")} | Ticketwaze`,
-      description: t("business.description"),
-      url: `${siteUrl}${localePath}/business`,
-    },
-    twitter: {
-      title: `${t("business.title")} | Ticketwaze`,
-      description: t("business.description"),
-    },
-    alternates: {
-      canonical: `${siteUrl}${localePath}/business`,
-      languages: {
-        en: `${siteUrl}/en/business`,
-        fr: `${siteUrl}/business`,
-        "x-default": `${siteUrl}/business`,
-      },
-    },
-  };
+  });
 }
 
 export default async function BusinessPage({

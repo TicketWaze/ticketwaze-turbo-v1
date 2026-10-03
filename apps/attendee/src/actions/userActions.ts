@@ -62,7 +62,7 @@ export async function UpdateUserProfileImage(
 
     const data = await res.json();
     if (data.status === "success") {
-      revalidatePath("/settings/account");
+      revalidatePath("/profile");
       return {
         status: "success",
         message: "Image Uploaded",
@@ -108,6 +108,8 @@ export async function UpdateUserProfile(
       return {
         status: "failed",
         message: data.message,
+        // e.g. USERNAME_TAKEN, so the form can put the error on its field.
+        code: data.code as string | undefined,
       };
     }
   } catch (err: unknown) {
@@ -182,7 +184,8 @@ export async function RequestAccountDeletion(
       return {
         status: "success" as const,
         scheduledAt: data.scheduledAt as string,
-        soloOrgsWillLoseAccess: (data.soloOrgsWillLoseAccess ?? []) as DeletionOrg[],
+        soloOrgsWillLoseAccess: (data.soloOrgsWillLoseAccess ??
+          []) as DeletionOrg[],
       };
     }
     if (data.status === "ownership_transfer_required") {
@@ -194,7 +197,9 @@ export async function RequestAccountDeletion(
     }
     return { status: "failed" as const, message: data.message as string };
   } catch (err: unknown) {
-    return { error: err instanceof Error ? err.message : "An unknown error occurred" };
+    return {
+      error: err instanceof Error ? err.message : "An unknown error occurred",
+    };
   }
 }
 
@@ -221,7 +226,9 @@ export async function CancelAccountDeletion(
     }
     return { status: "failed" as const, message: data.message as string };
   } catch (err: unknown) {
-    return { error: err instanceof Error ? err.message : "An unknown error occurred" };
+    return {
+      error: err instanceof Error ? err.message : "An unknown error occurred",
+    };
   }
 }
 
@@ -276,14 +283,17 @@ export async function CreateUserWithdrawalRequestAction(
   },
 ) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me/withdrawal`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/users/me/withdrawal`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: JSON.stringify(body),
       },
-      body: JSON.stringify(body),
-    });
+    );
     const data = await res.json();
     if (data.status === "success") {
       revalidatePath("/wallet");
@@ -297,6 +307,8 @@ export async function CreateUserWithdrawalRequestAction(
       code: data.code as string | undefined,
     };
   } catch (err: unknown) {
-    return { error: err instanceof Error ? err.message : "An unknown error occurred" };
+    return {
+      error: err instanceof Error ? err.message : "An unknown error occurred",
+    };
   }
 }

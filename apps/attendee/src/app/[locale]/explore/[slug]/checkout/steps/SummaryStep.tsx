@@ -13,7 +13,6 @@ import { useTranslations } from "next-intl";
 import { Event, EventTicketType } from "@ticketwaze/typescript-config";
 import moncash from "../moncash.svg";
 import natcash from "@/assets/images/natcash.png";
-import Capitalize from "@/lib/Capitalize";
 import { FeeBreakdown, PaymentType, SelectedTicket } from "../checkout.types";
 import { SERVICE_FEE_RATE } from "../checkoutUtils";
 import { formatAmount } from "@ticketwaze/currency";
@@ -112,7 +111,12 @@ export default function SummaryStep({
         {/* Waitlist first-purchase perk banner */}
         {!isFree && feeWaived && (
           <div className="mx-[2rem] mt-[1.6rem] flex items-start gap-3 rounded-[12px] bg-[#EAF7EE] border border-[#BFE6CB] px-[1.5rem] py-[1.2rem]">
-            <Gift size="20" color="#1F9D55" variant="Bulk" className="shrink-0 mt-[2px]" />
+            <Gift
+              size="20"
+              color="#1F9D55"
+              variant="Bulk"
+              className="shrink-0 mt-[2px]"
+            />
             <p className="text-[1.3rem] leading-7 text-[#1a7a43]">
               {t("summary.fees_waived_banner")}
             </p>
@@ -144,9 +148,7 @@ export default function SummaryStep({
                       {ticket.quantity}
                     </span>
                     <span className="text-[1.5rem] font-medium text-deep-100">
-                      {ticketType
-                        ? Capitalize(ticketType.ticketTypeName)
-                        : "Unknown"}
+                      {ticketType ? ticketType.ticketTypeName : "Unknown"}
                     </span>
                   </div>
                   {isFree ? (
@@ -179,16 +181,18 @@ export default function SummaryStep({
           !absorbedByOrganiser &&
           !feesCancelled &&
           selectedWithIndex.length > 0 && (
-          <div className="px-8 py-[1.8rem] flex flex-col gap-4 border-b border-dashed border-neutral-200">
-            <div className="flex items-center justify-between text-[1.4rem]">
-              <span className="text-neutral-500">{t("summary.subtotal")}</span>
-              <span className="text-deep-100 font-medium">
-                {formatAmount(subtotal)} {event.currency}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-[1.4rem]">
-              <span className="text-neutral-500">
-                {/*
+            <div className="px-8 py-[1.8rem] flex flex-col gap-4 border-b border-dashed border-neutral-200">
+              <div className="flex items-center justify-between text-[1.4rem]">
+                <span className="text-neutral-500">
+                  {t("summary.subtotal")}
+                </span>
+                <span className="text-deep-100 font-medium">
+                  {formatAmount(subtotal)} {event.currency}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-[1.4rem]">
+                <span className="text-neutral-500">
+                  {/*
                   ONE ROW, AND THE RATE ONLY WHEN A RATE WAS CHARGED.
 
                   HTG tiers inside a flat band carry a single flat fee and no
@@ -201,38 +205,18 @@ export default function SummaryStep({
                   applies to the tiers above the bands, and the processor row
                   reappears beside this one with its own figure.
                 */}
-                {/* Custom admin fees are not the standard 3%, so no rate is
+                  {/* Custom admin fees are not the standard 3%, so no rate is
                     quoted for them. */}
-                {serviceFee > 0 && !customFees
-                  ? `Ticketwaze fee (${serviceFeeLabel} + ${t("summary.tax_label")})`
-                  : serviceFee > 0
-                    ? "Ticketwaze fee"
-                    : t("summary.transaction_fee")}
-              </span>
-              {feeWaived ? (
-                <span className="flex items-center gap-2">
-                  <span className="text-neutral-400 line-through">
-                    {formatAmount(ticketwazeFee)} {event.currency}
-                  </span>
-                  <span className="text-[1.1rem] font-semibold uppercase tracking-[0.04em] text-[#1F9D55] bg-[#EAF7EE] px-[0.6rem] py-[0.2rem] rounded-full">
-                    {t("summary.waived")}
-                  </span>
-                </span>
-              ) : (
-                <span className="text-deep-100 font-medium">
-                  {formatAmount(ticketwazeFee)} {event.currency}
-                </span>
-              )}
-            </div>
-            {transactionFee > 0 && (
-              <div className="flex items-center justify-between text-[1.4rem]">
-                <span className="text-neutral-500">
-                  {t("summary.transaction_fee")}
+                  {serviceFee > 0 && !customFees
+                    ? `Ticketwaze fee (${serviceFeeLabel} + ${t("summary.tax_label")})`
+                    : serviceFee > 0
+                      ? "Ticketwaze fee"
+                      : t("summary.transaction_fee")}
                 </span>
                 {feeWaived ? (
                   <span className="flex items-center gap-2">
                     <span className="text-neutral-400 line-through">
-                      {formatAmount(transactionFee)} {event.currency}
+                      {formatAmount(ticketwazeFee)} {event.currency}
                     </span>
                     <span className="text-[1.1rem] font-semibold uppercase tracking-[0.04em] text-[#1F9D55] bg-[#EAF7EE] px-[0.6rem] py-[0.2rem] rounded-full">
                       {t("summary.waived")}
@@ -240,13 +224,33 @@ export default function SummaryStep({
                   </span>
                 ) : (
                   <span className="text-deep-100 font-medium">
-                    {formatAmount(transactionFee)} {event.currency}
+                    {formatAmount(ticketwazeFee)} {event.currency}
                   </span>
                 )}
               </div>
-            )}
-          </div>
-        )}
+              {transactionFee > 0 && (
+                <div className="flex items-center justify-between text-[1.4rem]">
+                  <span className="text-neutral-500">
+                    {t("summary.transaction_fee")}
+                  </span>
+                  {feeWaived ? (
+                    <span className="flex items-center gap-2">
+                      <span className="text-neutral-400 line-through">
+                        {formatAmount(transactionFee)} {event.currency}
+                      </span>
+                      <span className="text-[1.1rem] font-semibold uppercase tracking-[0.04em] text-[#1F9D55] bg-[#EAF7EE] px-[0.6rem] py-[0.2rem] rounded-full">
+                        {t("summary.waived")}
+                      </span>
+                    </span>
+                  ) : (
+                    <span className="text-deep-100 font-medium">
+                      {formatAmount(transactionFee)} {event.currency}
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
         {/*
           THE TWO REDUCTIONS, ITEMISED SEPARATELY AND AFTER THE FEES.

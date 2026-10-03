@@ -5,13 +5,19 @@ import EventActions from "./EventActions";
 import { getLocale, getTranslations } from "next-intl/server";
 import {
   Calendar2,
+  Call,
   Clock,
+  Global,
   Google,
   Location,
+  People,
   RouteSquare,
   SecurityUser,
+  Sms,
   Video,
 } from "iconsax-reactjs";
+import RecommendedActivities from "@/components/activity/RecommendedActivities";
+import { pickRecommendations } from "@/lib/recommendations";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import FollowButton from "./FollowButton";
 import { auth } from "@/lib/auth";
@@ -23,7 +29,6 @@ import { Metadata } from "next";
 import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Capitalize from "@/lib/Capitalize";
-import StripHtml from "@/lib/StripHtml";
 import { extractIdFromSlug, slugify } from "@/lib/Slugify";
 import formatDate from "@/lib/FormatDate";
 import formatTime from "@/lib/formatTime";
@@ -31,6 +36,8 @@ import AnimatedEventPage from "./AnimatedEventPage";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import isEventPast from "@/lib/isEventPast";
 import isEventSalesEnded from "@/lib/isEventSalesEnded";
+import { DateTime } from "luxon";
+import { publicPageMetadata, snippet } from "@/lib/seoMetadata";
 import {
   JsonLd,
   buildEventJsonLd,
@@ -40,9 +47,9 @@ import {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, locale } = await params;
   const eventId = extractIdFromSlug(slug);
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
@@ -58,36 +65,39 @@ export async function generateMetadata({
   // Metadata must not throw. The API omits `event` for an event that is
   // deleted, cancelled or unapproved, and the page below answers that with
   // notFound() — but generateMetadata runs first, so it needs its own answer.
-  if (!event) return { title: "Ticketwaze" };
+  if (!event)
+    return { title: { absolute: "Ticketwaze" }, robots: { index: false } };
 
-  // Descriptions are rich text (HTML); strip tags so they don't leak into
-  // meta/OpenGraph previews, and trim to a sensible preview length.
-  const plainDescription = StripHtml(event.eventDescription).slice(0, 200);
+  const t = await getTranslations({ locale, namespace: "Metadata" });
+  // Where and when, the two things people scan a search result for. A teaser
+  // has neither yet, so both are optional.
+  const firstDay = [...(event.eventDays ?? [])].sort(
+    (a, b) => a.dayNumber - b.dayNumber,
+  )[0];
+  const date = firstDay
+    ? DateTime.fromISO(String(firstDay.eventDate), { zone: "utc" })
+        .setLocale(locale)
+        .toFormat("d LLL yyyy")
+    : null;
+  const where = [event.city, date].filter(Boolean).join(", ");
+  const title = `${event.eventName} – ${t("event.tickets")}${where ? ` · ${where}` : ""}`;
+  const body = snippet(
+    event.eventDescription,
+    t("event.fallbackDescription", { name: event.eventName }),
+  );
+  const description = where ? `${where}. ${body}` : body;
+
   return {
-    title: event.eventName,
-    description: plainDescription,
-    openGraph: {
-      title: event.eventName,
-      description: plainDescription,
-      type: "website",
-      images: event.eventImageUrl
-        ? [
-            {
-              url: event.eventImageUrl,
-              secureUrl: event.eventImageUrl,
-              width: 1200,
-              height: 630,
-              alt: event.eventName,
-            },
-          ]
-        : undefined,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: event.eventName,
-      description: plainDescription,
-      images: event.eventImageUrl ? [event.eventImageUrl] : undefined,
-    },
+    ...publicPageMetadata({
+      locale,
+      // The canonical slug, whatever spelling the visitor arrived on.
+      path: `/explore/${slugify(event.eventName, event.eventId)}`,
+      title,
+      description,
+      image: event.eventImageUrl,
+    }),
+    // Private events are reachable by link only; keep them out of search.
+    ...(event.isPrivate && { robots: { index: false, follow: false } }),
   };
 }
 
@@ -253,6 +263,41 @@ export default async function EventPage({
     (follower: any) => follower.userId === session?.user.userId,
   );
 
+  // "500+ sold": rounded down to a milestone, and hidden below 10 so a quiet
+  // start isn't advertised.
+  const sold = (event.eventTicketTypes ?? []).reduce(
+    (total, type) => total + (type.ticketTypeQuantitySold ?? 0),
+    0,
+  );
+  const soldMilestone = [10000, 5000, 1000, 500, 250, 100, 50, 10].find(
+    (step) => sold >= step,
+  );
+  const soldText = soldMilestone
+    ? t("soldCount", {
+        count:
+          soldMilestone >= 1000 ? `${soldMilestone / 1000}k` : soldMilestone,
+      })
+    : null;
+  const isOnline = event.eventCategory === "meet";
+
+  // Other activities for the bottom row (same cached list explore uses).
+  let recommendations: Event[] = [];
+  try {
+    const listRequest = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/events`,
+      {
+        next: { revalidate: 60 },
+      },
+    );
+    const list = await listRequest.json();
+    recommendations = pickRecommendations(event, [
+      ...(list?.events ?? []),
+      ...(list?.comingSoon ?? []),
+    ]);
+  } catch {
+    recommendations = [];
+  }
+
   const layoutT = await getTranslations("Layout");
   const eventUrl = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore/${slug}`;
   const eventJsonLd = buildEventJsonLd({
@@ -265,6 +310,190 @@ export default async function EventPage({
     { name: event.eventName },
   ]);
 
+  const details = (
+    <div className="flex flex-col gap-8">
+      <span className="font-semibold text-[1.6rem] leading-8 text-deep-200">
+        {t("details")}
+      </span>
+      <div className="flex items-center justify-between w-full gap-4">
+        <Link
+          href={`/organisations/${slugify(organisation.organisationName, organisation.organisationId)}`}
+          className="flex items-center gap-4 min-w-0"
+        >
+          {organisation?.profileImageUrl ? (
+            <Image
+              src={organisation.profileImageUrl}
+              width={35}
+              height={35}
+              alt={organisation.organisationName}
+              className="rounded-full size-14 object-cover"
+            />
+          ) : (
+            <span className="w-14 h-14 shrink-0 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
+              {organisation?.organisationName.slice()[0]?.toUpperCase()}
+            </span>
+          )}
+          <span className="flex flex-col min-w-0">
+            <span className="font-normal text-[1.4rem] leading-8 text-deep-200 truncate">
+              {organisation.organisationName}{" "}
+              {organisation.isVerified && <VerifiedOrganisationCheckMark />}
+            </span>
+            <span className="font-normal text-[1.3rem] leading-8 text-neutral-600">
+              {organisation.followers.length} {t("followers")}
+            </span>
+          </span>
+        </Link>
+        <FollowButton
+          organisationId={event.organisationId}
+          initialIsFollowing={isFollowing.length > 0}
+        />
+      </div>
+      <ul className="flex flex-col gap-8">
+        {event.eventDays.map((eventDate) => (
+          <li key={eventDate.eventDayId} className="flex flex-col w-full gap-6">
+            <div className="flex items-center gap-4">
+              <span className="w-14 h-14 shrink-0 flex items-center justify-center bg-neutral-100 rounded-full">
+                <Calendar2 size="20" color="#737c8a" variant="Bulk" />
+              </span>
+              <span className="font-normal text-[1.4rem] leading-8 text-deep-200">
+                {formatDate(eventDate.eventDate, locale, eventDate.timezone)}
+              </span>
+              {!isOnline && <AddToCalendar event={event} />}
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="w-14 h-14 shrink-0 flex items-center justify-center bg-neutral-100 rounded-full">
+                <Clock size="20" color="#737c8a" variant="Bulk" />
+              </span>
+              <span className="font-normal text-[1.4rem] leading-8 text-deep-200">
+                {formatTime(eventDate.startTime, eventDate.timezone, locale)} -{" "}
+                {formatTime(eventDate.endTime, eventDate.timezone, locale)}{" "}
+                <span className="text-neutral-600">
+                  (
+                  {timezoneAbbreviation(
+                    eventDate.timezone,
+                    String(eventDate.eventDate),
+                    locale,
+                  )}
+                  )
+                </span>
+              </span>
+            </div>
+          </li>
+        ))}
+      </ul>
+      {isOnline && <OnlinePlatform provider={event.onlineProvider} />}
+      {!isOnline && locationLabel && (
+        <div className="flex items-center gap-4">
+          <span className="w-14 h-14 shrink-0 flex items-center justify-center bg-neutral-100 rounded-full">
+            <Location size="20" color="#737c8a" variant="Bulk" />
+          </span>
+          <span className="font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]">
+            {locationLabel}
+          </span>
+        </div>
+      )}
+      {soldText && (
+        <div className="flex items-center gap-4">
+          <span className="w-14 h-14 shrink-0 flex items-center justify-center bg-neutral-100 rounded-full">
+            <People size="20" color="#737c8a" variant="Bulk" />
+          </span>
+          <span className="font-normal text-[1.4rem] leading-8 text-deep-200">
+            {soldText}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+
+  // Under the details: the map for an in-person activity, or Figma's "Note"
+  // for an online one (the link arrives with the ticket).
+  const whereBlock = isOnline ? (
+    <>
+      <Separator />
+      <div className="flex flex-col gap-4">
+        <span className="font-semibold text-[1.6rem] leading-8 text-deep-200">
+          {t("note")}
+        </span>
+        <p className="text-[1.5rem] leading-9 text-neutral-700">
+          {t("onlineNote")}
+        </p>
+      </div>
+    </>
+  ) : hasCoordinates ? (
+    <>
+      <Separator />
+      <div className="flex flex-col gap-8">
+        <div className="flex items-center justify-between">
+          <span className="font-semibold text-[1.6rem] leading-8 text-deep-200">
+            {t("direction")}
+          </span>
+          <Link
+            href={`https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`}
+            target="_blank"
+            className="group flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
+          >
+            {t("open")}{" "}
+            <RouteSquare
+              variant="Bulk"
+              color="#E45B00"
+              size={20}
+              className="transition-transform group-hover:translate-x-0.5"
+            />
+          </Link>
+        </div>
+        <Map location={event.location} />
+      </div>
+    </>
+  ) : null;
+
+  const website = organisation.organisationWebsite as string | undefined;
+  const contact =
+    organisation.organisationEmail ||
+    organisation.organisationPhoneNumber ||
+    website ? (
+      <>
+        <Separator />
+        <div className="flex flex-col gap-6">
+          <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
+            {t("contact")}
+          </span>
+          <div className="flex flex-col gap-4">
+            {organisation.organisationEmail && (
+              <a
+                href={`mailto:${organisation.organisationEmail}`}
+                className="flex items-center gap-4 text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 transition-colors w-fit"
+              >
+                <Sms size="20" color="#737c8a" variant="Bulk" />
+                {organisation.organisationEmail}
+              </a>
+            )}
+            {organisation.organisationPhoneNumber && (
+              <a
+                href={`tel:${String(organisation.organisationPhoneNumber).replace(/\s+/g, "")}`}
+                className="flex items-center gap-4 text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 transition-colors w-fit"
+              >
+                <Call size="20" color="#737c8a" variant="Bulk" />
+                {organisation.organisationPhoneNumber}
+              </a>
+            )}
+            {website && (
+              <a
+                href={
+                  /^https?:\/\//.test(website) ? website : `https://${website}`
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-4 text-[1.5rem] leading-8 text-neutral-700 underline underline-offset-4 hover:text-primary-500 transition-colors w-fit"
+              >
+                <Global size="20" color="#737c8a" variant="Bulk" />
+                {website.replace(/^https?:\/\//, "")}
+              </a>
+            )}
+          </div>
+        </div>
+      </>
+    ) : null;
+
   return (
     <AttendeeLayout title={event.eventName}>
       <JsonLd data={eventJsonLd} />
@@ -274,454 +503,89 @@ export default async function EventPage({
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
           {event.eventName}
         </span>
-        <main className="w-full gap-8 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:min-h-0 lg:overflow-y-auto lg:h-full">
-          <div className="flex flex-col gap-8 overflow-y-auto min-h-0">
-            <EventImageLightbox
-              src={event.eventImageUrl}
-              alt={event.eventName}
-              width={580}
-              height={298}
-            />
-            <EventActions
-              event={event}
-              isFavorite={isFavorite}
-              isPast={isEventPast(event)}
-              salesEnded={isEventSalesEnded(event)}
-              hasReserved={hasReserved}
-              reservationCount={reservationCount}
-            />
-            <Separator />
-            <div className="flex flex-col gap-4">
-              <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-                {t("about")}
-              </span>
-              <div
-                className="rich-text text-[1.6rem] font-sans leading-10 text-neutral-700"
-                dangerouslySetInnerHTML={{ __html: event.eventDescription }}
+        {/* One scroll area: the two columns, then the full-width row of
+            recommendations under both (Figma "Event summary + more"). */}
+        <div className="flex flex-col gap-12 lg:min-h-0 lg:overflow-y-auto lg:h-full -mx-4 px-4">
+          <main className="w-full gap-8 lg:gap-16 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:items-start">
+            <div className="flex flex-col gap-8">
+              <EventImageLightbox
+                src={event.eventImageUrl}
+                alt={event.eventName}
+                width={580}
+                height={298}
               />
-            </div>
-            {eventPerformers.length > 0 && (
-              <>
-                <Separator />
-                <ul className=" grid grid-cols-[repeat(auto-fill,12rem)] justify-center lg:justify-start items-start gap-8 w-full shrink-0">
-                  {eventPerformers.map((eventPerformer) => (
-                    <li
-                      key={eventPerformer.eventPerformerId}
-                      className="shrink-0"
-                    >
-                      <Link
-                        href={eventPerformer.performerLink}
-                        target="_blank"
-                        className="group flex flex-col items-center gap-3 w-48"
-                      >
-                        <span className="flex items-center justify-center w-48 h-48 overflow-hidden rounded-full">
-                          <Image
-                            src={eventPerformer.performerProfileUrl}
-                            width={120}
-                            height={120}
-                            loading="eager"
-                            alt={eventPerformer.performerName}
-                          />
-                        </span>
-                        {/* Circle-wide and cut with an ellipsis, so a long name
-                            cannot push the row apart; the full name on hover. */}
-                        <span
-                          title={eventPerformer.performerName}
-                          className="block w-full truncate text-center text-[1.4rem] font-medium leading-8 text-deep-100 group-hover:text-primary-500 transition-colors"
-                        >
-                          {eventPerformer.performerName}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
-            {/* <Separator />
-            <div>
-              <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-                {t("contact")}
-              </span>
-            </div>
-            <div className={"flex flex-col gap-2"}>
-              <div className={"flex items-center gap-4"}>
-                <Sms size="20" color="#737c8a" variant="Bulk" />
-                <span
-                  className={
-                    "font-normal text-[1.5rem] leading-[30px] text-neutral-700"
-                  }
-                >
-                  {organisation.organisationEmail}
+              <EventActions
+                event={event}
+                isFavorite={isFavorite}
+                isPast={isEventPast(event)}
+                salesEnded={isEventSalesEnded(event)}
+                hasReserved={hasReserved}
+                reservationCount={reservationCount}
+              />
+              <Separator />
+              <div className="flex flex-col gap-4">
+                <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
+                  {t("about")}
                 </span>
-              </div>
-              <div className={"flex items-center gap-4"}>
-                <Call size="20" color="#737c8a" variant="Bulk" />
-                <span
-                  className={
-                    "font-normal text-[1.5rem] leading-[30px] text-neutral-700"
-                  }
-                >
-                  {organisation.organisationPhoneNumber}
-                </span>
-              </div>
-              {organisation.organisationWebsite && (
-                <div className={"flex items-center gap-4"}>
-                  <Global size="20" color="#737c8a" variant="Bulk" />
-                  <span
-                    className={
-                      "font-normal text-[1.5rem] leading-[30px] text-neutral-700"
-                    }
-                  >
-                    {organisation.organisationWebsite}
-                  </span>
-                </div>
-              )}
-            </div> */}
-
-            <div className="lg:hidden flex flex-col gap-8">
-              <div className={"flex flex-col gap-8"}>
-                <span
-                  className={
-                    "font-semibold text-[1.6rem] leading-8 text-deep-200"
-                  }
-                >
-                  {t("details")}
-                </span>
-                {/*  organizer*/}
-                <div className={"flex items-center justify-between w-full"}>
-                  <Link
-                    href={`/organisations/${slugify(organisation.organisationName, organisation.organisationId)}`}
-                    className={"flex items-center gap-4"}
-                  >
-                    {organisation?.profileImageUrl ? (
-                      <Image
-                        src={organisation.profileImageUrl}
-                        width={35}
-                        height={35}
-                        alt={organisation.organisationName}
-                        className="rounded-full"
-                      />
-                    ) : (
-                      <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
-                        {organisation?.organisationName
-                          .slice()[0]
-                          ?.toUpperCase()}
-                      </span>
-                    )}
-                    <div className={"flex flex-col"}>
-                      <span
-                        className={
-                          "font-normal text-[1.4rem] leading-8 text-deep-200"
-                        }
-                      >
-                        {organisation.organisationName}{" "}
-                        {organisation.isVerified && (
-                          <VerifiedOrganisationCheckMark />
-                        )}
-                      </span>
-                      <span
-                        className={
-                          "font-normal text-[1.3rem] leading-8 text-neutral-600"
-                        }
-                      >
-                        {organisation.followers.length} {t("followers")}
-                      </span>
-                    </div>
-                  </Link>
-                  <FollowButton
-                    organisationId={event.organisationId}
-                    initialIsFollowing={isFollowing.length > 0}
-                  />
-                </div>
-                <ul className="flex flex-col w-full">
-                  {event.eventDays.map((eventDate) => {
-                    return (
-                      <li
-                        key={eventDate.eventDayId}
-                        className="flex flex-col gap-6"
-                      >
-                        {/*  date*/}
-                        <div className={"flex items-center gap-2"}>
-                          <div
-                            className={
-                              "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                            }
-                          >
-                            <Calendar2
-                              size="20"
-                              color="#737c8a"
-                              variant="Bulk"
-                            />
-                          </div>
-                          <span
-                            className={
-                              "font-normal text-[1.4rem] leading-8 text-deep-200"
-                            }
-                          >
-                            {formatDate(
-                              eventDate.eventDate,
-                              locale,
-                              eventDate.timezone,
-                            )}
-                          </span>
-                          {event.eventCategory !== "meet" && (
-                            <AddToCalendar event={event} />
-                          )}
-                        </div>
-                        {/*  time*/}
-                        <div className={"flex items-center gap-2"}>
-                          <div
-                            className={
-                              "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                            }
-                          >
-                            <Clock size="20" color="#737c8a" variant="Bulk" />
-                          </div>
-                          <span
-                            className={
-                              "font-normal text-[1.4rem] leading-8 text-deep-200"
-                            }
-                          >
-                            {formatTime(
-                              eventDate.startTime,
-                              eventDate.timezone,
-                              locale,
-                            )}{" "}
-                            -{" "}
-                            {formatTime(
-                              eventDate.endTime,
-                              eventDate.timezone,
-                              locale,
-                            )}{" "}
-                            - {eventDate.timezone}
-                          </span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-                {/*  address*/}
-                {event.eventCategory === "meet" && (
-                  <OnlinePlatform provider={event.onlineProvider} />
-                )}
-                {event.eventCategory !== "meet" && locationLabel && (
-                  <div className={"flex items-center gap-2 "}>
-                    <div
-                      className={
-                        "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                      }
-                    >
-                      <Location size="20" color="#737c8a" variant="Bulk" />
-                    </div>
-                    <span
-                      className={
-                        "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
-                      }
-                    >
-                      {locationLabel}
-                    </span>
-                  </div>
-                )}
-              </div>
-              {event.eventCategory !== "meet" && hasCoordinates && (
-                <>
-                  <Separator />
-                  <div className=" flex flex-col gap-8">
-                    <div className="flex items-center justify-between">
-                      <span
-                        className={
-                          "font-semibold text-[1.6rem] leading-8 text-deep-200"
-                        }
-                      >
-                        {t("direction")}
-                      </span>
-
-                      <Link
-                        href={`https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`}
-                        target="_blank"
-                        className="flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
-                      >
-                        {t("open")}{" "}
-                        <RouteSquare variant="Bulk" color="#E45B00" size={20} />
-                      </Link>
-                    </div>
-                    <Map location={event.location} />
-                    <div></div>
-                  </div>
-                </>
-              )}
-            </div>
-            <div></div>
-          </div>
-
-          <div className="hidden lg:flex lg:flex-col lg:overflow-y-auto min-h-0 flex-col gap-8 p-4 pt-0">
-            <div className={"flex flex-col gap-8"}>
-              <span
-                className={
-                  "font-semibold text-[1.6rem] leading-8 text-deep-200"
-                }
-              >
-                {t("details")}
-              </span>
-              {/*  organizer*/}
-              <div className={"flex items-center justify-between w-full"}>
-                <Link
-                  href={`/organisations/${slugify(organisation.organisationName, organisation.organisationId)}`}
-                  className={"flex items-center gap-4"}
-                >
-                  {organisation?.profileImageUrl ? (
-                    <Image
-                      src={organisation.profileImageUrl}
-                      width={35}
-                      height={35}
-                      alt={organisation.organisationName}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2.2rem] leading-12 font-primary">
-                      {organisation?.organisationName.slice()[0]?.toUpperCase()}
-                    </span>
-                  )}
-                  <div className={"flex flex-col"}>
-                    <span
-                      className={
-                        "font-normal text-[1.4rem] leading-8 text-deep-200"
-                      }
-                    >
-                      {organisation.organisationName}{" "}
-                      {organisation.isVerified && (
-                        <VerifiedOrganisationCheckMark />
-                      )}
-                    </span>
-                    <span
-                      className={
-                        "font-normal text-[1.3rem] leading-8 text-neutral-600"
-                      }
-                    >
-                      {organisation.followers.length} {t("followers")}
-                    </span>
-                  </div>
-                </Link>
-                <FollowButton
-                  organisationId={event.organisationId}
-                  initialIsFollowing={isFollowing.length > 0}
+                <div
+                  className="rich-text text-[1.6rem] font-sans leading-10 text-neutral-700"
+                  dangerouslySetInnerHTML={{ __html: event.eventDescription }}
                 />
               </div>
-              <ul className="flex flex-col gap-8">
-                {event.eventDays.map((eventDate) => {
-                  return (
-                    <li
-                      key={eventDate.eventDayId}
-                      className="flex flex-col w-full gap-2"
-                    >
-                      {/*  date*/}
-                      <div className={"flex items-center gap-2"}>
-                        <div
-                          className={
-                            "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                          }
+              {eventPerformers.length > 0 && (
+                <>
+                  <Separator />
+                  <ul className=" grid grid-cols-[repeat(auto-fill,12rem)] justify-center lg:justify-start items-start gap-8 w-full shrink-0">
+                    {eventPerformers.map((eventPerformer) => (
+                      <li
+                        key={eventPerformer.eventPerformerId}
+                        className="shrink-0"
+                      >
+                        <Link
+                          href={eventPerformer.performerLink}
+                          target="_blank"
+                          className="group flex flex-col items-center gap-3 w-48"
                         >
-                          <Calendar2 size="20" color="#737c8a" variant="Bulk" />
-                        </div>
-                        <span
-                          className={
-                            "font-normal text-[1.4rem] leading-8 text-deep-200"
-                          }
-                        >
-                          {formatDate(
-                            eventDate.eventDate,
-                            locale,
-                            eventDate.timezone,
-                          )}
-                        </span>
-                        {event.eventCategory !== "meet" && (
-                          <AddToCalendar event={event} />
-                        )}
-                      </div>
-                      {/*  time*/}
-                      <div className={"flex items-center gap-2"}>
-                        <div
-                          className={
-                            "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                          }
-                        >
-                          <Clock size="20" color="#737c8a" variant="Bulk" />
-                        </div>
-                        <span
-                          className={
-                            "font-normal text-[1.4rem] leading-8 text-deep-200"
-                          }
-                        >
-                          {formatTime(
-                            eventDate.startTime,
-                            eventDate.timezone,
-                            locale,
-                          )}{" "}
-                          -{" "}
-                          {formatTime(
-                            eventDate.endTime,
-                            eventDate.timezone,
-                            locale,
-                          )}{" "}
-                          - {eventDate.timezone}
-                        </span>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-              {/*  address*/}
-              {event.eventCategory === "meet" && (
-                <OnlinePlatform provider={event.onlineProvider} />
+                          <span className="flex items-center justify-center w-48 h-48 overflow-hidden rounded-full">
+                            <Image
+                              src={eventPerformer.performerProfileUrl}
+                              width={120}
+                              height={120}
+                              loading="eager"
+                              alt={eventPerformer.performerName}
+                            />
+                          </span>
+                          {/* Circle-wide and cut with an ellipsis, so a long name
+                              cannot push the row apart; the full name on hover. */}
+                          <span
+                            title={eventPerformer.performerName}
+                            className="block w-full truncate text-center text-[1.4rem] font-medium leading-8 text-deep-100 group-hover:text-primary-500 transition-colors"
+                          >
+                            {eventPerformer.performerName}
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </>
               )}
-              {event.eventCategory !== "meet" && locationLabel && (
-                <div className={"flex items-center gap-2 "}>
-                  <div
-                    className={
-                      "w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full"
-                    }
-                  >
-                    <Location size="20" color="#737c8a" variant="Bulk" />
-                  </div>
-                  <span
-                    className={
-                      "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
-                    }
-                  >
-                    {locationLabel}
-                  </span>
-                </div>
-              )}
-            </div>
-            {event.eventCategory !== "meet" && hasCoordinates && (
-              <>
+              {contact}
+              <div className="lg:hidden flex flex-col gap-8">
                 <Separator />
-                <div className=" flex flex-col gap-8">
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={
-                        "font-semibold text-[1.6rem] leading-8 text-deep-200"
-                      }
-                    >
-                      {t("direction")}
-                    </span>
-
-                    <Link
-                      href={`https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`}
-                      target="_blank"
-                      className="flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
-                    >
-                      {t("open")}{" "}
-                      <RouteSquare variant="Bulk" color="#E45B00" size={20} />
-                    </Link>
-                  </div>
-                  <Map location={event.location} />
-                  <div></div>
-                </div>
-              </>
-            )}
-          </div>
-        </main>
+                {details}
+                {whereBlock}
+              </div>
+            </div>
+            <aside className="hidden lg:flex flex-col gap-8 lg:sticky lg:top-0">
+              {details}
+              {whereBlock}
+            </aside>
+          </main>
+          <RecommendedActivities
+            title={t("recommended")}
+            events={recommendations}
+          />
+        </div>
       </AnimatedEventPage>
     </AttendeeLayout>
   );
@@ -763,4 +627,25 @@ function OnlinePlatform({ provider }: { provider: string | null | undefined }) {
       </span>
     </div>
   );
+}
+
+/**
+ * "EDT", "GMT-5", … for the activity's own timezone on that day — shorter than
+ * the IANA name the times used to end with, and still enough for a visitor
+ * abroad to know which clock the times are on.
+ */
+function timezoneAbbreviation(timezone: string, day: string, locale: string) {
+  try {
+    const date = new Date(`${day.slice(0, 10)}T12:00:00Z`);
+    return (
+      new Intl.DateTimeFormat(locale, {
+        timeZone: timezone,
+        timeZoneName: "short",
+      })
+        .formatToParts(date)
+        .find((part) => part.type === "timeZoneName")?.value ?? timezone
+    );
+  } catch {
+    return timezone;
+  }
 }

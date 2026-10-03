@@ -43,9 +43,13 @@ export default function DeleteAccountModal() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoingBack, setIsGoingBack] = useState(false);
   const [scheduledAt, setScheduledAt] = useState<string | null>(null);
-  const [orgsNeedingTransfer, setOrgsNeedingTransfer] = useState<DeletionOrg[]>([]);
+  const [orgsNeedingTransfer, setOrgsNeedingTransfer] = useState<DeletionOrg[]>(
+    [],
+  );
   const [soloOrgs, setSoloOrgs] = useState<DeletionOrg[]>([]);
-  const [soloOrgsWillLoseAccess, setSoloOrgsWillLoseAccess] = useState<DeletionOrg[]>([]);
+  const [soloOrgsWillLoseAccess, setSoloOrgsWillLoseAccess] = useState<
+    DeletionOrg[]
+  >([]);
   const [countdown, setCountdown] = useState(10);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -136,7 +140,9 @@ export default function DeleteAccountModal() {
   const reasonLabels: Record<(typeof REASONS)[number], string> = {
     no_longer_needed: t("account.delete_modal.reasons.no_longer_needed"),
     privacy_concerns: t("account.delete_modal.reasons.privacy_concerns"),
-    found_better_alternative: t("account.delete_modal.reasons.found_better_alternative"),
+    found_better_alternative: t(
+      "account.delete_modal.reasons.found_better_alternative",
+    ),
     too_many_emails: t("account.delete_modal.reasons.too_many_emails"),
     other: t("account.delete_modal.reasons.other"),
   };
@@ -156,7 +162,6 @@ export default function DeleteAccountModal() {
       </DialogTrigger>
 
       <DialogContent className="max-h-[90dvh] overflow-y-auto flex flex-col gap-0 p-0 lg:p-0 border-0">
-
         {/* ── STEP 1: Form ── */}
         {view === "form" && (
           <>
@@ -211,7 +216,9 @@ export default function DeleteAccountModal() {
                         </span>
                         <span
                           className={`text-[1.5rem] leading-8 ${
-                            selected ? "text-failure font-medium" : "text-deep-100"
+                            selected
+                              ? "text-failure font-medium"
+                              : "text-deep-100"
                           }`}
                         >
                           {reasonLabels[r]}
@@ -252,7 +259,11 @@ export default function DeleteAccountModal() {
                 ) : (
                   <>
                     {t("account.delete_modal.submit")}
-                    <ArrowRight2 size="18" color="currentColor" variant="Bulk" />
+                    <ArrowRight2
+                      size="18"
+                      color="currentColor"
+                      variant="Bulk"
+                    />
                   </>
                 )}
               </ButtonRed>
@@ -378,12 +389,13 @@ export default function DeleteAccountModal() {
                 onClick={handleGoBack}
                 className="sm:w-auto"
               >
-                {isGoingBack ? <LoadingCircleSmall /> : t("account.delete_modal.go_back")}
+                {isGoingBack ? (
+                  <LoadingCircleSmall />
+                ) : (
+                  t("account.delete_modal.go_back")
+                )}
               </ButtonNeutral>
-              <ButtonRed
-                onClick={() => setView("success")}
-                className="flex-1"
-              >
+              <ButtonRed onClick={() => setView("success")} className="flex-1">
                 {t("account.delete_modal.confirm_deletion")}
               </ButtonRed>
             </div>
@@ -432,13 +444,17 @@ export default function DeleteAccountModal() {
               <div className="relative w-16 h-16">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 36 36">
                   <circle
-                    cx="18" cy="18" r="15.9"
+                    cx="18"
+                    cy="18"
+                    r="15.9"
                     fill="none"
                     stroke="#e5e7eb"
                     strokeWidth="2.5"
                   />
                   <circle
-                    cx="18" cy="18" r="15.9"
+                    cx="18"
+                    cy="18"
+                    r="15.9"
                     fill="none"
                     stroke="#737C8A"
                     strokeWidth="2.5"
@@ -458,7 +474,6 @@ export default function DeleteAccountModal() {
             </div>
           </>
         )}
-
       </DialogContent>
     </Dialog>
   );

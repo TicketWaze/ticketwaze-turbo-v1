@@ -73,6 +73,7 @@ export default function DiscountDrawerContent({ event }: { event: Event }) {
         }),
       perUserLimit: z.string().optional(),
       minPurchase: z.string().optional(),
+      notifyFollowers: z.boolean().optional(),
     })
     .refine(
       (data) =>
@@ -90,10 +91,11 @@ export default function DiscountDrawerContent({ event }: { event: Event }) {
     formState: { isSubmitting, errors },
   } = useForm<TDiscountCodeSchema>({
     resolver: zodResolver(DiscountCodeSchema),
-    defaultValues: { type: "percentage" },
+    defaultValues: { type: "percentage", notifyFollowers: false },
   });
 
   const type = watch("type");
+  const notifyFollowers = watch("notifyFollowers");
 
   async function submitHandler(data: TDiscountCodeSchema) {
     /**
@@ -112,6 +114,7 @@ export default function DiscountDrawerContent({ event }: { event: Event }) {
         usageLimit: Number(data.usageLimit),
         ...(data.perUserLimit ? { perUserLimit: Number(data.perUserLimit) } : {}),
         ...(data.minPurchase ? { minPurchase: Number(data.minPurchase) } : {}),
+        notifyFollowers: Boolean(data.notifyFollowers),
       },
       pathname,
       locale,
@@ -292,6 +295,28 @@ export default function DiscountDrawerContent({ event }: { event: Event }) {
           >
             {`${t("min_purchase")} (${event.currency})`}
           </Input>
+
+          {/* Opt-in announcement. Codes are often meant for one partner, so
+              followers only hear about a code when the organiser says so —
+              and then they receive the code itself in their notifications. */}
+          <label className="flex items-start gap-4 rounded-[15px] bg-neutral-100 px-8 py-6 cursor-pointer">
+            <input
+              type="checkbox"
+              className="mt-[3px] size-[1.8rem] accent-primary-500 cursor-pointer"
+              checked={Boolean(notifyFollowers)}
+              onChange={(e) =>
+                setValue("notifyFollowers", e.target.checked)
+              }
+            />
+            <span className="flex flex-col gap-1">
+              <span className="text-[1.5rem] leading-8 text-deep-200">
+                {t("notify_followers")}
+              </span>
+              <span className="text-[1.3rem] leading-6 text-neutral-600">
+                {t("notify_followers_description")}
+              </span>
+            </span>
+          </label>
         </div>
       </div>
 

@@ -6,6 +6,7 @@ import { Restaurant } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import AnimatedEventPage from "../../[slug]/AnimatedEventPage";
 import { auth } from "@/lib/auth";
+import { publicPageMetadata, snippet } from "@/lib/seoMetadata";
 import RestaurantDetail, {
   type AttendeeMenu,
   type RestaurantOrganisation,
@@ -27,7 +28,8 @@ async function fetchRestaurant(slug: string, locale: string) {
   if (!request.ok || !response?.restaurant) return null;
   return {
     restaurant: response.restaurant as Restaurant,
-    organisation: (response.organisation ?? null) as RestaurantOrganisation | null,
+    organisation: (response.organisation ??
+      null) as RestaurantOrganisation | null,
     menus: (response.menus ?? []) as AttendeeMenu[],
   };
 }
@@ -66,13 +68,16 @@ export async function generateMetadata({
   const { slug } = await params;
   const locale = await getLocale();
   const data = await fetchRestaurant(slug, locale);
-  if (!data) return { title: "Ticketwaze" };
-  return {
-    title: data.restaurant.name,
-    description: data.restaurant.description
-      ?.replace(/<[^>]*>/g, "")
-      .slice(0, 160),
-  };
+  if (!data)
+    return { title: { absolute: "Ticketwaze" }, robots: { index: false } };
+  const { restaurant } = data;
+  return publicPageMetadata({
+    locale,
+    path: `/explore/restaurant/${restaurant.slug}`,
+    title: restaurant.name,
+    description: snippet(restaurant.description, restaurant.name),
+    image: restaurant.coverImageUrl,
+  });
 }
 
 export default async function RestaurantPage({

@@ -44,15 +44,17 @@ export default function PrintedTicketsSection({
   return (
     <div className="flex flex-col gap-6 pt-4">
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-4">
-          <h2 className="font-medium font-primary text-[2rem] leading-10 text-deep-100">
+        {/* Wraps rather than squeezes: on a phone the badges drop under the
+            title instead of breaking it (and themselves) over two lines. */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <h2 className="font-medium font-primary text-[2rem] leading-10 text-deep-100 whitespace-nowrap">
             {t("title")}
           </h2>
-          <span className="px-4 py-[3px] rounded-[30px] bg-neutral-100 text-[1.2rem] font-medium leading-6 text-neutral-600">
+          <span className="px-4 py-[3px] rounded-[30px] bg-neutral-100 text-[1.2rem] font-medium leading-6 text-neutral-600 whitespace-nowrap">
             {t("summary", { printed, scanned })}
           </span>
           {cancelled > 0 && (
-            <span className="px-4 py-[3px] rounded-[30px] bg-[#FDECEA] text-[1.2rem] font-medium leading-6 text-[#B3261E]">
+            <span className="px-4 py-[3px] rounded-[30px] bg-[#FDECEA] text-[1.2rem] font-medium leading-6 text-[#B3261E] whitespace-nowrap">
               {t("cancelled", { count: cancelled })}
             </span>
           )}
@@ -66,7 +68,9 @@ export default function PrintedTicketsSection({
             <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("table.date")}
             </TableHead>
-            <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+            {/* Mobile keeps the date and the two counts, like the buyers table
+                above keeps name and status; the rest is desktop-only. */}
+            <TableHead className="hidden lg:table-cell font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
               {t("table.ticket_type")}
             </TableHead>
             <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
@@ -86,7 +90,7 @@ export default function PrintedTicketsSection({
               <TableCell className="text-[1.5rem] py-[15px] leading-8 text-neutral-900">
                 {FormatDate(batch.createdAt, locale, timezone)}
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden lg:table-cell">
                 <span className="py-[3px] text-[1.1rem] font-bold leading-6 uppercase text-[#EF1870] px-[5px] rounded-[30px] bg-[#f5f5f5]">
                   {batch.ticketType}
                 </span>

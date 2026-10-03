@@ -44,11 +44,13 @@ function FrequentlyAskedQuestions() {
     >
       <h2
         className={
-          "font-primary font-bold text-[3.2rem] lg:text-[5.4rem] leading-[35px] lg:leading-[65px] text-neutral-800 max-w-[550px] text-center "
+          "font-primary font-normal text-[3.2rem] lg:text-[5.4rem] leading-[35px] lg:leading-[65px] text-neutral-800 max-w-[550px] text-center"
         }
       >
         {t("title-1")}
-        <span className={"text-primary-500"}>{t("title-2")}</span>
+        <span className={"block font-bold text-primary-500"}>
+          {t("title-2")}
+        </span>
       </h2>
       <div className={"w-full max-w-[890px]"}>
         <Accordion

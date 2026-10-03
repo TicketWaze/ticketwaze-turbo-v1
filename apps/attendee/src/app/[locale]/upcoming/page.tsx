@@ -1,16 +1,20 @@
+import SignedOutState from "@/components/SignedOutState";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { auth } from "@/lib/auth";
 import UpcomingPageContent from "./UpcomingPageContent";
-import { getLocale } from "next-intl/server";
-import { redirect } from "@/i18n/navigation";
+import { getTranslations } from "next-intl/server";
 import { Event, MyRaffle } from "@ticketwaze/typescript-config";
 
 export default async function UpcomingPage() {
   const session = await auth();
-  const locale = await getLocale();
 
   if (!session) {
-    redirect({ href: "/auth/login", locale });
+    const title = (await getTranslations("Upcoming"))("title");
+    return (
+      <AttendeeLayout title={title}>
+        <SignedOutState page="upcoming" title={title} />
+      </AttendeeLayout>
+    );
   }
 
   // This is an authenticated, per-user request, so never cache it. Guard every

@@ -1,10 +1,9 @@
-/* eslint-disable react-hooks/immutability */
 "use client";
 import { Link, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn, useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
@@ -13,11 +12,36 @@ import { useSearchParams } from "next/navigation";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { LinkAccent } from "@/components/shared/Links";
-import { useGoogleSignIn } from "@/lib/useGoogleSignIn";
-import { ArrowLeft2, ArrowRight2, LoginCurve } from "iconsax-reactjs";
+import GoogleSignInButton from "@/components/shared/GoogleSignInButton";
+import {
+  AuthHeading,
+  AuthItem,
+  AuthRole,
+  AuthScreen,
+  AuthSplash,
+  FooterPill,
+  FooterPillText,
+  OrDivider,
+  RoleCards,
+  backPillClass,
+  pillActionClass,
+} from "@/components/auth/AuthParts";
+import TermsNote from "@/components/auth/TermsNote";
+import OtpCodeInput, { emptyOtp } from "@/components/auth/OtpCodeInput";
+import { AuthError, AuthStatus } from "@/components/auth/AuthParts";
+import mail from "@/assets/icons/mail-big.svg";
+import { readMfaCode, type MfaChallenge } from "@ticketwaze/auth/mfa";
+import { ResendLoginCodeAction } from "@/actions/mfaActions";
+import { authHref, safeCallbackPath } from "@/lib/authRedirect";
 
-type View = "choice" | "credentials";
+type View = "role" | "credentials" | "code";
+
+const slide = {
+  initial: { opacity: 0, x: 30 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -30 },
+  transition: { duration: 0.22, ease: "easeInOut" as const },
+};
 
 export default function LoginPageContent({
   email,
@@ -25,13 +49,29 @@ export default function LoginPageContent({
   email: string | undefined;
 }) {
   const t = useTranslations("Auth.login");
-  const [view, setView] = useState<View>("choice");
+  const tFlow = useTranslations("Auth.flow");
+  const locale = useLocale();
+  const searchParams = useSearchParams();
+  // Set by the signed-out prompts ("Complete Purchase", "Follow", ...): where
+  // to land after signing in.
+  const callbackUrl = safeCallbackPath(searchParams.get("callbackUrl"));
+  // A prefilled email means the visitor already chose to sign in elsewhere
+  // (e.g. "Already own an account?"), and a prompt is attendee-only, so both
+  // skip the splash and role steps.
+  // The organisation app's "Attendee" choice (?role=attendee) skips them too.
+  const roleChosen = searchParams.get("role") === "attendee";
+  const [view, setView] = useState<View>(
+    email || callbackUrl || roleChosen ? "credentials" : "role",
+  );
+  const [splashDone, setSplashDone] = useState(
+    Boolean(email) || roleChosen || searchParams.has("start"),
+  );
+  const [role, setRole] = useState<AuthRole>("attendee");
 
   const LoginSchema = z.object({
     email: z.email(t("errors.email")),
     password: z.string(),
   });
-  const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const errorMessage = error ? decodeURIComponent(error) : null;
   if (errorMessage) toast.error("AccessDenied");
@@ -50,9 +90,111 @@ export default function LoginPageContent({
   const [isLoading, setIsloading] = useState(false);
   const { update } = useSession();
   const router = useRouter();
-  const { trigger: triggerGoogle, isLoading: googleLoading } = useGoogleSignIn({
-    referralCode,
-  });
+
+  // Email 2FA: the challenge the API answered with, and the code step state.
+  const [challenge, setChallenge] = useState<MfaChallenge | null>(null);
+  const [otp, setOtp] = useState(emptyOtp);
+  const [otpError, setOtpError] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [resendIn, setResendIn] = useState(0);
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const id = setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [resendIn]);
+
+  function mfaMessage(reason: string, attemptsLeft?: number) {
+    if (reason === "INVALID_CODE")
+      return attemptsLeft
+        ? t("mfa.errors.invalid_left", { count: attemptsLeft })
+        : t("mfa.errors.invalid");
+    if (reason === "CODE_EXPIRED") return t("mfa.errors.expired");
+    if (reason === "TOO_MANY_ATTEMPTS") return t("mfa.errors.too_many");
+    return t("mfa.errors.restart");
+  }
+
+  async function handleVerifyCode(entered?: string | React.SyntheticEvent) {
+    // OtpCodeInput passes the code it just completed; the Verify button
+    // passes its click event, so fall back to state then.
+    const code =
+      typeof entered === "string" ? entered : otp.join("");
+    if (!challenge || code.length < 6 || isVerifying) return;
+    setIsVerifying(true);
+    const result = await signIn("credentials", {
+      challengeId: challenge.challengeId,
+      code,
+      redirect: false,
+    });
+    if (result?.error) {
+      const mfa = readMfaCode(result.code);
+      const reason = mfa?.kind === "failure" ? mfa.reason : "INVALID_CODE";
+      setOtpError(
+        mfaMessage(
+          reason,
+          mfa?.kind === "failure" ? mfa.attemptsLeft : undefined,
+        ),
+      );
+      setOtp(emptyOtp());
+      setIsVerifying(false);
+      return;
+    }
+    await afterSignIn();
+    setIsVerifying(false);
+  }
+
+  async function handleResendCode() {
+    if (!challenge || resendIn > 0 || isResending) return;
+    setIsResending(true);
+    const result = await ResendLoginCodeAction(challenge.challengeId);
+    setIsResending(false);
+    if (result.ok) {
+      toast.success(t("mfa.resent"));
+      setOtp(emptyOtp());
+      setOtpError("");
+      setResendIn(result.resendAfterSeconds);
+    } else if (result.code === "RESEND_TOO_SOON") {
+      setResendIn(result.retryAfterSeconds ?? 60);
+    } else {
+      setOtpError(mfaMessage(result.code));
+    }
+  }
+
+  // Shared by both ways in: password alone, or password then emailed code.
+  async function afterSignIn() {
+    const session = await update();
+    if (session?.user.deletionCancelled) {
+      toast.success(t("deletionCancelled"));
+      update({ user: { deletionCancelled: false } });
+    }
+    if (!session?.user.userPreference) {
+      if (
+        session?.user?.organisations &&
+        session.user.organisations.length > 0
+      ) {
+        router.push("/auth/onboarding/attendee");
+      } else {
+        router.push(
+          callbackUrl
+            ? `/auth/onboarding?callbackUrl=${encodeURIComponent(callbackUrl)}`
+            : "/auth/onboarding",
+        );
+      }
+    } else {
+      const locale = session?.user.userPreference.appLanguage;
+      window.location.assign(
+        `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}${callbackUrl ?? "/explore"}`,
+      );
+    }
+  }
+
+  function continueWithRole() {
+    if (role === "organizer") {
+      window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/login?role=organizer`;
+      return;
+    }
+    setView("credentials");
+  }
 
   async function submitHandler(data: TLoginSchema) {
     setIsloading(true);
@@ -63,225 +205,105 @@ export default function LoginPageContent({
       callbackUrl: process.env.NEXT_PUBLIC_ATTENDEE_URL,
     });
     if (result?.error) {
-      toast.error("Login failed");
-    } else {
-      const session = await update();
-      if (session?.user.deletionCancelled) {
-        toast.success(t("deletionCancelled"));
-        update({ user: { deletionCancelled: false } });
-      }
-      if (!session?.user.userPreference) {
-        if (
-          session?.user?.organisations &&
-          session.user.organisations.length > 0
-        ) {
-          router.push("/auth/onboarding/attendee");
-        } else {
-          router.push("/auth/onboarding");
-        }
+      const mfa = readMfaCode(result.code);
+      if (mfa?.kind === "challenge") {
+        // Right password, 2FA on: the code was emailed; ask for it.
+        setChallenge(mfa.challenge);
+        setOtp(emptyOtp());
+        setOtpError("");
+        setResendIn(mfa.challenge.resendAfterSeconds);
+        setView("code");
       } else {
-        const locale = session?.user.userPreference.appLanguage;
-        window.location.href = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}/explore`;
+        toast.error("Login failed");
       }
+    } else {
+      await afterSignIn();
     }
     setIsloading(false);
   }
 
-  const footer = (
-    <div className="border border-neutral-100 w-full lg:w-auto p-4 pl-6 flex items-center justify-between gap-4 lg:gap-[1.8rem] rounded-[100px]">
-      <span className="text-[1.8rem] leading-10 text-neutral-700">
-        {t("footer.text")}
-      </span>
-      <LinkAccent href="/auth/register">{t("footer.cta")}</LinkAccent>
-    </div>
-  );
-
-  const terms = (
-    <p className="text-[1.3rem] leading-6 text-neutral-500 text-center">
-      {t("terms.before")}
-      <a
-        href="https://ticketwaze.com/legals"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-primary-500 hover:underline"
+  const signUpFooter = (
+    <FooterPill>
+      <FooterPillText>{t("footer.text")}</FooterPillText>
+      <Link
+        href={authHref("/auth/register", callbackUrl)}
+        className={pillActionClass}
       >
-        {t("terms.terms")}
-      </a>
-      {t("terms.and")}
-      <a
-        href="https://ticketwaze.com/legals"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-primary-500 hover:underline"
-      >
-        {t("terms.privacy")}
-      </a>
-    </p>
-  );
-
-  const googleIcon = (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <path
-        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-        fill="#4285F4"
-      />
-      <path
-        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-        fill="#34A853"
-      />
-      <path
-        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-        fill="#FBBC05"
-      />
-      <path
-        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-        fill="#EA4335"
-      />
-    </svg>
+        {t("footer.cta")}
+      </Link>
+    </FooterPill>
   );
 
   return (
-    <div className="flex flex-col items-center h-full pb-4">
-      <AnimatePresence mode="wait" initial={false}>
-        {view === "choice" && (
+    <div className="flex flex-col items-center h-full">
+      <AnimatePresence mode="popLayout" initial={false}>
+        {!splashDone && (
           <motion.div
-            key="choice"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="flex flex-col justify-between w-full h-full"
+            key="splash"
+            exit={{ opacity: 0, y: -24 }}
+            transition={{ duration: 0.25 }}
+            className="lg:hidden w-full h-full"
           >
-            <div className="flex-1 flex justify-center flex-col w-full">
-              <div className="flex flex-col gap-16 items-center">
-                <div className="flex flex-col gap-8 items-center text-center">
-                  <h3 className="font-medium font-primary text-[3.2rem] leading-14 text-black">
-                    {t("title")}
-                  </h3>
-                  {/* <p className="text-[1.8rem] leading-10 text-neutral-700">
-                    {t("description")}
-                  </p> */}
-                </div>
-
-                <div className="flex flex-col gap-4 w-full">
-                  <button
-                    onClick={triggerGoogle}
-                    disabled={googleLoading}
-                    aria-busy={googleLoading}
-                    className={`flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left disabled:cursor-not-allowed ${
-                      googleLoading ? "opacity-60 pointer-events-none" : ""
-                    }`}
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-[44px] h-[44px] rounded-full bg-[#F3F4F6] flex items-center justify-center shrink-0">
-                        {googleIcon}
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-                          {t("method.google")}
-                        </span>
-                        <span className="text-[1.3rem] leading-6 text-neutral-600">
-                          {t("method.google_desc")}
-                        </span>
-                      </div>
-                    </div>
-                    {googleLoading ? (
-                      <LoadingCircleSmall />
-                    ) : (
-                      <ArrowRight2
-                        size={20}
-                        color="#737C8A"
-                        variant="Bulk"
-                        className="shrink-0"
-                      />
-                    )}
-                  </button>
-
-                  <button
-                    onClick={() => setView("credentials")}
-                    className="flex items-center justify-between gap-4 p-[15px] rounded-[15px] border border-neutral-100 hover:border-primary-500 hover:bg-primary-50 transition-all duration-300 text-left"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="w-[44px] h-[44px] rounded-full bg-primary-100 flex items-center justify-center shrink-0">
-                        <LoginCurve size={20} color="#E45B00" variant="Bulk" />
-                      </div>
-                      <div className="flex flex-col gap-1">
-                        <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-                          {t("method.credentials")}
-                        </span>
-                        <span className="text-[1.3rem] leading-6 text-neutral-600">
-                          {t("method.credentials_desc")}
-                        </span>
-                      </div>
-                    </div>
-                    <ArrowRight2
-                      size={20}
-                      color="#737C8A"
-                      variant="Bulk"
-                      className="shrink-0"
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-6 w-full">
-              {terms}
-              {footer}
-            </div>
+            <AuthSplash
+              onCreate={() =>
+                router.push(authHref("/auth/register", callbackUrl))
+              }
+              onLogin={() => setSplashDone(true)}
+            />
           </motion.div>
         )}
+      </AnimatePresence>
+      {/* Keyed so the screen replays its entrance once the splash is dismissed. */}
+      <div
+        key={splashDone ? "app" : "behind-splash"}
+        className={`w-full h-full ${splashDone ? "flex" : "hidden lg:flex"}`}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {view === "role" && (
+            <motion.div key="role" {...slide} className="w-full h-full">
+              <AuthScreen footer={signUpFooter}>
+                <div className="flex flex-col gap-20 items-center">
+                  <AuthHeading
+                    title={tFlow("role.login_title")}
+                    description={tFlow("role.login_description")}
+                  />
+                  <RoleCards value={role} onChange={setRole} />
+                  <AuthItem>
+                    <ButtonPrimary
+                      onClick={continueWithRole}
+                      className="w-full h-[6rem] active:scale-[0.98]"
+                    >
+                      {tFlow("role.continue")}
+                    </ButtonPrimary>
+                  </AuthItem>
+                </div>
+              </AuthScreen>
+            </motion.div>
+          )}
 
-        {view === "credentials" && (
-          <motion.div
-            key="credentials"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 30 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="flex flex-col justify-between w-full h-full"
-          >
-            <form
-              onSubmit={handleSubmit(submitHandler)}
-              className="flex flex-col items-center h-full pb-4"
-            >
-              <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
-                <div className="flex flex-col gap-16 items-center">
+          {view === "credentials" && (
+            <motion.div key="credentials" {...slide} className="w-full h-full">
+              <AuthScreen
+                footer={
                   <button
                     type="button"
-                    onClick={() => setView("choice")}
-                    className="flex items-center gap-3 w-fit text-neutral-600 hover:text-primary-500 transition-colors self-start"
+                    onClick={() => setView("role")}
+                    className={backPillClass}
                   >
-                    <ArrowLeft2 size={18} color="#737C8A" variant="Bulk" />
-                    <span className="text-[1.5rem] leading-8">
-                      {t("method.back")}
-                    </span>
+                    {tFlow("back")}
                   </button>
-
-                  <div className="flex flex-col gap-8 items-center">
-                    <motion.h3
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.1 }}
-                      className="font-medium font-primary text-[3.2rem] leading-14 text-black"
-                    >
-                      {t("title")}
-                    </motion.h3>
-                    <motion.p
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.15 }}
-                      className="text-[1.8rem] text-center leading-10 text-neutral-700"
-                    >
-                      {t("description")}
-                    </motion.p>
-                  </div>
-
+                }
+              >
+                <form
+                  onSubmit={handleSubmit(submitHandler)}
+                  className="flex flex-col gap-16 items-center w-full"
+                >
+                  <AuthHeading
+                    title={t("title")}
+                    description={t("description")}
+                  />
                   <div className="w-full flex flex-col gap-6">
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.2 }}
-                    >
+                    <AuthItem>
                       <Input
                         error={errors.email?.message}
                         type="email"
@@ -289,65 +311,122 @@ export default function LoginPageContent({
                       >
                         {t("placeholders.email")}
                       </Input>
-                    </motion.div>
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.25 }}
-                    >
+                    </AuthItem>
+                    <AuthItem>
                       <PasswordInput
                         error={errors.password?.message}
                         {...register("password")}
                       >
                         {t("placeholders.password")}
                       </PasswordInput>
-                    </motion.div>
-                    <motion.div
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.28 }}
-                      className="flex items-center justify-between"
-                    >
-                      <span></span>
+                    </AuthItem>
+                    <AuthItem className="flex justify-end">
                       <Link
-                        className="text-[1.5rem] leading-8 text-primary-500"
+                        className="text-[1.5rem] leading-8 text-primary-500 hover:underline"
                         href={"/auth/forgot-password"}
                       >
                         {t("forgot")}
                       </Link>
-                    </motion.div>
+                    </AuthItem>
                   </div>
+                  <div className="w-full flex flex-col gap-8">
+                    <AuthItem>
+                      <ButtonPrimary
+                        type="submit"
+                        disabled={isLoading}
+                        className="w-full h-[6rem] active:scale-[0.98]"
+                      >
+                        {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
+                      </ButtonPrimary>
+                    </AuthItem>
+                    <OrDivider />
+                    <AuthItem>
+                      <GoogleSignInButton
+                        referralCode={referralCode}
+                        callbackUrl={
+                          callbackUrl &&
+                          `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}${callbackUrl}`
+                        }
+                      />
+                    </AuthItem>
+                    <AuthItem>
+                      <TermsNote />
+                    </AuthItem>
+                  </div>
+                </form>
+              </AuthScreen>
+            </motion.div>
+          )}
 
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
-                    className="w-full"
+          {view === "code" && challenge && (
+            <motion.div key="code" {...slide} className="w-full h-full">
+              <AuthScreen
+                centered
+                footer={
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setView("credentials");
+                      setChallenge(null);
+                      setOtp(emptyOtp());
+                      setOtpError("");
+                    }}
+                    className={backPillClass}
                   >
-                    <ButtonPrimary
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full"
-                    >
-                      {isLoading ? <LoadingCircleSmall /> : t("cta.submit")}
-                    </ButtonPrimary>
-                  </motion.div>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-6 w-full">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.35 }}
+                    {tFlow("back")}
+                  </button>
+                }
+              >
+                <AuthStatus
+                  image={mail}
+                  title={t("mfa.title")}
+                  description={
+                    <>
+                      {t("mfa.description")}{" "}
+                      <span className="font-semibold text-deep-100">
+                        {challenge.email}
+                      </span>
+                    </>
+                  }
                 >
-                  {footer}
-                </motion.div>
-              </div>
-            </form>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  <OtpCodeInput
+                    value={otp}
+                    onChange={(next) => {
+                      setOtp(next);
+                      setOtpError("");
+                    }}
+                    onSubmit={handleVerifyCode}
+                    error={otpError}
+                  />
+                  <AuthError message={otpError} />
+                  <ButtonPrimary
+                    onClick={handleVerifyCode}
+                    disabled={isVerifying || otp.join("").length < 6}
+                    className="w-full h-[6rem] active:scale-[0.98]"
+                  >
+                    {isVerifying ? <LoadingCircleSmall /> : t("mfa.submit")}
+                  </ButtonPrimary>
+                  <FooterPill>
+                    <FooterPillText>
+                      {tFlow("verify.resend_text")}
+                    </FooterPillText>
+                    <button
+                      type="button"
+                      onClick={handleResendCode}
+                      disabled={isResending || resendIn > 0}
+                      className={`${pillActionClass} disabled:opacity-60`}
+                    >
+                      {resendIn > 0
+                        ? t("mfa.resend_in", { seconds: resendIn })
+                        : tFlow("verify.resend")}
+                    </button>
+                  </FooterPill>
+                </AuthStatus>
+              </AuthScreen>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }

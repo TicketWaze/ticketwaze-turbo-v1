@@ -2,7 +2,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
-import { LoginCurve, User } from "iconsax-reactjs";
+import { LoginCurve } from "iconsax-reactjs";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
@@ -31,9 +31,10 @@ type SignedInUser = {
  * up. (Tabs on different subdomains cannot message each other; the shared
  * cookie is what carries the change, so asking again on return is enough.)
  *
- * `compact` is the desktop navbar: round icon buttons the height of the
- * language switcher beside them, labelled by tooltip, so the landing page's
- * header stays light. The mobile menu has room for the words.
+ * `compact` is the desktop navbar: a solid orange Log in pill for a visitor,
+ * or a round avatar button (labelled by tooltip) once signed in, both the
+ * height of the language switcher beside them. The mobile menu uses the light
+ * pills with an icon and label.
  */
 export default function AccountLinks({
   compact = false,
@@ -92,13 +93,18 @@ export default function AccountLinks({
     return (
       <div className={cn("flex items-center gap-4", className)}>
         {user === null ? (
-          <IconLink href={loginUrl} label={t("login")}>
-            <User
-              size="20"
-              variant="Bulk"
-              className="transition-colors duration-300 stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500"
-            />
-          </IconLink>
+          <a
+            href={loginUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-[45px] min-w-[120px] px-[30px] border-2 border-primary-500 rounded-[100px] flex items-center justify-center font-medium text-[1.6rem] leading-[20px] tracking-[-0.48px] text-white whitespace-nowrap transition-[filter] duration-300 hover:brightness-110"
+            style={{
+              backgroundImage:
+                "linear-gradient(155deg, rgba(235, 235, 235, 0.112) 2.35%, rgba(248, 117, 31, 0.2) 89.17%), linear-gradient(90deg, #e45b00 0%, #e45b00 100%)",
+            }}
+          >
+            {t("login")}
+          </a>
         ) : (
           <IconLink href={accountUrl} label={accountLabel} bare>
             {avatar}

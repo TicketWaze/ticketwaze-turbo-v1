@@ -38,7 +38,7 @@ export default function Navbar() {
       <nav className="hidden lg:block">
         <ul className="flex items-center gap-8">
           <li
-            className={`px-[1.5rem] py-[5px] flex items-center gap-3 bg-neutral-100 rounded-[100px] text-[1.6rem]  leading-[22.5px] ${isActive("/attendee") ? "text-primary-500 font-medium" : "text-deep-100 font-normal"} hover:text-primary-500`}
+            className={`h-[33px] px-[1.5rem] py-[5px] flex items-center gap-3 bg-neutral-100 rounded-[100px] text-[1.6rem] leading-[22.5px] tracking-[-0.48px] transition-colors duration-300 ${isActive("/attendee") ? "text-primary-500 font-medium" : "text-deep-100 font-normal"} hover:text-primary-500`}
           >
             {isActive("/attendee") && (
               <div className="w-3 h-3 rounded-full bg-primary-500"></div>
@@ -46,7 +46,7 @@ export default function Navbar() {
             <Link href="/attendee">{t("personal")}</Link>
           </li>
           <li
-            className={`px-[1.5rem] py-[5px] flex items-center gap-3 bg-neutral-100 rounded-[100px] text-[1.6rem]  leading-[22.5px] ${isActive("/business") ? "text-primary-500 font-medium" : "text-deep-100 font-normal"} hover:text-primary-500`}
+            className={`h-[33px] px-[1.5rem] py-[5px] flex items-center gap-3 bg-neutral-100 rounded-[100px] text-[1.6rem] leading-[22.5px] tracking-[-0.48px] transition-colors duration-300 ${isActive("/business") ? "text-primary-500 font-medium" : "text-deep-100 font-normal"} hover:text-primary-500`}
           >
             {isActive("/business") && (
               <div className="w-3 h-3 rounded-full bg-primary-500"></div>
@@ -54,7 +54,7 @@ export default function Navbar() {
             <Link href="/business">{t("business")}</Link>
           </li>
           <li
-            className={`px-[1.5rem] py-[5px] flex items-center gap-3 bg-neutral-100 rounded-[100px] text-[1.6rem]  leading-[22.5px] ${isActive("/about") ? "text-primary-500 font-medium" : "text-deep-100 font-normal"} hover:text-primary-500`}
+            className={`h-[33px] px-[1.5rem] py-[5px] flex items-center gap-3 bg-neutral-100 rounded-[100px] text-[1.6rem] leading-[22.5px] tracking-[-0.48px] transition-colors duration-300 ${isActive("/about") ? "text-primary-500 font-medium" : "text-deep-100 font-normal"} hover:text-primary-500`}
           >
             {isActive("/about") && (
               <div className="w-3 h-3 rounded-full bg-primary-500"></div>
@@ -62,7 +62,7 @@ export default function Navbar() {
             <Link href="/about">{t("about")}</Link>
           </li>
           <li
-            className={`px-[1.5rem] py-[5px] flex items-center gap-3 bg-neutral-100 rounded-[100px] text-[1.6rem]  leading-[22.5px] ${isActive("/contact") ? "text-primary-500 font-medium" : "text-deep-100 font-normal"} hover:text-primary-500`}
+            className={`h-[33px] px-[1.5rem] py-[5px] flex items-center gap-3 bg-neutral-100 rounded-[100px] text-[1.6rem] leading-[22.5px] tracking-[-0.48px] transition-colors duration-300 ${isActive("/contact") ? "text-primary-500 font-medium" : "text-deep-100 font-normal"} hover:text-primary-500`}
           >
             {isActive("/contact") && (
               <div className="w-3 h-3 rounded-full bg-primary-500"></div>
@@ -151,9 +151,9 @@ export default function Navbar() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
-      <div className="hidden lg:flex items-center gap-6">
-        <AccountLinks compact />
+      <div className="hidden lg:flex items-center gap-8">
         <SwitchLocale />
+        <AccountLinks compact />
       </div>
     </motion.header>
   );

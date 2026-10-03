@@ -239,6 +239,8 @@ export interface OrganisationMember {
   hasCustomPermissions: boolean;
 }
 
+export type KycStatus = "unverified" | "pending" | "approved" | "rejected";
+
 export interface Organisation {
   organisationId: string;
   userId: string;
@@ -270,6 +272,9 @@ export interface Organisation {
   isVerified: boolean;
   isPublished: boolean;
   membershipTierId: string;
+  /** KYC review state; anything but "approved" locks creating activities and withdrawing. */
+  kycStatus?: KycStatus;
+  address?: string | null;
   /**
    * OAuth tokens are deliberately ABSENT from this type.
    *

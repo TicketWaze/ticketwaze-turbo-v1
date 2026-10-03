@@ -8,10 +8,38 @@ import AnimatedEventPage from "../../[slug]/AnimatedEventPage";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import OrganisationSummary from "@/components/shared/OrganisationSummary";
 import SaleActions from "./SaleActions";
-import { extractIdFromSlug } from "@/lib/Slugify";
+import { extractIdFromSlug, slugify } from "@/lib/Slugify";
+import type { Metadata } from "next";
+import { publicPageMetadata, snippet } from "@/lib/seoMetadata";
 
 function Separator() {
   return <div className="bg-neutral-100 h-[0.2rem] w-full shrink-0"></div>;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; locale: string }>;
+}): Promise<Metadata> {
+  const { slug, locale } = await params;
+  // Same request as the page below; Next dedupes it into one.
+  const request = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/explore/sales/${extractIdFromSlug(slug)}`,
+    { next: { revalidate: 60 } },
+  ).catch(() => null);
+  const sale: PublicSale | undefined = request?.ok
+    ? (await request.json().catch(() => null))?.sale
+    : undefined;
+  if (!sale)
+    return { title: { absolute: "Ticketwaze" }, robots: { index: false } };
+
+  return publicPageMetadata({
+    locale,
+    path: `/explore/sale/${slugify(sale.title, sale.saleId)}`,
+    title: sale.title,
+    description: snippet(sale.description, sale.title),
+    image: sale.coverImageUrl,
+  });
 }
 
 export default async function SalePage({

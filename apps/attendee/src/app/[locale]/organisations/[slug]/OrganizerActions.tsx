@@ -26,6 +26,8 @@ export default function OrganizerActions({
    */
   const currentUserId = session?.user?.userId;
   const followers = organisation.followers ?? [];
+  // One decimal, as in Figma ("4.3", not "4.333…"); 0 when nobody rated yet.
+  const rating = Number(organisation.averageRating ?? 0).toFixed(1);
   const isFollowing = currentUserId
     ? followers.some((follower: any) => follower.userId === currentUserId)
     : false;
@@ -37,19 +39,20 @@ export default function OrganizerActions({
             <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
               <Star variant="Bulk" size={20} color="#E45B00" />
             </div>
-            {organisation.averageRating} {t("profile.rating")}
+            {rating} {t("profile.rating")}
           </div>
           <div className="hidden lg:flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">
             <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
               <UserIcon variant="Bulk" size={20} color="#2E3237" />
             </div>
-            {organisation.followers.length} {t("profile.followers")}
+            {followers.length}{" "}
+            {t("profile.followers", { count: followers.length })}
           </div>
           <div className="hidden lg:flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">
             <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
               <Layer variant="Bulk" size={20} color="#2E3237" />
             </div>
-            {events.length} {t("event")}
+            {events.length} {t("activities", { count: events.length })}
           </div>
         </div>
         {/**
@@ -78,13 +81,14 @@ export default function OrganizerActions({
           <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
             <UserIcon variant="Bulk" size={20} color="#2E3237" />
           </div>
-          {organisation.followers.length} {t("profile.followers")}
+          {followers.length}{" "}
+          {t("profile.followers", { count: followers.length })}
         </div>
         <div className="flex items-center gap-4 text-[1.4rem] leading-8 text-deep-100">
           <div className="h-14 w-14 bg-neutral-100 flex items-center justify-center rounded-full">
             <Layer variant="Bulk" size={20} color="#2E3237" />
           </div>
-          {events.length} {t("event")}
+          {events.length} {t("activities", { count: events.length })}
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import "@ticketwaze/ui/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { Toaster } from "sonner";
 import { getTranslations } from "next-intl/server";
+import { OG_IMAGE } from "@/lib/seo";
 import TopLoader from "@/components/TopLoader";
 import LiveChatWidgetMount from "@/components/LiveChatWidgetMount";
 import { Analytics } from "@vercel/analytics/next";
@@ -86,14 +87,7 @@ export async function generateMetadata({
       siteName: "Ticketwaze",
       title: t("title"),
       description: t("description"),
-      images: [
-        {
-          url: "/opengraph-image.png",
-          width: 1200,
-          height: 630,
-          alt: "Ticketwaze – Every Ticket, Every Activity, One Platform",
-        },
-      ],
+      images: [OG_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
@@ -101,7 +95,7 @@ export async function generateMetadata({
       creator: "@ticketwaze",
       title: t("title"),
       description: t("description"),
-      images: ["/opengraph-image.png"],
+      images: [OG_IMAGE.url],
     },
     alternates: {
       canonical: `${siteUrl}${localePath}`,

@@ -1,6 +1,7 @@
 "use client";
 import { Link, usePathname } from "@/i18n/navigation";
 import {
+  ShieldSecurity,
   Building,
   Calendar,
   Chart1,
@@ -10,6 +11,7 @@ import {
   Message,
   Money,
   MoneyRecive,
+  WalletMoney,
   Note,
   SecurityUser,
   Ticket,
@@ -51,10 +53,12 @@ export default function MobileNavigation({
   const moreLinks = [
     { label: t("links.waitlist"), path: "/waitlist", Icon: Note, badge: 0 },
     { label: t("links.organisations"), path: "/organisations", Icon: Building, badge: 0 },
+    { label: t("links.kyc"), path: "/kyc", Icon: ShieldSecurity, badge: 0 },
     { label: t("links.admins"), path: "/admins", Icon: SecurityUser, badge: 0 },
     { label: t("links.tickets"), path: "/tickets", Icon: Ticket, badge: 0 },
     { label: t("links.payments"), path: "/payments", Icon: Money, badge: 0 },
     { label: t("links.payouts"), path: "/payouts", Icon: MoneyRecive, badge: 0 },
+    { label: t("links.finance"), path: "/finance", Icon: WalletMoney, badge: 0 },
     { label: t("links.support"), path: "/support", Icon: Headphone, badge: liveThreadBadge },
     { label: t("links.contact"), path: "/contact", Icon: Message, badge: contactBadge },
   ];

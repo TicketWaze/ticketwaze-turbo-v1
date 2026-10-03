@@ -23,7 +23,7 @@ export default async function Layout({
             className="mb-20"
           />
         </Link>
-        <h1 className="mb-8 font-primary font-bold text-[4.5rem] leading-[6.2rem] text-white max-w-240">
+        <h1 className="mb-8 font-primary font-bold text-[4.5rem] leading-[6.2rem] text-white max-w-[53rem]">
           {t("title")}
         </h1>
         <p className="mb-14 text-[1.8rem] leading-10 text-neutral-200 max-w-[42.2rem]">

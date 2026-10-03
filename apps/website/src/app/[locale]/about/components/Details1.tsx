@@ -33,7 +33,7 @@ export default function Details1() {
     },
   ];
   return (
-    <section className="bg-white py-[3rem] lg:py-[7.5rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center lg:items-start gap-[3.5rem] lg:gap-[100px]">
+    <section className="bg-white py-[3rem] lg:py-[10rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center lg:items-start gap-[3.5rem] lg:gap-[75px]">
       <div className="flex flex-col gap-8 max-w-[850px]">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
@@ -49,12 +49,12 @@ export default function Details1() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="font-sans text-[1.8rem] lg:text-[2.6rem] leading-[2.5rem] lg:leading-[3.5rem] text-neutral-600"
+          className="font-sans text-[1.8rem] lg:text-[2.6rem] leading-[2.5rem] lg:leading-[3.5rem] lg:tracking-[-0.78px] text-neutral-600"
         >
           {t("description")}
         </motion.p>
       </div>
-      <ul className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <ul className="grid grid-cols-1 lg:grid-cols-2 gap-12 w-full">
         {items.map(({ description, image, title }, id) => {
           return (
             <motion.li
@@ -63,10 +63,10 @@ export default function Details1() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.2 }}
               key={id}
-              className="bg-neutral-100 w-full rounded-[3rem] flex flex-col gap-[55px] overflow-hidden"
+              className="bg-neutral-100 w-full rounded-[3rem] flex flex-col gap-[25px] overflow-hidden"
             >
-              <div className="relative">
-                <Image src={bg} alt="background" />
+              <div className="relative flex justify-center pt-[15px]">
+                <Image src={bg} alt="" />
                 <Image
                   src={image}
                   alt={title}
@@ -74,10 +74,10 @@ export default function Details1() {
                 />
               </div>
               <div className="flex flex-col gap-[1.5rem] px-[3rem] pb-12">
-                <span className="font-sans font-semibold text-[2.2rem] leading-[3rem] text-deep-200">
+                <span className="font-sans font-semibold text-[2.2rem] leading-[3rem] tracking-[-0.66px] text-deep-200">
                   {title}
                 </span>
-                <span className="font-sans text-[1.8rem] leading-[25px] text-neutral-700">
+                <span className="font-sans text-[1.8rem] leading-[25px] tracking-[-0.54px] text-neutral-700">
                   {description}
                 </span>
               </div>

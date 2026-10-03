@@ -1,4 +1,6 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
+import MoreInfoDialog from "@/components/activity/MoreInfoDialog";
+import ContactInfo from "@/components/activity/ContactInfo";
 import { auth } from "@/lib/auth";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
@@ -6,7 +8,7 @@ import EventActions from "./EventActions";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import { Link } from "@/i18n/navigation";
 import MapComponent from "./MapComponent";
-import { Global, RouteSquare, Sms, Warning2 } from "iconsax-reactjs";
+import { RouteSquare, Warning2 } from "iconsax-reactjs";
 import TicketViewer from "./TicketViewer";
 import { Event, Ticket } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
@@ -78,8 +80,13 @@ export default async function UpcomingEventPage({
   );
   const favoriteResponse = await favoriteRequest.json().catch(() => ({}));
 
+  const isOnline = event.eventCategory === "meet";
+  const hasCoordinates =
+    Number.isFinite(event.location?.lat) &&
+    Number.isFinite(event.location?.lng);
+
   return (
-    <AttendeeLayout title="Event Page">
+    <AttendeeLayout title={event.eventName}>
       <BackButton text={t("back")} />
       {isFromCheckout && <CheckoutEmailAlert />}
 
@@ -175,71 +182,65 @@ export default async function UpcomingEventPage({
           <EventActions
             event={event}
             isFavorite={favoriteResponse?.isFavorite}
+            moreInfo={
+              isOnline ? undefined : (
+                <MoreInfoDialog
+                  aboutHtml={event.eventDescription}
+                  email={organisation.organisationEmail}
+                  phone={organisation.organisationPhoneNumber}
+                  website={organisation.organisationWebsite}
+                />
+              )
+            }
           />
           <Separator />
 
-          {event.eventCategory !== "meet" && (
+          {/* Figma: in person, the map; online, About + Contact (no venue).
+              In person, About and Contact live in ⋯ → More information. */}
+          {!isOnline && hasCoordinates && (
             <div className="flex flex-col gap-8">
               <div className="flex items-center justify-between">
-                <span
-                  className={
-                    "font-semibold text-[1.6rem] leading-8 text-deep-200"
-                  }
-                >
+                <span className="font-semibold text-[1.6rem] leading-8 text-deep-200">
                   {t("direction")}
                 </span>
-
                 <Link
                   href={`https://www.google.com/maps/search/?api=1&query=${event.location.lat},${event.location.lng}`}
                   target="_blank"
-                  className="flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
+                  className="group flex items-center gap-4 text-[1.6rem] leading-8 text-primary-500"
                 >
                   {t("open")}{" "}
-                  <RouteSquare variant="Bulk" color="#E45B00" size={20} />
+                  <RouteSquare
+                    variant="Bulk"
+                    color="#E45B00"
+                    size={20}
+                    className="transition-transform group-hover:translate-x-0.5"
+                  />
                 </Link>
               </div>
               <MapComponent location={event.location} />
             </div>
           )}
-
-          <div className="flex flex-col gap-4">
-            <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-              {t("about")}
-            </span>
-            <div
-              className="rich-text text-[1.6rem] font-sans leading-10 text-neutral-700"
-              dangerouslySetInnerHTML={{ __html: event.eventDescription }}
-            />
-          </div>
-
-          <Separator />
-
-          {/* <div>
-            <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-              {t("contact")}
-            </span>
-          </div> */}
-          <div className="flex flex-col gap-2">
-            {/* <div className="flex items-center gap-4">
-              <Sms size="20" color="#737c8a" variant="Bulk" />
-              <span className="font-normal text-[1.5rem] leading-12 text-neutral-700">
-                {organisation.organisationEmail}
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Call size="20" color="#737c8a" variant="Bulk" />
-              <span className="font-normal text-[1.5rem] leading-[30px] text-neutral-700">
-                {organisation.organisationPhoneNumber}
-              </span>
-            </div>
-            {organisation.organisationWebsite && (
-              <div className="flex items-center gap-4">
-                <Global size="20" color="#737c8a" variant="Bulk" />
-                <span className="font-normal text-[1.5rem] leading-12 text-neutral-700">
-                  {organisation.organisationWebsite}
+          {isOnline && (
+            <>
+              <div className="flex flex-col gap-4">
+                <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
+                  {t("about")}
                 </span>
+                <div
+                  className="rich-text text-[1.6rem] font-sans leading-10 text-neutral-700"
+                  dangerouslySetInnerHTML={{ __html: event.eventDescription }}
+                />
               </div>
-            )} */}
+              <Separator />
+              <ContactInfo
+                email={organisation.organisationEmail}
+                phone={organisation.organisationPhoneNumber}
+                website={organisation.organisationWebsite}
+              />
+            </>
+          )}
+
+          <div className="flex flex-col gap-2">
             {/* <div></div>
             <div></div>
             <div></div> */}

@@ -1,4 +1,5 @@
 "use client";
+import { motion } from "framer-motion";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { ArrowLeft2 } from "iconsax-reactjs";
@@ -64,6 +65,7 @@ export default function CheckoutFlow({
   feeWaiverEligible = false,
   htgExchangeRate = 0,
   formQuestions = [],
+  initialQuantities = {},
 }: {
   event: Event;
   ticketTypes: EventTicketType[];
@@ -77,6 +79,11 @@ export default function CheckoutFlow({
    * is exactly when the questions step does not exist.
    */
   formQuestions?: PublicEventFormQuestion[];
+  /**
+   * ticketTypeId → quantity to start with, from a resumed pending purchase
+   * (`?resume=`). Capped to what is still available; unknown ids are ignored.
+   */
+  initialQuantities?: Record<string, number>;
 }) {
   const t = useTranslations("Checkout");
   const tSuspension = useTranslations("Suspension");
@@ -193,7 +200,13 @@ export default function CheckoutFlow({
     defaultValues: {
       tickets: ticketTypes.map((ticket) => ({
         ticketTypeId: ticket.eventTicketTypeId,
-        quantity: 0,
+        quantity: Math.max(
+          0,
+          Math.min(
+            initialQuantities[ticket.eventTicketTypeId] ?? 0,
+            ticket.ticketTypeQuantity - ticket.ticketTypeQuantitySold,
+          ),
+        ),
       })),
       attendees: [],
     },
@@ -880,10 +893,6 @@ export default function CheckoutFlow({
               event={event}
               reward={reward}
               eventIsAllFree={eventIsAllFree}
-              selectedWithIndex={selectedWithIndex}
-              feeBreakdown={feeBreakdown}
-              paymentType={paymentType}
-               
               setValue={
                 setValue as (name: string, value: any, options?: object) => void
               }
@@ -895,14 +904,9 @@ export default function CheckoutFlow({
               delta={delta}
               watchedAttendees={watchedAttendees}
               ticketTypes={ticketTypes}
-              event={event}
-              isFree={selectionIsFree}
               isGuest={isGuest}
               guestInfo={guestInfo}
               onGuestInfoChange={setGuestInfo}
-              selectedWithIndex={selectedWithIndex}
-              feeBreakdown={feeBreakdown}
-              paymentType={paymentType}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               register={register as (name: string, options?: object) => any}
               control={control}
@@ -917,12 +921,6 @@ export default function CheckoutFlow({
               ticketTypeNames={ticketTypeNames}
               answers={seatAnswers}
               onAnswerChange={setAnswer}
-              event={event}
-              ticketTypes={ticketTypes}
-              isFree={selectionIsFree}
-              selectedWithIndex={selectedWithIndex}
-              feeBreakdown={feeBreakdown}
-              paymentType={paymentType}
             />
           )}
 
@@ -933,12 +931,9 @@ export default function CheckoutFlow({
               isGuest={isGuest}
               paymentType={paymentType}
               onSelectPayment={setPaymentType}
-              selectedWithIndex={selectedWithIndex}
-              ticketTypes={ticketTypes}
-              event={event}
-              feeBreakdown={feeBreakdown}
               reductions={
                 <ReductionsPanel
+                  showDiscount={false}
                   currency={event.currency}
                   exchangeRate={htgExchangeRate}
                   billTotal={feeBreakdown.total + feeBreakdown.tokenValue}
@@ -967,17 +962,30 @@ export default function CheckoutFlow({
             />
           )}
 
-          {/* Desktop sidebar — always visible */}
-          <div className="hidden lg:flex lg:flex-col overflow-y-auto min-h-0 p-4 pt-0">
-            <TicketSummaryCard
-              selectedWithIndex={selectedWithIndex}
-              ticketTypes={ticketTypes}
-              event={event}
-              isFree={selectionIsFree}
-              feeBreakdown={feeBreakdown}
-              paymentType={paymentType}
-            />
-          </div>
+          {/* The Summary ticket: beside the step on desktop, under it on
+              mobile (Figma). Not on the final step, which is itself the
+              itemised summary. */}
+          {step !== "summary" && (
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="flex flex-col lg:overflow-y-auto min-h-0 lg:p-4 lg:pt-0 pb-8 lg:pb-0"
+            >
+              <TicketSummaryCard
+                selectedWithIndex={selectedWithIndex}
+                ticketTypes={ticketTypes}
+                event={event}
+                isFree={selectionIsFree}
+                feeBreakdown={feeBreakdown}
+                discount={reductions.discount}
+                discountError={reductions.discountError}
+                isChecking={reductions.isChecking}
+                onCheckDiscount={reductions.checkDiscount}
+                onClearDiscount={reductions.clearDiscount}
+              />
+            </motion.div>
+          )}
         </main>
 
         {/*
@@ -1018,8 +1026,12 @@ export default function CheckoutFlow({
             /{steps.length}
           </div>
 
-          <ButtonPrimary disabled={isFooterButtonDisabled} onClick={handleNext}>
-            {footerButtonText}
+          <ButtonPrimary
+            disabled={isFooterButtonDisabled}
+            onClick={handleNext}
+            className="min-w-[13.3rem] h-[6rem] active:scale-[0.98] disabled:bg-primary-500"
+          >
+            {isLoading ? <LoadingDots /> : footerButtonText}
           </ButtonPrimary>
         </div>
       </div>
@@ -1040,5 +1052,24 @@ export default function CheckoutFlow({
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+/** Figma's "processing" state for the footer button: three pulsing dots. */
+function LoadingDots() {
+  return (
+    <span
+      className="flex items-center gap-[0.6rem] py-[0.4rem]"
+      aria-label="Loading"
+    >
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className="size-[1.2rem] rounded-full bg-white"
+          animate={{ opacity: [0.35, 1, 0.35], scale: [0.85, 1, 0.85] }}
+          transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.15 }}
+        />
+      ))}
+    </span>
   );
 }

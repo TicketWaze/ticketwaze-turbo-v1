@@ -1,13 +1,10 @@
-import { redirect } from "@/i18n/navigation";
-import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
-import OnboardingOrganisationPageComponent from "./OnboardingOrganisationPageComponent";
 
-export default async function OnboardingOrganisation() {
-  const session = await auth();
+// Organizer set-up and team invitations now live in the organisation app
+// (Figma "Organizers + Mobile"); old links land on its onboarding, which
+// routes to set-up, a pending invitation or the dashboard.
+export default async function Page() {
   const locale = await getLocale();
-  if (!session) {
-    redirect({ href: "/auth/login", locale });
-  }
-  return <OnboardingOrganisationPageComponent />;
+  redirect(`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`);
 }

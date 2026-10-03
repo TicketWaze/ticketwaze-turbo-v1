@@ -7,6 +7,7 @@ import Details2 from "./components/Details2";
 import Details3 from "./components/Details3";
 import FrequentlyAskedQuestions from "./components/FrequentlyAskedQuestions";
 import Footer from "@/components/Footer";
+import { pageMetadata } from "@/lib/seo";
 
 const siteUrl = "https://ticketwaze.com";
 
@@ -17,29 +18,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "Metadata" });
-  const localePath = locale === "fr" ? "" : `/${locale}`;
 
-  return {
-    title: { absolute: t("title") },
+  return pageMetadata({
+    locale,
+    path: "",
+    title: t("title"),
     description: t("description"),
-    openGraph: {
-      title: t("title"),
-      description: t("description"),
-      url: `${siteUrl}${localePath}`,
-    },
-    twitter: {
-      title: t("title"),
-      description: t("description"),
-    },
-    alternates: {
-      canonical: `${siteUrl}${localePath}`,
-      languages: {
-        en: `${siteUrl}/en`,
-        fr: siteUrl,
-        "x-default": siteUrl,
-      },
-    },
-  };
+    absoluteTitle: true,
+  });
 }
 
 export default async function Home({
@@ -72,7 +58,7 @@ export default async function Home({
           "@type": "ImageObject",
           url: `${siteUrl}/opengraph-image.png`,
           width: 1200,
-          height: 630,
+          height: 600,
         },
         description:
           "Buy, sell, and manage tickets for activities, experiences, and events, online or in-person, all in one secure platform.",

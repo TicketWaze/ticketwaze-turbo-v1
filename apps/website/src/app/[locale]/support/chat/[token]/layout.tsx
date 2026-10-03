@@ -1,3 +1,11 @@
+import type { Metadata } from "next";
+
+// A support conversation is private and reached by its secret token only;
+// it must never be indexed or show up in search results.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
+
 export default function SupportChatLayout({
   children,
 }: {
