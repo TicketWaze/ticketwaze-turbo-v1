@@ -1,4 +1,5 @@
 "use client";
+import ActivityMoreMenu from "@/components/activity/ActivityMoreMenu";
 import {
   AddEventToFavorite,
   RemoveEventToFavorite,
@@ -9,7 +10,7 @@ import ReportOrganisationComponent from "../../[slug]/ReportOrganisationComponen
 import ShareEvent from "@/components/shared/ShareEvent";
 import { usePathname } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
-import { Heart, MoreCircle } from "iconsax-reactjs";
+import { ArchiveMinus } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
@@ -18,11 +19,6 @@ import { PublicSale } from "@ticketwaze/typescript-config";
 import PageLoader from "@/components/PageLoader";
 import { LinkPrimary } from "@/components/shared/Links";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 
 /**
  * The action row on a product page.
@@ -101,7 +97,7 @@ export default function SaleActions({
             onClick={removeFavorite}
             className="p-[7.5px] group flex items-center justify-center rounded-[30px] cursor-pointer bg-primary-100"
           >
-            <Heart width={20} height={20} color="#E45B00" variant="Bulk" />
+            <ArchiveMinus width={20} height={20} color="#E45B00" variant="Bulk" />
           </button>
         )}
         {session?.user && !fav && (
@@ -110,7 +106,7 @@ export default function SaleActions({
             onClick={addFavorite}
             className="w-fit h-fit p-[7.5px] group flex items-center justify-center bg-neutral-100 rounded-full cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500"
           >
-            <Heart
+            <ArchiveMinus
               width={20}
               height={20}
               className="stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500 transition-all ease-in-out duration-500"
@@ -122,7 +118,7 @@ export default function SaleActions({
           <Dialog>
             <DialogTrigger>
               <span className="w-fit h-fit p-[7.5px] group flex items-center justify-center bg-neutral-100 rounded-[30px] cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500">
-                <Heart
+                <ArchiveMinus
                   width={20}
                   height={20}
                   className="stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500 transition-all ease-in-out duration-500"
@@ -130,40 +126,13 @@ export default function SaleActions({
                 />
               </span>
             </DialogTrigger>
-            <NoAuthDialog callbackUrl={pathname} />
+            <NoAuthDialog callbackUrl={pathname} intent="save" />
           </Dialog>
         )}
-        <Popover>
-          <PopoverTrigger asChild>
-            <span className="w-fit h-fit p-[7.5px] group flex items-center justify-center bg-neutral-100 rounded-[30px] cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500">
-              <MoreCircle
-                variant={"Bulk"}
-                color={"#737C8A"}
-                width={20}
-                height={20}
-              />
-            </span>
-          </PopoverTrigger>
-          <PopoverContent
-            className={
-              "bg-neutral-100 border border-neutral-200 right-8 p-4 pb-8 w-92  mb-8 rounded-2xl shadow-xl bottom-full flex flex-col gap-4"
-            }
-          >
-            <span
-              className={
-                "font-medium py-2 border-b border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
-              }
-            >
-              {t("more")}
-            </span>
-            <ReportEventComponent
-              activityId={sale.saleId}
-              organisationId={sale.organisationId}
-            />
-            <div className="h-px bg-neutral-200 w-full"></div>
-            <ReportOrganisationComponent organisationId={sale.organisationId} />
-          </PopoverContent>
-        </Popover>
+        <ActivityMoreMenu
+          activityId={sale.saleId}
+          organisationId={sale.organisationId}
+        />
       </div>
 
       {/* Signed-out buyers are sent to sign in first: guest purchase of a
@@ -200,7 +169,10 @@ export default function SaleActions({
               {st("buyNow")}
             </span>
           </DialogTrigger>
-          <NoAuthDialog callbackUrl={`/explore/sale/${saleSlug}/checkout`} />
+          <NoAuthDialog
+            callbackUrl={`/explore/sale/${saleSlug}/checkout`}
+            intent="purchase"
+          />
         </Dialog>
       )}
     </div>

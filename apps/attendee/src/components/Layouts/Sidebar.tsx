@@ -8,6 +8,7 @@ import {
   LoginCurve,
   Logout,
   MoneyRecive,
+  Setting2,
   Setting5,
   Star,
   Ticket,
@@ -17,10 +18,8 @@ import { Link } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
 import { signOut, useSession } from "next-auth/react";
-import NoAuthDialog from "./NoAuthDialog";
 import { useAuthInterceptor } from "@/hooks/useAuthInterceptor";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogTrigger } from "../ui/dialog";
 
 type NavLink = {
   label: string;
@@ -29,19 +28,15 @@ type NavLink = {
 };
 
 /**
- * One sidebar row. Signed out, a row that needs an account opens the sign-in
- * dialog instead of navigating to a page that would only bounce the visitor.
+ * One sidebar row. Signed out, account pages still navigate: each shows the
+ * Figma empty state with "Log in or sign up".
  */
 function NavItem({
   link: { path, label, Icon },
   active,
-  requiresAuth,
-  isLoggedIn,
 }: {
   link: NavLink;
   active: boolean;
-  requiresAuth: boolean;
-  isLoggedIn: boolean;
 }) {
   const className = `group flex w-full items-center gap-4 py-4 relative text-[1.5rem] leading-8 ${active ? "font-semibold text-primary-500 is-active" : "text-neutral-700 hover:text-primary-500"}`;
   const content = (
@@ -59,17 +54,6 @@ function NavItem({
       ></div>
     </>
   );
-
-  if (requiresAuth && !isLoggedIn) {
-    return (
-      <Dialog>
-        <DialogTrigger className={cn(className, "cursor-pointer")}>
-          {content}
-        </DialogTrigger>
-        <NoAuthDialog callbackUrl={path} />
-      </Dialog>
-    );
-  }
 
   return (
     <Link href={path} className={className}>
@@ -110,6 +94,11 @@ function Sidebar({ className }: { className: string }) {
       label: t("links.preferences"),
       path: `/preferences`,
       Icon: Setting5,
+    },
+    {
+      label: t("links.settings"),
+      path: `/settings`,
+      Icon: Setting2,
     },
   ];
 
@@ -160,20 +149,17 @@ function Sidebar({ className }: { className: string }) {
           <ul className="flex flex-col gap-4">
             <li>
               <NavItem
-                link={{ label: t("links.explore"), path: "/explore", Icon: Ticket }}
+                link={{
+                  label: t("links.explore"),
+                  path: "/explore",
+                  Icon: Ticket,
+                }}
                 active={isActive("/explore")}
-                requiresAuth={false}
-                isLoggedIn={isLoggedIn}
               />
             </li>
             {eventsLinks.map((link) => (
               <li key={link.path}>
-                <NavItem
-                  link={link}
-                  active={isActive(link.path)}
-                  requiresAuth
-                  isLoggedIn={isLoggedIn}
-                />
+                <NavItem link={link} active={isActive(link.path)} />
               </li>
             ))}
             <li>
@@ -184,33 +170,24 @@ function Sidebar({ className }: { className: string }) {
                   Icon: Building,
                 }}
                 active={isActive("/organisations")}
-                requiresAuth={false}
-                isLoggedIn={isLoggedIn}
               />
             </li>
           </ul>
         </nav>
-        {isLoggedIn && (
-          <nav>
-            <div
-              className={`mb-4 uppercase font-medium text-[1.4rem] leading-8 ${isUserGroupActive() ? "text-neutral-900" : "text-neutral-600"}`}
-            >
-              {t("links.title2")}
-            </div>
-            <ul className="flex flex-col gap-4">
-              {userLinks.map((link) => (
-                <li key={link.path}>
-                  <NavItem
-                    link={link}
-                    active={isActive(link.path)}
-                    requiresAuth
-                    isLoggedIn={isLoggedIn}
-                  />
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
+        <nav>
+          <div
+            className={`mb-4 uppercase font-medium text-[1.4rem] leading-8 ${isUserGroupActive() ? "text-neutral-900" : "text-neutral-600"}`}
+          >
+            {t("links.title2")}
+          </div>
+          <ul className="flex flex-col gap-4">
+            {userLinks.map((link) => (
+              <li key={link.path}>
+                <NavItem link={link} active={isActive(link.path)} />
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
       {/* Pinned to the bottom: help, and the way in or out of an account. */}
       <ul className="flex flex-col gap-4 pt-8 pb-12">

@@ -13,10 +13,21 @@ import { notFound } from "next/navigation";
 
 export default async function CheckoutPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{ resume?: string }>;
 }) {
   const { slug } = await params;
+  // "typeId:qty,typeId:qty" from a pending purchase — the cart to start with.
+  const { resume } = await searchParams;
+  const initialQuantities: Record<string, number> = {};
+  for (const part of (resume ?? "").split(",")) {
+    const [id, qty] = part.split(":");
+    const n = Number(qty);
+    if (id && Number.isInteger(n) && n > 0)
+      initialQuantities[id] = Math.min(n, 50);
+  }
   const eventId = extractIdFromSlug(slug);
   const session = await auth();
   const eventRequest = await fetch(
@@ -76,7 +87,8 @@ export default async function CheckoutPage({
         },
       );
       const walletResponse = await walletRequest.json();
-      feeWaiverEligible = walletResponse?.wallet?.firstPurchaseFeeWaiver === true;
+      feeWaiverEligible =
+        walletResponse?.wallet?.firstPurchaseFeeWaiver === true;
     } catch {
       feeWaiverEligible = false;
     }
@@ -117,6 +129,7 @@ export default async function CheckoutPage({
         feeWaiverEligible={feeWaiverEligible}
         htgExchangeRate={htgExchangeRate}
         formQuestions={formQuestions}
+        initialQuantities={initialQuantities}
       />
     </AttendeeLayout>
   );

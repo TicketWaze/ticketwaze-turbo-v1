@@ -15,8 +15,10 @@ import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { AnimatePresence, motion } from "motion/react";
 import { useGoogleSignIn } from "@/lib/useGoogleSignIn";
 import { ArrowLeft2, ArrowRight2, LoginCurve } from "iconsax-reactjs";
+import { readMfaCode, type MfaChallenge } from "@ticketwaze/auth/mfa";
+import MfaCodeStep from "./MfaCodeStep";
 
-type View = "choice" | "credentials";
+type View = "choice" | "credentials" | "code";
 
 export default function LoginWrapper() {
   const t = useTranslations("Auth.login");
@@ -38,6 +40,16 @@ export default function LoginWrapper() {
   });
   const [isLoading, setIsloading] = useState(false);
   const { update } = useSession();
+  // Email 2FA: set when the password was right and a code was emailed.
+  const [challenge, setChallenge] = useState<MfaChallenge | null>(null);
+
+  async function afterSignIn() {
+    const session = await update();
+    const lang = session?.user?.userPreference?.appLanguage ?? "en";
+    window.location.assign(
+      `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${lang}/auth/onboarding`,
+    );
+  }
   const { trigger: triggerGoogle, isLoading: googleLoading } = useGoogleSignIn({
     callbackUrl: `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`,
   });
@@ -72,15 +84,17 @@ export default function LoginWrapper() {
     if (result?.error) {
       // `code` carries our own reason out of `authorize`; `error` alone is the
       // generic CredentialsSignin that every failure shares.
-      if (result.code === "organisation_suspended") {
+      const mfa = readMfaCode(result.code);
+      if (mfa?.kind === "challenge") {
+        setChallenge(mfa.challenge);
+        setView("code");
+      } else if (result.code === "organisation_suspended") {
         toast.error(t("errors.organisation_suspended"), { duration: 15000 });
       } else {
         toast.error(t("errors.wrong"));
       }
     } else {
-      const session = await update();
-      const lang = session?.user?.userPreference?.appLanguage ?? "en";
-      window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${lang}/auth/onboarding`;
+      await afterSignIn();
     }
     setIsloading(false);
   }
@@ -356,6 +370,17 @@ export default function LoginWrapper() {
               </div>
             </form>
           </motion.div>
+        )}
+        {view === "code" && challenge && (
+          <MfaCodeStep
+            key="code"
+            challenge={challenge}
+            onBack={() => {
+              setChallenge(null);
+              setView("credentials");
+            }}
+            onSignedIn={afterSignIn}
+          />
         )}
       </AnimatePresence>
     </div>

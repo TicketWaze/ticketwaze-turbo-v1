@@ -3,8 +3,8 @@ import type { MetadataRoute } from "next";
 const BASE_URL = process.env.NEXT_PUBLIC_ATTENDEE_URL ?? "";
 
 /**
- * Public discovery pages (explore, events, organisers, raffles, sales,
- * restaurants) are crawlable. Account, checkout and personal pages are not:
+ * Public discovery pages (explore, events, raffles, sales, restaurants) are
+ * crawlable. Account, organisation, checkout and personal pages are not:
  * they need a login or a purchase, so a crawler only ever sees a redirect or
  * an empty shell there, and they would waste crawl budget.
  */
@@ -18,6 +18,7 @@ export default function robots(): MetadataRoute.Robots {
     "/purchases",
     "/history",
     "/upcoming",
+    "/organisations",
     "/explore/checkout",
     "/explore/liked",
     "/explore/reservations",

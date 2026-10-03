@@ -321,6 +321,23 @@
       "footer": {
         "text": "Pas de compte ?",
         "cta": "S'inscrire"
+      },
+      "mfa": {
+        "title": "Saisissez votre code de connexion",
+        "description": "La vérification en deux étapes est activée. Nous avons envoyé un code à 6 chiffres à",
+        "submit": "Vérifier et se connecter",
+        "resend": "Renvoyer le code",
+        "resent": "Un nouveau code est en route",
+        "resend_in": "Renvoyer dans {seconds}s",
+        "back": "Retour",
+        "digit": "Chiffre",
+        "errors": {
+          "invalid": "Ce code est incorrect.",
+          "invalid_left": "Ce code est incorrect. {count, plural, one {# essai restant} other {# essais restants}}.",
+          "expired": "Ce code a expiré. Demandez-en un nouveau.",
+          "too_many": "Trop de codes incorrects. Revenez en arrière et reconnectez-vous.",
+          "restart": "Cette connexion a expiré. Revenez en arrière et reconnectez-vous."
+        }
       }
     },
     "forgot": {
@@ -864,7 +881,9 @@
         "generate": "Générer un code",
         "per_user_limit": "Utilisations par client (facultatif)",
         "min_purchase": "Commande minimum (facultatif)",
-        "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze sont toujours calculés sur votre prix affiché : une réduction ne modifie jamais les frais, et vous recevez le prix réduit."
+        "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze sont toujours calculés sur votre prix affiché : une réduction ne modifie jamais les frais, et vous recevez le prix réduit.",
+        "notify_followers": "Prévenir mes abonnés",
+        "notify_followers_description": "Envoyer ce code à toutes les personnes qui suivent votre organisation, dans leurs notifications Ticketwaze."
       },
       "rewards": {
         "title": "Récompenses",

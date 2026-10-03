@@ -7,8 +7,8 @@
   },
   "Auth": {
     "layout": {
-      "title": "Ticketing Made Simple. Experiences Made Unforgettable.",
-      "description": "Your time, your passion and your adventures, made more accessible than ever. Connects you to the activities you care about, from start to finish."
+      "title": "Discover Events, Connect with Culture, Experience Haiti.",
+      "description": "Easily explore, share, and enjoy the best events Haiti has to offer. Join us today and start your journey!"
     },
     "choice": {
       "title": "Welcome to Ticketwaze",
@@ -40,7 +40,7 @@
         "email": "Enter a valid email",
         "password": "Password must be at least 8 characters"
       },
-      "forgot": "Forgot password",
+      "forgot": "Reset password",
       "method": {
         "google": "Continue with Google",
         "google_desc": "Sign in using your Google account",
@@ -57,11 +57,25 @@
         "text": "Don’t own an account?",
         "cta": "Sign up"
       },
-      "deletionCancelled": "Your scheduled account deletion has been cancelled. Welcome back!"
+      "deletionCancelled": "Your scheduled account deletion has been cancelled. Welcome back!",
+      "mfa": {
+        "title": "Enter your sign-in code",
+        "description": "Two-step verification is on. We sent a 6-digit code to",
+        "submit": "Verify and sign in",
+        "resent": "A new code is on its way",
+        "resend_in": "Resend in {seconds}s",
+        "errors": {
+          "invalid": "That code isn't right.",
+          "invalid_left": "That code isn't right. {count, plural, one {# try} other {# tries}} left.",
+          "expired": "This code has expired. Request a new one.",
+          "too_many": "Too many wrong codes. Go back and sign in again.",
+          "restart": "This sign-in has expired. Go back and sign in again."
+        }
+      }
     },
     "register": {
       "title": "Create an Account",
-      "organizer": "Create an Account",
+      "organizer": "Organizer Account",
       "description": "Please complete the form below to continue.",
       "referral": " thought you might like it here.",
       "method": {
@@ -134,7 +148,8 @@
           "expired": "This code has expired. Request a new one below.",
           "notFound": "No code found. Request a new one below."
         }
-      }
+      },
+      "attendee": "Attendee Account"
     },
     "verify": {
       "title": "Verify Account",
@@ -436,6 +451,77 @@
     "footer": {
       "text": "Didn't get a mail?",
       "cta": "Resend"
+    },
+    "flow": {
+      "splash": {
+        "create": "Create account",
+        "login": "Log in"
+      },
+      "role": {
+        "login_title": "Welcome back",
+        "login_description": "Choose an option to access your account.",
+        "register_title": "Create Account",
+        "register_description": "Choose an option to continue and set up your account.",
+        "attendee_title": "Attendee",
+        "attendee_description": "Easily browse, discover, and purchase tickets for a wide variety of events.",
+        "organizer_title": "Organizer",
+        "organizer_description": "Create and manage events effortlessly. Track ticket sales & monitor attendee data.",
+        "continue": "Continue"
+      },
+      "back": "Back",
+      "or": "Or",
+      "verify": {
+        "title": "Verify Account",
+        "description": "A verification mail has been sent to the email address you signed up with.",
+        "resend_text": "Didn’t get a mail?",
+        "resend": "Resend"
+      },
+      "reset_sent": {
+        "title": "Reset Password",
+        "description": "A password reset mail has been sent to the email address you provided"
+      },
+      "created": {
+        "title": "Account Created",
+        "description": "You’ve successfully created an account. We’re now signing you in."
+      },
+      "password_created": {
+        "title": "Password Created",
+        "description": "You’ve successfully created a new password. We’re now signing you in."
+      },
+      "signing_in": "Signing you in...",
+      "setup": {
+        "title": "Complete Account Set-up",
+        "description": "Please fill the form below to complete your account set-up.",
+        "username": "Username",
+        "address": "Address",
+        "country": "Country",
+        "state": "State / Department",
+        "city": "City",
+        "dob": "Date of birth",
+        "gender": "Gender",
+        "genders": {
+          "title": "Select gender",
+          "male": "Male",
+          "female": "Female",
+          "non-binary": "Non-binary",
+          "undisclosed": "Rather not say"
+        },
+        "submit": "Complete",
+        "errors": {
+          "username": "3–30 characters: letters, numbers, dots or underscores.",
+          "username_taken": "This username is already taken.",
+          "address": "Please enter your address.",
+          "country": "Please select your country.",
+          "state": "Please select your state.",
+          "city": "Please select your city.",
+          "dob": "Please enter your date of birth.",
+          "gender": "Please select your gender."
+        }
+      },
+      "verified": {
+        "title": "Account Verified",
+        "description": "You’ve successfully verified your email. We’re now signing you in."
+      }
     }
   },
   "Layout": {
@@ -443,7 +529,7 @@
       "more": "More",
       "login": "Log in",
       "help": "Help",
-      "logout": "Logout",
+      "logout": "Log out",
       "verified": "This is a verified organisation",
       "links": {
         "title1": "Activity",
@@ -455,7 +541,7 @@
         "title2": "User",
         "more": "More",
         "profile": "Profile",
-        "preferences": "Preferences",
+        "preferences": "Preference",
         "settings": "Settings"
       }
     },
@@ -470,6 +556,46 @@
       "description": "Access your account to securely manage tickets and complete actions.",
       "cancel": "Cancel",
       "proceed": "Proceed"
+    },
+    "prompt": {
+      "cancel": "Cancel",
+      "proceed": "Proceed",
+      "purchase": {
+        "title": "Complete Purchase",
+        "description": "Log in or create an account to purchase your ticket"
+      },
+      "follow": {
+        "title": "Follow Organisation",
+        "description": "Log in or create an account to follow an organisation and keep track of activities."
+      },
+      "save": {
+        "title": "Save Activity",
+        "description": "Log in or create an account to save activities and find them later."
+      },
+      "report": {
+        "title": "Report",
+        "description": "Log in or create an account to send a report."
+      },
+      "reserve": {
+        "title": "Reserve Your Spot",
+        "description": "Log in or create an account to reserve your spot."
+      },
+      "generic": {
+        "title": "Log in to continue",
+        "description": "Log in or create an account to continue."
+      }
+    },
+    "signedOut": {
+      "cta": "Log in or sign up",
+      "upcoming": "You haven’t purchased any tickets yet. Explore our activities to find something you love!",
+      "history": "You haven’t attended any activities yet. Explore our activities to find something you love!",
+      "profile": "Set up your profile to enhance your Ticketwaze experience!",
+      "preferences": "Customize your activity preferences to receive tailored recommendations.",
+      "wallet": "Log in to see your balance, tokens and purchases in one place.",
+      "settings": "Adjust your account settings to personalize your experience.",
+      "organisations": "Follow your favorite organisations to stay updated on their latest activities!",
+      "saved": "Save activities you like and find them all here, on every device.",
+      "pending": "Log in to pick up purchases you started but didn’t finish."
     }
   },
   "Raffle": {
@@ -559,27 +685,53 @@
     "pastActivities": "Past activities",
     "liked": "Liked activities",
     "filters": {
-      "first": {
-        "1": "All",
-        "2": "Music",
-        "3": "Conference",
-        "4": "Sport"
-      },
-      "second": {
-        "1": "Category",
-        "2": "Location",
-        "3": {
-          "1": "This week",
-          "2": "This month",
-          "3": "Next month",
-          "4": "This Year",
-          "title": "Date"
-        }
-      }
+      "all": "All",
+      "category": "Category",
+      "location": "Location",
+      "date": "Date",
+      "popularity": "Popularity",
+      "allCategories": "All categories",
+      "allLocations": "All locations",
+      "anyDate": "Any date",
+      "soonest": "Soonest first",
+      "mostPopular": "Most popular",
+      "chooseMonth": "Choose month",
+      "chooseYear": "Choose year",
+      "datePlaceholder": "DD - MM - YYYY",
+      "clear": "Clear filters"
     },
     "raffles": "Raffles",
     "restaurants": "Bar & Restaurant",
-    "sales": "Digital products"
+    "sales": "Digital products",
+    "categories": {
+      "conference": "Conference",
+      "concert": "Concert",
+      "festival": "Festival",
+      "comedy": "Comedy",
+      "theater_performance": "Theater",
+      "tournament": "Tournament",
+      "workshop": "Workshop",
+      "seminar": "Seminar",
+      "networking": "Networking",
+      "startup": "Startup",
+      "food": "Food Festival",
+      "art": "Art",
+      "cultural": "Cultural",
+      "charity": "Charity",
+      "fundraiser": "Fundraiser",
+      "meetup": "Meetup",
+      "community": "Community"
+    },
+    "noResultQuery": "No search result found for “{query}”. Here are similar activities that may interest you!",
+    "noResultFilters": "No activities match these filters. Here are other activities that may interest you!",
+    "saved": "Saved activities",
+    "pending": {
+      "title": "Pending Purchases",
+      "open": "Pending purchases",
+      "empty": "You have no pending purchases. Activities you start buying but don’t finish wait for you here for 24 hours.",
+      "resume": "Resume purchase",
+      "back": "Back"
+    }
   },
   "Wallet": {
     "title": "Wallet",
@@ -718,7 +870,8 @@
       "awaitingDraw": "Awaiting draw",
       "drawn": "Draw complete"
     },
-    "entries": "entries"
+    "entries": "entries",
+    "tickets": "{count, plural, one {ticket} other {tickets}}"
   },
   "History": {
     "title": "Activities history",
@@ -754,7 +907,7 @@
           "placeholder": "Message"
         },
         "success": {
-          "title": "Feedback sent successfully",
+          "title": "Feedback Sent Successfully",
           "text": "Thanks! Your feedback has been shared with the organizer successfully.",
           "cta": {
             "close": "Close",
@@ -811,7 +964,7 @@
     "misleadingInformation": "Misleading Information",
     "fraud": "Fraud or Scam Concerns",
     "venue": "Venue or Date Issues",
-    "other": "Other",
+    "other": "Others",
     "question": "What issue do you have with this activity?",
     "question2": "What issue do you have with this organisation?",
     "message": "Message",
@@ -855,7 +1008,8 @@
       "guest_description": "Quick checkout without creating an account.",
       "private_note": "This is a private activity. Please sign in with the email you were invited with to purchase tickets.",
       "back": "Back",
-      "online_note": "Online activities require an account, so you can be added to the invite and join the call."
+      "online_note": "Online activities require an account, so you can be added to the invite and join the call.",
+      "or": "Or"
     },
     "raffleCard": {
       "tag": "Raffle",
@@ -972,7 +1126,31 @@
       "failed": "Your ticket could not be generated. Please try again."
     },
     "giveaway": "Paid by Ticketwaze",
-    "reward": "Offered"
+    "reward": "Offered",
+    "soldCount": "{count}+ sold",
+    "note": "Note",
+    "onlineNote": "The activity link and password (if required) will be provided after your ticket purchase is confirmed.",
+    "recommended": "More activities recommended for you",
+    "save": "Save",
+    "saved": "Saved",
+    "website": "Website",
+    "reportFlow": {
+      "submit": "Submit",
+      "close": "Close",
+      "successTitle": "Report Submitted",
+      "successText": "Thank you! Your report has been submitted successfully. We’ll review it shortly.",
+      "returningActivity": "Returning to activity...",
+      "returningOrganisation": "Returning to organisation..."
+    },
+    "moreInfo": "More information",
+    "moreInfoTitle": "More Information",
+    "eventLink": "Event link",
+    "close": "Close",
+    "used": "Ticket used",
+    "used_m": "Used",
+    "previous": "Previous ticket",
+    "next": "Next ticket",
+    "noTickets": "No tickets available"
   },
   "Checkout": {
     "back": "Back",
@@ -1000,7 +1178,9 @@
       "error": "Select at least one ticket",
       "mixed_error": "Free and paid tickets have to be taken separately. Please choose one or the other, then come back for the rest.",
       "free_login_required": "Please sign in to claim your free ticket.",
-      "ticketWarning": "Tickets are non-refundable. All sales are final."
+      "ticketWarning": "Tickets are non-refundable. All sales are final.",
+      "discount_applied": "Discount applied",
+      "fees": "Fees"
     },
     "recipient": {
       "title": "Recipient",
@@ -1088,7 +1268,8 @@
       "checking": "Checking…",
       "remove": "Remove discount code",
       "applied_percentage": "{value}% off your tickets",
-      "applied_fixed": "{amount} off your order"
+      "applied_fixed": "{amount} off your order",
+      "cancel": "Cancel"
     },
     "tokens": {
       "title": "Ticketwaze tokens",
@@ -1097,12 +1278,30 @@
       "max": "Use all",
       "none": "Use none",
       "nothing_to_apply": "Your tokens cannot be applied to this order."
+    },
+    "success": {
+      "raffle": {
+        "title": "Entries confirmed",
+        "text": "Good luck in the draw! Your entries are saved and a copy is on its way to your email.",
+        "cta": "Opening your entries..."
+      },
+      "sale": {
+        "title": "Purchase complete",
+        "text": "Your purchase is confirmed! Your files are ready to download in Purchases.",
+        "cta": "Opening your purchases..."
+      },
+      "reservation": {
+        "title": "Reservation confirmed",
+        "text": "Your reservation is confirmed! You’ll find the details here and in your email.",
+        "cta": "Opening your reservation..."
+      },
+      "checking": "Confirming your payment..."
     }
   },
   "Liked": {
-    "title": "Like activities",
+    "title": "Saved Activities",
     "back": "Back",
-    "noEvent": "You have not liked any activities yet. Browse upcoming activities and tap the heart to save your favourites.",
+    "noEvent": "You haven’t saved any activities yet. Once you do, they’ll appear here!",
     "filters": {
       "saved": "Saved",
       "liked": "Liked"
@@ -1110,7 +1309,7 @@
   },
   "Profile": {
     "title": "Profile",
-    "edit": "Edit Profile",
+    "edit": "Edit profile",
     "save": "Save changes",
     "setProfile": "Set profile image",
     "resize": "Resize Image",
@@ -1193,10 +1392,12 @@
       "title": "Others",
       "privacy": "Privacy policy",
       "terms": "Terms of use"
-    }
+    },
+    "changeProfile": "Change profile image",
+    "updated": "Profile updated"
   },
   "Preferences": {
-    "title": "Preferences",
+    "title": "Preference",
     "categories": {
       "title": "Preferred Categories"
     },
@@ -1204,13 +1405,14 @@
       "title": "Email Notifications",
       "upcoming": "Notify me about upcoming activities I’ve purchased tickets for.",
       "preferred": "Notify me about new activities in my preferred categories.",
-      "follow": "Notify me when a followed organizer adds new activities."
+      "follow": "Notify me when a followed organisation adds new activities."
     },
     "user": {
       "title": "App Preferences",
       "currency": "Preferred Currency",
       "notifications": "Preferred notification provider",
-      "none": "None"
+      "none": "None",
+      "usd": "US Dollars"
     },
     "interests": {
       "title": "Activity preferences",
@@ -1228,12 +1430,14 @@
         "booking": "Booking"
       },
       "update": "Update interests",
-      "error": "Choose at leat one interest"
-    }
+      "error": "Choose at least one category"
+    },
+    "saved": "Preferences saved",
+    "saveError": "Couldn't save your preferences. Please try again."
   },
   "Settings": {
     "title": "Settings",
-    "forgot": "Forgot password",
+    "forgot": "Reset password",
     "addPassword": {
       "title": "Add a Password",
       "description": "Set a password so you can also sign in with your email.",
@@ -1245,11 +1449,11 @@
       "cta": "Change Password",
       "tips": {
         "title": "Security tip",
-        "description": "After updating your password, you'll need to sign in again on all you devices for security puposes."
+        "description": "After updating your password, you'll need to sign in again on all your devices for security purposes."
       },
       "errors": {
         "blank": "Field cannot be blank",
-        "password": "Password must me at least 8 characters",
+        "password": "Password must be at least 8 characters",
         "confirm": "Password must be the same"
       }
     },
@@ -1267,7 +1471,27 @@
     },
     "security": {
       "title": "Security",
-      "2fa": "2FA"
+      "label": "Two-step verification (2FA)",
+      "description": "Ask for a code sent to your email each time you sign in with your password.",
+      "noPassword": "Add a password first: two-step verification protects password sign-in.",
+      "turnOnTitle": "Turn on two-step verification",
+      "turnOffTitle": "Turn off two-step verification",
+      "sent": "Enter the 6-digit code we sent to {email}.",
+      "confirm": "Confirm",
+      "resend": "Resend code",
+      "resendIn": "Resend in {seconds}s",
+      "resent": "A new code is on its way",
+      "on": "Two-step verification is on",
+      "off": "Two-step verification is off",
+      "cancel": "Cancel",
+      "errors": {
+        "invalid": "That code isn't right.",
+        "invalidLeft": "That code isn't right. {count, plural, one {# try} other {# tries}} left.",
+        "expired": "This code has expired. Request a new one.",
+        "tooMany": "Too many wrong codes. Close this and try again.",
+        "restart": "This request has expired. Close this and try again.",
+        "generic": "Something went wrong. Please try again."
+      }
     },
     "language": {
       "title": "App language"
@@ -1276,6 +1500,11 @@
       "title": "Others",
       "privacy": "Privacy policy",
       "terms": "Terms of use"
+    },
+    "done": {
+      "title": "Password changed",
+      "description": "You have successfully changed your password.",
+      "signingOut": "Signing you out…"
     }
   },
   "Organizers": {
@@ -1295,20 +1524,23 @@
     "event": "activity",
     "follow": "Follow",
     "unfollow": "Unfollow",
-    "noFollowed": "You’re not following any organisations yet. Discover and follow organisations to stay updated on their latest activities.",
+    "noFollowed": "You’re not following any organisations yet. Start following to see their latest activities here!",
     "profile": {
       "upcoming": "Upcoming activities",
       "past": "Past activities",
       "noUpcoming": "No upcoming activity",
       "rating": "rating",
-      "followers": "followers",
+      "followers": "{count, plural, one {follower} other {followers}}",
       "events": "Activities",
       "follow": "Follow",
       "unfollow": "Unfollow",
       "about": "About organisation",
       "contact": "Contact Information",
       "noResult": "There's no result for "
-    }
+    },
+    "activities": "{count, plural, one {activity} other {activities}}",
+    "noResultQuery": "No search result found for “{query}”",
+    "find": "Find organisations"
   },
   "WelcomeModal": {
     "next": "Next",
@@ -1418,6 +1650,142 @@
     "event": {
       "tickets": "Tickets",
       "fallbackDescription": "Get your tickets for {name} on Ticketwaze. Secure payment by card or MonCash, tickets on your phone."
+    }
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "open": "Open notifications",
+    "emptyTitle": "Your overview will show up here",
+    "empty": "You have no notifications yet. As updates come in, they’ll show up here!",
+    "view": "View",
+    "copy": "Copy code",
+    "copied": "Code copied",
+    "followed_new_activity": {
+      "title": "Following an Organisation",
+      "body": "{organisation} just posted “{activity}”. See what’s next!"
+    },
+    "interest_new_activity": {
+      "title": "New Activity Alert!",
+      "body": "“{activity}” was just added in one of your favourite categories."
+    },
+    "offer": {
+      "title": "Special Offer",
+      "body": "Use code {code} for {value} off “{activity}”. Limited time only!"
+    },
+    "reminder_tomorrow": {
+      "title": "Tomorrow",
+      "body": "“{activity}” is tomorrow. Your ticket is ready in Upcoming."
+    },
+    "reminder_today": {
+      "title": "Today",
+      "body": "“{activity}” is today. Have your ticket ready at the door."
+    },
+    "activity_changed": {
+      "title": "Activity updated",
+      "body": "“{activity}” changed: {changes}. Check the new details."
+    },
+    "raffle_changed": {
+      "title": "Raffle updated",
+      "body": "“{activity}” changed: {changes}."
+    },
+    "activity_deletion_scheduled": {
+      "title": "Activity may be cancelled",
+      "body": "The organiser plans to cancel “{activity}”. If it is, you'll be refunded."
+    },
+    "activity_cancelled": {
+      "title": "Activity cancelled",
+      "body": "“{activity}” has been cancelled. Your tickets will be refunded (service fees excluded)."
+    },
+    "rate_activity": {
+      "title": "How was it?",
+      "body": "Tell us how “{activity}” went: it takes a few seconds."
+    },
+    "purchase_confirmed": {
+      "title": "Purchase confirmed",
+      "body": "{count, plural, one {Your ticket} other {Your # tickets}} for “{activity}” {count, plural, one {is} other {are}} ready."
+    },
+    "ticket_received": {
+      "title": "You received a ticket",
+      "body": "{from} got you {count, plural, one {a ticket} other {# tickets}} for “{activity}”."
+    },
+    "giveaway_received": {
+      "title": "A gift from Ticketwaze",
+      "body": "You received {count, plural, one {a free ticket} other {# free tickets}} for “{activity}”."
+    },
+    "reward_unlocked": {
+      "title": "Reward unlocked",
+      "body": "You unlocked “{reward}” for “{activity}”."
+    },
+    "ticket_returned": {
+      "title": "Ticket returned",
+      "body": "Your return for “{activity}” went through."
+    },
+    "raffle_entry_confirmed": {
+      "title": "You're in the draw",
+      "body": "{count, plural, one {Your entry} other {Your # entries}} for “{activity}” {count, plural, one {is} other {are}} confirmed. Good luck!"
+    },
+    "reservation_confirmed": {
+      "title": "Table reserved",
+      "body": "Your reservation at {activity} is confirmed."
+    },
+    "sale_confirmed": {
+      "title": "Purchase confirmed",
+      "body": "You bought “{activity}”. It's in your purchases."
+    },
+    "private_invitation": {
+      "title": "You're invited",
+      "body": "You've been invited to the private activity “{activity}”."
+    },
+    "invitation_revoked": {
+      "title": "Invitation withdrawn",
+      "body": "Your invitation to “{activity}” was withdrawn by the organiser."
+    },
+    "raffle_won": {
+      "title": "You won!",
+      "body": "You won “{prize}” in “{activity}”."
+    },
+    "raffle_result": {
+      "title": "Draw results",
+      "body": "The draw for “{activity}” took place. See the results."
+    },
+    "raffle_cancelled": {
+      "title": "Raffle cancelled",
+      "body": "“{activity}” was cancelled. Your entries were refunded to your wallet."
+    },
+    "wallet_credited": {
+      "title": "Wallet credited",
+      "body": "{amount} was added to your wallet."
+    },
+    "withdrawal_accepted": {
+      "title": "Withdrawal sent",
+      "body": "Your withdrawal of {amount} was accepted."
+    },
+    "withdrawal_rejected": {
+      "title": "Withdrawal declined",
+      "body": "Your withdrawal of {amount} was declined. The amount is back in your wallet."
+    },
+    "password_changed": {
+      "title": "Password changed",
+      "body": "Your password was changed. If this wasn't you, reset it now."
+    },
+    "account_deletion_scheduled": {
+      "title": "Account deletion scheduled",
+      "body": "Your account will be deleted on {date}. Sign in before then to cancel."
+    },
+    "account_deletion_reminder": {
+      "title": "Account deletion soon",
+      "body": "Your account will be deleted on {date}. Sign in to keep it."
+    },
+    "changes": {
+      "name": "name",
+      "venue": "venue",
+      "date": "date",
+      "prizes": "prizes",
+      "and": " and "
+    },
+    "waitlist_tokens": {
+      "title": "Your waitlist gift",
+      "body": "You have {tokens} free tokens in your wallet, and your first purchase is free of fees."
     }
   }
 }

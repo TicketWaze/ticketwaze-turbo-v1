@@ -3,6 +3,8 @@ import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import {
+  assertNoMfa,
+  verifyMfaLogin,
   needsRefresh,
   readJsonBody,
   refreshApiTokens,
@@ -119,8 +121,18 @@ const nextAuthResult = NextAuth({
         email: {},
         password: {},
         googleIdToken: {},
+        // Email 2FA, second step: the challenge from the first and the code.
+        challengeId: {},
+        code: {},
       },
       authorize: async (credentials) => {
+        if (credentials.challengeId) {
+          const data = await verifyMfaLogin(
+            credentials.challengeId,
+            credentials.code,
+          );
+          return data.user;
+        }
         if (credentials.googleIdToken) {
           const response = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
@@ -161,6 +173,8 @@ const nextAuthResult = NextAuth({
         if (data.code === "ORGANISATION_SUSPENDED") {
           throw new OrganisationSuspendedError();
         }
+        // 2FA account: no session yet — the page asks for the emailed code.
+        assertNoMfa(data);
         if (data.status !== "success") {
           throw new Error(data.message || "Invalid credentials");
         }

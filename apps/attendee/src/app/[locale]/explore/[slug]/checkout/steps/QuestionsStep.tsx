@@ -3,20 +3,8 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ClipboardText } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
-import type {
-  Event,
-  EventTicketType,
-  PublicEventFormQuestion,
-} from "@ticketwaze/typescript-config";
-import Capitalize from "@/lib/Capitalize";
-import {
-  AttendeeFormData,
-  FeeBreakdown,
-  PaymentType,
-  SeatAnswers,
-  SelectedTicket,
-} from "../checkout.types";
-import TicketSummaryCard from "../TicketSummaryCard";
+import type { PublicEventFormQuestion } from "@ticketwaze/typescript-config";
+import { AttendeeFormData, SeatAnswers } from "../checkout.types";
 
 /**
  * THE ORGANISER'S QUESTIONS, ASKED ONCE PER SEAT.
@@ -178,12 +166,6 @@ export default function QuestionsStep({
   ticketTypeNames,
   answers,
   onAnswerChange,
-  event,
-  ticketTypes,
-  isFree,
-  selectedWithIndex,
-  feeBreakdown,
-  paymentType,
 }: {
   delta: number;
   questions: PublicEventFormQuestion[];
@@ -196,12 +178,6 @@ export default function QuestionsStep({
     questionId: string,
     value: { answer: string; isOther: boolean },
   ) => void;
-  event: Event;
-  ticketTypes: EventTicketType[];
-  isFree: boolean;
-  selectedWithIndex: SelectedTicket[];
-  feeBreakdown: FeeBreakdown;
-  paymentType: PaymentType;
 }) {
   const t = useTranslations("Checkout.questions");
 
@@ -225,22 +201,16 @@ export default function QuestionsStep({
       </div>
 
       {watchedAttendees.map((attendee, seatIndex) => {
-        // "#2 VIP" — which of several identical seats this card is for. Counted
-        // within the type, matching how the recipient step numbers them.
-        const sameTypeCount = watchedAttendees
-          .slice(0, seatIndex)
-          .filter((other) => other.ticketTypeId === attendee.ticketTypeId).length;
-
+        // "#3 VIP": numbered across the whole order, matching the recipient
+        // step (Figma), with the type name as the organiser wrote it.
         return (
           <div
             key={`${attendee.ticketTypeId}-${seatIndex}`}
             className="border border-neutral-100 rounded-[15px] flex flex-col gap-8 p-6"
           >
             <div className="flex items-center w-full justify-between font-semibold text-[1.6rem] leading-8 text-deep-100">
-              <span>#{sameTypeCount + 1}</span>
-              <span>
-                {Capitalize(ticketTypeNames[attendee.ticketTypeId] ?? "")}
-              </span>
+              <span>#{seatIndex + 1}</span>
+              <span>{ticketTypeNames[attendee.ticketTypeId] ?? ""}</span>
             </div>
 
             {questions.map((question) => (
@@ -257,17 +227,6 @@ export default function QuestionsStep({
           </div>
         );
       })}
-
-      <div className="lg:hidden flex flex-col gap-8">
-        <TicketSummaryCard
-          selectedWithIndex={selectedWithIndex}
-          ticketTypes={ticketTypes}
-          event={event}
-          isFree={isFree}
-          feeBreakdown={feeBreakdown}
-          paymentType={paymentType}
-        />
-      </div>
     </motion.div>
   );
 }

@@ -2,7 +2,7 @@ import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
-import PageLoader from "@/components/PageLoader";
+import PurchaseSuccess from "@/components/PurchaseSuccess";
 
 /**
  * Where Stripe returns a buyer after paying for a digital product.
@@ -38,19 +38,17 @@ export default async function SuccessSaleStripe({
   ).catch(() => null);
   const response = request ? await request.json().catch(() => null) : null;
 
-  if (response?.status === "success") {
-    // Into the library, not back to the shop page: the buyer's next action is
-    // downloading what they just bought.
-    redirect({ href: `/purchases?from=checkout`, locale });
-  } else {
+  if (response?.status !== "success") {
     // The payment did not settle. Explore rather than the product page, which
     // would invite an immediate second attempt at something that just failed.
     redirect({ href: `/explore`, locale });
   }
+  // Success: into the library, not back to the shop page — the buyer's next
+  // action is downloading what they just bought.
 
   return (
     <AttendeeLayout className="items-center justify-center" title="">
-      <PageLoader isLoading={true} />
+      <PurchaseSuccess kind="sale" redirectTo="/purchases?from=checkout" />
     </AttendeeLayout>
   );
 }

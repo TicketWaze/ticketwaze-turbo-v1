@@ -1,26 +1,36 @@
 "use client";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Link, usePathname } from "@/i18n/navigation";
 import {
+  Building,
   Clock,
+  HamburgerMenu,
+  I24Support,
+  LoginCurve,
+  Logout,
+  MoneyRecive,
+  Setting2,
+  Setting5,
   Star,
   Ticket,
   User,
-  HamburgerMenu,
-  Setting5,
-  I24Support,
-  Logout,
-  MoneyRecive,
-  Building,
-  LoginCurve,
 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { signOut, useSession } from "next-auth/react";
-import NoAuthDialog from "./NoAuthDialog";
+import { authHref } from "@/lib/authRedirect";
 import { useAuthInterceptor } from "@/hooks/useAuthInterceptor";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogTrigger } from "../ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
+type NavIcon = typeof Ticket;
+
+/**
+ * Figma "Nav": the phone tab bar — Explore · Upcoming · Profile · More — and
+ * the More menu (History, Organisations, Preference, Settings, then Help and
+ * Log out). Wallet is not in Figma but is a real page, so it joins the menu.
+ * Signed out, More becomes "Log in": everything in it needs an account.
+ */
 export default function MobileNavigation({
   className,
 }: {
@@ -30,79 +40,28 @@ export default function MobileNavigation({
   const pathname = usePathname();
   useAuthInterceptor();
   const locale = useLocale();
-  const { data: session, status } = useSession();
-  // "loading" counts as neither, so a signed-in user never sees the Log in tab flash.
+  const { status } = useSession();
+  // "loading" counts as neither, so a signed-in user never sees Log in flash.
   const isSignedOut = status === "unauthenticated";
-  /*
-   * Signed out: Explore · Upcoming · Profile · Log in, and no More menu —
-   * everything in it needs an account. Upcoming and Profile open the sign-in
-   * dialog, so they show a visitor what an account gives them.
-   */
-  const links = [
-    {
-      label: t("links.upcoming"),
-      path: `/upcoming`,
-      Icon: Star,
-    },
-    isSignedOut
-      ? {
-          label: t("links.profile"),
-          path: `/profile`,
-          Icon: User,
-        }
-      : {
-          label: t("links.organizers"),
-          path: `/organisations`,
-          Icon: Building,
-        },
-  ];
-  const moreLinks = session?.user
-    ? [
-        {
-          label: t("links.profile"),
-          path: `/profile`,
-          Icon: User,
-        },
-        {
-          label: t("links.wallet"),
-          path: `/wallet`,
-          Icon: MoneyRecive,
-        },
-        {
-          label: t("links.history"),
-          path: `/history`,
-          Icon: Clock,
-        },
-        // {
-        //   label: t("links.organizers"),
-        //   path: `/organisations`,
-        //   Icon: Building,
-        // },
-        {
-          label: t("links.preferences"),
-          path: `/preferences`,
-          Icon: Setting5,
-        },
-        // {
-        //   label: t("links.settings"),
-        //   path: `/settings`,
-        //   Icon: Setting,
-        // },
-      ]
-    : [];
+  const [moreOpen, setMoreOpen] = useState(false);
 
-  function isMoreLinkActive(path: string) {
-    return (
-      path.startsWith("/history") ||
-      path.startsWith("/organizers") ||
-      path.startsWith("/preferences") ||
-      path.startsWith("/settings") ||
-      path.startsWith("/wallet")
-    );
-  }
-  function isActive(path: string) {
-    return pathname.startsWith(path);
-  }
+  const tabs: { label: string; path: string; Icon: NavIcon }[] = [
+    { label: t("links.explore"), path: "/explore", Icon: Ticket },
+    { label: t("links.upcoming"), path: "/upcoming", Icon: Star },
+    { label: t("links.profile"), path: "/profile", Icon: User },
+  ];
+  const moreLinks: { label: string; path: string; Icon: NavIcon }[] = [
+    { label: t("links.history"), path: "/history", Icon: Clock },
+    { label: t("links.organizers"), path: "/organisations", Icon: Building },
+    { label: t("links.wallet"), path: "/wallet", Icon: MoneyRecive },
+    { label: t("links.preferences"), path: "/preferences", Icon: Setting5 },
+    { label: t("links.settings"), path: "/settings", Icon: Setting2 },
+  ];
+
+  const isActive = (path: string) => pathname.startsWith(path);
+  // The More tab lights up whenever the current page lives in its menu.
+  const moreActive = moreLinks.some(({ path }) => isActive(path));
+
   return (
     <nav
       className={cn(
@@ -110,161 +69,149 @@ export default function MobileNavigation({
         className,
       )}
     >
-      <ul className={" flex gap-4 justify-between w-full"}>
-        <li>
-          <Link
-            href={"/explore"}
-            className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isActive("/explore") && "font-semibold text-primary-500 is-active"}`}
-          >
-            <Ticket
-              size="20"
-              className={`transition-all duration-500 ${isActive("/explore") ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-              variant="Bulk"
-            />
-            <span className={""}>{t("links.explore")}</span>
-          </Link>
-        </li>
-        {links.map(({ label, Icon, path }) => {
-          return (
-            <li key={path}>
-              {session?.user ? (
-                <Link
-                  href={path}
-                  className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isActive(path) && "font-semibold text-primary-500 is-active"}`}
-                >
-                  <Icon
-                    size="20"
-                    className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                    variant="Bulk"
-                  />
-                  <span className={""}>{label}</span>
-                </Link>
-              ) : (
-                <Dialog>
-                  <DialogTrigger>
-                    <div
-                      className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isActive(path) && "font-semibold text-primary-500 is-active"}`}
-                    >
-                      <Icon
-                        size="20"
-                        className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                        variant="Bulk"
-                      />
-                      <span className={""}>{label}</span>
-                    </div>
-                  </DialogTrigger>
-                  <NoAuthDialog callbackUrl={path} />
-                </Dialog>
-              )}
-            </li>
-          );
-        })}
-        {isSignedOut && (
-          <li>
-            <Dialog>
-              <DialogTrigger>
-                <div className="group font-semibold text-[1.5rem] leading-8 text-primary-500 flex flex-col items-center gap-4 cursor-pointer">
-                  <LoginCurve size="20" color="#E45B00" variant="Bulk" />
-                  <span>{t("login")}</span>
-                </div>
-              </DialogTrigger>
-              {/* Back to the page they were on once signed in. */}
-              <NoAuthDialog callbackUrl={pathname} />
-            </Dialog>
+      <ul className="flex gap-4 justify-between w-full">
+        {tabs.map(({ label, path, Icon }) => (
+          <li key={path}>
+            <Link href={path} className="group flex flex-col items-center">
+              <TabItem label={label} Icon={Icon} active={isActive(path)} />
+            </Link>
           </li>
-        )}
-        {!isSignedOut && (
+        ))}
+        {isSignedOut ? (
           <li>
-            <Popover>
-              <PopoverTrigger>
-                <div
-                  className={` group font-normal group text-[1.5rem] leading-8 text-neutral-700 hover:text-primary-500 flex flex-col items-center  gap-4 ${isMoreLinkActive(pathname) && "font-semibold text-primary-500 is-active"}`}
-                >
-                  <HamburgerMenu
-                    size="20"
-                    className={`transition-all duration-500 ${isMoreLinkActive(pathname) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                    variant="Bulk"
-                  />
-                  <span className={""}>{t("more")}</span>
-                </div>
+            {/* Back to the page they were on once signed in. */}
+            <Link
+              href={authHref("/auth/login", pathname)}
+              className="group font-semibold text-[1.5rem] leading-8 text-primary-500 flex flex-col items-center gap-4"
+            >
+              <LoginCurve size="20" color="#E45B00" variant="Bulk" />
+              <span>{t("login")}</span>
+            </Link>
+          </li>
+        ) : (
+          <li>
+            <Popover open={moreOpen} onOpenChange={setMoreOpen}>
+              <PopoverTrigger
+                aria-label={t("more")}
+                className="group flex flex-col items-center cursor-pointer"
+              >
+                <TabItem
+                  label={t("more")}
+                  Icon={HamburgerMenu}
+                  active={moreActive || moreOpen}
+                />
               </PopoverTrigger>
               <PopoverContent
-                className={
-                  "w-[250px] p-0 m-0 bg-none shadow-none border-none mx-4"
-                }
+                side="top"
+                align="end"
+                sideOffset={16}
+                className="w-[22rem] p-[10px] bg-white border border-neutral-100 rounded-[10px] shadow-[0px_5px_10px_0px_rgba(0,0,0,0.1)]"
               >
-                <div
-                  className={
-                    "bg-neutral-100 border border-neutral-200 right-8 p-4  mb-8 rounded-[1rem] shadow-xl bottom-full flex flex-col gap-4"
-                  }
-                >
-                  <span
-                    className={
-                      "font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
-                    }
-                  >
-                    {t("more")}
-                  </span>
-                  <ul className={"flex flex-col gap-4"}>
-                    {moreLinks.map(({ Icon, label, path }) => {
-                      return (
-                        <li key={path}>
-                          <Link
-                            href={path}
-                            className="flex items-center gap-4 py-4"
-                          >
-                            <Icon
-                              size="20"
-                              className={`transition-all duration-500 ${isActive(path) ? "stroke-primary-500 fill-primary-500" : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"}  `}
-                              variant="Bulk"
-                            />
-                            <span
-                              className={`text-[1.5rem] leading-4  ${isActive(path) ? "text-primary-500" : "text-neutral-700"}`}
-                            >
-                              {label}
-                            </span>
-                          </Link>
-                        </li>
-                      );
-                    })}
-                    <div className="bg-neutral-200 h-[1px] w-full"></div>
+                <span className="block px-[10px] pt-[2px] pb-[8px] mb-1 border-b border-neutral-100 text-[1.4rem] font-medium leading-8 text-deep-100">
+                  {t("more")}
+                </span>
+                <ul className="flex flex-col">
+                  {moreLinks.map(({ Icon, label, path }, index) => (
+                    <MenuItem key={path} index={index}>
+                      <Link
+                        href={path}
+                        onClick={() => setMoreOpen(false)}
+                        aria-current={isActive(path) ? "page" : undefined}
+                        className="flex items-center gap-4 px-[10px] py-[10px] rounded-[7.5px] hover:bg-neutral-100 transition-colors"
+                      >
+                        <Icon
+                          size="20"
+                          variant="Bulk"
+                          color={isActive(path) ? "#E45B00" : "#737C8A"}
+                        />
+                        <span
+                          className={`text-[1.5rem] leading-8 ${isActive(path) ? "text-primary-500 font-medium" : "text-neutral-700"}`}
+                        >
+                          {label}
+                        </span>
+                      </Link>
+                    </MenuItem>
+                  ))}
+                  <li className="my-2 mx-[10px] h-px bg-neutral-100" />
+                  <MenuItem index={moreLinks.length}>
                     <Link
                       target="_blank"
                       href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/contact`}
-                      className="flex items-center gap-4 py-4"
+                      onClick={() => setMoreOpen(false)}
+                      className="flex items-center gap-4 px-[10px] py-[10px] rounded-[7.5px] hover:bg-neutral-100 transition-colors"
                     >
                       <I24Support size="20" color="#737C8A" variant="Bulk" />
-                      <span
-                        className={`text-[1.5rem] leading-4 text-neutral-700`}
-                      >
+                      <span className="text-[1.5rem] leading-8 text-neutral-700">
                         {t("help")}
                       </span>
                     </Link>
-                    {session?.user && (
-                      <button
-                        onClick={() =>
-                          signOut({
-                            redirect: true,
-                            redirectTo: process.env.NEXT_PUBLIC_ATTENDEE_URL,
-                          })
-                        }
-                        className="flex items-center gap-4 py-4"
-                      >
-                        <Logout size="20" color="#737c8a" variant="Bulk" />
-                        <span
-                          className={`text-[1.5rem] leading-4 text-neutral-700`}
-                        >
-                          {t("logout")}
-                        </span>
-                      </button>
-                    )}
-                  </ul>
-                </div>
+                  </MenuItem>
+                  <MenuItem index={moreLinks.length + 1}>
+                    <button
+                      onClick={() =>
+                        signOut({
+                          redirect: true,
+                          redirectTo: process.env.NEXT_PUBLIC_ATTENDEE_URL,
+                        })
+                      }
+                      className="w-full flex items-center gap-4 px-[10px] py-[10px] rounded-[7.5px] hover:bg-neutral-100 transition-colors cursor-pointer"
+                    >
+                      <Logout size="20" color="#737c8a" variant="Bulk" />
+                      <span className="text-[1.5rem] leading-8 text-neutral-700">
+                        {t("logout")}
+                      </span>
+                    </button>
+                  </MenuItem>
+                </ul>
               </PopoverContent>
             </Popover>
           </li>
         )}
       </ul>
     </nav>
+  );
+}
+
+function TabItem({
+  label,
+  Icon,
+  active,
+}: {
+  label: string;
+  Icon: NavIcon;
+  active: boolean;
+}) {
+  return (
+    <span
+      className={`flex flex-col items-center gap-4 text-[1.5rem] leading-8 transition-colors ${active ? "font-semibold text-primary-500" : "font-normal text-neutral-700 group-hover:text-primary-500"}`}
+    >
+      <motion.span
+        animate={{ scale: active ? 1.12 : 1, y: active ? -1 : 0 }}
+        transition={{ type: "spring", stiffness: 500, damping: 28 }}
+        className="flex"
+      >
+        <Icon size="20" variant="Bulk" color={active ? "#E45B00" : "#2E3237"} />
+      </motion.span>
+      <span>{label}</span>
+    </span>
+  );
+}
+
+/** Menu rows slide in one after another as the menu opens. */
+function MenuItem({
+  index,
+  children,
+}: {
+  index: number;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.li
+      initial={{ opacity: 0, x: 8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.2, delay: index * 0.03 }}
+    >
+      {children}
+    </motion.li>
   );
 }

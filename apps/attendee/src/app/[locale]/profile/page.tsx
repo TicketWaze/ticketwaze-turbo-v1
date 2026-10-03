@@ -1,12 +1,19 @@
+import SignedOutState from "@/components/SignedOutState";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 import ProfilePageContent from "./ProfilePageContent";
 import { auth } from "@/lib/auth";
-import { redirect } from "@/i18n/navigation";
 
 export default async function ProfilePage() {
   const t = await getTranslations("Profile");
   const session = await auth();
+  if (!session) {
+    return (
+      <AttendeeLayout title={t("title")}>
+        <SignedOutState page="profile" title={t("title")} />
+      </AttendeeLayout>
+    );
+  }
   const request = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
     method: "GET",
     headers: {
@@ -15,10 +22,6 @@ export default async function ProfilePage() {
     },
   });
   const response = await request.json();
-  const locale = await getLocale();
-  if (!session) {
-    redirect({ href: "/auth/login", locale });
-  }
   return (
     <AttendeeLayout title={t("title")}>
       <ProfilePageContent

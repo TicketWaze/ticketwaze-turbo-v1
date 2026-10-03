@@ -1,5 +1,6 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { Ticket } from "iconsax-reactjs";
+import ContactInfo from "@/components/activity/ContactInfo";
 import { getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -19,6 +20,8 @@ import {
   buildBreadcrumbJsonLd,
 } from "@/lib/structuredData";
 import type { Metadata } from "next";
+import { auth } from "@/lib/auth";
+import SignedOutState from "@/components/SignedOutState";
 
 /** Preview text for search results and link unfurls. */
 function previewDescription(organisation: {
@@ -89,11 +92,9 @@ export async function generateMetadata({
       title: organisation.organisationName,
       description,
     },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true, "max-image-preview": "large" },
-    },
+    // Only signed-in users see the page, so keep it out of search results.
+    // The Open Graph tags above still give shared links a proper preview.
+    robots: { index: false, follow: false },
   };
 }
 
@@ -104,6 +105,20 @@ export default async function OrganizerProfile({
 }) {
   const { slug, locale } = await params;
   const t = await getTranslations("Organizers");
+  // Organisation pages are for account holders only; come back here after
+  // signing in.
+  const session = await auth();
+  if (!session?.user) {
+    return (
+      <AttendeeLayout title={t("title")}>
+        <SignedOutState
+          page="organisations"
+          title={t("title")}
+          returnPath={`/organisations/${slug}`}
+        />
+      </AttendeeLayout>
+    );
+  }
   // Same call generateMetadata made — Next dedupes it into one request.
   const organisation = await getOrganisation(slug);
   if (!organisation) {
@@ -123,8 +138,21 @@ export default async function OrganizerProfile({
   )}`;
   const canonicalUrl = `${process.env.NEXT_PUBLIC_ATTENDEE_URL ?? ""}${canonicalPath}`;
 
+  const noUpcoming = (
+    <div className="flex flex-col items-center gap-12">
+      <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
+        <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
+          <Ticket size="50" color="#0D0D0D" variant="Bulk" />
+        </div>
+      </div>
+      <span className="font-primary text-[1.8rem] leading-8 text-neutral-600">
+        {t("profile.noUpcoming")}
+      </span>
+    </div>
+  );
+
   return (
-    <AttendeeLayout title="OrganizerProfile">
+    <AttendeeLayout title={organisation.organisationName}>
       {/* Organization markup plus the trail back to the listing, so the page can
           surface as a rich result rather than a bare blue link. */}
       <JsonLd
@@ -185,46 +213,12 @@ export default async function OrganizerProfile({
               {organisation.organisationDescription}
             </p>
           </div>
-          {/* <Separator /> */}
-          {/* <div>
-            <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-              {t("profile.contact")}
-            </span>
-          </div>
-          <div className={"flex flex-col gap-[5px]"}>
-            <div className={"flex items-center gap-4"}>
-              <Sms size="20" color="#737c8a" variant="Bulk" />
-              <span
-                className={
-                  "font-normal text-[1.5rem] leading-[30px] text-neutral-700"
-                }
-              >
-                {organisation.organisationEmail}
-              </span>
-            </div>
-            <div className={"flex items-center gap-4"}>
-              <Call size="20" color="#737c8a" variant="Bulk" />
-              <span
-                className={
-                  "font-normal text-[1.5rem] leading-[30px] text-neutral-700"
-                }
-              >
-                {organisation.organisationPhoneNumber}
-              </span>
-            </div>
-            {organisation.organisationWebsite && (
-              <div className={"flex items-center gap-4"}>
-                <Global size="20" color="#737c8a" variant="Bulk" />
-                <span
-                  className={
-                    "font-normal text-[1.5rem] leading-[30px] text-neutral-700"
-                  }
-                >
-                  {organisation.organisationWebsite}
-                </span>
-              </div>
-            )}
-          </div> */}
+          <Separator />
+          <ContactInfo
+            email={organisation.organisationEmail}
+            phone={organisation.organisationPhoneNumber}
+            website={organisation.organisationWebsite}
+          />
           <div className="lg:hidden">
             <Separator />
           </div>
@@ -245,27 +239,7 @@ export default async function OrganizerProfile({
                 </ul>
               </div>
             )}
-            {/* no upcoming */}
-            {/* {upcomingEvents.length === 0 && (
-              <div
-                className="flex flex-col items-center"
-                style={{
-                  gap:
-                    upcomingEvents.length > 0 && pastEvents.length > 0
-                      ? "5rem"
-                      : "0",
-                }}
-              >
-                <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
-                  <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
-                    <Ticket size="50" color="#0D0D0D" variant="Bulk" />
-                  </div>
-                </div>
-                <span className="font-primary text-[1.8rem] leading-8 text-neutral-600">
-                  {t("profile.noUpcoming")}
-                </span>
-              </div>
-            )} */}
+            {upcomingEvents.length === 0 && noUpcoming}
           </div>
           {pastEvents.length > 0 && (
             <div className="lg:hidden flex flex-col gap-8">
@@ -285,13 +259,15 @@ export default async function OrganizerProfile({
           )}
           <div></div>
         </div>
-        <div
-          className="hidden lg:flex lg:flex-col lg:overflow-y-auto min-h-0 pt-0"
-          style={{
-            gap:
-              upcomingEvents.length > 0 && pastEvents.length > 0 ? "5rem" : "0",
-          }}
-        >
+        <div className="hidden lg:flex lg:flex-col lg:overflow-y-auto min-h-0 pt-0 gap-20">
+          {/* Figma: with nothing coming up, the column centres the empty state. */}
+          {upcomingEvents.length === 0 && (
+            <div
+              className={`flex items-center justify-center ${pastEvents.length > 0 ? "py-16" : "flex-1"}`}
+            >
+              {noUpcoming}
+            </div>
+          )}
           {upcomingEvents.length > 0 && (
             <div className="flex flex-col gap-4">
               <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
@@ -307,20 +283,6 @@ export default async function OrganizerProfile({
                   );
                 })}
               </ul>
-
-              {/* no upcoming */}
-              {/* {upcomingEvents.length === 0 && (
-                <div className="flex flex-col items-center gap-20">
-                  <div className="h-48 w-48 bg-neutral-100 rounded-full flex items-center justify-center">
-                    <div className="w-36 h-36 bg-neutral-200 flex items-center justify-center rounded-full">
-                      <Ticket size="50" color="#0D0D0D" variant="Bulk" />
-                    </div>
-                  </div>
-                  <span className="font-primary text-[1.8rem] leading-8 text-neutral-600">
-                    {t("profile.noUpcoming")}
-                  </span>
-                </div>
-              )} */}
             </div>
           )}
           {pastEvents.length > 0 && (

@@ -1,18 +1,21 @@
+import SignedOutState from "@/components/SignedOutState";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { SimpleTopbar } from "@/components/Layouts/Topbars";
-import { getLocale, getTranslations } from "next-intl/server";
-import React from "react";
-import EmailNotifications from "./EmailNotifications";
+import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
-import { redirect } from "@/i18n/navigation";
-import UserPreferences from "./UserPreferences";
 import { UserPreference } from "@ticketwaze/typescript-config";
-import AppLanguage from "./AppLanguage";
-import UserInterest from "./UserInterest";
+import PreferencesForm from "./PreferencesForm";
 
 export default async function PreferencesPage() {
   const t = await getTranslations("Preferences");
   const session = await auth();
+  if (!session) {
+    return (
+      <AttendeeLayout title={t("title")}>
+        <SignedOutState page="preferences" title={t("title")} />
+      </AttendeeLayout>
+    );
+  }
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/users/me/preferences`,
     {
@@ -21,29 +24,24 @@ export default async function PreferencesPage() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${session?.user.accessToken}`,
       },
+      cache: "no-store",
     },
   );
-  const response = await request.json();
-
-  const userPreferences: UserPreference = await response.preferences;
-
-  const locale = await getLocale();
-  if (!session) {
-    redirect({ href: "/auth/login", locale });
+  const response = await request.json().catch(() => null);
+  const userPreferences: UserPreference | undefined = response?.preferences;
+  if (!userPreferences) {
+    throw new Error("Could not load preferences");
   }
+
   return (
     <AttendeeLayout title={t("title")}>
       <SimpleTopbar title={t("title")} />
       <div
         className={
-          "flex flex-col gap-16 w-full lg:w-212 mx-auto lg:overflow-y-scroll lg:overflow-x-hidden lg:h-full"
+          "flex flex-col w-full lg:w-212 mx-auto lg:overflow-y-scroll lg:overflow-x-hidden lg:h-full"
         }
       >
-        <UserInterest userPreferences={userPreferences} />
-        <AppLanguage userPreferences={userPreferences} />
-        <UserPreferences userPreferences={userPreferences} />
-        <EmailNotifications userPreferences={userPreferences} />
-        <div></div>
+        <PreferencesForm userPreferences={userPreferences} />
       </div>
     </AttendeeLayout>
   );

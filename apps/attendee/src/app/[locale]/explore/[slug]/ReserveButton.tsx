@@ -88,7 +88,7 @@ export default function ReserveButton({
         <DialogTrigger asChild>
           <ButtonPrimary>{label}</ButtonPrimary>
         </DialogTrigger>
-        <NoAuthDialog callbackUrl={pathname} />
+        <NoAuthDialog callbackUrl={pathname} intent="reserve" />
       </Dialog>
     );
   }

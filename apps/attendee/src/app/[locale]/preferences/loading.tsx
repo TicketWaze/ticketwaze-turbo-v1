@@ -14,7 +14,7 @@ export default function Loading() {
         <div className="flex flex-col gap-16 w-full lg:w-212 mx-auto overflow-hidden h-screen">
           {/* UserInterest */}
           <Section>
-            <SectionTitle width="w-48"/>
+            <SectionTitle width="w-48" />
             <div className="flex flex-wrap gap-6 mt-10">
               {Array.from({ length: 10 }).map((_, i) => (
                 <div
@@ -42,7 +42,7 @@ export default function Loading() {
             <SectionTitle width="w-[140px]" />
             <div className="flex flex-col gap-3">
               {Array.from({ length: 3 }).map((_, i) => (
-                <RowItem key={i}  />
+                <RowItem key={i} />
               ))}
             </div>
           </Section>

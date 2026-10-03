@@ -117,6 +117,7 @@ function UpcomingCard({
   draw?: DrawState;
 }) {
   const t = useTranslations("Upcoming.countdown");
+  const tUpcoming = useTranslations("Upcoming");
 
   // Compute after mount (and tick) to avoid a server/client time mismatch.
   const [countdown, setCountdown] = useState<Countdown | null>(null);
@@ -187,6 +188,11 @@ function UpcomingCard({
           width={255}
         />
       </div>
+      {/* Figma's perforation between the poster and the details. */}
+      <div
+        aria-hidden
+        className="hidden lg:block h-[0.4rem] mx-4 bg-[repeating-linear-gradient(90deg,#F1F2F3_0_2.4rem,transparent_2.4rem_3.2rem)]"
+      />
       <div className={"px-4 flex flex-1 lg:flex-auto flex-col gap-6 lg:gap-4"}>
         <h1
           className={
@@ -220,7 +226,9 @@ function UpcomingCard({
             <Ticket size="15" color="#2e3237" variant="Bulk" />
             <p className={"font-medium text-[1rem] text-deep-100 leading-6"}>
               {tickets}{" "}
-              <span className={"text-neutral-700"}>{unitLabel ?? "tickets"}</span>
+              <span className={"text-neutral-700"}>
+                {unitLabel ?? tUpcoming("tickets", { count: tickets })}
+              </span>
             </p>
           </div>
         </div>

@@ -322,6 +322,23 @@
       "footer": {
         "text": "Don’t own an account ?",
         "cta": "Sign up"
+      },
+      "mfa": {
+        "title": "Enter your sign-in code",
+        "description": "Two-step verification is on. We sent a 6-digit code to",
+        "submit": "Verify and sign in",
+        "resend": "Resend code",
+        "resent": "A new code is on its way",
+        "resend_in": "Resend in {seconds}s",
+        "back": "Back",
+        "digit": "Digit",
+        "errors": {
+          "invalid": "That code isn't right.",
+          "invalid_left": "That code isn't right. {count, plural, one {# try} other {# tries}} left.",
+          "expired": "This code has expired. Request a new one.",
+          "too_many": "Too many wrong codes. Go back and sign in again.",
+          "restart": "This sign-in has expired. Go back and sign in again."
+        }
       }
     },
     "forgot": {
@@ -865,7 +882,9 @@
         "generate": "Generate a code",
         "per_user_limit": "Uses per customer (optional)",
         "min_purchase": "Minimum order (optional)",
-        "cost_notice": "Discounts come out of your proceeds. Ticketwaze fees are always calculated on your listed price, so a discount never changes the fees: you receive the discounted price."
+        "cost_notice": "Discounts come out of your proceeds. Ticketwaze fees are always calculated on your listed price, so a discount never changes the fees: you receive the discounted price.",
+        "notify_followers": "Notify my followers",
+        "notify_followers_description": "Send this code to everyone who follows your organisation, in their Ticketwaze notifications."
       },
       "rewards": {
         "title": "Rewards",

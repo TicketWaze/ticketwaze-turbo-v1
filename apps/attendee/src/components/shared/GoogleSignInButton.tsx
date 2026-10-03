@@ -8,7 +8,10 @@ interface Props {
   callbackUrl?: string;
 }
 
-export default function GoogleSignInButton({ referralCode, callbackUrl }: Props) {
+export default function GoogleSignInButton({
+  referralCode,
+  callbackUrl,
+}: Props) {
   const t = useTranslations("Auth.login");
   const { trigger, isLoading } = useGoogleSignIn({ referralCode, callbackUrl });
 
@@ -18,14 +21,14 @@ export default function GoogleSignInButton({ referralCode, callbackUrl }: Props)
       onClick={trigger}
       disabled={isLoading}
       aria-busy={isLoading}
-      className="w-full max-w-[400px] mx-auto flex items-center justify-center gap-3 h-[44px] rounded-full bg-black text-white font-medium text-[1.5rem] leading-8 hover:bg-neutral-800 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+      className="w-full flex items-center justify-center gap-6 h-[6rem] rounded-full border-2 border-black bg-linear-to-b from-[#2b2b2b] to-black text-white font-medium text-[1.5rem] leading-8 hover:from-black transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
     >
       {isLoading ? (
         <LoadingCircleSmall />
       ) : (
         <>
-          <span className="w-[20px] h-[20px] rounded-full bg-white flex items-center justify-center shrink-0">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+          <span className="flex items-center justify-center shrink-0">
+            <svg width="25" height="25" viewBox="0 0 24 24" fill="none">
               <path
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                 fill="#4285F4"

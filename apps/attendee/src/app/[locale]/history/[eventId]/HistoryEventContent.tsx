@@ -6,7 +6,8 @@ import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationChec
 import { slugify } from "@/lib/Slugify";
 import { Link, usePathname } from "@/i18n/navigation";
 import { Event, Organisation, Ticket } from "@ticketwaze/typescript-config";
-import More from "@ticketwaze/ui/assets/icons/more-circle.svg";
+import ActivityMoreMenu from "@/components/activity/ActivityMoreMenu";
+import MoreInfoDialog from "@/components/activity/MoreInfoDialog";
 import { Star1 } from "iconsax-reactjs";
 import TicketViewer from "./TicketViewer";
 import BackButton from "@/components/shared/BackButton";
@@ -15,7 +16,7 @@ import { ButtonBlack, ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { TextArea } from "@/components/shared/Inputs";
 import { useLocale, useTranslations } from "next-intl";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import RatingDialog from "./RatingDialog";
 import Separator from "@/components/shared/Separator";
@@ -64,12 +65,12 @@ export default function HistoryEventContent({
   );
   const [showSuccess, setShowSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const feedbackRef = useRef<HTMLDivElement>(null);
 
   async function handleRatingComplete(value: number) {
     const token = session?.user?.accessToken ?? "";
-    const previous = rating;
-    setRating(value); // optimistic
-    setShowRating(false);
+    // The dialog stays open with its spinner until the API answers, so a
+    // failed save leaves the chosen stars in place to retry.
     const res = await SubmitReviewAction(
       token,
       event.eventId,
@@ -77,8 +78,10 @@ export default function HistoryEventContent({
       pathname,
       locale,
     );
-    if (res.status !== "success") {
-      setRating(previous); // revert
+    if (res.status === "success") {
+      setRating(value);
+      setShowRating(false);
+    } else {
       toast.error(res.message);
     }
   }
@@ -106,7 +109,7 @@ export default function HistoryEventContent({
   }
 
   return (
-    <AttendeeLayout title="History Page">
+    <AttendeeLayout title={eventName}>
       <BackButton text={t("back")} />
       <div className="grid grid-cols-1 lg:grid-cols-[29fr_23fr] w-full ">
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
@@ -162,23 +165,26 @@ export default function HistoryEventContent({
             </div>
           )}
           <div className="flex justify-between items-center">
-            <div className="flex gap-2">
-              {Array.from({ length: rating }).map((_, index) => (
-                <Star1
-                  key={`stared-${index}`}
-                  size="25"
-                  color="#E45B00"
-                  variant="Bulk"
-                />
-              ))}
-
-              {Array.from({ length: 5 - rating }).map((_, index) => (
-                <Star1
-                  key={`empty-${index}`}
-                  size="25"
-                  color="#ABB0B9"
-                  variant="Bulk"
-                />
+            <div className="flex gap-2" role="img" aria-label={`${rating}/5`}>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <motion.span
+                  // Re-keyed on the rating, so a new rating sweeps in.
+                  key={`${rating}-${index}`}
+                  className="flex"
+                  initial={index < rating ? { scale: 0.4, opacity: 0 } : false}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{
+                    duration: 0.35,
+                    delay: index * 0.06,
+                    ease: [0.34, 1.56, 0.64, 1],
+                  }}
+                >
+                  <Star1
+                    size="25"
+                    color={index < rating ? "#E45B00" : "#ABB0B9"}
+                    variant="Bulk"
+                  />
+                </motion.span>
               ))}
             </div>
             <div className="flex gap-4 items-center">
@@ -198,16 +204,31 @@ export default function HistoryEventContent({
                   />
                 </Dialog>
               )}
-              {/* <div className=" h-fit p-3 bg-neutral-100 rounded-[3rem]">
-                <Image src={More} width={20} height={20} alt="more" />
-              </div> */}
+              <ActivityMoreMenu
+                activityId={event.eventId}
+                organisationId={event.organisationId}
+                extra={
+                  <MoreInfoDialog
+                    aboutHtml={event.eventDescription}
+                    email={organisation?.organisationEmail}
+                    phone={organisation?.organisationPhoneNumber}
+                    website={organisation?.organisationWebsite}
+                  />
+                }
+              />
             </div>
           </div>
 
           {/* feedback sent */}
           {feedback ? (
             <>
-              <div className="flex flex-col gap-4">
+              <motion.div
+                ref={feedbackRef}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="flex flex-col gap-4 scroll-mt-8"
+              >
                 <Separator />
                 <span className="text-deep-100 text-[1.6rem] font-semibold leading-9">
                   {t("feedback.title")}
@@ -215,7 +236,7 @@ export default function HistoryEventContent({
                 <p className="text-neutral-700 text-[1.5rem] leading-12">
                   {feedback}
                 </p>
-              </div>
+              </motion.div>
               <div></div>
             </>
           ) : (
@@ -291,6 +312,13 @@ export default function HistoryEventContent({
           <FeedbackSuccessDialog
             isOpen={showSuccess}
             onOpenChange={setShowSuccess}
+            onView={() => {
+              setShowSuccess(false);
+              feedbackRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+              });
+            }}
           />
           {/* Tickets on mobile */}
           <div className="lg:hidden flex flex-col gap-4 pb-4">
