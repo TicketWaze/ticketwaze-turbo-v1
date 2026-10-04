@@ -9,6 +9,7 @@
       "env": [
         "AUTH_SECRET",
         "AUTH_URL",
+        "AUTH_COOKIE_DOMAIN",
         "AUTH_GOOGLE_ID",
         "AUTH_GOOGLE_SECRET",
         "NEXT_PUBLIC_API_URL",
@@ -21,7 +22,8 @@
         "NEXT_PUBLIC_GOOGLE_MAP_API_KEY",
         "NEXT_PUBLIC_CLOUDFRONT_HOSTNAME",
         "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY",
-        "NEXT_PUBLIC_TURNSTILE_SITE_KEY"
+        "NEXT_PUBLIC_TURNSTILE_SITE_KEY",
+        "NEXT_PUBLIC_GA_MEASUREMENT_ID"
       ]
     },
     "lint": {
