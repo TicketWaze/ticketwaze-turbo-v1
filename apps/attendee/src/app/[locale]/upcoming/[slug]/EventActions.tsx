@@ -146,7 +146,9 @@ export default function EventActions({
     event.onlineProvider === "zoom"
       ? (event.tickets?.find((ticket) => ticket.zoomJoinUrl)?.zoomJoinUrl ??
         null)
-      : event.googleMeetLink;
+      : event.onlineProvider === "custom"
+        ? (event.onlineLink ?? null)
+        : event.googleMeetLink;
 
   // In-person events have a null link, and passing null to <Link> crashes it
   // ("Cannot read properties of null (reading 'pathname')").

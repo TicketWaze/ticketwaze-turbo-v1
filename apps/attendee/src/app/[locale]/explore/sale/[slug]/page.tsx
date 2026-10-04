@@ -1,3 +1,4 @@
+import TrackActivityView from "@/components/activity/TrackActivityView";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { getTranslations } from "next-intl/server";
 import { auth } from "@/lib/auth";
@@ -147,6 +148,7 @@ export default async function SalePage({
 
   return (
     <AttendeeLayout title={sale.title}>
+      <TrackActivityView activityId={sale.saleId} />
       <AnimatedEventPage>
         <BackButton text={t("back")} />
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">

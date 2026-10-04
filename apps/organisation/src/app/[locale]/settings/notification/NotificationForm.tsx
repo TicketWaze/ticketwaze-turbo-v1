@@ -1,13 +1,22 @@
 "use client";
-import { UpdateOrganisationNotificationPreferences } from "@/actions/organisationActions";
-import PageLoader from "@/components/PageLoader";
-import ToggleIcon from "@/components/shared/ToggleIcon";
-import { NotificationPreference } from "@ticketwaze/typescript-config";
-import { useSession } from "next-auth/react";
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import { motion } from "motion/react";
 import { toast } from "sonner";
+import { NotificationPreference } from "@ticketwaze/typescript-config";
+import { UpdateOrganisationNotificationPreferences } from "@/actions/organisationActions";
+import { SettingsColumn, SettingsHeader, SettingsSwitch } from "../parts";
 
+type Key =
+  | "emailTicketSalesUpdate"
+  | "emailPaymentUpdates"
+  | "emailPlatformAnnouncements";
+
+/**
+ * Notification (not designed — built from the Settings kit): the three email
+ * preferences as switches, saved on each change and rolled back if it fails.
+ */
 export default function NotificationForm({
   notificationPreferences,
 }: {
@@ -16,115 +25,66 @@ export default function NotificationForm({
   const t = useTranslations("Settings.notification");
   const locale = useLocale();
   const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
-  const organisation = session?.activeOrganisation;
-  async function changeHandler(e: React.FormEvent<HTMLFormElement>) {
-    setIsLoading(true);
-    const formData = new FormData(e.currentTarget);
-    const emailTicketSalesUpdate =
-      formData.get("emailTicketSalesUpdate") === "on";
-    const emailPaymentUpdates = formData.get("emailPaymentUpdates") === "on";
-    const emailPlatformAnnouncements =
-      formData.get("emailPlatformAnnouncements") === "on";
+  const [prefs, setPrefs] = useState<Record<Key, boolean>>({
+    emailTicketSalesUpdate: Boolean(
+      notificationPreferences.emailTicketSalesUpdate,
+    ),
+    emailPaymentUpdates: Boolean(notificationPreferences.emailPaymentUpdates),
+    emailPlatformAnnouncements: Boolean(
+      notificationPreferences.emailPlatformAnnouncements,
+    ),
+  });
+  const [busy, setBusy] = useState<Key | null>(null);
 
-    const body = {
-      emailTicketSalesUpdate,
-      emailPaymentUpdates,
-      emailPlatformAnnouncements,
-    };
-
+  async function toggle(key: Key, next: boolean) {
+    const before = prefs;
+    const updated = { ...prefs, [key]: next };
+    setPrefs(updated);
+    setBusy(key);
     const result = await UpdateOrganisationNotificationPreferences(
-      organisation?.organisationId ?? "",
-      body,
+      session?.activeOrganisation?.organisationId ?? "",
+      updated,
       locale,
     );
-
+    setBusy(null);
     if (result.error) {
+      setPrefs(before);
       toast.error(result.error);
     }
-    setIsLoading(false);
   }
+
+  const items: { key: Key; label: string }[] = [
+    { key: "emailTicketSalesUpdate", label: t("ticket_sales") },
+    { key: "emailPaymentUpdates", label: t("payment_update") },
+    { key: "emailPlatformAnnouncements", label: t("platform") },
+  ];
+
   return (
-    <div
-      className={
-        "flex flex-col overflow-y-scroll gap-16 w-full h-[70dvh] lg:w-212 mx-auto"
-      }
-    >
-      <PageLoader isLoading={isLoading} />
-      <form onChange={changeHandler} className={"flex flex-col gap-8"}>
-        <span
-          className={"font-medium text-[1.8rem] pb-4 leading-10 text-deep-100"}
-        >
-          {t("email")}
-        </span>
-        <div className={"flex items-center justify-between"}>
-          <p
-            className={
-              "text-[1.6rem] leading-[2.2rem] text-deep-100 max-w-md lg:max-w-152"
-            }
-          >
-            {t("ticket_sales")}
-          </p>
-          <label
-            className={`relative inline-block h-12 w-20 rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 cursor-pointer`}
-          >
-            <input
-              className="peer sr-only"
-              id="emailTicketSalesUpdate"
-              defaultChecked={notificationPreferences.emailTicketSalesUpdate}
-              name={"emailTicketSalesUpdate"}
-              type="checkbox"
-            />
-            <ToggleIcon />
-          </label>
+    <div className="flex flex-col gap-12 pb-16 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+      <SettingsHeader title={t("title")} />
+      <SettingsColumn title={t("email")}>
+        <div className="flex flex-col divide-y divide-neutral-100 rounded-[1.5rem] border border-neutral-100 px-6">
+          {items.map((item, i) => (
+            <motion.div
+              key={item.key}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.05 }}
+              className="flex items-center justify-between gap-6 py-6"
+            >
+              <span className="text-[1.5rem] leading-[2.2rem] text-deep-100">
+                {item.label}
+              </span>
+              <SettingsSwitch
+                checked={prefs[item.key]}
+                disabled={busy !== null}
+                onChange={(next) => toggle(item.key, next)}
+                label={item.label}
+              />
+            </motion.div>
+          ))}
         </div>
-        <div className={"h-[.1rem] w-full bg-neutral-100"}></div>
-        <div className={"flex items-center justify-between"}>
-          <p
-            className={
-              "text-[1.6rem] leading-[2.2rem] text-deep-100 max-w-md lg:max-w-152"
-            }
-          >
-            {t("payment_update")}
-          </p>
-          <label
-            className={`relative inline-block h-12 w-20 rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 cursor-pointer`}
-          >
-            <input
-              className="peer sr-only"
-              id="emailPaymentUpdates"
-              defaultChecked={notificationPreferences.emailPaymentUpdates}
-              name={"emailPaymentUpdates"}
-              type="checkbox"
-            />
-            <ToggleIcon />
-          </label>
-        </div>
-        <div className={"h-[.1rem] w-full bg-neutral-100"}></div>
-        <div className={"flex items-center justify-between"}>
-          <p
-            className={
-              "text-[1.6rem] leading-[2.2rem] text-deep-100 max-w-md lg:max-w-152"
-            }
-          >
-            {t("platform")}
-          </p>
-          <label
-            className={`relative inline-block h-12 w-20 rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 cursor-pointer`}
-          >
-            <input
-              className="peer sr-only"
-              id="emailPlatformAnnouncements"
-              defaultChecked={
-                notificationPreferences.emailPlatformAnnouncements
-              }
-              name={"emailPlatformAnnouncements"}
-              type="checkbox"
-            />
-            <ToggleIcon />
-          </label>
-        </div>
-      </form>
+      </SettingsColumn>
     </div>
   );
 }

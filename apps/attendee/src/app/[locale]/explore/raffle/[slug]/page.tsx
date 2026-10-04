@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import TrackActivityView from "@/components/activity/TrackActivityView";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -121,6 +122,7 @@ export default async function RafflePage({
 
   return (
     <AttendeeLayout title={raffle.title}>
+      <TrackActivityView activityId={raffle.raffleId} />
       <AnimatedEventPage>
         <BackButton text={t("back")} />
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">

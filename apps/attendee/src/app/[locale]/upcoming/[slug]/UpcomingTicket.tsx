@@ -20,7 +20,9 @@ export default function UpcomingTicket({
     event.eventCategory === "meet"
       ? event.onlineProvider === "zoom"
         ? (ticket.zoomJoinUrl ?? null)
-        : (event.googleMeetLink ?? null)
+        : event.onlineProvider === "custom"
+          ? (event.onlineLink ?? null)
+          : (event.googleMeetLink ?? null)
       : null;
   const isFree = ticket.ticketPrice === 0 || ticket.ticketUsdPrice === 0;
   /**
@@ -131,6 +133,15 @@ export default function UpcomingTicket({
                 >
                   {joinUrl.replace(/^https?:\/\//, "")}
                 </a>
+              </div>
+            )}
+            {/* "Other link" events may need a password to get in. */}
+            {joinUrl && event.onlineProvider === "custom" && event.onlinePassword && (
+              <div className={"flex items-center justify-between gap-4 w-full"}>
+                <span className="text-neutral-600">{t("eventPassword")}</span>
+                <span className="text-deep-100 font-medium text-right select-all">
+                  {event.onlinePassword}
+                </span>
               </div>
             )}
             {event.eventCategory !== "meet" && (

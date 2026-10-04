@@ -53,7 +53,7 @@ export default function SubscriptionDetailDrawerContent({
   };
 
   return (
-    <DrawerContent className={"my-6 p-12 rounded-[30px] w-full"}>
+    <DrawerContent className="bg-white border-none outline-none my-6 mr-4 lg:mr-6 p-6 lg:p-12 rounded-[30px] data-[vaul-drawer-direction=right]:w-[calc(100vw-2rem)] data-[vaul-drawer-direction=right]:lg:w-[58rem]">
       <div className={"w-full flex flex-col items-center overflow-y-scroll"}>
         <DrawerTitle className={"pb-16"}>
           <span

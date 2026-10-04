@@ -1,38 +1,36 @@
 "use client";
+import { useState } from "react";
 import { formatMoney } from "@ticketwaze/currency";
-import { LinkPrimary } from "@/components/shared/Links";
-import { ButtonRed } from "@/components/shared/buttons";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { useLocale, useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
+import { motion } from "motion/react";
+import { toast } from "sonner";
+import { Crown, Money3, Warning2 } from "iconsax-reactjs";
 import {
   MembershipTier,
   OrganisationSubscription,
 } from "@ticketwaze/typescript-config";
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import SubscriptionDetailDrawerContent from "./SubscriptionDetailDrawerContent";
-import { Calendar, Crown, Money3 } from "iconsax-reactjs";
-import { useSession } from "next-auth/react";
-import { useLocale, useTranslations } from "next-intl";
-import { useRef, useState } from "react";
-import { toast } from "sonner";
+import { Dialog } from "@/components/ui/dialog";
+import { Drawer } from "@/components/ui/drawer";
+import ModalShell from "@/components/shared/ModalShell";
+import { ButtonPill } from "@/components/shared/buttons";
+import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { GrowBar, Reveal } from "@/components/shared/motion";
+import { Metric } from "@/app/[locale]/analytics/parts";
 import { useRouter } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
+import { SettingsHeader } from "../parts";
+import SubscriptionDetailDrawerContent from "./SubscriptionDetailDrawerContent";
+
+const headClass =
+  "font-sans font-bold text-[1.1rem] leading-6 text-deep-100 uppercase text-left pb-6 pr-4 whitespace-nowrap";
+const cellClass =
+  "font-sans text-[1.5rem] leading-8 text-neutral-900 py-6 pr-4";
+const STATUS_COLOURS: Record<string, string> = {
+  ACTIVE: "#349C2E",
+  CANCELED: "#DE0028",
+  EXPIRED: "#737C8A",
+};
 
 function formatDate(date: Date, locale: string) {
   return new Intl.DateTimeFormat(locale, {
@@ -42,21 +40,23 @@ function formatDate(date: Date, locale: string) {
   }).format(date);
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    ACTIVE: "bg-[#E8F5E9] text-[#349C2E]",
-    CANCELED: "bg-[#FCE5EA] text-failure",
-    EXPIRED: "bg-neutral-100 text-neutral-500",
-  };
+function StatusPill({ status, label }: { status: string; label: string }) {
   return (
     <span
-      className={`text-[1.1rem] font-bold uppercase tracking-widest px-3 py-1 rounded-full ${map[status] ?? "bg-neutral-100 text-neutral-500"}`}
+      className="inline-block px-2 py-[.3rem] rounded-[3rem] bg-[#f5f5f5] font-bold text-[1.1rem] leading-6 uppercase"
+      style={{ color: STATUS_COLOURS[status] ?? "#737C8A" }}
     >
-      {status}
+      {label}
     </span>
   );
 }
 
+/**
+ * Subscriptions (not in Figma — restyled to the dashboard): the Settings
+ * header with Upgrade, the current plan as KPI tiles (plan, billing, renewal
+ * with the elapsed bar), then the history table with the same columns, pills
+ * and row panels as the other tables.
+ */
 export default function SubscriptionPageContent({
   organisationSubscriptions,
   membershipTier,
@@ -68,13 +68,13 @@ export default function SubscriptionPageContent({
   const { data: session } = useSession();
   const locale = useLocale();
   const router = useRouter();
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const [cancelOpen, setCancelOpen] = useState(false);
   const [isCanceling, setIsCanceling] = useState(false);
+  const [detail, setDetail] = useState<OrganisationSubscription | null>(null);
 
   const activeSub =
     organisationSubscriptions.find((s) => s.status === "ACTIVE") ??
     organisationSubscriptions.find((s) => s.status === "CANCELED");
-
   const now = new Date();
   const startDate = activeSub
     ? new Date(activeSub.createdAt as unknown as string)
@@ -82,7 +82,6 @@ export default function SubscriptionPageContent({
   const endDate = activeSub
     ? new Date(activeSub.endsAt as unknown as string)
     : null;
-
   const totalMs =
     startDate && endDate ? endDate.getTime() - startDate.getTime() : 0;
   const elapsedMs = startDate
@@ -92,18 +91,28 @@ export default function SubscriptionPageContent({
   const daysLeft = endDate
     ? Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / 86400000))
     : 0;
-
   const isTrial = activeSub?.subscriptionName?.toLowerCase().includes("trial");
-  // "Cancelled" here means "will not renew" — the plan is still running until
-  // endDate. Both markers have to count: our own cancel writes CANCELED, while
-  // Stripe's customer.subscription.updated webhook reports the subscription as
-  // still active with cancel_at_period_end set, and either can land first.
+  // "Cancelled" means "will not renew" — the plan runs until endDate. Our own
+  // cancel writes CANCELED; Stripe's webhook may report it still active with
+  // cancel_at_period_end, and either can land first.
   const isCanceled =
     activeSub?.status === "CANCELED" || activeSub?.cancelAtPeriodEnd === true;
-  const isPremium =
-    activeSub?.membershipTier === "premium" ||
-    membershipTier.membershipName === "premium";
   const isExpiringSoon = daysLeft <= 7 && daysLeft > 0;
+  const statusLabel = (status: string) =>
+    status === "ACTIVE"
+      ? t("status.active")
+      : status === "CANCELED"
+        ? t("status.canceled")
+        : t("status.expired");
+  const billing = !activeSub
+    ? "—"
+    : activeSub.paymentMethod === "stripe"
+      ? t("billed_via_stripe")
+      : activeSub.paymentMethod === "trial"
+        ? t("billed_trial")
+        : activeSub.paymentMethod === "natcash"
+          ? t("billed_via_natcash")
+          : t("billed_via_moncash");
 
   async function cancelSubscription() {
     setIsCanceling(true);
@@ -122,7 +131,7 @@ export default function SubscriptionPageContent({
       const data = await res.json();
       if (data.status === "success") {
         toast.success(t("cancel_success"));
-        closeRef.current?.click();
+        setCancelOpen(false);
         router.refresh();
       } else {
         toast.error(data.message ?? t("cancel_error"));
@@ -134,289 +143,240 @@ export default function SubscriptionPageContent({
     }
   }
 
+  const tile = "border-neutral-100";
   return (
-    <div className=" flex-col gap-12 overflow-y-scroll ">
-      {/* ── SUBSCRIPTION STATUS CARD ── */}
-      {activeSub ? (
-        <div
-          className={`rounded-[2.4rem] overflow-x-hidden mb-12 ${isPremium ? "p-[.2rem] bg-linear-to-br from-primary-500 via-[#E752AE] to-[#DD068B]" : ""}`}
-        >
-          <div
-            className={`rounded-[${isPremium ? "22px" : "24px"}] overflow-hidden ${isPremium ? "" : "border border-neutral-200"}`}
-          >
-            {/* Card header */}
-            <div
-              className={`px-8 pt-8 pb-6 flex items-start justify-between gap-4 ${
-                isPremium
-                  ? "bg-linear-to-br from-primary-500 via-[#E752AE] to-[#DD068B]"
-                  : "bg-primary-900"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-white/15 flex items-center justify-center shrink-0">
-                  <Crown size="22" color="#fff" variant="Bulk" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-white font-primary font-medium text-[2.4rem] leading-none capitalize">
-                      {activeSub.membershipTier}
-                    </h2>
-                    {isTrial && (
-                      <span className="text-[1rem] font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-white/20 text-white">
-                        {t("trial_badge")}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-white/60 text-[1.3rem] mt-1 capitalize">
-                    {activeSub.paymentMethod === "stripe"
-                      ? t("billed_via_stripe")
-                      : activeSub.paymentMethod === "trial"
-                        ? t("billed_trial")
-                        : activeSub.paymentMethod === "natcash"
-                          ? t("billed_via_natcash")
-                          : t("billed_via_moncash")}
-                    {/* {activeSub.usdAmountPaid > 0 && (
-                      <> · {formatMoney(activeSub.usdAmountPaid, "USD")}</>
-                    )} */}
-                  </p>
-                </div>
-              </div>
-              <StatusBadge status={activeSub.status} />
-            </div>
-
-            {/* Card body */}
-            <div className="bg-white px-8 py-7 flex flex-col gap-6">
-              {/* Canceled notice */}
-              {isCanceled && endDate && (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-[12px] bg-[#FCE5EA] border border-failure/20">
-                  <span className="text-[1.3rem] text-failure leading-6">
-                    {t("canceled_notice", {
-                      date: formatDate(endDate, locale),
-                    })}
-                  </span>
-                </div>
-              )}
-              {/* Dates row */}
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
-                    <Calendar size="16" color="#737c8a" variant="Bulk" />
-                  </div>
-                  <div>
-                    <p className="text-[1.1rem] text-neutral-400 uppercase tracking-widest font-medium">
-                      {t("started")}
-                    </p>
-                    <p className="text-[1.4rem] font-medium text-black">
-                      {startDate ? formatDate(startDate, locale) : "—"}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-[1.1rem] text-neutral-400 uppercase tracking-widest font-medium">
-                    {t("expires")}
-                  </p>
-                  <p
-                    className={`text-[1.4rem] font-medium ${isExpiringSoon ? "text-failure" : "text-black"}`}
-                  >
-                    {endDate ? formatDate(endDate, locale) : "—"}
-                  </p>
-                </div>
-              </div>
-
-              {/* Progress bar */}
-              <div className="flex flex-col gap-2">
-                <div className="w-full h-2.5 bg-neutral-100 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full transition-all duration-700 ${
-                      isExpiringSoon
-                        ? "bg-failure"
-                        : isPremium
-                          ? "bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]"
-                          : "bg-primary-900"
-                    }`}
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[1.2rem] text-neutral-400">
-                    {Math.round(progress)}% {t("elapsed")}
-                  </span>
-                  <span
-                    className={`text-[1.3rem] font-medium ${
-                      isExpiringSoon ? "text-failure" : "text-black"
-                    }`}
-                  >
-                    {daysLeft === 0
-                      ? t("expires_today")
-                      : daysLeft === 1
-                        ? t("day_left")
-                        : t("days_left", { count: daysLeft })}
-                  </span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row items-center w-full gap-4 pt-2 border-t border-neutral-100">
-                {isCanceled && (
-                  <LinkPrimary
-                    href="/settings/subscriptions/upgrade"
-                    className="flex-1 w-full gap-3 items-center justify-center whitespace-nowrap"
-                  >
-                    <Crown size="16" color="#fff" variant="Bulk" />
-                    {t("resubscribe")}
-                  </LinkPrimary>
-                )}
-
-                {!isCanceled && (
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <button className="flex-1 w-full flex items-center justify-center gap-2 px-6 py-4 rounded-full border border-failure/30 text-failure text-[1.3rem] font-medium hover:bg-[#FCE5EA] transition-colors cursor-pointer">
-                        {t("cancel_sub")}
-                      </button>
-                    </DialogTrigger>
-                    <DialogContent className="w-xl lg:w-3xl">
-                      <DialogHeader>
-                        <DialogTitle className="font-medium border-b border-neutral-100 pb-8 text-[2.2rem] leading-12 text-black font-primary">
-                          {t("cancel_title")}
-                        </DialogTitle>
-                        <DialogDescription className="sr-only">
-                          Cancel subscription
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="py-6">
-                        <p className="text-[1.5rem] leading-7 text-neutral-600">
-                          {t("cancel_warning")}
-                        </p>
-                      </div>
-                      <DialogFooter className="flex flex-col gap-3">
-                        <ButtonRed
-                          onClick={cancelSubscription}
-                          disabled={isCanceling}
-                          className="w-full"
-                        >
-                          {isCanceling ? (
-                            <LoadingCircleSmall />
-                          ) : (
-                            t("cancel_confirm")
-                          )}
-                        </ButtonRed>
-                        <DialogClose
-                          ref={closeRef}
-                          className="w-full px-12 py-5 rounded-[100px] text-[1.5rem] font-medium text-neutral-600 bg-neutral-100 hover:bg-neutral-200 transition-colors cursor-pointer"
-                        >
-                          {t("cancel_back")}
-                        </DialogClose>
-                      </DialogFooter>
-                    </DialogContent>
-                  </Dialog>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : (
-        /* Free plan — no active subscription */
-        <div className="rounded-[2.4rem] bg-neutral-100 mb-12 p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-neutral-200 flex items-center justify-center shrink-0">
-              <Crown size="22" color="#737c8a" variant="Bulk" />
-            </div>
-            <div>
-              <p className="text-[1.6rem] font-medium text-black capitalize">
-                {membershipTier.membershipName} {t("plan_label")}
-              </p>
-              <p className="text-[1.3rem] text-neutral-500 mt-0.5">
-                {t("free_plan_desc")}
-              </p>
-            </div>
-          </div>
-          <div className="p-[.2rem] rounded-[30px] bg-linear-to-r from-primary-500 w-full lg:w-auto via-[#E752AE] to-[#DD068B] shrink-0">
-            <LinkPrimary
-              className="bg-transparent gap-4 items-center whitespace-nowrap"
-              href="/settings/subscriptions/upgrade"
+    <div className="flex flex-col gap-12 lg:gap-16 pb-16 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+      <SettingsHeader
+        title={t("title")}
+        actions={
+          (!activeSub ||
+            isCanceled ||
+            activeSub.membershipTier !== "premium") && (
+            <ButtonPill
+              tone="primary"
+              onClick={() => router.push("/settings/subscriptions/upgrade")}
+              className="px-8"
             >
               <Crown size="18" color="#fff" variant="Bulk" />
-              {t("upgrade")}
-            </LinkPrimary>
-          </div>
+              {isCanceled ? t("resubscribe") : t("upgrade")}
+            </ButtonPill>
+          )
+        }
+      />
+
+      {/* Current plan */}
+      <div className="flex flex-col gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 border-b border-neutral-100 lg:divide-x divide-neutral-100">
+          <Reveal
+            className={cn(
+              tile,
+              "pb-8 lg:pb-10 pr-6 lg:pr-[2.5rem] max-lg:border-r",
+            )}
+            delay={0.06}
+          >
+            <Metric
+              label={t("plan_label")}
+              size="responsive"
+              trend={
+                activeSub ? (
+                  <StatusPill
+                    status={activeSub.status}
+                    label={
+                      isTrial ? t("trial_badge") : statusLabel(activeSub.status)
+                    }
+                  />
+                ) : undefined
+              }
+            >
+              <span className="capitalize">
+                {activeSub?.membershipTier ?? membershipTier.membershipName}
+              </span>
+            </Metric>
+          </Reveal>
+          <Reveal
+            className={cn(tile, "pb-8 lg:pb-10 pl-6 lg:px-[2.5rem]")}
+            delay={0.11}
+          >
+            <Metric label={t("billing")} size="responsive">
+              <span className="text-[1.6rem] lg:text-[2rem]">
+                {activeSub ? billing : t("free_plan_desc")}
+              </span>
+            </Metric>
+          </Reveal>
+          <Reveal
+            className={cn(
+              tile,
+              "py-8 lg:pt-0 lg:pb-10 lg:pl-[2.5rem] max-lg:border-t max-lg:col-span-2",
+            )}
+            delay={0.16}
+          >
+            <Metric
+              label={isCanceled ? t("ends") : t("expires")}
+              size="responsive"
+            >
+              <span className={isExpiringSoon ? "text-failure" : undefined}>
+                {endDate ? formatDate(endDate, locale) : "—"}
+              </span>
+            </Metric>
+            {activeSub && (
+              <div className="mt-3 flex flex-col gap-2">
+                <div className="w-full h-[.6rem] bg-neutral-100 rounded-full overflow-hidden">
+                  <GrowBar
+                    value={progress}
+                    delay={0.3}
+                    className={cn(
+                      "block h-full rounded-full",
+                      isExpiringSoon ? "bg-failure" : "bg-primary-500",
+                    )}
+                  />
+                </div>
+                <span
+                  className={cn(
+                    "text-[1.2rem]",
+                    isExpiringSoon ? "text-failure" : "text-neutral-500",
+                  )}
+                >
+                  {daysLeft === 0
+                    ? t("expires_today")
+                    : daysLeft === 1
+                      ? t("day_left")
+                      : t("days_left", { count: daysLeft })}
+                </span>
+              </div>
+            )}
+          </Reveal>
         </div>
-      )}
 
-      {/* ── SUBSCRIPTION HISTORY ── */}
-      <div className="flex flex-col gap-8">
-        <span className="font-primary font-medium text-[18px] leading-10 text-black">
+        {activeSub && isCanceled && endDate && (
+          <Reveal
+            delay={0.2}
+            className="flex items-start gap-3 text-[1.3rem] leading-6 text-failure"
+          >
+            <Warning2
+              size="16"
+              variant="Bulk"
+              color="#DE0028"
+              className="shrink-0 mt-[.2rem]"
+            />
+            {t("canceled_notice", { date: formatDate(endDate, locale) })}
+          </Reveal>
+        )}
+        {activeSub && !isCanceled && !isTrial && (
+          <Reveal delay={0.2}>
+            <button
+              type="button"
+              onClick={() => setCancelOpen(true)}
+              className="text-[1.4rem] text-failure cursor-pointer hover:underline"
+            >
+              {t("cancel_sub")}
+            </button>
+          </Reveal>
+        )}
+      </div>
+
+      {/* History */}
+      <Reveal delay={0.24} className="flex flex-col gap-8">
+        <h2 className="font-primary font-medium text-[1.8rem] leading-10 text-black">
           {t("history")}
-        </span>
-
+        </h2>
         {organisationSubscriptions.length === 0 ? (
-          <div className="w-132 lg:w-184 mx-auto flex flex-col items-center gap-20">
-            <div className="w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100">
-              <div className="w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200">
-                <Money3 size="50" color="#0d0d0d" variant="Bulk" />
+          <div className="flex flex-col items-center gap-8 py-10 text-center">
+            <div className="w-[11rem] h-[11rem] rounded-full flex items-center justify-center bg-neutral-100">
+              <div className="w-[8rem] h-[8rem] rounded-full flex items-center justify-center bg-neutral-200">
+                <Money3 size="40" color="#0d0d0d" variant="Bulk" />
               </div>
             </div>
-            <p className="text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem] text-center">
+            <p className="text-[1.6rem] leading-[2.4rem] text-neutral-600 max-w-[40rem]">
               {t("description")}
             </p>
           </div>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {/* Narrow screens only have room for what identifies the row and
-                    what it is worth knowing at a glance: the plan and its status.
-                    The id is the first thing to go — the drawer carries it. */}
-                <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+          <table className="w-full table-fixed">
+            <thead>
+              <tr className="border-b border-neutral-100">
+                <th className={cn(headClass, "hidden lg:table-cell")}>
                   {t("table.id")}
-                </TableHead>
-                <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                  {t("table.tier")}
-                </TableHead>
-                <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                </th>
+                <th className={headClass}>{t("table.tier")}</th>
+                <th className={cn(headClass, "hidden lg:table-cell")}>
                   {t("table.amount")}
-                </TableHead>
-                <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                  {t("table.status")}
-                </TableHead>
-                <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
+                </th>
+                <th className={headClass}>{t("table.status")}</th>
+                <th className={cn(headClass, "hidden lg:table-cell")}>
                   {t("table.date")}
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {organisationSubscriptions.map((sub) => (
-                <Drawer key={sub.organisationSubscriptionId} direction="right">
-                  <DrawerTrigger asChild>
-                    <TableRow className="cursor-pointer hover:bg-neutral-50 transition-colors">
-                      <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-600 py-5 font-mono">
-                        {sub.organisationSubscriptionId.slice(0, 8)}…
-                      </TableCell>
-                      <TableCell className="text-[1.3rem] font-medium text-black py-5 capitalize">
-                        {sub.membershipTier}
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-600 py-5">
-                        {formatMoney(sub.usdAmountPaid, "USD")}
-                      </TableCell>
-                      <TableCell className="py-5">
-                        <StatusBadge status={sub.status} />
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell text-[1.3rem] text-neutral-500 py-5">
-                        {formatDate(
-                          new Date(sub.createdAt as unknown as string),
-                          locale,
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  </DrawerTrigger>
-                  <SubscriptionDetailDrawerContent sub={sub} />
-                </Drawer>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {organisationSubscriptions.map((sub, i) => (
+                <motion.tr
+                  key={sub.organisationSubscriptionId}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.25,
+                    delay: Math.min(i * 0.03, 0.24),
+                  }}
+                  onClick={() => setDetail(sub)}
+                  className="border-b border-neutral-100 cursor-pointer transition-colors hover:bg-neutral-50"
+                >
+                  <td
+                    className={cn(cellClass, "hidden lg:table-cell uppercase")}
+                  >
+                    {sub.organisationSubscriptionId.slice(0, 8)}
+                  </td>
+                  <td className={cn(cellClass, "capitalize font-medium")}>
+                    {sub.membershipTier}
+                  </td>
+                  <td className={cn(cellClass, "hidden lg:table-cell")}>
+                    {formatMoney(sub.usdAmountPaid, "USD")}
+                  </td>
+                  <td className={cellClass}>
+                    <StatusPill
+                      status={sub.status}
+                      label={statusLabel(sub.status)}
+                    />
+                  </td>
+                  <td className={cn(cellClass, "hidden lg:table-cell")}>
+                    {formatDate(
+                      new Date(sub.createdAt as unknown as string),
+                      locale,
+                    )}
+                  </td>
+                </motion.tr>
               ))}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         )}
-        <div />
-      </div>
+      </Reveal>
+
+      <Drawer
+        open={detail !== null}
+        onOpenChange={(o) => !o && setDetail(null)}
+        direction="right"
+      >
+        {detail && <SubscriptionDetailDrawerContent sub={detail} />}
+      </Drawer>
+
+      <Dialog
+        open={cancelOpen}
+        onOpenChange={(o) => !isCanceling && setCancelOpen(o)}
+      >
+        <ModalShell
+          title={t("cancel_title")}
+          description={t("cancel_warning")}
+          className="lg:w-[46rem]"
+        >
+          <button
+            type="button"
+            onClick={cancelSubscription}
+            disabled={isCanceling}
+            className="w-full h-[5rem] rounded-[10rem] border-2 border-failure bg-failure/10 font-sans font-semibold text-[1.5rem] text-failure cursor-pointer hover:bg-failure/20 disabled:opacity-60 flex items-center justify-center"
+          >
+            {isCanceling ? <LoadingCircleSmall /> : t("cancel_confirm")}
+          </button>
+        </ModalShell>
+      </Dialog>
     </div>
   );
 }

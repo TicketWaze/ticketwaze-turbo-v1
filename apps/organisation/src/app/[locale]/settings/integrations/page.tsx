@@ -1,7 +1,6 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import BackButton from "@/components/shared/BackButton";
-import TopBar from "@/components/shared/TopBar";
+import { SettingsHeader } from "../parts";
 import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import { auth } from "@/lib/auth";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -86,11 +85,8 @@ export default async function IntegrationsPage() {
   }
 
   return (
-    <OrganizerLayout title={t("title")}>
-      <div className="flex flex-col gap-8">
-        <BackButton text={t("back")} />
-        <TopBar title={t("title")} />
-      </div>
+    <OrganizerLayout title="">
+      <SettingsHeader title={t("title")} />
       {/*
         The header stays put and this scrolls, matching the other settings
         screens. Without the scroll container the cards simply overflow the
@@ -98,7 +94,7 @@ export default async function IntegrationsPage() {
       */}
       <div
         className={
-          "flex flex-col gap-16 w-full lg:w-212 mx-auto overflow-y-scroll overflow-x-hidden h-full"
+          "flex flex-col gap-8 w-full max-w-[54rem] mx-auto pt-10 pb-16 flex-1 min-h-0 overflow-y-auto overflow-x-hidden"
         }
       >
         <GoogleIntegration google={google} />

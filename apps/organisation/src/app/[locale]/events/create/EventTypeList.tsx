@@ -8,7 +8,6 @@ import InPerson from "@/assets/images/in-person.jpg";
 import Draw from "@/assets/images/draw.jpg";
 import RestaurantCover from "@/assets/images/restaurant.jpg";
 // import GoogleMeet from "@/assets/images/meet.jpg";
-import Online from "@/assets/images/online.webp";
 import ComingSoonCover from "@/assets/images/coming.jpg";
 // Placeholder art: this was the old coming-soon cover, freed up when that card
 // moved to coming.jpg. Swap it for a digital-product image when one exists.
@@ -19,6 +18,8 @@ import SaleCover from "@/assets/images/online.jpg";
 // import Tours from "@/assets/images/tours.jpg";
 // import match from "@/assets/images/match.jpg";
 import { toast } from "sonner";
+import { motion } from "motion/react";
+import { cardMotion } from "@/components/shared/motion";
 import BackButton from "@/components/shared/BackButton";
 import TopBar from "@/components/shared/TopBar";
 import { ButtonPrimary } from "@/components/shared/buttons";
@@ -55,11 +56,13 @@ export default function EventTypeList({
     // A teaser, not an activity type of its own: it becomes a real event on the
     // same row once the organiser has dates and tickets. Listed first because
     // it is the cheapest thing an organiser can post.
+    // In-person and online events are one card now: the unified Create Event
+    // form asks Physical or Virtual as its first field (Figma › Create Event).
     {
-      title: t("list.inPerson.title"),
-      description: t("list.inPerson.description"),
+      title: t("list.event.title"),
+      description: t("list.event.description"),
       image: InPerson,
-      value: "in-person",
+      value: "event",
     },
 
     {
@@ -79,12 +82,6 @@ export default function EventTypeList({
       description: t("list.sale.description"),
       image: SaleCover,
       value: "sale",
-    },
-    {
-      title: t("list.meet.title"),
-      description: t("list.meet.description"),
-      image: Online,
-      value: "meet",
     },
     // {
     //   title: t("list.restaurant.title"),
@@ -308,7 +305,7 @@ export default function EventTypeList({
             );
           } else {
             return (
-              <li key={index}>
+              <motion.li key={index} {...cardMotion(index)}>
                 {isLocked(category.value) ? (
                   <Dialog>
                     <DialogTrigger asChild>
@@ -414,7 +411,7 @@ export default function EventTypeList({
                     </div>
                   </Link>
                 )}
-              </li>
+              </motion.li>
             );
           }
         })}

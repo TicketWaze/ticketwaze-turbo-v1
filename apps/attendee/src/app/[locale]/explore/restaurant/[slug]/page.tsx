@@ -1,3 +1,4 @@
+import TrackActivityView from "@/components/activity/TrackActivityView";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { getLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -110,6 +111,7 @@ export default async function RestaurantPage({
   // the page instead of scrolling.
   return (
     <AttendeeLayout title={data.restaurant.name}>
+      <TrackActivityView activityId={data.restaurant.restaurantId} />
       <AnimatedEventPage>
         <BackButton text={t("back")} />
         <RestaurantDetail

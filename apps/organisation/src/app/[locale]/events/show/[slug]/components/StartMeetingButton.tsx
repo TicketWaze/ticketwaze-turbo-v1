@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { ButtonPrimary } from "@/components/shared/buttons";
+import { ButtonPill } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 /**
@@ -24,7 +24,13 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
  * URL carries host control in an embedded token and is short-lived, so it is
  * never stored, cached or rendered into HTML.
  */
-export default function StartMeetingButton({ event }: { event: Event }) {
+export default function StartMeetingButton({
+  event,
+  className,
+}: {
+  event: Event;
+  className?: string;
+}) {
   const t = useTranslations("Events.single_event");
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
@@ -71,21 +77,19 @@ export default function StartMeetingButton({ event }: { event: Event }) {
   }
 
   return (
-    <div className="w-full lg:w-fit">
-      <ButtonPrimary
-        className="gap-4 w-full"
-        onClick={openMeeting}
-        disabled={isLoading}
-      >
-        {isLoading ? (
-          <LoadingCircleSmall />
-        ) : (
-          <>
-            <VideoPlay variant={"Bulk"} color={"#fff"} size={20} />
-            {t("start_meeting")}
-          </>
-        )}
-      </ButtonPrimary>
-    </div>
+    <ButtonPill
+      className={className}
+      onClick={openMeeting}
+      disabled={isLoading}
+    >
+      {isLoading ? (
+        <LoadingCircleSmall />
+      ) : (
+        <>
+          <VideoPlay variant={"Bulk"} color={"#737C8A"} size={20} />
+          {t("start_meeting")}
+        </>
+      )}
+    </ButtonPill>
   );
 }

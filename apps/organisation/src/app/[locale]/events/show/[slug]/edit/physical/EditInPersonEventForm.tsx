@@ -1,8 +1,6 @@
- 
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { ArrowLeft2 } from "iconsax-reactjs";
 import {
   Dialog,
   DialogClose,
@@ -12,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { motion } from "framer-motion";
+import { AnimatePresence } from "motion/react";
 import { DateTime } from "luxon";
 import resizeImage from "@/lib/ResizeImage";
 import * as z from "zod";
@@ -28,9 +26,11 @@ import StepTicket from "./TicketClasses";
 import { makeEditInPersonSchema } from "./schema";
 import { Event, MembershipTier } from "@ticketwaze/typescript-config";
 import { slugify } from "@/lib/Slugify";
-import { ButtonPrimary } from "@/components/shared/buttons";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import BackButton from "@/components/shared/BackButton";
+import {
+  CreateFooter,
+  CreateHeader,
+  StepPanel,
+} from "@/components/create/CreateParts";
 import useEventNameAvailability from "@/hooks/useEventNameAvailability";
 import { EventDay } from "./types";
 
@@ -142,6 +142,16 @@ export default function EditInPersonEventForm({
               ? String(ticketType.usdPrice)
               : String(ticketType.ticketTypePrice),
           ticketTypeQuantity: String(ticketType.ticketTypeQuantity),
+          salesStartAt: ticketType.salesStartAt
+            ? DateTime.fromISO(ticketType.salesStartAt)
+                .setZone(eventTimezone)
+                .toFormat("yyyy-MM-dd'T'HH:mm")
+            : "",
+          salesEndAt: ticketType.salesEndAt
+            ? DateTime.fromISO(ticketType.salesEndAt)
+                .setZone(eventTimezone)
+                .toFormat("yyyy-MM-dd'T'HH:mm")
+            : "",
           isFree: tierIsFree,
         };
       }),
@@ -171,7 +181,9 @@ export default function EditInPersonEventForm({
     formData.append("absorbFees", JSON.stringify(data.absorbFees));
     formData.append("isPrivate", JSON.stringify(isPrivate));
     // Always sent (even empty) so clearing the field removes the cutoff.
-    formData.append("ticketSalesEndAt", data.ticketSalesEndAt ?? "");
+    // The cutoff lives on each class now (migration 1785300000039 copied
+    // the old event-wide one onto every class), so the event-level one is cleared.
+    formData.append("ticketSalesEndAt", "");
     /**
      * A free plan's activity keeps collapsing to its one locked "General" tier
      * — those inputs are read-only, so the values are supplied here rather than
@@ -194,6 +206,8 @@ export default function EditInPersonEventForm({
             ticketTypeQuantity:
               data.ticketTypes[0]?.ticketTypeQuantity ||
               String(membershipTier.freeTickets),
+            salesStartAt: data.ticketTypes[0]?.salesStartAt || null,
+            salesEndAt: data.ticketTypes[0]?.salesEndAt || null,
           },
         ]),
       );
@@ -204,6 +218,8 @@ export default function EditInPersonEventForm({
           data.ticketTypes.map(({ isFree: tierIsFree, ...ticket }) => ({
             ...ticket,
             ticketTypePrice: tierIsFree ? "0" : ticket.ticketTypePrice,
+            salesStartAt: ticket.salesStartAt || null,
+            salesEndAt: ticket.salesEndAt || null,
           })),
         ),
       );
@@ -228,12 +244,14 @@ export default function EditInPersonEventForm({
   };
 
   type FieldName = keyof TForm;
-  const [isLoading, setIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
   // Checked live per keystroke, the same as the create form. The event's own id
   // is excluded so keeping the name it already has never reads as taken.
-  const nameStatus = useEventNameAvailability(watch("eventName"), event.eventId);
+  const nameStatus = useEventNameAvailability(
+    watch("eventName"),
+    event.eventId,
+  );
 
   /**
    * Will this edit be held for review rather than applied straight away?
@@ -276,7 +294,10 @@ export default function EditInPersonEventForm({
       fields = steps[currentStep]?.fields as FieldName[];
     }
     const output = await trigger(fields, { shouldFocus: true });
-    if (!output) return;
+    if (!output) {
+      scrollToFirstError();
+      return;
+    }
     if (currentStep === steps.length - 1) {
       const hasChanges =
         isDirty ||
@@ -312,6 +333,43 @@ export default function EditInPersonEventForm({
     }
   };
 
+  const formRef = useRef<HTMLFormElement>(null);
+  // Each step starts at its top, not wherever the last one was scrolled to.
+  useEffect(() => {
+    formRef.current?.scrollTo({ top: 0 });
+  }, [currentStep]);
+
+  /**
+   * The details drawer's pencils link here with the section to edit:
+   * #thumbnail and #about are on the first step, #details is the dates step.
+   */
+  useEffect(() => {
+    const section = window.location.hash.slice(1);
+    if (section === "details") {
+      setCurrentStep(1);
+      return;
+    }
+    if (section) {
+      setTimeout(
+        () =>
+          window.document.getElementById(section)
+            ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+        400,
+      );
+    }
+  }, []);
+
+  // After a failed validation, bring the first error into view (custom fields
+  // such as the map and the tags are not focusable, so focus alone misses them).
+  const scrollToFirstError = () => {
+    requestAnimationFrame(() => {
+      const firstError = Array.from(
+        formRef.current?.querySelectorAll<HTMLElement>(".text-failure") ?? [],
+      ).find((el) => (el.textContent ?? "").trim().length > 0);
+      firstError?.scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  };
+
   // Image handling
   const [imagePreview, setImagePreview] = useState<string>(event.eventImageUrl);
   useEffect(() => {
@@ -324,7 +382,10 @@ export default function EditInPersonEventForm({
           const file = new File([blob], "event-image.jpg", {
             type: blob.type || "image/jpeg",
           });
-          setValue("eventImage", file, { shouldValidate: true, shouldDirty: false });
+          setValue("eventImage", file, {
+            shouldValidate: true,
+            shouldDirty: false,
+          });
         } catch (error) {
           console.error("Failed to load existing image:", error);
         }
@@ -364,92 +425,21 @@ export default function EditInPersonEventForm({
     // `overflow-hidden` box is still a scroll container, so Tiptap's
     // scroll-caret-into-view after a paste shifts it permanently, with no
     // scrollbar or wheel for the user to shift it back. `clip` does not scroll.
-    <div className="relative flex flex-col gap-8 overflow-clip h-full ">
-      <div className="absolute bottom-4 z-[9999] w-full hidden lg:block">
-        <ButtonPrimary
-          onClick={next}
-          className=" w-full max-w-[530px] mx-auto  "
-          disabled={
-            isSubmitting ||
-            isLoading ||
-            (currentStep === 0 && nameStatus === "checking")
-          }
-        >
-          {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
-        </ButtonPrimary>
-      </div>
-
-      <div className="fixed lg:hidden bottom-36 w-full px-8 z-50 left-0">
-        <div className=" lg:hidden bg-white mx-auto border border-neutral-100 px-4 py-[5px] flex justify-between items-center rounded-[100px]">
-          <div className="text-[2.2rem] text-neutral-600">
-            <span className="text-primary-500">{currentStep + 1}</span>/3
-          </div>
-          <ButtonPrimary onClick={next} disabled={
-            isSubmitting ||
-            isLoading ||
-            (currentStep === 0 && nameStatus === "checking")
-          }>
-            {isSubmitting || isLoading ? <LoadingCircleSmall /> : t("proceed")}
-          </ButtonPrimary>
-        </div>
-      </div>
-
-      {currentStep === 0 ? (
-        <BackButton text={t("back")}>
-          <div className="flex justify-between">
-            <div className="hidden lg:flex items-center gap-4">
-              <span className="text-primary-500 font-medium text-[1.5rem] leading-[3rem] ">
-                {t("basic")}
-              </span>
-              <div className="w-[161px] h-[5px] rounded-[100px] bg-neutral-100" />
-              <span className="text-neutral-500 font-medium text-[1.5rem] leading-[3rem] ">
-                {t("date_time")}
-              </span>
-              <div className="w-[161px] h-[5px] rounded-[100px] bg-neutral-100" />
-              <span className="text-neutral-500 font-medium text-[1.5rem] leading-[3rem] ">
-                {t("ticket")}
-              </span>
-            </div>
-          </div>
-        </BackButton>
-      ) : (
-        <div className="flex items-center justify-between">
-          <button
-            onClick={prev}
-            className="flex max-w-[80px] cursor-pointer items-center gap-4"
-          >
-            <div className="w-[35px] h-[35px] rounded-full bg-neutral-100 flex items-center justify-center">
-              <ArrowLeft2 size="20" color="#0d0d0d" variant="Bulk" />
-            </div>
-            <span className="text-neutral-700 font-normal text-[1.4rem] leading-8">
-              {t("back")}
-            </span>
-          </button>
-          <div className="hidden lg:flex items-center gap-4">
-            <span className="text-primary-500 font-medium text-[1.5rem] leading-[3rem] ">
-              {t("basic")}
-            </span>
-            <div className="w-[161px] h-[5px] rounded-[100px] bg-primary-500" />
-            <span className="text-primary-500 font-medium text-[1.5rem] leading-[3rem] ">
-              {t("date_time")}
-            </span>
-            <div
-              className={`w-[161px] h-[5px] rounded-[100px] ${currentStep === 2 ? "bg-primary-500" : "bg-neutral-100"}`}
-            />
-            <span
-              className={`${currentStep === 2 ? "text-primary-500" : "text-neutral-500"} font-medium text-[1.5rem] leading-[3rem]`}
-            >
-              {t("ticket")}
-            </span>
-          </div>
-        </div>
-      )}
+    <div className="relative flex flex-col gap-10 overflow-clip h-full">
+      <CreateHeader
+        title={t("edit_title")}
+        steps={steps.map((s) => s.name)}
+        current={currentStep}
+        onBack={currentStep > 0 ? prev : () => window.history.back()}
+      />
 
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t("edit_warning_title")}</DialogTitle>
-            <DialogDescription className="text-[1.5rem]">
+            <DialogTitle className="font-primary font-medium text-[2.2rem] leading-12 text-black">
+              {t("edit_warning_title")}
+            </DialogTitle>
+            <DialogDescription className="text-[1.5rem] leading-8 text-neutral-600">
               {willBeHeldForReview
                 ? t("edit_warning_body_review")
                 : t("edit_warning_body")}
@@ -457,96 +447,100 @@ export default function EditInPersonEventForm({
           </DialogHeader>
           <DialogFooter className="flex gap-4 pt-2">
             <DialogClose asChild>
-              <span className="flex-1 px-[3rem] py-[15px] border border-neutral-200 rounded-[100px] text-neutral-600 font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center">
+              <button
+                type="button"
+                className="flex-1 px-[3rem] py-[15px] border border-neutral-200 rounded-[100px] text-neutral-600 font-medium text-[1.5rem] leading-8 cursor-pointer"
+              >
                 {t("edit_warning_cancel")}
-              </span>
+              </button>
             </DialogClose>
             <DialogClose asChild>
-              <span
+              <button
+                type="button"
                 onClick={() => handleSubmit(processForm)()}
-                className="flex-1 bg-primary-500 px-[3rem] py-[15px] rounded-[100px] text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer flex items-center justify-center"
+                className="flex-1 bg-primary-500 px-[3rem] py-[15px] rounded-[100px] text-white font-medium text-[1.5rem] leading-8 cursor-pointer"
               >
                 {t("edit_warning_confirm")}
-              </span>
+              </button>
             </DialogClose>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-
       <form
-        className=" flex flex-col gap-12 h-full overflow-y-scroll overflow-x-hidden"
+        ref={formRef}
+        className="flex flex-col gap-12 flex-1 min-h-0 overflow-y-auto overflow-x-hidden"
         onSubmit={handleSubmit(processForm)}
       >
-        {currentStep === 0 && (
-          <motion.div
-            initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            layout={false}
-            className="flex flex-col gap-12"
-          >
-            <StepBasic
-              register={register}
-              control={control}
-              errors={errors}
-              imagePreview={imagePreview}
-              handleFileChange={handleFileChange}
-              setValue={setValue}
-              getValues={getValues}
-              event={event}
-              isPrivate={isPrivate}
-              setIsPrivate={setIsPrivate}
-              nameStatus={nameStatus}
-            />
-          </motion.div>
-        )}
+        <AnimatePresence mode="wait" initial={false}>
+          {currentStep === 0 && (
+            <StepPanel stepKey="basic" direction={delta}>
+              <StepBasic
+                register={register}
+                control={control}
+                errors={errors}
+                imagePreview={imagePreview}
+                handleFileChange={handleFileChange}
+                setValue={setValue}
+                getValues={getValues}
+                initialLocation={event.location}
+                isPrivate={isPrivate}
+                setIsPrivate={setIsPrivate}
+                nameStatus={nameStatus}
+              />
+            </StepPanel>
+          )}
 
-        {currentStep === 1 && (
-          <motion.div
-            initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="flex flex-col gap-12"
-          >
-            <StepDateTime
-              register={register}
-              control={control}
-              errors={errors}
-              eventDays={eventDays as EventDay[]}
-              setEventDays={
-                setEventDays as React.Dispatch<React.SetStateAction<EventDay[]>>
-              }
-              setValue={setValue}
-              t={(k) => t(k)}
-              membershipTier={membershipTier}
-            />
-          </motion.div>
-        )}
+          {currentStep === 1 && (
+            <StepPanel stepKey="days" direction={delta}>
+              <StepDateTime
+                register={register}
+                control={control}
+                errors={errors}
+                eventDays={eventDays as EventDay[]}
+                setEventDays={
+                  setEventDays as React.Dispatch<
+                    React.SetStateAction<EventDay[]>
+                  >
+                }
+                setValue={setValue}
+                t={(k) => t(k)}
+                membershipTier={membershipTier}
+              />
+            </StepPanel>
+          )}
 
-        {currentStep === 2 && (
-          <motion.div
-            initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="flex flex-col gap-12"
-          >
-            <StepTicket
-              event={event}
-              register={register}
-              errors={errors}
-              isFree={isFree}
-              setIsFree={setIsfree}
-              isRefundable={isRefundable}
-              setIsRefundable={setIsRefundable}
-              setValue={setValue}
-              t={(k) => t(k)}
-              control={control}
-              membershipTier={membershipTier}
-            />
-          </motion.div>
-        )}
+          {currentStep === 2 && (
+            <StepPanel stepKey="tickets" direction={delta}>
+              <StepTicket
+                event={event}
+                register={register}
+                errors={errors}
+                isFree={isFree}
+                setIsFree={setIsfree}
+                isRefundable={isRefundable}
+                setIsRefundable={setIsRefundable}
+                setValue={setValue}
+                t={(k) => t(k)}
+                control={control}
+                membershipTier={membershipTier}
+              />
+            </StepPanel>
+          )}
+        </AnimatePresence>
       </form>
+
+      <CreateFooter
+        step={currentStep}
+        total={steps.length}
+        onBack={currentStep > 0 ? prev : undefined}
+        onContinue={next}
+        continueLabel={
+          currentStep === steps.length - 1 ? t("save_cta") : undefined
+        }
+        loading={isSubmitting}
+        disabled={currentStep === 0 && nameStatus === "checking"}
+      />
     </div>
   );
 }

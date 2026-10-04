@@ -18,10 +18,7 @@ export type StepKey =
   | "summary";
 
 /** One seat's answers, keyed by question id. */
-export type SeatAnswers = Record<
-  string,
-  { answer: string; isOther: boolean }
->;
+export type SeatAnswers = Record<string, { answer: string; isOther: boolean }>;
 
 /** One answer as the API receives it, per seat. */
 export interface SubmittedAnswer {
@@ -141,7 +138,9 @@ export interface AppliedDiscount {
 export type DiscountRefusalReason =
   | "not_found"
   | "inactive"
+  | "not_started"
   | "expired"
+  | "not_applicable"
   | "usage_limit_reached"
   | "per_user_limit_reached"
   | "below_min_purchase";

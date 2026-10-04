@@ -59,8 +59,7 @@ export default async function EventFormsPage({
     eventId,
     locale,
   );
-  const responses =
-    "error" in responsesResult ? [] : responsesResult.responses;
+  const responses = "error" in responsesResult ? [] : responsesResult.responses;
 
   return (
     <OrganizerLayout title={t("title")}>

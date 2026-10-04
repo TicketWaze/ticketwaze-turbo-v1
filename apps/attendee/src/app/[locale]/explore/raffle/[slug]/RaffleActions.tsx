@@ -75,7 +75,7 @@ export default function RaffleActions({
     <div className="flex items-center justify-between">
       <PageLoader isLoading={isLoading} />
       <div className="flex gap-8">
-        <ShareEvent url={raffleUrl} />
+        <ShareEvent url={raffleUrl} activityId={raffle.raffleId} />
         {session?.user && fav && (
           <button
             disabled={isLoading}

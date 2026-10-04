@@ -739,9 +739,15 @@
     "revenue": "Revenus totaux",
     "sold": "Billets vendus",
     "filters": {
-      "first": {
-        "all": "Toutes les activités",
-        "date": "Ce mois-ci"
+      "activity": "Activité",
+      "period": "Période",
+      "allActivities": "Toutes les activités",
+      "periods": {
+        "7d": "7 derniers jours",
+        "month": "Ce mois-ci",
+        "30d": "30 derniers jours",
+        "year": "Cette année",
+        "all": "Depuis le début"
       }
     },
     "content": {
@@ -766,7 +772,10 @@
         "ticketsPlural": "tickets",
         "forecast": "Prévisions",
         "ticketsSold": "Billets vendus"
-      }
+      },
+      "monthly": "Ventes de billets mensuelles",
+      "now": "Auj.",
+      "noData": "Pas encore de données"
     },
     "event": {
       "event_demographics": {
@@ -832,6 +841,14 @@
       "title": "Avis",
       "average": "Note moyenne",
       "total": "Total des avis"
+    },
+    "trend": {
+      "up": "En hausse de {value} % par rapport à la période précédente",
+      "down": "En baisse de {value} % par rapport à la période précédente"
+    },
+    "more": {
+      "title": "Plus d’analyses",
+      "topByViews": "Activités les plus vues"
     }
   },
   "Finance": {
@@ -915,7 +932,8 @@
       "revenue": "Revenu total",
       "profit": "Bénéfice total",
       "pendingBalance": "Solde en attente",
-      "availableBalance": "Solde disponible"
+      "availableBalance": "Solde disponible",
+      "balance": "Solde"
     },
     "filters": {
       "all": "Tous les statuts",
@@ -963,8 +981,13 @@
         "checked_out": "Sorti",
         "close": "Fermer",
         "resend": "Renvoyer le billet",
-        "draw_date": "Date du tirage"
-      }
+        "draw_date": "Date du tirage",
+        "tickets": "Billets",
+        "buyer": "Acheteur"
+      },
+      "no_match": "Aucune transaction ne correspond à ces filtres.",
+      "clear_filters": "Effacer les filtres",
+      "partly_returned": "Partiellement retourné"
     },
     "withdrawal": {
       "title": "Historique des retraits",
@@ -979,6 +1002,22 @@
         "status": "Statut",
         "date": "Date",
         "reason": "Motif du rejet"
+      },
+      "no_match": "Aucun retrait ne correspond à ces filtres.",
+      "approved": "Approuvé",
+      "details": {
+        "title": "Détails du retrait",
+        "amount": "Montant",
+        "request_date": "Date de la demande",
+        "requested_by": "Demandé par",
+        "status": "Statut de la transaction",
+        "method": "Méthode",
+        "bank_name": "Nom de la banque",
+        "account_name": "Titulaire du compte",
+        "account_number": "Numéro de compte",
+        "processed_date": "Date de traitement",
+        "reason": "Motif",
+        "close": "Fermer"
       }
     },
     "wise": "Wise",
@@ -1010,7 +1049,35 @@
     "cash_phone": "Numéro de téléphone",
     "cash_phone_hint": "Doit comporter exactement 8 chiffres (ex. 47123456)",
     "cash_handover_note": "Notre équipe appellera ce numéro pour convenir du lieu et de l'heure de la remise. Présentez une pièce d'identité au nom indiqué ci-dessus.",
-    "no_fee_note": "Vous recevez exactement ce montant. Ticketwaze n'ajoute aucuns frais de retrait et ne déduit rien de plus."
+    "no_fee_note": "Vous recevez exactement ce montant. Ticketwaze n'ajoute aucuns frais de retrait et ne déduit rien de plus.",
+    "pending_line": "+ {amount} en attente jusqu’à la fin de vos activités",
+    "nothing_to_withdraw": "Rien à retirer pour le moment",
+    "filters_title": "Filtres",
+    "close": "Fermer",
+    "page_prev": "Page précédente",
+    "page_next": "Page suivante",
+    "search_withdrawal": "Rechercher un ID de retrait",
+    "initiate": {
+      "title": "Initier un retrait",
+      "method_step": "Méthode",
+      "balance": "Solde",
+      "platform_fees": "Frais de la plateforme",
+      "pending_note": "{amount} de plus est en attente jusqu’à la fin de vos activités. Ce montant rejoindra ensuite votre solde.",
+      "receive_in": "Recevoir en",
+      "save_details": "Enregistrer pour les prochains paiements",
+      "create_pin": "Créer un code de retrait",
+      "pin_title": "Créer un code de retrait",
+      "enter_pin": "Saisir le code",
+      "confirm_pin": "Confirmer le code",
+      "create_pin_button": "Créer le code",
+      "pin_created": "Code de retrait créé",
+      "pin_mismatch": "Les deux codes ne correspondent pas",
+      "pin_failed": "Impossible de créer le code. Réessayez.",
+      "success_title": "Retrait initié avec succès",
+      "success_description": "Votre demande de retrait est en route. Notre équipe traite les paiements sous 1 à 3 jours ouvrables et vous recevrez une confirmation dès l’envoi des fonds.",
+      "opening": "Ouverture de la page Finance…",
+      "no_pin": "Créez d’abord votre code de retrait."
+    }
   },
   "Events": {
     "title": "Aperçu des activités",
@@ -1063,7 +1130,8 @@
         "email": "Email",
         "status": "Statut",
         "date_purchased": "Acheté le",
-        "answers": "Réponses au paiement"
+        "answers": "Réponses au paiement",
+        "amount": "Montant payé"
       },
       "create_ticket": "Créer un billet",
       "ticket": "Classes de billets",
@@ -1106,7 +1174,27 @@
         "time_inside": "Temps à l'intérieur",
         "entries": "Entrées",
         "stayed": "Durée",
-        "since": "À l'intérieur depuis {time}"
+        "since": "À l'intérieur depuis {time}",
+        "title": "Check-in",
+        "tap_to_scan": "Touchez pour scanner",
+        "or": "ou",
+        "ticket_id_label": "ID du billet",
+        "checking": "Enregistrement en cours",
+        "checking_out": "Sortie en cours",
+        "success_title": "Check-in réussi !",
+        "success_body": "Le participant a été enregistré.",
+        "checkout_title": "Sortie enregistrée",
+        "checkout_body": "{name} est sorti(e). Le temps passé est enregistré.",
+        "inside_title": "Déjà à l'intérieur",
+        "inside_body": "{name} est déjà enregistré(e). Enregistrez sa sortie s'il ou elle s'en va.",
+        "already_title": "Participant déjà enregistré",
+        "not_open_title": "Le check-in n'est pas ouvert",
+        "error_title": "Échec du check-in",
+        "invalid_title": "Billet invalide",
+        "continue": "Continuer",
+        "retry": "Réessayer",
+        "close": "Fermer",
+        "cancel": "Annuler"
       },
       "ticketID": "ID du billet",
       "revenue": "Revenus totaux",
@@ -1149,8 +1237,8 @@
         "nothing": "Vos codes de réduction apparaîtront ici une fois que vous commencerez à les créer",
         "errors": {
           "code": {
-            "min": "Le code de réduction ne peut pas contenir moins de 6 caractères",
-            "max": "Le code de réduction ne peut pas dépasser 10 caractères",
+            "min": "Au moins 4 caractères",
+            "max": "Au plus 20 caractères",
             "format": "Utilisez uniquement des lettres et des chiffres"
           },
           "value": {
@@ -1165,6 +1253,11 @@
           "expiresIn": {
             "min": "1 heure est le minimum",
             "negative": "L'heure ne peut pas être négative"
+          },
+          "end": {
+            "required": "Choisissez une date de fin",
+            "before": "La date de fin doit être le jour du début ou après",
+            "past": "La date de fin est déjà passée"
           }
         },
         "actions": "Actions",
@@ -1185,7 +1278,26 @@
         "min_purchase": "Commande minimum (facultatif)",
         "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze sont toujours calculés sur votre prix affiché : une réduction ne modifie jamais les frais, et vous recevez le prix réduit.",
         "notify_followers": "Prévenir mes abonnés",
-        "notify_followers_description": "Envoyer ce code à toutes les personnes qui suivent votre organisation, dans leurs notifications Ticketwaze."
+        "notify_followers_description": "Envoyer ce code à toutes les personnes qui suivent votre organisation, dans leurs notifications Ticketwaze.",
+        "all_classes": "Toutes les classes de billets",
+        "more_options": "Plus d'options",
+        "success_title": "Code promo ajouté avec succès !",
+        "success_description": "Votre code promo est actif. Les participants peuvent l’utiliser au paiement pour économiser sur leurs billets.",
+        "success_description_scheduled": "Votre code promo commence le {date}. À partir de là, les participants pourront l’utiliser au paiement.",
+        "back_to_event": "Retour à l'activité",
+        "share": "Partager",
+        "code_copied": "Code {code} copié. Collez-le dans votre publication.",
+        "remove_class": "Retirer {name}",
+        "page_title": "Codes promo",
+        "page_description": "Codes pour {name}",
+        "manage": "Codes promo",
+        "col_applies": "S'applique à",
+        "col_window": "Validité",
+        "col_used": "Utilisés",
+        "col_status": "Statut",
+        "scheduled": "Programmé",
+        "live": "Actif",
+        "off": "Désactivé"
       },
       "rewards": {
         "title": "Récompenses",
@@ -1294,7 +1406,10 @@
         "time_inside": "Temps à l'intérieur",
         "entries": "Entrées",
         "date_purchased": "Date d'achat",
-        "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !"
+        "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !",
+        "no_match": "Aucun billet ne correspond à ces filtres.",
+        "clear_filters": "Effacer les filtres",
+        "check_time": "Heure d'enregistrement"
       },
       "printed_tickets": {
         "title": "Billets imprimés",
@@ -1411,7 +1526,74 @@
         "export_pdf": "Exporter en PDF",
         "export_error": "Impossible de générer le fichier. Veuillez réessayer.",
         "generated": "Généré le {date}"
-      }
+      },
+      "check_in_short": "Check-in",
+      "search_ticket": "Rechercher un billet, un participant",
+      "promote": "Promouvoir l'activité",
+      "ticket_class_label": "Catégorie de billet",
+      "filters_title": "Filtres",
+      "checked_in_done": "{name} est enregistré(e).",
+      "page_prev": "Page précédente",
+      "page_next": "Page suivante",
+      "add_discount": "Ajouter un code promo",
+      "trend": {
+        "up": "En hausse de {value} % sur les 7 jours précédents",
+        "down": "En baisse de {value} % sur les 7 jours précédents"
+      },
+      "share_dialog": {
+        "copy": "Copier",
+        "copied": "Lien copié",
+        "copy_failed": "Impossible de copier le lien",
+        "paste_hint": "Lien copié. Collez-le dans votre story, publication ou bio {app}.",
+        "qr": "Télécharger le code QR"
+      },
+      "contact": "Coordonnées",
+      "edit_section": "Modifier : {section}",
+      "cannot_edit_pending": "Cette activité est en cours de suppression et ne peut pas être modifiée.",
+      "export_dialog": {
+        "title": "Exporter les données",
+        "description": "L'export comprend les informations des participants, les types de billets, les prix et les statuts de check-in.",
+        "email_note": "Les fichiers exportés seront aussi envoyés à votre adresse e-mail.",
+        "attendees": "Liste des participants",
+        "attendees_hint": "Excel (.xlsx)",
+        "report": "Rapport de l'activité",
+        "report_hint": "PDF",
+        "report_locked": "Disponible avec les forfaits payants",
+        "download": "Télécharger",
+        "preparing": "Préparation…",
+        "none": "Choisissez au moins un fichier.",
+        "emailed": "Une copie a été envoyée à votre adresse e-mail.",
+        "email_failed": "Les fichiers ont été téléchargés, mais la copie par e-mail n'a pas pu être envoyée.",
+        "failed": "L'export a échoué. Veuillez réessayer."
+      },
+      "checked_in_kpi": "Participants enregistrés",
+      "transaction": {
+        "day": "Jour {n}",
+        "resend_done": "Billet renvoyé à {email}",
+        "resend_checked": "Déjà enregistré — rien à renvoyer.",
+        "resend_returned": "Ce billet a été retourné et ne peut plus être renvoyé.",
+        "resend_limited": "Trop de renvois pour le moment. Réessayez plus tard.",
+        "resend_failed": "Impossible de renvoyer le billet. Réessayez.",
+        "sending": "Envoi…",
+        "methods": {
+          "moncash": "MonCash",
+          "natcash": "NatCash",
+          "stripe": "Carte",
+          "wallet": "Portefeuille",
+          "free": "Gratuit"
+        },
+        "statuses": {
+          "SUCCESSFUL": "Réussie",
+          "PENDING": "En attente",
+          "FAILED": "Échouée",
+          "RETURNED": "Retournée"
+        },
+        "sent_wait": "Envoyé · à nouveau dans {minutes} min",
+        "resend_wait": "Déjà envoyé. Vous pourrez le renvoyer dans {minutes} min.",
+        "resend_ticket_daily": "Ce billet a déjà été renvoyé 3 fois aujourd’hui. Réessayez demain.",
+        "resend_org_daily": "Votre organisation a atteint la limite de renvois du jour. Réessayez dans {hours} h."
+      },
+      "create_ticket_upgrade": "L'ajout de classes de billets est disponible avec Pro."
     },
     "create_event": {
       "title": "Créer une activité",
@@ -1579,6 +1761,10 @@
             "connectedGeneric": "Connecté. Chaque acheteur reçoit son propre lien."
           },
           "upgrade": "Passer à la version supérieure"
+        },
+        "event": {
+          "title": "Événement",
+          "description": "En présentiel ou en ligne : concerts, conférences, ateliers, rencontres…"
         }
       },
       "tagPlaceholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d’espace",
@@ -1686,7 +1872,24 @@
       "price": "Prix",
       "quantity": "Quantité",
       "add_class": "Ajouter une catégorie de billet",
-      "event_link": "Plateformes en ligne",
+      "event_link": {
+        "title": "Lien de l’événement",
+        "platform_placeholder": "Choisir la plateforme en ligne",
+        "other": "Autre lien",
+        "ready": "Votre compte est connecté.",
+        "ready_as": "Connecté en tant que {account}.",
+        "connect_zoom_hint": "Connectez un compte Zoom sous licence : nous créerons la réunion et enverrons à chaque acheteur son propre lien.",
+        "connect_google_hint": "Connectez votre compte Google : nous créerons le Meet et inviterons chaque acheteur.",
+        "auto_link_hint": "La réunion est créée pour vous à l’enregistrement de l’événement.",
+        "connect": "Connecter le compte",
+        "link_placeholder": "Lien de diffusion / de réunion",
+        "password_placeholder": "Mot de passe (si nécessaire)",
+        "private_hint": "Seules les personnes munies d’un billet voient le lien et le mot de passe.",
+        "errors": {
+          "platform": "Choisissez où se déroule l’événement.",
+          "not_ready": "Connectez d’abord ce compte ou choisissez une autre plateforme."
+        }
+      },
       "leave_blank": "*Laissez vide pour des billets gratuits",
       "zoom": "En faire une réunion Zoom",
       "select_platform": "Sélectionnez une plateforme en ligne",
@@ -1739,7 +1942,9 @@
             "max": "La taille maximale du fichier est de 200ko.",
             "type": "Les fichiers .jpg, .jpeg, .png et .webp sont acceptés."
           },
-          "nameCheckFailed": "Nous n’avons pas pu vérifier si ce nom est libre. Vous pouvez continuer, mais s’il est déjà pris, l’activité sera refusée au moment de l’envoi."
+          "nameCheckFailed": "Nous n’avons pas pu vérifier si ce nom est libre. Vous pouvez continuer, mais s’il est déjà pris, l’activité sera refusée au moment de l’envoi.",
+          "category": "Choisissez une catégorie.",
+          "onlineLink": "Saisissez un lien complet commençant par https://"
         },
         "dateAndTime": {
           "eventDate": "La date de l’événement est requise",
@@ -1767,7 +1972,8 @@
             "exceedsLimit": "La quantité ne peut pas dépasser la limite de {limit} billets gratuits de votre forfait",
             "exceedsZoomSeats": "Le nombre total de billets ne peut pas dépasser les {limit} places de votre forfait Zoom.",
             "exceedsGoogleSeats": "Le nombre total de billets ne peut pas dépasser les {limit} personnes que votre forfait Google peut accueillir, une fois votre propre place d’hôte comptée."
-          }
+          },
+          "salesWindow": "La fin des ventes doit suivre leur début."
         }
       },
       "restaurant": {
@@ -1946,7 +2152,36 @@
       },
       "absorb_fees": "Prendre les frais en charge pour vos participants",
       "absorb_fees_hint": "Désactivé, les frais s’ajoutent à votre prix et votre participant les paie. Activé, le prix que vous fixez est exactement ce qu’il paie et les frais sont déduits de ce que vous recevez.",
-      "absorb_fees_locked": "Vous pouvez modifier ce réglage à tout moment. Il s’applique aux ventes futures ; les billets déjà vendus conservent le prix auquel ils ont été achetés."
+      "absorb_fees_locked": "Vous pouvez modifier ce réglage à tout moment. Il s’applique aux ventes futures ; les billets déjà vendus conservent le prix auquel ils ont été achetés.",
+      "title_event": "Créer un événement",
+      "publish_title": "Publier l’événement",
+      "create_cta": "Créer l’événement",
+      "publish_cta": "Publier l’événement",
+      "event_kind_title": "Type d’événement",
+      "event_type_placeholder": "Choisir le type d’événement",
+      "kind": {
+        "physical": "En présentiel",
+        "virtual": "En ligne"
+      },
+      "category_placeholder": "Catégorie (Concert, Conférence…)",
+      "sales_start": "Début des ventes",
+      "sales_end": "Fin des ventes",
+      "sales_window_hint": "Facultatif. Laissez vide pour vendre dès l’approbation de l’événement, jusqu’à sa fin.",
+      "created": {
+        "title": "Événement créé avec succès",
+        "published_title": "Événement publié avec succès",
+        "description": "Votre événement a été envoyé pour validation — vous serez prévenu dès qu’il sera en ligne. En attendant, vous pouvez le gérer et suivre ses performances depuis le tableau de bord.",
+        "opening": "Ouverture de l’événement...",
+        "raffle": "Tombola créée avec succès",
+        "sale": "Produit créé avec succès",
+        "restaurant": "Établissement créé avec succès",
+        "coming_soon": "Annonce créée avec succès",
+        "description_activity": "Elle a été envoyée pour validation — vous serez prévenu dès sa mise en ligne. En attendant, vous pouvez la gérer depuis vos activités.",
+        "opening_list": "Ouverture de vos activités..."
+      },
+      "edit_title": "Modifier l'événement",
+      "save_cta": "Enregistrer les modifications",
+      "free_locked": "Gratuit ou payant est fixé à la création de l'activité et ne peut plus changer, afin que les acheteurs gardent ce qu'ils ont payé."
     },
     "sale_price_preview": {
       "title": "Ce que vos acheteurs paieront",
@@ -2008,7 +2243,27 @@
       "all_categories": "Toutes les catégories",
       "empty_status": "Rien ici pour le moment. Essayez un autre onglet ou retirez le filtre de catégorie.",
       "status_label": "Statut",
-      "category_label": "Catégorie"
+      "category_label": "Catégorie",
+      "title": "Filtres",
+      "reset": "Réinitialiser",
+      "apply": "{count, plural, =0 {Aucun résultat} one {Voir 1 résultat} other {Voir # résultats}}",
+      "location": "Lieu",
+      "any_location": "Tous les lieux",
+      "date": "Date",
+      "dates": {
+        "any": "Toutes les dates",
+        "today": "Aujourd’hui",
+        "week": "Cette semaine",
+        "month": "Ce mois-ci",
+        "next30": "30 prochains jours",
+        "past": "Passées"
+      },
+      "popularity": "Popularité",
+      "sort": {
+        "default": "Recommandé",
+        "views": "Les plus vues",
+        "sold": "Les plus vendues"
+      }
     },
     "restaurantCard": {
       "tag": "Bar & Restaurant",
@@ -2301,7 +2556,26 @@
         "deleted_notice": "Cette annonce a été supprimée."
       }
     },
-    "coming_soon_label": "Bientôt disponible"
+    "coming_soon_label": "Bientôt disponible",
+    "search_empty": "Aucune activité ne correspond à « {query} ».",
+    "badge": {
+      "requested": "Demandé",
+      "review": "En révision",
+      "rejected": "Refusé"
+    },
+    "online_link_label": "En ligne",
+    "create_ticket": {
+      "title": "Créer un billet",
+      "create": "Créer",
+      "free_only": "Cette activité est gratuite, les nouvelles classes le sont donc aussi.",
+      "paid_only": "Les nouvelles classes de billets de cette activité sont payantes.",
+      "existing": "En vente : {names}",
+      "success_title": "Nouveaux billets ajoutés avec succès",
+      "success_description": "Vos billets supplémentaires sont disponibles à l’achat. Les participants peuvent les réserver dès maintenant.",
+      "opening": "Ouverture de l'événement…",
+      "duplicate": "Une classe de billets porte déjà ce nom",
+      "failed": "Impossible d'ajouter les billets. Réessayez."
+    }
   },
   "Sales": {
     "single_sale": {
@@ -2546,15 +2820,15 @@
       "title": "Compte",
       "back": "Retour",
       "edit": "Modifier",
-      "save": "Sauvegarder",
+      "save": "Enregistrer",
       "resize": "Redimensionner votre image",
-      "subtitle": "Informations utilisateur",
+      "subtitle": "Informations de l'organisateur",
       "setProfile": "Définir l'image de profil",
       "personal": "Informations personnelles",
       "profileAlert": "Veuillez vous connecter à votre tableau de bord afin de consulter ou de mettre à jour les informations liées à votre profil. Une fois connecté, vous pourrez vérifier vos données et effectuer les modifications nécessaires directement depuis votre tableau de bord.",
       "securityTip": "Conseil de sécurité",
       "2faTip": "L’authentification à deux facteurs (2FA) ne peut pas être désactivée, car votre compte est propriétaire ou membre d’une organisation. Pour des raisons de sécurité et de conformité, les comptes organisationnels doivent toujours conserver la 2FA activée.",
-      "profileLink": "Lien vers votre profil",
+      "profileLink": "Modifier votre nom et votre photo dans votre profil Ticketwaze",
       "placeholders": {
         "firstname": "Prénom",
         "lastname": "Nom de famille",
@@ -2584,13 +2858,15 @@
         "title": "Compte",
         "created": "Date de création",
         "delete": "Supprimer le compte"
-      }
+      },
+      "cancel": "Annuler",
+      "saved": "Compte mis à jour"
     },
     "profile": {
       "title": "Profil",
       "back": "Retour",
       "edit": "Modifier",
-      "save": "Sauvegarder",
+      "save": "Enregistrer",
       "setProfile": "Définir l'image de profil",
       "subtitle": "Profil de l'organisation",
       "resize": "Redimensionner votre image",
@@ -2613,7 +2889,11 @@
         "instagram": "Identifiant Instagram",
         "twitter": "Identifiant X (Twitter)",
         "social_links": "Réseaux sociaux",
-        "social_links_premium": "Les liens sociaux ne sont affichés sur votre profil public qu'avec un abonnement Premium."
+        "social_links_premium": "Les liens sociaux ne sont affichés sur votre profil public qu'avec un abonnement Premium.",
+        "address": "Adresse",
+        "about": "À propos de l'organisation",
+        "email": "E-mail de contact",
+        "phone": "Téléphone de contact"
       },
       "errors": {
         "name": {
@@ -2623,14 +2903,17 @@
         "description": {
           "min": "La description de l'organisation ne peut pas contenir moins de 150 caractères",
           "max": "La description de l'organisation ne peut pas contenir plus de 350 caractères"
-        }
+        },
+        "email": "Saisissez une adresse e-mail valide"
       },
       "preferences": {
         "title": "Préférences de l'organisation",
         "currency": "Devise préférée",
         "notifications": "Fournisseur de notifications préféré",
         "none": "Aucun"
-      }
+      },
+      "cancel": "Annuler",
+      "saved": "Profil mis à jour"
     },
     "team": {
       "title": "Équipe",
@@ -2696,13 +2979,27 @@
       "errors": {
         "name": "Le nom ne peut pas être vide",
         "email": "Saisissez une adresse e-mail valide"
-      }
+      },
+      "owner": "Propriétaire",
+      "inactive": "Inactif",
+      "no_match": "Aucun membre ne correspond à votre recherche.",
+      "details_title": "Détails du membre",
+      "date_added": "Date d'ajout",
+      "remove_member_full": "Retirer le membre",
+      "edit_title": "Modifier le membre",
+      "email_address": "Adresse e-mail",
+      "invited_toast": "Invitation envoyée à {email}",
+      "confirm_remove": "Voulez-vous vraiment retirer <b>{name}</b> ? Cette personne perdra tout accès à cette organisation.",
+      "removed_title": "Membre retiré",
+      "removed_description": "Vous avez retiré <b>{name}</b>, qui n'a plus accès à cette organisation.",
+      "returning": "Retour à l'équipe…",
+      "transferred": "Propriété transférée à {name}"
     },
     "security": {
       "title": "Sécurité",
       "back": "Retour",
       "subtitle": "Changer le mot de passe",
-      "reset": "Mot de passe oublié ?",
+      "reset": "Réinitialiser le mot de passe",
       "placeholders": {
         "password": "Mot de passe actuel",
         "new": "Nouveau mot de passe",
@@ -2711,24 +3008,33 @@
       "errors": {
         "blank": "Le champ ne peut pas être vide",
         "password": "Le mot de passe doit contenir au moins 8 caractères",
-        "confirm": "Le mot de passe doit être identique"
+        "confirm": "Le mot de passe doit être identique",
+        "failed": "Impossible de changer le mot de passe. Réessayez."
       },
       "two_factor": "Authentification à deux facteurs",
       "securityTip": "Conseil de sécurité",
       "2faTip": "L’authentification à deux facteurs (2FA) ne peut pas être désactivée, car votre compte est propriétaire ou membre d’une organisation. Pour des raisons de sécurité et de conformité, les comptes organisationnels doivent toujours conserver la 2FA activée.",
-      "passwordTip": "Après avoir mis à jour votre mot de passe, vous devrez vous reconnecter sur tous vos appareils pour des raisons de sécurité.",
-      "enable": "Activer"
+      "passwordTip": "Après la modification, vous devrez vous reconnecter sur tous vos appareils par mesure de sécurité.",
+      "enable": "Activer",
+      "change": "Changer le mot de passe",
+      "changed_title": "Mot de passe modifié",
+      "changed_description": "Votre mot de passe a été modifié. Reconnectez-vous avec le nouveau.",
+      "signing_out": "Déconnexion en cours…"
     },
     "payment": {
-      "title": "Banque",
+      "title": "Paiement",
       "edit": "Modifier",
-      "save": "Sauvegarder",
+      "save": "Enregistrer",
       "back": "Retour",
       "subtitle": "Compte de retrait",
       "errors": {
         "bank_name": "Le nom de la banque ne peut pas être vide",
         "bank_account_name": "Le nom du compte bancaire ne peut pas être vide",
-        "bank_account_number": "Le numéro de compte bancaire ne peut pas être vide"
+        "bank_account_number": "Le numéro de compte bancaire ne peut pas être vide",
+        "bank_incomplete": "Renseignez la banque, le numéro de compte et le titulaire.",
+        "moncash_invalid": "Saisissez le titulaire MonCash et un numéro à 8 chiffres.",
+        "natcash_invalid": "Saisissez le titulaire NatCash et un numéro à 8 chiffres.",
+        "save": "Impossible d'enregistrer. Réessayez."
       },
       "bank": "Détails bancaires",
       "bank_name": "Nom de la banque",
@@ -2747,7 +3053,7 @@
       "reset": "Réinitialiser le code PIN de retrait",
       "description": "Un e-mail de réinitialisation du code PIN de retrait a été envoyé à",
       "newRequest": "Vous pourrez effectuer une nouvelle demande dans",
-      "no_mail": "Vous n'avez pas reçu d'e-mail ? ",
+      "no_mail": "Pas reçu d'e-mail ?",
       "resend": "Renvoyer",
       "new_pin": "Définir un nouveau code PIN",
       "clearBanking": "Effacer les informations bancaires",
@@ -2755,7 +3061,22 @@
       "type": "Saisissez le nom de l’organisation pour confirmer",
       "noBankingInfo": "Vous n’avez actuellement aucune information bancaire ! Veuillez en ajouter avant d’essayer de supprimer. Si vous pensez qu’il s’agit d’une erreur, veuillez contacter le support.",
       "failedDelete": "Échec de la suppression des informations bancaires. Veuillez vérifier votre connexion Internet. Si l’erreur persiste, veuillez contacter le support.",
-      "successDelete": "Informations bancaires supprimées avec succès"
+      "successDelete": "Informations bancaires supprimées avec succès",
+      "cancel": "Annuler",
+      "saved": "Coordonnées de paiement mises à jour",
+      "moncash": "MonCash",
+      "natcash": "NatCash",
+      "holder_name": "Nom du titulaire",
+      "wallet_number": "Numéro de téléphone (8 chiffres)",
+      "change_pin_title": "Changer le code de retrait",
+      "reset_title": "Réinitialiser le code de retrait",
+      "reset_description": "Nous avons envoyé un lien à {email}. Ouvrez-le pour définir un nouveau code sécurisé et continuer à retirer vos gains en toute sécurité.",
+      "pin": "Créer le code de retrait",
+      "confirmPin": "Confirmer le code de retrait",
+      "set_new_pin": "Définir le nouveau code",
+      "pin_set_title": "Code de retrait mis à jour",
+      "pin_set_description": "Votre nouveau code est prêt pour votre prochain retrait.",
+      "returning": "Retour au paiement…"
     },
     "notification": {
       "title": "Notification",
@@ -2908,6 +3229,13 @@
         "error_title": "Une erreur est survenue",
         "error_desc": "Nous n'avons pas pu activer votre abonnement. Veuillez réessayer ou contacter le support.",
         "error_retry": "Réessayer"
+      },
+      "billing": "Facturation",
+      "ends": "Se termine",
+      "status": {
+        "active": "Actif",
+        "canceled": "Annulé",
+        "expired": "Expiré"
       }
     },
     "integrations": {
@@ -2961,6 +3289,7 @@
           "durationHours": "{hours} heures"
         }
       }
-    }
+    },
+    "back": "Retour"
   }
 }

@@ -24,6 +24,15 @@ export async function UpdateOrganisationProfile(
   organisationWebsite?: string,
   instagram?: string,
   twitter?: string,
+  /** Figma "Organization Profile" fields; omitted ones are left as they are. */
+  contact?: {
+    address?: string;
+    country?: string;
+    state?: string;
+    city?: string;
+    organisationEmail?: string;
+    organisationPhoneNumber?: string;
+  },
 ) {
   try {
     const accessToken = await sessionToken();
@@ -43,6 +52,7 @@ export async function UpdateOrganisationProfile(
           organisationWebsite,
           instagram,
           twitter,
+          ...(contact ?? {}),
         }),
       },
     );
@@ -54,7 +64,8 @@ export async function UpdateOrganisationProfile(
         organisation: response.organisation,
       };
     } else {
-      throw new Error(response.message);
+      // Validation errors come back as a list, not a message.
+      throw new Error(response.message ?? response.errors?.[0]?.message);
     }
   } catch (error: unknown) {
     return {

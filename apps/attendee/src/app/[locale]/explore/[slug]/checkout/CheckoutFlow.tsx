@@ -129,7 +129,10 @@ export default function CheckoutFlow({
   const isMeet = event.eventCategory === "meet";
   // Mirrors the API's `isGoogleMeetEvent`: online, and not hosted by Zoom.
   // Online events created before Zoom existed carry no provider and are Google.
-  const isGoogleMeet = isMeet && event.onlineProvider !== "zoom";
+  const isGoogleMeet =
+    isMeet &&
+    event.onlineProvider !== "zoom" &&
+    event.onlineProvider !== "custom";
   const [currentStep, setCurrentStep] = useState(0);
   const [previousStep, setPreviousStep] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -462,9 +465,29 @@ export default function CheckoutFlow({
     return sum + price * ticket.quantity;
   }, 0);
 
+  // The same cart by class, for codes limited to some classes.
+  const discountLines = selectedWithIndex.flatMap((ticket) => {
+    const ticketType = ticketTypes.find(
+      (type) => type.eventTicketTypeId === ticket.ticketTypeId,
+    );
+    if (!ticketType) return [];
+    const price = Number(
+      event.currency === "USD"
+        ? ticketType.usdPrice
+        : ticketType.ticketTypePrice,
+    );
+    return [
+      {
+        ticketType: ticketType.ticketTypeName,
+        amount: price * ticket.quantity,
+      },
+    ];
+  });
+
   const reductions = useCheckoutReductions({
     activityId: event.eventId,
     subtotal: faceSubtotal,
+    lines: discountLines,
     accessToken,
     isGuest,
   });

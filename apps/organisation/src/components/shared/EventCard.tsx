@@ -1,197 +1,122 @@
 "use client";
-import { Link } from "@/i18n/navigation";
-import { Calendar2, Google, Location, Video } from "iconsax-reactjs";
+import { Calendar2, Global, Google, Location, Video } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import { slugify } from "@/lib/Slugify";
 import { Event } from "@ticketwaze/typescript-config";
 import FormatDate from "@/lib/FormatDate";
+import ActivityCard, { CardBadge, CardMeta, CardPrice } from "./ActivityCard";
 
-function EventCard({
-  event,
-  aside,
-  ongoing,
-}: {
-  event: Event;
-  aside?: boolean;
-  ongoing?: boolean;
-}) {
-  // A coming-soon teaser has no days, no ticket types and often no city, so
-  // every one of those reads below has to be guarded rather than assumed.
-  const isTeaser = event.isComingSoon === true;
-  const date = event.eventDays?.filter(
-    (eventDay) => eventDay.dayNumber === 1,
-  )[0];
-  const slug = slugify(event.eventName, event.eventId);
+const ICON = { size: "15", color: "#2e3237", variant: "Bulk" } as const;
+
+/** The badge an event needs, if any: review states, deletion. Approved = none. */
+export function eventBadge(
+  event: Event,
+  t: (key: string) => string,
+): CardBadge | null {
+  if (event.deletionStatus === "deleted")
+    return { label: t("deleted"), tone: "muted" };
+  if (event.adminStatus === "requested")
+    return { label: t("badge.requested"), tone: "neutral" };
+  if (event.adminStatus === "review")
+    return { label: t("badge.review"), tone: "warning" };
+  if (event.adminStatus === "rejected")
+    return { label: t("badge.rejected"), tone: "failure" };
+  // An edit to an approved event is reviewed after the fact: still live and
+  // selling, with a look owed on it.
+  if (event.adminStatus === "approved" && event.pendingReviewAt)
+    return { label: t("edit_under_review"), tone: "warning" };
+  return null;
+}
+
+/** Cheapest to dearest ticket, in the event's own currency. */
+export function eventPriceRange(event: Event): [number, number] {
+  const prices = (event.eventTicketTypes ?? []).map((tt) =>
+    Number(event.currency === "USD" ? tt.usdPrice : tt.ticketTypePrice),
+  );
+  if (prices.length === 0) return [0, 0];
+  return [Math.min(...prices), Math.max(...prices)];
+}
+
+function EventCard({ event, ongoing }: { event: Event; ongoing?: boolean }) {
   const locale = useLocale();
   const t = useTranslations("Events");
-  const price =
-    event.currency === "USD"
-      ? (event.eventTicketTypes?.[0]?.usdPrice ?? 0)
-      : (event.eventTicketTypes?.[0]?.ticketTypePrice ?? 0);
-  return (
-    <Link
-      // The show page is built entirely around tickets, attendees and
-      // check-ins, none of which a teaser has — it reads eventDays[0] in
-      // several places and would crash. Teasers get their own management page,
-      // which mirrors it minus everything that needs a sold ticket.
-      href={isTeaser ? `/events/coming-soon/${slug}` : `/events/show/${slug}`}
-      className={`flex flex-row items-center lg:items-stretch lg:mb-8 lg:flex-col gap-4 w-full ${!aside && "lg:max-w-140"} bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0`}
-    >
-      <div className="relative">
-        <Image
-          src={event.eventImageUrl}
-          className={
-            "h-62 lg:h-[19.1rem] flex-1 lg:flex-auto w-62 lg:w-full object-cover object-top-left rounded-2xl "
-          }
-          alt={event.eventName}
-          height={191}
-          width={255}
-        />
-        {event.adminStatus === "requested" && (
-          <div className="bg-neutral-900 block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
-            {event.adminStatus.toUpperCase()}
-          </div>
-        )}
-        {event.adminStatus === "review" && (
-          <div className="bg-warning block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
-            {event.adminStatus.toUpperCase()}
-          </div>
-        )}
-        {/* An edit to an approved event is reviewed after the fact, so the event
-            is still live and selling — it just has a look owed on it. That is a
-            different thing to say than "APPROVED", so it takes the same slot. */}
-        {event.adminStatus === "approved" &&
-          event.pendingReviewAt &&
-          event.deletionStatus !== "deleted" && (
-            <div className="bg-warning block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
-              {t("edit_under_review").toUpperCase()}
-            </div>
-          )}
-        {event.adminStatus === "approved" &&
-          !event.pendingReviewAt &&
-          event.deletionStatus !== "deleted" && (
-            <div className="bg-success block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
-              {event.adminStatus.toUpperCase()}
-            </div>
-          )}
-        {event.deletionStatus === "deleted" && (
-          <div className="bg-neutral-500 block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
-            {t("deleted").toUpperCase()}
-          </div>
-        )}
-        {ongoing && (
-          <div className="bg-success absolute top-4 left-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit flex items-center gap-2">
-            <span className="w-[0.6rem] h-[0.6rem] rounded-full bg-white animate-pulse shrink-0" />
-            {t("ongoing").toUpperCase()}
-          </div>
-        )}
-        {event.adminStatus === "rejected" && (
-          <div className="bg-failure block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit">
-            {event.adminStatus.toUpperCase()}
-          </div>
-        )}
-        <div className="bg-primary-50 block absolute bottom-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-primary-500 font-primary font-bold leading-6 w-fit">
-          {event.eventType.toUpperCase()}
-        </div>
-      </div>
+  const isTeaser = event.isComingSoon === true;
+  const slug = slugify(event.eventName, event.eventId);
+  const firstDay = event.eventDays?.find((d) => d.dayNumber === 1);
+  const [min, max] = eventPriceRange(event);
+  const num = (n: number) => n.toLocaleString(locale);
 
-      <div
-        className={
-          "px-4 flex flex-1 lg:flex-auto min-w-0 flex-col gap-6 lg:gap-4"
+  const date = firstDay
+    ? FormatDate(firstDay.eventDate, locale, firstDay.timezone)
+    : event.comingSoonDate
+      ? // A bare "YYYY-MM-DD" parses as UTC; T00:00:00 keeps it local.
+        new Date(`${event.comingSoonDate}T00:00:00`).toLocaleDateString(
+          locale,
+          { day: "numeric", month: "short", year: "numeric" },
+        )
+      : (event.comingSoonHint ?? t("coming_soon_label"));
+
+  const place =
+    event.eventCategory === "meet" ? (
+      <CardMeta
+        icon={
+          event.onlineProvider === "zoom" ? (
+            <Video {...ICON} />
+          ) : event.onlineProvider === "custom" ? (
+            <Global {...ICON} />
+          ) : (
+            <Google {...ICON} />
+          )
         }
       >
-        <ul className="hidden lg:flex gap-2 text-primary-500 font-medium">
-          {event.activityTags.map((tag, key) => {
-            return <li key={key}>#{tag}</li>;
-          })}
-        </ul>
-        <div className="flex flex-col w-full gap-1">
-          <h1
-            className={
-              "font-bold w-full truncate font-primary text-[1.2rem] text-deep-100 leading-6"
-            }
-          >
-            {event.eventName}
-          </h1>
-          <ul className="flex gap-2 lg:hidden text-primary-500 font-medium">
-            {event.activityTags.slice(0, 2).map((tag, key) => {
-              return <li key={key}>#{tag}</li>;
-            })}
-          </ul>
-        </div>
-        <div
-          className={
-            "flex flex-col lg:flex-row gap-6  lg:items-center justify-between"
-          }
-        >
-          <div className={"flex items-center gap-2"}>
-            <Calendar2 size="15" color="#2e3237" variant="Bulk" />
-            <span className={"font-medium text-[1rem] text-deep-100 leading-6"}>
-              {/* Date, then hint, then the bare label. The teaser date is a
-                  plain "YYYY-MM-DD"; appending T00:00:00 forces local parsing,
-                  since a bare date string is read as UTC and can render as the
-                  previous day west of Greenwich. */}
-              {date
-                ? FormatDate(date.eventDate, locale, date.timezone)
-                : event.comingSoonDate
-                  ? new Date(
-                      `${event.comingSoonDate}T00:00:00`,
-                    ).toLocaleDateString(locale, {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })
-                  : (event.comingSoonHint ?? t("coming_soon_label"))}
-            </span>
-          </div>
-          {/* A teaser may have no venue at all; rendering "city, country" from
-              two nulls prints a bare comma. */}
-          {isTeaser && !event.city ? null : event.eventCategory === "meet" ? (
-            <div className={"flex items-center gap-2"}>
-              {event.onlineProvider === "zoom" ? (
-                <Video size="15" color="#2e3237" variant="Bulk" />
-              ) : (
-                <Google size="15" color="#2e3237" variant="Bulk" />
-              )}
-              <p className={"font-medium text-[1rem] text-deep-100 leading-6"}>
-                {event.onlineProvider === "zoom" ? (
-                  <span className={"text-neutral-700"}>Zoom</span>
-                ) : (
-                  <>
-                    Meet, <span className={"text-neutral-700"}>Google</span>
-                  </>
-                )}
-              </p>
-            </div>
-          ) : (
-            <div className={"flex items-center gap-2"}>
-              <Location size="15" color="#2e3237" variant="Bulk" />
-              <p className={"font-medium text-[1rem] text-deep-100 leading-6"}>
-                {event.city},{" "}
-                <span className={"text-neutral-700"}>{event.country}</span>
-              </p>
-            </div>
-          )}
-        </div>
-        <p className="font-bold text-[1.2rem] leading-6 text-primary-500">
-          {/* A teaser has no ticket types, so its price computes to 0. Showing
-              "Free" would advertise something that is not on sale at all. */}
-          {isTeaser ? (
-            t("coming_soon_label")
-          ) : price > 0 ? (
-            <>
-              {t("from")} {price}{" "}
-              <span className="font-normal text-neutral-700">
-                {event.currency}
-              </span>
-            </>
-          ) : (
-            t("free")
-          )}
-        </p>
-      </div>
-    </Link>
+        {event.onlineProvider === "zoom" ? (
+          "Zoom"
+        ) : event.onlineProvider === "custom" ? (
+          t("online_link_label")
+        ) : (
+          <>
+            Meet, <span className="font-normal text-neutral-700">Google</span>
+          </>
+        )}
+      </CardMeta>
+    ) : // A teaser may have no venue yet; "null, null" would print a bare comma.
+    event.city ? (
+      <CardMeta icon={<Location {...ICON} />}>
+        {event.city},{" "}
+        <span className="font-normal text-neutral-700">{event.country}</span>
+      </CardMeta>
+    ) : undefined;
+
+  return (
+    <ActivityCard
+      href={isTeaser ? `/events/coming-soon/${slug}` : `/events/show/${slug}`}
+      imageUrl={event.eventImageUrl}
+      title={event.eventName}
+      badge={eventBadge(event, t)}
+      liveBadge={
+        ongoing ? { label: t("ongoing"), tone: "success", pulse: true } : null
+      }
+      meta={[
+        <CardMeta key="d" icon={<Calendar2 {...ICON} />}>
+          {date}
+        </CardMeta>,
+        place,
+      ]}
+      price={
+        // A teaser has no ticket types; "Free" would advertise a sale that
+        // does not exist yet.
+        isTeaser ? (
+          <CardPrice amount={t("coming_soon_label")} />
+        ) : max > 0 ? (
+          <CardPrice
+            amount={min === max ? num(min) : `${num(min)}–${num(max)}`}
+            unit={event.currency}
+          />
+        ) : (
+          <CardPrice amount={t("free")} />
+        )
+      }
+    />
   );
 }
 

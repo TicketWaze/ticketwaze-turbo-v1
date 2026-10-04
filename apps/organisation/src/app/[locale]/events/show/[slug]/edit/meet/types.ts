@@ -4,6 +4,9 @@ export type TicketType = {
   ticketTypeDescription: string;
   ticketTypePrice: string;
   ticketTypeQuantity: string;
+  /** This class's sales window, "YYYY-MM-DDTHH:mm" local; empty = open-ended. */
+  salesStartAt?: string;
+  salesEndAt?: string;
 };
 export type EventDay = {
   dayNumber: number;

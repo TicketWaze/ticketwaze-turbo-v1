@@ -24,7 +24,7 @@ export function minutesBetween(
 }
 
 /** Which platform hosts the call. Both have plan limits; they differ in wording. */
-export type OnlineProvider = "zoom" | "google_meet";
+export type OnlineProvider = "zoom" | "google_meet" | "custom";
 
 /**
  * Refuse a first day longer than the provider's plan allows.
@@ -205,16 +205,37 @@ export function makeMeetPersonSchema(
             .refine((val) => /^[1-9]\d*$/.test(val), {
               message: t("errors.ticketClass.quantity.decimal"),
             }),
-        }),
+          // Optional sales window for this class, naive local datetimes.
+          salesStartAt: z.string().optional(),
+          salesEndAt: z.string().optional(),
+        }).refine(
+          (ticket) =>
+            !ticket.salesStartAt ||
+            !ticket.salesEndAt ||
+            ticket.salesEndAt > ticket.salesStartAt,
+          { message: t("errors.ticketClass.salesWindow"), path: ["salesEndAt"] },
+        ),
       ),
       eventCurrency: z.string(),
       isFree: z.boolean(),
       absorbFees: z.boolean(),
-      // Optional cutoff after which tickets can no longer be bought. The event
-      // stays listed; it is simply shown as "sales ended". Empty = no cutoff.
+      // Kept for older drafts; the form now sets a window per class instead.
       ticketSalesEndAt: z.string().optional(),
+      // "Other link" only: the organiser's own URL and optional password.
+      onlineLink: z.string().optional(),
+      onlinePassword: z.string().max(120).optional(),
     })
     .superRefine((data, ctx) => {
+      if (provider === "custom") {
+        const link = (data.onlineLink ?? "").trim();
+        if (!/^https?:\/\/\S+\.\S+/i.test(link)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: t("errors.basicDetails.onlineLink"),
+            path: ["onlineLink"],
+          });
+        }
+      }
       addMeetingDurationIssue(
         ctx,
         data.eventDays,

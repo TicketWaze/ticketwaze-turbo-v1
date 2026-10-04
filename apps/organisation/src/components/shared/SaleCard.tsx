@@ -1,11 +1,10 @@
 "use client";
 import { DocumentText, ArchiveBox } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import { Sale } from "@ticketwaze/typescript-config";
 import { formatMoney } from "@ticketwaze/currency";
-import { Link } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
+import ActivityCard, { CardBadge, CardMeta, CardPrice } from "./ActivityCard";
 
 /** Bytes as the seller thinks of them: MB, or GB once it stops being readable. */
 export function formatFileSize(bytes: number): string {
@@ -35,114 +34,61 @@ export function saleStatusClass(status: Sale["status"]): string {
   }
 }
 
+const ICON = { size: "15", color: "#2e3237", variant: "Bulk" } as const;
+
+/** Every state but `live` needs the seller's eye, so it wears a badge. */
+function saleBadge(sale: Sale, t: (key: string) => string): CardBadge | null {
+  if (sale.status === "live") return null;
+  const tone: CardBadge["tone"] =
+    sale.status === "rejected"
+      ? "failure"
+      : sale.status === "scanning" || sale.status === "pending_review"
+        ? "warning"
+        : sale.status === "unlisted"
+          ? "muted"
+          : "neutral";
+  return { label: t(`saleCard.status.${sale.status}`), tone };
+}
+
 function SaleCard({ sale }: { sale: Sale }) {
   const locale = useLocale();
   const t = useTranslations("Events");
 
-  // Prices are stored in both currencies; the product is denominated in one.
   const sellerPrice = sale.currencyCode === "USD" ? sale.usdPrice : sale.price;
-  // What the buyer is actually charged, which is the number a seller compares
-  // against other listings. Derived by the API — never recomputed here.
   const buyerPays = sale.pricing?.buyerPays ?? sellerPrice;
   const file = sale.files?.find((f) => f.isCurrent) ?? sale.files?.[0];
 
   return (
-    <Link
+    <ActivityCard
       href={`/events/sale/${slugify(sale.title, sale.saleId)}`}
-      className="flex flex-row items-center lg:items-stretch lg:mb-8 lg:flex-col gap-4 w-full lg:max-w-140 bg-white shadow-lg rounded-2xl overflow-hidden pb-4 pl-4 lg:pl-0"
-    >
-      <div className="relative">
-        {sale.coverImageUrl && (
-          <Image
-            src={sale.coverImageUrl}
-            className="h-62 lg:h-[19.1rem] flex-1 lg:flex-auto w-62 lg:w-full object-cover object-top-left rounded-2xl"
-            alt={sale.title}
-            height={191}
-            width={255}
-          />
-        )}
-        <div
-          className={`${saleStatusClass(sale.status)} block absolute top-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-white font-primary font-bold leading-6 w-fit`}
-        >
-          {t(`saleCard.status.${sale.status}`).toUpperCase()}
-        </div>
-        <div className="bg-primary-50 block absolute bottom-4 right-4 py-1 px-4 rounded-[30px] text-[1rem] text-primary-500 font-primary font-bold leading-6 w-fit">
-          {t("saleCard.tag").toUpperCase()}
-        </div>
-      </div>
-
-      <div className="px-4 flex flex-1 lg:flex-auto min-w-0 flex-col gap-6 lg:gap-4">
-        {sale.activityTags?.length > 0 && (
-          <ul className="hidden lg:flex gap-2 text-primary-500 font-medium">
-            {sale.activityTags.slice(0, 3).map((tag, key) => (
-              <li key={key}>#{tag}</li>
-            ))}
-          </ul>
-        )}
-        <div className="flex flex-col w-full gap-1">
-          <h1 className="font-bold w-full truncate font-primary text-[1.2rem] text-deep-100 leading-6">
-            {sale.title}
-          </h1>
-          {sale.activityTags?.length > 0 && (
-            <ul className="flex gap-2 lg:hidden text-primary-500 font-medium">
-              {sale.activityTags.slice(0, 2).map((tag, key) => (
-                <li key={key}>#{tag}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-        {/*
-          THE FILENAME YIELDS, THE SIZE DOES NOT.
-
-          Uploaded filenames are arbitrarily long and frequently unbroken
-          ("Ticketwaze-Team-Management-Plan-v3-final.pdf"), so without this the
-          name pushed the size out of the row and "62 KB" wrapped onto two
-          lines, making the card taller than every other card in the grid.
-
-          `min-w-0` is the part that actually does the work: a flex child
-          defaults to min-width:auto and refuses to shrink below its content, so
-          `truncate` alone never engages. The size is `shrink-0` and
-          `whitespace-nowrap` because it is short, fixed and the one of the two
-          that must stay whole.
-        */}
-        <div className="flex flex-row gap-4 items-center justify-between">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <DocumentText
-              size="15"
-              color="#2e3237"
-              variant="Bulk"
-              className="shrink-0"
-            />
-            <p className="font-medium truncate text-[1rem] text-deep-100 leading-6">
-              {/* A sale with no file cannot be reviewed, let alone sold, so the
-                  missing case is worth naming rather than leaving blank. */}
-              {file ? file.originalFilename : t("saleCard.no_file")}
-            </p>
-          </div>
-          {file && (
-            <div className="flex items-center gap-2 shrink-0">
-              <ArchiveBox
-                size="15"
-                color="#2e3237"
-                variant="Bulk"
-                className="shrink-0"
-              />
-              <span className="font-medium text-[1rem] text-deep-100 leading-6 whitespace-nowrap">
-                {formatFileSize(file.byteSize)}
-              </span>
-            </div>
-          )}
-        </div>
-        <p className="font-bold text-[1.2rem] leading-6 text-primary-500">
-          {formatMoney(buyerPays, sale.currencyCode, locale)}{" "}
-          <span className="font-normal text-neutral-700">
-            {t("saleCard.you_receive", {
-              amount: formatMoney(sellerPrice, sale.currencyCode, locale),
-            })}
-          </span>
-        </p>
-      </div>
-    </Link>
+      imageUrl={sale.coverImageUrl}
+      title={sale.title}
+      badge={saleBadge(sale, t)}
+      meta={[
+        // The filename yields (they run long and unbroken), the size does not.
+        <CardMeta key="f" icon={<DocumentText {...ICON} />} className="flex-1">
+          {/* No file means nothing to review or sell — worth naming. */}
+          {file ? file.originalFilename : t("saleCard.no_file")}
+        </CardMeta>,
+        file ? (
+          <CardMeta
+            key="s"
+            icon={<ArchiveBox {...ICON} />}
+            className="shrink-0"
+          >
+            {formatFileSize(file.byteSize)}
+          </CardMeta>
+        ) : undefined,
+      ]}
+      price={
+        <CardPrice
+          amount={formatMoney(buyerPays, sale.currencyCode, locale)}
+          unit={t("saleCard.you_receive", {
+            amount: formatMoney(sellerPrice, sale.currencyCode, locale),
+          })}
+        />
+      }
+    />
   );
 }
 

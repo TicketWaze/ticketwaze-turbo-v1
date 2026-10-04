@@ -1,1509 +1,669 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import {
-  ArrowLeft2,
-  InfoCircle,
-  Money,
-  MoneyRecive,
-  TickCircle,
-} from "iconsax-reactjs";
-import { AnimatePresence, motion } from "motion/react";
-import { ButtonPrimary } from "@/components/shared/buttons";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import BackButton from "@/components/shared/BackButton";
-import { Organisation } from "@ticketwaze/typescript-config";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { AnimatePresence, motion } from "motion/react";
+import { toast } from "sonner";
+import { Bank, InfoCircle, MoneyRecive, TickCircle } from "iconsax-reactjs";
+import { Order, Organisation } from "@ticketwaze/typescript-config";
+import {
+  CreateFooter,
+  CreateHeader,
+  CreatedScreen,
+  Section,
+  StepPanel,
+} from "@/components/create/CreateParts";
+import { Input } from "@/components/shared/Inputs";
+import ToggleIcon from "@/components/shared/ToggleIcon";
+import PinBoxes from "@/components/shared/PinBoxes";
+import CreatePinDialog from "@/components/shared/CreatePinDialog";
+import { useRouter } from "@/i18n/navigation";
+import { financeFigures, formatMoney } from "@/lib/financeFigures";
+import { cn } from "@/lib/utils";
 import moncashIcon from "@/assets/images/moncash-icon.svg";
 import natcashIcon from "@/assets/images/natcash.png";
-import wiseIcon from "@/assets/images/wise-icon.svg";
-import { toast } from "sonner";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
 import {
   BankWithdrawalRequest,
-  ResolveWiseRecipient,
   UpdateOrganisationBankPaymentInformation,
   UpdateOrganisationMoncashPaymentInformation,
   UpdateOrganisationNatcashPaymentInformation,
 } from "@/actions/organisationActions";
-import PageLoader from "@/components/PageLoader";
-import { useRouter } from "@/i18n/navigation";
-import { Input } from "@/components/shared/Inputs";
-
-/** The screens this wizard can show. Which apply depends on the payout method. */
-type StepKey = "summary" | "method" | "amount" | "details" | "pin";
 
 /**
- * How the organiser wants the money.
- *
- * `cash` is a handover in person — Ticketwaze pays in notes, so there is no
- * account to send to and the "details" it collects are who is collecting and
- * the number to reach them on.
+ * How the organiser wants the money. `cash` is a handover in person, so its
+ * "details" are who collects and the number to reach them on. Wise is paused.
  */
-type PayoutMethod = "bank" | "moncash" | "natcash" | "cash" | "wise";
-
-/** Every method that settles in gourdes. Only a bank payout may choose. */
-const HTG_ONLY_METHODS: PayoutMethod[] = ["moncash", "natcash", "cash"];
-
-/* ─── Animation helpers ──────────────────────────────────────────── */
-
-const slideVariants = {
-  enter: (d: number) => ({
-    x: d >= 0 ? "55%" : "-55%",
-    opacity: 0,
-    scale: 0.97,
-  }),
-  center: { x: 0, opacity: 1, scale: 1 },
-  exit: (d: number) => ({
-    x: d >= 0 ? "-55%" : "55%",
-    opacity: 0,
-    scale: 0.97,
-  }),
-};
-
-const slideTransition = {
-  duration: 0.3,
-  ease: [0.25, 0.46, 0.45, 0.94] as const,
-};
-
-/* ─── Desktop stepper ────────────────────────────────────────────── */
-
-function Stepper({ labels, current }: { labels: string[]; current: number }) {
-  return (
-    <div className="flex flex-col items-center gap-[6px]">
-      <div className="flex items-center">
-        {labels.map((_, i) => (
-          <div key={i} className="flex items-center">
-            <motion.div
-              layout
-              animate={{
-                backgroundColor: i <= current ? "#e45b00" : "#f1f2f3",
-                scale: i === current ? 1.18 : 1,
-              }}
-              transition={{ duration: 0.28, ease: "easeInOut" }}
-              className="w-[26px] h-[26px] rounded-full flex items-center justify-center shrink-0"
-            >
-              <AnimatePresence mode="wait">
-                {i < current ? (
-                  <motion.span
-                    key="check"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    transition={{ type: "spring", stiffness: 450, damping: 22 }}
-                  >
-                    <TickCircle size="15" color="#fff" variant="Bold" />
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key="num"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                    className={`text-[1rem] font-bold leading-none ${i <= current ? "text-white" : "text-neutral-400"}`}
-                  >
-                    {i + 1}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </motion.div>
-
-            {i < labels.length - 1 && (
-              <div className="relative w-10 h-[2px] bg-neutral-100 rounded-full mx-[6px] overflow-hidden">
-                <motion.div
-                  className="absolute inset-y-0 left-0 bg-primary-500 rounded-full"
-                  animate={{ width: i < current ? "100%" : "0%" }}
-                  transition={{
-                    duration: 0.38,
-                    ease: "easeInOut",
-                    delay: 0.08,
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* <AnimatePresence mode="wait">
-        <motion.span
-          key={current}
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -5 }}
-          transition={{ duration: 0.18 }}
-          className="text-[1.15rem] text-primary-500 font-semibold tracking-wide"
-        >
-          {labels[current]}
-        </motion.span>
-      </AnimatePresence> */}
-    </div>
-  );
-}
-
-/* ─── Animated checkbox ──────────────────────────────────────────── */
-
-function AnimatedCheckbox({ checked }: { checked: boolean }) {
-  return (
-    <motion.div
-      animate={{
-        backgroundColor: checked ? "#e45b00" : "transparent",
-        borderColor: checked ? "#e45b00" : "#c7cbd0",
-      }}
-      transition={{ duration: 0.18 }}
-      className="w-[20px] h-[20px] rounded-[5px] border-2 flex items-center justify-center shrink-0 mt-[2px]"
-    >
-      <AnimatePresence>
-        {checked && (
-          <motion.svg
-            key="check"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 500, damping: 26 }}
-            width="11"
-            height="8"
-            viewBox="0 0 11 8"
-            fill="none"
-          >
-            <path
-              d="M1 4L4 7L10 1"
-              stroke="white"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </motion.svg>
-        )}
-      </AnimatePresence>
-    </motion.div>
-  );
-}
-
-/* ─── No-fee notice ──────────────────────────────────────────────── */
+type Method = "bank" | "moncash" | "natcash" | "cash";
 
 /**
- * What the organiser actually receives, stated before they commit.
- *
- * The figure on screen is the whole available balance and Ticketwaze takes
- * nothing further out of it — the platform fee was already accounted for on
- * each sale, long before this screen. Saying so here answers the question
- * every organiser asks of a payout form, and answering it up front is cheaper
- * than answering it in support afterwards.
+ * Initiate Withdrawal (Figma rows y6661 / y10311, phone y8576): two steps.
+ * Summary — the balance and its breakdown. Method — how to receive it, the
+ * account details (saved ones pre-filled, with "Save details for future
+ * payment") and the 4-digit PIN. With no PIN yet, the button reads "Create
+ * withdrawal pin" and opens Create Withdrawal Pin first. The whole available
+ * balance is withdrawn; only a bank payout picks HTG or USD.
  */
-function NoFeeNotice({ text }: { text: string }) {
-  return (
-    <div className="flex items-start gap-3 p-4 rounded-[12px] border border-emerald-200 bg-emerald-50 text-[1.3rem] leading-7 text-emerald-800">
-      <div className="shrink-0 mt-[2px]">
-        <TickCircle size="18" color="#047857" variant="Bulk" />
-      </div>
-      <span>{text}</span>
-    </div>
-  );
-}
-
-/* ─── Payout method row ──────────────────────────────────────────── */
-
-/**
- * One selectable payout method.
- *
- * Extracted because there are now five of them and the markup is forty lines
- * each — written out one per method, adding one meant copying the selected
- * state, the tick animation and the hover border, and the copies had already
- * started to drift apart.
- *
- * `badge` marks a method that exists but cannot be picked (Wise, while it is
- * withdrawn). A badged row is rendered dimmed and inert rather than hidden, so
- * an organiser who used it last month can see it is coming back instead of
- * wondering where it went.
- */
-function MethodOption({
-  icon,
-  label,
-  hint,
-  selected,
-  onSelect,
-  badge,
-}: {
-  icon: (active: boolean) => React.ReactNode;
-  label: string;
-  hint: string;
-  selected: boolean;
-  onSelect: () => void;
-  badge?: string;
-}) {
-  const disabled = Boolean(badge);
-
-  return (
-    <motion.button
-      type="button"
-      whileTap={disabled ? undefined : { scale: 0.985 }}
-      onClick={disabled ? undefined : onSelect}
-      disabled={disabled}
-      aria-disabled={disabled}
-      className={`flex items-center w-full justify-between p-5 rounded-[16px] border-2 transition-colors duration-200 ${
-        disabled
-          ? "border-neutral-100 bg-neutral-50 opacity-60 cursor-not-allowed"
-          : selected
-            ? "border-primary-500 bg-primary-50 cursor-pointer"
-            : "border-neutral-100 hover:border-neutral-200 cursor-pointer"
-      }`}
-    >
-      <div className="flex items-center gap-4">
-        <div
-          className={`w-[46px] h-[46px] rounded-[12px] flex items-center justify-center transition-colors duration-200 ${
-            selected && !disabled ? "bg-primary-100" : "bg-neutral-100"
-          }`}
-        >
-          {icon(selected && !disabled)}
-        </div>
-        <div className="flex flex-col items-start gap-[3px]">
-          <span className="font-semibold text-[1.5rem] leading-6 text-deep-100">
-            {label}
-          </span>
-          <span className="text-[1.2rem] leading-5 text-neutral-500 text-left">
-            {hint}
-          </span>
-        </div>
-      </div>
-
-      {disabled ? (
-        <span className="shrink-0 rounded-[100px] bg-neutral-100 px-4 py-[5px] text-[1.15rem] font-medium text-neutral-500">
-          {badge}
-        </span>
-      ) : (
-        <motion.div
-          animate={{ scale: selected ? 1 : 0.4, opacity: selected ? 1 : 0 }}
-          transition={{ type: "spring", stiffness: 420, damping: 22 }}
-          className="w-[22px] h-[22px] rounded-full bg-primary-500 flex items-center justify-center shrink-0"
-        >
-          <TickCircle size="14" color="#fff" variant="Bold" />
-        </motion.div>
-      )}
-    </motion.button>
-  );
-}
-
-/* ─── Main component ─────────────────────────────────────────────── */
-
 export default function InitiateWithdrawalPageWrapper({
   organisation,
-  /**
-   * False on an environment with no Wise credentials, where the method is not
-   * offered at all. Better than presenting it and failing at Verify with an
-   * error the organiser would read as their own mistake.
-   */
-  wiseAvailable,
+  orders,
 }: {
   organisation: Organisation;
-  wiseAvailable: boolean;
+  orders: Order[];
 }) {
   const t = useTranslations("Finance");
+  const ti = useTranslations("Finance.initiate");
   const locale = useLocale();
-  const { data: session } = useSession();
   const router = useRouter();
 
-  // Detect if the saved profile data belongs to MonCash (stored with moncashAccountName)
-  const hasSavedMoncash = !!organisation.moncashAccountName;
-  const hasSavedBank = !!(
-    organisation.bankName &&
-    organisation.bankAccountName &&
-    organisation.bankAccountNumber
+  const currency = organisation.currency ?? "HTG";
+  const figures = financeFigures(orders, organisation, currency);
+
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [done, setDone] = useState(false);
+  const [method, setMethod] = useState<Method | null>(null);
+  const [bankCurrency, setBankCurrency] = useState<"HTG" | "USD">(
+    currency === "USD" ? "USD" : "HTG",
   );
 
-  const [previousStep, setPreviousStep] = useState(0);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [accountType, setAccountType] = useState<PayoutMethod | null>(null);
-  const [bankCurrency, setBankCurrency] = useState<"HTG" | "USD">("HTG");
+  const [bank, setBank] = useState({
+    name: organisation.bankName ?? "",
+    holder: organisation.bankAccountName ?? "",
+    number: organisation.bankAccountNumber ?? "",
+  });
+  const [moncash, setMoncash] = useState({
+    holder: organisation.moncashAccountName ?? "",
+    number: organisation.moncashNumber ?? "",
+  });
+  const [natcash, setNatcash] = useState({
+    holder: organisation.natcashAccountName ?? "",
+    number: organisation.natcashNumber ?? "",
+  });
+  const [cash, setCash] = useState({ holder: "", number: "" });
+  const [save, setSave] = useState<Record<Method, boolean>>({
+    bank: Boolean(organisation.bankAccountNumber),
+    moncash: Boolean(organisation.moncashNumber),
+    natcash: Boolean(organisation.natcashNumber),
+    cash: false,
+  });
 
-  /* Wise state.
-     The Wisetag is NOT read from the organisation and never saved back to it:
-     a payout destination that is entered once and reused silently sends every
-     future payout to the wrong place if it is ever wrong. It is stated fresh
-     each time, and re-resolved server-side before the request is taken. */
-  const [wiseRecipientValue, setWiseRecipientValue] = useState("");
-  /** The name Wise reported. Non-null only while it matches the typed value. */
-  const [wiseResolvedName, setWiseResolvedName] = useState<string | null>(null);
-  const [isVerifyingWise, setIsVerifyingWise] = useState(false);
-  /** The organiser has read the name and said it is theirs. */
-  const [wiseNameConfirmed, setWiseNameConfirmed] = useState(false);
-
-  // Bank state
-  const [bankName, setBankName] = useState(organisation.bankName ?? "");
-  const [bankAccountName, setBankAccountName] = useState(
-    organisation.bankAccountName ?? "",
-  );
-  const [bankAccountNumber, setBankAccountNumber] = useState(
-    organisation.bankAccountNumber ?? "",
-  );
-  const [saveBankInfo, setSaveBankInfo] = useState(hasSavedBank);
-
-  // Moncash state
-  const [moncashAccountName, setMoncashAccountName] = useState(
-    organisation.moncashAccountName ?? "",
-  );
-  const [moncashNumber, setMoncashNumber] = useState(
-    organisation.moncashNumber ?? "",
-  );
-  const [saveMoncashInfo, setSaveMoncashInfo] = useState(
-    hasSavedMoncash || !!organisation.moncashNumber,
-  );
-
-  // Natcash state. Same shape as MonCash — both wallets take an 8-digit local
-  // number — and saved on the organisation the same way.
-  const [natcashAccountName, setNatcashAccountName] = useState(
-    organisation.natcashAccountName ?? "",
-  );
-  const [natcashNumber, setNatcashNumber] = useState(
-    organisation.natcashNumber ?? "",
-  );
-  const [saveNatcashInfo, setSaveNatcashInfo] = useState(
-    !!organisation.natcashNumber,
-  );
-
-  /* Cash state.
-     Never saved back to the organisation: unlike an account number, "who is
-     collecting" is a decision about one specific handover, and silently
-     reusing last month's answer is how money ends up with the wrong person. */
-  const [cashCollectorName, setCashCollectorName] = useState("");
-  const [cashPhone, setCashPhone] = useState("");
-
-  // PIN state
+  const [hasPin, setHasPin] = useState(Boolean(organisation.hasWithdrawalPin));
   const [pin, setPin] = useState("");
-  const [pinConfirmation, setPinConfirmation] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [pinError, setPinError] = useState(0);
+  const [pinModal, setPinModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const delta = currentStep - previousStep;
+  // MonCash, NatCash and cash settle in gourdes; a bank payout picks.
+  const payCurrency: "HTG" | "USD" = method === "bank" ? bankCurrency : "HTG";
+  const payAmount =
+    payCurrency === "USD"
+      ? Number(organisation.usdAvailableBalance) || 0
+      : Number(organisation.availableBalance) || 0;
 
-  // Summary step uses the org's default display currency
-  const currency = session?.activeOrganisation?.currency ?? "HTG";
-  const availableBalance =
-    currency === "HTG"
-      ? organisation.availableBalance
-      : organisation.usdAvailableBalance;
-
-  // Amount step: bank uses the selected currency, the wallets and cash are
-  // always HTG, and Wise is always USD — a Wise payout is USD on both sides by
-  // design. Mirrored server-side, which is the authority.
-  const activeCurrency: "HTG" | "USD" =
-    accountType && HTG_ONLY_METHODS.includes(accountType)
-      ? "HTG"
-      : accountType === "wise"
-        ? "USD"
-        : bankCurrency;
-  const activeCurrencyBalance =
-    activeCurrency === "HTG"
-      ? organisation.availableBalance
-      : organisation.usdAvailableBalance;
-
-  /**
-   * The wizard's steps, as data rather than as hardcoded indices.
-   *
-   * Wise skips the amount step entirely: there is nothing to decide there. The
-   * currency is fixed to USD, the amount is always the full available balance,
-   * and both are already stated on the summary — so for Wise that screen asked
-   * a question with no answer and made the flow a step longer than it is.
-   *
-   * Deriving the list means the stepper, the mobile dots, the "last step" check
-   * and every validation follow from one place. With indices written by hand in
-   * a dozen spots, removing a step for one method silently desynchronised them.
-   */
-  const steps: StepKey[] =
-    accountType === "wise"
-      ? ["summary", "method", "details", "pin"]
-      : ["summary", "method", "amount", "details", "pin"];
-  const step = steps[currentStep];
-  const isLastStep = currentStep === steps.length - 1;
-
-  /**
-   * Where the money is going, per method, as the two fields every payout
-   * records: a name and a number.
-   *
-   * A cash payout has no account, so those two carry who collects the money and
-   * the phone number to arrange it on. Reusing the same pair rather than giving
-   * cash a shape of its own is what lets the admin payout screen, the Discord
-   * notice and the settlement emails handle it without knowing it exists.
-   *
-   * Derived once and read by both the submission and the confirmation summary —
-   * written out separately, the summary showed the MonCash name for every
-   * method that was not bank or Wise.
-   */
-  const DESTINATIONS: Record<PayoutMethod, { name: string; number: string }> = {
-    bank: { name: bankAccountName, number: bankAccountNumber },
-    moncash: { name: moncashAccountName, number: moncashNumber },
-    natcash: { name: natcashAccountName, number: natcashNumber },
-    cash: { name: cashCollectorName, number: cashPhone },
-    // Both come from Wise's own resolution, never from a typed field.
-    wise: { name: wiseResolvedName ?? "", number: wiseRecipientValue },
+  const destination: Record<Method, { holder: string; number: string }> = {
+    bank: { holder: bank.holder, number: bank.number },
+    moncash,
+    natcash,
+    cash,
   };
-  const destination = DESTINATIONS[accountType ?? "bank"];
 
-  const DETAILS_LABEL_KEY: Record<PayoutMethod, string> = {
-    bank: "bank_details",
-    moncash: "moncash_details",
-    natcash: "natcash_details",
-    cash: "cash_details",
-    wise: "wise_details",
-  };
-  const detailsLabel = t(DETAILS_LABEL_KEY[accountType ?? "bank"]);
-  const stepLabels = steps.map((key) =>
-    key === "summary"
-      ? t("summary")
-      : key === "method"
-        ? t("payment_method")
-        : key === "amount"
-          ? t("amount")
-          : key === "details"
-            ? detailsLabel
-            : t("security"),
-  );
-
-  /* ── Wise verification ───────────────────────────────────────── */
-
-  /**
-   * Any edit invalidates a previous verification. Without this, an organiser
-   * could verify one Wisetag, change a character, and carry the confirmed name
-   * of a different account through to the request.
-   */
-  function updateWiseIdentifier(value: string) {
-    setWiseRecipientValue(value);
-    setWiseResolvedName(null);
-    setWiseNameConfirmed(false);
+  function go(next: number) {
+    setDirection(next > step ? 1 : -1);
+    setStep(next);
   }
 
-  async function handleVerifyWise() {
-    if (!wiseRecipientValue.trim()) {
-      toast.error(t("errors.wise_identifier_required"));
+  /** Checks the chosen method's fields; returns false after telling why. */
+  function detailsValid(): boolean {
+    if (!method) {
+      toast.error(t("accountTypeError"));
+      return false;
+    }
+    const eight = (v: string) => /^\d{8}$/.test(v.trim());
+    const fail = (key: string) => {
+      toast.error(t(`errors.${key}`));
+      return false;
+    };
+    if (method === "bank") {
+      if (!bank.name.trim()) return fail("bank_name");
+      if (!bank.number.trim()) return fail("bank_account_number");
+      if (!bank.holder.trim()) return fail("bank_account_name");
+    } else if (method === "moncash") {
+      if (!moncash.holder.trim()) return fail("moncash_account_name");
+      if (!moncash.number.trim()) return fail("moncash_number");
+      if (!eight(moncash.number)) return fail("moncash_number_invalid");
+    } else if (method === "natcash") {
+      if (!natcash.holder.trim()) return fail("natcash_account_name");
+      if (!natcash.number.trim()) return fail("natcash_number");
+      if (!eight(natcash.number)) return fail("natcash_number_invalid");
+    } else {
+      if (!cash.holder.trim()) return fail("cash_collector_name");
+      if (!cash.number.trim()) return fail("cash_phone");
+      if (!eight(cash.number)) return fail("cash_phone_invalid");
+    }
+    if (payAmount <= 0) return fail("insufficient");
+    return true;
+  }
+
+  async function withdraw() {
+    if (!detailsValid() || !method) return;
+    if (pin.length !== 4) {
+      toast.error(t("errors.noPin"));
+      setPinError((n) => n + 1);
       return;
     }
-    setIsVerifyingWise(true);
-    const result = await ResolveWiseRecipient(
-      organisation.organisationId,
-      locale,
-      { wiseRecipientValue: wiseRecipientValue.trim() },
-    );
-    if (result.status === "success" && result.name) {
-      setWiseResolvedName(result.name);
-      setWiseNameConfirmed(false);
-    } else {
-      setWiseResolvedName(null);
-      // The API answers with a stable code so the copy can be localised here.
-      // `wise_unresolved` is by far the most common, and almost always means a
-      // typo or a profile that is not discoverable — so it says both.
-      const code = (result as { error?: string }).error ?? "wise_error";
-      const messages: Record<string, string> = {
-        wise_unresolved: t("errors.wise_unresolved"),
-        // Not a spelling problem — telling someone to check discoverability
-        // when they typed their own Wisetag just wastes their time.
-        wise_self: t("errors.wise_self"),
-        wise_invalid_identifier: t("errors.wise_invalid_identifier"),
-        wise_no_name: t("errors.wise_no_name"),
-        wise_unavailable: t("errors.wise_unavailable"),
-      };
-      toast.error(messages[code] ?? t("errors.wise_error"));
-    }
-    setIsVerifyingWise(false);
-  }
-
-  /* ── Submission ──────────────────────────────────────────────── */
-
-  async function handleWithdrawal() {
-    setIsLoading(true);
+    setSubmitting(true);
     try {
-      const accountName = destination.name;
-      const accountNumber = destination.number;
-
-      // Optionally persist account details to profile. Cash is deliberately
-      // absent — see the cash state above.
-      if (accountType === "bank" && saveBankInfo) {
-        await UpdateOrganisationBankPaymentInformation(
-          organisation.organisationId,
-          { bankName, bankAccountName, bankAccountNumber },
-          locale,
-        );
-      }
-      if (accountType === "moncash" && saveMoncashInfo) {
-        await UpdateOrganisationMoncashPaymentInformation(
-          organisation.organisationId,
-          {
-            moncashAccountName: moncashAccountName,
-            moncashNumber: moncashNumber,
-          },
-          locale,
-        );
-      }
-      if (accountType === "natcash" && saveNatcashInfo) {
-        await UpdateOrganisationNatcashPaymentInformation(
-          organisation.organisationId,
-          {
-            natcashAccountName: natcashAccountName,
-            natcashNumber: natcashNumber,
-          },
-          locale,
-        );
-      }
-
+      const { holder, number } = destination[method];
       const result = await BankWithdrawalRequest(
         organisation.organisationId,
         locale,
-        accountType === "wise"
-          ? {
-              accountType,
-              pin,
-              pin_confirmation: pinConfirmation,
-              // No accountName/accountNumber: the account name is whatever Wise
-              // reports for the Wisetag, resolved again server-side. Sending a
-              // name from here would let the client state one Wise never
-              // confirmed, which is what the Verify step exists to prevent.
-              // No type either — a Wisetag is the only thing accepted.
-              wiseRecipientValue: wiseRecipientValue.trim(),
-              currency: "USD",
-            }
-          : {
-              accountType,
-              pin,
-              pin_confirmation: pinConfirmation,
-              accountName,
-              accountNumber,
-              // No amount — the full available balance is withdrawn. Only a
-              // bank payout chooses a currency; the rest are HTG.
-              currency: activeCurrency,
-              // The server sets its own label for every non-bank method, so
-              // this only has to carry the one it cannot know.
-              ...(accountType === "bank" ? { bankName } : {}),
-            },
+        {
+          accountType: method,
+          pin,
+          accountName: holder.trim(),
+          accountNumber: number.trim(),
+          currency: payCurrency,
+          ...(method === "bank" ? { bankName: bank.name.trim() } : {}),
+        },
       );
-
       if (result.status === "success") {
-        toast.success(t("withdrawSuccess"));
-        router.push("/finance");
+        // Saved only once the request went through, never on a wrong PIN.
+        // Remembered for next time only when asked; cash never is.
+        if (method === "bank" && save.bank) {
+          await UpdateOrganisationBankPaymentInformation(
+            organisation.organisationId,
+            {
+              bankName: bank.name,
+              bankAccountName: bank.holder,
+              bankAccountNumber: bank.number,
+            },
+            locale,
+          );
+        }
+        if (method === "moncash" && save.moncash) {
+          await UpdateOrganisationMoncashPaymentInformation(
+            organisation.organisationId,
+            {
+              moncashAccountName: moncash.holder,
+              moncashNumber: moncash.number,
+            },
+            locale,
+          );
+        }
+        if (method === "natcash" && save.natcash) {
+          await UpdateOrganisationNatcashPaymentInformation(
+            organisation.organisationId,
+            {
+              natcashAccountName: natcash.holder,
+              natcashNumber: natcash.number,
+            },
+            locale,
+          );
+        }
+        setDone(true);
+        setTimeout(() => {
+          router.push("/finance");
+          router.refresh();
+        }, 2200);
         return;
       }
-
-      /**
-       * The API answers with stable codes, not sentences. Rendering one raw
-       * showed organisers the literal word "insufficient" — map every code we
-       * know, and only fall back for one we do not.
-       */
+      // The API answers with codes; map the ones we know.
       const code = (result as { error?: string }).error ?? "";
       const messages: Record<string, string> = {
         pin: t("errors.incorrectPin"),
+        no_pin: ti("no_pin"),
         Unauthorized: t("errors.Unauthorized"),
         insufficient: t("errors.insufficient"),
         pending_exists: t("errors.pending_exists"),
-        wise_unresolved: t("errors.wise_unresolved"),
-        wise_self: t("errors.wise_self"),
-        wise_invalid_identifier: t("errors.wise_invalid_identifier"),
-        wise_no_name: t("errors.wise_no_name"),
-        wise_unavailable: t("errors.wise_unavailable"),
-        wise_error: t("errors.wise_error"),
       };
-
       if (code === "pin") {
         setPin("");
-        setPinConfirmation("");
+        setPinError((n) => n + 1);
       }
+      if (code === "no_pin") setHasPin(false);
       toast.error(messages[code] ?? t("errors.insufficient"));
     } finally {
-      setIsLoading(false);
+      setSubmitting(false);
     }
   }
 
-  /* ── Navigation ──────────────────────────────────────────────── */
+  if (done) {
+    return (
+      <CreatedScreen
+        title={ti("success_title")}
+        description={ti("success_description")}
+        pendingLabel={ti("opening")}
+      />
+    );
+  }
 
-  const go = (next: number) => {
-    setPreviousStep(currentStep);
-    setCurrentStep(next);
-  };
-
-  const next = async () => {
-    if (step === "method") {
-      if (!accountType) {
-        toast.error(t("accountTypeError"));
-        return;
-      }
-      /**
-       * Wise has no amount step to catch an empty balance, so it is checked on
-       * the way out of here instead. Its currency is fixed, so there is nothing
-       * later that could change which balance applies.
-       */
-      if (accountType === "wise" && organisation.usdAvailableBalance <= 0) {
-        toast.error(t("errors.insufficient"));
-        return;
-      }
-      go(currentStep + 1);
-      return;
-    }
-
-    if (step === "amount") {
-      if (activeCurrencyBalance <= 0) {
-        toast.error(t("errors.insufficient"));
-        return;
-      }
-      go(currentStep + 1);
-      return;
-    }
-
-    if (step === "details") {
-      if (accountType === "wise") {
-        if (!wiseRecipientValue.trim()) {
-          toast.error(t("errors.wise_identifier_required"));
-          return;
-        }
-        // Both checkpoints are required before the request can be made: Wise
-        // has to have resolved the identifier, and the organiser has to have
-        // read the resulting name and said it is theirs.
-        if (!wiseResolvedName) {
-          toast.error(t("errors.wise_not_verified"));
-          return;
-        }
-        if (!wiseNameConfirmed) {
-          toast.error(t("errors.wise_name_not_confirmed"));
-          return;
-        }
-        go(currentStep + 1);
-        return;
-      }
-      if (accountType === "bank") {
-        if (!bankName.trim()) {
-          toast.error(t("errors.bank_name"));
-          return;
-        }
-        if (!bankAccountName.trim()) {
-          toast.error(t("errors.bank_account_name"));
-          return;
-        }
-        if (!bankAccountNumber.trim()) {
-          toast.error(t("errors.bank_account_number"));
-          return;
-        }
-      } else if (accountType === "natcash") {
-        if (!natcashAccountName.trim()) {
-          toast.error(t("errors.natcash_account_name"));
-          return;
-        }
-        if (!natcashNumber.trim()) {
-          toast.error(t("errors.natcash_number"));
-          return;
-        }
-        if (!/^\d{8}$/.test(natcashNumber.trim())) {
-          toast.error(t("errors.natcash_number_invalid"));
-          return;
-        }
-      } else if (accountType === "cash") {
-        if (!cashCollectorName.trim()) {
-          toast.error(t("errors.cash_collector_name"));
-          return;
-        }
-        if (!cashPhone.trim()) {
-          toast.error(t("errors.cash_phone"));
-          return;
-        }
-        if (!/^\d{8}$/.test(cashPhone.trim())) {
-          toast.error(t("errors.cash_phone_invalid"));
-          return;
-        }
-      } else {
-        if (!moncashAccountName.trim()) {
-          toast.error(t("errors.moncash_account_name"));
-          return;
-        }
-        if (!moncashNumber.trim()) {
-          toast.error(t("errors.moncash_number"));
-          return;
-        }
-        if (!/^\d{8}$/.test(moncashNumber.trim())) {
-          toast.error(t("errors.moncash_number_invalid"));
-          return;
-        }
-      }
-      go(currentStep + 1);
-      return;
-    }
-
-    if (step === "pin") {
-      if (!pin || pin.length !== 4) {
-        toast.error(t("errors.noPin"));
-        return;
-      }
-      if (!pinConfirmation || pinConfirmation.length !== 4) {
-        toast.error(t("errors.noPinConfirmation"));
-        return;
-      }
-      if (pin !== pinConfirmation) {
-        toast.error(t("errors.pinNotSame"));
-        setPinConfirmation("");
-        return;
-      }
-      await handleWithdrawal();
-      return;
-    }
-
-    go(currentStep + 1);
-  };
-
-  const prev = () => {
-    if (currentStep > 0) {
-      setPreviousStep(currentStep);
-      setCurrentStep((s) => s - 1);
-    }
-  };
-
-  const proceedLabel = isLastStep ? t("withdraw") : t("proceed");
-
-  /* ── Render ──────────────────────────────────────────────────── */
+  const money = (value: number, unit = currency) =>
+    `${formatMoney(value, locale)} ${unit}`;
 
   return (
-    <>
-      <PageLoader isLoading={isLoading} />
-      <div className="relative flex flex-col gap-6 h-full w-full overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center w-full justify-between gap-4 py-4">
-          {currentStep === 0 ? (
-            <>
-              <BackButton text={t("back")} />
-              <div className="hidden lg:flex flex-1 items-center justify-end">
-                <Stepper labels={stepLabels} current={currentStep} />
-              </div>
-            </>
-          ) : (
-            <>
-              <button
-                onClick={prev}
-                className="flex cursor-pointer items-center gap-3 shrink-0"
-              >
-                <div className="w-[35px] h-[35px] rounded-full bg-neutral-100 flex items-center justify-center">
-                  <ArrowLeft2 size="20" color="#0d0d0d" variant="Bulk" />
-                </div>
-                <span className="hidden sm:inline text-neutral-700 font-normal text-[1.4rem] leading-8">
-                  {t("back")}
-                </span>
-              </button>
-              <div className="hidden lg:flex flex-1 items-center justify-end">
-                <Stepper labels={stepLabels} current={currentStep} />
-              </div>
-            </>
-          )}
-        </div>
+    <div className="flex flex-col h-full gap-10 lg:gap-12">
+      <CreateHeader
+        title={ti("title")}
+        steps={[t("summary"), ti("method_step")]}
+        current={step}
+        onBack={() => (step === 0 ? router.push("/finance") : go(0))}
+      />
 
-        {/* Mobile pill dots */}
-        <div className="lg:hidden flex items-center justify-center gap-[6px] py-1">
-          {stepLabels.map((_, i) => (
-            <motion.div
-              key={i}
-              animate={{
-                backgroundColor: i <= currentStep ? "#e45b00" : "#f1f2f3",
-                width: i === currentStep ? 28 : 8,
-              }}
-              transition={{ duration: 0.3 }}
-              className="h-[8px] rounded-full"
-            />
-          ))}
-        </div>
-
-        {/* Steps */}
-        <div className="flex flex-col h-full overflow-y-auto overflow-x-hidden pb-44 lg:pb-44">
-          <AnimatePresence mode="wait" custom={delta}>
-            {/* ── Step 0: Summary ─────────────────────────────── */}
-            {step === "summary" && (
-              <motion.div
-                key="summary"
-                custom={delta}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={slideTransition}
-                className="flex flex-col gap-10"
-              >
-                <div className="flex flex-col border border-neutral-100 rounded-[14px] overflow-hidden gap-6 items-center w-full p-6 lg:w-212 mx-auto">
-                  <div className="py-10 flex flex-col items-center w-full gap-3 bg-neutral-100 rounded-[16px]">
-                    <span className="font-semibold text-[1.4rem] leading-8 text-neutral-600">
-                      {t("amounts.availableBalance")}
-                    </span>
-                    <p className="font-primary font-bold text-[4.5rem] leading-[50px] text-black">
-                      {availableBalance}
-                      <span className="text-neutral-400 text-[3rem]">
-                        {" "}
-                        {currency}
-                      </span>
-                    </p>
-                  </div>
-                  <span className="text-[1.3rem] leading-8 text-neutral-500 self-start">
-                    {t("breakdown")}
+      <div
+        className="flex-1 overflow-y-auto overflow-x-hidden pb-6"
+        onWheel={(e) => {
+          const el = e.target as HTMLInputElement;
+          if (el.type === "number" && document.activeElement === el) el.blur();
+        }}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          {step === 0 ? (
+            <StepPanel key="summary" stepKey="summary" direction={direction}>
+              <Section>
+                <motion.div
+                  initial={{ scale: 0.96, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 22 }}
+                  className="rounded-[1.5rem] bg-neutral-100 py-10 px-6 flex flex-col items-center gap-2"
+                >
+                  <span className="font-sans font-medium text-[1.5rem] text-deep-100">
+                    {ti("balance")}
                   </span>
-                  <div className="w-full flex flex-col gap-5">
-                    <div className="w-full flex items-center justify-between">
-                      <span className="text-[1.4rem] leading-8 text-neutral-500">
-                        {t("amounts.pendingBalance")}
-                      </span>
-                      <span className="text-[1.4rem] leading-8 font-medium text-deep-100">
-                        {currency === "HTG"
-                          ? organisation.pendingBalance
-                          : organisation.usdPendingBalance}{" "}
-                        <span className="text-neutral-400 text-[1.2rem]">
-                          {currency}
-                        </span>
-                      </span>
-                    </div>
-                    <div className="w-full flex items-center justify-between">
-                      <span className="text-[1.4rem] leading-8 text-neutral-500">
-                        {t("amounts.availableBalance")}
-                      </span>
-                      <span className="text-[1.4rem] leading-8 font-medium text-success">
-                        {availableBalance}{" "}
-                        <span className="text-neutral-400 text-[1.2rem]">
-                          {currency}
-                        </span>
-                      </span>
-                    </div>
-                  </div>
+                  <span className="font-primary font-medium text-[3.6rem] lg:text-[4.8rem] leading-[1.1] text-black text-center break-all">
+                    {formatMoney(figures.balance, locale)}{" "}
+                    <span className="text-neutral-400">{currency}</span>
+                  </span>
+                </motion.div>
+                <p className="text-center font-sans text-[1.3rem] text-neutral-500">
+                  {t("breakdown")}
+                </p>
+                <div className="flex flex-col gap-5 font-sans text-[1.4rem] leading-8">
+                  <BreakdownRow
+                    label={t("revenue")}
+                    value={money(figures.revenue)}
+                  />
+                  <BreakdownRow
+                    label={ti("platform_fees")}
+                    value={money(figures.fees)}
+                  />
+                  <div className="h-px bg-neutral-100" />
+                  <BreakdownRow
+                    label={t("profit")}
+                    value={money(figures.profit)}
+                    strong
+                  />
                 </div>
-                <div className="flex lg:w-212 mx-auto items-start gap-3 p-4 rounded-[12px] border border-amber-200 bg-amber-50 text-[1.3rem] leading-7 text-amber-800">
-                  <div className="shrink-0 mt-[2px]">
-                    <InfoCircle size="18" color="#b45309" />
-                  </div>
-                  <span>{t("pendingAlert")}</span>
-                </div>
-              </motion.div>
-            )}
-
-            {/* ── Step 1: Payment method ───────────────────────── */}
-            {step === "method" && (
-              <motion.div
-                key="payment-method"
-                custom={delta}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={slideTransition}
-                className="flex flex-col gap-8 lg:w-212 mx-auto w-full"
-              >
-                <div className="flex flex-col gap-2">
-                  <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
-                    {t("payment_method")}
-                  </h2>
-                  <p className="text-[1.4rem] leading-7 text-neutral-500">
-                    {t("payment_method_hint")}
+                {figures.pending > 0 && (
+                  <p className="flex items-start gap-3 text-[1.2rem] leading-6 text-neutral-600">
+                    <InfoCircle
+                      size="16"
+                      variant="Bulk"
+                      color="#737C8A"
+                      className="shrink-0 mt-[.1rem]"
+                    />
+                    {ti("pending_note", { amount: money(figures.pending) })}
                   </p>
-                </div>
-
-                <div className="flex flex-col gap-4">
-                  <MethodOption
+                )}
+              </Section>
+            </StepPanel>
+          ) : (
+            <StepPanel key="method" stepKey="method" direction={direction}>
+              <Section title={t("payment_method")}>
+                <div className="grid grid-cols-2 gap-3">
+                  <MethodTile
+                    active={method === "bank"}
+                    onClick={() => setMethod("bank")}
                     label={t("bank")}
-                    hint={t("bank_hint")}
-                    selected={accountType === "bank"}
-                    onSelect={() => setAccountType("bank")}
-                    icon={(active) => (
+                    icon={
+                      <Bank
+                        size="22"
+                        variant="Bulk"
+                        color={method === "bank" ? "#E45B00" : "#737C8A"}
+                      />
+                    }
+                  />
+                  <MethodTile
+                    active={method === "moncash"}
+                    onClick={() => setMethod("moncash")}
+                    label={t("moncash")}
+                    icon={
+                      <Image src={moncashIcon} alt="" width={26} height={26} />
+                    }
+                  />
+                  <MethodTile
+                    active={method === "natcash"}
+                    onClick={() => setMethod("natcash")}
+                    label={t("natcash")}
+                    icon={
+                      <Image
+                        src={natcashIcon}
+                        alt=""
+                        width={26}
+                        height={26}
+                        className="rounded-md"
+                      />
+                    }
+                  />
+                  <MethodTile
+                    active={method === "cash"}
+                    onClick={() => setMethod("cash")}
+                    label={t("cash")}
+                    icon={
                       <MoneyRecive
                         size="22"
-                        color={active ? "#e45b00" : "#737c8a"}
                         variant="Bulk"
+                        color={method === "cash" ? "#E45B00" : "#737C8A"}
                       />
-                    )}
-                  />
-
-                  <MethodOption
-                    label={t("moncash")}
-                    hint={t("moncash_hint")}
-                    selected={accountType === "moncash"}
-                    onSelect={() => setAccountType("moncash")}
-                    icon={() => (
-                      <Image src={moncashIcon} width={26} alt="MonCash" />
-                    )}
-                  />
-
-                  <MethodOption
-                    label={t("natcash")}
-                    hint={t("natcash_hint")}
-                    selected={accountType === "natcash"}
-                    onSelect={() => setAccountType("natcash")}
-                    icon={() => (
-                      <Image src={natcashIcon} width={26} alt="Natcash" />
-                    )}
-                  />
-
-                  {/* Cash. No account behind it — Ticketwaze hands the money
-                      over in person, so the icon is notes rather than a logo. */}
-                  <MethodOption
-                    label={t("cash")}
-                    hint={t("cash_hint")}
-                    selected={accountType === "cash"}
-                    onSelect={() => setAccountType("cash")}
-                    icon={(active) => (
-                      <Money
-                        size="22"
-                        color={active ? "#e45b00" : "#737c8a"}
-                        variant="Bulk"
-                      />
-                    )}
-                  />
-
-                  {/* Wise. Selectable only where the environment has
-                      credentials AND the method is switched on; otherwise it
-                      stays listed as coming soon rather than disappearing, so
-                      an organiser who used it before knows it is returning. */}
-                  <MethodOption
-                    label={t("wise")}
-                    hint={t("wise_hint")}
-                    selected={accountType === "wise"}
-                    onSelect={() => setAccountType("wise")}
-                    badge={wiseAvailable ? undefined : t("soon")}
-                    icon={() => <Image src={wiseIcon} width={26} alt="Wise" />}
+                    }
                   />
                 </div>
-              </motion.div>
-            )}
+              </Section>
 
-            {/* ── Step 2: Amount ───────────────────────────────── */}
-            {step === "amount" && (
-              <motion.div
-                key="amount"
-                custom={delta}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={slideTransition}
-                className="flex flex-col gap-8 lg:w-212 mx-auto w-full"
-              >
-                <div className="flex flex-col gap-2">
-                  <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
-                    {t("amount")}
-                  </h2>
-                  <p className="text-[1.4rem] leading-7 text-neutral-500">
-                    {t("amount_hint")}
-                  </p>
-                </div>
-
-                {/* Currency choice – bank only (MonCash is always HTG) */}
-                {accountType === "bank" && (
-                  <div className="flex gap-1 p-1 bg-neutral-100 rounded-[12px]">
-                    {(["HTG", "USD"] as const).map((curr) => (
-                      <motion.button
-                        key={curr}
-                        whileTap={{ scale: 0.96 }}
-                        onClick={() => setBankCurrency(curr)}
-                        animate={{
-                          backgroundColor:
-                            bankCurrency === curr ? "#e45b00" : "transparent",
-                          color: bankCurrency === curr ? "#ffffff" : "#8f96a1",
-                        }}
-                        transition={{ duration: 0.18 }}
-                        className="flex-1 py-[10px] rounded-[10px] text-[1.35rem] font-semibold"
-                      >
-                        {curr}
-                      </motion.button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Full available balance that will be withdrawn */}
-                <div className="flex flex-col items-center gap-2 py-10 rounded-[16px] bg-neutral-100">
-                  <span className="font-semibold text-[1.4rem] leading-8 text-neutral-600">
-                    {t("amounts.availableBalance")}
-                  </span>
-                  <p className="font-primary font-bold text-[4.5rem] leading-[50px] text-black">
-                    {activeCurrencyBalance}
-                    <span className="text-neutral-400 text-[3rem]">
-                      {" "}
-                      {activeCurrency}
-                    </span>
-                  </p>
-                </div>
-
-                <NoFeeNotice text={t("no_fee_note")} />
-
-                <div className="flex items-start gap-3 p-4 rounded-[12px] border border-amber-200 bg-amber-50 text-[1.3rem] leading-7 text-amber-800">
-                  <div className="shrink-0 mt-[2px]">
-                    <InfoCircle size="18" color="#b45309" />
-                  </div>
-                  <span>{t("withdraw_all_note")}</span>
-                </div>
-              </motion.div>
-            )}
-
-            {/* ── Step 3: Account details ──────────────────────── */}
-            {step === "details" && (
-              <motion.div
-                key="account-details"
-                custom={delta}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={slideTransition}
-                className="flex flex-col gap-8 lg:w-212 mx-auto w-full"
-              >
-                {accountType === "wise" ? (
-                  <>
-                    <div className="flex flex-col gap-2">
-                      <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
-                        {t("wise_details")}
-                      </h2>
-                      <p className="text-[1.4rem] leading-7 text-neutral-500">
-                        {t("wise_details_hint")}
-                      </p>
-                    </div>
-
-                    <div className="border border-neutral-100 rounded-[16px] p-6 flex flex-col gap-8">
-                      {/* Wisetag only. Wise's endpoint also takes an email or a
-                          phone number, but a Wisetag is the only identifier
-                          somebody picks deliberately for being paid. */}
-                      <div className="flex flex-col gap-2">
-                        <Input
-                          value={wiseRecipientValue}
-                          onChange={(e) => updateWiseIdentifier(e.target.value)}
-                          type="text"
-                          placeholder="@wisetag"
-                        >
-                          {t("wise_value_label")}
-                        </Input>
-                        <p className="flex items-center gap-[6px] text-[1.2rem] leading-5 text-neutral-400 px-1">
-                          <InfoCircle size="14" color="#9ca3af" />
-                          {t("wise_discoverable_hint")}
-                        </p>
-                      </div>
-
-                      {/* Verify. Resolving here rather than at submission means
-                          a typo is a corrected field, not a rejected request. */}
-                      <ButtonPrimary
-                        onClick={handleVerifyWise}
-                        disabled={
-                          isVerifyingWise ||
-                          !wiseRecipientValue.trim() ||
-                          Boolean(wiseResolvedName)
-                        }
-                        className="w-full"
-                      >
-                        {isVerifyingWise ? (
-                          <LoadingCircleSmall />
-                        ) : wiseResolvedName ? (
-                          t("wise_verified")
-                        ) : (
-                          t("wise_verify")
-                        )}
-                      </ButtonPrimary>
-                    </div>
-
-                    {/* The name Wise returned, and the organiser confirming it.
-                        This is the first of two human checkpoints — the admin
-                        sees the same name again before the money goes. Nothing
-                        in the code can catch an identifier that resolves to the
-                        wrong real person; only someone reading this can. */}
-                    {wiseResolvedName && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.22 }}
-                        className="flex flex-col gap-4"
-                      >
-                        <div className="flex flex-col gap-[6px] p-6 rounded-[16px] bg-neutral-100">
-                          <span className="text-[1.2rem] leading-5 text-neutral-500 uppercase font-medium tracking-wide">
-                            {t("wise_resolved_name_label")}
-                          </span>
-                          <span className="font-semibold text-[2rem] leading-8 text-deep-100 wrap-break-word">
-                            {wiseResolvedName}
-                          </span>
-                        </div>
-                        <motion.button
-                          whileTap={{ scale: 0.985 }}
-                          onClick={() => setWiseNameConfirmed((v) => !v)}
-                          className={`flex items-start gap-4 p-5 rounded-[14px] border-2 w-full text-left transition-colors duration-200 ${
-                            wiseNameConfirmed
-                              ? "border-primary-500 bg-primary-50"
-                              : "border-neutral-100 hover:border-neutral-200"
-                          }`}
-                        >
-                          <AnimatedCheckbox checked={wiseNameConfirmed} />
-                          <div className="flex flex-col gap-[4px]">
-                            <span className="font-semibold text-[1.4rem] leading-6 text-deep-100">
-                              {t("wise_confirm_name")}
+              <AnimatePresence mode="wait" initial={false}>
+                {method && (
+                  <motion.div
+                    key={method}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.25 }}
+                    className="flex flex-col gap-10"
+                  >
+                    <Section
+                      title={
+                        method === "bank"
+                          ? t("bank_details")
+                          : method === "moncash"
+                            ? t("moncash_details")
+                            : method === "natcash"
+                              ? t("natcash_details")
+                              : t("cash_details")
+                      }
+                    >
+                      {method === "bank" && (
+                        <>
+                          <Input
+                            value={bank.name}
+                            onChange={(e) =>
+                              setBank({ ...bank, name: e.target.value })
+                            }
+                          >
+                            {t("bank_name")}
+                          </Input>
+                          <Input
+                            value={bank.number}
+                            onChange={(e) =>
+                              setBank({ ...bank, number: e.target.value })
+                            }
+                          >
+                            {t("bank_account_number")}
+                          </Input>
+                          <Input
+                            value={bank.holder}
+                            onChange={(e) =>
+                              setBank({ ...bank, holder: e.target.value })
+                            }
+                          >
+                            {t("bank_account_name")}
+                          </Input>
+                          <div className="flex items-center justify-between gap-4 px-2">
+                            <span className="text-[1.4rem] text-deep-100">
+                              {ti("receive_in")}
                             </span>
-                            <span className="text-[1.2rem] leading-5 text-neutral-500">
-                              {t("wise_confirm_name_hint")}
-                            </span>
+                            <div className="flex bg-neutral-100 rounded-[3rem] p-[.5rem]">
+                              {(["HTG", "USD"] as const).map((c) => (
+                                <button
+                                  key={c}
+                                  type="button"
+                                  onClick={() => setBankCurrency(c)}
+                                  className={cn(
+                                    "relative px-5 py-1 rounded-[3rem] text-[1.4rem] cursor-pointer",
+                                    bankCurrency === c
+                                      ? "text-white"
+                                      : "text-neutral-700",
+                                  )}
+                                >
+                                  {bankCurrency === c && (
+                                    <motion.span
+                                      layoutId="bank-currency"
+                                      className="absolute inset-0 rounded-[3rem] bg-black"
+                                      transition={{
+                                        type: "spring",
+                                        stiffness: 500,
+                                        damping: 34,
+                                      }}
+                                    />
+                                  )}
+                                  <span className="relative">{c}</span>
+                                </button>
+                              ))}
+                            </div>
                           </div>
-                        </motion.button>
-                      </motion.div>
+                        </>
+                      )}
+                      {(method === "moncash" || method === "natcash") && (
+                        <>
+                          <Input
+                            value={
+                              method === "moncash"
+                                ? moncash.holder
+                                : natcash.holder
+                            }
+                            onChange={(e) =>
+                              method === "moncash"
+                                ? setMoncash({
+                                    ...moncash,
+                                    holder: e.target.value,
+                                  })
+                                : setNatcash({
+                                    ...natcash,
+                                    holder: e.target.value,
+                                  })
+                            }
+                          >
+                            {t(
+                              method === "moncash"
+                                ? "moncash_account_name"
+                                : "natcash_account_name",
+                            )}
+                          </Input>
+                          <Input
+                            inputMode="numeric"
+                            maxLength={8}
+                            value={
+                              method === "moncash"
+                                ? moncash.number
+                                : natcash.number
+                            }
+                            onChange={(e) => {
+                              const v = e.target.value
+                                .replace(/\D/g, "")
+                                .slice(0, 8);
+                              if (method === "moncash")
+                                setMoncash({ ...moncash, number: v });
+                              else setNatcash({ ...natcash, number: v });
+                            }}
+                          >
+                            {t(
+                              method === "moncash"
+                                ? "moncash_number"
+                                : "natcash_number",
+                            )}
+                          </Input>
+                        </>
+                      )}
+                      {method === "cash" && (
+                        <>
+                          <Input
+                            value={cash.holder}
+                            onChange={(e) =>
+                              setCash({ ...cash, holder: e.target.value })
+                            }
+                          >
+                            {t("cash_collector_name")}
+                          </Input>
+                          <Input
+                            inputMode="numeric"
+                            maxLength={8}
+                            value={cash.number}
+                            onChange={(e) =>
+                              setCash({
+                                ...cash,
+                                number: e.target.value
+                                  .replace(/\D/g, "")
+                                  .slice(0, 8),
+                              })
+                            }
+                          >
+                            {t("cash_phone")}
+                          </Input>
+                          <p className="text-[1.2rem] leading-6 text-neutral-600 px-2">
+                            {t("cash_handover_note")}
+                          </p>
+                        </>
+                      )}
+                      {method !== "cash" && (
+                        <label className="flex items-center justify-between gap-4 rounded-[1.2rem] bg-neutral-100 px-6 py-4 cursor-pointer">
+                          <span className="text-[1.4rem] text-deep-100">
+                            {ti("save_details")}
+                          </span>
+                          <span className="relative inline-block h-12 w-20 shrink-0 rounded-full bg-neutral-600 transition has-checked:bg-primary-500">
+                            <input
+                              type="checkbox"
+                              className="peer sr-only"
+                              checked={save[method]}
+                              onChange={() =>
+                                setSave({ ...save, [method]: !save[method] })
+                              }
+                            />
+                            <ToggleIcon />
+                          </span>
+                        </label>
+                      )}
+                      <p className="flex items-center gap-2 text-[1.3rem] text-neutral-600 px-2">
+                        <TickCircle size="16" variant="Bulk" color="#349C2E" />
+                        {money(payAmount, payCurrency)}
+                      </p>
+                    </Section>
+
+                    {hasPin && (
+                      <Section title={t("pin")} className="max-w-[30rem]">
+                        <PinBoxes
+                          value={pin}
+                          onChange={setPin}
+                          errorKey={pinError}
+                          label={t("pin")}
+                        />
+                      </Section>
                     )}
-
-                    {/* Approval is a real gate, not a formality — say so, so
-                        nobody expects the money to arrive the moment they
-                        finish this form. */}
-                    <div className="flex items-start gap-3 p-4 rounded-[12px] border border-neutral-200 bg-neutral-50 text-[1.3rem] leading-7 text-neutral-600">
-                      <div className="shrink-0 mt-[2px]">
-                        <InfoCircle size="18" color="#737c8a" />
-                      </div>
-                      <span>{t("wise_review_note")}</span>
-                    </div>
-                  </>
-                ) : accountType === "bank" ? (
-                  <>
-                    <div className="flex flex-col gap-2">
-                      <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
-                        {t("bank_details")}
-                      </h2>
-                      <p className="text-[1.4rem] leading-7 text-neutral-500">
-                        {t("bank_details_hint")}
-                      </p>
-                    </div>
-                    <div className="border border-neutral-100 rounded-[16px] p-6 flex flex-col gap-8">
-                      <Input
-                        value={bankName}
-                        onChange={(e) => setBankName(e.target.value)}
-                        type="text"
-                      >
-                        {t("bank_name")}
-                      </Input>
-                      <Input
-                        value={bankAccountName}
-                        onChange={(e) => setBankAccountName(e.target.value)}
-                        type="text"
-                      >
-                        {t("bank_account_name")}
-                      </Input>
-                      <Input
-                        value={bankAccountNumber}
-                        onChange={(e) => setBankAccountNumber(e.target.value)}
-                        type="text"
-                      >
-                        {t("bank_account_number")}
-                      </Input>
-                    </div>
-                    <motion.button
-                      whileTap={{ scale: 0.985 }}
-                      onClick={() => setSaveBankInfo((v) => !v)}
-                      className={`flex items-start gap-4 p-5 rounded-[14px] border-2 w-full text-left transition-colors duration-200 ${
-                        saveBankInfo
-                          ? "border-primary-500 bg-primary-50"
-                          : "border-neutral-100 hover:border-neutral-200"
-                      }`}
-                    >
-                      <AnimatedCheckbox checked={saveBankInfo} />
-                      <div className="flex flex-col gap-[4px]">
-                        <span className="font-semibold text-[1.4rem] leading-6 text-deep-100">
-                          {t("saveBankInfo")}
-                        </span>
-                        <span className="text-[1.2rem] leading-5 text-neutral-500">
-                          {t("saveBankInfo_hint")}
-                        </span>
-                      </div>
-                    </motion.button>
-                  </>
-                ) : accountType === "natcash" ? (
-                  <>
-                    <div className="flex flex-col gap-2">
-                      <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
-                        {t("natcash_details")}
-                      </h2>
-                      <p className="text-[1.4rem] leading-7 text-neutral-500">
-                        {t("natcash_details_hint")}
-                      </p>
-                    </div>
-                    <div className="border border-neutral-100 rounded-[16px] p-6 flex flex-col gap-8">
-                      <Input
-                        value={natcashAccountName}
-                        onChange={(e) => setNatcashAccountName(e.target.value)}
-                        type="text"
-                      >
-                        {t("natcash_account_name")}
-                      </Input>
-                      <div className="flex flex-col gap-2">
-                        <Input
-                          value={natcashNumber}
-                          onChange={(e) => {
-                            const val = e.target.value
-                              .replace(/\D/g, "")
-                              .slice(0, 8);
-                            setNatcashNumber(val);
-                          }}
-                          type="tel"
-                          inputMode="numeric"
-                          maxLength={8}
-                        >
-                          {t("natcash_number")}
-                        </Input>
-                        <p className="flex items-center gap-[6px] text-[1.2rem] leading-5 text-neutral-400 px-1">
-                          <InfoCircle size="14" color="#9ca3af" />
-                          {t("natcash_number_hint")}
-                        </p>
-                      </div>
-                    </div>
-                    <motion.button
-                      whileTap={{ scale: 0.985 }}
-                      onClick={() => setSaveNatcashInfo((v) => !v)}
-                      className={`flex items-start gap-4 p-5 rounded-[14px] border-2 w-full text-left transition-colors duration-200 ${
-                        saveNatcashInfo
-                          ? "border-primary-500 bg-primary-50"
-                          : "border-neutral-100 hover:border-neutral-200"
-                      }`}
-                    >
-                      <AnimatedCheckbox checked={saveNatcashInfo} />
-                      <div className="flex flex-col gap-[4px]">
-                        <span className="font-semibold text-[1.4rem] leading-6 text-deep-100">
-                          {t("saveNatcashInfo")}
-                        </span>
-                        <span className="text-[1.2rem] leading-5 text-neutral-500">
-                          {t("saveNatcashInfo_hint")}
-                        </span>
-                      </div>
-                    </motion.button>
-                  </>
-                ) : accountType === "cash" ? (
-                  <>
-                    <div className="flex flex-col gap-2">
-                      <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
-                        {t("cash_details")}
-                      </h2>
-                      <p className="text-[1.4rem] leading-7 text-neutral-500">
-                        {t("cash_details_hint")}
-                      </p>
-                    </div>
-                    <div className="border border-neutral-100 rounded-[16px] p-6 flex flex-col gap-8">
-                      <Input
-                        value={cashCollectorName}
-                        onChange={(e) => setCashCollectorName(e.target.value)}
-                        type="text"
-                      >
-                        {t("cash_collector_name")}
-                      </Input>
-                      <div className="flex flex-col gap-2">
-                        <Input
-                          value={cashPhone}
-                          onChange={(e) => {
-                            const val = e.target.value
-                              .replace(/\D/g, "")
-                              .slice(0, 8);
-                            setCashPhone(val);
-                          }}
-                          type="tel"
-                          inputMode="numeric"
-                          maxLength={8}
-                        >
-                          {t("cash_phone")}
-                        </Input>
-                        <p className="flex items-center gap-[6px] text-[1.2rem] leading-5 text-neutral-400 px-1">
-                          <InfoCircle size="14" color="#9ca3af" />
-                          {t("cash_phone_hint")}
-                        </p>
-                      </div>
-                    </div>
-                    {/* Nothing is saved for a cash payout, and nothing happens
-                        automatically either — somebody has to call. Said here
-                        so the organiser is not left watching for a transfer. */}
-                    <div className="flex items-start gap-3 p-4 rounded-[12px] border border-neutral-200 bg-neutral-50 text-[1.3rem] leading-7 text-neutral-600">
-                      <div className="shrink-0 mt-[2px]">
-                        <InfoCircle size="18" color="#737c8a" />
-                      </div>
-                      <span>{t("cash_handover_note")}</span>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="flex flex-col gap-2">
-                      <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
-                        {t("moncash_details")}
-                      </h2>
-                      <p className="text-[1.4rem] leading-7 text-neutral-500">
-                        {t("moncash_details_hint")}
-                      </p>
-                    </div>
-                    <div className="border border-neutral-100 rounded-[16px] p-6 flex flex-col gap-8">
-                      <Input
-                        value={moncashAccountName}
-                        onChange={(e) => setMoncashAccountName(e.target.value)}
-                        type="text"
-                      >
-                        {t("moncash_account_name")}
-                      </Input>
-                      <div className="flex flex-col gap-2">
-                        <Input
-                          value={moncashNumber}
-                          onChange={(e) => {
-                            const val = e.target.value
-                              .replace(/\D/g, "")
-                              .slice(0, 8);
-                            setMoncashNumber(val);
-                          }}
-                          type="tel"
-                          inputMode="numeric"
-                          maxLength={8}
-                        >
-                          {t("moncash_number")}
-                        </Input>
-                        <p className="flex items-center gap-[6px] text-[1.2rem] leading-5 text-neutral-400 px-1">
-                          <InfoCircle size="14" color="#9ca3af" />
-                          {t("moncash_number_hint")}
-                        </p>
-                      </div>
-                    </div>
-                    <motion.button
-                      whileTap={{ scale: 0.985 }}
-                      onClick={() => setSaveMoncashInfo((v) => !v)}
-                      className={`flex items-start gap-4 p-5 rounded-[14px] border-2 w-full text-left transition-colors duration-200 ${
-                        saveMoncashInfo
-                          ? "border-primary-500 bg-primary-50"
-                          : "border-neutral-100 hover:border-neutral-200"
-                      }`}
-                    >
-                      <AnimatedCheckbox checked={saveMoncashInfo} />
-                      <div className="flex flex-col gap-[4px]">
-                        <span className="font-semibold text-[1.4rem] leading-6 text-deep-100">
-                          {t("saveMoncashInfo")}
-                        </span>
-                        <span className="text-[1.2rem] leading-5 text-neutral-500">
-                          {t("saveMoncashInfo_hint")}
-                        </span>
-                      </div>
-                    </motion.button>
-                  </>
+                  </motion.div>
                 )}
-                {/* The notice normally lives on the amount step. A method that
-                    skips that step (Wise) would otherwise never show it, so it
-                    follows the step list rather than being written twice. */}
-                {!steps.includes("amount") && (
-                  <NoFeeNotice text={t("no_fee_note")} />
-                )}
-
-                <div className="flex items-start gap-3 p-4 rounded-[12px] border border-amber-200 bg-amber-50 text-[1.3rem] leading-7 text-amber-800">
-                  <div className="shrink-0 mt-[2px]">
-                    <InfoCircle size="18" color="#b45309" />
-                  </div>
-                  <span>{t("incorrectInfoWarning")}</span>
-                </div>
-              </motion.div>
-            )}
-
-            {/* ── Step 4: PIN ──────────────────────────────────── */}
-            {step === "pin" && (
-              <motion.div
-                key="pin"
-                custom={delta}
-                variants={slideVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={slideTransition}
-                className="flex flex-col gap-8 lg:w-212 mx-auto w-full"
-              >
-                <div className="flex flex-col gap-2">
-                  <h2 className="font-semibold text-[1.9rem] leading-[2.6rem] text-deep-100">
-                    {t("security")}
-                  </h2>
-                  <p className="text-[1.4rem] leading-7 text-neutral-500">
-                    {t("security_hint")}
-                  </p>
-                </div>
-
-                {/* Withdrawal summary */}
-                <div className="flex items-center justify-between p-5 rounded-[14px] bg-neutral-100">
-                  <div className="flex flex-col gap-[3px]">
-                    <span className="text-[1.2rem] text-neutral-500">
-                      {t("withdraw")}
-                    </span>
-                    <span className="font-bold text-[2rem] text-deep-100">
-                      {activeCurrencyBalance}{" "}
-                      <span className="text-neutral-400 font-normal text-[1.3rem]">
-                        {activeCurrency}
-                      </span>
-                    </span>
-                  </div>
-                  <div className="text-right flex flex-col gap-[2px]">
-                    <span className="text-[1.3rem] font-medium text-deep-100">
-                      {destination.name}
-                    </span>
-                    <span className="text-[1.2rem] text-neutral-400">
-                      {destination.number}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="border border-neutral-100 w-full rounded-[16px] p-8 flex flex-col gap-12">
-                  <div className="flex flex-col gap-6">
-                    <span className="font-semibold text-[1.5rem] leading-8 text-deep-100">
-                      {t("pin")}
-                    </span>
-                    <InputOTP
-                      onChange={setPin}
-                      value={pin}
-                      pattern={REGEXP_ONLY_DIGITS}
-                      maxLength={4}
-                    >
-                      <InputOTPGroup className="flex justify-between w-full">
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                  <div className="flex flex-col gap-6">
-                    <span className="font-semibold text-[1.5rem] leading-8 text-deep-100">
-                      {t("confirmPin")}
-                    </span>
-                    <InputOTP
-                      onChange={setPinConfirmation}
-                      value={pinConfirmation}
-                      pattern={REGEXP_ONLY_DIGITS}
-                      maxLength={4}
-                    >
-                      <InputOTPGroup className="flex justify-between w-full">
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                      </InputOTPGroup>
-                    </InputOTP>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Desktop proceed button */}
-        <div className="absolute bottom-0 z-[9999] w-full hidden lg:block">
-          <ButtonPrimary
-            onClick={next}
-            className="w-full max-w-[530px] mx-auto"
-            disabled={isLoading}
-          >
-            {isLoading ? <LoadingCircleSmall /> : proceedLabel}
-          </ButtonPrimary>
-        </div>
-
-        {/* Mobile proceed bar */}
-        <div className="fixed lg:hidden bottom-36 w-full px-8 z-50 left-0">
-          <div className="bg-white mx-auto border border-neutral-100 px-4 py-[5px] flex justify-between items-center rounded-[100px] shadow-sm">
-            <div className="text-[2rem] text-neutral-500 font-medium">
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={currentStep}
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 5 }}
-                  transition={{ duration: 0.15 }}
-                  className="text-primary-500 inline-block"
-                >
-                  {currentStep + 1}
-                </motion.span>
               </AnimatePresence>
-              <span className="text-neutral-300">/{stepLabels.length}</span>
-            </div>
-            <ButtonPrimary disabled={isLoading} onClick={next}>
-              {isLoading ? <LoadingCircleSmall /> : proceedLabel}
-            </ButtonPrimary>
-          </div>
-        </div>
+              {/* Room above the phone's pinned footer bar. */}
+              <div className="h-24 lg:hidden" />
+            </StepPanel>
+          )}
+        </AnimatePresence>
       </div>
-    </>
+
+      <CreateFooter
+        step={step}
+        total={2}
+        onBack={step === 1 ? () => go(0) : undefined}
+        onContinue={() => {
+          if (step === 0) {
+            if (figures.balance <= 0) {
+              toast.error(t("errors.insufficient"));
+              return;
+            }
+            go(1);
+            return;
+          }
+          if (!hasPin) {
+            if (detailsValid()) setPinModal(true);
+            return;
+          }
+          void withdraw();
+        }}
+        continueLabel={
+          step === 0 ? undefined : hasPin ? t("withdraw") : ti("create_pin")
+        }
+        disabled={step === 1 && hasPin && (!method || pin.length !== 4)}
+        loading={submitting}
+      />
+
+      <CreatePinDialog
+        open={pinModal}
+        onOpenChange={setPinModal}
+        organisationId={organisation.organisationId}
+        onCreated={() => {
+          setHasPin(true);
+          setPinModal(false);
+        }}
+      />
+    </div>
+  );
+}
+
+function BreakdownRow({
+  label,
+  value,
+  strong = false,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <span className="text-neutral-600">{label}</span>
+      <span
+        className={cn("text-deep-100 text-right", strong && "font-semibold")}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function MethodTile({
+  active,
+  onClick,
+  label,
+  icon,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  icon: React.ReactNode;
+}) {
+  return (
+    <motion.button
+      type="button"
+      whileTap={{ scale: 0.97 }}
+      onClick={onClick}
+      aria-pressed={active}
+      className={cn(
+        "relative flex items-center gap-3 rounded-[1.2rem] border-2 px-4 py-4 text-left cursor-pointer transition-colors",
+        active
+          ? "border-primary-500 bg-primary-50"
+          : "border-neutral-100 hover:border-neutral-200",
+      )}
+    >
+      <span className="w-[4rem] h-[4rem] shrink-0 rounded-[1rem] bg-white flex items-center justify-center">
+        {icon}
+      </span>
+      <span className="font-sans font-medium text-[1.4rem] leading-6 text-deep-100">
+        {label}
+      </span>
+      <motion.span
+        initial={false}
+        animate={{ scale: active ? 1 : 0, opacity: active ? 1 : 0 }}
+        transition={{ type: "spring", stiffness: 420, damping: 22 }}
+        className="absolute top-2 right-2 flex"
+      >
+        <TickCircle size="16" variant="Bold" color="#E45B00" />
+      </motion.span>
+    </motion.button>
   );
 }

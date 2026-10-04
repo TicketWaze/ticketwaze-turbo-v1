@@ -128,7 +128,15 @@ export function makeEditInPersonSchema(
             message: t("errors.ticketClass.quantity.decimal"),
           }),
         isFree: z.boolean(),
-      }),
+        salesStartAt: z.string().optional(),
+        salesEndAt: z.string().optional(),
+      }).refine(
+        (ticket) =>
+          !ticket.salesStartAt ||
+          !ticket.salesEndAt ||
+          ticket.salesEndAt > ticket.salesStartAt,
+        { message: t("errors.ticketClass.salesWindow"), path: ["salesEndAt"] },
+      ),
     ),
     eventCurrency: z.string(),
     isFree: z.boolean(),

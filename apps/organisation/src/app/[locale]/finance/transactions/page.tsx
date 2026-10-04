@@ -1,25 +1,23 @@
-import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import { auth } from "@/lib/auth";
-import { OrganisationOrders } from "@ticketwaze/typescript-config";
-import { getLocale, getTranslations } from "next-intl/server";
-import OrganisationPageWrapper from "./OrganisationPageWrapper";
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
+import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import BackButton from "@/components/shared/BackButton";
+import { Order } from "@ticketwaze/typescript-config";
+import { auth } from "@/lib/auth";
+import { getLocale, getTranslations } from "next-intl/server";
+import { TransactionsTable } from "../components/FinanceTables";
 
-export default async function OrganisationTransactions({
-  searchParams,
-}: {
-  searchParams: Promise<{ page: string | undefined }>;
-}) {
+/**
+ * Every transaction (Figma 1754:39485): the same table as the overview, 15 a
+ * page, with the filter and search over all of them.
+ */
+export default async function TransactionsPage() {
   const t = await getTranslations("Finance");
   const locale = await getLocale();
   const session = await auth();
-  const { page } = await searchParams;
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/orders?limit=15&page=${page ?? 1}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/transactions`,
     {
-      method: "GET",
       headers: {
         "Content-Type": "application/json",
         "Accept-Language": locale,
@@ -28,22 +26,24 @@ export default async function OrganisationTransactions({
       },
     },
   );
-  if (request.status === 403) {
-    return <UnauthorizedView />;
-  }
+  if (request.status === 403) return <UnauthorizedView />;
   const response = await request.json().catch(() => null);
-  if (!request.ok || !response?.orders) {
+  if (!request.ok || !response?.allOrders) {
     return (
       <OrganizerLayout title="">
         <FetchFailedErrorView />
       </OrganizerLayout>
     );
   }
-  const organisationOrders: OrganisationOrders = await response.orders;
+  const orders: Order[] = response.allOrders.filter((o: Order) =>
+    Boolean(o.activity),
+  );
   return (
     <OrganizerLayout title="">
-      <BackButton text={t("back")} />
-      <OrganisationPageWrapper organisationOrders={organisationOrders} />
+      <div className="flex flex-col gap-8 pb-16 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+        <BackButton text={t("back")} />
+        <TransactionsTable orders={orders} pageSize={15} titleAs="h1" />
+      </div>
     </OrganizerLayout>
   );
 }

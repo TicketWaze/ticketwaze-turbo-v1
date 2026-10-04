@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import TrackActivityView from "@/components/activity/TrackActivityView";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import Image from "next/image";
 import EventActions from "./EventActions";
@@ -159,6 +160,7 @@ export default async function EventPage({
   if (event.eventType === "private") {
     return (
       <AttendeeLayout title={event.eventName}>
+        <TrackActivityView activityId={event.eventId} />
         <AnimatedEventPage>
           <BackButton text={t("back")} />
           <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">
@@ -496,6 +498,7 @@ export default async function EventPage({
 
   return (
     <AttendeeLayout title={event.eventName}>
+      <TrackActivityView activityId={event.eventId} />
       <JsonLd data={eventJsonLd} />
       <JsonLd data={breadcrumbJsonLd} />
       <AnimatedEventPage>
@@ -605,6 +608,8 @@ function Separator() {
  */
 function OnlinePlatform({ provider }: { provider: string | null | undefined }) {
   const isZoom = provider === "zoom";
+  // An organiser's own link: we only know it is online, not which tool.
+  const isCustom = provider === "custom";
   return (
     <div className={"flex items-center gap-2 "}>
       <div
@@ -614,6 +619,8 @@ function OnlinePlatform({ provider }: { provider: string | null | undefined }) {
       >
         {isZoom ? (
           <Video size="20" color="#737c8a" variant="Bulk" />
+        ) : isCustom ? (
+          <Global size="20" color="#737c8a" variant="Bulk" />
         ) : (
           <Google size="20" color="#737c8a" variant="Bulk" />
         )}
@@ -623,7 +630,7 @@ function OnlinePlatform({ provider }: { provider: string | null | undefined }) {
           "font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]"
         }
       >
-        {isZoom ? "Zoom" : "Meet, Google"}
+        {isZoom ? "Zoom" : isCustom ? "Online" : "Meet, Google"}
       </span>
     </div>
   );

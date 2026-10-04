@@ -10,12 +10,6 @@ import {
   UseFormGetValues,
   useWatch,
 } from "react-hook-form";
-
-// The counter has to promise the limit the input actually enforces, so the
-// `maxLength` attribute and the counter's denominator read from one constant.
-// The minimum mirrors the schema's `eventName: z.string().min(10)`.
-const NAME_MIN_CHARS = 10;
-const NAME_MAX_CHARS = 50;
 import Image from "next/image";
 import {
   Select,
@@ -35,6 +29,15 @@ import RichTextEditor from "@/components/shared/RichTextEditor";
 import LocationPicker from "@/lib/LocationPicker";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import ToggleIcon from "@/components/shared/ToggleIcon";
+import { Section } from "@/components/create/CreateParts";
+
+// The counter promises the limit the input enforces; the minimum mirrors the
+// schema's `eventName: z.string().min(10)`.
+const NAME_MIN_CHARS = 10;
+const NAME_MAX_CHARS = 50;
+
+const selectTriggerClass =
+  "bg-neutral-100 w-full rounded-[5rem] data-[size=default]:h-[6rem] shadow-none focus-visible:ring-0 focus-visible:border-primary-500 px-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus:border-primary-500 data-[placeholder]:text-neutral-600";
 
 type Props = {
   register: UseFormRegister<CreateInPersonFormValues>;
@@ -42,19 +45,25 @@ type Props = {
   errors: any;
   imagePreview: string | null;
   handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  // mapContainerRef: React.RefObject<HTMLDivElement | null>;
   setValue: UseFormSetValue<CreateInPersonFormValues>;
   getValues: UseFormGetValues<CreateInPersonFormValues>;
   isPrivate: boolean;
   setIsPrivate: React.Dispatch<React.SetStateAction<boolean>>;
   nameStatus: EventNameAvailability;
   /**
-   * Set when publishing a teaser. The teaser was announced under this name and
-   * may already have followers and reservations attached to it, so it is shown
-   * but not editable — and there is nothing to check availability against,
-   * since the name is this row's own.
+   * Set when publishing a teaser: it was announced under this name, so it is
+   * shown but not editable, and there is nothing to check availability against.
    */
   nameLocked?: boolean;
+  /** Rendered first — the unified create page's Physical/Virtual select. */
+  topSlot?: React.ReactNode;
+  /** The event's category (Concert, Festival…), chosen here since Figma. */
+  category?: string;
+  onCategoryChange?: (value: string) => void;
+  categories?: readonly string[];
+  categoryError?: string;
+  /** The pin the map opens on (the edit form's stored location). */
+  initialLocation?: { lat: number; lng: number };
 };
 
 export default function BasicDetails({
@@ -63,15 +72,21 @@ export default function BasicDetails({
   errors,
   imagePreview,
   handleFileChange,
-  // mapContainerRef,
   setValue,
   getValues,
   isPrivate,
   setIsPrivate,
   nameStatus,
   nameLocked = false,
+  topSlot,
+  category,
+  onCategoryChange,
+  categories,
+  categoryError,
+  initialLocation,
 }: Props) {
   const t = useTranslations("Events.create_event");
+  const tCategory = useTranslations("Events.create_event.list.inPerson");
   const availableCountries = countries.map((country) => country.name);
   const [selectedCountry, setSelectedCountry] = useState<string>(
     getValues("country") ?? "",
@@ -79,112 +94,52 @@ export default function BasicDetails({
   const [selectedState, setSelectedState] = useState<string>(
     getValues("state") ?? "",
   );
-
   const availableStates =
     countries.find((c) => c.name === selectedCountry)?.state ?? [];
   const availableCities =
     availableStates.find((s) => s.name === selectedState)?.cities ?? [];
 
-  // `register` leaves the name input uncontrolled, so its length is read back
-  // through the form rather than from component state.
+  // `register` leaves the name input uncontrolled; read its length back.
   const nameLength = (useWatch({ control, name: "eventName" }) ?? "").length;
 
-  // tags handler
+  // Tags
   const [tags, setTags] = useState<string[]>(getValues("activityTags"));
   const [input, setInput] = useState<string>("");
-
   const addTag = (): void => {
     const tag = input.trim().replace("#", "").toLowerCase();
-
-    if (!tag) return;
-    if (tags.includes(tag)) return;
-
+    if (!tag || tags.includes(tag)) return;
     setTags((prev) => [...prev, tag]);
     setValue("activityTags", [...tags, tag]);
     setInput("");
   };
-
+  const removeTag = (tag: string) => {
+    const next = tags.filter((t) => t !== tag);
+    setTags(next);
+    setValue("activityTags", next);
+  };
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>): void => {
-    // Create tag
     if (["Enter", ",", " "].includes(e.key)) {
       e.preventDefault();
       addTag();
     }
-
-    // Backspace editing
     if (e.key === "Backspace" && input === "" && tags.length > 0) {
       e.preventDefault();
-
       const lastTag = tags[tags.length - 1];
-
       setTags((prev) => prev.slice(0, prev.length - 1));
       setValue("activityTags", tags.slice(0, tags.length - 1));
       setInput(lastTag);
     }
   };
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>): void =>
     setInput(e.target.value);
-  };
   const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="flex flex-col gap-12">
-      {/* image */}
-      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
-          {t("thumbnail")}
-        </span>
+      {topSlot}
 
-        {imagePreview ? (
-          <div className="relative w-full h-120">
-            <img
-              src={imagePreview}
-              alt="Preview"
-              className="w-full h-120 object-cover object-top rounded-2xl"
-            />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
-            />
-          </div>
-        ) : (
-          <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
-            <div className="flex flex-col items-center gap-4 ">
-              <div className="flex flex-col gap-4 items-center">
-                <Image
-                  src={UploadDocument}
-                  alt="upload"
-                  width={24}
-                  height={24}
-                />
-                <p className="text-[1.5rem] leading-6 text-neutral-500 ">
-                  {t("thumbnail_text")}{" "}
-                  <span className="font-medium text-primary-500">
-                    {t("browse")}
-                  </span>
-                </p>
-              </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
-              />
-            </div>
-          </div>
-        )}
-
-        <span className="text-[1.2rem] px-8 py-2 text-failure">
-          {errors.eventImage?.message}
-        </span>
-      </div>
       {/* Event details */}
-      <div className="p-6 max-w-216 w-full mx-auto rounded-[15px] flex flex-col gap-6 border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
-          {t("event_details")}
-        </span>
+      <Section id="about" title={t("event_details")}>
         <Input
           {...register("eventName")}
           type="text"
@@ -199,8 +154,8 @@ export default function BasicDetails({
             (!nameLocked && nameStatus === "unknown"
               ? t("errors.basicDetails.nameCheckFailed")
               : !nameLocked && nameStatus === "taken"
-              ? t("errors.basicDetails.nameTaken")
-              : undefined)
+                ? t("errors.basicDetails.nameTaken")
+                : undefined)
           }
           trailing={
             nameLocked ? null : nameStatus === "checking" ? (
@@ -210,8 +165,7 @@ export default function BasicDetails({
             ) : nameStatus === "taken" ? (
               <CloseCircle size="20" color="#DE0028" variant="Bulk" />
             ) : nameStatus === "unknown" ? (
-              // Not a tick and not a cross: the name was never actually
-              // checked, and pretending either way is what hid this bug.
+              // Never actually checked; neither a tick nor a cross.
               <Warning2 size="20" color="#E45B00" variant="Bulk" />
             ) : null
           }
@@ -222,6 +176,34 @@ export default function BasicDetails({
           <span className="text-[1.2rem] px-8 leading-7 text-neutral-600">
             {t("publish_name_locked")}
           </span>
+        )}
+        {categories && onCategoryChange && (
+          <div>
+            <Select
+              value={category || undefined}
+              onValueChange={onCategoryChange}
+            >
+              <SelectTrigger className={selectTriggerClass}>
+                <SelectValue placeholder={t("category_placeholder")} />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((c) => (
+                  <SelectItem
+                    key={c}
+                    value={c}
+                    className="text-[1.4rem] text-deep-100"
+                  >
+                    {tCategory(`categories.${c}.title`)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {categoryError && (
+              <span className="text-[1.2rem] px-8 py-2 text-failure">
+                {categoryError}
+              </span>
+            )}
+          </div>
         )}
         <Controller
           control={control}
@@ -235,15 +217,15 @@ export default function BasicDetails({
             />
           )}
         />
-      </div>
+      </Section>
 
-      {/* mark as private */}
-      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
-        <div className="flex items-center justify-between">
-          <p className="text-[1.6rem] leading-8 text-deep-100 max-w-152">
+      {/* Private */}
+      <Section>
+        <div className="flex items-center justify-between gap-6">
+          <p className="text-[1.6rem] leading-8 text-deep-100">
             {t("mark_as_private")}
           </p>
-          <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 has-disabled:cursor-not-allowed">
+          <label className="relative inline-block h-12 w-20 shrink-0 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500 has-disabled:cursor-not-allowed">
             <input
               className="peer sr-only"
               id="private-event"
@@ -257,13 +239,58 @@ export default function BasicDetails({
         <p className="text-[1.2rem] leading-8 text-neutral-800">
           {t("private_tip")}
         </p>
-      </div>
+      </Section>
 
-      {/* location */}
-      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
-          {t("location")}
-        </span>
+      {/* Tags */}
+      <Section title={t("event_tags")}>
+        <div
+          className="flex flex-wrap items-center gap-2 bg-neutral-100 w-full rounded-[5rem] min-h-[6rem] px-8 py-3 text-[1.5rem] leading-8 text-deep-200 border border-transparent focus-within:border-primary-500 cursor-text"
+          onClick={() => inputRef.current?.focus()}
+        >
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="flex items-center gap-2 bg-white border border-neutral-200 pl-4 pr-2 py-1 text-neutral-700 rounded-full text-[1.2rem] whitespace-nowrap"
+            >
+              {tag}
+              <button
+                type="button"
+                aria-label={`Remove ${tag}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeTag(tag);
+                }}
+                className="flex cursor-pointer"
+              >
+                <CloseCircle size="14" variant="Bulk" color="#737C8A" />
+              </button>
+            </span>
+          ))}
+          <input
+            ref={inputRef}
+            value={input}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            onBlur={addTag}
+            placeholder={tags.length === 0 ? t("tagPlaceholder") : undefined}
+            className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
+          />
+        </div>
+        {errors.activityTags && (
+          <span className="text-[1.2rem] px-8 text-failure">
+            {errors.activityTags?.message}
+          </span>
+        )}
+        <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+          <Warning2 size="24" color="#737C8A" variant="Bulk" />
+          <p className="text-[1.2rem] leading-8 text-neutral-800">
+            {t("tagTip.description")}
+          </p>
+        </div>
+      </Section>
+
+      {/* Location */}
+      <Section title={t("location")}>
         <Input
           {...register("address")}
           type="text"
@@ -287,21 +314,19 @@ export default function BasicDetails({
                   setValue("city", "");
                 }}
               >
-                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
+                <SelectTrigger className={selectTriggerClass}>
                   <SelectValue placeholder={t("country")} />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableCountries.map((country) => {
-                    return (
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        key={country}
-                        value={country}
-                      >
-                        {country}
-                      </SelectItem>
-                    );
-                  })}
+                  {availableCountries.map((country) => (
+                    <SelectItem
+                      className="text-[1.4rem] text-deep-100"
+                      key={country}
+                      value={country}
+                    >
+                      {country}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             )}
@@ -312,7 +337,41 @@ export default function BasicDetails({
             </span>
           )}
         </div>
-        <div className="flex flex-col lg:flex-row w-full gap-6 items-center justify-between">
+        <div className="flex flex-col lg:flex-row w-full gap-6">
+          <div className="flex-1 w-full">
+            <Controller
+              control={control}
+              name="city"
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={!selectedState}
+                >
+                  <SelectTrigger className={selectTriggerClass}>
+                    <SelectValue placeholder={t("city")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableCities.map((city, i) => (
+                      <SelectItem
+                        className="text-[1.4rem] text-deep-100"
+                        key={i}
+                        value={city}
+                      >
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.city && (
+              <span className="text-[1.2rem] px-8 py-2 text-failure">
+                {errors.city?.message}
+              </span>
+            )}
+          </div>
           <div className="flex-1 w-full">
             <Controller
               control={control}
@@ -328,21 +387,19 @@ export default function BasicDetails({
                   }}
                   disabled={!selectedCountry}
                 >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
+                  <SelectTrigger className={selectTriggerClass}>
                     <SelectValue placeholder={t("state")} />
                   </SelectTrigger>
                   <SelectContent>
-                    {availableStates.map((state, i) => {
-                      return (
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          key={i}
-                          value={state.name}
-                        >
-                          {state.name}
-                        </SelectItem>
-                      );
-                    })}
+                    {availableStates.map((state, i) => (
+                      <SelectItem
+                        className="text-[1.4rem] text-deep-100"
+                        key={i}
+                        value={state.name}
+                      >
+                        {state.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               )}
@@ -353,101 +410,60 @@ export default function BasicDetails({
               </span>
             )}
           </div>
-          <div className="flex-1 w-full">
-            <Controller
-              control={control}
-              name="city"
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  disabled={!selectedState}
-                >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
-                    <SelectValue placeholder={t("city")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableCities.map((city, i) => {
-                      return (
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          key={i}
-                          value={city}
-                        >
-                          {city}
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.city && (
-              <span className="text-[1.2rem] px-8 py-2 text-failure">
-                {errors.city?.message}
-              </span>
-            )}
-          </div>
         </div>
         <div>
           <LocationPicker
+            initialValue={initialLocation}
             onLocationSelect={(location) => setValue("location", location!)}
           />
           <span className="text-[1.2rem] px-8 py-2 text-failure">
             {errors.location?.lat?.message}
           </span>
         </div>
-      </div>
+      </Section>
 
-      {/* tags */}
-      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
-          {t("event_tags")}
-        </span>
-        <div className="w-full">
-          <div
-            className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
-            onClick={() => inputRef.current?.focus()}
-          >
-            {tags.map((tag) => (
-              <div
-                key={tag}
-                className="flex items-center gap-1 bg-primary-100/50 px-2 text-primary-500 rounded-full text-[1.4rem] whitespace-nowrap"
-              >
-                #{tag}
-              </div>
-            ))}
-
+      {/* Thumbnail — last, as a wide banner, like the design */}
+      <Section id="thumbnail" title={t("thumbnail")}>
+        {imagePreview ? (
+          <div className="relative w-full h-[18rem] rounded-[1rem] overflow-hidden group">
+            <img
+              src={imagePreview}
+              alt="Preview"
+              className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
+            />
             <input
-              ref={inputRef}
-              value={input}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              onBlur={addTag}
-              placeholder={t("tagPlaceholder")}
-              className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="absolute inset-0 z-10 opacity-0 cursor-pointer"
             />
           </div>
-        </div>
-        {errors.activityTags && (
-          <span className={"text-[1.2rem] px-8 text-failure"}>
-            {errors.activityTags?.message}
+        ) : (
+          <div className="py-20 px-[1.4rem] rounded-[.75rem] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] hover:bg-primary-50/40 transition-colors flex items-center justify-center relative">
+            <div className="flex flex-col gap-4 items-center">
+              <Image src={UploadDocument} alt="" width={24} height={24} />
+              <p className="text-[1.4rem] leading-6 text-neutral-500 text-center">
+                {t("thumbnail_text")}{" "}
+                <span className="font-medium text-primary-500">
+                  {t("browse")}
+                </span>
+              </p>
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="absolute inset-0 z-10 opacity-0 cursor-pointer"
+            />
+          </div>
+        )}
+        {errors.eventImage?.message && (
+          <span className="text-[1.2rem] px-8 py-2 text-failure">
+            {errors.eventImage?.message}
           </span>
         )}
-        <div className="flex flex-col items-start gap-4 border p-4 rounded-2xl border-neutral-300">
-          <Warning2 size="24" color="#737C8A" variant="Bulk" />
-          <div>
-            <p className="text-[1.2rem] leading-8 text-neutral-800">
-              {t("tagTip.description")}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div></div>
-      <div></div>
-      <div></div>
+      </Section>
+      <div className="h-24 lg:hidden" />
     </div>
   );
 }

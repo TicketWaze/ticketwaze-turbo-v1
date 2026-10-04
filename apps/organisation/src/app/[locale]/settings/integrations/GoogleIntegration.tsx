@@ -179,13 +179,13 @@ export default function GoogleIntegration({
   return (
     <div className="flex flex-col gap-8">
       <PageLoader isLoading={isLoading} />
-      <div className="rounded-[10px] bg-neutral-100 p-8 flex flex-col gap-8">
+      <div className="rounded-[1.5rem] border border-neutral-100 bg-white p-6 lg:p-8 flex flex-col gap-8 transition-shadow hover:shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
         <div className="flex items-center gap-6">
-          <div className="w-[70px] h-[70px] rounded-full flex items-center justify-center bg-neutral-200 shrink-0">
+          <div className="w-[5.6rem] h-[5.6rem] rounded-[1.4rem] flex items-center justify-center bg-neutral-100 shrink-0">
             <Google size="30" color="#0d0d0d" variant="Bulk" />
           </div>
           <div className="flex flex-col gap-1">
-            <span className="font-primary font-medium text-[2.2rem] leading-12 text-neutral-900">
+            <span className="font-primary font-medium text-[1.8rem] leading-10 text-deep-100">
               {t("title")}
             </span>
             <span className="font-sans text-[1.4rem] leading-8 text-neutral-600">

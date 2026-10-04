@@ -1,24 +1,50 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import AnalyticsPageTopbar from "./AnalyticsPageTopbar";
 import { auth } from "@/lib/auth";
 import { getLocale, getTranslations } from "next-intl/server";
-import DailyTicketSalesChart from "./DailyTicketSalesChart";
-import BarChart from "./BarChart";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { redirect } from "next/navigation";
 import { Crown, InfoCircle } from "iconsax-reactjs";
 import ProFeatureAlert from "@/components/Layouts/ProFeatureAlert";
 import { LinkPrimary } from "@/components/shared/Links";
-import Separator from "@/components/shared/Separator";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
+import { cn } from "@/lib/utils";
 import TicketClassesChart from "./TicketClassesChart";
 import RevenueTicketsChart from "./RevenueTicketsChart";
 import DonutChart from "./DonutChart";
 import StarRatingChart from "./StarRatingChart";
-import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
+import SalesLineChart from "./SalesLineChart";
+import AnalyticsFilters from "./AnalyticsFilters";
+import { PERIODS, type Period } from "./periods";
+import { Reveal } from "@/components/shared/motion";
+import {
+  BarList,
+  Metric,
+  PanelTitle,
+  SectionTitle,
+  TrendBadge,
+  Unit,
+} from "./parts";
 
-export default async function AnalyticsPage() {
+function UpgradeButton({ label }: { label: string }) {
+  return (
+    <div className="w-fit p-[.2rem] rounded-[30px] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
+      <LinkPrimary
+        className="bg-transparent gap-4 py-2 items-center"
+        href="/settings/subscriptions/upgrade"
+      >
+        <Crown size="24" color="#fff" variant="Bulk" />
+        <span>{label}</span>
+      </LinkPrimary>
+    </div>
+  );
+}
+
+export default async function AnalyticsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ eventId?: string; period?: string }>;
+}) {
   const session = await auth();
-  const currentOrganisation = session?.activeOrganisation;
   const currentOrganisationId = session?.activeOrganisation?.organisationId;
   if (!session?.user) {
     redirect(`/auth/login`);
@@ -30,10 +56,17 @@ export default async function AnalyticsPage() {
   const t = await getTranslations("Analytics");
   const locale = await getLocale();
 
+  const params = await searchParams;
+  const period: Period = PERIODS.includes(params.period as Period)
+    ? (params.period as Period)
+    : "month";
+  const query = new URLSearchParams({ period });
+  if (params.eventId) query.set("eventId", params.eventId);
+
   let request: Response;
   try {
     request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${currentOrganisationId}/analytics`,
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${currentOrganisationId}/analytics?${query}`,
       {
         method: "GET",
         headers: {
@@ -54,8 +87,13 @@ export default async function AnalyticsPage() {
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
+  // A stale link to an activity that is gone (or belongs to another
+  // organisation) falls back to every activity rather than an error page.
+  if (request.status === 404 && params.eventId) {
+    redirect(period === "month" ? "/analytics" : `/analytics?period=${period}`);
+  }
   const analytics = await request.json().catch(() => null);
-  // On error/404 the API returns an error object without the analytics keys.
+  // On error the API returns an error object without the analytics keys.
   // Guard the shape so the server render doesn't crash on undefined access.
   if (!request.ok || !analytics?.membershipTier) {
     return (
@@ -65,35 +103,64 @@ export default async function AnalyticsPage() {
     );
   }
 
-  /* ── Derived data for new sections ── */
   const isFree = analytics.membershipTier?.membershipName === "free";
+  const eventId: string | null = analytics.filters?.eventId ?? null;
 
-  const genderItems = Object.entries(
-    (analytics.genderPercentages ?? {}) as Record<string, number>,
-  ).map(([key, value]) => {
-    const colorMap: Record<string, string> = {
-      male: "#60A5FA",
-      female: "#F472B6",
-      other: "#A78BFA",
-      others: "#A78BFA",
-    };
-    return {
-      label: key.charAt(0).toUpperCase() + key.slice(1),
-      value,
-      color: colorMap[key.toLowerCase()] ?? "#D1D5DB",
-    };
-  });
+  const num = (value: number, digits = 0) =>
+    Number(value ?? 0).toLocaleString(locale, {
+      minimumFractionDigits: digits,
+      maximumFractionDigits: digits,
+    });
+  // Figma's empty state reads "0 HTG", not "0.00 HTG".
+  const money = (value: number) => (Number(value) ? num(value, 2) : "0");
+  const trendLabel = (value: number | null | undefined) =>
+    value === null || value === undefined
+      ? ""
+      : t(value < 0 ? "trend.down" : "trend.up", { value: Math.abs(value) });
 
+  /* ── Demographics ── */
+  const gender = analytics.genderPercentages ?? {};
+  const hasSales = analytics.totalTicketsSold > 0;
+  const genderRows = [
+    { key: "male", value: gender.male ?? 0 },
+    { key: "female", value: gender.female ?? 0 },
+    { key: "others", value: (gender.other ?? 0) + (gender.others ?? 0) },
+  ].map(({ key, value }) => ({
+    label: t(`event.event_demographics.gender_distribution.gender.${key}`),
+    value,
+    display: hasSales ? `${Math.round(value)}%` : "0",
+  }));
+
+  const topEvents = (
+    (analytics.topEvents ?? []) as Array<{
+      eventName: string;
+      percentage: string;
+    }>
+  ).slice(0, 3);
+  const topEventRows =
+    topEvents.length > 0
+      ? topEvents.map((e) => ({
+          label: e.eventName,
+          value: parseFloat(e.percentage) || 0,
+          display: e.percentage,
+        }))
+      : Array.from({ length: 3 }, () => ({
+          label: "–",
+          value: 0,
+          display: "0",
+        }));
+
+  /* ── More insights ── */
   const guestVsRegisteredItems = [
     {
       label: t("audience.guest"),
       value: analytics.guestVsRegistered?.guest?.count ?? 0,
-      color: "#FBBF24",
+      color: "#FFCFAB",
     },
     {
       label: t("audience.registered"),
       value: analytics.guestVsRegistered?.registered?.count ?? 0,
-      color: "#34D399",
+      color: "#E45B00",
     },
   ];
 
@@ -106,7 +173,6 @@ export default async function AnalyticsPage() {
       analytics.paymentProviders as Array<{
         provider: string;
         count: number;
-        percentage: number;
       }>
     )?.map((p, i) => ({
       label: p.provider.charAt(0).toUpperCase() + p.provider.slice(1),
@@ -116,262 +182,160 @@ export default async function AnalyticsPage() {
         `hsl(${(i * 67) % 360}, 65%, 55%)`,
     })) ?? [];
 
-  const topEventsByTicketsItems =
-    (
-      analytics.topEvents as Array<{
-        eventName: string;
-        ticketsSold: number;
-        revenue: number;
-        percentage: string;
-      }>
-    )
-      ?.slice(0, 5)
-      .map((e) => ({
-        label: e.eventName,
-        value: e.percentage,
-      })) ?? [];
-
   const topEventsByViewsArr =
     (analytics.topEventsByViews as Array<{
       eventName: string;
       viewCount: number;
     }>) ?? [];
-  const totalViews = topEventsByViewsArr.reduce(
-    (sum, e) => sum + e.viewCount,
-    0,
-  );
-  const topEventsByViewsItems = topEventsByViewsArr.slice(0, 5).map((e) => ({
-    label: e.eventName,
-    value: totalViews > 0 ? ((e.viewCount / totalViews) * 100).toFixed(1) : "0",
-  }));
+  const totalViews = topEventsByViewsArr.reduce((s, e) => s + e.viewCount, 0);
+  const topEventsByViewsRows = topEventsByViewsArr.slice(0, 5).map((e) => {
+    const share = totalViews > 0 ? (e.viewCount / totalViews) * 100 : 0;
+    return {
+      label: e.eventName,
+      value: share,
+      display: `${Math.round(share)}%`,
+    };
+  });
+
+  // 2×2 on mobile (dividers between columns and rows), one row of four on desktop.
+  const kpiTiles = [
+    "max-lg:pr-6 max-lg:pb-8 max-lg:border-r lg:pr-[2.5rem] lg:pb-10",
+    "max-lg:pl-6 max-lg:pb-8 lg:px-[2.5rem] lg:pb-10",
+    "max-lg:pr-6 max-lg:pt-8 max-lg:border-r max-lg:border-t lg:px-[2.5rem] lg:pb-10",
+    "max-lg:pl-6 max-lg:pt-8 max-lg:border-t lg:pl-[2.5rem] lg:pb-10",
+  ].map((c) => cn(c, "border-neutral-100"));
 
   return (
     <OrganizerLayout title="Analytics">
-      <AnalyticsPageTopbar
-        isVerified={currentOrganisation?.isVerified ?? false}
-        title={currentOrganisation?.organisationName ?? ""}
-        description={t("description")}
-        membershipTier={analytics.membershipTier}
-      />
-      {/* main */}
-      <div className={"flex flex-col gap-12 overflow-y-scroll lg:gap-16"}>
-        <div
-          className={
-            "grid grid-cols-2 lg:divide-x divide-neutral-100 border-neutral-100 lg:border-b lg:grid-cols-4"
-          }
+      <div className="flex flex-col gap-16 overflow-y-auto pb-16">
+        {/* Header */}
+        <Reveal
+          y={-12}
+          className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"
         >
-          <div className={" border-b lg:border-b-0"}>
-            <div
-              className={
-                "mb-8 border-r border-neutral-100 pr-10 lg:pb-12 lg:mb-0 lg:border-r-0"
-              }
-            >
-              <div className={"flex justify-between"}>
-                <span
-                  className={
-                    "text-start text-[14px] text-neutral-600 font-sans leading-tight pb-6"
-                  }
-                >
-                  {t("revenue")}
-                </span>
-              </div>
-              <p
-                className={
-                  "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
-                }
-              >
-                {analytics.totalRevenue}{" "}
-                <span className={"font-normal text-neutral-500"}>USD</span>
-              </p>
-            </div>
+          <div className="flex flex-col gap-2">
+            <h1 className="font-primary font-medium text-[2.6rem] leading-12 text-black">
+              {t("title")}
+            </h1>
+            <p className="font-sans text-[1.6rem] leading-[2.25rem] text-neutral-600">
+              {t("description")}
+            </p>
           </div>
-
-          <div className={" border-b lg:border-b-0"}>
-            <div className={"pl-10 mb-8 lg:px-10 lg:pb-12 lg:mb-0"}>
-              <div className={"flex justify-between"}>
-                <span
-                  className={
-                    "text-start text-[14px] text-neutral-600 font-sans leading-tight pb-2"
-                  }
-                >
-                  {t("sold")}
-                </span>
-              </div>
-              <p
-                className={
-                  "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px] mt-4"
-                }
-              >
-                {analytics.totalTicketsSold}
-              </p>
-            </div>
+          <div className="flex flex-wrap items-center gap-4">
+            {isFree && <UpgradeButton label={t("upgrade")} />}
+            <AnalyticsFilters
+              events={analytics.events ?? []}
+              eventId={eventId}
+              period={period}
+            />
           </div>
+        </Reveal>
 
-          <div>
-            <div
-              className={
-                "mt-8 pr-1 border-r border-neutral-100 lg:px-10 lg:pb-12 lg:mt-0 lg:border-r-0"
-              }
-            >
-              <div className={"flex justify-between"}>
-                <span
-                  className={
-                    "text-start text-[14px] text-neutral-600 font-sans leading-tight pb-6"
-                  }
-                >
-                  {t("content.upcomingTitle")}
-                </span>
-              </div>
-              <p
-                className={
-                  "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
-                }
-              >
-                {analytics.upcomingEvents}
-              </p>
-            </div>
-          </div>
-
-          <div>
-            <div className={"mt-8 pl-10 lg:pb-12 lg:mt-0"}>
-              <div className={"flex justify-between"}>
-                <span
-                  className={
-                    "text-start text-[14px] text-neutral-600 font-sans leading-tight pb-6"
-                  }
-                >
-                  {t("content.followers")}
-                </span>
-              </div>
-              <p
-                className={
-                  "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
-                }
-              >
-                {analytics.followers}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* tickets analytic stat */}
-        <div className={"flex flex-col gap-8 lg:gap-10"}>
-          <h3
-            className={
-              "self-stretch justify-start font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]"
-            }
-          >
-            {t("tickets.title")}
-          </h3>
-          <div
-            className={
-              "grid-cols-1 grid  lg:grid-cols-21 lg:divide-x divide-neutral-100 border-neutral-100 lg:border-b"
-            }
-          >
-            <div
-              className={"w-full pt-6 pb-8 lg:pr-12 lg:pb-12 lg:col-span-11 "}
-            >
-              <div className={"flex flex-col gap-8 lg:gap-10"}>
-                <span
-                  className={
-                    "text-[14px] font-sans justify-start text-gray-800 text-base font-medium leading-tight lg:text-[15px]"
-                  }
-                >
-                  {t("tickets.daily")}
-                </span>
-                <DailyTicketSalesChart ticketSales={analytics.ticketSales} />
-              </div>
-            </div>
-            <div
-              className={
-                "flex flex-col gap-8 w-full lg:flex-row col-span-10 lg:pt-6 lg:pb-12 lg:pl-12"
-              }
-            >
-              <TicketClassesChart analytics={analytics} />
-            </div>
-          </div>
-        </div>
-
-        {/* event analytic stat */}
-        <div className={"flex flex-col gap-8 lg:gap-10"}>
-          <h3
-            className={
-              "font-medium font-primary text-[18px] leading-12 text-black lg:text-[22px]"
-            }
-          >
-            {t("event.event_demographics.title")}
-          </h3>
-          <div
-            className={
-              "grid grid-cols-1 divide-y lg:grid-cols-2  lg:divide-x lg:divide-y-0 divide-neutral-100 border-neutral-100 lg:border-b"
-            }
-          >
-            <div className={"flex flex-col gap-9 pb-6 lg:pr-10 lg:pb-8 "}>
-              <span
-                className={
-                  "text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"
-                }
-              >
-                {t("event.event_demographics.gender_distribution.title")}
-              </span>
-              {analytics.membershipTier.membershipName === "free" ? (
-                <ProFeatureAlert />
-              ) : (
-                <div className={"w-full"}>
-                  <BarChart
-                    category1={t(
-                      "event.event_demographics.gender_distribution.gender.male",
-                    )}
-                    category2={t(
-                      "event.event_demographics.gender_distribution.gender.female",
-                    )}
-                    category3={t(
-                      "event.event_demographics.gender_distribution.gender.others",
-                    )}
-                    percent1={`${Math.round(analytics.genderPercentages?.male ?? 0)}%`}
-                    percent2={`${Math.round(analytics.genderPercentages?.female ?? 0)}%`}
-                    percent3={`${Math.round(analytics.genderPercentages?.other ?? analytics.genderPercentages?.others ?? 0)}%`}
-                  ></BarChart>
-                </div>
-              )}
-            </div>
-            <div className={"flex flex-col gap-9 lg:pl-10 lg:pb-8 "}>
-              <span
-                className={
-                  "text-[14px] text-black-100 font-medium lg:text-[15px]"
-                }
-              >
-                {t("event.event_demographics.events_top.title")}
-              </span>
-              <div className={"w-full"}>
-                {analytics.topEvents.length > 0 ? (
-                  <BarChart
-                    category1={analytics.topEvents[0].eventName}
-                    category2={analytics.topEvents[1]?.eventName}
-                    category3={analytics.topEvents[2]?.eventName}
-                    percent1={analytics.topEvents[0]?.percentage}
-                    percent2={analytics.topEvents[1]?.percentage}
-                    percent3={analytics.topEvents[2]?.percentage}
+        {/* KPIs */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 lg:border-b border-neutral-100 divide-neutral-100 lg:divide-x">
+          <Reveal className={kpiTiles[0]} delay={0.08}>
+            <Metric
+              label={t("revenue")}
+              size="responsive"
+              trend={
+                <span className="hidden lg:inline-flex">
+                  <TrendBadge
+                    value={analytics.trends?.revenue}
+                    label={trendLabel(analytics.trends?.revenue)}
                   />
-                ) : (
-                  <div className="flex flex-col justify-center items-center gap-4">
-                    <InfoCircle size="32" color="#D5D8DC" />
-                    <span className="font-primary text-[1.2rem] text-neutral-500">
-                      {t("noActivity")}
-                    </span>
-                  </div>
+                </span>
+              }
+            >
+              {money(analytics.totalRevenueHtg)} <Unit>HTG</Unit>
+              <span className="block font-sans font-normal text-[1.2rem] leading-6 text-neutral-500">
+                {money(analytics.totalRevenue)} USD
+              </span>
+            </Metric>
+          </Reveal>
+          <Reveal className={kpiTiles[1]} delay={0.13}>
+            <Metric
+              label={t("sold")}
+              size="responsive"
+              trend={
+                <span className="hidden lg:inline-flex">
+                  <TrendBadge
+                    value={analytics.trends?.ticketsSold}
+                    label={trendLabel(analytics.trends?.ticketsSold)}
+                  />
+                </span>
+              }
+            >
+              {num(analytics.totalTicketsSold)}
+            </Metric>
+          </Reveal>
+          <Reveal className={kpiTiles[2]} delay={0.18}>
+            <Metric label={t("content.upcomingTitle")} size="responsive">
+              {num(analytics.upcomingEvents)}
+            </Metric>
+          </Reveal>
+          <Reveal className={kpiTiles[3]} delay={0.23}>
+            <Metric
+              label={t("content.view")}
+              size="responsive"
+              trend={
+                <span className="hidden lg:inline-flex">
+                  <TrendBadge
+                    value={analytics.trends?.eventViews}
+                    label={trendLabel(analytics.trends?.eventViews)}
+                  />
+                </span>
+              }
+            >
+              {num(analytics.eventViews)}
+            </Metric>
+          </Reveal>
+        </div>
+
+        {/* Ticket Sales Insights */}
+        <Reveal as="section" delay={0.25} className="flex flex-col gap-10">
+          <SectionTitle>{t("tickets.title")}</SectionTitle>
+          <div className="grid grid-cols-1 gap-12 lg:gap-0 lg:grid-cols-2 lg:divide-x divide-neutral-100 lg:border-b border-neutral-100">
+            <div className="flex flex-col gap-10 min-w-0 lg:pr-[3rem] lg:pt-6 lg:pb-10">
+              <PanelTitle>
+                {t(
+                  analytics.salesSeries?.granularity === "month"
+                    ? "tickets.monthly"
+                    : "tickets.daily",
                 )}
-              </div>
+              </PanelTitle>
+              <SalesLineChart
+                key={`${eventId ?? "all"}:${period}`}
+                series={analytics.salesSeries}
+              />
+            </div>
+            <div className="min-w-0 lg:pl-[3rem] lg:pt-6 lg:pb-10">
+              <TicketClassesChart
+                ticketTypePercentages={analytics.ticketTypePercentages}
+              />
             </div>
           </div>
-        </div>
-        {analytics.membershipTier.membershipName === "free" && (
-          <div className="lg:hidden">
-            <Separator />
+        </Reveal>
+
+        {/* Demographics */}
+        <Reveal as="section" delay={0.32} className="flex flex-col gap-10">
+          <SectionTitle>{t("event.event_demographics.title")}</SectionTitle>
+          <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 lg:border-b border-neutral-100">
+            <div className="flex flex-col gap-8 pb-8 lg:pr-[2.5rem] lg:pb-10 min-w-0">
+              <PanelTitle>
+                {t("event.event_demographics.gender_distribution.title")}
+              </PanelTitle>
+              {isFree ? <ProFeatureAlert /> : <BarList rows={genderRows} />}
+            </div>
+            <div className="flex flex-col gap-8 pt-8 lg:pt-0 lg:pl-[2.5rem] lg:pb-10 min-w-0">
+              <PanelTitle>
+                {t("event.event_demographics.events_top.title")}
+              </PanelTitle>
+              <BarList rows={topEventRows} truncateLabels />
+            </div>
           </div>
-        )}
-        {/* feedback analytic */}
-        {analytics.membershipTier.membershipName === "free" ? (
+        </Reveal>
+
+        {isFree ? (
           <div className="flex items-center flex-col gap-8">
             <div className="flex items-center flex-col gap-4">
               <InfoCircle size="32" color="#D5D8DC" />
@@ -379,329 +343,123 @@ export default async function AnalyticsPage() {
                 {t("upgradeAlert")}
               </span>
             </div>
-            <div className="flex-1 p-[.2rem] rounded-[30px] bg-linear-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
-              <LinkPrimary
-                className="bg-transparent gap-4 py-2 items-center"
-                href="/settings/subscriptions/upgrade"
-              >
-                <Crown size="24" color="#fff" variant="Bulk" />
-                {t("upgrade")}
-              </LinkPrimary>
-            </div>
+            <UpgradeButton label={t("upgrade")} />
           </div>
         ) : (
           <>
-            <div className={"flex flex-col gap-10 mb-6"}>
-              <h3
-                className={
-                  "font-medium font-primary text-[18px] text-black lg:text-[22px]"
-                }
-              >
-                {t("feedback.title")}
-              </h3>
-              <div
-                className={"flex flex-col gap-6 lg:flex-row lg:justify-between"}
-              >
-                <div className={"flex flex-col gap-4"}>
-                  <span className={"text-[14px] text-neutral-500 font-sm"}>
-                    {t("feedback.action.add_favorite")}
-                  </span>
-                  <p
-                    className={
-                      "font-medium text-[25px] text-black capitalize font-primary"
-                    }
-                  >
-                    {analytics.favorites}
-                  </p>
-                </div>
-
-                <div className={"flex flex-col gap-4"}>
-                  <span className={"text-[14px] text-neutral-500 font-sm"}>
-                    {t("feedback.action.rated")}
-                  </span>
-                  <div
-                    className={
-                      "flex font-medium text-[25px] capitalize font-primary"
-                    }
-                  >
-                    <p className={" text-black "}>{analytics.average}</p>
-                    <span className={"text-neutral-500"}>/5</span>
-                  </div>
-                </div>
-                <div className={"flex flex-col gap-4"}>
-                  <span className={"text-[14px] text-neutral-500  font-sm"}>
-                    {t("feedback.action.reviews")}
-                  </span>
-                  <p
-                    className={
-                      "font-medium text-[25px] text-black capitalize font-primary"
-                    }
-                  >
-                    {analytics.totalReviews}
-                  </p>
-                </div>
+            {/* Engagement & Feedback */}
+            <Reveal as="section" delay={0.39} className="flex flex-col gap-10">
+              <SectionTitle>{t("feedback.title")}</SectionTitle>
+              <div className="flex flex-col gap-8 lg:flex-row lg:justify-between lg:gap-12">
+                <Metric label={t("feedback.action.click_on_event")}>
+                  {num(analytics.eventViews)}
+                </Metric>
+                <Metric label={t("feedback.action.social_media_shares")}>
+                  {num(analytics.socialShares)}
+                </Metric>
+                <Metric label={t("feedback.action.add_favorite")}>
+                  {num(analytics.favorites)}
+                </Metric>
+                <Metric label={t("feedback.action.rated")}>
+                  {analytics.average} <Unit>/ 5</Unit>
+                </Metric>
+                <Metric label={t("feedback.action.reviews")}>
+                  {num(analytics.totalReviews)}
+                </Metric>
               </div>
-            </div>
-            {/* ── NEW SECTIONS ── */}
+            </Reveal>
 
-            {/* KPI extras: orders, avg order value, total events, past events, conversion, check-in, refund, shares */}
-            <div className="flex flex-col gap-8 lg:gap-10">
-              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-                {t("kpi.title")}
-              </h3>
-              <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-neutral-100 border-b border-neutral-100">
-                <div className="px-4 py-6 lg:px-6">
-                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                    {t("kpi.orders")}
-                  </span>
-                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                    {analytics.totalOrders}
-                  </p>
-                </div>
-                <div className="px-4 py-6 lg:px-6">
-                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                    {t("kpi.avgOrderValue")}
-                  </span>
-                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                    {analytics.averageOrderValue}{" "}
-                    <span className="font-normal text-neutral-500">USD</span>
-                  </p>
-                </div>
-                <div className="px-4 py-6 lg:px-6">
-                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                    {t("kpi.totalEvents")}
-                  </span>
-                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                    {analytics.totalEvents}
-                  </p>
-                </div>
-                <div className="px-4 py-6 lg:px-6">
-                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                    {t("kpi.pastEvents")}
-                  </span>
-                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                    {analytics.pastEvents}
-                  </p>
-                </div>
+            {/* More insights — post-design metrics, in the same visual language */}
+            <Reveal
+              as="section"
+              delay={0.46}
+              className="flex flex-col gap-10 border-t border-neutral-100 pt-16"
+            >
+              <SectionTitle>{t("more.title")}</SectionTitle>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-12">
+                <Metric label={t("kpi.orders")} size="responsive">
+                  {num(analytics.totalOrders)}
+                </Metric>
+                <Metric label={t("kpi.avgOrderValue")} size="responsive">
+                  {money(analytics.averageOrderValue)} <Unit>USD</Unit>
+                </Metric>
+                <Metric label={t("kpi.totalEvents")} size="responsive">
+                  {num(analytics.totalEvents)}
+                </Metric>
+                <Metric label={t("kpi.pastEvents")} size="responsive">
+                  {num(analytics.pastEvents)}
+                </Metric>
+                <Metric label={t("content.followers")} size="responsive">
+                  {num(analytics.followers)}
+                </Metric>
+                <Metric label={t("engagement.conversion")} size="responsive">
+                  {analytics.conversionRate}
+                  <Unit>%</Unit>
+                </Metric>
+                <Metric label={t("engagement.checkIn")} size="responsive">
+                  {analytics.checkInRate}
+                  <Unit>%</Unit>
+                </Metric>
+                <Metric label={t("engagement.refund")} size="responsive">
+                  {analytics.refundRate}
+                  <Unit>%</Unit>
+                </Metric>
               </div>
-            </div>
+            </Reveal>
 
-            {/* Engagement */}
-            <div className="flex flex-col gap-8 lg:gap-10">
-              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-                {t("engagement.title")}
-              </h3>
-              <div className="grid grid-cols-2 lg:grid-cols-5 divide-x divide-neutral-100 border-b border-neutral-100">
-                <div className="px-4 py-6 lg:px-6">
-                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                    {t("engagement.views")}
-                  </span>
-                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                    {analytics.eventViews}
-                  </p>
-                </div>
-                <div className="px-4 py-6 lg:px-6">
-                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                    {t("engagement.shares")}
-                  </span>
-                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                    {analytics.socialShares}
-                  </p>
-                </div>
-                <div className="px-4 py-6 lg:px-6">
-                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                    {t("engagement.conversion")}
-                  </span>
-                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                    {analytics.conversionRate}
-                    <span className="font-normal text-neutral-500">%</span>
-                  </p>
-                </div>
-                <div className="px-4 py-6 lg:px-6">
-                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                    {t("engagement.checkIn")}
-                  </span>
-                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                    {analytics.checkInRate}
-                    <span className="font-normal text-neutral-500">%</span>
-                  </p>
-                </div>
-                <div className="px-4 py-6 lg:px-6">
-                  <span className="text-[14px] text-neutral-600 font-sans leading-tight pb-2 block">
-                    {t("engagement.refund")}
-                  </span>
-                  <p className="text-[16px] lg:text-[25px] font-medium font-primary leading-loose">
-                    {analytics.refundRate}
-                    <span className="font-normal text-neutral-500">%</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Monthly Revenue & Tickets chart */}
-            <div className="flex flex-col gap-8 lg:gap-10">
-              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-                {t("chart.monthly")}
-              </h3>
+            <Reveal as="section" delay={0.53} className="flex flex-col gap-10">
+              <PanelTitle>{t("chart.monthly")}</PanelTitle>
               <RevenueTicketsChart
                 revenueByMonth={analytics.revenueByMonth}
                 ticketsByMonth={analytics.ticketsByMonth}
               />
-            </div>
+            </Reveal>
 
-            {/* Audience donuts */}
-            <div className="flex flex-col gap-8 lg:gap-10">
-              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-                {t("audience.title")}
-              </h3>
-              {isFree ? (
-                <ProFeatureAlert />
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 border-neutral-100 lg:border-b pb-8">
-                  <div className="py-6 lg:pr-10 lg:py-0">
-                    <DonutChart
-                      title={t("audience.gender")}
-                      items={genderItems}
-                    />
-                  </div>
-                  <div className="py-6 lg:px-10 lg:py-0">
-                    <DonutChart
-                      title={t("audience.guestVsRegistered")}
-                      items={guestVsRegisteredItems}
-                    />
-                  </div>
-                  <div className="py-6 lg:pl-10 lg:py-0">
-                    <DonutChart
-                      title={t("audience.paymentProviders")}
-                      items={paymentProviderItems}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Top events by tickets & by views */}
-            <div className="flex flex-col gap-8 lg:gap-10">
-              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-                {t("topEvents.title")}
-              </h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 border-neutral-100 lg:border-b">
-                <div className="flex flex-col gap-6 pb-8 lg:pr-10 lg:pb-10">
-                  <span className="text-[14px] font-medium font-sans text-gray-800">
-                    {t("topEvents.byTickets")}
-                  </span>
-                  {topEventsByTicketsItems.length > 0 ? (
-                    <table className="w-full border-separate border-spacing-y-3">
-                      <tbody>
-                        {topEventsByTicketsItems.map(({ label, value }, i) => {
-                          const num = parseFloat(value);
-                          return (
-                            <tr key={i}>
-                              <td className="w-24 pr-4 max-w-48">
-                                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap truncate block">
-                                  {label}
-                                </span>
-                              </td>
-                              <td className="w-full px-4">
-                                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                                  <div
-                                    className="h-full bg-amber-500 rounded-full transition-all duration-500"
-                                    style={{
-                                      width: isNaN(num) ? "0%" : `${num}%`,
-                                    }}
-                                  />
-                                </div>
-                              </td>
-                              <td className="w-16 pl-4 text-right">
-                                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap">
-                                  {isNaN(num) ? "0%" : `${value}`}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <div className="flex flex-col justify-center items-center gap-4">
-                      <InfoCircle size="32" color="#D5D8DC" />
-                      <span className="font-primary text-[1.2rem] text-neutral-500">
-                        {t("noActivity")}
-                      </span>
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-col gap-6 pt-8 lg:pt-0 lg:pl-10 lg:pb-10">
-                  <span className="text-[14px] font-medium font-sans text-gray-800">
-                    {t("topEvents.byViews")}
-                  </span>
-                  {topEventsByViewsItems.length > 0 ? (
-                    <table className="w-full border-separate border-spacing-y-3">
-                      <tbody>
-                        {topEventsByViewsItems.map(({ label, value }, i) => {
-                          const num = parseFloat(value);
-                          return (
-                            <tr key={i}>
-                              <td className="w-24 pr-4 max-w-48">
-                                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap truncate block">
-                                  {label}
-                                </span>
-                              </td>
-                              <td className="w-full px-4">
-                                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
-                                  <div
-                                    className="h-full bg-amber-500 rounded-full transition-all duration-500"
-                                    style={{
-                                      width: isNaN(num) ? "0%" : `${num}%`,
-                                    }}
-                                  />
-                                </div>
-                              </td>
-                              <td className="w-16 pl-4 text-right">
-                                <span className="text-[14px] font-sans text-black-100 whitespace-nowrap">
-                                  {isNaN(num) ? "0%" : `${value}%`}
-                                </span>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  ) : (
-                    <div className="flex flex-col justify-center items-center gap-4">
-                      <InfoCircle size="32" color="#D5D8DC" />
-                      <span className="font-primary text-[1.2rem] text-neutral-500">
-                        {t("noActivity")}
-                      </span>
-                    </div>
-                  )}
-                </div>
+            <Reveal
+              as="section"
+              delay={0.55}
+              className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100 border-y border-neutral-100"
+            >
+              <div className="py-10 lg:pr-[2.5rem]">
+                <DonutChart
+                  title={t("audience.guestVsRegistered")}
+                  items={guestVsRegisteredItems}
+                />
               </div>
-            </div>
+              <div className="py-10 lg:pl-[2.5rem]">
+                <DonutChart
+                  title={t("audience.paymentProviders")}
+                  items={paymentProviderItems}
+                />
+              </div>
+            </Reveal>
 
-            {/* Reviews / Star rating */}
-            <div className="flex flex-col gap-8 lg:gap-10">
-              <h3 className="font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]">
-                {t("reviews.title")}
-              </h3>
-              {isFree ? (
-                <ProFeatureAlert />
-              ) : (
-                <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:gap-16 border-b border-neutral-100 pb-10">
-                  <div className="flex-1">
-                    <StarRatingChart
-                      distribution={analytics.reviewDistribution}
-                      average={analytics.average}
-                      total={analytics.totalReviews}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
+            <Reveal
+              as="section"
+              delay={0.55}
+              className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-neutral-100"
+            >
+              <div className="flex flex-col gap-8 pb-10 lg:pr-[2.5rem] min-w-0">
+                <PanelTitle>{t("more.topByViews")}</PanelTitle>
+                {topEventsByViewsRows.length > 0 ? (
+                  <BarList rows={topEventsByViewsRows} truncateLabels />
+                ) : (
+                  <span className="font-sans text-[1.4rem] text-neutral-500">
+                    {t("noActivity")}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col gap-8 pt-10 lg:pt-0 lg:pl-[2.5rem] min-w-0">
+                <PanelTitle>{t("reviews.title")}</PanelTitle>
+                <StarRatingChart
+                  distribution={analytics.reviewDistribution}
+                  average={analytics.average}
+                  total={analytics.totalReviews}
+                />
+              </div>
+            </Reveal>
           </>
         )}
-
-        <div></div>
       </div>
     </OrganizerLayout>
   );

@@ -2,7 +2,9 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { AddCircle, Gift, MinusCirlce } from "iconsax-reactjs";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { DateTime } from "luxon";
+import { ticketSalesState } from "@/lib/ticketSalesWindow";
 import {
   Event,
   EventTicketType,
@@ -46,6 +48,7 @@ export default function TicketSelectionStep({
   setValue,
 }: Props) {
   const t = useTranslations("Checkout");
+  const locale = useLocale();
 
   const [quantities, setQuantities] = useState<number[]>(() =>
     watchedTickets.map((t) => t.quantity),
@@ -144,10 +147,16 @@ export default function TicketSelectionStep({
             // Per TIER: the price is the whole answer. On a mixed activity some
             // rows here are free while `event.isFree` is false.
             const tierIsFree = isFreeTicketType(ticketType);
+            // Each class sells only inside its own window (the API refuses
+            // the cart otherwise), so outside it the row cannot be added.
+            const salesState = ticketSalesState(ticketType, event);
+            const onSale = salesState === "on_sale";
             // One free ticket per person, so a free row never goes past 1.
-            const maxSelectable = tierIsFree
-              ? Math.min(1, ticketLeft)
-              : ticketLeft;
+            const maxSelectable = !onSale
+              ? 0
+              : tierIsFree
+                ? Math.min(1, ticketLeft)
+                : ticketLeft;
 
             return (
               <li
@@ -159,12 +168,26 @@ export default function TicketSelectionStep({
                     <span className="font-semibold text-[1.6rem] leading-10 text-deep-100">
                       {ticketType.ticketTypeName}
                     </span>
-                    {ticketLeft <= 100 && ticketLeft !== 0 && (
+                    {salesState === "not_started" && ticketType.salesStartAt && (
+                      <span className="text-[1.2rem] text-neutral-700">
+                        {t("ticket.on_sale_from", {
+                          date: DateTime.fromISO(ticketType.salesStartAt)
+                            .setLocale(locale)
+                            .toLocaleString(DateTime.DATETIME_MED),
+                        })}
+                      </span>
+                    )}
+                    {salesState === "ended" && (
+                      <span className="text-[1.2rem] text-failure">
+                        {t("ticket.sales_ended")}
+                      </span>
+                    )}
+                    {onSale && ticketLeft <= 100 && ticketLeft !== 0 && (
                       <span className="text-[1.2rem] text-warning">
                         {ticketLeft} {t("ticket.left")}
                       </span>
                     )}
-                    {ticketLeft === 0 && (
+                    {onSale && ticketLeft === 0 && (
                       <span className="text-[1.2rem] text-failure">
                         {t("ticket.soldout")}
                       </span>

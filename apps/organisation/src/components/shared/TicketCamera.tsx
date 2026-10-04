@@ -74,7 +74,9 @@ export default function TicketCamera({
         const message = String(reason);
         if (/NotAllowedError|Permission|SecurityError/i.test(message)) {
           setError("denied");
-        } else if (/NotFoundError|OverconstrainedError|NotReadableError/i.test(message)) {
+        } else if (
+          /NotFoundError|OverconstrainedError|NotReadableError/i.test(message)
+        ) {
           setError("unavailable");
         } else {
           setError("failed");

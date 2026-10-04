@@ -1150,7 +1150,8 @@
     "used_m": "Used",
     "previous": "Previous ticket",
     "next": "Next ticket",
-    "noTickets": "No tickets available"
+    "noTickets": "No tickets available",
+    "eventPassword": "Password"
   },
   "Checkout": {
     "back": "Back",
@@ -1180,7 +1181,9 @@
       "free_login_required": "Please sign in to claim your free ticket.",
       "ticketWarning": "Tickets are non-refundable. All sales are final.",
       "discount_applied": "Discount applied",
-      "fees": "Fees"
+      "fees": "Fees",
+      "on_sale_from": "On sale from {date}",
+      "sales_ended": "Sales ended"
     },
     "recipient": {
       "title": "Recipient",

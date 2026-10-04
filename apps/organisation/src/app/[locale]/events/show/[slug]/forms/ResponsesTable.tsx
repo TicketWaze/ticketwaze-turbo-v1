@@ -92,7 +92,9 @@ export default function ResponsesTable({
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="text-deep-100">{response.ticketName}</span>
+                      <span className="text-deep-100">
+                        {response.ticketName}
+                      </span>
                       <span className="text-neutral-500 text-[1.2rem]">
                         {Capitalize(response.ticketType)}
                       </span>

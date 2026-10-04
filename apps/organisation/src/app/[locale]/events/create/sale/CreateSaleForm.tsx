@@ -12,10 +12,13 @@ import { useSession } from "next-auth/react";
 import { InfoCircle, Warning2 } from "iconsax-reactjs";
 import { getSaleMinPrice, getMinAbsorbedSalePrice } from "@ticketwaze/pricing";
 import { useRouter } from "@/i18n/navigation";
+import {
+  CreateFooter,
+  CreateHeader,
+  CreatedScreen,
+} from "@/components/create/CreateParts";
+import { Stagger } from "@/components/shared/motion";
 import { CreateSale } from "@/actions/SaleActions";
-import BackButton from "@/components/shared/BackButton";
-import { ButtonPrimary } from "@/components/shared/buttons";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import RichTextEditor from "@/components/shared/RichTextEditor";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import { compressImage } from "@/lib/compressImage";
@@ -45,33 +48,35 @@ type TranslateFn = (
 ) => string;
 
 function makeSaleSchema(t: TranslateFn) {
-  return z
-    .object({
-      title: z.string().min(TITLE_MIN_CHARS, t("errors.title")),
-      description: z.string().min(20, t("errors.description")),
-      price: z.coerce.number().gt(0, t("errors.price")),
-      currency: z.enum(["HTG", "USD"]),
-      absorbFees: z.boolean(),
-      activityTags: z.array(z.string()),
-    })
-    /**
-     * The floor is currency-dependent — below it the surcharge would dwarf the
-     * product — so it is checked here rather than as a fixed `min` on the
-     * field. A seller who ABSORBS the surcharge needs a higher floor still: it
-     * has a flat component that does not scale down, and at the ordinary
-     * minimum they would be credited nothing at all.
-     */
-    .refine(
-      (d) =>
-        d.price >=
-        (d.absorbFees
-          ? getMinAbsorbedSalePrice(d.currency)
-          : getSaleMinPrice(d.currency)),
-      {
-        message: t("errors.min_price"),
-        path: ["price"],
-      },
-    );
+  return (
+    z
+      .object({
+        title: z.string().min(TITLE_MIN_CHARS, t("errors.title")),
+        description: z.string().min(20, t("errors.description")),
+        price: z.coerce.number().gt(0, t("errors.price")),
+        currency: z.enum(["HTG", "USD"]),
+        absorbFees: z.boolean(),
+        activityTags: z.array(z.string()),
+      })
+      /**
+       * The floor is currency-dependent — below it the surcharge would dwarf the
+       * product — so it is checked here rather than as a fixed `min` on the
+       * field. A seller who ABSORBS the surcharge needs a higher floor still: it
+       * has a flat component that does not scale down, and at the ordinary
+       * minimum they would be credited nothing at all.
+       */
+      .refine(
+        (d) =>
+          d.price >=
+          (d.absorbFees
+            ? getMinAbsorbedSalePrice(d.currency)
+            : getSaleMinPrice(d.currency)),
+        {
+          message: t("errors.min_price"),
+          path: ["price"],
+        },
+      )
+  );
 }
 
 function Field({
@@ -117,6 +122,9 @@ function Note({ children }: { children: React.ReactNode }) {
 
 export default function CreateSaleForm() {
   const t = useTranslations("Events.create_event.sale");
+  const tCreated = useTranslations("Events.create_event.created");
+  // Creating ends on the shared "created" screen while the list opens.
+  const [created, setCreated] = useState(false);
   const locale = useLocale();
   const router = useRouter();
   const { data: session } = useSession();
@@ -247,11 +255,7 @@ export default function CreateSaleForm() {
     }
 
     try {
-      const created = await CreateSale(
-        organisation.organisationId,
-        fd,
-        locale,
-      );
+      const created = await CreateSale(organisation.organisationId, fd, locale);
       if (created.status !== "success") {
         toast.error(created.error);
         setSubmitting(false);
@@ -277,8 +281,8 @@ export default function CreateSaleForm() {
         return;
       }
 
-      toast.success(t("success"));
-      router.push("/events");
+      setCreated(true);
+      setTimeout(() => router.push("/events"), 1800);
     } catch (error) {
       // A server action can reject rather than return — an oversized body, a
       // gateway timeout, or a stale action id after a redeploy never reach the
@@ -294,51 +298,41 @@ export default function CreateSaleForm() {
     }
   };
 
-  return (
-    <div className="flex flex-col gap-8 overflow-y-scroll pb-12">
-      <BackButton text={t("back")} />
+  if (created) {
+    return (
+      <CreatedScreen
+        title={tCreated("sale")}
+        description={tCreated("description_activity")}
+        pendingLabel={tCreated("opening_list")}
+      />
+    );
+  }
 
-      <h1 className="max-w-216 w-full mx-auto font-primary font-medium text-[2.6rem] leading-12 text-black">
-        {t("title_heading")}
-      </h1>
+  return (
+    <div className="relative flex flex-col gap-10 h-full overflow-clip">
+      <CreateHeader
+        title={t("title_heading")}
+        onBack={() => router.back()}
+        backLabel={t("back")}
+      />
 
       <form
+        id="create-sale-form"
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-12"
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex flex-col gap-12 pb-28 lg:pb-8"
         noValidate
       >
-        {/* Cover image */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("cover")}</span>
-          {coverPreview ? (
-            <div className="relative w-full h-120">
-              <img
-                src={coverPreview}
-                alt="Preview"
-                className="w-full h-120 object-cover object-top rounded-2xl"
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleCover}
-                className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
-              />
-            </div>
-          ) : (
-            <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
-              <div className="flex flex-col items-center gap-4">
-                <Image
-                  src={UploadDocument}
-                  alt="upload"
-                  width={24}
-                  height={24}
+        <Stagger>
+          {/* Cover image */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("cover")}</span>
+            {coverPreview ? (
+              <div className="relative w-full h-120">
+                <img
+                  src={coverPreview}
+                  alt="Preview"
+                  className="w-full h-120 object-cover object-top rounded-2xl"
                 />
-                <p className="text-[1.5rem] leading-6 text-neutral-500">
-                  {t("cover_text")}{" "}
-                  <span className="font-medium text-primary-500">
-                    {t("browse")}
-                  </span>
-                </p>
                 <input
                   type="file"
                   accept="image/*"
@@ -346,198 +340,221 @@ export default function CreateSaleForm() {
                   className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
                 />
               </div>
-            </div>
-          )}
-          {coverError && (
-            <span className="text-[1.2rem] text-failure">{coverError}</span>
-          )}
-        </div>
-
-        {/* Details */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("details")}</span>
-          <Field
-            label={t("name")}
-            error={
-              errors.title?.message ??
-              (titleStatus === "taken" ? t("errors.title_taken") : undefined)
-            }
-            counter={
-              <CharCounter
-                count={(watch("title") ?? "").length}
-                min={TITLE_MIN_CHARS}
-                max={TITLE_MAX_CHARS}
-              />
-            }
-          >
-            <input
-              {...register("title")}
-              type="text"
-              maxLength={TITLE_MAX_CHARS}
-              className={inputClass}
-            />
-          </Field>
-          <Field label={t("description")} error={errors.description?.message}>
-            <Controller
-              control={control}
-              name="description"
-              render={({ field }) => (
-                <RichTextEditor
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder={t("description_placeholder")}
-                  error={undefined}
-                />
-              )}
-            />
-          </Field>
-        </div>
-
-        {/* Tags */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("tags")}</span>
-          <div
-            className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
-            onClick={() => tagInputRef.current?.focus()}
-          >
-            {tags.map((tag) => (
-              <button
-                type="button"
-                key={tag}
-                onClick={() => removeTag(tag)}
-                className="flex items-center gap-1 bg-primary-100/50 px-2 text-primary-500 rounded-full text-[1.4rem] whitespace-nowrap"
-              >
-                #{tag}
-              </button>
-            ))}
-            <input
-              ref={tagInputRef}
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={handleTagKeyDown}
-              placeholder={t("tags_placeholder")}
-              className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
-            />
+            ) : (
+              <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
+                <div className="flex flex-col items-center gap-4">
+                  <Image
+                    src={UploadDocument}
+                    alt="upload"
+                    width={24}
+                    height={24}
+                  />
+                  <p className="text-[1.5rem] leading-6 text-neutral-500">
+                    {t("cover_text")}{" "}
+                    <span className="font-medium text-primary-500">
+                      {t("browse")}
+                    </span>
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCover}
+                    className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+            {coverError && (
+              <span className="text-[1.2rem] text-failure">{coverError}</span>
+            )}
           </div>
-          <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
-            <Warning2
-              size="24"
-              color="#737C8A"
-              variant="Bulk"
-              className="shrink-0"
+
+          {/* Details */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("details")}</span>
+            <Field
+              label={t("name")}
+              error={
+                errors.title?.message ??
+                (titleStatus === "taken" ? t("errors.title_taken") : undefined)
+              }
+              counter={
+                <CharCounter
+                  count={(watch("title") ?? "").length}
+                  min={TITLE_MIN_CHARS}
+                  max={TITLE_MAX_CHARS}
+                />
+              }
+            >
+              <input
+                {...register("title")}
+                type="text"
+                maxLength={TITLE_MAX_CHARS}
+                className={inputClass}
+              />
+            </Field>
+            <Field label={t("description")} error={errors.description?.message}>
+              <Controller
+                control={control}
+                name="description"
+                render={({ field }) => (
+                  <RichTextEditor
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder={t("description_placeholder")}
+                    error={undefined}
+                  />
+                )}
+              />
+            </Field>
+          </div>
+
+          {/* Tags */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("tags")}</span>
+            <div
+              className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
+              onClick={() => tagInputRef.current?.focus()}
+            >
+              {tags.map((tag) => (
+                <button
+                  type="button"
+                  key={tag}
+                  onClick={() => removeTag(tag)}
+                  className="flex items-center gap-1 bg-primary-100/50 px-2 text-primary-500 rounded-full text-[1.4rem] whitespace-nowrap"
+                >
+                  #{tag}
+                </button>
+              ))}
+              <input
+                ref={tagInputRef}
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                placeholder={t("tags_placeholder")}
+                className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
+              />
+            </div>
+            <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+              <Warning2
+                size="24"
+                color="#737C8A"
+                variant="Bulk"
+                className="shrink-0"
+              />
+              <p className="text-[1.2rem] leading-8 text-neutral-800">
+                {t("tags_tip")}
+              </p>
+            </div>
+          </div>
+
+          {/* The product file */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("file")}</span>
+            <SaleFilePicker
+              file={productFile}
+              onSelect={(file) => {
+                setProductFile(file);
+                setProductError("");
+              }}
+              onClear={() => setProductFile(null)}
+              error={productError}
+              uploadPercent={uploadPercent}
             />
-            <p className="text-[1.2rem] leading-8 text-neutral-800">
-              {t("tags_tip")}
+            <p className="text-[1.2rem] leading-7 text-neutral-600">
+              {t("file_tip")}
             </p>
           </div>
-        </div>
 
-        {/* The product file */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("file")}</span>
-          <SaleFilePicker
-            file={productFile}
-            onSelect={(file) => {
-              setProductFile(file);
-              setProductError("");
-            }}
-            onClear={() => setProductFile(null)}
-            error={productError}
-            uploadPercent={uploadPercent}
-          />
-          <p className="text-[1.2rem] leading-7 text-neutral-600">
-            {t("file_tip")}
-          </p>
-        </div>
-
-        {/* Pricing */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("pricing")}</span>
-          <div className="flex flex-col lg:flex-row gap-6">
-            <div className="flex-1">
-              <Field label={t("price")} error={errors.price?.message}>
-                <input
-                  {...register("price")}
-                  type="number"
-                  min={0}
-                  step="1"
-                  className={inputClass}
-                />
-              </Field>
+          {/* Pricing */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("pricing")}</span>
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex-1">
+                <Field label={t("price")} error={errors.price?.message}>
+                  <input
+                    {...register("price")}
+                    type="number"
+                    min={0}
+                    step="1"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+              <div className="flex-1">
+                <Field label={t("currency")}>
+                  <Controller
+                    control={control}
+                    name="currency"
+                    render={({ field }) => (
+                      <div className="flex gap-4">
+                        {(["HTG", "USD"] as const).map((c) => (
+                          <button
+                            type="button"
+                            key={c}
+                            onClick={() => field.onChange(c)}
+                            className={`flex-1 rounded-[1.5rem] border py-5 text-[1.4rem] transition-colors ${
+                              field.value === c
+                                ? "border-primary-500 bg-primary-50 text-primary-500"
+                                : "border-neutral-200 text-deep-100 hover:border-primary-500"
+                            }`}
+                          >
+                            {c === "HTG" ? "Gourdes (HTG)" : "US Dollar (USD)"}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  />
+                </Field>
+              </div>
             </div>
-            <div className="flex-1">
-              <Field label={t("currency")}>
-                <Controller
-                  control={control}
-                  name="currency"
-                  render={({ field }) => (
-                    <div className="flex gap-4">
-                      {(["HTG", "USD"] as const).map((c) => (
-                        <button
-                          type="button"
-                          key={c}
-                          onClick={() => field.onChange(c)}
-                          className={`flex-1 rounded-[1.5rem] border py-5 text-[1.4rem] transition-colors ${
-                            field.value === c
-                              ? "border-primary-500 bg-primary-50 text-primary-500"
-                              : "border-neutral-200 text-deep-100 hover:border-primary-500"
-                          }`}
-                        >
-                          {c === "HTG" ? "Gourdes (HTG)" : "US Dollar (USD)"}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                />
-              </Field>
-            </div>
-          </div>
 
-          {/* Who pays the fees. Sits directly under the currency, because it is
+            {/* Who pays the fees. Sits directly under the currency, because it is
               what decides whether the price above is what the payer pays or what
               the organiser keeps. */}
-          <div className="flex items-center justify-between">
-            <p className="text-[1.5rem] leading-8 text-deep-100">
-              {t("absorb_fees")}
+            <div className="flex items-center justify-between">
+              <p className="text-[1.5rem] leading-8 text-deep-100">
+                {t("absorb_fees")}
+              </p>
+              <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
+                <input
+                  className="peer sr-only"
+                  type="checkbox"
+                  checked={absorbFees}
+                  onChange={(e) => setValue("absorbFees", e.target.checked)}
+                />
+                <ToggleIcon />
+              </label>
+            </div>
+            <p className="text-[1.2rem] leading-7 text-neutral-600">
+              {t("absorb_fees_hint")}
             </p>
-            <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
-              <input
-                className="peer sr-only"
-                type="checkbox"
-                checked={absorbFees}
-                onChange={(e) => setValue("absorbFees", e.target.checked)}
-              />
-              <ToggleIcon />
-            </label>
+
+            <SalePricePreview
+              price={watch("price")}
+              currency={watch("currency")}
+              absorbFees={absorbFees}
+            />
           </div>
-          <p className="text-[1.2rem] leading-7 text-neutral-600">
-            {t("absorb_fees_hint")}
-          </p>
 
-          <SalePricePreview
-            price={watch("price")}
-            currency={watch("currency")}
-            absorbFees={absorbFees}
-          />
-        </div>
-
-        {/* What happens next */}
-        <div className={`${cardClass} !gap-4`}>
-          <Note>{t("review_note")}</Note>
-          <Note>{t("final_note")}</Note>
-          <Note>{t("delivery_note")}</Note>
-        </div>
-
-        <div className="max-w-216 w-full mx-auto">
-          <ButtonPrimary type="submit" className="w-full" disabled={
-              submitting ||
-              titleStatus === "checking" ||
-              titleStatus === "taken"
-            }>
-            {submitting ? <LoadingCircleSmall /> : t("submit")}
-          </ButtonPrimary>
-        </div>
+          {/* What happens next */}
+          <div className={`${cardClass} !gap-4`}>
+            <Note>{t("review_note")}</Note>
+            <Note>{t("final_note")}</Note>
+            <Note>{t("delivery_note")}</Note>
+          </div>
+        </Stagger>
       </form>
+
+      <CreateFooter
+        step={0}
+        total={1}
+        type="submit"
+        formId="create-sale-form"
+        continueLabel={t("submit")}
+        loading={submitting}
+        disabled={titleStatus === "checking" || titleStatus === "taken"}
+      />
     </div>
   );
 }

@@ -3,33 +3,31 @@ import {
   Chart as ChartJS,
   ArcElement,
   Tooltip,
-  Legend,
   ChartData,
   ChartOptions,
 } from "chart.js";
-import { InfoCircle } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import { Doughnut } from "react-chartjs-2";
+import { PanelTitle } from "./parts";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip);
 
 interface TicketType {
   name: string;
   percentage: number;
 }
 
-interface DoughnutChartProps {
-  options?: ChartOptions<"doughnut">;
-  analytics: { ticketTypePercentages: TicketType[] };
-}
-
 const TICKET_COLORS: Record<string, string> = {
+  general: "#FFEFE2",
   vip: "#FF8A9F",
   vvip: "#E752AE",
-  general: "#FFEFE2",
+  "premium vip": "#E752AE",
 };
 
-const FALLBACK_COLORS = ["#A78BFA", "#34D399", "#60A5FA", "#FBBF24", "#F87171"];
+const FALLBACK_COLORS = ["#FFCFAB", "#F8751F", "#A78BFA", "#60A5FA", "#34D399"];
+
+/** The design's three swatches, shown with "–" when nothing has sold. */
+const EMPTY_SWATCHES = ["#FFEFE2", "#FF8A9F", "#E752AE"];
 
 function getColor(name: string, index: number): string {
   return (
@@ -39,122 +37,81 @@ function getColor(name: string, index: number): string {
 }
 
 export default function TicketClassesChart({
-  options,
-  analytics,
-}: DoughnutChartProps) {
+  ticketTypePercentages = [],
+}: {
+  ticketTypePercentages?: TicketType[];
+}) {
   const t = useTranslations("Analytics");
-  const raw = analytics.ticketTypePercentages ?? [];
 
   // Merge duplicate ticket types by summing their percentages
   const tickets = Object.values(
-    raw.reduce<Record<string, TicketType>>((acc, ticket) => {
+    ticketTypePercentages.reduce<Record<string, TicketType>>((acc, ticket) => {
       const key = ticket.name.toLowerCase();
-      if (acc[key]) {
-        acc[key] = {
-          ...acc[key],
-          percentage: acc[key].percentage + ticket.percentage,
-        };
-      } else {
-        acc[key] = { name: ticket.name, percentage: ticket.percentage };
-      }
+      acc[key] = acc[key]
+        ? { ...acc[key], percentage: acc[key].percentage + ticket.percentage }
+        : { name: ticket.name, percentage: ticket.percentage };
       return acc;
     }, {}),
-  ).map((t) => ({
-    ...t,
-    percentage: Math.round(t.percentage * 100) / 100,
-  }));
+  ).sort((a, b) => b.percentage - a.percentage);
 
   const isEmpty = tickets.length === 0;
+  const legend = isEmpty
+    ? EMPTY_SWATCHES.map((color) => ({ label: "–", value: "0", color }))
+    : tickets.map((type, i) => ({
+        label: type.name,
+        value: `${Math.round(type.percentage)}%`,
+        color: getColor(type.name, i),
+      }));
 
-  const defaultData: ChartData<"doughnut"> = {
+  const data: ChartData<"doughnut"> = {
     datasets: [
       {
-        data: tickets.map((t) => t.percentage),
-        backgroundColor: tickets.map((t, i) => getColor(t.name, i)),
+        data: isEmpty ? [1] : tickets.map((t) => t.percentage),
+        backgroundColor: isEmpty
+          ? ["#F1F2F3"]
+          : tickets.map((t, i) => getColor(t.name, i)),
         borderWidth: 0,
-        spacing: 0,
         hoverOffset: 0,
       },
     ],
   };
 
-  const emptyData: ChartData<"doughnut"> = {
-    datasets: [
-      {
-        data: [1],
-        backgroundColor: ["#E0E0E0"],
-        borderWidth: 0,
-        spacing: 0,
-        hoverOffset: 0,
-      },
-    ],
-  };
-
-  const defaultOptions: ChartOptions<"doughnut"> = {
+  const options: ChartOptions<"doughnut"> = {
     responsive: true,
-    cutout: "85%",
-    plugins: { legend: { display: false } },
-    layout: { padding: 0 },
+    maintainAspectRatio: true,
+    cutout: "84%",
+    // The ring sweeps round on first paint.
+    animation: { animateRotate: true, duration: 800, easing: "easeOutQuart" },
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: !isEmpty },
+    },
   };
 
   return (
-    <>
-      {tickets.length === 0 ? (
-        <div className="flex flex-col gap-8 lg:flex-row w-full">
-          {/* Legend */}
-          <div className="w-full flex flex-col gap-12 lg:gap-10">
-            <span className="text-[14px] font-sans justify-start text-gray-800 text-base font-medium leading-tight lg:text-[15px]">
-              {t("tickets.classes")}
-            </span>
-            <div className="flex flex-col justify-center h-full items-center gap-4">
-              <InfoCircle size="32" color="#D5D8DC" />
-              <span className="font-primary text-[1.2rem] text-neutral-500">
-                {t("noActivity")}
+    <div className="flex flex-col gap-10 w-full lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-10 min-w-0">
+        <PanelTitle>{t("tickets.classes")}</PanelTitle>
+        <ul className="flex justify-between gap-6 lg:grid lg:grid-cols-2 lg:gap-x-20 lg:gap-y-10">
+          {legend.map((item, i) => (
+            <li key={`${item.label}-${i}`} className="flex flex-col min-w-0">
+              <span className="flex items-center gap-2 font-sans text-[1.4rem] leading-8 text-neutral-600 min-w-0">
+                <span
+                  className="size-[1.5rem] shrink-0 rounded-[.5rem]"
+                  style={{ backgroundColor: item.color }}
+                />
+                <span className="truncate capitalize">{item.label}</span>
               </span>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-8 lg:flex-row w-full">
-          {/* Legend */}
-          <div className="w-full flex flex-col gap-8 lg:gap-10">
-            <span className="text-[14px] font-sans justify-start text-gray-800 text-base font-medium leading-tight lg:text-[15px]">
-              {t("tickets.classes")}
-            </span>
-            <div className="grid grid-cols-2 items-start gap-x-8 gap-y-8 lg:gap-x-20 lg:gap-y-14">
-              {tickets.map((type, index) => (
-                <div
-                  key={type.name}
-                  className="grid grid-cols justify-start items-start"
-                >
-                  <div className="justify-start items-center gap-2 inline-flex">
-                    <div
-                      className="w-6 h-6 rounded-[5px]"
-                      style={{ backgroundColor: getColor(type.name, index) }}
-                    />
-                    <div className="text-[#8F96A1] text-[14px] font-sans font-medium capitalize">
-                      {type.name}
-                    </div>
-                  </div>
-                  <div className="justify-start font-medium text-black text-[25px] font-primary capitalize leading-none">
-                    {Number.isInteger(type.percentage)
-                      ? type.percentage
-                      : type.percentage.toFixed(2)}%
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Chart */}
-          <div className="h-70 justify-center items-center flex">
-            <Doughnut
-              data={isEmpty ? emptyData : defaultData}
-              options={options || defaultOptions}
-            />
-          </div>
-        </div>
-      )}
-    </>
+              <span className="font-primary font-medium text-[1.6rem] lg:text-[2.5rem] leading-12 text-black">
+                {item.value}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div className="size-[17.5rem] shrink-0 self-center">
+        <Doughnut data={data} options={options} updateMode="none" />
+      </div>
+    </div>
   );
 }

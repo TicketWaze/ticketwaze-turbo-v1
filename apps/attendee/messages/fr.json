@@ -1194,7 +1194,8 @@
     "used_m": "Utilisé",
     "previous": "Billet précédent",
     "next": "Billet suivant",
-    "noTickets": "Aucun billet disponible"
+    "noTickets": "Aucun billet disponible",
+    "eventPassword": "Mot de passe"
   },
   "Checkout": {
     "reward": {
@@ -1224,7 +1225,9 @@
       "free_login_required": "Connectez-vous pour réclamer votre billet gratuit.",
       "ticketWarning": "Les billets ne sont pas remboursables. Toutes les ventes sont définitives",
       "discount_applied": "Réduction appliquée",
-      "fees": "Frais"
+      "fees": "Frais",
+      "on_sale_from": "En vente à partir du {date}",
+      "sales_ended": "Ventes terminées"
     },
     "recipient": {
       "title": "Destinataire",

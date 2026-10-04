@@ -122,3 +122,31 @@ export function ButtonYellowSecondary({
     </Button>
   );
 }
+
+/**
+ * The compact pill of the Figma page headers ("Check in", "Share event",
+ * "Create ticket"): 35px tall, 14px text. `primary` is the orange one.
+ */
+export function ButtonPill({
+  children,
+  className,
+  tone = "neutral",
+  ref,
+  ...props
+}: ButtonProps & { tone?: "neutral" | "primary" }) {
+  return (
+    <button
+      {...props}
+      ref={ref}
+      className={cn(
+        "inline-flex items-center justify-center gap-3 rounded-[3rem] px-6 py-[.7rem] border font-sans text-[1.4rem] leading-8 whitespace-nowrap cursor-pointer transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed",
+        tone === "primary"
+          ? "bg-primary-500 border-primary-600 text-white hover:bg-primary-600"
+          : "bg-neutral-100 border-transparent text-neutral-700 hover:bg-neutral-200 hover:text-deep-100",
+        className,
+      )}
+    >
+      {children}
+    </button>
+  );
+}

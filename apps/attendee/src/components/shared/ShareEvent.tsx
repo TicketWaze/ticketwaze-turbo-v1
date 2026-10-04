@@ -19,14 +19,21 @@ import {
 import { slugify } from "@/lib/Slugify";
 import { cn } from "@/lib/utils";
 import { Event } from "@ticketwaze/typescript-config";
+import { trackEngagement, type ShareChannel } from "@/lib/engagement";
 
 export default function ShareEvent({
   event,
   url,
+  activityId,
   triggerClassName,
 }: {
   event?: Event;
   url?: string;
+  /**
+   * The activity being shared, for the organiser's share count. Defaults to
+   * `event`'s id; left out (e.g. sharing an organisation) nothing is reported.
+   */
+  activityId?: string;
   /**
    * Overrides on the trigger, merged through `cn` so they beat the defaults.
    * Lets a caller size the button to whatever it sits beside — the default pill
@@ -35,6 +42,10 @@ export default function ShareEvent({
   triggerClassName?: string;
 }) {
   const t = useTranslations("Event");
+  const sharedId = activityId ?? event?.eventId;
+  const report = (channel: ShareChannel) => {
+    if (sharedId) trackEngagement(sharedId, "share", channel);
+  };
   const currentUrl =
     url ??
     (event
@@ -97,6 +108,7 @@ export default function ShareEvent({
               onClick={async () => {
                 try {
                   await navigator.clipboard.writeText(currentUrl);
+                  report("copy");
                   toast.success("Url copied to clipboard");
                 } catch {
                   toast.error("Failed to copy url");
@@ -114,6 +126,7 @@ export default function ShareEvent({
             <Link
               href={`https://wa.me/?text=${encodeURIComponent(`*Check this out — it’s worth your time!* \nSomething exciting is happening and I wanted you to be part of it.\nTap the link to explore - Reserve your spot now! \n${currentUrl}`)}`}
               target="_blank"
+              onClick={() => report("whatsapp")}
               className="flex items-center justify-center w-18 h-18 bg-neutral-100 rounded-full"
             >
               <Image src={Whatsapp} alt="whatsapp Icon" />
@@ -123,6 +136,7 @@ export default function ShareEvent({
                 `Check this out — it’s worth your time! 🚀\nSomething exciting is happening and I wanted you to be part of it.\nReserve your spot now: ${currentUrl}`,
               )}`}
               target="_blank"
+              onClick={() => report("x")}
               className="flex items-center justify-center w-18 h-18 bg-neutral-100 rounded-full"
             >
               <Image src={Twitter} alt="Twitter Icon" />
@@ -130,6 +144,7 @@ export default function ShareEvent({
             <Link
               href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`}
               target="_blank"
+              onClick={() => report("linkedin")}
               className="flex items-center justify-center w-18 h-18 bg-neutral-100 rounded-full"
             >
               <Image src={Linkedin} alt="LinkedIn Icon" />

@@ -72,8 +72,7 @@ export function Input({
   );
 }
 
-interface TextAreaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextAreaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   children: React.ReactNode;
   error?: string;
   className?: string;

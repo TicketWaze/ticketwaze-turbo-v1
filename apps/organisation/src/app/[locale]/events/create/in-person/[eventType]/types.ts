@@ -14,6 +14,9 @@ export type TicketType = {
    * (untouched or deliberately free?) until the organiser has said which.
    */
   isFree: boolean;
+  /** This class's sales window, "YYYY-MM-DDTHH:mm" local; empty = open-ended. */
+  salesStartAt?: string;
+  salesEndAt?: string;
 };
 export type EventDay = {
   dayNumber: number;

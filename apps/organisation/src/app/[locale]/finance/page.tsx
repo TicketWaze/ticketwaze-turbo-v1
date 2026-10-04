@@ -1,14 +1,12 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 import FinancePageContent from "./FinancePageContent";
 import { auth } from "@/lib/auth";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import TopBar from "@/components/shared/TopBar";
-import InitiateWithdrawalButton from "./InitiateWithdrawalButton";
 import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
+import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 
 export default async function FinancePage() {
-  const t = await getTranslations("Finance");
   const locale = await getLocale();
   const session = await auth();
 
@@ -28,40 +26,34 @@ export default async function FinancePage() {
     );
   } catch {
     return (
-      <OrganizerLayout title="Finance">
+      <OrganizerLayout title="">
         <FetchFailedErrorView />
       </OrganizerLayout>
     );
   }
-  const authorized = request.status === 200;
   if (request.status === 403) {
     return <UnauthorizedView />;
   }
   const transactions = await request.json().catch(() => null);
-  // On error/404 the API returns an error object without the transaction keys.
-  // Guard the shape so the client render doesn't crash on undefined access.
+  // On error the API returns an object without the transaction keys; guard the
+  // shape so the client render doesn't crash on undefined access.
   if (!request.ok || !transactions?.allOrders) {
     return (
-      <OrganizerLayout title="Finance">
+      <OrganizerLayout title="">
         <FetchFailedErrorView />
       </OrganizerLayout>
     );
   }
+  // Seeing the money (viewFinance) is not the same as moving it.
+  const canWithdraw = OrganisationPolicy.fromSession(
+    session?.activeOrganisation?.myPermissions ?? [],
+  ).CreateWithdrawalRequest();
+
   return (
-    <OrganizerLayout title="Finance">
-      <TopBar title={t("title")}>
-        {authorized && (
-          <div className="hidden lg:block">
-            <InitiateWithdrawalButton
-              organisation={transactions.organisation}
-              hasPendingPayout={Boolean(transactions.hasPendingPayout)}
-            />
-          </div>
-        )}
-      </TopBar>
+    <OrganizerLayout title="">
       <FinancePageContent
         transactions={transactions}
-        authorizedUpdate={authorized}
+        canWithdraw={canWithdraw}
       />
     </OrganizerLayout>
   );

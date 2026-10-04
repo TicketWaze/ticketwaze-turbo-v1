@@ -1,6 +1,6 @@
 "use client";
 import { Link } from "@/i18n/navigation";
-import { Calendar2, Google, Location, Video } from "iconsax-reactjs";
+import { Calendar2, Global, Google, Location, Video } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { slugify } from "@/lib/Slugify";
@@ -120,12 +120,16 @@ function EventCard({
             <div className={"flex items-center gap-2"}>
               {event.onlineProvider === "zoom" ? (
                 <Video size="15" color="#2e3237" variant="Bulk" />
+              ) : event.onlineProvider === "custom" ? (
+                <Global size="15" color="#2e3237" variant="Bulk" />
               ) : (
                 <Google size="15" color="#2e3237" variant="Bulk" />
               )}
               <p className={"font-medium text-[1rem] text-deep-100 leading-6"}>
                 {event.onlineProvider === "zoom" ? (
                   <span className={"text-neutral-700"}>Zoom</span>
+                ) : event.onlineProvider === "custom" ? (
+                  <span className={"text-neutral-700"}>{locale.startsWith("fr") ? "En ligne" : "Online"}</span>
                 ) : (
                   <>
                     Meet, <span className={"text-neutral-700"}>Google</span>
