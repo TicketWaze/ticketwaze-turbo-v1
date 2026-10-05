@@ -30,16 +30,8 @@ export default async function CompleteComingSoonEventPage({
   ).createEvent();
   if (!authorized) return <UnauthorizedView />;
 
-  const { event } = await getTeaser(slug);
-  if (!event) {
-    return (
-      <OrganizerLayout title={t("publish.title")}>
-        <FetchFailedErrorView />
-      </OrganizerLayout>
-    );
-  }
-
-  const request = await fetch(
+  // The plan doesn't depend on the teaser: both load together.
+  const orgPending = fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,
     {
       method: "GET",
@@ -51,6 +43,18 @@ export default async function CompleteComingSoonEventPage({
       },
     },
   );
+  // Settled here so an early return leaves no unhandled rejection.
+  orgPending.catch(() => {});
+  const { event } = await getTeaser(slug);
+  if (!event) {
+    return (
+      <OrganizerLayout title={t("publish.title")}>
+        <FetchFailedErrorView />
+      </OrganizerLayout>
+    );
+  }
+
+  const request = await orgPending;
   const response = await request.json().catch(() => null);
   if (!request.ok || !response?.membershipTier) {
     return (

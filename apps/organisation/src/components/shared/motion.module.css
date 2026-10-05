@@ -1,0 +1,36 @@
+/*
+ * Entrance motion as plain CSS, so it plays as soon as the HTML paints rather
+ * than after the JavaScript arrives and hydrates — on a slow connection that
+ * gap is seconds of invisible (opacity: 0) content. Timings mirror the motion
+ * values in motion.tsx; `both` keeps the start frame through the delay.
+ */
+
+.rise {
+  animation: rise 0.35s ease-out both;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--rise, 16px));
+  }
+}
+
+.grow {
+  animation: grow 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes grow {
+  from {
+    width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .grow {
+    animation: none;
+  }
+}

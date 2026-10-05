@@ -179,7 +179,7 @@ export default function LocationPicker({
   };
 
   return (
-    <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!}>
+    <>
       <div className="tw-picker">
         {!mapVisible ? (
           <button
@@ -194,6 +194,9 @@ export default function LocationPicker({
             <LoadingCircleSmall />
           </div>
         ) : (
+          // The provider loads the Google Maps script (several hundred KB),
+          // so it mounts with the map, not with the form around the button.
+          <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!}>
           <div className="tw-map-wrap h-[300px]">
             <MapLayer
               value={internalValue}
@@ -203,6 +206,7 @@ export default function LocationPicker({
               userLocation={userLocation}
             />
           </div>
+          </APIProvider>
         )}
       </div>
 
@@ -225,6 +229,6 @@ export default function LocationPicker({
         .tw-coords{font-size:12px;color:#6b7280}
         .tw-clear{background:none;border:none;cursor:pointer}
       `}</style>
-    </APIProvider>
+    </>
   );
 }

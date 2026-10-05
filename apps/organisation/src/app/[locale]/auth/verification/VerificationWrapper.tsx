@@ -39,6 +39,7 @@ import {
   KYC_DOCUMENT_ACCEPT,
   KYC_MAX_FILE_BYTES,
   KYC_PHOTO_ACCEPT,
+  clearCachedKyc,
   fetchKycStatus,
   identityKinds,
   isPhotoKind,
@@ -91,6 +92,8 @@ export default function VerificationWrapper({
 
   useEffect(() => {
     if (!organisationId || !accessToken) return;
+    // The status changes here; the dashboard banner re-reads it afterwards.
+    clearCachedKyc();
     let cancelled = false;
     fetchKycStatus(organisationId, accessToken, locale).then((state) => {
       if (!cancelled) setKyc(state);

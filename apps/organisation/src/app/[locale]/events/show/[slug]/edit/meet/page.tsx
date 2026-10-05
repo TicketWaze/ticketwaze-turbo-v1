@@ -17,6 +17,22 @@ export default async function EditEvent({
   const eventId = extractIdFromSlug(slug);
   const session = await auth();
   const locale = await getLocale();
+  // The organisation (for its plan) doesn't depend on the request below,
+  // so both start together.
+  const requestPending = fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.user.accessToken}`,
+        "Accept-Language": locale,
+        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+      },
+    },
+  );
+  // Settled here so an early return leaves no unhandled rejection.
+  requestPending.catch(() => {});
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/events/${eventId}`,
     {
@@ -42,18 +58,7 @@ export default async function EditEvent({
   }
   const event: Event = eventResponse.event;
   if (event.deletionStatus != null) redirect(`/events/show/${slug}`);
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.user.accessToken}`,
-        "Accept-Language": locale,
-        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-      },
-    },
-  );
+  const request = await requestPending;
   const response = await request.json().catch(() => null);
   if (!request.ok || !response?.membershipTier) {
     return (

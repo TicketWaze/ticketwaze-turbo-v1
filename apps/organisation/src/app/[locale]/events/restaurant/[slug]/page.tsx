@@ -28,6 +28,23 @@ export default async function RestaurantDetailPage({
     );
   }
 
+  // The organisation's branding (for the QR card) loads alongside the
+  // restaurant rather than after it.
+  const orgPending = fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation.organisationId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept-Language": locale,
+        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        Authorization: `Bearer ${session?.user.accessToken}`,
+      },
+    },
+  );
+  // Settled here so an early return leaves no unhandled rejection.
+  orgPending.catch(() => {});
+
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/restaurants/${session?.activeOrganisation.organisationId}/${restaurantId}`,
     {
@@ -65,18 +82,7 @@ export default async function RestaurantDetailPage({
   let organisationName = "";
   let organisationLogoUrl: string | null = null;
   try {
-    const orgRequest = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation.organisationId}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-          Authorization: `Bearer ${session?.user.accessToken}`,
-        },
-      },
-    );
+    const orgRequest = await orgPending;
     const orgResponse = await orgRequest.json().catch(() => null);
     organisationName = orgResponse?.organisation?.organisationName ?? "";
     organisationLogoUrl = orgResponse?.organisation?.profileImageUrl ?? null;

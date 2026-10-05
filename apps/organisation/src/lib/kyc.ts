@@ -100,6 +100,45 @@ export async function fetchKycStatus(
   }
 }
 
+/**
+ * The dashboard banner's copy of the status, for the browser session. The
+ * banner sits on every page, and re-asking the API on each one is a round trip
+ * per navigation on a slow connection. The status only moves on an admin
+ * review, so "approved" is kept for the session and anything else for a few
+ * minutes; the verification page clears it, since that's where it changes.
+ */
+const KYC_CACHE_KEY = "tw:kyc-status";
+const KYC_CACHE_MS = 5 * 60 * 1000;
+
+export function readCachedKyc(organisationId: string): KycState | undefined {
+  try {
+    const raw = window.sessionStorage.getItem(KYC_CACHE_KEY);
+    if (!raw) return undefined;
+    const { orgId, at, state } = JSON.parse(raw);
+    if (orgId !== organisationId || !state) return undefined;
+    const fresh =
+      state.status === "approved" || Date.now() - at < KYC_CACHE_MS;
+    return fresh ? state : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function writeCachedKyc(organisationId: string, state: KycState) {
+  try {
+    window.sessionStorage.setItem(
+      KYC_CACHE_KEY,
+      JSON.stringify({ orgId: organisationId, at: Date.now(), state }),
+    );
+  } catch {}
+}
+
+export function clearCachedKyc() {
+  try {
+    window.sessionStorage.removeItem(KYC_CACHE_KEY);
+  } catch {}
+}
+
 export type KycUploadResult =
   | { ok: true; key: string }
   | { ok: false; code?: string; message?: string };

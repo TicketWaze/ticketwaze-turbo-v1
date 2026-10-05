@@ -38,51 +38,57 @@ export default async function IntegrationsPage() {
    * The connect button still works, and an organiser who genuinely is connected
    * sees the truth on the next load — which is better than a dead screen.
    */
-  let zoom: ZoomStatus = { connected: false, available: false };
-  try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${organisationId}/status`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.user.accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+  const readZoom = async (): Promise<ZoomStatus> => {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${organisationId}/status`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.accessToken}`,
+            "Accept-Language": locale,
+            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          },
+          cache: "no-store",
         },
-        cache: "no-store",
-      },
-    );
-    const response = await request.json();
-    if (response.status === "success" && response.zoom) {
-      zoom = response.zoom;
+      );
+      const response = await request.json();
+      if (response.status === "success" && response.zoom) {
+        return response.zoom;
+      }
+    } catch (error) {
+      console.error("Failed to read the Zoom connection status:", error);
     }
-  } catch (error) {
-    console.error("Failed to read the Zoom connection status:", error);
-  }
+    return { connected: false, available: false };
+  };
 
-  let google: GoogleStatus = { connected: false, available: false };
-  try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/status`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.user.accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+  const readGoogle = async (): Promise<GoogleStatus> => {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/status`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.accessToken}`,
+            "Accept-Language": locale,
+            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          },
+          cache: "no-store",
         },
-        cache: "no-store",
-      },
-    );
-    const response = await request.json();
-    if (response.status === "success" && response.google) {
-      google = response.google;
+      );
+      const response = await request.json();
+      if (response.status === "success" && response.google) {
+        return response.google;
+      }
+    } catch (error) {
+      console.error("Failed to read the Google connection status:", error);
     }
-  } catch (error) {
-    console.error("Failed to read the Google connection status:", error);
-  }
+    return { connected: false, available: false };
+  };
+  // Independent reads: run them side by side.
+  const [zoom, google] = await Promise.all([readZoom(), readGoogle()]);
 
   return (
     <OrganizerLayout title="">

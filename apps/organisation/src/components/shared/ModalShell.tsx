@@ -16,7 +16,8 @@ import { ease } from "./motion";
  * The centred modal of the Figma event pages ("Share Event", "Export Data"):
  * 520px card, title on the left, a round grey close button on the right, a
  * hairline under the header, then the body rising in. Goes inside a
- * `<Dialog>`; replaces the dialog's own corner close button.
+ * `<Dialog>`; replaces the dialog's own corner close button. Never taller
+ * than the viewport: the header stays put and the body scrolls.
  */
 export default function ModalShell({
   title,
@@ -33,12 +34,12 @@ export default function ModalShell({
   return (
     <DialogContent
       className={cn(
-        "flex flex-col w-[calc(100vw-3.2rem)] max-w-[52rem] lg:w-[52rem] p-[2rem] lg:p-[3rem] gap-0 rounded-[2rem] border-none",
+        "flex flex-col max-h-[calc(100dvh-3.2rem)] w-[calc(100vw-3.2rem)] max-w-[52rem] lg:w-[52rem] p-[2rem] lg:p-[3rem] gap-0 rounded-[2rem] border-none",
         "[&>[data-slot=dialog-close]:last-child]:hidden",
         className,
       )}
     >
-      <div className="flex items-center justify-between gap-4 pb-[1.5rem] border-b border-neutral-100">
+      <div className="shrink-0 flex items-center justify-between gap-4 pb-[1.5rem] border-b border-neutral-100">
         <DialogTitle className="font-primary font-medium text-[2rem] lg:text-[2.6rem] leading-12 text-black">
           {title}
         </DialogTitle>
@@ -50,7 +51,7 @@ export default function ModalShell({
         </DialogClose>
       </div>
       <motion.div
-        className="flex flex-col items-center gap-[2.5rem] pt-[2.5rem] min-w-0 w-full"
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex flex-col items-center gap-[2.5rem] pt-[2.5rem] min-w-0 w-full"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, ease, delay: 0.05 }}

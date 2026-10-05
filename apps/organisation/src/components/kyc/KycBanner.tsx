@@ -8,7 +8,12 @@ import type { KycStatus } from "@ticketwaze/typescript-config";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { usePermission } from "@/hooks/usePermission";
-import { fetchKycStatus, type KycState } from "@/lib/kyc";
+import {
+  fetchKycStatus,
+  readCachedKyc,
+  writeCachedKyc,
+  type KycState,
+} from "@/lib/kyc";
 
 const DISMISS_KEY = "tw:kyc-banner-dismissed";
 const listeners = new Set<() => void>();
@@ -41,12 +46,20 @@ export default function KycBanner() {
   const [kyc, setKyc] = useState<KycState | null>(null);
   const dismissed = useSyncExternalStore(subscribe, dismissedFor, () => null);
 
-  // Read fresh on every page: approval happens elsewhere (admin review), so
-  // the session's copy of the organisation can't be trusted for this.
+  // Approval happens elsewhere (admin review), so the session's copy of the
+  // organisation can't be trusted for this; a short-lived browser copy can
+  // (see readCachedKyc), and spares a request on every page.
   useEffect(() => {
     if (!organisationId || !accessToken) return;
+    const cached = readCachedKyc(organisationId);
     let cancelled = false;
-    fetchKycStatus(organisationId, accessToken, locale).then((state) => {
+    const pending = cached
+      ? Promise.resolve(cached)
+      : fetchKycStatus(organisationId, accessToken, locale).then((state) => {
+          if (state) writeCachedKyc(organisationId, state);
+          return state;
+        });
+    pending.then((state) => {
       if (!cancelled) setKyc(state);
     });
     return () => {

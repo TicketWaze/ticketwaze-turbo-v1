@@ -4,7 +4,8 @@ import { useSession } from "next-auth/react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import Cropper from "react-easy-crop";
+import dynamic from "next/dynamic";
+import type EasyCrop from "react-easy-crop";
 import { useCallback } from "react";
 import {
   Dialog,
@@ -21,6 +22,12 @@ import { UpdateOrganisationProfileImage } from "@/actions/organisationActions";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import Image from "next/image";
+
+// The cropper only appears once an image is picked: fetched then, not with the page.
+// The cast keeps the class's defaultProps typing, which dynamic() drops.
+const Cropper = dynamic(() => import("react-easy-crop"), {
+  ssr: false,
+}) as unknown as typeof EasyCrop;
 
 function ProfileImage() {
   const t = useTranslations("Settings.profile");

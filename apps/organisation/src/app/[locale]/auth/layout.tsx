@@ -2,6 +2,7 @@ import React from "react";
 import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-white.svg";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import SectionIntlProvider from "@/components/i18n/SectionIntlProvider";
 import ticket from "@ticketwaze/ui/assets/images/ticket-auth-bg.svg";
 
 // Figma "Organizers + Mobile" → Authentication: same panel as the attendee
@@ -33,7 +34,8 @@ export default async function Layout({
         <Image src={ticket} alt="Ticket auth" className=" self-center" />
       </div>
       <main className="bg-white lg:rounded-[3rem] px-6 lg:px-32 overflow-x-hidden overflow-y-scroll">
-        {children}
+        {/* The messages this section's client components use. */}
+        <SectionIntlProvider namespaces={["Auth"]}>{children}</SectionIntlProvider>
       </main>
     </section>
   );

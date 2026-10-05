@@ -8,11 +8,13 @@ import ProFeatureAlert from "@/components/Layouts/ProFeatureAlert";
 import { LinkPrimary } from "@/components/shared/Links";
 import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import { cn } from "@/lib/utils";
-import TicketClassesChart from "./TicketClassesChart";
-import RevenueTicketsChart from "./RevenueTicketsChart";
-import DonutChart from "./DonutChart";
+import {
+  DonutChart,
+  RevenueTicketsChart,
+  SalesLineChart,
+  TicketClassesChart,
+} from "./charts";
 import StarRatingChart from "./StarRatingChart";
-import SalesLineChart from "./SalesLineChart";
 import AnalyticsFilters from "./AnalyticsFilters";
 import { PERIODS, type Period } from "./periods";
 import { Reveal } from "@/components/shared/motion";

@@ -24,14 +24,24 @@ import CheckingDialog from "./CheckingDialog";
 import StartMeetingButton from "./StartMeetingButton";
 import DeletionBanner from "./DeletionBanner";
 import EventArtist from "./EventArtist";
-import ShareEvent from "./ShareEvent";
-import ExportDialog from "./ExportDialog";
-import EventDrawerContent from "./EventDrawerContent";
 import TicketsTable from "./TicketsTable";
 import ReturnedTicketsSection from "./ReturnedTicketsSection";
 import PrintedTicketsSection from "./PrintedTicketsSection";
-import AddDiscountDrawer from "../discount-codes/AddDiscountDrawer";
 import { useRouter } from "@/i18n/navigation";
+import dynamic from "next/dynamic";
+import MountOnOpen from "@/components/shared/MountOnOpen";
+
+// Dialogs and drawers download on first open, not with the page: between
+// them they carry QR and poster rendering, form validation and the exports.
+const ShareEvent = dynamic(() => import("./ShareEvent"), { ssr: false });
+const ExportDialog = dynamic(() => import("./ExportDialog"), { ssr: false });
+const EventDrawerContent = dynamic(() => import("./EventDrawerContent"), {
+  ssr: false,
+});
+const AddDiscountDrawer = dynamic(
+  () => import("../discount-codes/AddDiscountDrawer"),
+  { ssr: false },
+);
 
 /**
  * % change of `value` over the last 7 days against the 7 before; null when
@@ -342,25 +352,37 @@ export default function EventPageDetails({
       <PrintedTicketsSection event={event} batches={physicalTicketBatches} />
       <ReturnedTicketsSection event={event} ticketReturns={ticketReturns} />
 
-      <ShareEvent event={event} open={shareOpen} onOpenChange={setShareOpen} />
-      <ExportDialog
-        event={event}
-        tickets={tickets}
-        membershipTier={membershipTier}
-        open={exportOpen}
-        onOpenChange={setExportOpen}
-      />
-      <EventDrawerContent
-        event={event}
-        open={detailsOpen}
-        onOpenChange={setDetailsOpen}
-      />
-      <AddDiscountDrawer
-        event={event}
-        open={discountOpen}
-        onOpenChange={setDiscountOpen}
-        onShare={shareDiscount}
-      />
+      <MountOnOpen open={shareOpen}>
+        <ShareEvent
+          event={event}
+          open={shareOpen}
+          onOpenChange={setShareOpen}
+        />
+      </MountOnOpen>
+      <MountOnOpen open={exportOpen}>
+        <ExportDialog
+          event={event}
+          tickets={tickets}
+          membershipTier={membershipTier}
+          open={exportOpen}
+          onOpenChange={setExportOpen}
+        />
+      </MountOnOpen>
+      <MountOnOpen open={detailsOpen}>
+        <EventDrawerContent
+          event={event}
+          open={detailsOpen}
+          onOpenChange={setDetailsOpen}
+        />
+      </MountOnOpen>
+      <MountOnOpen open={discountOpen}>
+        <AddDiscountDrawer
+          event={event}
+          open={discountOpen}
+          onOpenChange={setDiscountOpen}
+          onShare={shareDiscount}
+        />
+      </MountOnOpen>
     </div>
   );
 }

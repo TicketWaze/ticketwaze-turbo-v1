@@ -17,7 +17,8 @@ import {
 import { Image as ImageIcon, Trash } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import React, { useCallback, useRef, useState } from "react";
-import Cropper from "react-easy-crop";
+import dynamic from "next/dynamic";
+import type EasyCrop from "react-easy-crop";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
@@ -31,6 +32,12 @@ import PageLoader from "@/components/PageLoader";
 import { Input } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+
+// The cropper only appears once an image is picked: fetched then, not with the page.
+// The cast keeps the class's defaultProps typing, which dynamic() drops.
+const Cropper = dynamic(() => import("react-easy-crop"), {
+  ssr: false,
+}) as unknown as typeof EasyCrop;
 
 const httpsUrlRegex = /^https:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/\S*)?$/;
 

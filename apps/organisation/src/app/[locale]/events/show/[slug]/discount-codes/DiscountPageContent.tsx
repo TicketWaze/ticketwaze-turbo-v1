@@ -7,9 +7,18 @@ import { DiscountCode, Event } from "@ticketwaze/typescript-config";
 import { ButtonPill } from "@/components/shared/buttons";
 import { Reveal, tabSpring } from "@/components/shared/motion";
 import { cn } from "@/lib/utils";
-import ShareEvent from "../components/ShareEvent";
-import AddDiscountDrawer from "./AddDiscountDrawer";
+import dynamic from "next/dynamic";
+import MountOnOpen from "@/components/shared/MountOnOpen";
 import DiscountCodeTable, { codeState } from "./DiscountCodeTable";
+
+// Downloaded on first open: the form's validation and the share dialog's QR
+// and poster rendering are heavy, and most visits only read the table.
+const ShareEvent = dynamic(() => import("../components/ShareEvent"), {
+  ssr: false,
+});
+const AddDiscountDrawer = dynamic(() => import("./AddDiscountDrawer"), {
+  ssr: false,
+});
 
 type Tab = "all" | "active" | "inactive";
 
@@ -140,13 +149,21 @@ export default function DiscountPageContent({ event }: { event: Event }) {
         onAdd={tab === "all" ? () => setAddOpen(true) : undefined}
       />
 
-      <AddDiscountDrawer
-        event={event}
-        open={addOpen}
-        onOpenChange={setAddOpen}
-        onShare={share}
-      />
-      <ShareEvent event={event} open={shareOpen} onOpenChange={setShareOpen} />
+      <MountOnOpen open={addOpen}>
+        <AddDiscountDrawer
+          event={event}
+          open={addOpen}
+          onOpenChange={setAddOpen}
+          onShare={share}
+        />
+      </MountOnOpen>
+      <MountOnOpen open={shareOpen}>
+        <ShareEvent
+          event={event}
+          open={shareOpen}
+          onOpenChange={setShareOpen}
+        />
+      </MountOnOpen>
     </div>
   );
 }

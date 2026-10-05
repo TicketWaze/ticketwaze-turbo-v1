@@ -599,7 +599,7 @@ function RoleField({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="max-h-[32rem] overflow-y-auto rounded-[1.5rem] border border-neutral-100 p-4">
+            <div className="rounded-[1.5rem] border border-neutral-100 p-4">
               <PermissionPicker
                 availablePermissions={availablePermissions}
                 selected={permissions}
@@ -612,6 +612,14 @@ function RoleField({
     </div>
   );
 }
+
+/**
+ * Add/Edit member keep one height whichever role is picked: the fields
+ * scroll (Custom's permission list included) and the button stays pinned.
+ */
+const MEMBER_MODAL = "lg:w-[52rem] h-[min(58rem,calc(100dvh-3.2rem))]";
+const MEMBER_FIELDS =
+  "w-full flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex flex-col gap-4";
 
 function permissionsFor(role: string, custom: string[], available: string[]) {
   if (role === "custom") return custom;
@@ -669,8 +677,8 @@ function AddMemberDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <ModalShell title={t("add")} className="lg:w-[52rem]">
-        <div className="w-full flex flex-col gap-4">
+      <ModalShell title={t("add")} className={MEMBER_MODAL}>
+        <div className={MEMBER_FIELDS}>
           <Input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -700,7 +708,7 @@ function AddMemberDialog({
           type="button"
           onClick={submit}
           disabled={!ready || busy}
-          className="w-full h-[5.2rem] rounded-[10rem] bg-primary-500 font-sans font-semibold text-[1.5rem] text-white cursor-pointer hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full h-[5.2rem] shrink-0 rounded-[10rem] bg-primary-500 font-sans font-semibold text-[1.5rem] text-white cursor-pointer hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
           {busy ? <LoadingCircleSmall /> : t("add")}
         </button>
@@ -754,8 +762,8 @@ function EditMemberDialog({
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <ModalShell title={t("edit_title")} className="lg:w-[52rem]">
-        <div className="w-full flex flex-col gap-4">
+      <ModalShell title={t("edit_title")} className={MEMBER_MODAL}>
+        <div className={MEMBER_FIELDS}>
           <Input
             value={`${member.firstName} ${member.lastName}`}
             disabled
@@ -778,7 +786,7 @@ function EditMemberDialog({
           type="button"
           onClick={save}
           disabled={busy || permissions.length === 0}
-          className="w-full h-[5.2rem] rounded-[10rem] bg-primary-500 font-sans font-semibold text-[1.5rem] text-white cursor-pointer hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          className="w-full h-[5.2rem] shrink-0 rounded-[10rem] bg-primary-500 font-sans font-semibold text-[1.5rem] text-white cursor-pointer hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
         >
           {busy ? <LoadingCircleSmall /> : t("save")}
         </button>

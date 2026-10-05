@@ -6,10 +6,7 @@ import { auth } from "@/lib/auth";
 import { getLocale } from "next-intl/server";
 import CreateEventFlow from "./CreateEventFlow";
 import type { OnlineProviders } from "@/components/create/EventLinkCard";
-import type {
-  GoogleStatus,
-  ZoomStatus,
-} from "../meet/OnlineProviderPicker";
+import type { GoogleStatus, ZoomStatus } from "../meet/OnlineProviderPicker";
 
 /**
  * CREATE EVENT — one page for physical and virtual events (Figma › Events ›
@@ -45,6 +42,26 @@ export default async function CreateEventPage({
     origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
   };
 
+  const readStatus = async <T,>(
+    provider: "zoom" | "google",
+  ): Promise<T | null> => {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/${provider}/${organisationId}/status`,
+        { headers, cache: "no-store" },
+      );
+      const response = await request.json();
+      return response.status === "success" ? (response[provider] as T) : null;
+    } catch {
+      return null;
+    }
+  };
+  // Neither status depends on the plan: all three requests run together.
+  const statusesPending = Promise.all([
+    readStatus<ZoomStatus>("zoom"),
+    readStatus<GoogleStatus>("google"),
+  ]);
+
   const meRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${organisationId}`,
     { headers },
@@ -59,22 +76,7 @@ export default async function CreateEventPage({
     );
   }
 
-  const readStatus = async <T,>(provider: "zoom" | "google"): Promise<T | null> => {
-    try {
-      const request = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/events/${provider}/${organisationId}/status`,
-        { headers, cache: "no-store" },
-      );
-      const response = await request.json();
-      return response.status === "success" ? (response[provider] as T) : null;
-    } catch {
-      return null;
-    }
-  };
-  const [zoom, google] = await Promise.all([
-    readStatus<ZoomStatus>("zoom"),
-    readStatus<GoogleStatus>("google"),
-  ]);
+  const [zoom, google] = await statusesPending;
 
   // Same readiness rules as the platform picker (meet/OnlineProviderPicker).
   const isProLocked = me.membershipTier.membershipName === "free";
@@ -82,18 +84,24 @@ export default async function CreateEventPage({
     zoom: {
       ready: Boolean(!isProLocked && zoom?.connected && zoom?.isLicensed),
       seatLimit: zoom?.seatLimit ? Number(zoom.seatLimit) : null,
-      maxMinutes: zoom?.maxDurationMinutes ? Number(zoom.maxDurationMinutes) : null,
+      maxMinutes: zoom?.maxDurationMinutes
+        ? Number(zoom.maxDurationMinutes)
+        : null,
       account: zoom?.email ?? null,
     },
     google_meet: {
       ready: Boolean(google?.connected && google?.plan),
       seatLimit: google?.seatLimit ? Number(google.seatLimit) : null,
-      maxMinutes: google?.maxDurationMinutes ? Number(google.maxDurationMinutes) : null,
+      maxMinutes: google?.maxDurationMinutes
+        ? Number(google.maxDurationMinutes)
+        : null,
     },
   };
 
   const provider =
-    params.provider === "zoom" || params.provider === "google_meet" || params.provider === "custom"
+    params.provider === "zoom" ||
+    params.provider === "google_meet" ||
+    params.provider === "custom"
       ? params.provider
       : undefined;
 

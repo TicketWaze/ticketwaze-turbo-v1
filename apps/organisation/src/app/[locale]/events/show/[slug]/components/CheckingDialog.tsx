@@ -11,8 +11,8 @@ import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
-import { extractTicketCode } from "@/lib/ticketScanner";
-import TicketCamera from "@/components/shared/TicketCamera";
+import dynamic from "next/dynamic";
+import { extractTicketCode } from "@/lib/ticketCode";
 import {
   ScanTicketAction,
   CheckInTicketAction,
@@ -25,6 +25,11 @@ import { cn } from "@/lib/utils";
 import SuccessBadge from "@/assets/images/auth/success-badge.png";
 import { DateTime } from "luxon";
 import { isOvernight } from "@/lib/eventTime";
+
+// The scanner library is ~110 KB: fetched when the camera opens, not with the page.
+const TicketCamera = dynamic(() => import("@/components/shared/TicketCamera"), {
+  ssr: false,
+});
 
 type ScanResult = Awaited<ReturnType<typeof ScanTicketAction>>;
 type TicketInfo = { fullName: string; ticketName: string; ticketType: string };

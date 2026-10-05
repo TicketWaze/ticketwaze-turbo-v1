@@ -1,11 +1,14 @@
-"use client";
-
-import { motion } from "motion/react";
 import React from "react";
+import { cn } from "@/lib/utils";
+import styles from "./motion.module.css";
 
 /*
  * The motion vocabulary of the dashboard pages, matching the attendee app's
  * Explore page so both products move the same way.
+ *
+ * Entrances (Reveal, Stagger, GrowBar) are CSS, not JS: they need no client
+ * bundle and start on first paint instead of after hydration. The motion
+ * values below are for client components that animate exits or layout.
  */
 
 /** The attendee app's ease-out curve. */
@@ -32,9 +35,11 @@ export const tabSpring = {
   damping: 34,
 } as const;
 
+type Vars = React.CSSProperties & Record<`--${string}`, string>;
+
 /**
- * A block that fades and rises in on mount. Usable from server components:
- * the page stays server-rendered and only this wrapper is client-side.
+ * A block that fades and rises in on mount. Plain markup, so it renders
+ * inside server components without making anything client-side.
  */
 export function Reveal({
   children,
@@ -50,14 +55,10 @@ export function Reveal({
   y?: number;
   as?: "div" | "section";
 }) {
-  const Tag = as === "section" ? motion.section : motion.div;
+  const Tag = as;
+  const style: Vars = { "--delay": `${delay}s`, "--rise": `${y}px` };
   return (
-    <Tag
-      className={className}
-      initial={{ opacity: 0, y }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35, ease: "easeOut", delay }}
-    >
+    <Tag className={cn(styles.rise, className)} style={style}>
       {children}
     </Tag>
   );
@@ -74,14 +75,11 @@ export function GrowBar({
   className?: string;
   delay?: number;
 }) {
-  return (
-    <motion.span
-      className={className}
-      initial={{ width: 0 }}
-      animate={{ width: `${Math.max(0, Math.min(100, value))}%` }}
-      transition={{ duration: 0.6, ease, delay }}
-    />
-  );
+  const style: Vars = {
+    width: `${Math.max(0, Math.min(100, value))}%`,
+    "--delay": `${delay}s`,
+  };
+  return <span className={cn(styles.grow, className)} style={style} />;
 }
 
 /**
@@ -102,15 +100,11 @@ export function Stagger({
     <>
       {React.Children.map(children, (child) => {
         if (!child) return child;
-        const delay = Math.min(i++ * step, max);
+        const style: Vars = { "--delay": `${Math.min(i++ * step, max)}s` };
         return (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: "easeOut", delay }}
-          >
+          <div className={styles.rise} style={style}>
             {child}
-          </motion.div>
+          </div>
         );
       })}
     </>
