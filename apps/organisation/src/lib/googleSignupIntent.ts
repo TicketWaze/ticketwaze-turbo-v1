@@ -1,9 +1,9 @@
 /**
- * The Google button on /auth/register opens an account; the one on
- * /auth/login only signs into an existing one. Both go through the same
- * Auth.js Google provider (one redirect URI registered with Google), so the
- * register page leaves this short-lived cookie before the redirect and the
- * `signIn` callback reads it to decide whether the API may create the account.
+ * Both Google buttons (login and register) open an account for a Google
+ * address that has none. They share one Auth.js Google provider (one redirect
+ * URI registered with Google), so the register page leaves this short-lived
+ * cookie before the redirect, and the `signIn` callback reads it to send a
+ * failure back to the register page rather than the login page.
  */
 export const GOOGLE_SIGNUP_COOKIE = "tw_google_signup";
 

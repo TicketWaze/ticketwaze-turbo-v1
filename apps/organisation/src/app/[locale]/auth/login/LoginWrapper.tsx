@@ -79,9 +79,9 @@ export default function LoginWrapper() {
   const [isLoading, setIsloading] = useState(false);
   const { update } = useSession();
 
-  // The google redirect flow surfaces auth failures (e.g. signing in with a
-  // Google account that has no Ticketwaze account) as a ?error= param on this
-  // page rather than an inline toast. Our own codes are translated; anything
+  // The google redirect flow surfaces auth failures as a ?error= param on
+  // this page rather than an inline toast. (A Google account without a
+  // Ticketwaze account is not one: it gets an account and goes to set-up.) Our own codes are translated; anything
   // else is an Auth.js code like `AccessDenied` or `Configuration`, which is
   // meaningless to a user, so it degrades to the generic message.
   useEffect(() => {
@@ -93,8 +93,7 @@ export default function LoginWrapper() {
       toast.error(t("errors.organisation_suspended"), { duration: 15000 });
       return;
     }
-    const key = error === "no_account" ? "no_account" : "google_failed";
-    toast.error(t(`errors.${key}`), { duration: 8000 });
+    toast.error(t("errors.google_failed"), { duration: 8000 });
   }, [searchParams, t]);
 
   // Email 2FA: the challenge the API answered with, and the code step state.

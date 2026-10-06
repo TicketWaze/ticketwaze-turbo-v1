@@ -8,8 +8,8 @@ import { clearGoogleSignup, markGoogleSignup } from "./googleSignupIntent";
  * next-auth redirect flow, so `isLoading` reflects the moment between the click
  * and the browser navigating to Google — surfaced to the user on slow networks.
  *
- * `signup` (the register page) lets the API open an account for a Google
- * address it doesn't know; otherwise only existing accounts get in.
+ * `signup` (the register page) only decides where a failure is reported;
+ * either way a Google address without an account gets one.
  */
 export function useGoogleSignIn({
   callbackUrl,

@@ -143,7 +143,8 @@ const nextAuthResult = NextAuth({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 idToken: credentials.googleIdToken as string,
-                noCreate: true,
+                // Same as the redirect flow below: new Google users get an account.
+                noCreate: false,
                 context: LOGIN_CONTEXT,
               }),
             },
@@ -191,8 +192,10 @@ const nextAuthResult = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
-        // Started from /auth/register: the API may open the account. Read once
-        // and cleared, so a later Google login can't create one by accident.
+        // A Google address without an account gets one, from the login page
+        // as from the register page: onboarding then sends the new organizer
+        // to the organisation name step and the set-up. The register page's
+        // mark only decides where a failure is reported. Read once, cleared.
         const jar = await cookies();
         const signup = jar.get(GOOGLE_SIGNUP_COOKIE)?.value === "1";
         if (signup) jar.delete(GOOGLE_SIGNUP_COOKIE);
@@ -205,7 +208,7 @@ const nextAuthResult = NextAuth({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 idToken: account.id_token,
-                noCreate: !signup,
+                noCreate: false,
                 context: LOGIN_CONTEXT,
               }),
             },
@@ -216,14 +219,10 @@ const nextAuthResult = NextAuth({
           }
           if (data.status !== "success") {
             // Returning a URL rather than throwing: Auth.js turns a thrown
-            // error into a bare `AccessDenied` code and discards the message,
-            // so the one thing the user needs to know — that this Google
-            // account has no Ticketwaze account yet — would be lost.
-            //
+            // error into a bare `AccessDenied` code and discards the message.
             // A stable code travels instead of the API's English sentence, so
-            // the login page can render the notice in the user's language.
-            const code = res.status === 404 ? "no_account" : "google_failed";
-            return `${errorPage}?error=${code}`;
+            // the page can render the notice in the user's language.
+            return `${errorPage}?error=google_failed`;
           }
           Object.assign(user, {
             ...data.user,
