@@ -1,11 +1,18 @@
 import SignedOutState from "@/components/SignedOutState";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import ProfilePageContent from "./ProfilePageContent";
 import { auth } from "@/lib/auth";
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  searchParams,
+}: {
+  // `?edit=1` (the profile reminder email and bell) opens the edit mode.
+  searchParams: Promise<{ edit?: string }>;
+}) {
   const t = await getTranslations("Profile");
+  const locale = await getLocale();
+  const { edit } = await searchParams;
   const session = await auth();
   if (!session) {
     return (
@@ -18,6 +25,7 @@ export default async function ProfilePage() {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      "Accept-Language": locale,
       Authorization: `Bearer ${session?.user.accessToken}`,
     },
   });
@@ -27,6 +35,7 @@ export default async function ProfilePage() {
       <ProfilePageContent
         analytics={response.userAnalytic}
         user={response.user}
+        startEditing={edit === "1"}
       />
     </AttendeeLayout>
   );

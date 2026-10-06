@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { AnimatePresence, motion } from "motion/react";
-import { signIn } from "next-auth/react";
+import { signIn, signOut } from "next-auth/react";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -240,6 +240,9 @@ export default function ForgotPasswordPageWrapper({
     });
     if (result?.error) {
       // The reset itself succeeded; fall back to the sign-in form.
+      // The reset revoked every session; clear this one so the sign-in
+      // page opens instead of bouncing back into the app.
+      await signOut({ redirect: false });
       toast.success(t("success"));
       router.push(`/auth/login?email=${encodeURIComponent(email)}`);
       return;

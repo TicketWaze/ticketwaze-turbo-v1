@@ -3,7 +3,7 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signIn } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import GoogleSignInButton from "@/components/shared/GoogleSignInButton";
 import {
   AuthError,
   AuthHeading,
@@ -22,6 +23,7 @@ import {
   AuthStatus,
   FooterPill,
   FooterPillText,
+  OrDivider,
   RoleCards,
   StepFooter,
   backPillClass,
@@ -33,9 +35,11 @@ import mail from "@/assets/icons/mail-big.svg";
 
 // Figma "Organizers + Mobile" → Authentication → Sign up: role choice →
 // "Organizer Account" (1/2) → "Verify Account" → "Complete Account Set-up"
-// (2/2, /auth/onboarding/organisation) → "Account Created". The organisation
-// email is also the account's login. Figma verifies by link; the app sends the
-// same 6-digit code as the attendee sign-up.
+// (2/2, /auth/onboarding/organisation) → "Account Created". The email is the
+// account's login (the organisation's contact email is asked at 2/2). Figma
+// verifies by link; the app sends the same 6-digit code as the attendee sign-up.
+// "Continue with Google" skips this form and the code: the set-up page asks
+// for the organisation name first, then the rest.
 
 type Step = "role" | "form" | "otp";
 
@@ -49,15 +53,29 @@ const slide = {
 export default function RegisterWrapper() {
   const t = useTranslations("Auth.register");
   const tFlow = useTranslations("Auth.flow");
+  const tLogin = useTranslations("Auth.login");
   const locale = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const skipRole = searchParams.get("role") === "organizer";
+  // Coming back from a failed Google sign-up also means the role was chosen.
+  const skipRole =
+    searchParams.get("role") === "organizer" || searchParams.has("error");
   const [step, setStep] = useState<Step>(skipRole ? "form" : "role");
   const [splashDone, setSplashDone] = useState(
     skipRole || searchParams.has("start"),
   );
   const [role, setRole] = useState<AuthRole>("organizer");
+
+  // A failed Google sign-up comes back here as ?error= (see lib/auth.ts).
+  useEffect(() => {
+    const error = searchParams.get("error");
+    if (!error) return;
+    if (error === "organisation_suspended") {
+      toast.error(tLogin("errors.organisation_suspended"), { duration: 15000 });
+      return;
+    }
+    toast.error(tLogin("errors.google_failed"), { duration: 8000 });
+  }, [searchParams, tLogin]);
 
   const RegisterSchema = z
     .object({
@@ -321,7 +339,7 @@ export default function RegisterWrapper() {
                         autoComplete="email"
                         error={errors.email?.message}
                       >
-                        {t("placeholders.organisation_email")}
+                        {t("placeholders.email")}
                       </Input>
                     </AuthItem>
                     <AuthItem>
@@ -357,6 +375,13 @@ export default function RegisterWrapper() {
                           t("cta.submit")
                         )}
                       </ButtonPrimary>
+                    </AuthItem>
+                    <OrDivider />
+                    <AuthItem>
+                      <GoogleSignInButton
+                        signup
+                        callbackUrl={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`}
+                      />
                     </AuthItem>
                     <AuthItem>
                       <TermsNote />

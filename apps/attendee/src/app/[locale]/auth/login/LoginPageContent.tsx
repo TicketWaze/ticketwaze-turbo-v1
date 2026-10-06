@@ -167,25 +167,12 @@ export default function LoginPageContent({
       toast.success(t("deletionCancelled"));
       update({ user: { deletionCancelled: false } });
     }
-    if (!session?.user.userPreference) {
-      if (
-        session?.user?.organisations &&
-        session.user.organisations.length > 0
-      ) {
-        router.push("/auth/onboarding/attendee");
-      } else {
-        router.push(
-          callbackUrl
-            ? `/auth/onboarding?callbackUrl=${encodeURIComponent(callbackUrl)}`
-            : "/auth/onboarding",
-        );
-      }
-    } else {
-      const locale = session?.user.userPreference.appLanguage;
-      window.location.assign(
-        `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${locale}${callbackUrl ?? "/explore"}`,
-      );
-    }
+    // No detour through "Complete Account Set-up" for accounts that skipped
+    // it: the Tuesday profile reminder asks for the missing details instead.
+    const appLanguage = session?.user.userPreference?.appLanguage ?? locale;
+    window.location.assign(
+      `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/${appLanguage}${callbackUrl ?? "/explore"}`,
+    );
   }
 
   function continueWithRole() {

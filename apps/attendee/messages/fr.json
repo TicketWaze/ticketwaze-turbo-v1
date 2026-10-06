@@ -1520,6 +1520,7 @@
       "title": "Sécurité",
       "label": "Vérification en deux étapes (2FA)",
       "description": "Demander un code envoyé par e-mail à chaque connexion avec votre mot de passe.",
+      "required": "Activée car vous faites partie d’une organisation vérifiée. Elle reste activée tant que vous en êtes membre.",
       "noPassword": "Ajoutez d'abord un mot de passe : la vérification en deux étapes protège la connexion par mot de passe.",
       "turnOnTitle": "Activer la vérification en deux étapes",
       "turnOffTitle": "Désactiver la vérification en deux étapes",
@@ -1552,7 +1553,8 @@
       "title": "Mot de passe modifié",
       "description": "Votre mot de passe a bien été modifié.",
       "signingOut": "Déconnexion en cours…"
-    }
+    },
+    "saving": "Enregistrement…"
   },
   "Organizers": {
     "title": "Organisations",
@@ -1833,6 +1835,15 @@
     "waitlist_tokens": {
       "title": "Votre cadeau de la liste d’attente",
       "body": "Vous avez {tokens} jetons offerts dans votre portefeuille, et votre premier achat est sans frais."
+    },
+    "profile_incomplete": {
+      "title": "Complétez votre profil",
+      "body": "Il manque encore quelques informations à votre compte. Cela ne prend qu’une minute."
     }
+  },
+  "SaveStatus": {
+    "saving": "Enregistrement…",
+    "saved": "Enregistré",
+    "error": "Non enregistré"
   }
 }

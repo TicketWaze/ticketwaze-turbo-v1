@@ -20,6 +20,7 @@ import {
   TicketDiscount,
   Timer1,
   Trash,
+  UserEdit,
   UserSquare,
   Wallet,
 } from "iconsax-reactjs";
@@ -63,6 +64,7 @@ const ICONS: Record<string, typeof Ticket> = {
   account_deletion_scheduled: ShieldTick,
   account_deletion_reminder: ShieldTick,
   waitlist_tokens: Gift,
+  profile_incomplete: UserEdit,
 };
 /** Kinds that are bad news get a neutral icon chip instead of orange. */
 const SOMBER = new Set([

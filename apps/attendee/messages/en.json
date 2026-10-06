@@ -1476,6 +1476,7 @@
       "title": "Security",
       "label": "Two-step verification (2FA)",
       "description": "Ask for a code sent to your email each time you sign in with your password.",
+      "required": "On because you belong to a verified organization. It stays on while you are a member.",
       "noPassword": "Add a password first: two-step verification protects password sign-in.",
       "turnOnTitle": "Turn on two-step verification",
       "turnOffTitle": "Turn off two-step verification",
@@ -1508,7 +1509,8 @@
       "title": "Password changed",
       "description": "You have successfully changed your password.",
       "signingOut": "Signing you out…"
-    }
+    },
+    "saving": "Saving…"
   },
   "Organizers": {
     "title": "Organisations",
@@ -1789,6 +1791,15 @@
     "waitlist_tokens": {
       "title": "Your waitlist gift",
       "body": "You have {tokens} free tokens in your wallet, and your first purchase is free of fees."
+    },
+    "profile_incomplete": {
+      "title": "Complete your profile",
+      "body": "A few details are still missing from your account. It only takes a minute."
     }
+  },
+  "SaveStatus": {
+    "saving": "Saving…",
+    "saved": "Saved",
+    "error": "Not saved"
   }
 }

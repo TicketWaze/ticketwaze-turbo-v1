@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { motion } from "motion/react";
@@ -7,6 +6,8 @@ import { toast } from "sonner";
 import { NotificationPreference } from "@ticketwaze/typescript-config";
 import { UpdateOrganisationNotificationPreferences } from "@/actions/organisationActions";
 import { SettingsColumn, SettingsHeader, SettingsSwitch } from "../parts";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import SaveIndicator from "@/components/shared/SaveIndicator";
 
 type Key =
   | "emailTicketSalesUpdate"
@@ -15,7 +16,9 @@ type Key =
 
 /**
  * Notification (not designed — built from the Settings kit): the three email
- * preferences as switches, saved on each change and rolled back if it fails.
+ * preferences as switches. Saved through useAutoSave: quick changes are
+ * grouped into one request, one at a time, with a "Saving… / Saved" pill, and
+ * a failure puts back what the server last confirmed.
  */
 export default function NotificationForm({
   notificationPreferences,
@@ -25,32 +28,36 @@ export default function NotificationForm({
   const t = useTranslations("Settings.notification");
   const locale = useLocale();
   const { data: session } = useSession();
-  const [prefs, setPrefs] = useState<Record<Key, boolean>>({
-    emailTicketSalesUpdate: Boolean(
-      notificationPreferences.emailTicketSalesUpdate,
-    ),
-    emailPaymentUpdates: Boolean(notificationPreferences.emailPaymentUpdates),
-    emailPlatformAnnouncements: Boolean(
-      notificationPreferences.emailPlatformAnnouncements,
-    ),
-  });
-  const [busy, setBusy] = useState<Key | null>(null);
+  const {
+    value: prefs,
+    status,
+    change,
+  } = useAutoSave<Record<Key, boolean>>(
+    {
+      emailTicketSalesUpdate: Boolean(
+        notificationPreferences.emailTicketSalesUpdate,
+      ),
+      emailPaymentUpdates: Boolean(notificationPreferences.emailPaymentUpdates),
+      emailPlatformAnnouncements: Boolean(
+        notificationPreferences.emailPlatformAnnouncements,
+      ),
+    },
+    async (next) => {
+      const result = await UpdateOrganisationNotificationPreferences(
+        session?.activeOrganisation?.organisationId ?? "",
+        next,
+        locale,
+      );
+      return { ok: !result.error, message: result.error };
+    },
+    {
+      onError: (message) =>
+        toast.error(message || t("error"), { id: "notification-error" }),
+    },
+  );
 
-  async function toggle(key: Key, next: boolean) {
-    const before = prefs;
-    const updated = { ...prefs, [key]: next };
-    setPrefs(updated);
-    setBusy(key);
-    const result = await UpdateOrganisationNotificationPreferences(
-      session?.activeOrganisation?.organisationId ?? "",
-      updated,
-      locale,
-    );
-    setBusy(null);
-    if (result.error) {
-      setPrefs(before);
-      toast.error(result.error);
-    }
+  function toggle(key: Key, next: boolean) {
+    void change((previous) => ({ ...previous, [key]: next }));
   }
 
   const items: { key: Key; label: string }[] = [
@@ -77,7 +84,6 @@ export default function NotificationForm({
               </span>
               <SettingsSwitch
                 checked={prefs[item.key]}
-                disabled={busy !== null}
                 onChange={(next) => toggle(item.key, next)}
                 label={item.label}
               />
@@ -85,6 +91,7 @@ export default function NotificationForm({
           ))}
         </div>
       </SettingsColumn>
+      <SaveIndicator status={status} />
     </div>
   );
 }

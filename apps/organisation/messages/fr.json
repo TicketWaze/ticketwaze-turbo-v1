@@ -196,7 +196,6 @@
         "lastname": "Nom",
         "email": "Adresse e-mail",
         "organisation_name": "Nom de l’organisation",
-        "organisation_email": "E-mail de l’organisation",
         "password": "Créer un mot de passe",
         "confirm": "Confirmer le mot de passe"
       },
@@ -285,7 +284,7 @@
         "male": "Homme",
         "female": "Femme",
         "no": "Préfère ne pas dire",
-        "about": "À propos de l'organisateur",
+        "about": "À propos de l’organisation",
         "email": "Adresse e-mail de contact",
         "phone": "Numéro de téléphone",
         "website": "URL du site web de l'organisation",
@@ -465,10 +464,16 @@
         "title": "Finaliser le compte",
         "description": "Veuillez remplir le formulaire ci-dessous pour finaliser votre compte.",
         "organisation_name": "Nom de l’organisation",
+        "name_step": {
+          "title": "Nommez votre organisation",
+          "description": "C’est le nom que les participants verront sur vos activités et vos billets. Vous pourrez le modifier plus tard dans les Paramètres.",
+          "submit": "Continuer"
+        },
         "address": "Adresse",
+        "country": "Pays",
         "state": "Département",
         "city": "Ville",
-        "about": "À propos de l’organisateur",
+        "about": "À propos de l’organisation",
         "contact_email": "E-mail de contact",
         "contact_phone": "Téléphone de contact",
         "submit": "Terminer",
@@ -476,6 +481,7 @@
           "organisation_name": "3 à 30 caractères.",
           "organisation_name_taken": "Une organisation porte déjà ce nom.",
           "address": "Veuillez saisir votre adresse.",
+          "country": "Veuillez choisir votre pays.",
           "state": "Veuillez choisir votre département.",
           "city": "Veuillez choisir votre ville.",
           "about": "Présentez-vous aux participants en 150 à 350 caractères.",
@@ -3013,13 +3019,21 @@
       },
       "two_factor": "Authentification à deux facteurs",
       "securityTip": "Conseil de sécurité",
-      "2faTip": "L’authentification à deux facteurs (2FA) ne peut pas être désactivée, car votre compte est propriétaire ou membre d’une organisation. Pour des raisons de sécurité et de conformité, les comptes organisationnels doivent toujours conserver la 2FA activée.",
+      "tip_required": "L’authentification à deux facteurs est activée car vous faites partie d’une organisation vérifiée. À chaque connexion avec votre e-mail et votre mot de passe, nous envoyons un code à {email}. Elle reste activée tant que vous en êtes membre.",
+      "tip_personal": "Vous avez activé l’authentification à deux facteurs depuis les paramètres de votre compte Ticketwaze. Vous pouvez la gérer depuis ces paramètres.",
+      "tip_off": "L’authentification à deux facteurs s’active automatiquement dès que la vérification (KYC) de votre organisation est approuvée. Chaque connexion par e-mail et mot de passe demandera alors un code envoyé à votre e-mail.",
       "passwordTip": "Après la modification, vous devrez vous reconnecter sur tous vos appareils par mesure de sécurité.",
       "enable": "Activer",
       "change": "Changer le mot de passe",
       "changed_title": "Mot de passe modifié",
       "changed_description": "Votre mot de passe a été modifié. Reconnectez-vous avec le nouveau.",
-      "signing_out": "Déconnexion en cours…"
+      "signing_out": "Déconnexion en cours…",
+      "add_title": "Créer un mot de passe",
+      "add_description": "Vous vous connectez avec Google. Créez un mot de passe pour pouvoir aussi vous connecter avec votre e-mail et votre mot de passe.",
+      "add_cta": "Créer le mot de passe",
+      "added_title": "Mot de passe créé",
+      "added_description": "Vous pouvez maintenant vous connecter avec votre e-mail et votre mot de passe, ou avec Google. Reconnectez-vous pour continuer.",
+      "tip_no_password": "L’authentification à deux facteurs protège les connexions par e-mail et mot de passe. Vous vous connectez avec Google, aucun code n’est donc demandé. Elle s’appliquera dès que vous créerez un mot de passe."
     },
     "payment": {
       "title": "Paiement",
@@ -3085,7 +3099,8 @@
       "ticket_sales": "Mises à jour des ventes de billets",
       "event_check_in": "Alertes d'enregistrement d'activité",
       "payment_update": "Mises à jour de paiement",
-      "platform": "Annonces de la plateforme"
+      "platform": "Annonces de la plateforme",
+      "error": "Impossible d’enregistrer vos préférences de notification. Réessayez."
     },
     "subscriptions": {
       "title": "Abonnements",
@@ -3291,5 +3306,10 @@
       }
     },
     "back": "Retour"
+  },
+  "SaveStatus": {
+    "saving": "Enregistrement…",
+    "saved": "Enregistré",
+    "error": "Non enregistré"
   }
 }

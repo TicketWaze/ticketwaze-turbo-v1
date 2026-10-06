@@ -1,10 +1,11 @@
 "use client";
-import { useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { UpdateUserPreferences } from "@/actions/userActions";
 import { UserPreference } from "@ticketwaze/typescript-config";
+import { useAutoSave } from "@/hooks/useAutoSave";
+import SaveIndicator from "@/components/shared/SaveIndicator";
 import {
   Checkbox,
   Radio,
@@ -41,6 +42,8 @@ const INTERESTS = [
  * whole page, because the API replaces all preferences at once: each section
  * used to send the copy it was rendered with, so saving one undid another
  * (and the email toggles were overwritten by that copy before sending).
+ * Saving goes through useAutoSave: quick clicks are grouped into one request,
+ * one at a time, with a "Saving… / Saved" pill for slow connections.
  */
 export default function PreferencesForm({
   userPreferences,
@@ -50,7 +53,7 @@ export default function PreferencesForm({
   const t = useTranslations("Preferences");
   const locale = useLocale();
   const { data: session, update } = useSession();
-  const [prefs, setPrefs] = useState<Prefs>(() => ({
+  const initial: Prefs = {
     interests: userPreferences.interests ?? [],
     upcomingEvents: Boolean(userPreferences.upcomingEvents),
     newEventsPreferredCategories: Boolean(
@@ -67,33 +70,36 @@ export default function PreferencesForm({
       .startsWith("fr")
       ? "fr"
       : "en",
-  }));
-  // Latest state for async saves, so two quick changes don't race on a stale
-  // copy.
-  const latest = useRef(prefs);
+  };
+  const {
+    value: prefs,
+    status,
+    change,
+    current,
+  } = useAutoSave<Prefs>(
+    initial,
+    async (next) => {
+      const response = await UpdateUserPreferences(
+        session?.user.accessToken ?? "",
+        next,
+        locale,
+      );
+      return {
+        ok: response.status === "success",
+        message: response.message || response.error,
+      };
+    },
+    {
+      onError: (message) =>
+        toast.error(message || t("saveError"), { id: "preferences-error" }),
+    },
+  );
 
-  async function save(patch: Partial<Prefs>) {
-    const previous = latest.current;
-    const next = { ...previous, ...patch };
-    latest.current = next;
-    setPrefs(next); // optimistic
-    const response = await UpdateUserPreferences(
-      session?.user.accessToken ?? "",
-      next,
-      locale,
-    );
-    if (response.status !== "success") {
-      latest.current = previous;
-      setPrefs(previous);
-      toast.error(response.message || t("saveError"));
-      return false;
-    }
-    toast.success(t("saved"), { id: "preferences-saved" });
-    return true;
-  }
+  const save = (patch: Partial<Prefs>) =>
+    change((previous) => ({ ...previous, ...patch }));
 
   function toggleInterest(value: string) {
-    const { interests } = latest.current;
+    const { interests } = current();
     const has = interests.includes(value);
     if (has && interests.length === 1) {
       toast.error(t("interests.error"), { id: "preferences-min" });
@@ -107,7 +113,7 @@ export default function PreferencesForm({
   }
 
   async function setCurrency(currency: Prefs["currency"]) {
-    if (currency === prefs.currency) return;
+    if (currency === current().currency) return;
     if (await save({ currency })) {
       await update({
         ...session,
@@ -151,7 +157,7 @@ export default function PreferencesForm({
             key={key}
             role="switch"
             ariaChecked={prefs[key]}
-            onClick={() => save({ [key]: !latest.current[key] })}
+            onClick={() => save({ [key]: !current()[key] })}
           >
             <span className="text-[1.6rem] leading-[2.2rem] text-deep-100 max-w-[28rem] lg:max-w-152">
               {label}
@@ -181,6 +187,7 @@ export default function PreferencesForm({
       </Section>
 
       <div></div>
+      <SaveIndicator status={status} />
     </div>
   );
 }

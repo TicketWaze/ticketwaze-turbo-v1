@@ -197,7 +197,6 @@
         "lastname": "Last Name",
         "email": "Email Address",
         "organisation_name": "Organization Name",
-        "organisation_email": "Organization Email Address",
         "password": "Create Password",
         "confirm": "Confirm Password"
       },
@@ -286,7 +285,7 @@
         "male": "Male",
         "female": "Female",
         "no": "Rather not say",
-        "about": "About Organizer",
+        "about": "About the organization",
         "email": "Contact Email Address",
         "phone": "Phone Number",
         "website": "Organisation Website Url",
@@ -466,10 +465,16 @@
         "title": "Complete Account Set-up",
         "description": "Please fill the form below to complete your account set-up.",
         "organisation_name": "Organization Name",
+        "name_step": {
+          "title": "Name Your Organization",
+          "description": "This is the name attendees will see on your activities and tickets. You can change it later in Settings.",
+          "submit": "Continue"
+        },
         "address": "Address",
+        "country": "Country",
         "state": "State",
         "city": "City",
-        "about": "About organizer",
+        "about": "About the organization",
         "contact_email": "Contact Email Address",
         "contact_phone": "Contact Phone Number",
         "submit": "Complete",
@@ -477,6 +482,7 @@
           "organisation_name": "3–30 characters.",
           "organisation_name_taken": "An organisation with this name already exists.",
           "address": "Please enter your address.",
+          "country": "Please select your country.",
           "state": "Please select your state.",
           "city": "Please select your city.",
           "about": "Tell attendees about you in 150–350 characters.",
@@ -3018,13 +3024,21 @@
       },
       "two_factor": "Two Factor Authentication",
       "securityTip": "Security tip",
-      "2faTip": "Two‑factor authentication (2FA) cannot be disabled because your account is either the owner of, or belongs to, an organization. For security and compliance reasons, organization accounts must always keep 2FA enabled.",
+      "tip_required": "Two-factor authentication is on because you belong to a verified organization. Each time you sign in with your email and password, we send a code to {email}. It stays on while you are a member.",
+      "tip_personal": "You turned on two-factor authentication from your Ticketwaze account settings. You can manage it there.",
+      "tip_off": "Two-factor authentication turns on automatically once your organization’s verification (KYC) is approved. Every email and password sign-in will then ask for a code sent to your email.",
       "passwordTip": "After updating your password, you'll need to sign in again on all your devices for security purposes.",
       "enable": "Enable",
       "change": "Change Password",
       "changed_title": "Password changed",
       "changed_description": "You have successfully changed your password. Sign in again with your new password.",
-      "signing_out": "Signing you out…"
+      "signing_out": "Signing you out…",
+      "add_title": "Create a Password",
+      "add_description": "You sign in with Google. Create a password to also sign in with your email and password.",
+      "add_cta": "Create password",
+      "added_title": "Password created",
+      "added_description": "You can now sign in with your email and password, or with Google. Sign in again to continue.",
+      "tip_no_password": "Two-factor authentication protects email and password sign-ins. You sign in with Google, so no code is needed. It applies once you create a password."
     },
     "payment": {
       "title": "Payment",
@@ -3090,7 +3104,8 @@
       "ticket_sales": "Ticket Sales Updates",
       "event_check_in": "Activity Check-In Alerts",
       "payment_update": "Payment Updates",
-      "platform": "Platform Announcements"
+      "platform": "Platform Announcements",
+      "error": "Couldn’t save your notification settings. Try again."
     },
     "subscriptions": {
       "title": "Subscriptions",
@@ -3296,5 +3311,10 @@
       }
     },
     "back": "Back"
+  },
+  "SaveStatus": {
+    "saving": "Saving…",
+    "saved": "Saved",
+    "error": "Not saved"
   }
 }

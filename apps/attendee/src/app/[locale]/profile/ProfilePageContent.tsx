@@ -55,7 +55,8 @@ function fromUser(user: User): ProfileData {
     lastName: user.lastName ?? "",
     username: u.username ?? "",
     address: u.address ?? "",
-    country: user.country ?? "",
+    // Haiti until the user picks another country.
+    country: user.country || "Haiti",
     state: user.state ?? "",
     city: user.city ?? "",
     dateOfBirth: user.dateOfBirth ? String(user.dateOfBirth).slice(0, 10) : "",
@@ -66,9 +67,11 @@ function fromUser(user: User): ProfileData {
 export default function ProfilePageContent({
   analytics,
   user,
+  startEditing = false,
 }: {
   analytics: UserAnalytic;
   user: User;
+  startEditing?: boolean;
 }) {
   const t = useTranslations("Profile");
   const tSetup = useTranslations("Auth.flow.setup");
@@ -77,7 +80,7 @@ export default function ProfilePageContent({
 
   // Figma: the page reads as a summary; "Edit profile" unlocks the fields
   // and turns into "Save changes".
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(startEditing);
   const [saved, setSaved] = useState(() => fromUser(user));
   const [data, setData] = useState(saved);
   const [errors, setErrors] = useState<ProfileErrors>({});

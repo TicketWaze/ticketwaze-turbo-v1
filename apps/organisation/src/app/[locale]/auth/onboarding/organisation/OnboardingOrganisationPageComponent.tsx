@@ -30,10 +30,11 @@ import countries from "@/lib/Countries";
 
 // Organizer sign-up step 2/2, "Complete Account Set-up" in Figma. Creates the
 // organisation (POST /auth/organizer/setup) with the name typed at step 1/2,
-// carried here as ?name=. Without it (an existing account that never set up an
-// organisation) the name is asked for at the top of the form.
+// carried here as ?name=. Without it (a Google sign-up, or an existing account
+// that never set up an organisation) a name screen comes first, as step 1, and
+// the form follows; the field reappears in the form only if the name is taken.
 
-const COUNTRY = "Haiti";
+const DEFAULT_COUNTRY = "Haiti";
 const ABOUT_MIN = 150;
 const ABOUT_MAX = 350;
 const PHONE_PATTERN = /^\+?[0-9 ()-]{6,20}$/;
@@ -43,15 +44,14 @@ const LINK_PATTERNS: Record<SocialPlatform, RegExp> = {
   tiktok: /^(https?:\/\/)?(www\.)?(tiktok\.com\/)?@?[a-z0-9._]{2,24}\/?([?#].*)?$/i,
   website: /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i,
 };
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface SetupData {
   organisationName: string;
   address: string;
+  country: string;
   state: string;
   city: string;
   about: string;
-  contactEmail: string;
   phone: string;
 }
 type SetupErrors = Partial<Record<keyof SetupData, string>>;
@@ -69,10 +69,10 @@ export default function OnboardingOrganisationPageComponent() {
   const [data, setData] = useState<SetupData>({
     organisationName: carriedName,
     address: "",
+    country: DEFAULT_COUNTRY,
     state: "",
     city: "",
     about: "",
-    contactEmail: "",
     phone: "",
   });
   const [errors, setErrors] = useState<SetupErrors>({});
@@ -81,22 +81,25 @@ export default function OnboardingOrganisationPageComponent() {
     Partial<Record<SocialPlatform, string>>
   >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  // Asked only when step 1/2 didn't provide it, or when it turned out taken.
-  const [askName, setAskName] = useState(carriedName.length < 3);
+  // No name from step 1: ask for it on its own screen before the form.
+  const askedFirst = carriedName.length < 3;
+  const [stage, setStage] = useState<"name" | "details">(
+    askedFirst ? "name" : "details",
+  );
+  const [isCheckingName, setIsCheckingName] = useState(false);
+  // In the form itself only when the name turned out invalid or taken.
+  const [askName, setAskName] = useState(false);
 
-  // The sign-up email is the natural contact address: shown until the field
-  // is edited (the session can arrive after the first render).
-  const [emailTouched, setEmailTouched] = useState(false);
-  const contactEmail = emailTouched
-    ? data.contactEmail
-    : data.contactEmail || (session?.user?.email ?? "");
+  // The contact email is the account's own email and can't be changed here;
+  // the API uses the account email whatever the form sends.
+  const contactEmail = session?.user?.email ?? "";
 
   const states = useMemo(
-    () => countries.find((c) => c.name === COUNTRY)?.state ?? [],
-    [],
+    () => countries.find((c) => c.name === data.country)?.state ?? [],
+    [data.country],
   );
-  // Figma puts City before State, so City lists every city until a state
-  // narrows it, and picking a city fills in its state.
+  // City lists every city of the country until a state narrows it, and
+  // picking a city fills in its state.
   const cities = useMemo(() => {
     const pool = data.state
       ? states.filter((s) => s.name === data.state)
@@ -117,12 +120,11 @@ export default function OnboardingOrganisationPageComponent() {
     if (name.length < 3 || name.length > 30)
       e.organisationName = t("errors.organisation_name");
     if (!data.address.trim()) e.address = t("errors.address");
-    if (!data.city) e.city = t("errors.city");
+    if (!data.country) e.country = t("errors.country");
     if (!data.state) e.state = t("errors.state");
+    if (!data.city) e.city = t("errors.city");
     const about = data.about.trim().length;
     if (about < ABOUT_MIN || about > ABOUT_MAX) e.about = t("errors.about");
-    if (!EMAIL_PATTERN.test(contactEmail.trim()))
-      e.contactEmail = t("errors.contact_email");
     if (!PHONE_PATTERN.test(data.phone.trim()))
       e.phone = t("errors.contact_phone");
     return e;
@@ -136,6 +138,37 @@ export default function OnboardingOrganisationPageComponent() {
       if (v && !LINK_PATTERNS[platform].test(v)) e[platform] = t(`links.errors.${platform}`);
     }
     return e;
+  }
+
+  async function handleNameSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    const name = data.organisationName.trim();
+    if (name.length < 3 || name.length > 30) {
+      setErrors({ organisationName: t("errors.organisation_name") });
+      return;
+    }
+    setIsCheckingName(true);
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/organizer/name-available?name=${encodeURIComponent(name)}`,
+        {
+          headers: {
+            "Accept-Language": locale,
+            Authorization: `Bearer ${session?.user.accessToken}`,
+          },
+        },
+      );
+      const response = await request.json();
+      if (response.status === "success" && response.available === false) {
+        setErrors({ organisationName: t("errors.organisation_name_taken") });
+        setIsCheckingName(false);
+        return;
+      }
+    } catch {
+      // Only a courtesy: the set-up request checks the name again.
+    }
+    setIsCheckingName(false);
+    setStage("details");
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -163,7 +196,7 @@ export default function OnboardingOrganisationPageComponent() {
           body: JSON.stringify({
             organisationName: data.organisationName.trim(),
             address: data.address.trim(),
-            country: COUNTRY,
+            country: data.country,
             state: data.state,
             city: data.city,
             organisationDescription: data.about.trim(),
@@ -205,12 +238,75 @@ export default function OnboardingOrganisationPageComponent() {
   }
 
   return (
+    <AnimatePresence mode="wait" initial={false}>
+      {stage === "name" ? (
+        <motion.div
+          key="name"
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -30 }}
+          transition={{ duration: 0.22, ease: "easeInOut" }}
+          className="w-full h-full"
+        >
+          <AuthScreen footer={<StepFooter step={1} total={3} />}>
+            <form
+              onSubmit={handleNameSubmit}
+              noValidate
+              className="flex flex-col gap-16 items-center w-full"
+            >
+              <AuthHeading
+                title={t("name_step.title")}
+                description={t("name_step.description")}
+              />
+              <div className="w-full flex flex-col gap-6">
+                <AuthItem>
+                  <Input
+                    value={data.organisationName}
+                    onChange={(e) =>
+                      setField("organisationName", e.target.value)
+                    }
+                    maxLength={30}
+                    autoComplete="organization"
+                    autoFocus
+                    error={errors.organisationName}
+                  >
+                    {t("organisation_name")}
+                  </Input>
+                </AuthItem>
+              </div>
+              <AuthItem>
+                <ButtonPrimary
+                  type="submit"
+                  disabled={isCheckingName}
+                  className="w-full h-[6rem] active:scale-[0.98]"
+                >
+                  {isCheckingName ? (
+                    <LoadingCircleSmall />
+                  ) : (
+                    t("name_step.submit")
+                  )}
+                </ButtonPrimary>
+              </AuthItem>
+            </form>
+          </AuthScreen>
+        </motion.div>
+      ) : (
     <motion.div
+      key="details"
       initial={{ opacity: 0, x: 30 }}
       animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.22, ease: "easeInOut" }}
       className="w-full h-full"
     >
-          <AuthScreen footer={<StepFooter step={2} total={3} />}>
+          <AuthScreen
+            footer={
+              <StepFooter
+                step={2}
+                total={3}
+                onBack={askedFirst ? () => setStage("name") : undefined}
+              />
+            }
+          >
             <form
               onSubmit={handleSubmit}
               noValidate
@@ -244,7 +340,82 @@ export default function OnboardingOrganisationPageComponent() {
                   </Input>
                 </AuthItem>
                 <AuthItem>
+                  <Field error={errors.country}>
+                    <Select
+                      value={data.country}
+                      onValueChange={(country) => {
+                        setData((prev) => ({
+                          ...prev,
+                          country,
+                          state: "",
+                          city: "",
+                        }));
+                        setErrors((e) => ({
+                          ...e,
+                          country: undefined,
+                          state: undefined,
+                          city: undefined,
+                        }));
+                      }}
+                    >
+                      <SelectTrigger
+                        aria-label={t("country")}
+                        className={selectTriggerClass}
+                      >
+                        <SelectValue placeholder={t("country")} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-neutral-100 text-[1.4rem] max-h-[30rem]">
+                        {countries.map((c) => (
+                          <SelectItem
+                            key={c.name}
+                            value={c.name}
+                            className="text-[1.4rem] text-deep-100"
+                          >
+                            {c.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                </AuthItem>
+                <AuthItem>
                   <div className="flex gap-6">
+                    <Field error={errors.state} className="flex-1 min-w-0">
+                      <Select
+                        value={data.state}
+                        onValueChange={(state) => {
+                          setData((prev) => {
+                            const keepCity = states
+                              .find((s) => s.name === state)
+                              ?.cities.includes(prev.city);
+                            return {
+                              ...prev,
+                              state,
+                              city: keepCity ? prev.city : "",
+                            };
+                          });
+                          setErrors((e) => ({ ...e, state: undefined }));
+                        }}
+                      >
+                        <SelectTrigger
+                          aria-label={t("state")}
+                          className={selectTriggerClass}
+                        >
+                          <SelectValue placeholder={t("state")} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-neutral-100 text-[1.4rem] max-h-[30rem]">
+                          {states.map((s) => (
+                            <SelectItem
+                              key={s.name}
+                              value={s.name}
+                              className="text-[1.4rem] text-deep-100"
+                            >
+                              {s.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
                     <Field error={errors.city} className="flex-1 min-w-0">
                       <Select
                         value={data.city}
@@ -281,42 +452,6 @@ export default function OnboardingOrganisationPageComponent() {
                         </SelectContent>
                       </Select>
                     </Field>
-                    <Field error={errors.state} className="flex-1 min-w-0">
-                      <Select
-                        value={data.state}
-                        onValueChange={(state) => {
-                          setData((prev) => {
-                            const keepCity = states
-                              .find((s) => s.name === state)
-                              ?.cities.includes(prev.city);
-                            return {
-                              ...prev,
-                              state,
-                              city: keepCity ? prev.city : "",
-                            };
-                          });
-                          setErrors((e) => ({ ...e, state: undefined }));
-                        }}
-                      >
-                        <SelectTrigger
-                          aria-label={t("state")}
-                          className={selectTriggerClass}
-                        >
-                          <SelectValue placeholder={t("state")} />
-                        </SelectTrigger>
-                        <SelectContent className="bg-neutral-100 text-[1.4rem]">
-                          {states.map((s) => (
-                            <SelectItem
-                              key={s.name}
-                              value={s.name}
-                              className="text-[1.4rem] text-deep-100"
-                            >
-                              {s.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </Field>
                   </div>
                 </AuthItem>
                 <AuthItem>
@@ -336,12 +471,9 @@ export default function OnboardingOrganisationPageComponent() {
                   <Input
                     type="email"
                     value={contactEmail}
-                    onChange={(e) => {
-                      setEmailTouched(true);
-                      setField("contactEmail", e.target.value);
-                    }}
-                    autoComplete="email"
-                    error={errors.contactEmail}
+                    readOnly
+                    disabled
+                    aria-readonly
                   >
                     {t("contact_email")}
                   </Input>
@@ -380,6 +512,8 @@ export default function OnboardingOrganisationPageComponent() {
             </form>
           </AuthScreen>
     </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

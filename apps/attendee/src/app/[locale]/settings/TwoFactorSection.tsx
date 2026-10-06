@@ -30,10 +30,16 @@ type Pending = {
  */
 export default function TwoFactorSection({
   initialEnabled,
+  required,
   hasPassword,
   index,
 }: {
   initialEnabled: boolean;
+  /**
+   * Belongs to a KYC-approved organisation: 2FA is on whatever the user chose,
+   * and the API refuses to turn it off (MFA_REQUIRED_BY_ORGANISATION).
+   */
+  required: boolean;
   hasPassword: boolean;
   index: number;
 }) {
@@ -81,8 +87,11 @@ export default function TwoFactorSection({
     return t("errors.generic");
   }
 
+  // A Google-only account has no password login for a code to protect.
+  const locked = required && hasPassword;
+
   async function request() {
-    if (!hasPassword || isRequesting) return;
+    if (!hasPassword || locked || isRequesting) return;
     setIsRequesting(true);
     const turningOn = !enabled;
     const data = await call("/users/me/mfa", { enabled: turningOn });
@@ -145,18 +154,22 @@ export default function TwoFactorSection({
 
   return (
     <Section title={t("title")} index={index}>
-      <Row role="switch" ariaChecked={enabled} onClick={request}>
+      <Row role="switch" ariaChecked={enabled || locked} onClick={request}>
         <span className="flex flex-col gap-1">
           <span className="text-[1.6rem] text-deep-100">{t("label")}</span>
           <span className="text-[1.3rem] leading-[1.8rem] text-neutral-600 max-w-[28rem] lg:max-w-152">
-            {hasPassword ? t("description") : t("noPassword")}
+            {!hasPassword
+              ? t("noPassword")
+              : locked
+                ? t("required")
+                : t("description")}
           </span>
         </span>
         {isRequesting ? (
           <LoadingCircleSmall />
         ) : (
-          <span className={hasPassword ? "" : "opacity-40"}>
-            <Toggle on={enabled} />
+          <span className={hasPassword && !locked ? "" : "opacity-40"}>
+            <Toggle on={enabled || locked} />
           </span>
         )}
       </Row>

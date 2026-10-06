@@ -1,6 +1,6 @@
 import ClientErrorReporter from "@/components/ClientErrorReporter";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
+import { bricolageGrotesque, dmMono, dmSans } from "@ticketwaze/ui/fonts";
 import SectionIntlProvider from "@/components/i18n/SectionIntlProvider";
 import { Toaster } from "sonner";
 import { getTranslations } from "next-intl/server";
@@ -13,26 +13,6 @@ import ConsentModeScript from "@/components/analytics/ConsentModeScript";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import { WebVitals } from "@/components/analytics/WebVitals";
 import { CookieConsentBanner } from "@/components/analytics/CookieConsentBanner";
-
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-primary",
-});
-
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["300", "400", "500"],
-  // Used in a handful of places: fetched when a page actually shows it, not
-  // preloaded (three files) on every first visit.
-  preload: false,
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["300", "400", "500"],
-});
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");

@@ -47,23 +47,34 @@ export default function KycBanner() {
   const dismissed = useSyncExternalStore(subscribe, dismissedFor, () => null);
 
   // Approval happens elsewhere (admin review), so the session's copy of the
-  // organisation can't be trusted for this; a short-lived browser copy can
-  // (see readCachedKyc), and spares a request on every page.
+  // organisation can't be trusted for this. Asked on every page until it is
+  // approved (see readCachedKyc), and again when the tab comes back into view,
+  // e.g. after reading the decision email.
   useEffect(() => {
     if (!organisationId || !accessToken) return;
-    const cached = readCachedKyc(organisationId);
     let cancelled = false;
-    const pending = cached
-      ? Promise.resolve(cached)
-      : fetchKycStatus(organisationId, accessToken, locale).then((state) => {
-          if (state) writeCachedKyc(organisationId, state);
-          return state;
-        });
-    pending.then((state) => {
-      if (!cancelled) setKyc(state);
-    });
+    function load() {
+      const cached = readCachedKyc(organisationId!);
+      const pending = cached
+        ? Promise.resolve(cached)
+        : fetchKycStatus(organisationId!, accessToken!, locale).then(
+            (state) => {
+              if (state) writeCachedKyc(organisationId!, state);
+              return state;
+            },
+          );
+      pending.then((state) => {
+        if (!cancelled && state) setKyc(state);
+      });
+    }
+    load();
+    function onVisible() {
+      if (document.visibilityState === "visible") load();
+    }
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       cancelled = true;
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [organisationId, accessToken, locale]);
 

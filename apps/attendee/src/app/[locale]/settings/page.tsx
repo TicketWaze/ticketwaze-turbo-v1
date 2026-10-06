@@ -30,7 +30,9 @@ export default async function SettingsPage() {
       cache: "no-store",
     }).then((r) => r.json().catch(() => null)),
   ]);
-  const user: (User & { mfaEnabled?: boolean }) | undefined = meResponse?.user;
+  const user:
+    | (User & { mfaEnabled?: boolean; mfaRequired?: boolean })
+    | undefined = meResponse?.user;
   const preferences: UserPreference | undefined =
     preferencesResponse?.preferences;
   if (!user || !preferences) {
@@ -44,6 +46,7 @@ export default async function SettingsPage() {
         <SettingsContent
           hasPassword={Boolean(user.hasPassword)}
           mfaEnabled={Boolean(user.mfaEnabled)}
+          mfaRequired={Boolean(user.mfaRequired)}
           preferences={preferences}
         />
       </div>

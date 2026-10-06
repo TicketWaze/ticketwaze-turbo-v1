@@ -2,6 +2,8 @@
 import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { cookies } from "next/headers";
+import { GOOGLE_SIGNUP_COOKIE } from "./googleSignupIntent";
 import {
   assertNoMfa,
   verifyMfaLogin,
@@ -189,6 +191,12 @@ const nextAuthResult = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
+        // Started from /auth/register: the API may open the account. Read once
+        // and cleared, so a later Google login can't create one by accident.
+        const jar = await cookies();
+        const signup = jar.get(GOOGLE_SIGNUP_COOKIE)?.value === "1";
+        if (signup) jar.delete(GOOGLE_SIGNUP_COOKIE);
+        const errorPage = signup ? "/auth/register" : "/auth/login";
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
@@ -197,14 +205,14 @@ const nextAuthResult = NextAuth({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 idToken: account.id_token,
-                noCreate: true,
+                noCreate: !signup,
                 context: LOGIN_CONTEXT,
               }),
             },
           );
           const data = await res.json();
           if (data.code === "ORGANISATION_SUSPENDED") {
-            return `/auth/login?error=organisation_suspended`;
+            return `${errorPage}?error=organisation_suspended`;
           }
           if (data.status !== "success") {
             // Returning a URL rather than throwing: Auth.js turns a thrown
@@ -215,7 +223,7 @@ const nextAuthResult = NextAuth({
             // A stable code travels instead of the API's English sentence, so
             // the login page can render the notice in the user's language.
             const code = res.status === 404 ? "no_account" : "google_failed";
-            return `/auth/login?error=${code}`;
+            return `${errorPage}?error=${code}`;
           }
           Object.assign(user, {
             ...data.user,
@@ -223,7 +231,7 @@ const nextAuthResult = NextAuth({
           });
           return true;
         } catch {
-          return `/auth/login?error=google_failed`;
+          return `${errorPage}?error=google_failed`;
         }
       }
       return true;

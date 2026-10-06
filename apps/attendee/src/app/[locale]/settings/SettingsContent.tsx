@@ -25,10 +25,13 @@ const ease = [0.22, 1, 0.36, 1] as const;
 export default function SettingsContent({
   hasPassword,
   mfaEnabled,
+  mfaRequired,
   preferences,
 }: {
   hasPassword: boolean;
   mfaEnabled: boolean;
+  /** On because of a KYC-approved organisation; can't be turned off. */
+  mfaRequired: boolean;
   preferences: UserPreference;
 }) {
   const t = useTranslations("Settings");
@@ -53,10 +56,15 @@ export default function SettingsContent({
     return () => clearTimeout(id);
   }, [done]);
 
+  // The language reloads the app once saved; until then a spinner shows on
+  // the chosen row and further clicks are ignored (no second request).
+  const [switching, setSwitching] = useState(false);
+
   async function changeLanguage(next: "en" | "fr") {
-    if (next === language) return;
+    if (next === language || switching) return;
     const previous = language;
     setLanguage(next);
+    setSwitching(true);
     const response = await UpdateUserPreferences(
       session?.user.accessToken ?? "",
       {
@@ -70,6 +78,7 @@ export default function SettingsContent({
       locale,
     );
     if (response.status !== "success") {
+      setSwitching(false);
       setLanguage(previous);
       toast.error(response.message || t("security.errors.generic"));
       return;
@@ -137,6 +146,7 @@ export default function SettingsContent({
 
           <TwoFactorSection
             initialEnabled={mfaEnabled}
+            required={mfaRequired}
             hasPassword={hasPassword}
             index={1}
           />
@@ -155,7 +165,14 @@ export default function SettingsContent({
                 onClick={() => changeLanguage(value)}
               >
                 <span className="text-[1.6rem] text-deep-100">{label}</span>
-                <Radio checked={language === value} />
+                {switching && language === value ? (
+                  <span
+                    aria-label={t("saving")}
+                    className="w-[2rem] h-[2rem] rounded-full border-2 border-neutral-200 border-t-primary-500 animate-spin"
+                  />
+                ) : (
+                  <Radio checked={language === value} />
+                )}
               </Row>
             ))}
           </Section>

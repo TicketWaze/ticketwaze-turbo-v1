@@ -28,7 +28,7 @@ import ProfileImage from "./ProfileImage";
 import CurrencyPreference from "./CurrencyPreference";
 import ShareOrganisation from "./ShareOrganisation";
 
-const COUNTRY = "Haiti";
+const DEFAULT_COUNTRY = "Haiti";
 const ABOUT_MIN = 150;
 const ABOUT_MAX = 350;
 const selectClass =
@@ -37,8 +37,9 @@ const selectClass =
 type Fields = {
   organisationName: string;
   address: string;
-  city: string;
+  country: string;
   state: string;
+  city: string;
   organisationDescription: string;
   organisationEmail: string;
   organisationPhoneNumber: string;
@@ -49,7 +50,7 @@ type Fields = {
 
 /**
  * Profile (Figma 1820:47771 view / 1821:48133 edit): "Organization Profile"
- * — address, city, state, about, contact email and phone, website — read-only
+ * — address, country, state, city, about, contact email and phone, website — read-only
  * until Edit, saved with Save changes. The post-design parts stay with it: the
  * logo and name above, social links, the display currency and the share card.
  */
@@ -66,8 +67,9 @@ export default function ProfileContent({
   const initial: Fields = {
     organisationName: organisation.organisationName ?? "",
     address: organisation.address ?? "",
-    city: organisation.city ?? "",
+    country: organisation.country || DEFAULT_COUNTRY,
     state: organisation.state ?? "",
+    city: organisation.city ?? "",
     organisationDescription: organisation.organisationDescription ?? "",
     organisationEmail: organisation.organisationEmail ?? "",
     organisationPhoneNumber: organisation.organisationPhoneNumber ?? "",
@@ -88,10 +90,10 @@ export default function ProfileContent({
   };
 
   const states = useMemo(
-    () => countries.find((c) => c.name === COUNTRY)?.state ?? [],
-    [],
+    () => countries.find((c) => c.name === data.country)?.state ?? [],
+    [data.country],
   );
-  // City first (as in Figma): every city until a state narrows the list, and
+  // City lists every city of the country until a state narrows it, and
   // picking a city fills in its state.
   const cities = useMemo(() => {
     const pool = data.state
@@ -140,7 +142,7 @@ export default function ProfileContent({
       data.twitter.trim(),
       {
         address: data.address.trim(),
-        country: COUNTRY,
+        country: data.country,
         city: data.city,
         state: data.state,
         ...(data.organisationEmail.trim()
@@ -226,7 +228,61 @@ export default function ProfileContent({
         >
           {t("placeholders.address")}
         </Input>
+        <Select
+          value={data.country || undefined}
+          disabled={off}
+          onValueChange={(country) =>
+            setData((d) => ({ ...d, country, state: "", city: "" }))
+          }
+        >
+          <SelectTrigger
+            aria-label={t("placeholders.country")}
+            className={selectClass}
+          >
+            <SelectValue placeholder={t("placeholders.country")} />
+          </SelectTrigger>
+          <SelectContent className="max-h-[30rem]">
+            {countries.map((c) => (
+              <SelectItem key={c.name} value={c.name} className="text-[1.4rem]">
+                {c.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <div className="flex flex-col lg:flex-row gap-4">
+          <Select
+            value={data.state || undefined}
+            disabled={off}
+            onValueChange={(state) =>
+              setData((d) => ({
+                ...d,
+                state,
+                city: states
+                  .find((s) => s.name === state)
+                  ?.cities.includes(d.city)
+                  ? d.city
+                  : "",
+              }))
+            }
+          >
+            <SelectTrigger
+              aria-label={t("placeholders.state")}
+              className={cn(selectClass, "flex-1")}
+            >
+              <SelectValue placeholder={t("placeholders.state")} />
+            </SelectTrigger>
+            <SelectContent className="max-h-[30rem]">
+              {states.map((s) => (
+                <SelectItem
+                  key={s.name}
+                  value={s.name}
+                  className="text-[1.4rem]"
+                >
+                  {s.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Select
             value={data.city || undefined}
             disabled={off}
@@ -249,39 +305,6 @@ export default function ProfileContent({
                   className="text-[1.4rem]"
                 >
                   {city}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={data.state || undefined}
-            disabled={off}
-            onValueChange={(state) =>
-              setData((d) => ({
-                ...d,
-                state,
-                city: states
-                  .find((s) => s.name === state)
-                  ?.cities.includes(d.city)
-                  ? d.city
-                  : "",
-              }))
-            }
-          >
-            <SelectTrigger
-              aria-label={t("placeholders.state")}
-              className={cn(selectClass, "flex-1")}
-            >
-              <SelectValue placeholder={t("placeholders.state")} />
-            </SelectTrigger>
-            <SelectContent>
-              {states.map((s) => (
-                <SelectItem
-                  key={s.name}
-                  value={s.name}
-                  className="text-[1.4rem]"
-                >
-                  {s.name}
                 </SelectItem>
               ))}
             </SelectContent>

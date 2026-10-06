@@ -1,6 +1,6 @@
 import ClientErrorReporter from "@/components/ClientErrorReporter";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
+import { bricolageGrotesque, dmMono, dmSans } from "@ticketwaze/ui/fonts";
 import "@ticketwaze/ui/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { Toaster } from "sonner";
@@ -14,23 +14,6 @@ import ConsentModeScript from "@/components/analytics/ConsentModeScript";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import { WebVitals } from "@/components/analytics/WebVitals";
 import { CookieConsentBanner } from "@/components/analytics/CookieConsentBanner";
-
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-primary",
-});
-
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["300", "400", "500"],
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["300", "400", "500"],
-});
 
 const siteUrl = "https://ticketwaze.com";
 

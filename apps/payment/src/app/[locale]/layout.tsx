@@ -1,31 +1,18 @@
 import ClientErrorReporter from "@/components/ClientErrorReporter";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
+import { bricolageGrotesque, dmMono, dmSans } from "@ticketwaze/ui/fonts";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { Toaster } from "sonner";
 import { routing } from "@/i18n/routing";
 import "@ticketwaze/ui/styles/globals.css";
 
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-primary",
-});
-
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["300", "400", "500"],
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["300", "400", "500"],
-});
+const paymentUrl = process.env.NEXT_PUBLIC_PAYMENT_URL;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_PAYMENT_URL ?? ""),
+  // `new URL("")` throws while the build collects page data, so a missing
+  // env var used to fail the whole deploy over a metadata base.
+  metadataBase: paymentUrl ? new URL(paymentUrl) : undefined,
   title: "Ticketwaze - Secure Payment",
   description: "Secure payment processing for Ticketwaze events.",
 };

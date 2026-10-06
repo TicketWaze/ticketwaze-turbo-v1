@@ -1,5 +1,5 @@
 import ClientErrorReporter from "@/components/ClientErrorReporter";
-import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
+import { bricolageGrotesque, dmMono, dmSans } from "@ticketwaze/ui/fonts";
 import type { Metadata, Viewport } from "next";
 import "@ticketwaze/ui/styles/globals.css";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -8,23 +8,6 @@ import { routing } from "@/i18n/routing";
 import { Toaster } from "sonner";
 import TopLoader from "@/components/shared/TopLoader";
 import AuthProvider from "@/lib/AuthProvider";
-
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-primary",
-});
-
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["300", "400", "500"],
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["300", "400", "500"],
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_ADMIN_URL ?? ""),

@@ -5,12 +5,14 @@ import LoadingCircleSmall from "./LoadingCircleSmall";
 
 interface Props {
   callbackUrl: string;
+  /** On the register page: a Google address without an account gets one. */
+  signup?: boolean;
 }
 
 /** Black "Continue with Google" button from the Figma sign-in form. */
-export default function GoogleSignInButton({ callbackUrl }: Props) {
+export default function GoogleSignInButton({ callbackUrl, signup }: Props) {
   const t = useTranslations("Auth.login");
-  const { trigger, isLoading } = useGoogleSignIn({ callbackUrl });
+  const { trigger, isLoading } = useGoogleSignIn({ callbackUrl, signup });
 
   return (
     <button

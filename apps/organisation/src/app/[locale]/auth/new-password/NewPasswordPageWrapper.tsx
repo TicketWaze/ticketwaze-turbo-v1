@@ -1,4 +1,5 @@
 "use client";
+import { signOut } from "next-auth/react";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import { PasswordInput } from "@/components/shared/Inputs";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -52,6 +53,9 @@ export default function NewPasswordPageWrapper({
     );
     const response = await request.json();
     if (response.status === "success") {
+      // The reset revoked every session; clear this one so the sign-in
+      // page opens instead of bouncing back into the app.
+      await signOut({ redirect: false });
       router.push("/auth/login");
     } else {
       toast.error(response.message);

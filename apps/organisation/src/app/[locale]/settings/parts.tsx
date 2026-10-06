@@ -189,16 +189,18 @@ export function SettingsSwitch({
       disabled={disabled}
       onClick={() => onChange?.(!checked)}
       className={cn(
-        "relative inline-flex h-[2.8rem] w-[5rem] shrink-0 items-center rounded-full transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
+        "group relative inline-flex h-[2.8rem] w-[5rem] shrink-0 items-center rounded-full transition-colors duration-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
         checked ? "bg-primary-500" : "bg-neutral-500",
       )}
     >
-      <motion.span
-        layout
-        transition={{ type: "spring", stiffness: 600, damping: 34 }}
+      {/* Slides with a slight overshoot, and stretches toward the side it
+          will travel to while pressed. */}
+      <span
         className={cn(
-          "inline-block h-[2.2rem] w-[2.2rem] rounded-full bg-white shadow",
-          checked ? "ml-[2.5rem]" : "ml-[0.3rem]",
+          "absolute left-[0.3rem] h-[2.2rem] w-[2.2rem] rounded-full bg-white shadow transition-[translate,scale] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-enabled:group-active:scale-x-125",
+          checked
+            ? "translate-x-[2.2rem] origin-right"
+            : "translate-x-0 origin-left",
         )}
       />
     </button>

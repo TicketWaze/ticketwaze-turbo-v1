@@ -98,12 +98,12 @@ export function Toggle({ on }: { on: boolean }) {
     <motion.span
       animate={{ backgroundColor: on ? "#E45B00" : "#737C8A" }}
       transition={{ duration: 0.2 }}
-      className={`shrink-0 w-20 h-12 rounded-full p-1 flex ${on ? "justify-end" : "justify-start"}`}
+      className="shrink-0 w-20 h-12 rounded-full p-1 flex"
     >
-      <motion.span
-        layout
-        transition={{ type: "spring", stiffness: 600, damping: 35 }}
-        className="w-10 h-10 rounded-full bg-white shadow-sm"
+      {/* Slides with a slight overshoot, and stretches toward the side it
+          will travel to while its row is pressed. */}
+      <span
+        className={`w-10 h-10 rounded-full bg-white shadow-sm transition-[translate,scale] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-active:scale-x-125 ${on ? "translate-x-8 origin-right" : "translate-x-0 origin-left"}`}
       />
     </motion.span>
   );
