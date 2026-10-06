@@ -27,6 +27,11 @@ import { SettingsColumn, SettingsHeader } from "../parts";
 import ProfileImage from "./ProfileImage";
 import CurrencyPreference from "./CurrencyPreference";
 import ShareOrganisation from "./ShareOrganisation";
+import SocialLinksField, {
+  type SocialLinks,
+  type SocialPlatform,
+  validateSocialLinks,
+} from "@/components/auth/SocialLinksField";
 
 const DEFAULT_COUNTRY = "Haiti";
 const ABOUT_MIN = 150;
@@ -43,10 +48,30 @@ type Fields = {
   organisationDescription: string;
   organisationEmail: string;
   organisationPhoneNumber: string;
-  organisationWebsite: string;
-  instagram: string;
-  twitter: string;
+  /** Only the links the organisation added (website, Instagram, TikTok, X). */
+  links: SocialLinks;
 };
+type TextField = Exclude<keyof Fields, "links">;
+
+/** The saved links as rows: a platform shows only when it has a value. */
+function linksOf(organisation: Organisation): SocialLinks {
+  const social = (organisation.socialLinks ?? {}) as Record<string, unknown>;
+  const links: SocialLinks = {};
+  if (organisation.organisationWebsite)
+    links.website = organisation.organisationWebsite;
+  for (const platform of ["instagram", "tiktok", "twitter"] as const) {
+    const handle = social[platform];
+    if (typeof handle === "string" && handle.trim()) links[platform] = handle;
+  }
+  return links;
+}
+
+/** Rows added but left empty are dropped on save. */
+function filledLinks(links: SocialLinks): SocialLinks {
+  return Object.fromEntries(
+    Object.entries(links).filter(([, v]) => v?.trim()),
+  ) as SocialLinks;
+}
 
 /**
  * Profile (Figma 1820:47771 view / 1821:48133 edit): "Organization Profile"
@@ -63,7 +88,7 @@ export default function ProfileContent({
 }) {
   const t = useTranslations("Settings.profile");
   const locale = useLocale();
-  const { update } = useSession();
+  const { data: session, update } = useSession();
   const initial: Fields = {
     organisationName: organisation.organisationName ?? "",
     address: organisation.address ?? "",
@@ -73,18 +98,18 @@ export default function ProfileContent({
     organisationDescription: organisation.organisationDescription ?? "",
     organisationEmail: organisation.organisationEmail ?? "",
     organisationPhoneNumber: organisation.organisationPhoneNumber ?? "",
-    organisationWebsite: organisation.organisationWebsite ?? "",
-    instagram: (organisation.socialLinks?.instagram as string) ?? "",
-    twitter: (organisation.socialLinks?.twitter as string) ?? "",
+    links: linksOf(organisation),
   };
   const [saved, setSaved] = useState<Fields>(initial);
   const [data, setData] = useState<Fields>(initial);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [errors, setErrors] = useState<Partial<Record<keyof Fields, string>>>(
-    {},
-  );
-  const set = (field: keyof Fields) => (value: string) => {
+  const [errors, setErrors] = useState<Partial<Record<TextField, string>>>({});
+  const [linkErrors, setLinkErrors] = useState<
+    Partial<Record<SocialPlatform, string>>
+  >({});
+  const tLinks = useTranslations("Auth.flow.setup.links");
+  const set = (field: TextField) => (value: string) => {
     setData((d) => ({ ...d, [field]: value }));
     setErrors((e) => ({ ...e, [field]: undefined }));
   };
@@ -110,7 +135,7 @@ export default function ProfileContent({
   }, [states, data.state, data.city]);
 
   function validate() {
-    const e: Partial<Record<keyof Fields, string>> = {};
+    const e: Partial<Record<TextField, string>> = {};
     const name = data.organisationName.trim();
     if (name.length < 3) e.organisationName = t("errors.name.min");
     if (name.length > 30) e.organisationName = t("errors.name.max");
@@ -125,22 +150,27 @@ export default function ProfileContent({
     ) {
       e.organisationEmail = t("errors.email");
     }
+    const le = validateSocialLinks(data.links, tLinks);
     setErrors(e);
-    return Object.keys(e).length === 0;
+    setLinkErrors(le);
+    return Object.keys(e).length === 0 && Object.keys(le).length === 0;
   }
 
   async function save() {
     if (!validate()) return;
     setSaving(true);
+    // A link not added (or removed) is sent empty, which clears it.
+    const links = filledLinks(data.links);
     const result = await UpdateOrganisationProfile(
       organisation.organisationId,
       data.organisationName.trim(),
       data.organisationDescription.trim(),
       locale,
-      data.organisationWebsite.trim(),
-      data.instagram.trim(),
-      data.twitter.trim(),
+      links.website?.trim(),
+      links.instagram?.trim(),
+      links.twitter?.trim(),
       {
+        tiktok: links.tiktok?.trim(),
         address: data.address.trim(),
         country: data.country,
         city: data.city,
@@ -157,10 +187,23 @@ export default function ProfileContent({
       return;
     }
     toast.success(t("saved"));
-    setSaved(data);
+    // What the API stored: handles only, so a pasted URL shows as its handle.
+    const stored = result.organisation
+      ? linksOf(result.organisation as Organisation)
+      : links;
+    setSaved({ ...data, links: stored });
+    setData({ ...data, links: stored });
     setEditing(false);
+    // Merged into the session's copy: the API's organisation has no role,
+    // permissions or plan, and replacing the copy with it hid every
+    // permission-gated button (e.g. "Create activity") until the next refresh.
     if (result.organisation)
-      await update({ activeOrganisation: result.organisation });
+      await update({
+        activeOrganisation: {
+          ...session?.activeOrganisation,
+          ...result.organisation,
+        },
+      });
   }
 
   const off = !editing || saving;
@@ -178,6 +221,7 @@ export default function ProfileContent({
                   onClick={() => {
                     setData(saved);
                     setErrors({});
+                    setLinkErrors({});
                     setEditing(false);
                   }}
                   disabled={saving}
@@ -342,15 +386,6 @@ export default function ProfileContent({
         >
           {t("placeholders.phone")}
         </Input>
-        <Input
-          type="url"
-          value={data.organisationWebsite}
-          onChange={(e) => set("organisationWebsite")(e.target.value)}
-          disabled={off}
-          placeholder="https://yourwebsite.com"
-        >
-          {t("placeholders.website")}
-        </Input>
       </SettingsColumn>
 
       <SettingsColumn
@@ -376,31 +411,18 @@ export default function ProfileContent({
           </span>
         }
       >
-        {(
-          [
-            ["instagram", "instagram.com/"],
-            ["twitter", "x.com/"],
-          ] as const
-        ).map(([field, prefix]) => (
-          <label
-            key={field}
-            className={cn(
-              "flex items-center bg-neutral-100 rounded-[5rem] h-[6rem] overflow-hidden border border-transparent focus-within:border-primary-500",
-              off && "text-neutral-500",
-            )}
-          >
-            <span className="pl-8 pr-2 text-[1.5rem] text-neutral-500 whitespace-nowrap select-none">
-              {prefix}
-            </span>
-            <input
-              value={data[field]}
-              onChange={(e) => set(field)(e.target.value)}
-              disabled={off}
-              placeholder={t(`placeholders.${field}`)}
-              className="flex-1 min-w-0 bg-transparent pr-8 text-[1.5rem] text-deep-200 outline-none disabled:text-neutral-500 disabled:cursor-not-allowed"
-            />
-          </label>
-        ))}
+        {/* Same field as the set-up: only the links added, "+ Add link" for
+            more while editing. */}
+        <SocialLinksField
+          value={data.links}
+          onChange={(links) => {
+            setData((d) => ({ ...d, links }));
+            setLinkErrors({});
+          }}
+          errors={linkErrors}
+          readOnly={off}
+          emptyLabel={t("no_links")}
+        />
       </SettingsColumn>
 
       <SettingsColumn delay={0.22}>

@@ -19,6 +19,7 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import SocialLinksField, {
   type SocialLinks,
   type SocialPlatform,
+  validateSocialLinks,
 } from "@/components/auth/SocialLinksField";
 import {
   AuthHeading,
@@ -38,12 +39,6 @@ const DEFAULT_COUNTRY = "Haiti";
 const ABOUT_MIN = 150;
 const ABOUT_MAX = 350;
 const PHONE_PATTERN = /^\+?[0-9 ()-]{6,20}$/;
-// A handle, or a pasted profile URL (the API keeps only the handle).
-const LINK_PATTERNS: Record<SocialPlatform, RegExp> = {
-  instagram: /^(https?:\/\/)?(www\.)?(instagram\.com\/)?@?[a-z0-9._]{1,30}\/?([?#].*)?$/i,
-  tiktok: /^(https?:\/\/)?(www\.)?(tiktok\.com\/)?@?[a-z0-9._]{2,24}\/?([?#].*)?$/i,
-  website: /^(https?:\/\/)?([a-z0-9-]+\.)+[a-z]{2,}(\/\S*)?$/i,
-};
 
 interface SetupData {
   organisationName: string;
@@ -131,14 +126,8 @@ export default function OnboardingOrganisationPageComponent() {
   }
 
   // Links are optional; a row added but left empty is simply not sent.
-  function validateLinks() {
-    const e: Partial<Record<SocialPlatform, string>> = {};
-    for (const [platform, raw] of Object.entries(links) as [SocialPlatform, string][]) {
-      const v = raw.trim();
-      if (v && !LINK_PATTERNS[platform].test(v)) e[platform] = t(`links.errors.${platform}`);
-    }
-    return e;
-  }
+  const validateLinks = () =>
+    validateSocialLinks(links, (key) => t(`links.${key}`));
 
   async function handleNameSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -205,6 +194,7 @@ export default function OnboardingOrganisationPageComponent() {
             organisationWebsite: links.website?.trim() || null,
             instagram: links.instagram?.trim() || null,
             tiktok: links.tiktok?.trim() || null,
+            twitter: links.twitter?.trim() || null,
           }),
         },
       );
@@ -291,13 +281,13 @@ export default function OnboardingOrganisationPageComponent() {
           </AuthScreen>
         </motion.div>
       ) : (
-    <motion.div
-      key="details"
-      initial={{ opacity: 0, x: 30 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.22, ease: "easeInOut" }}
-      className="w-full h-full"
-    >
+        <motion.div
+          key="details"
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.22, ease: "easeInOut" }}
+          className="w-full h-full"
+        >
           <AuthScreen
             footer={
               <StepFooter
@@ -511,7 +501,7 @@ export default function OnboardingOrganisationPageComponent() {
               </AuthItem>
             </form>
           </AuthScreen>
-    </motion.div>
+        </motion.div>
       )}
     </AnimatePresence>
   );

@@ -341,40 +341,6 @@ export default function BasicDetails({
           <div className="flex-1 w-full">
             <Controller
               control={control}
-              name="city"
-              render={({ field }) => (
-                <Select
-                  {...field}
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  disabled={!selectedState}
-                >
-                  <SelectTrigger className={selectTriggerClass}>
-                    <SelectValue placeholder={t("city")} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableCities.map((city, i) => (
-                      <SelectItem
-                        className="text-[1.4rem] text-deep-100"
-                        key={i}
-                        value={city}
-                      >
-                        {city}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.city && (
-              <span className="text-[1.2rem] px-8 py-2 text-failure">
-                {errors.city?.message}
-              </span>
-            )}
-          </div>
-          <div className="flex-1 w-full">
-            <Controller
-              control={control}
               name="state"
               render={({ field }) => (
                 <Select
@@ -407,6 +373,40 @@ export default function BasicDetails({
             {errors.state && (
               <span className="text-[1.2rem] px-8 py-2 text-failure">
                 {errors.state?.message}
+              </span>
+            )}
+          </div>
+          <div className="flex-1 w-full">
+            <Controller
+              control={control}
+              name="city"
+              render={({ field }) => (
+                <Select
+                  {...field}
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  disabled={!selectedState}
+                >
+                  <SelectTrigger className={selectTriggerClass}>
+                    <SelectValue placeholder={t("city")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableCities.map((city, i) => (
+                      <SelectItem
+                        className="text-[1.4rem] text-deep-100"
+                        key={i}
+                        value={city}
+                      >
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.city && (
+              <span className="text-[1.2rem] px-8 py-2 text-failure">
+                {errors.city?.message}
               </span>
             )}
           </div>

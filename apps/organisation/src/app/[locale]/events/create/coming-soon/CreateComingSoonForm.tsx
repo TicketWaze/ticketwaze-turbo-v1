@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
+import { openPicker } from "@/components/create/FormFields";
 import React, { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
@@ -202,6 +203,7 @@ export default function CreateComingSoonForm({
             <div className="flex items-center gap-4">
               <input
                 type="date"
+                onClick={(e) => openPicker(e.currentTarget)}
                 value={when}
                 onChange={(e) => setWhen(e.target.value)}
                 className={inputClass}

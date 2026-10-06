@@ -497,17 +497,20 @@
           "platforms": {
             "instagram": "Instagram",
             "website": "Site web",
-            "tiktok": "TikTok"
+            "tiktok": "TikTok",
+            "twitter": "X (Twitter)"
           },
           "placeholders": {
             "instagram": "votrenom",
             "website": "votresite.com",
-            "tiktok": "votrenom"
+            "tiktok": "votrenom",
+            "twitter": "votrenom"
           },
           "errors": {
             "instagram": "Saisissez un nom d’utilisateur Instagram valide.",
             "website": "Saisissez une adresse de site web valide.",
-            "tiktok": "Saisissez un nom d’utilisateur TikTok valide."
+            "tiktok": "Saisissez un nom d’utilisateur TikTok valide.",
+            "twitter": "Saisissez un nom d’utilisateur X valide."
           }
         }
       },
@@ -2186,7 +2189,16 @@
       },
       "edit_title": "Modifier l'événement",
       "save_cta": "Enregistrer les modifications",
-      "free_locked": "Gratuit ou payant est fixé à la création de l'activité et ne peut plus changer, afin que les acheteurs gardent ce qu'ils ont payé."
+      "free_locked": "Gratuit ou payant est fixé à la création de l'activité et ne peut plus changer, afin que les acheteurs gardent ce qu'ils ont payé.",
+      "location_me": "Ma position",
+      "location_locating": "Recherche de votre position…",
+      "location_hint": "Cliquez sur la carte pour placer un repère",
+      "location_search": "Rechercher un lieu ou une adresse",
+      "location_search_clear": "Effacer la recherche",
+      "location_search_empty": "Aucun lieu trouvé. Essayez un autre nom ou cliquez sur la carte.",
+      "location_search_error": "La recherche n’est pas disponible pour le moment. Cliquez sur la carte pour placer le repère.",
+      "location_search_min": "Saisissez au moins {min} caractères pour rechercher.",
+      "location_search_more": "Encore {count, plural, one {# caractère} other {# caractères}} pour lancer la recherche."
     },
     "sale_price_preview": {
       "title": "Ce que vos acheteurs paieront",
@@ -2918,7 +2930,8 @@
         "none": "Aucun"
       },
       "cancel": "Annuler",
-      "saved": "Profil mis à jour"
+      "saved": "Profil mis à jour",
+      "no_links": "Aucun lien ajouté pour le moment."
     },
     "team": {
       "title": "Équipe",

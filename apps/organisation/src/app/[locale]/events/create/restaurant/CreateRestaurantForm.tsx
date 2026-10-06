@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { openPicker } from "@/components/create/FormFields";
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
@@ -829,6 +830,7 @@ export default function CreateRestaurantForm() {
                                 </span>
                                 <input
                                   type="time"
+                                  onClick={(e) => openPicker(e.currentTarget)}
                                   value={value.opensAt}
                                   onChange={(e) =>
                                     updateDay(day, { opensAt: e.target.value })
@@ -842,6 +844,7 @@ export default function CreateRestaurantForm() {
                                 </span>
                                 <input
                                   type="time"
+                                  onClick={(e) => openPicker(e.currentTarget)}
                                   value={value.closesAt}
                                   onChange={(e) =>
                                     updateDay(day, { closesAt: e.target.value })

@@ -248,7 +248,27 @@ const nextAuthResult = NextAuth({
 
       // Manual update() call (e.g. switching active organisation)
       if (trigger === "update" && session?.activeOrganisation) {
-        token.activeOrganisation = session.activeOrganisation;
+        const next = session.activeOrganisation;
+        const current = token.activeOrganisation as
+          | Record<string, unknown>
+          | null
+          | undefined;
+        // Same organisation, updated details (profile, logo, currency): a
+        // copy straight from the API carries no role, permissions or plan, so
+        // keep the ones the session has rather than locking the member out of
+        // every permission-gated button until the next refresh. Switching to
+        // another organisation replaces everything, as before.
+        const sameOrganisation =
+          current?.organisationId &&
+          current.organisationId === next.organisationId;
+        token.activeOrganisation = sameOrganisation
+          ? {
+              ...next,
+              myRole: next.myRole ?? current.myRole,
+              myPermissions: next.myPermissions ?? current.myPermissions,
+              membershipTier: next.membershipTier ?? current.membershipTier,
+            }
+          : next;
         return token;
       }
 

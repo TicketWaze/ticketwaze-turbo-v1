@@ -17,11 +17,28 @@ export const pillClass =
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
   return (
-    <span className="block text-[1.2rem] px-8 pt-2 text-failure">{message}</span>
+    <span className="block text-[1.2rem] px-8 pt-2 text-failure">
+      {message}
+    </span>
   );
 }
 
-/** A native date / time / datetime input in a labelled pill with an icon. */
+/** Opens the browser's own date/time picker for this input, where supported. */
+export function openPicker(input: HTMLInputElement | null) {
+  if (!input || input.disabled || input.readOnly) return;
+  input.focus();
+  try {
+    input.showPicker?.();
+  } catch {
+    // Already open, or not allowed here: focusing is enough (typing works).
+  }
+}
+
+/**
+ * A native date / time / datetime input in a labelled pill with an icon. The
+ * whole pill — padding, label, value and icon — opens the picker; typing the
+ * value with the keyboard still works.
+ */
 export function PickerField({
   label,
   type,
@@ -31,24 +48,39 @@ export function PickerField({
 }: {
   label: string;
   type: "date" | "time" | "datetime-local";
-  inputProps: UseFormRegisterReturn | React.InputHTMLAttributes<HTMLInputElement>;
+  inputProps:
+    | UseFormRegisterReturn
+    | React.InputHTMLAttributes<HTMLInputElement>;
   error?: string;
   className?: string;
 }) {
   const Icon = type === "time" ? Clock : Calendar;
   return (
     <div className={cn("flex-1 min-w-0", className)}>
-      <label className={pillClass}>
+      <div
+        className={cn(pillClass, "cursor-pointer")}
+        // The pill's own input (register() keeps the input's ref for itself).
+        onClick={(e) => openPicker(e.currentTarget.querySelector("input"))}
+      >
         <span className="flex-1 min-w-0 flex flex-col">
-          <span className="text-[1.1rem] leading-6 text-neutral-600">{label}</span>
+          <span className="text-[1.1rem] leading-6 text-neutral-600 select-none">
+            {label}
+          </span>
           <input
             type={type}
-            className="w-full bg-transparent outline-none text-[1.5rem] leading-8 text-deep-200 [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:cursor-pointer relative"
+            aria-label={label}
+            className="w-full bg-transparent outline-none text-[1.5rem] leading-8 text-deep-200 cursor-pointer [&::-webkit-calendar-picker-indicator]:hidden"
             {...inputProps}
           />
         </span>
-        <Icon size="20" variant="Bulk" color="#737C8A" className="shrink-0" />
-      </label>
+        <Icon
+          size="20"
+          variant="Bulk"
+          color="#737C8A"
+          className="shrink-0"
+          aria-hidden
+        />
+      </div>
       <FieldError message={error} />
     </div>
   );

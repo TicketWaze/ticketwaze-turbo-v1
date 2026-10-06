@@ -26,6 +26,8 @@ export async function UpdateOrganisationProfile(
   twitter?: string,
   /** Figma "Organization Profile" fields; omitted ones are left as they are. */
   contact?: {
+    /** TikTok handle; empty clears it (like instagram/twitter above). */
+    tiktok?: string;
     address?: string;
     country?: string;
     state?: string;
