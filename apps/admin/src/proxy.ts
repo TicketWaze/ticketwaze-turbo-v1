@@ -17,9 +17,23 @@ export default auth((req) => {
     : routing.defaultLocale;
 
   // Then check authentication - req.auth is available in the Auth.js callback
-  if (!req.auth && !req.nextUrl.pathname.startsWith(`/${locale}/auth/`)) {
+  const onAuthPage = req.nextUrl.pathname.startsWith(`/${locale}/auth/`);
+  if (!req.auth && !onAuthPage) {
     const newUrl = new URL(`/${locale}/auth/login`, req.nextUrl.origin);
     return Response.redirect(newUrl);
+  }
+
+  // A signed-in admin has nothing to do on sign-in or reset. /auth/join stays
+  // open: an invitation link may be opened in a browser signed in as someone
+  // else, and accepting it replaces that session.
+  const sessionExpired =
+    (req.auth as { error?: string } | null)?.error === "AccessTokenExpired";
+  if (
+    req.auth &&
+    !sessionExpired &&
+    /^\/(en|fr)\/auth\/(login|reset)\/?$/.test(req.nextUrl.pathname)
+  ) {
+    return Response.redirect(new URL(`/${locale}/analytics`, req.nextUrl.origin));
   }
 
   return intlResponse;

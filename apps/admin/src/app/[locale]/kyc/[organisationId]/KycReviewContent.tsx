@@ -6,9 +6,11 @@ import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { DocumentText, ExportSquare, InfoCircle } from "iconsax-reactjs";
 import AdminLayout from "@/components/Layouts/AdminLayout";
-import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
-import BackButton from "@/components/shared/BackButton";
-import { ButtonPrimary } from "@/components/shared/buttons";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import SettingsHeader from "@/components/shared/SettingsHeader";
+import { Reveal } from "@/components/shared/motion";
+import { CARD, HEADER_PILL, PILL_TONE } from "@/components/shared/DataTable";
+import { cn } from "@/lib/utils";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import KycStatusPill from "@/components/kyc/KycStatusPill";
 import formatDate from "@/lib/FormatDate";
@@ -97,15 +99,33 @@ export default function KycReviewContent({ data }: { data: KycReviewData }) {
 
   return (
     <AdminLayout>
-      <div className={PAGE_SCROLLER}>
-        <BackButton text={t("review.back")} onClick={() => router.push("/kyc")} />
-        <PageTitle
-          actions={<KycStatusPill status={organisation.kycStatus} />}
-        >
-          {organisation.organisationName}
-        </PageTitle>
+      <div className={cn(PAGE_SCROLLER, "gap-0")}>
+        <SettingsHeader
+          title={organisation.organisationName}
+          back={{ href: "/kyc", label: t("review.back") }}
+          actions={
+            current?.status === "pending" ? (
+              <div className="flex items-center gap-[1rem] w-full lg:w-auto">
+                <RejectKycDialog
+                  verificationId={current.verificationId}
+                  organisationId={organisation.organisationId}
+                />
+                <button
+                  type="button"
+                  onClick={approve}
+                  disabled={approving}
+                  className={cn(HEADER_PILL, PILL_TONE.primary)}
+                >
+                  {approving ? <LoadingCircleSmall /> : t("review.approve")}
+                </button>
+              </div>
+            ) : (
+              <KycStatusPill status={organisation.kycStatus} />
+            )
+          }
+        />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 border-b border-neutral-100 pb-10">
+        <Reveal className={cn(CARD, "grid grid-cols-1 lg:grid-cols-3 gap-8")}>
           <Info label={t("review.owner")}>
             {organisation.owner ? (
               <>
@@ -121,14 +141,14 @@ export default function KycReviewContent({ data }: { data: KycReviewData }) {
             <span className="text-neutral-500">{organisation.organisationPhoneNumber}</span>
           </Info>
           <Info label={t("review.location")}>{location || "—"}</Info>
-        </div>
+        </Reveal>
 
         {!current ? (
           <p className="text-[1.6rem] text-neutral-600 py-10 text-center">
             {t("review.none")}
           </p>
         ) : (
-          <section className="flex flex-col gap-8">
+          <Reveal as="section" delay={0.05} className="flex flex-col gap-8 pt-12">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
               <div className="flex flex-col gap-1">
                 <h4 className="font-primary font-medium text-[1.8rem] text-black">
@@ -142,23 +162,7 @@ export default function KycReviewContent({ data }: { data: KycReviewData }) {
                   })}
                 </p>
               </div>
-              {current.status === "pending" ? (
-                <div className="flex gap-4">
-                  <RejectKycDialog
-                    verificationId={current.verificationId}
-                    organisationId={organisation.organisationId}
-                  />
-                  <ButtonPrimary
-                    onClick={approve}
-                    disabled={approving}
-                    className="py-[7.5px] px-10"
-                  >
-                    {approving ? <LoadingCircleSmall /> : t("review.approve")}
-                  </ButtonPrimary>
-                </div>
-              ) : (
-                <KycStatusPill status={current.status} />
-              )}
+              <KycStatusPill status={current.status} />
             </div>
 
             {current.status === "pending" && (
@@ -175,18 +179,18 @@ export default function KycReviewContent({ data }: { data: KycReviewData }) {
 
             <FileGrid files={current.files} />
             <p className="text-[1.2rem] text-neutral-500">{t("review.links_expire")}</p>
-          </section>
+          </Reveal>
         )}
 
         {history.length > 0 && (
-          <section className="flex flex-col gap-6 border-t border-neutral-100 pt-10 pb-10">
+          <section className="flex flex-col gap-6 border-t-2 border-neutral-100 mt-12 pt-12 pb-10">
             <h4 className="font-primary font-medium text-[1.8rem] text-black">
               {t("review.history")}
             </h4>
             {history.map((s) => (
               <details
                 key={s.verificationId}
-                className="rounded-[2rem] border border-neutral-100 p-6 group"
+                className="rounded-[1.5rem] border border-neutral-100 p-6 group"
               >
                 <summary className="flex items-center justify-between gap-4 cursor-pointer list-none">
                   <span className="text-[1.4rem] text-neutral-700">
@@ -237,7 +241,7 @@ function FileGrid({ files }: { files: KycFile[] }) {
           target="_blank"
           rel="noopener noreferrer"
           aria-disabled={!file.url}
-          className="group flex flex-col rounded-[2rem] border border-neutral-100 overflow-hidden hover:border-primary-300 transition-colors aria-disabled:pointer-events-none"
+          className="group flex flex-col rounded-[1.5rem] border border-neutral-100 overflow-hidden hover:border-primary-300 transition-colors aria-disabled:pointer-events-none"
         >
           <div className="aspect-[4/3] bg-neutral-100 flex items-center justify-center overflow-hidden">
             {file.url && file.mimeType.startsWith("image/") ? (

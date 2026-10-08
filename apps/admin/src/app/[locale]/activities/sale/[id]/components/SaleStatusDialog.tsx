@@ -1,4 +1,5 @@
 "use client";
+import type { DialogControl } from "@/lib/dialogControl";
 
 import { useState } from "react";
 import { useLocale } from "next-intl";
@@ -111,13 +112,19 @@ export function SaleStatusDialog({
   sale,
   hasFile,
   className,
+  hideTrigger,
+  open: controlledOpen,
+  onOpenChange,
 }: {
   sale: Sale;
   /** Approving with nothing to deliver is refused by the API; say so up front. */
   hasFile: boolean;
   className?: string;
-}) {
-  const [open, setOpen] = useState(false);
+} & DialogControl) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (next: boolean) =>
+    onOpenChange ? onOpenChange(next) : setUncontrolledOpen(next);
   const [selected, setSelected] = useState<Ruling | null>(null);
   const [step, setStep] = useState<"select" | "reason">("select");
   const [rejectionReason, setRejectionReason] = useState("");
@@ -177,17 +184,19 @@ export function SaleStatusDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <ButtonNeutral
-          className={cn(`py-[7.5px] flex items-center gap-3`, className)}
-        >
-          <span
-            className="w-[0.8rem] h-[0.8rem] rounded-full shrink-0"
-            style={{ backgroundColor: STATUS_CONFIG[sale.status].color }}
-          />
-          Review
-        </ButtonNeutral>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <ButtonNeutral
+            className={cn(`py-[7.5px] flex items-center gap-3`, className)}
+          >
+            <span
+              className="w-[0.8rem] h-[0.8rem] rounded-full shrink-0"
+              style={{ backgroundColor: STATUS_CONFIG[sale.status].color }}
+            />
+            Review
+          </ButtonNeutral>
+        </DialogTrigger>
+      )}
       <DialogContent className="overflow-hidden">
         <AnimatePresence mode="wait" initial={false}>
           {step === "select" ? (

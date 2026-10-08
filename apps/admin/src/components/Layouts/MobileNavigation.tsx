@@ -1,19 +1,14 @@
 "use client";
 import { Link, usePathname } from "@/i18n/navigation";
 import {
-  ShieldSecurity,
   Building,
   Calendar,
   Chart1,
   HamburgerMenu,
-  Headphone,
   Logout,
-  Message,
   Money,
   MoneyRecive,
-  WalletMoney,
-  Note,
-  SecurityUser,
+  Setting2,
   Ticket,
   UserSquare,
 } from "iconsax-reactjs";
@@ -23,12 +18,13 @@ import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useAdminSocket } from "@/lib/AdminSocketContext";
 import { useEffect } from "react";
+import { SETTINGS_PATHS } from "./settingsLinks";
 
-export default function MobileNavigation({
-  className,
-}: {
-  className?: string;
-}) {
+/**
+ * Phone navigation: the three most used Figma links, and "More" with the rest
+ * of the sidebar (Organizers, Tickets, Payments, Payouts, Settings, Log out).
+ */
+export default function MobileNavigation({ className }: { className?: string }) {
   const t = useTranslations("Layout.sidebar");
   const pathname = usePathname();
   const locale = useLocale();
@@ -44,6 +40,8 @@ export default function MobileNavigation({
     if (pathname.startsWith("/contact")) clearContactBadge();
   }, [pathname, clearContactBadge]);
 
+  const settingsBadge = liveThreadBadge + contactBadge;
+
   const primaryLinks = [
     { label: t("links.analytics"), path: "/analytics", Icon: Chart1 },
     { label: t("links.activities"), path: "/activities", Icon: Calendar },
@@ -51,29 +49,22 @@ export default function MobileNavigation({
   ];
 
   const moreLinks = [
-    { label: t("links.waitlist"), path: "/waitlist", Icon: Note, badge: 0 },
     { label: t("links.organisations"), path: "/organisations", Icon: Building, badge: 0 },
-    { label: t("links.kyc"), path: "/kyc", Icon: ShieldSecurity, badge: 0 },
-    { label: t("links.admins"), path: "/admins", Icon: SecurityUser, badge: 0 },
     { label: t("links.tickets"), path: "/tickets", Icon: Ticket, badge: 0 },
     { label: t("links.payments"), path: "/payments", Icon: Money, badge: 0 },
     { label: t("links.payouts"), path: "/payouts", Icon: MoneyRecive, badge: 0 },
-    { label: t("links.finance"), path: "/finance", Icon: WalletMoney, badge: 0 },
-    { label: t("links.support"), path: "/support", Icon: Headphone, badge: liveThreadBadge },
-    { label: t("links.contact"), path: "/contact", Icon: Message, badge: contactBadge },
+    { label: t("settings"), path: "/settings", Icon: Setting2, badge: settingsBadge },
   ];
 
-  const morePathPrefixes = moreLinks.map((l) => l.path);
-
   function isActive(path: string) {
+    if (path === "/settings") return SETTINGS_PATHS.some((p) => pathname.startsWith(p));
+    if (path === "/activities") {
+      return pathname.startsWith(path) && !pathname.startsWith("/activities/revisions");
+    }
     return pathname.startsWith(path);
   }
 
-  function isMoreActive() {
-    return morePathPrefixes.some((p) => pathname.startsWith(p));
-  }
-
-  const totalMoreBadge = liveThreadBadge + contactBadge;
+  const isMoreActive = moreLinks.some((l) => isActive(l.path));
 
   return (
     <nav className={cn("lg:hidden rounded-t-3xl px-6", className)}>
@@ -82,20 +73,22 @@ export default function MobileNavigation({
           <li key={path}>
             <Link
               href={path}
-              className={`group flex flex-col items-center gap-1 text-[1.2rem] leading-6 ${
+              className={cn(
+                "group flex flex-col items-center gap-1 text-[1.2rem] leading-6",
                 isActive(path)
-                  ? "font-semibold text-primary-500 is-active"
-                  : "text-neutral-700 hover:text-primary-500"
-              }`}
+                  ? "font-semibold text-primary-500"
+                  : "text-neutral-700 hover:text-primary-500",
+              )}
             >
               <Icon
                 size="22"
-                className={`transition-all duration-300 ${
+                variant="Bulk"
+                className={cn(
+                  "transition-all duration-300",
                   isActive(path)
                     ? "stroke-primary-500 fill-primary-500"
-                    : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"
-                }`}
-                variant="Bulk"
+                    : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500",
+                )}
               />
               <span>{label}</span>
             </Link>
@@ -106,25 +99,25 @@ export default function MobileNavigation({
           <Popover>
             <PopoverTrigger asChild>
               <button
-                className={`group relative flex flex-col items-center gap-1 text-[1.2rem] leading-6 cursor-pointer ${
-                  isMoreActive()
-                    ? "font-semibold text-primary-500"
-                    : "text-neutral-700 hover:text-primary-500"
-                }`}
+                className={cn(
+                  "group relative flex flex-col items-center gap-1 text-[1.2rem] leading-6 cursor-pointer",
+                  isMoreActive ? "font-semibold text-primary-500" : "text-neutral-700 hover:text-primary-500",
+                )}
               >
-                {totalMoreBadge > 0 && (
+                {settingsBadge > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[1.6rem] h-[1.6rem] rounded-full bg-failure text-white text-[1rem] font-bold flex items-center justify-center px-[3px] leading-none">
-                    {totalMoreBadge > 9 ? "9+" : totalMoreBadge}
+                    {settingsBadge > 9 ? "9+" : settingsBadge}
                   </span>
                 )}
                 <HamburgerMenu
                   size="22"
-                  className={`transition-all duration-300 ${
-                    isMoreActive()
-                      ? "stroke-primary-500 fill-primary-500"
-                      : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"
-                  }`}
                   variant="Bulk"
+                  className={cn(
+                    "transition-all duration-300",
+                    isMoreActive
+                      ? "stroke-primary-500 fill-primary-500"
+                      : "stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500",
+                  )}
                 />
                 <span>{t("more")}</span>
               </button>
@@ -140,17 +133,19 @@ export default function MobileNavigation({
                       <Link href={path} className="flex items-center gap-4 py-3">
                         <Icon
                           size="20"
-                          className={`transition-all duration-300 ${
+                          variant="Bulk"
+                          className={cn(
+                            "transition-all duration-300",
                             isActive(path)
                               ? "stroke-primary-500 fill-primary-500"
-                              : "stroke-neutral-900 fill-neutral-900"
-                          }`}
-                          variant="Bulk"
+                              : "stroke-neutral-900 fill-neutral-900",
+                          )}
                         />
                         <span
-                          className={`text-[1.4rem] leading-4 flex-1 ${
-                            isActive(path) ? "text-primary-500" : "text-neutral-700"
-                          }`}
+                          className={cn(
+                            "text-[1.4rem] leading-4 flex-1",
+                            isActive(path) ? "text-primary-500" : "text-neutral-700",
+                          )}
                         >
                           {label}
                         </span>
@@ -162,21 +157,23 @@ export default function MobileNavigation({
                       </Link>
                     </li>
                   ))}
-                  <div className="bg-neutral-200 h-px w-full" />
-                  <button
-                    onClick={() =>
-                      signOut({
-                        redirect: true,
-                        redirectTo: `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/auth/login`,
-                      })
-                    }
-                    className="flex items-center gap-4 py-3 cursor-pointer"
-                  >
-                    <Logout size="20" color="#737c8a" variant="Bulk" />
-                    <span className="text-[1.4rem] leading-4 text-neutral-700">
-                      {t("logout")}
-                    </span>
-                  </button>
+                  <li className="bg-neutral-200 h-px w-full" aria-hidden />
+                  <li>
+                    <button
+                      onClick={() =>
+                        signOut({
+                          redirect: true,
+                          redirectTo: `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/auth/login`,
+                        })
+                      }
+                      className="flex items-center gap-4 py-3 cursor-pointer"
+                    >
+                      <Logout size="20" color="#737c8a" variant="Bulk" />
+                      <span className="text-[1.4rem] leading-4 text-neutral-700">
+                        {t("logout")}
+                      </span>
+                    </button>
+                  </li>
                 </ul>
               </div>
             </PopoverContent>

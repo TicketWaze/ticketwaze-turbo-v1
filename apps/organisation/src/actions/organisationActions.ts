@@ -32,7 +32,6 @@ export async function UpdateOrganisationProfile(
     country?: string;
     state?: string;
     city?: string;
-    organisationEmail?: string;
     organisationPhoneNumber?: string;
   },
 ) {

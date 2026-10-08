@@ -340,7 +340,10 @@ export default function ExplorePageContent({
         <div className="lg:pt-4 overflow-y-scroll flex flex-col gap-8 -mx-4">
           {filteredEvents.length > 0 && (
             <motion.ul layout className="list pt-2 lg:pt-4 px-4 pb-8 lg:pb-0">
-              <AnimatePresence initial={false} mode="popLayout">
+              {/* No `initial={false}` here: it skips the entrance of every
+                  card present on first render, so the feed appeared without
+                  the fade-in the other sections have. */}
+              <AnimatePresence mode="popLayout">
                 {filteredEvents.map((event, index) => (
                   <motion.li
                     layout

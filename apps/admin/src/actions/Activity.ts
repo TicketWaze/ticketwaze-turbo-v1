@@ -196,10 +196,15 @@ export async function ResendTicketAction(
     );
     const data = await request.json();
     if (data.status === "success") {
-      return { status: "success" };
-    } else {
-      throw new Error(data.message);
+      // Seconds until this ticket can be resent again (the API's budget).
+      return { status: "success", cooldown: Number(data.cooldown ?? 0) };
     }
+    // RESEND_COOLDOWN / RESEND_TICKET_DAILY / RESEND_ADMIN_DAILY carry the wait.
+    return {
+      error: data.message ?? "",
+      code: data.code as string | undefined,
+      retryAfter: Number(data.retryAfter ?? 0),
+    };
   } catch (error: unknown) {
     return {
       error:

@@ -1,5 +1,6 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import { auth } from "@/lib/auth";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import ContactDetailContent from "./ContactDetailContent";
 import { type ContactMessage } from "../ContactPageContent";
 
@@ -23,8 +24,15 @@ export default async function ContactMessagePage({
     },
   );
 
-  const response = await request.json();
-  const message: ContactMessage = response.message;
+  const response = await request.json().catch(() => null);
+  const message: ContactMessage | undefined = response?.message;
+  if (!request.ok || !message) {
+    return (
+      <AdminLayout>
+        <FetchFailedErrorView />
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

@@ -1,5 +1,6 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import { auth } from "@/lib/auth";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import SupportDetailContent, {
   type SupportThreadDetail,
 } from "./SupportDetailContent";
@@ -24,9 +25,16 @@ export default async function SupportThreadPage({
     },
   );
 
-  const response = await request.json();
-  const thread: SupportThreadDetail = response.thread;
-  const chatUrl: string = response.chatUrl ?? "";
+  const response = await request.json().catch(() => null);
+  const thread: SupportThreadDetail | undefined = response?.thread;
+  const chatUrl: string = response?.chatUrl ?? "";
+  if (!request.ok || !thread) {
+    return (
+      <AdminLayout>
+        <FetchFailedErrorView />
+      </AdminLayout>
+    );
+  }
 
   return (
     <AdminLayout>

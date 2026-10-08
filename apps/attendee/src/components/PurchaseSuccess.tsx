@@ -4,6 +4,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { ResultSkeleton } from "@/components/skeletons/CheckoutSkeleton";
 import successBadge from "@/assets/images/auth/success-badge.png";
 
 export type PurchaseKind = "ticket" | "raffle" | "sale" | "reservation";
@@ -95,17 +96,13 @@ export default function PurchaseSuccess({
   );
 }
 
-/** Shown while a return page is still confirming the payment with the API. */
+/**
+ * Shown while a return page is still confirming the payment with the API: the
+ * success screen in skeleton, with "Checking your payment…" where its last
+ * line will be, so the badge and title land in place instead of replacing a
+ * spinner.
+ */
 export function PurchaseChecking() {
   const t = useTranslations("Checkout.success");
-  return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-8 min-h-[60vh]">
-      <motion.span
-        className="size-[6rem] rounded-full border-4 border-primary-100 border-t-primary-500"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 0.9, repeat: Infinity, ease: "linear" }}
-      />
-      <p className="text-[1.6rem] text-neutral-600">{t("checking")}</p>
-    </div>
-  );
+  return <ResultSkeleton status={t("checking")} />;
 }

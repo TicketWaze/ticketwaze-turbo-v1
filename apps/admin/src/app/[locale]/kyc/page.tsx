@@ -1,3 +1,4 @@
+import AdminLayout from "@/components/Layouts/AdminLayout";
 import { auth } from "@/lib/auth";
 import KycPageContent, { type KycQueueRow } from "./KycPageContent";
 
@@ -24,11 +25,13 @@ export default async function KycPage({
   const response = await request.json().catch(() => null);
 
   return (
-    <KycPageContent
-      rows={(response?.data ?? []) as KycQueueRow[]}
-      meta={response?.meta ?? { currentPage: 1, lastPage: 1, total: 0 }}
-      pendingCount={response?.pendingCount ?? 0}
-      status={status}
-    />
+    <AdminLayout>
+      <KycPageContent
+        rows={(response?.data ?? []) as KycQueueRow[]}
+        meta={response?.meta ?? { currentPage: 1, lastPage: 1, total: 0 }}
+        pendingCount={response?.pendingCount ?? 0}
+        status={status}
+      />
+    </AdminLayout>
   );
 }

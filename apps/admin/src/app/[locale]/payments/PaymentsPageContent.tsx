@@ -1,542 +1,302 @@
 "use client";
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useTranslations } from "next-intl";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { useSession } from "next-auth/react";
-import TransactionDetails from "./TransactionDetails";
-import Money from "@ticketwaze/ui/assets/icons/moneys.svg";
-import ArrowUp from "@ticketwaze/ui/assets/icons/arrow-up.svg";
-import Image from "next/image";
-import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
-import SearchInput from "@/components/shared/SearchInput";
-import PageLoader from "@/components/PageLoader";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { Order } from "@ticketwaze/typescript-config";
+import { useEffect, useState, useTransition } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { MoneyRecive, MoreCircle } from "iconsax-reactjs";
+import { formatMoney } from "@ticketwaze/currency";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import FilterPill from "@/components/shared/FilterPill";
+import SearchField from "@/components/shared/SearchField";
+import TablePagination from "@/components/shared/TablePagination";
+import { Reveal } from "@/components/shared/motion";
+import TransactionDetailsDrawer, {
+  ORDER_BADGE,
+  type TransactionDetailsData,
+} from "@/components/shared/TransactionDetailsDrawer";
+import { ticketClassColor } from "@/components/shared/ticketBadges";
+import { Drawer } from "@/components/ui/drawer";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { cn } from "@/lib/utils";
+import { Metric, TrendBadge, Unit } from "../analytics/parts";
+import { PERIODS, readPeriod, type Period } from "../analytics/periods";
 
-function getTransactionStatusStyle(status: string) {
-  switch (status) {
-    case "SUCCESSFUL":
-      return { color: "#349C2E" };
-    case "FAILED":
-      return { color: "#EF1870" };
-    case "RETURNED":
-      return { color: "#3F3F3F" };
-    default:
-      return { color: "#EA961C" };
-  }
-}
+type Money = { htg: number; usd: number };
 
-function formatOrderAmount(order: Order) {
-  // From the normalized activity, not the first ticket's event — a raffle order
-  // has no `events` row, so that path silently fell back to HTG.
-  const currency = order.activity?.currency ?? "HTG";
-  const amount =
-    currency === "HTG"
-      ? order.amount.toLocaleString()
-      : order.usdPrice.toLocaleString();
-  return `${amount} ${currency}`;
-}
-
-/**
- * The buyer's name lives in two places depending on how they checked out: on
- * the tickets for a signed-in purchase, and on the order itself for a guest
- * one. Both are checked, in the same order the API searches them, so the name
- * shown here is the one a search for it would match.
- */
-function getOrderAttendeeName(order: Order): string {
-  const fromTicket = order.tickets?.[0]?.fullName?.trim();
-  if (fromTicket) return fromTicket;
-  const fromOrder = [order.firstName, order.lastName]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
-  return fromOrder || "—";
-}
-
-type PaymentStats = {
-  totalRevenue: number;
-  totalTransactions: number;
-  revenueGrowth: number;
-  platformFees: number;
+export type PaymentsData = {
+  period: Period;
+  stats: { revenue: Money; transactions: number; fees: Money };
+  trends: { revenue: number | null; transactions: number | null; fees: number | null };
+  payments: {
+    data: TransactionDetailsData[];
+    meta: { total: number; perPage: number; currentPage: number; lastPage: number };
+  };
 };
 
+const STATUSES = ["SUCCESSFUL", "PENDING", "FAILED", "RETURNED"] as const;
+
+/**
+ * Figma "Admin" → Payments (4369:44126 empty / 4369:44282 data): Total
+ * Revenue / Total Transactions / Platform Fees Earned under the period pill
+ * (the same figures as the Finance page for that window), then one row per
+ * paid order of any activity type with Figma's status + search filters and
+ * numbered pages. A row opens Transaction Details (4373:73357) with the data
+ * the API already sent. See the API's services/admin_payments.ts.
+ */
 export default function PaymentsPageContent({
-  orders,
-  stats,
-  activeStatus,
-  period,
-  search,
+  data,
+  filters,
 }: {
-  orders: Order[];
-  stats: PaymentStats;
-  activeStatus: string;
-  period?: string;
-  search?: string;
+  data: PaymentsData | null;
+  filters: { status: string | null; search: string };
 }) {
-  const t = useTranslations("Payments");
+  const t = useTranslations("PaymentsList");
+  const tPeriods = useTranslations("Analytics.filters.periods");
+  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
-  const [term, setTerm] = useState(search ?? "");
+  const searchParams = useSearchParams();
+  const [pending, startTransition] = useTransition();
+  const [term, setTerm] = useState(filters.search);
+  const [selected, setSelected] = useState<TransactionDetailsData | null>(null);
 
-  /**
-   * Search results live beside the server-rendered rows rather than replacing
-   * them: null means "not searching", so clearing the box restores the filtered
-   * list already on screen without a round trip.
-   */
-  const [searchRows, setSearchRows] = useState<Order[] | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
-
-  const isSearchActive = term.trim().length > 0;
-  const rows = searchRows ?? orders;
-  const history = rows.length > 0;
-
-  const selectedStatus = [
-    "PENDING",
-    "SUCCESSFUL",
-    "FAILED",
-    "RETURNED",
-  ].includes(activeStatus)
-    ? activeStatus
-    : "all";
-
-  // The server is the source of truth for what is on screen, so a completed
-  // navigation is what clears the loader.
-  useEffect(() => {
-    setIsLoading(false);
-  }, [activeStatus, period, search]);
-
-  /**
-   * One request per keystroke, with the previous one aborted as the next goes
-   * out. Aborting is what keeps the results honest: without it a slow early
-   * request can land after a faster later one and overwrite the newer results
-   * with stale rows.
-   *
-   * The request goes straight to the API rather than through a navigation so it
-   * is cancellable — the admin origin is CORS allow-listed, and the bearer token
-   * is the same one the server components use.
-   */
-  useEffect(() => {
-    abortRef.current?.abort();
-
-    const trimmed = term.trim();
-    if (!trimmed) {
-      setSearchRows(null);
-      setIsSearching(false);
-      return;
+  function update(changes: Record<string, string | null>) {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === null || value === "") params.delete(key);
+      else params.set(key, value);
     }
-
-    const token = session?.user.accessToken;
-    if (!token) return;
-
-    const controller = new AbortController();
-    abortRef.current = controller;
-    setIsSearching(true);
-
-    // Searching deliberately ignores the status and period pills so it runs
-    // against every record.
-    const params = new URLSearchParams({
-      status: "all",
-      search: trimmed,
-      limit: "50",
+    // Any new filter starts again from the first page.
+    if (!("page" in changes)) params.delete("page");
+    const query = params.toString();
+    startTransition(() => {
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
     });
+  }
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/admin/payments/requests?${params.toString()}`,
-      {
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+  // Search follows typing, 300 ms after the last key.
+  useEffect(() => {
+    if (term.trim() === filters.search) return;
+    const id = setTimeout(() => update({ search: term.trim() || null }), 300);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term]);
+
+  const period = readPeriod(data?.period);
+  const rows = data?.payments.data ?? [];
+  const meta = data?.payments.meta;
+  const filtering = Boolean(filters.status || filters.search);
+  const number = (n: number) => n.toLocaleString(locale, { maximumFractionDigits: 2 });
+
+  const trend = (value: number | null) => (
+    <TrendBadge
+      value={value}
+      label={
+        value === null
+          ? ""
+          : t(value < 0 ? "trend.down" : "trend.up", { value: Math.abs(value) })
+      }
+    />
+  );
+  const moneyFigure = (value: Money) => (
+    <>
+      {number(value.htg)} <Unit>HTG</Unit>
+    </>
+  );
+
+  const tiles = data
+    ? [
+        {
+          key: "revenue",
+          figure: moneyFigure(data.stats.revenue),
+          note: formatMoney(data.stats.revenue.usd, "USD", locale),
+          trend: data.trends.revenue,
         },
-      },
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setSearchRows(data?.orders?.data ?? []);
-        setIsSearching(false);
-      })
-      .catch((error) => {
-        // An aborted request was replaced by a newer one; it owns the state now.
-        if (error?.name === "AbortError") return;
-        setSearchRows([]);
-        setIsSearching(false);
-      });
+        {
+          key: "transactions",
+          figure: number(data.stats.transactions),
+          note: null,
+          trend: data.trends.transactions,
+        },
+        {
+          key: "fees",
+          figure: moneyFigure(data.stats.fees),
+          note: formatMoney(data.stats.fees.usd, "USD", locale),
+          trend: data.trends.fees,
+        },
+      ]
+    : [];
 
-    return () => controller.abort();
-  }, [term, session?.user.accessToken]);
-
-  // Picking a filter ends the search — the two are alternative ways of choosing
-  // rows, and leaving a stale term in the box would misdescribe what is listed.
-  const navigate = (params: URLSearchParams) => {
-    abortRef.current?.abort();
-    setTerm("");
-    setSearchRows(null);
-    setIsSearching(false);
-    setIsLoading(true);
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
-  // `status` is always written to the URL, "all" included: an absent param
-  // falls back to the page's SUCCESSFUL default, so omitting it would turn
-  // "All status" back into "Successful".
-  const handleStatusChange = (value: string) => {
-    const params = new URLSearchParams();
-    params.set("status", value);
-    if (period) params.set("period", period);
-    navigate(params);
-  };
-
-  const handlePeriodChange = (value: string) => {
-    const params = new URLSearchParams();
-    params.set("status", selectedStatus);
-    if (value !== "all_period") params.set("period", value);
-    navigate(params);
-  };
-
-  const growthPositive = stats.revenueGrowth >= 0;
+  const head = "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase text-left";
+  const cell = "py-6 pr-4 text-[1.5rem] leading-8 text-deep-100";
+  const badge = "py-[0.3rem] px-2 rounded-[30px] text-[1.1rem] font-bold leading-6 uppercase whitespace-nowrap";
 
   return (
-    <div className={PAGE_SCROLLER}>
-      <PageLoader isLoading={isLoading} />
-      <PageTitle>{t("title")}</PageTitle>
-      <div
-        className={
-          "grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b"
-        }
-      >
-        <div className={"pb-12"}>
-          <span
-            className={
-              "flex text-[14px] text-neutral-600 leading-8 pb-2 justify-between"
-            }
-          >
-            {t("total_revenue")}
-            <span
-              className={`flex gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10 ${growthPositive ? "text-success" : "text-[#EF1870]"}`}
-            >
-              {Math.abs(stats.revenueGrowth)}%
-              <Image src={ArrowUp} alt="trend" width={20} height={20} />
-            </span>
-          </span>
-          <p
-            className={
-              "font-medium text-[1.6rem] -mt-2 lg:text-[25px] leading-12 font-primary"
-            }
-          >
-            {stats.totalRevenue.toLocaleString()}{" "}
-            <span className="text-neutral-600">HTG</span>
-          </p>
-        </div>
-        <div className={"pl-10"}>
-          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
-            {t("total_transactions")}
-          </span>
-          <p
-            className={
-              "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
-            }
-          >
-            {stats.totalTransactions.toLocaleString()}
-          </p>
-        </div>
-        <div className={"pl-0 lg:pl-10"}>
-          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
-            {t("fees")}
-          </span>
-          <p
-            className={
-              "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
-            }
-          >
-            {stats.platformFees.toLocaleString()}{" "}
-            <span className="text-neutral-600">HTG</span>
-          </p>
-        </div>
+    <div className={cn(PAGE_SCROLLER, "gap-0")} aria-busy={pending}>
+      {/* Heading + the tiles' period pill. */}
+      <div className="sticky top-0 z-20 bg-white pb-8 flex items-center justify-between gap-6">
+        <h3 className="font-primary font-medium text-[2.6rem] leading-12 text-black">{t("title")}</h3>
+        <FilterPill
+          label={t("filters.period")}
+          value={period}
+          defaultValue="month"
+          options={PERIODS.map((p) => ({ value: p, label: tPeriods(p) }))}
+          onChange={(v) => update({ period: v === "month" ? null : v })}
+          pending={pending}
+        />
       </div>
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-8">
-          <div className="flex justify-between">
-            <h4 className="hidden font-medium lg:inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
-              {t("transactions.title")}
-            </h4>
-            <div className="flex flex-col lg:flex-row gap-4 w-full lg:w-auto">
-              <SearchInput
-                value={term}
-                onChange={setTerm}
-                placeholder={t("filters.search")}
-              />
-              {/* The two pills share a row of their own so they sit side by
-                  side on mobile instead of stacking under the search box. On
-                  desktop the parent is already a row, so this nests without
-                  changing the layout. */}
-              <div className="flex flex-row gap-4 w-full lg:w-auto">
-                {/* Controlled, not defaultValue: a search runs against every
-                  record, so while one is active the pills have to show that no
-                  status or period narrowing is in effect. */}
-                <Select
-                  value={isSearchActive ? "all" : selectedStatus}
-                  onValueChange={handleStatusChange}
-                >
-                  {/* Mobile: each pill takes an equal share of the row, so the
-                      two split the width either side of the gap. `min-w-0` lets
-                      them actually shrink to that share — a flex item's default
-                      min-width is its content, which the base `whitespace-nowrap`
-                      would otherwise hold wide. Desktop keeps the original
-                      content-width pills. */}
-                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none flex-1 lg:flex-none w-full lg:w-fit min-w-0 text-[1.4rem] text-neutral-700 leading-8">
-                    <SelectValue placeholder="" />
-                  </SelectTrigger>
-                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                    <SelectGroup>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="all"
-                      >
-                        {t("filters.status")}
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="SUCCESSFUL"
-                      >
-                        Successful
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="PENDING"
-                      >
-                        Pending
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="FAILED"
-                      >
-                        Failed
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="RETURNED"
-                      >
-                        Returned
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Select
-                  value={
-                    isSearchActive ? "all_period" : (period ?? "all_period")
-                  }
-                  onValueChange={handlePeriodChange}
-                >
-                  {/* Mobile: each pill takes an equal share of the row, so the
-                      two split the width either side of the gap. `min-w-0` lets
-                      them actually shrink to that share — a flex item's default
-                      min-width is its content, which the base `whitespace-nowrap`
-                      would otherwise hold wide. Desktop keeps the original
-                      content-width pills. */}
-                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none flex-1 lg:flex-none w-full lg:w-fit min-w-0 text-[1.4rem] text-neutral-700 leading-8">
-                    <SelectValue placeholder="" />
-                  </SelectTrigger>
-                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                    <SelectGroup>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="all_period"
-                      >
-                        {t("filters.time")}
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="last_week"
-                      >
-                        Last week
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="last_month"
-                      >
-                        Last month
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          {/* The results area owns the search loader: the header, stats and
-              filters stay usable while a query is in flight. */}
-          <div className="relative min-h-40">
-            {isSearching && (
-              <div className="absolute inset-0 z-10 flex items-start justify-center pt-20 bg-white/70">
-                <LoadingCircleSmall />
-              </div>
-            )}
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {/* Mobile keeps only the attendee and the amount — the two
-                      columns that identify a transaction at a glance on a
-                      narrow screen. Everything else is desktop-only. */}
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("transactions.table.transaction_id")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("transactions.table.attendee")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("transactions.table.activity_name")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("transactions.table.amount_paid")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("transactions.table.transaction_status.title")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
 
-              {history ? (
-                <TableBody>
-                  {rows.map((order) => {
-                    const statusStyle = getTransactionStatusStyle(order.status);
-                    const attendeeName = getOrderAttendeeName(order);
-                    return (
-                      <Drawer key={order.orderId} direction="right">
-                        <DrawerTrigger asChild>
-                          <TableRow className="cursor-pointer">
-                            <TableCell
-                              className={
-                                "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                              }
-                            >
-                              {/* Transaction ids run long and are the first
-                                  column, so an untruncated one pushes every
-                                  other column off the row. */}
-                              <span
-                                className="block max-w-[16rem] lg:max-w-[24rem] truncate cursor-pointer"
-                                title={order.orderName}
-                              >
-                                {order.orderName}
-                              </span>
-                            </TableCell>
-                            {/* A long name would otherwise widen the column and
-                                push the amount off a narrow screen, so it is
-                                clipped and the full value kept in the title. */}
-                            <TableCell
-                              className={
-                                "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                              }
-                            >
-                              <span
-                                className="block max-w-[16rem] lg:max-w-[24rem] truncate cursor-pointer"
-                                title={attendeeName}
-                              >
-                                {attendeeName}
-                              </span>
-                            </TableCell>
-                            <TableCell
-                              className={
-                                "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                              }
-                            >
-                              <span
-                                className="block max-w-[16rem] lg:max-w-[24rem] truncate"
-                                title={order.activity?.name ?? undefined}
-                              >
-                                {order.activity?.name ?? "—"}
-                              </span>
-                            </TableCell>
-                            <TableCell
-                              className={
-                                "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                              }
-                            >
-                              {formatOrderAmount(order)}
-                            </TableCell>
-                            <TableCell className="py-6 hidden lg:table-cell">
-                              <span
-                                style={{ color: statusStyle.color }}
-                                className="py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-[#f5f5f5]"
-                              >
-                                {order.status}
-                              </span>
-                            </TableCell>
-                          </TableRow>
-                        </DrawerTrigger>
-                        <TransactionDetails order={order} />
-                      </Drawer>
-                    );
-                  })}
-                </TableBody>
-              ) : null}
-            </Table>
-            {/* An empty search is not an empty system: the "no payments yet"
-                illustration would be wrong while a query is narrowing the list. */}
-            {!history &&
-              !isSearching &&
-              (isSearchActive ? (
-                <p className="text-[1.8rem] text-neutral-600 leading-10 text-center mt-16">
-                  {t("transactions.no_results", { term: term.trim() })}
-                </p>
-              ) : (
-                <div className="flex flex-col gap-12 items-center mt-8 self-center w-full">
-                  <div className="rounded-full bg-neutral-100 p-6 w-fit">
-                    <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
-                      <Image
-                        src={Money}
-                        alt="no payment history"
-                        width={50}
-                        height={50}
-                      />
-                    </div>
-                  </div>
-                  <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
-                    {t("transactions.no_history")}
-                  </p>
-                </div>
-              ))}
+      <Reveal className="grid grid-cols-2 lg:grid-cols-3 border-b border-neutral-100">
+        {tiles.map((tile, i) => (
+          <div
+            key={tile.key}
+            title={t(`hints.${tile.key}`)}
+            className={cn(
+              "py-6 pr-6 lg:pr-10 border-neutral-100",
+              i === 1 && "pl-6 lg:pl-10 border-l",
+              i === 2 && "col-span-2 lg:col-span-1 border-t lg:border-t-0 lg:pl-10 lg:border-l",
+            )}
+          >
+            <Metric label={t(tile.key)} trend={trend(tile.trend)} note={tile.note}>
+              {tile.figure}
+            </Metric>
+          </div>
+        ))}
+      </Reveal>
+
+      <Reveal delay={0.05} className="flex flex-col gap-6 pt-12">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <h4 className="font-primary font-medium text-[1.8rem] leading-10 text-black">
+            {t("list.title")}
+          </h4>
+          <div className="flex flex-wrap items-center gap-4">
+            <FilterPill
+              label={t("filters.status_label")}
+              value={filters.status ?? "all"}
+              defaultValue="all"
+              placeholder={t("filters.status")}
+              options={[
+                { value: "all", label: t("filters.status") },
+                ...STATUSES.map((s) => ({ value: s, label: t(`filters.${s}`) })),
+              ]}
+              onChange={(v) => update({ status: v === "all" ? null : v })}
+              pending={pending}
+            />
+            <SearchField
+              value={term}
+              onChange={setTerm}
+              placeholder={t("filters.search")}
+              className="flex w-full lg:w-[26rem]"
+            />
           </div>
         </div>
-      </div>
+
+        <div className={cn("overflow-x-auto transition-opacity", pending && "opacity-60")}>
+          <table className="w-full min-w-[80rem] border-collapse">
+            <thead>
+              <tr className="border-b border-neutral-100">
+                <th className={head}>{t("list.table.id")}</th>
+                <th className={head}>{t("list.table.activity")}</th>
+                <th className={head}>{t("list.table.class")}</th>
+                <th className={head}>{t("list.table.amount")}</th>
+                <th className={head}>{t("list.table.status")}</th>
+                <th className={head}>
+                  <span className="sr-only">{t("list.table.actions")}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                const usd = row.activity.currency === "USD";
+                return (
+                  <tr
+                    key={row.orderId}
+                    onClick={() => setSelected(row)}
+                    className="border-b border-neutral-100 cursor-pointer hover:bg-neutral-50 transition-colors"
+                  >
+                    <td className={cn(cell, "whitespace-nowrap")}>{row.orderName}</td>
+                    <td className={cell}>
+                      <span className="flex items-center gap-3 max-w-[24rem]">
+                        <span className="truncate" title={row.activity.name}>
+                          {row.activity.name}
+                        </span>
+                        {["raffle", "sale", "restaurant"].includes(row.activity.type) && (
+                          <span className="shrink-0 bg-primary-50 text-primary-500 text-[1rem] font-bold uppercase rounded-[30px] px-2 py-[0.2rem]">
+                            {t(`list.type_badge.${row.activity.type}`)}
+                          </span>
+                        )}
+                      </span>
+                    </td>
+                    <td className="py-6 pr-4">
+                      {/* One badge per class in the order (multi-ticket orders). */}
+                      <span className="flex flex-wrap gap-2 max-w-[22rem]">
+                        {row.classes.length > 0
+                          ? row.classes.map((name) => (
+                              <span
+                                key={name}
+                                style={{ color: ticketClassColor(name) }}
+                                className={cn(badge, "inline-block max-w-[14rem] truncate bg-neutral-100")}
+                              >
+                                {name}
+                              </span>
+                            ))
+                          : "—"}
+                      </span>
+                    </td>
+                    <td className={cn(cell, "whitespace-nowrap")}>
+                      {formatMoney(usd ? row.amount.usd : row.amount.htg, row.activity.currency, locale)}
+                    </td>
+                    <td className="py-6 pr-4">
+                      <span className={cn(badge, ORDER_BADGE[row.status] ?? ORDER_BADGE.PENDING)}>
+                        {t(`status.${row.status}`)}
+                      </span>
+                    </td>
+                    <td className="py-6 text-right">
+                      <span
+                        aria-hidden
+                        className="relative w-[2rem] h-[2rem] shrink-0 rounded-full bg-neutral-100 inline-flex items-center justify-center"
+                      >
+                        <MoreCircle size="10" variant="Bulk" color="#737C8A" />
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {rows.length === 0 &&
+          (filtering ? (
+            <p className="text-[1.6rem] text-neutral-600 leading-10 text-center py-16">
+              {t("list.no_results")}
+            </p>
+          ) : (
+            <div className="flex flex-col items-center gap-10 py-16">
+              <div className="rounded-full bg-neutral-100 p-6">
+                <div className="rounded-full bg-neutral-200 p-8">
+                  <MoneyRecive size="44" variant="Bulk" color="#454A53" />
+                </div>
+              </div>
+              <p className="max-w-[44rem] text-[1.6rem] text-neutral-600 leading-9 text-center">
+                {t("list.no_history")}
+              </p>
+            </div>
+          ))}
+
+        {meta && meta.lastPage > 1 && (
+          <TablePagination
+            page={meta.currentPage}
+            count={meta.lastPage}
+            onChange={(page) => update({ page: page > 1 ? String(page) : null })}
+            prevLabel={t("list.prev")}
+            nextLabel={t("list.next")}
+          />
+        )}
+      </Reveal>
+
+      <Drawer direction="right" open={selected !== null} onOpenChange={(open) => !open && setSelected(null)}>
+        {selected && <TransactionDetailsDrawer tx={selected} />}
+      </Drawer>
     </div>
   );
 }

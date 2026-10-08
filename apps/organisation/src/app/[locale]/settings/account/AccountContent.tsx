@@ -38,8 +38,7 @@ export default function AccountContent({
   const locale = useLocale();
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [phone, setPhone] = useState(user.whatsappPhoneNumber ?? "");
-  const [language, setLanguage] = useState<"en" | "fr">(
+  const [phone, setPhone] = useState(user.whatsappPhoneNumber ?? "");  const [language, setLanguage] = useState<"en" | "fr">(
     preferences.appLanguage === "en" ? "en" : "fr",
   );
 

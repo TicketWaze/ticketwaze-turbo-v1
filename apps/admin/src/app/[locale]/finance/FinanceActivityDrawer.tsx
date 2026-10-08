@@ -10,7 +10,7 @@ import {
   DrawerFooter,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import Separator from "@/components/shared/Separator";
+import { Badge } from "@/components/shared/DataTable";
 import { ButtonAccent } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import formatDate from "@/lib/FormatDate";
@@ -22,8 +22,6 @@ import {
   type Money,
 } from "./types";
 
-const badgeBase =
-  "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-neutral-200";
 
 /**
  * One activity's books, loaded when the drawer opens. Keyed on the activity
@@ -123,9 +121,7 @@ function Details({
       <Section>
         <Row label={t("drawer.organisation")}>{activity.organisationName}</Row>
         <Row label={t("drawer.type")}>
-          <span className={`${badgeBase} text-deep-100`}>
-            {t(`types.${activity.activityType}`)}
-          </span>
+          <Badge tone="primary">{t(`types.${activity.activityType}`)}</Badge>
         </Row>
         <Row label={t("drawer.currency")}>{activity.currency}</Row>
         <Row label={t("drawer.period")}>{t(`periods.${detail.period}`)}</Row>
@@ -149,7 +145,7 @@ function Details({
           <Row label={t("drawer.cancelled")}>{date(activity.cancelledAt)}</Row>
         )}
       </Section>
-      <Separator />
+      <div className="h-[2px] w-full bg-neutral-100" />
 
       {/* Sales */}
       <Section title={t("drawer.sales.title")}>
@@ -178,7 +174,7 @@ function Details({
         <Row label={t("drawer.sales.first_sale")}>{date(counts.firstSaleAt)}</Row>
         <Row label={t("drawer.sales.last_sale")}>{date(counts.lastSaleAt)}</Row>
       </Section>
-      <Separator />
+      <div className="h-[2px] w-full bg-neutral-100" />
 
       {/* Money */}
       <Section title={t("drawer.money.title")}>
@@ -219,7 +215,7 @@ function Details({
           <Amount money={money.net} currency={cur} />
         </Row>
       </Section>
-      <Separator />
+      <div className="h-[2px] w-full bg-neutral-100" />
 
       {/* By payment method */}
       <Section title={t("drawer.providers.title")}>
@@ -243,7 +239,7 @@ function Details({
           empty={t("drawer.orders.empty")}
         />
       </Section>
-      <Separator />
+      <div className="h-[2px] w-full bg-neutral-100" />
 
       {/* Registered pricing */}
       <Section title={t("drawer.pricing.title")}>
@@ -275,7 +271,7 @@ function Details({
           ))
         )}
       </Section>
-      <Separator />
+      <div className="h-[2px] w-full bg-neutral-100" />
 
       {/* What actually sold, at the price it sold at */}
       <Section title={t("drawer.items.title")}>
@@ -290,7 +286,7 @@ function Details({
           hideHeader
         />
       </Section>
-      <Separator />
+      <div className="h-[2px] w-full bg-neutral-100" />
 
       {/* Latest orders */}
       <Section title={t("drawer.orders.title")}>

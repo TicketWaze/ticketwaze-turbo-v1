@@ -3,7 +3,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ArrowLeft, TickCircle } from "iconsax-reactjs";
+import { TickCircle } from "iconsax-reactjs";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import SettingsHeader from "@/components/shared/SettingsHeader";
+import { cn } from "@/lib/utils";
 import { Input, TextArea } from "@/components/shared/Inputs";
 import { ButtonPrimary, ButtonSecondary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -291,23 +294,16 @@ export default function CampaignComposer({ accessToken, campaign }: Props) {
   ];
 
   return (
-    <div className="overflow-y-scroll flex flex-col gap-8 pb-24">
-      {/* Header */}
-      <div className="flex flex-col gap-4">
-        <button
-          onClick={() => (step === 1 ? router.push("/emails") : setStep((step - 1) as Step))}
-          className="flex items-center gap-2 text-[1.4rem] leading-8 text-neutral-600 hover:text-primary-500 cursor-pointer transition-colors w-fit"
-        >
-          <ArrowLeft size="18" />
-          {step === 1 ? t("compose.backToList") : t("compose.back")}
-        </button>
-        <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
-          {campaign ? t("compose.editTitle") : t("compose.title")}
-        </h3>
-      </div>
+    <div className={cn(PAGE_SCROLLER, "gap-8 pb-24")}>
+      {/* The header links back to the list; each step's own Back button
+          (bottom left) walks back through the steps. */}
+      <SettingsHeader
+        title={campaign ? t("compose.editTitle") : t("compose.title")}
+        back={{ href: "/emails", label: t("title") }}
+      />
 
       {/* Stepper */}
-      <div className="flex items-center gap-4 border-b border-neutral-100 pb-8">
+      <div className="flex items-center gap-4 border-b border-neutral-100 pb-8 -mt-8">
         {steps.map(({ number, label }, index) => (
           <div key={number} className="flex items-center gap-4">
             <div className="flex items-center gap-3">

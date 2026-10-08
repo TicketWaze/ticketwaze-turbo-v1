@@ -16,6 +16,8 @@ import {
 import { ButtonNeutral, ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { RejectKycAction } from "@/actions/Kyc";
+import { HEADER_PILL, PILL_TONE } from "@/components/shared/DataTable";
+import { cn } from "@/lib/utils";
 
 /** Same shape as the Suspend dialog: the reason is emailed to the organizer. */
 export function RejectKycDialog({
@@ -54,7 +56,9 @@ export function RejectKycDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <ButtonRed className="py-[7.5px] px-10">{t("reject")}</ButtonRed>
+        <button type="button" className={cn(HEADER_PILL, PILL_TONE.danger)}>
+          {t("reject")}
+        </button>
       </DialogTrigger>
       <DialogContent>
         <div className="flex flex-col gap-6">

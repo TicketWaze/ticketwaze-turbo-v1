@@ -1,7 +1,10 @@
 "use client";
 import { useState } from "react";
 import BackButton from "@/components/shared/BackButton";
-import { ButtonBlack, ButtonNeutral } from "@/components/shared/buttons";
+import { ButtonNeutral } from "@/components/shared/buttons";
+import ActivityHeaderActions, {
+  ActivitySuspensionNotice,
+} from "@/components/shared/ActivityHeaderActions";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
 import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
@@ -12,7 +15,6 @@ import {
   Calendar2,
   Location,
   Clock,
-  Edit2,
   Gift,
   Trash,
   Status,
@@ -29,7 +31,6 @@ import CheckingDialog, {
   canOfferChecking,
   getCheckingWindowStatus,
 } from "@/components/shared/CheckingDialog";
-import Separator from "@/components/shared/Separator";
 import { useLocale, useTranslations } from "next-intl";
 import ActivityActionsMenu from "@/components/shared/ActivityActionsMenu";
 import useAdminCan from "@/lib/useAdminCan";
@@ -195,6 +196,11 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
           : `${daysLeft} days to go`;
 
   const canManage = useAdminCan("activity.manage");
+  // Migration 044's columns; not on the shared Event type yet.
+  const suspension = event as Event & {
+    suspendedAt?: string | null;
+    suspensionReason?: string | null;
+  };
 
   /**
    * Which action dialog is open. Held here rather than inside each dialog
@@ -289,14 +295,8 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
     );
   }
 
+  // Edit is Figma's orange header button now; the menu keeps the rest.
   const actions = [
-    canManage && {
-      key: "edit",
-      label: t("activity.edit"),
-      href: `/activities/${event.eventId}/edit`,
-      icon: <Edit2 size="20" variant="Bulk" color="#2E3237" />,
-      disabledReason: editBlockedReason,
-    },
     {
       key: "status",
       label: t("activity.actions.status"),
@@ -352,9 +352,9 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
   return (
     <div className="flex flex-col gap-8 h-full overflow-hidden">
       <BackButton text={t("activity.back")}></BackButton>
-      <div className="flex justify-between items-center gap-6">
+      <div className="flex flex-col lg:flex-row justify-between lg:items-center gap-6">
         <div className="flex items-center gap-4 min-w-0">
-          <h2 className="items-center font-primary leading-12 font-medium text-[2.6rem] min-w-0">
+          <h2 className="items-center font-primary leading-[3rem] font-medium text-[2.6rem] text-black capitalize min-w-0">
             {event.eventName}
           </h2>
           {isSponsored && (
@@ -366,10 +366,18 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-4 shrink-0">
-          {/* Desktop: the scanner sits between the title and the actions menu,
-              so it reads before it. On a phone the header row has no space for
-              it, so it gets the pinned footer at the bottom of the page. */}
+        {/* Figma's Suspend + Edit pills, then the scanner and the ⋯ menu with
+            every other action. */}
+        <ActivityHeaderActions
+          kind="event"
+          activityId={event.eventId}
+          editHref={`/activities/${event.eventId}/edit`}
+          editLabel={t("activity.edit")}
+          editDisabledReason={editBlockedReason}
+          suspendedAt={suspension.suspendedAt}
+        >
+          {/* Desktop: the scanner sits before the pills. On a phone the header
+              has no space for it, so it gets the pinned footer below. */}
           {canCheck && (
             <ScanTriggerButton
               className="hidden lg:flex"
@@ -378,14 +386,19 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
               onClick={() => setOpenDialog("checking")}
             />
           )}
-          {/* One menu at every width — the four pills used to wrap onto a
-              second line below a wide desktop. */}
           <ActivityActionsMenu
             actions={actions}
             label={t("activity.actions.title")}
           />
-        </div>
+        </ActivityHeaderActions>
       </div>
+      <ActivitySuspensionNotice
+        suspendedAt={suspension.suspendedAt}
+        reason={suspension.suspensionReason}
+        organisationSuspended={
+          (event.organisation as { isSuspended?: boolean }).isSuspended === true
+        }
+      />
       <main className="w-full gap-16 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden flex flex-col lg:grid lg:grid-cols-[15fr_21fr]">
         <div className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
           <EventImageLightbox
@@ -394,20 +407,20 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
             height={298}
             alt={event.eventName}
           />
-          <Separator />
-          <div className="flex flex-col gap-4">
-            <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
+          <div className="h-[2px] w-full shrink-0 bg-neutral-100" />
+          <div className="flex flex-col gap-[1rem]">
+            <span className="font-semibold text-[1.6rem] leading-[2.25rem] text-deep-100">
               {t("activity.about.title")}
             </span>
             <div
-              className="rich-text text-[1.5rem] leading-8 text-neutral-700"
+              className="rich-text text-[1.5rem] leading-[3rem] text-neutral-700"
               dangerouslySetInnerHTML={{ __html: event.eventDescription }}
             />
           </div>
-          <Separator />
+          <div className="h-[2px] w-full shrink-0 bg-neutral-100" />
           <div className="flex flex-col gap-8">
             <div className="flex flex-col gap-8">
-              <span className="font-semibold text-[1.6rem] leading-8 text-deep-200">
+              <span className="font-semibold text-[1.6rem] leading-[2.25rem] text-deep-100">
                 {t("activity.details.title")}
               </span>
               {/* organizer */}
@@ -428,43 +441,44 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
                       className="rounded-full w-14 h-14 object-cover shrink-0"
                     />
                   ) : (
-                    <div className="flex shrink-0 rounded-full w-14 h-14 bg-black justify-center items-center">
-                      <p className="font-medium text-white leading-12 text-[2.2rem] font-primary">
+                    <div className="flex shrink-0 rounded-full w-14 h-14 bg-black border border-neutral-700 justify-center items-center">
+                      <p className="font-medium text-white leading-[3rem] text-[2.2rem] font-primary">
                         {orgInitial}
                       </p>
                     </div>
                   )}
                   <div className="flex flex-col">
-                    <span className="font-normal text-[1.4rem] leading-8 text-deep-200">
+                    <span className="font-normal text-[1.4rem] leading-8 text-deep-100">
                       {event.organisation.organisationName}
                     </span>
-                    <span className="font-normal text-[1.3rem] leading-8 text-neutral-600">
+                    <span className="font-normal text-[1.2rem] leading-[1.65rem] text-neutral-600">
                       {followersCount} followers
                     </span>
                   </div>
                 </Link>
-                <Link href={`/organisations/${event.organisationId}`}>
-                  <ButtonBlack className="w-fit">
-                    {t("activity.details.button.view")}
-                  </ButtonBlack>
+                <Link
+                  href={`/organisations/${event.organisationId}`}
+                  className="h-[3.5rem] px-[1.5rem] shrink-0 inline-flex items-center rounded-[10rem] bg-black border-2 border-[#070707] text-white text-[1.4rem] leading-8 hover:bg-neutral-900"
+                >
+                  {t("activity.details.button.view")}
                 </Link>
               </div>
-              <div className="flex justify-between">
+              <div className="flex gap-[2rem]">
                 {/* date */}
-                <div className="flex items-center gap-2">
-                  <div className="w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full">
+                <div className="flex flex-1 min-w-0 items-center gap-2">
+                  <div className="w-14 h-14 shrink-0 flex items-center justify-center bg-neutral-100 rounded-full">
                     <Calendar2 size="20" color="#737c8a" variant="Bulk" />
                   </div>
-                  <span className="font-normal text-[1.4rem] leading-8 text-deep-200">
+                  <span className="font-normal text-[1.4rem] leading-8 text-deep-100">
                     {formattedDate}
                   </span>
                 </div>
                 {/* time */}
-                <div className="flex items-center gap-2">
-                  <div className="w-14 h-14 flex items-center justify-center bg-neutral-100 rounded-full">
+                <div className="flex flex-1 min-w-0 items-center gap-2">
+                  <div className="w-14 h-14 shrink-0 flex items-center justify-center bg-neutral-100 rounded-full">
                     <Clock size="20" color="#737c8a" variant="Bulk" />
                   </div>
-                  <span className="font-normal text-[1.4rem] leading-8 text-deep-200">
+                  <span className="font-normal text-[1.4rem] leading-8 text-deep-100">
                     {formattedTime}
                   </span>
                 </div>
@@ -500,7 +514,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
                     <Location size="20" color="#737c8a" variant="Bulk" />
                   )}
                 </div>
-                <span className="font-normal text-[1.4rem] leading-8 text-deep-200 max-w-[29.3rem]">
+                <span className="font-normal text-[1.4rem] leading-8 text-deep-100 max-w-[29.3rem]">
                   {address}
                 </span>
               </div>

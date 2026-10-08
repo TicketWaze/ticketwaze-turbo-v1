@@ -14,11 +14,26 @@ import { ButtonNeutral, ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useRouter } from "@/i18n/navigation";
+import type { DialogControl } from "@/lib/dialogControl";
 import { SuspendOrganisationAction } from "@/actions/Organisation";
 
-export function SuspendDialog({ organisationId }: { organisationId: string }) {
+export function SuspendDialog({
+  organisationId,
+  hideTrigger,
+  open: controlledOpen,
+  onOpenChange,
+}: {
+  organisationId: string;
+} & DialogControl) {
   const t = useTranslations("Organisations.profile.suspend");
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  function setOpen(next: boolean) {
+    if (onOpenChange) onOpenChange(next);
+    else setUncontrolledOpen(next);
+  }
   const [reason, setReason] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { data: session } = useSession();
@@ -35,6 +50,7 @@ export function SuspendDialog({ organisationId }: { organisationId: string }) {
     if ("status" in result && result.status === "success") {
       toast.success(t("success"));
       setOpen(false);
+      router.refresh();
       setReason("");
     } else {
       toast.error("error" in result ? result.error : t("error"));
@@ -44,9 +60,11 @@ export function SuspendDialog({ organisationId }: { organisationId: string }) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <ButtonRed className="py-[7.5px]">{t("trigger")}</ButtonRed>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <ButtonRed className="py-[7.5px]">{t("trigger")}</ButtonRed>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">

@@ -1,637 +1,223 @@
-import AdminLayout from "@/components/Layouts/AdminLayout";
+"use client";
+
+import type { ReactNode } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { formatMoney } from "@ticketwaze/currency";
-import BarChart from "./BarChart";
-import { InfoCircle } from "iconsax-reactjs";
-import UserGrowthChart from "./UserGrowthChat";
-import RevenueGrowthChart from "./RevenueGrowthChart";
-import Image from "next/image";
-import ArrowUp from "@ticketwaze/ui/assets/icons/arrow-up.svg";
-import ArrowDown from "@ticketwaze/ui/assets/icons/arrow-down.svg";
+import { Reveal } from "@/components/shared/motion";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import { cn } from "@/lib/utils";
+import AnalyticsFilters from "./AnalyticsFilters";
+import RevenueChart, { type RevenuePoint } from "./RevenueChart";
+import SignupsChart, { type SignupPoint } from "./SignupsChart";
+import { BarList, Metric, PanelTitle, SectionTitle, TrendBadge, Unit } from "./parts";
+import { readPeriod, type Period } from "./periods";
+import type { Granularity } from "./axis";
 
-type ChartPoint = { label: string; value: number };
-type UserGrowthPoint = { label: string; attendees: number; organizers: number };
-type TopEvent = { name: string; percent: number };
+type Money = { htg: number; usd: number };
 
 export type AnalyticsData = {
+  filters: { period: Period; eventId: string | null };
+  events: { eventId: string; name: string }[];
   stats: {
-    totalRevenue: number;
-    totalRevenueGrowth: number;
-    totalUsers: number;
-    totalUsersGrowth: number;
-    totalAttendees: number;
-    totalAttendeesGrowth: number;
-    totalOrganizers: number;
-    totalOrganizersGrowth: number;
-    totalEvents: number;
-    totalEventsGrowth: number;
-    totalTicketsSold: number;
-    totalTicketsSoldGrowth: number;
+    revenue: Money;
+    users: number;
+    attendees: number;
+    organizers: number;
+    events: number;
+    ticketsSold: number;
     avgTicketsPerAttendee: number;
-    avgTicketsGrowth: number;
-    topOrganizerRevenue: number;
-    topOrganizerRevenueGrowth: number;
+    topOrganizerRevenue: Money;
   };
-  revenueChart: ChartPoint[];
-  userGrowthChart: UserGrowthPoint[];
-  genderDistribution: {
-    malePercent: number;
-    femalePercent: number;
-    othersPercent: number;
+  trends: Record<
+    | "revenue"
+    | "users"
+    | "attendees"
+    | "organizers"
+    | "events"
+    | "ticketsSold"
+    | "avgTicketsPerAttendee"
+    | "topOrganizerRevenue",
+    number | null
+  >;
+  series: {
+    granularity: Granularity;
+    revenue: RevenuePoint[];
+    users: SignupPoint[];
   };
-  topEvents: TopEvent[];
-  topOrganizers: TopEvent[];
-  paymentMethods: { provider: string; percent: number }[];
-  activityStatus: { approved: number; inReview: number; rejected: number };
+  gender: Record<"male" | "female" | "others", { count: number; percent: number }>;
+  top: { name: string; sold: number; percent: number }[];
 };
 
-function GrowthBadge({ value }: { value: number }) {
-  const isPositive = value >= 0;
+/**
+ * Figma "Admin" → Analytics ("Platform Overview", 4009:103596 / 4111:65348):
+ * heading with the event and period pills, eight KPI tiles, Income
+ * Performance, User Demographics and User Growth. KPIs follow both filters
+ * (see the API's services/admin_analytics.ts); money is HTG with the USD
+ * equivalent in small type.
+ */
+export default function AnalyticsPageContent({ data }: { data: AnalyticsData | null }) {
+  const t = useTranslations("Analytics");
+  const locale = useLocale();
+  const period = readPeriod(data?.filters.period);
+  const eventId = data?.filters.eventId ?? null;
+
+  const number = (n: number) => n.toLocaleString(locale);
+  // Figma: "20,553,758,125.90 HTG", and a plain "0 HTG" when empty.
+  const money = new Intl.NumberFormat(locale, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  const htg = (n: number) => (
+    <>
+      {n === 0 ? "0" : money.format(n)} <Unit>HTG</Unit>
+    </>
+  );
+  const usd = (n: number) => formatMoney(n, "USD", locale);
+  const trend = (value: number | null) => (
+    <TrendBadge
+      value={value}
+      label={
+        value === null
+          ? ""
+          : t(value < 0 ? "trend.down" : "trend.up", { value: Math.abs(value) })
+      }
+    />
+  );
+
+  const stats = data?.stats;
+  const tiles: {
+    label: string;
+    value: ReactNode;
+    trend: number | null;
+    note?: string;
+  }[] = stats
+    ? [
+        { label: t("kpis.revenue"), value: htg(stats.revenue.htg), trend: data.trends.revenue, note: usd(stats.revenue.usd) },
+        { label: t("kpis.users"), value: number(stats.users), trend: data.trends.users },
+        { label: t("kpis.attendees"), value: number(stats.attendees), trend: data.trends.attendees },
+        { label: t("kpis.organizers"), value: number(stats.organizers), trend: data.trends.organizers },
+        { label: t("kpis.events"), value: number(stats.events), trend: data.trends.events },
+        { label: t("kpis.sold"), value: number(stats.ticketsSold), trend: data.trends.ticketsSold },
+        { label: t("kpis.avg"), value: number(stats.avgTicketsPerAttendee), trend: data.trends.avgTicketsPerAttendee },
+        {
+          label: t("kpis.top_organizer"),
+          value: htg(stats.topOrganizerRevenue.htg),
+          trend: data.trends.topOrganizerRevenue,
+          note: usd(stats.topOrganizerRevenue.usd),
+        },
+      ]
+    : [];
+
+  // Figma's empty state still lists three rows with dashes and zeros.
+  const topRows = Array.from({ length: 3 }, (_, i) => data?.top[i]);
+  const gender = data?.gender;
+
   return (
-    <span
-      className={`pl-4 flex gap-[0.3] uppercase text-[1.1rem] leading-6 items-center mr-10 ${isPositive ? "text-success" : "text-red-500"}`}
-    >
-      {Math.abs(value)}%
-      <Image
-        src={isPositive ? ArrowUp : ArrowDown}
-        alt={isPositive ? "arrow up" : "arrow down"}
-        width={20}
-        height={20}
-      />
-    </span>
+    <div className={cn(PAGE_SCROLLER, "gap-0")}>
+      {/* Heading row (sticky) — title + description, filters on the right. */}
+      <div className="sticky top-0 z-20 bg-white pb-10 flex flex-col lg:flex-row lg:items-start justify-between gap-6">
+        <div className="flex flex-col gap-2">
+          <h3 className="font-primary font-medium text-[2.6rem] leading-12 text-black">
+            {t("title")}
+          </h3>
+          <p className="text-[1.5rem] leading-8 text-neutral-600">{t("description")}</p>
+        </div>
+        {data && (
+          <AnalyticsFilters events={data.events} eventId={eventId} period={period} />
+        )}
+      </div>
+
+      {/* KPI grid: 4 × 2 with hairlines between cells (2 × 4 on phones). */}
+      <Reveal className="grid grid-cols-2 lg:grid-cols-4 border-b border-neutral-100">
+        {tiles.map((tile, i) => (
+          <div
+            key={tile.label}
+            className={cn(
+              "py-8 pr-6 lg:pr-10 border-neutral-100",
+              // Phones: two columns, hairline between them and under rows 1–3.
+              i % 2 === 1 && "pl-6 border-l",
+              i < 6 && "border-b",
+              // Desktop: four columns, hairline before columns 2–4, under row 1.
+              "lg:pl-0 lg:border-l-0 lg:border-b-0",
+              i % 4 !== 0 && "lg:pl-10 lg:border-l",
+              i < 4 && "lg:border-b",
+            )}
+          >
+            <Metric label={tile.label} trend={trend(tile.trend)} note={tile.note}>
+              {tile.value}
+            </Metric>
+          </div>
+        ))}
+      </Reveal>
+
+      {/* Income Performance */}
+      <Reveal delay={0.05} className="flex flex-col gap-8 pt-14">
+        <SectionTitle>{t("income.title")}</SectionTitle>
+        <PanelTitle>{t("income.revenue")}</PanelTitle>
+        <RevenueChart
+          points={data?.series.revenue ?? []}
+          granularity={data?.series.granularity ?? "day"}
+        />
+      </Reveal>
+
+      {/* User Demographics */}
+      <Reveal delay={0.1} className="flex flex-col gap-10 pt-16">
+        <SectionTitle>{t("demographics.title")}</SectionTitle>
+        <div className="grid grid-cols-1 lg:grid-cols-2 border-b border-neutral-100">
+          <div className="flex flex-col gap-8 pb-10 lg:pr-10 border-b lg:border-b-0 lg:border-r border-neutral-100">
+            <PanelTitle>{t("demographics.gender")}</PanelTitle>
+            <BarList
+              rows={(["male", "female", "others"] as const).map((key) => ({
+                label: t(`demographics.${key}`),
+                value: gender?.[key].percent ?? 0,
+                // Figma's empty state prints 0 rather than 0%.
+                display:
+                  gender && gender.male.count + gender.female.count + gender.others.count > 0
+                    ? `${gender[key].percent}%`
+                    : "0",
+              }))}
+            />
+          </div>
+          <div className="flex flex-col gap-8 py-10 lg:pt-0 lg:pl-10">
+            <PanelTitle>
+              {eventId ? t("demographics.top_classes") : t("demographics.top_events")}
+            </PanelTitle>
+            <BarList
+              truncateLabels
+              rows={topRows.map((row) => ({
+                label: row?.name ?? "-",
+                value: row?.percent ?? 0,
+                display: row ? `${row.percent}%` : "0",
+              }))}
+            />
+          </div>
+        </div>
+      </Reveal>
+
+      {/* User Growth */}
+      <Reveal delay={0.15} className="flex flex-col gap-8 pt-16">
+        <SectionTitle>{t("growth.title")}</SectionTitle>
+        <div className="flex items-center justify-between gap-6 flex-wrap">
+          <PanelTitle>{t("growth.signups")}</PanelTitle>
+          <div className="flex items-center gap-6">
+            <Legend color="bg-primary-500" label={t("growth.attendee")} />
+            <Legend color="bg-primary-50" label={t("growth.organizer")} />
+          </div>
+        </div>
+        <SignupsChart
+          points={data?.series.users ?? []}
+          granularity={data?.series.granularity ?? "day"}
+        />
+      </Reveal>
+    </div>
   );
 }
 
-export default function AnalyticsPageContent({
-  data,
-}: {
-  data: AnalyticsData;
-}) {
-  const t = useTranslations("Analytics");
-  const locale = useLocale();
-  const {
-    stats,
-    revenueChart,
-    userGrowthChart,
-    genderDistribution,
-    topEvents,
-    topOrganizers,
-    paymentMethods,
-    activityStatus,
-  } = data;
-
+function Legend({ color, label }: { color: string; label: string }) {
   return (
-    <AdminLayout>
-      <>
-        {/* On mobile this container is the scroller (AdminLayout drops to
-            overflow-y-auto below lg), so the heading sticks to its top while
-            the charts move under it. On desktop nothing scrolls here and
-            sticky is inert. */}
-        <h3
-          className={
-            "sticky top-0 z-10 bg-white pb-8 lg:pb-16 lg:static font-medium font-primary text-[2.6rem] leading-12 text-black"
-          }
-        >
-          {t("title")}
-        </h3>
-        <div
-          className={
-            "flex flex-col gap-12 overflow-y-scroll overflow-x-hidden lg:gap-16"
-          }
-        >
-          <div>
-            <div
-              className={
-                "grid grid-cols-2 lg:divide-x divide-neutral-100 border-neutral-100 lg:border-b lg:grid-cols-4"
-              }
-            >
-              <div className={" border-b lg:border-b-0"}>
-                <div
-                  className={
-                    "mb-8 border-r border-neutral-100 pr-10 lg:pb-12 lg:mb-0 lg:border-r-0"
-                  }
-                >
-                  <div className={"flex justify-between"}>
-                    <span
-                      className={
-                        "flex justify-between text-start text-[14px] text-neutral-600 font-sans leading-tight pb-6"
-                      }
-                    >
-                      {t("revenue")}
-                      <GrowthBadge value={stats.totalRevenueGrowth} />
-                    </span>
-                  </div>
-                  <p
-                    className={
-                      "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
-                    }
-                  >
-                    {/* The API sums the tickets' USD column for these tiles, so
-                        USD is the real unit, not just a label. */}
-                    {formatMoney(stats.totalRevenue, "USD", locale)}
-                  </p>
-                </div>
-              </div>
-
-              <div className={" border-b lg:border-b-0"}>
-                <div className={"pl-10 mb-8 lg:px-10 lg:pb-12 lg:mb-0"}>
-                  <div className={"flex justify-between"}>
-                    <span
-                      className={
-                        "flex justify-between text-start text-[14px] text-neutral-600 font-sans leading-tight pb-2"
-                      }
-                    >
-                      {t("users_registered")}
-                      <GrowthBadge value={stats.totalUsersGrowth} />
-                    </span>
-                  </div>
-                  <p
-                    className={
-                      "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px] mt-4"
-                    }
-                  >
-                    {stats.totalUsers.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <div
-                  className={
-                    "mt-8 pr-1 border-r border-neutral-100 lg:px-10 lg:pb-12 lg:mt-0 lg:border-r-0"
-                  }
-                >
-                  <div className={"flex justify-between"}>
-                    <span
-                      className={
-                        "flex justify-between text-start text-[14px] text-neutral-600 font-sans leading-tight pb-6"
-                      }
-                    >
-                      {t("attendees_registered")}
-                      <GrowthBadge value={stats.totalAttendeesGrowth} />
-                    </span>
-                  </div>
-                  <p
-                    className={
-                      "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
-                    }
-                  >
-                    {stats.totalAttendees.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <div className={"mt-8 pl-10 lg:pb-12 lg:mt-0"}>
-                  <div className={"flex justify-between"}>
-                    <span
-                      className={
-                        "flex justify-between text-start text-[14px] text-neutral-600 font-sans leading-tight pb-6"
-                      }
-                    >
-                      {t("organizers_registered")}
-                      <GrowthBadge value={stats.totalOrganizersGrowth} />
-                    </span>
-                  </div>
-                  <p
-                    className={
-                      "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
-                    }
-                  >
-                    {stats.totalOrganizers.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div
-              className={
-                "grid grid-cols-2 lg:divide-x divide-neutral-100 border-neutral-100 lg:grid-cols-4"
-              }
-            >
-              <div className={" border-b lg:border-b-0"}>
-                <div
-                  className={
-                    "mb-8 border-r border-neutral-100 pr-10 lg:pb-12 lg:mb-0 lg:border-r-0"
-                  }
-                >
-                  <div className={"flex justify-between"}>
-                    <span
-                      className={
-                        "flex justify-between text-start pt-12 text-[14px] text-neutral-600 font-sans leading-tight pb-6"
-                      }
-                    >
-                      {t("activity_created")}
-                      <GrowthBadge value={stats.totalEventsGrowth} />
-                    </span>
-                  </div>
-                  <p
-                    className={
-                      "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
-                    }
-                  >
-                    {stats.totalEvents.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              <div className={" border-b lg:border-b-0"}>
-                <div className={"pl-10 mb-8 lg:px-10  lg:mb-0"}>
-                  <div className={"flex justify-between"}>
-                    <span
-                      className={
-                        "flex justify-between text-start pt-12 text-[14px] text-neutral-600 font-sans leading-tight pb-2"
-                      }
-                    >
-                      {t("sold")}
-                      <GrowthBadge value={stats.totalTicketsSoldGrowth} />
-                    </span>
-                  </div>
-                  <p
-                    className={
-                      "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px] mt-4"
-                    }
-                  >
-                    {stats.totalTicketsSold.toLocaleString()}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <div
-                  className={
-                    "mt-8 pr-1 border-r border-neutral-100 lg:px-10 lg:mt-0 lg:border-r-0"
-                  }
-                >
-                  <div className={"flex justify-between"}>
-                    <span
-                      className={
-                        "flex justify-between text-start pt-12 text-[14px] text-neutral-600 font-sans leading-tight pb-6"
-                      }
-                    >
-                      {t("avg_tickets")}
-                      <GrowthBadge value={stats.avgTicketsGrowth} />
-                    </span>
-                  </div>
-                  <p
-                    className={
-                      "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
-                    }
-                  >
-                    {stats.avgTicketsPerAttendee}
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <div className={"mt-8 pl-10 pt-12 lg:mt-0"}>
-                  <div className={"flex justify-between"}>
-                    <span
-                      className={
-                        "flex justify-between text-start  text-[14px] text-neutral-600 font-sans leading-tight pb-6"
-                      }
-                    >
-                      {t("top_organizer_revenue")}
-                      <GrowthBadge value={stats.topOrganizerRevenueGrowth} />
-                    </span>
-                  </div>
-                  <p
-                    className={
-                      "text-[16px] font-medium capitalize leading-loose font-primary lg:text-[25px]"
-                    }
-                  >
-                    {formatMoney(stats.topOrganizerRevenue, "USD", locale)}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          {/* income performance */}
-          <div className={"flex flex-col gap-8 lg:gap-10"}>
-            <h3
-              className={
-                "self-stretch justify-start font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]"
-              }
-            >
-              {t("income.title")}
-            </h3>
-            <div
-              className={"w-full pt-6 pb-8 lg:pr-12 lg:pb-12 lg:col-span-11 "}
-            >
-              <div className={"flex flex-col gap-8 lg:gap-10"}>
-                <span
-                  className={
-                    "text-[14px] font-sans justify-start text-gray-800 text-base font-medium leading-tight lg:text-[15px]"
-                  }
-                >
-                  {t("income.revenue")}
-                </span>
-                <RevenueGrowthChart data={revenueChart} />
-              </div>
-            </div>
-          </div>
-
-          {/* user analytic stat */}
-          <div className={"flex flex-col gap-8 lg:gap-10"}>
-            <h3
-              className={
-                "font-medium font-primary text-[18px] leading-12 text-black lg:text-[22px]"
-              }
-            >
-              {t("user_demographics.title")}
-            </h3>
-            <div
-              className={
-                "grid grid-cols-1 divide-y lg:grid-cols-2  lg:divide-x lg:divide-y-0 divide-neutral-100 border-neutral-100 lg:border-b"
-              }
-            >
-              <div className={"flex flex-col gap-9 pb-6 lg:pr-10 lg:pb-8 "}>
-                <span
-                  className={
-                    "text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"
-                  }
-                >
-                  {t("user_demographics.gender_distribution.title")}
-                </span>
-                <div className={"w-full"}>
-                  <BarChart
-                    category1={t(
-                      "user_demographics.gender_distribution.gender.male",
-                    )}
-                    category2={t(
-                      "user_demographics.gender_distribution.gender.female",
-                    )}
-                    category3={t(
-                      "user_demographics.gender_distribution.gender.others",
-                    )}
-                    percent1={`${genderDistribution.malePercent}%`}
-                    percent2={`${genderDistribution.femalePercent}%`}
-                    percent3={`${genderDistribution.othersPercent}%`}
-                  />
-                </div>
-              </div>
-              <div className={"flex flex-col gap-9 lg:pl-10 lg:pb-8 "}>
-                <span
-                  className={
-                    "text-[14px] text-black-100 font-medium lg:text-[15px]"
-                  }
-                >
-                  {t("user_demographics.events_top.title")}
-                </span>
-                <div className={"w-full"}>
-                  {topEvents.length > 0 && topEvents[0].name ? (
-                    <BarChart
-                      category1={topEvents[0]?.name}
-                      category2={topEvents[1]?.name}
-                      category3={topEvents[2]?.name}
-                      percent1={
-                        topEvents[0] ? `${topEvents[0].percent}%` : undefined
-                      }
-                      percent2={
-                        topEvents[1] ? `${topEvents[1].percent}%` : undefined
-                      }
-                      percent3={
-                        topEvents[2] ? `${topEvents[2].percent}%` : undefined
-                      }
-                    />
-                  ) : (
-                    <div className="flex flex-col justify-center items-center gap-4">
-                      <InfoCircle size="32" color="#D5D8DC" />
-                      <span className="font-primary text-[1.2rem] text-neutral-500">
-                        {t("noActivity")}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* growth */}
-          <div className={"flex flex-col gap-8 lg:gap-10"}>
-            <h3
-              className={
-                "self-stretch justify-start font-medium font-primary text-[18px] leading-loose text-black lg:text-[22px]"
-              }
-            >
-              {t("user.title")}
-            </h3>
-            <div
-              className={"w-full pt-6 pb-8 lg:pr-12 lg:pb-12 lg:col-span-11 "}
-            >
-              <div className={"flex flex-col gap-4 lg:gap-10"}>
-                <div
-                  className={
-                    "flex text-[14px] font-sans justify-between text-gray-800 text-base font-medium leading-tight lg:text-[15px]"
-                  }
-                >
-                  {/* {t("income.revenue")} */}
-                  <div className="flex gap-6 ">
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-primary-500"></div>
-                      <span className="text-[1.4rem] leading-8 text-neutral-600">
-                        {t("user.chart.attendee")}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 bg-primary-50"></div>
-                      <span className="text-[1.4rem] leading-8 text-neutral-600">
-                        {t("user.chart.organizer")}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <UserGrowthChart data={userGrowthChart} />
-              </div>
-            </div>
-          </div>
-
-          {/* platform health */}
-          <div className={"flex flex-col gap-8 lg:gap-10"}>
-            <h3
-              className={
-                "font-medium font-primary text-[18px] leading-12 text-black lg:text-[22px]"
-              }
-            >
-              {t("platform_health.title")}
-            </h3>
-            <div
-              className={
-                "grid grid-cols-1 divide-y lg:grid-cols-2 lg:divide-x lg:divide-y-0 divide-neutral-100 border-neutral-100 lg:border-b"
-              }
-            >
-              <div className={"flex flex-col gap-9 pb-6 lg:pr-10 lg:pb-8"}>
-                <span
-                  className={
-                    "text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"
-                  }
-                >
-                  {t("top_organizers.title")}
-                </span>
-                <div className={"w-full"}>
-                  {topOrganizers.length > 0 && topOrganizers[0].name ? (
-                    <BarChart
-                      category1={topOrganizers[0]?.name}
-                      category2={topOrganizers[1]?.name}
-                      category3={topOrganizers[2]?.name}
-                      percent1={
-                        topOrganizers[0]
-                          ? `${topOrganizers[0].percent}%`
-                          : undefined
-                      }
-                      percent2={
-                        topOrganizers[1]
-                          ? `${topOrganizers[1].percent}%`
-                          : undefined
-                      }
-                      percent3={
-                        topOrganizers[2]
-                          ? `${topOrganizers[2].percent}%`
-                          : undefined
-                      }
-                    />
-                  ) : (
-                    <div className="flex flex-col justify-center items-center gap-4">
-                      <InfoCircle size="32" color="#D5D8DC" />
-                      <span className="font-primary text-[1.2rem] text-neutral-500">
-                        {t("noActivity")}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className={"flex flex-col gap-9 lg:pl-10 lg:pb-8"}>
-                <span
-                  className={
-                    "text-[14px] text-black-100 font-sans font-medium lg:text-[15px]"
-                  }
-                >
-                  {t("payment_methods.title")}
-                </span>
-                <div className={"w-full"}>
-                  {paymentMethods.length > 0 ? (
-                    <BarChart
-                      category1={
-                        paymentMethods[0]
-                          ? paymentMethods[0].provider.charAt(0).toUpperCase() +
-                            paymentMethods[0].provider.slice(1)
-                          : undefined
-                      }
-                      category2={
-                        paymentMethods[1]
-                          ? paymentMethods[1].provider.charAt(0).toUpperCase() +
-                            paymentMethods[1].provider.slice(1)
-                          : undefined
-                      }
-                      category3={
-                        paymentMethods[2]
-                          ? paymentMethods[2].provider.charAt(0).toUpperCase() +
-                            paymentMethods[2].provider.slice(1)
-                          : undefined
-                      }
-                      percent1={
-                        paymentMethods[0]
-                          ? `${paymentMethods[0].percent}%`
-                          : undefined
-                      }
-                      percent2={
-                        paymentMethods[1]
-                          ? `${paymentMethods[1].percent}%`
-                          : undefined
-                      }
-                      percent3={
-                        paymentMethods[2]
-                          ? `${paymentMethods[2].percent}%`
-                          : undefined
-                      }
-                    />
-                  ) : (
-                    <div className="flex flex-col justify-center items-center gap-4">
-                      <InfoCircle size="32" color="#D5D8DC" />
-                      <span className="font-primary text-[1.2rem] text-neutral-500">
-                        {t("noActivity")}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* activity status */}
-          <div className={"flex flex-col gap-8 lg:gap-10"}>
-            <h3
-              className={
-                "font-medium font-primary text-[18px] leading-12 text-black lg:text-[22px]"
-              }
-            >
-              {t("activity_status.title")}
-            </h3>
-            <div
-              className={
-                "grid grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b pb-12"
-              }
-            >
-              <div className={"flex flex-col gap-4 pr-10"}>
-                <div className="flex items-center gap-3">
-                  <span className="w-[0.8rem] h-[0.8rem] rounded-full bg-green-500 shrink-0" />
-                  <span
-                    className={
-                      "text-[14px] text-neutral-600 font-sans leading-tight"
-                    }
-                  >
-                    {t("activity_status.approved")}
-                  </span>
-                </div>
-                <p
-                  className={
-                    "text-[16px] font-medium font-primary lg:text-[25px]"
-                  }
-                >
-                  {activityStatus.approved.toLocaleString()}
-                </p>
-              </div>
-              <div className={"flex flex-col gap-4 px-10"}>
-                <div className="flex items-center gap-3">
-                  <span className="w-[0.8rem] h-[0.8rem] rounded-full bg-amber-400 shrink-0" />
-                  <span
-                    className={
-                      "text-[14px] text-neutral-600 font-sans leading-tight"
-                    }
-                  >
-                    {t("activity_status.in_review")}
-                  </span>
-                </div>
-                <p
-                  className={
-                    "text-[16px] font-medium font-primary lg:text-[25px]"
-                  }
-                >
-                  {activityStatus.inReview.toLocaleString()}
-                </p>
-              </div>
-              <div className={"flex flex-col gap-4 pl-10"}>
-                <div className="flex items-center gap-3">
-                  <span className="w-[0.8rem] h-[0.8rem] rounded-full bg-red-400 shrink-0" />
-                  <span
-                    className={
-                      "text-[14px] text-neutral-600 font-sans leading-tight"
-                    }
-                  >
-                    {t("activity_status.rejected")}
-                  </span>
-                </div>
-                <p
-                  className={
-                    "text-[16px] font-medium font-primary lg:text-[25px]"
-                  }
-                >
-                  {activityStatus.rejected.toLocaleString()}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </>
-    </AdminLayout>
+    <span className="flex items-center gap-2 text-[1.4rem] leading-8 text-neutral-600">
+      <span className={cn("w-6 h-6", color)} />
+      {label}
+    </span>
   );
 }

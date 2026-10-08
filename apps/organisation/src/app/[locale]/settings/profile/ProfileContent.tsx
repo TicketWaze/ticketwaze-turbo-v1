@@ -76,7 +76,8 @@ function filledLinks(links: SocialLinks): SocialLinks {
 /**
  * Profile (Figma 1820:47771 view / 1821:48133 edit): "Organization Profile"
  * — address, country, state, city, about, contact email and phone, website — read-only
- * until Edit, saved with Save changes. The post-design parts stay with it: the
+ * until Edit, saved with Save changes. The contact email (the owner's login
+ * email) stays read-only even while editing. The post-design parts stay with it: the
  * logo and name above, social links, the display currency and the share card.
  */
 export default function ProfileContent({
@@ -144,12 +145,6 @@ export default function ProfileContent({
       e.organisationDescription = t("errors.description.min");
     if (about > ABOUT_MAX)
       e.organisationDescription = t("errors.description.max");
-    if (
-      data.organisationEmail.trim() &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.organisationEmail.trim())
-    ) {
-      e.organisationEmail = t("errors.email");
-    }
     const le = validateSocialLinks(data.links, tLinks);
     setErrors(e);
     setLinkErrors(le);
@@ -175,9 +170,6 @@ export default function ProfileContent({
         country: data.country,
         city: data.city,
         state: data.state,
-        ...(data.organisationEmail.trim()
-          ? { organisationEmail: data.organisationEmail.trim() }
-          : {}),
         organisationPhoneNumber: data.organisationPhoneNumber.trim(),
       },
     );
@@ -368,13 +360,8 @@ export default function ProfileContent({
         >
           {t("placeholders.about")}
         </TextArea>
-        <Input
-          type="email"
-          value={data.organisationEmail}
-          onChange={(e) => set("organisationEmail")(e.target.value)}
-          disabled={off}
-          error={errors.organisationEmail}
-        >
+        {/* The owner's login email: read-only, even while editing. */}
+        <Input type="email" value={data.organisationEmail} disabled readOnly>
           {t("placeholders.email")}
         </Input>
         <Input

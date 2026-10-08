@@ -1,8 +1,11 @@
 import { auth } from "@/lib/auth";
-import UserPageContent from "./UserPageContent";
+import UserPageContent, {
+  type OrganisationOwner,
+  type OrganisationSummary,
+} from "./UserPageContent";
 import { AdminOrganisation } from "@ticketwaze/typescript-config";
 
-export default async function OrganisationsPage({
+export default async function OrganisationPage({
   params,
 }: {
   params: Promise<{ user: string }>;
@@ -10,28 +13,25 @@ export default async function OrganisationsPage({
   const session = await auth();
   const { user: organisationId } = await params;
 
-  const request = await fetch(
+  const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/admin/organisations/${organisationId}`,
     {
-      method: "GET",
       cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.user.accessToken}`,
-      },
+      headers: { Authorization: `Bearer ${session?.user.accessToken}` },
     },
-  );
-  const response = await request.json();
+  ).catch(() => null);
+  const data = await response?.json().catch(() => null);
+  const organisation: AdminOrganisation | null = data?.organisation ?? null;
+  const summary: OrganisationSummary | null = data?.summary ?? null;
+  const owner: OrganisationOwner | null = data?.owner ?? null;
 
-  const organisation: AdminOrganisation | null = response.organisation ?? null;
-  const totalRevenue: number = response.totalRevenue ?? 0;
-  const totalTicketsSold: number = response.totalTicketsSold ?? 0;
-
+  // Keyed by the record so a refresh after saving re-reads it from scratch.
   return (
     <UserPageContent
+      key={organisation?.updatedAt ?? organisationId}
       organisation={organisation}
-      totalRevenue={totalRevenue}
-      totalTicketsSold={totalTicketsSold}
+      summary={summary}
+      owner={owner}
     />
   );
 }

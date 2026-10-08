@@ -19,7 +19,7 @@ import {
   CreditAttendeeWalletAction,
   GetHtgExchangeRate,
 } from "@/actions/Attendee";
-import type { DialogControl } from "./dialogControl";
+import type { DialogControl } from "@/lib/dialogControl";
 
 /** 200 tokens = 100 HTG. Mirrors `TOKENS_PER_HTG` on the API. */
 const TOKENS_PER_HTG = 2;

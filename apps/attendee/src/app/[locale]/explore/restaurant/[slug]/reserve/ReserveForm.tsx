@@ -33,7 +33,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { Bone } from "@/components/skeletons/Skeleton";
 import Calendar, { toDateKey } from "./Calendar";
 import moncashLogo from "../../../[slug]/checkout/moncash.svg";
 
@@ -486,8 +486,11 @@ export default function ReserveForm({
                     {t("time")}
                   </h2>
                   {loadingSlots ? (
-                    <div className="py-12 flex justify-center">
-                      <LoadingCircleSmall />
+                    // The slot chips in skeleton (px-8 py-4, 1.5rem text).
+                    <div className="flex flex-wrap gap-3" role="status" aria-busy="true">
+                      {Array.from({ length: 8 }).map((_, i) => (
+                        <Bone key={i} className="h-[4rem] w-[8.6rem]" />
+                      ))}
                     </div>
                   ) : slots.length === 0 ? (
                     <p className="text-[1.5rem] leading-8 text-neutral-600 py-6">

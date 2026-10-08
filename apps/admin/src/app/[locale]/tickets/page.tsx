@@ -1,53 +1,47 @@
 import AdminLayout from "@/components/Layouts/AdminLayout";
-import TicketPageContent from "./TicketPageContent";
 import { auth } from "@/lib/auth";
+import TicketPageContent, { type TicketsData } from "./TicketPageContent";
 
 export default async function TicketPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    status?: string;
     period?: string;
+    status?: string;
+    purchased?: string;
     search?: string;
-    activityType?: string;
+    page?: string;
   }>;
 }) {
   const session = await auth();
-  const { status, period, search, activityType } = await searchParams;
-  const activeStatus = status ?? "PENDING";
+  const filters = await searchParams;
 
-  const params = new URLSearchParams();
-  params.set("status", activeStatus);
-  // Same as the payments table: newest seven only. Search runs its own
-  // client-side request across every record, so nothing becomes unfindable.
-  params.set("limit", "7");
-  if (period) params.set("period", period);
-  if (search) params.set("search", search);
-  if (activityType) params.set("activityType", activityType);
+  const params = new URLSearchParams({ limit: "10" });
+  for (const key of ["period", "status", "purchased", "search", "page"] as const) {
+    const value = filters[key];
+    if (value) params.set(key, value);
+  }
 
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/admin/tickets/requests?${params.toString()}`,
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/tickets-overview?${params}`,
     {
-      method: "GET",
       cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.user.accessToken}`,
-      },
+      headers: { Authorization: `Bearer ${session?.user.accessToken}` },
     },
-  );
-  // The API omits its data keys on error, so guard before reading.
-  const response = await request.json().catch(() => null);
+  ).catch(() => null);
+  const data = (await response?.json().catch(() => null)) as
+    | (TicketsData & { status: string })
+    | null;
 
   return (
     <AdminLayout>
       <TicketPageContent
-        tickets={response?.tickets?.data ?? []}
-        stats={response?.stats ?? { total: 0, returned: 0, checkedIn: 0 }}
-        activeStatus={activeStatus}
-        period={period}
-        search={search}
-        activityType={activityType}
+        data={data?.status === "success" ? data : null}
+        filters={{
+          status: filters.status ?? null,
+          purchased: filters.purchased ?? null,
+          search: filters.search ?? "",
+        }}
       />
     </AdminLayout>
   );
