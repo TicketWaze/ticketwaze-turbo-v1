@@ -31,7 +31,14 @@ type View =
   | { kind: "suspended"; organisationName?: string; supportUrl?: string }
   | { kind: "accepted" };
 
-export default function OnboardingLogic({ response }: { response: any }) {
+export default function OnboardingLogic({
+  response,
+  next,
+}: {
+  response: any;
+  /** Where the person was headed before signing in (lib/nextPath). */
+  next?: string | null;
+}) {
   const t = useTranslations("Auth.onboarding");
   const tInvite = useTranslations("Auth.flow.invitation");
   const { data: session, update } = useSession();
@@ -66,7 +73,7 @@ export default function OnboardingLogic({ response }: { response: any }) {
               membershipTier: response.membershipTier,
             },
           });
-          window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/analytics`;
+          window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}${next ?? "/analytics"}`;
         } catch {
           toast.error(t("loadOrganisationError"));
         }

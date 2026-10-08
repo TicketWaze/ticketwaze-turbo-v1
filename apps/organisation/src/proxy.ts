@@ -2,6 +2,7 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "./i18n/routing";
 import { auth } from "@/lib/auth";
 import type { NextRequest } from "next/server";
+import { safeNextPath } from "@/lib/nextPath";
 
 // Create the intl middleware first
 const intlMiddleware = createMiddleware(routing);
@@ -46,6 +47,9 @@ export default auth((req) => {
   if (!req.auth && !isAuthPath) {
     const newUrl = new URL(`/${locale}/auth/login`, req.nextUrl.origin);
     newUrl.search = req.nextUrl.search;
+    // Come back here after signing in (an emailed link, a bookmark).
+    const next = safeNextPath(pathWithoutLocale + req.nextUrl.search);
+    if (next) newUrl.searchParams.set("next", next);
     return Response.redirect(newUrl);
   }
 
