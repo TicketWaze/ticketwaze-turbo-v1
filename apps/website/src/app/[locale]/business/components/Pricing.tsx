@@ -2,8 +2,7 @@
 import { useLocale, useTranslations } from "next-intl";
 import { motion } from "motion/react";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
-import { Link } from "@/i18n/navigation";
-import { Ticket } from "iconsax-reactjs";
+import AppCta from "@/components/AppCta";
 
 function Pricing() {
   const t = useTranslations("BusinessPage.pricing");
@@ -11,16 +10,16 @@ function Pricing() {
   return (
     <section
       id={"pricing"}
-      className="bg-white py-[3rem] lg:py-[7.5rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center lg:items-start gap-[3.5rem] lg:gap-[100px]"
+      className="bg-white py-[3rem] lg:py-[10rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center lg:items-start gap-[3.5rem] lg:gap-[100px]"
     >
       <div
         className={
-          "flex flex-col lg:flex-row items-start text-center lg:text-start gap-[15px] lg:gap-0"
+          "flex flex-col lg:flex-row items-start lg:justify-between w-full text-center lg:text-start gap-[15px] lg:gap-8"
         }
       >
         <h2
           className={
-            "text-[3.2rem] lg:text-[4.5rem] font-primary font-bold text-deep-200 leading-[35px] lg:leading-[50px] flex-1"
+            "text-[3.2rem] lg:text-[4.5rem] font-primary font-bold text-deep-200 leading-[35px] lg:leading-[50px] lg:max-w-[480px]"
           }
         >
           {t("title-1")}
@@ -28,7 +27,7 @@ function Pricing() {
         </h2>
         <p
           className={
-            "text-[1.6rem] lg:text-[2.6rem] text-neutral-700 leading-[22.5px] lg:leading-[35px] flex-1"
+            "text-[1.6rem] lg:text-[2.6rem] text-neutral-700 leading-[22.5px] lg:leading-[35px] lg:tracking-[-0.78px] lg:max-w-[550px]"
           }
         >
           {t("description")}
@@ -36,7 +35,7 @@ function Pricing() {
       </div>
       <div
         className={
-          "flex flex-col lg:flex-row items-stretch w-full justify-between gap-[20px]"
+          "flex flex-col lg:flex-row items-stretch w-full justify-between gap-[20px] lg:gap-[30px]"
         }
       >
         {/*  FREE*/}
@@ -54,13 +53,15 @@ function Pricing() {
               className={"bg-white rounded-[20px] p-8 flex flex-col gap-[50px]"}
             >
               <span
-                className={"text-black font-medium text-[1.5rem] leading-8"}
+                className={
+                  "text-black font-semibold uppercase text-[1.5rem] leading-[20px]"
+                }
               >
                 {t("free.subtitle")}
               </span>
               <span
                 className={
-                  "text-black text-[2.5rem] lg:text-[5rem] leading-[100%] font-primary font-medium text-center"
+                  "text-black text-[2.5rem] lg:text-[5rem] leading-normal font-primary font-semibold text-center"
                 }
               >
                 {t("free.title")}
@@ -68,27 +69,22 @@ function Pricing() {
             </div>
             <ul
               className={
-                "text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
+                "list-disc ps-[24px] text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
               }
             >
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("free.list.1")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("free.list.2")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("free.list.3")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("free.list.4")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("free.list.5")}</span>
               </li>
             </ul>
@@ -120,14 +116,14 @@ function Pricing() {
               <div className={"flex items-start justify-between w-full"}>
                 <span
                   className={
-                    " font-medium flex-1 word-wrap text-[1.5rem] leading-8"
+                    "font-semibold uppercase flex-1 word-wrap text-[1.5rem] leading-[20px]"
                   }
                 >
                   {t("pro.subtitle")}
                 </span>
                 <span
                   className={
-                    " font-bold text-[1.1rem] leading-[15px] px-[5px] py-[2.5px] bg-primary-500 rounded-[30px]"
+                    "font-bold uppercase text-[1.1rem] leading-[15px] px-[5px] py-[2.5px] bg-primary-500 rounded-[30px]"
                   }
                 >
                   {t("pro.tag")}
@@ -135,7 +131,7 @@ function Pricing() {
               </div>
               <span
                 className={
-                  " text-[2.5rem] lg:text-[5rem] leading-[100%] font-primary font-medium text-center"
+                  " text-[2.5rem] lg:text-[5rem] leading-normal font-primary font-semibold text-center"
                 }
               >
                 {t("pro.title")}
@@ -143,35 +139,28 @@ function Pricing() {
             </div>
             <ul
               className={
-                "text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
+                "list-disc ps-[24px] text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
               }
             >
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("pro.list.1")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("pro.list.2")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("pro.list.3")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("pro.list.4")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("pro.list.5")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("pro.list.6")}</span>
               </li>
-              <li className={"flex items-center gap-6"}>
-                <div className={"w-2 h-2 bg-black rounded-full"}></div>
+              <li>
                 <span>{t("pro.list.7")}</span>
               </li>
             </ul>
@@ -204,13 +193,15 @@ function Pricing() {
                 }
               >
                 <span
-                  className={"text-black font-medium text-[1.5rem] leading-8"}
+                  className={
+                    "text-black font-semibold uppercase text-[1.5rem] leading-[20px]"
+                  }
                 >
                   {t("premium.subtitle")}
                 </span>
                 <span
                   className={
-                    "text-black text-[2.5rem] lg:text-[5rem] leading-[100%] font-primary font-medium text-center"
+                    "text-black text-[2.5rem] lg:text-[5rem] leading-normal font-primary font-semibold text-center"
                   }
                 >
                   {t("premium.title")}
@@ -218,37 +209,32 @@ function Pricing() {
               </div>
               <ul
                 className={
-                  "text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
+                  "list-disc ps-[24px] text-[1.4rem] lg:text-[1.6rem] text-black leading-[28px] lg:leading-[35.5px]"
                 }
               >
-                <li className={"flex items-center gap-6"}>
-                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <li>
                   <span>{t("premium.list.1")}</span>
                 </li>
-                <li className={"flex items-center gap-6"}>
-                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <li>
                   <span>{t("premium.list.2")}</span>
                 </li>
-                <li className={"flex items-center gap-6"}>
-                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <li>
                   <span>{t("premium.list.3")}</span>
                 </li>
-                <li className={"flex items-center gap-6"}>
-                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <li>
                   <span>{t("premium.list.4")}</span>
                 </li>
-                <li className={"flex items-center gap-6"}>
-                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <li>
                   <span>{t("premium.list.5")}</span>
                 </li>
-                <li className={"flex items-center gap-6"}>
-                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <li>
                   <span>{t("premium.list.6")}</span>
                 </li>
-                <li className={"flex items-center gap-6"}>
-                  <div className={"w-2 h-2 bg-black rounded-full"}></div>
+                <li>
                   <span>{t("premium.list.7")}</span>
-                  <VerifiedOrganisationCheckMark />
+                  <span className="inline-block align-middle ms-2">
+                    <VerifiedOrganisationCheckMark />
+                  </span>
                 </li>
               </ul>
             </div>
@@ -268,17 +254,10 @@ function Pricing() {
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.5, delay: 0.3 }}
       >
-        <Link
-          target="_blank"
-          rel="noopener noreferrer"
+        <AppCta
           href={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/login`}
-          className="px-12 py-[7.5px] border border-[#E45B00] bg-[#fee7d5] rounded-[100px] flex items-center gap-4"
-        >
-          <Ticket size="20" color="#E45B00" variant="Bulk" />
-          <span className="font-medium font-sans text-[1.5rem] text-primary-500">
-            {t("free.cta")}
-          </span>
-        </Link>
+          label={t("free.cta")}
+        />
       </motion.div>
     </section>
   );

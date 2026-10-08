@@ -4,6 +4,9 @@ export type TicketType = {
   ticketTypeDescription: string;
   ticketTypePrice: string;
   ticketTypeQuantity: string;
+  /** This class's sales window, "YYYY-MM-DDTHH:mm" local; empty = open-ended. */
+  salesStartAt?: string;
+  salesEndAt?: string;
 };
 export type EventDay = {
   dayNumber: number;
@@ -29,6 +32,9 @@ export type CreateMeetFormValues = {
    */
   absorbFees: boolean;
   ticketSalesEndAt?: string;
+  /** "Other link" events: the organiser's own URL and optional password. */
+  onlineLink?: string;
+  onlinePassword?: string;
 };
 
 // Small helper to allow passing translation function

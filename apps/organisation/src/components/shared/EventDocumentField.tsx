@@ -89,9 +89,7 @@ export default function EventDocumentField({
         <span className="font-semibold text-[16px] leading-[2.2rem] text-deep-100">
           {t("title")}
         </span>
-        <p className="text-[1.3rem] leading-6 text-neutral-600">
-          {t("hint")}
-        </p>
+        <p className="text-[1.3rem] leading-6 text-neutral-600">{t("hint")}</p>
       </div>
 
       {locked ? (

@@ -1,10 +1,9 @@
-import HistoryCard from "@/components/HistoryCard";
+import SignedOutState from "@/components/SignedOutState";
+import HistoryPageContent, { HistoryItem } from "./HistoryPageContent";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
-import { redirect } from "@/i18n/navigation";
 import { auth } from "@/lib/auth";
 import { Event } from "@ticketwaze/typescript-config";
 import { DateTime } from "luxon";
-import { Calendar2 } from "iconsax-reactjs";
 import { getLocale, getTranslations } from "next-intl/server";
 
 // A past event carries the signed-in user's own rating (0 when not rated).
@@ -32,10 +31,14 @@ function daysAgo(event: Event): number {
 export default async function HistoryPage() {
   const locale = await getLocale();
   const session = await auth();
-  if (!session) {
-    redirect({ href: "/auth/login", locale });
-  }
   const t = await getTranslations("History");
+  if (!session) {
+    return (
+      <AttendeeLayout title={t("title")}>
+        <SignedOutState page="history" title={t("title")} />
+      </AttendeeLayout>
+    );
+  }
 
   // Authenticated, per-user request — never cache. Guard every failure path so
   // the page renders an empty state instead of crashing.
@@ -63,55 +66,20 @@ export default async function HistoryPage() {
     console.error("Error fetching history events:", error);
   }
 
-  return (
-    <AttendeeLayout title="HistoryPage" className="overflow-x-hidden">
-      <>
-        <header className="w-full flex items-center justify-between">
-          <div className="flex flex-col gap-2">
-            {session?.user && (
-              <span className="text-[1.6rem] leading-8 text-neutral-600">
-                {t("subtitle")}{" "}
-                <span className="text-deep-100">{session?.user.firstName}</span>
-              </span>
-            )}
-            <span className="font-primary font-medium text-[1.8rem] lg:text-[2.6rem] leading-10 lg:leading-12 text-black">
-              {t("title")}
-            </span>
-          </div>
-        </header>
+  const items: HistoryItem[] = events
+    .map((event) => ({
+      eventId: event.eventId,
+      eventName: event.eventName,
+      eventImageUrl: event.eventImageUrl,
+      daysAgo: daysAgo(event),
+      rating: event.userRating ?? 0,
+    }))
+    // Most recent first, as in Figma.
+    .sort((a, b) => a.daysAgo - b.daysAgo);
 
-        {/* main */}
-        {events.length > 0 ? (
-          <div className="pt-4 overflow-y-scroll flex flex-col gap-8 -mx-4">
-            <ul className="list px-4 pb-8 ">
-              {events.map((event) => (
-                <li key={event.eventId}>
-                  <HistoryCard
-                    href={`history/${event.eventId}`}
-                    image={event.eventImageUrl}
-                    name={event.eventName}
-                    day={daysAgo(event)}
-                    rated={event.userRating ?? 0}
-                  />
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <div className="w-132 lg:w-184 mx-auto h-full justify-center flex flex-col items-center gap-20">
-            <div className="w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100">
-              <div className="w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200">
-                <Calendar2 size="50" color="#0d0d0d" variant="Bulk" />
-              </div>
-            </div>
-            <div className={"flex flex-col gap-12 items-center text-center"}>
-              <p className="text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]">
-                {t("description")}
-              </p>
-            </div>
-          </div>
-        )}
-      </>
+  return (
+    <AttendeeLayout title={t("title")} className="overflow-x-hidden">
+      <HistoryPageContent items={items} />
     </AttendeeLayout>
   );
 }

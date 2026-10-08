@@ -1,20 +1,26 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
-import React, { useEffect, useState } from "react";
-import AdminLayout from "@/components/Layouts/AdminLayout";
-import { useTranslations, useLocale } from "next-intl";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useEffect, useState, useTransition } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { Messages2 } from "iconsax-reactjs";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import SettingsHeader from "@/components/shared/SettingsHeader";
+import FilterPill from "@/components/shared/FilterPill";
+import SearchField from "@/components/shared/SearchField";
+import TablePagination from "@/components/shared/TablePagination";
+import { Reveal } from "@/components/shared/motion";
 import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-import { ArrowLeft2, ArrowRight2 } from "iconsax-reactjs";
-import formatDate from "@/lib/FormatDate";
-import PageLoader from "@/components/PageLoader";
+  Badge,
+  EmptyState,
+  RowMore,
+  TABLE_CELL,
+  TABLE_HEAD,
+  TABLE_ROW,
+  TableFrame,
+} from "@/components/shared/DataTable";
+import formatDateTime from "@/lib/formatDateTime";
+import { cn } from "@/lib/utils";
 
 export type SupportThread = {
   threadId: string;
@@ -37,242 +43,155 @@ export type SupportMessage = {
   createdAt: string;
 };
 
-type ThreadsMeta = {
-  total: number;
-  perPage: number;
-  currentPage: number;
-  lastPage: number;
-  firstPage: number;
-  firstPageUrl: string | null;
-  lastPageUrl: string | null;
-  nextPageUrl: string | null;
-  previousPageUrl: string | null;
-};
-
 export type SupportThreadsResponse = {
   data: SupportThread[];
-  meta: ThreadsMeta;
+  meta: { total: number; perPage: number; currentPage: number; lastPage: number };
 };
 
+/**
+ * Settings → Live Chat: the chat threads, most recently active first. Open
+ * first (the default filter), a status pill and a search over the visitor and
+ * subject; a row opens the conversation. An open thread nobody has picked up
+ * yet reads "Waiting".
+ */
 export default function SupportPageContent({
   threads,
-  resolved,
+  filters,
 }: {
   threads: SupportThreadsResponse;
-  resolved: string;
-  accessToken: string;
+  filters: { resolved: string; search: string };
 }) {
   const t = useTranslations("Support");
   const locale = useLocale();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [pending, startTransition] = useTransition();
+  const [term, setTerm] = useState(filters.search);
 
+  function update(changes: Record<string, string | null>) {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === null || value === "") params.delete(key);
+      else params.set(key, value);
+    }
+    if (!("page" in changes)) params.delete("page");
+    const query = params.toString();
+    startTransition(() => {
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    });
+  }
+
+  // Search follows typing, 300 ms after the last key.
   useEffect(() => {
-    setIsLoading(false);
-  }, [resolved, threads]);
+    if (term.trim() === filters.search) return;
+    const id = setTimeout(() => update({ search: term.trim() || null }), 300);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term]);
 
+  const rows = threads.data;
   const { meta } = threads;
-  const currentPage = meta.currentPage;
-  const hasPrev = currentPage > meta.firstPage;
-  const hasNext = currentPage < meta.lastPage;
-
-  const getPageNumbers = () => {
-    const range: number[] = [];
-    const delta = 2;
-    const left = Math.max(meta.firstPage, currentPage - delta);
-    const right = Math.min(meta.lastPage, currentPage + delta);
-    for (let i = left; i <= right; i++) range.push(i);
-    return range;
-  };
-
-  function buildPageHref(page: number) {
-    return `/support?page=${page}&resolved=${resolved}`;
-  }
-
-  function handleTabChange(value: string) {
-    setIsLoading(true);
-    router.push(`/support?page=1&resolved=${value}`);
-  }
-
-  function openThread(id: string) {
-    setIsLoading(true);
-    router.push(`/support/${id}`);
-  }
+  const filtering = filters.resolved !== "false" || Boolean(filters.search);
 
   return (
-    <AdminLayout>
-      <div className="flex flex-1 min-h-0 flex-col gap-8 overflow-y-auto">
-        <PageLoader isLoading={isLoading} />
+    <div className={cn(PAGE_SCROLLER, "gap-0")} aria-busy={pending}>
+      <SettingsHeader
+        title={t("title")}
+        actions={
+          <>
+            <FilterPill
+              label={t("filters.label")}
+              value={filters.resolved}
+              defaultValue="false"
+              options={[
+                { value: "false", label: t("filters.open") },
+                { value: "true", label: t("filters.resolved") },
+                { value: "all", label: t("filters.all") },
+              ]}
+              onChange={(v) => update({ resolved: v === "false" ? null : v })}
+              pending={pending}
+            />
+            <SearchField
+              value={term}
+              onChange={setTerm}
+              placeholder={t("filters.search")}
+              className="flex w-full lg:w-[26rem]"
+            />
+          </>
+        }
+      />
 
-        {/* Topbar. The whole row sticks: the Open/Resolved toggle belongs to
-            the title, and leaving it behind while scrolling would read as a
-            bug. Everything below this row moves. */}
-        <div className="sticky top-0 z-20 bg-white pb-8 -mb-8 flex items-center justify-between">
-          <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
-            {t("title")}
-          </h3>
-
-          {/* Open / Resolved toggle */}
-          <div className="flex bg-neutral-100 rounded-[3rem] p-1 gap-1">
-            <button
-              onClick={() => resolved !== "false" && handleTabChange("false")}
-              className={`px-6 py-2 rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
-                resolved === "false"
-                  ? "bg-white text-primary-500 font-medium shadow-sm"
-                  : "text-neutral-600 hover:text-neutral-900"
-              }`}
-            >
-              {t("filters.open")}
-            </button>
-            <button
-              onClick={() => resolved !== "true" && handleTabChange("true")}
-              className={`px-6 py-2 rounded-[3rem] text-[1.4rem] transition-colors cursor-pointer ${
-                resolved === "true"
-                  ? "bg-white text-[#349C2E] font-medium shadow-sm"
-                  : "text-neutral-600 hover:text-neutral-900"
-              }`}
-            >
-              {t("filters.resolved")}
-            </button>
-          </div>
-        </div>
-
-        {/* Table */}
-        <Table id="support-table">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                {t("table.sender")}
-              </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                {t("table.subject")}
-              </TableHead>
-              <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                {t("table.status")}
-              </TableHead>
-              <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-                {t("table.date")}
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {threads.data.map((thread) => (
-              <TableRow
+      <Reveal className="flex flex-col gap-6">
+        <TableFrame minWidth="72rem" pending={pending}>
+          <thead>
+            <tr className="border-b border-neutral-100">
+              <th className={TABLE_HEAD}>{t("table.sender")}</th>
+              <th className={TABLE_HEAD}>{t("table.subject")}</th>
+              <th className={TABLE_HEAD}>{t("table.status")}</th>
+              <th className={TABLE_HEAD}>{t("table.date")}</th>
+              <th className={TABLE_HEAD}>
+                <span className="sr-only">{t("table.actions")}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((thread) => (
+              <tr
                 key={thread.threadId}
-                onClick={() => openThread(thread.threadId)}
-                className="cursor-pointer"
+                className={TABLE_ROW}
+                onClick={() => router.push(`/support/${thread.threadId}`)}
               >
-                <TableCell className="py-6">
-                  <p className="text-[1.5rem] leading-8 text-neutral-900 font-medium">
-                    {thread.fullName}
-                  </p>
-                  <p className="text-[1.3rem] leading-6 text-neutral-500">
-                    {thread.email}
-                  </p>
-                </TableCell>
-                <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900 py-6">
-                  {thread.subject}
-                </TableCell>
-                <TableCell className="py-6">
-                  {thread.resolved ? (
-                    <span className="py-[0.3rem] text-[1.1rem] font-bold leading-6 uppercase text-[#349C2E] px-2 rounded-[30px] bg-[#f5f5f5]">
-                      {t("status.resolved")}
-                    </span>
-                  ) : (
-                    <span className="py-[0.3rem] text-[1.1rem] font-bold leading-6 uppercase text-[#EA961C] px-2 rounded-[30px] bg-[#f5f5f5]">
-                      {t("status.open")}
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900">
-                  {formatDate(thread.updatedAt, locale, "local")}
-                </TableCell>
-              </TableRow>
+                <td className={TABLE_CELL}>
+                  <span className="flex flex-col max-w-[24rem]">
+                    <span className="truncate font-medium">{thread.fullName}</span>
+                    <span className="truncate text-[1.3rem] text-neutral-600">{thread.email}</span>
+                  </span>
+                </td>
+                <td className={TABLE_CELL}>
+                  <span className="block max-w-[32rem] truncate" title={thread.subject}>
+                    {thread.subject}
+                  </span>
+                </td>
+                <td className="py-6 pr-4">
+                  <ThreadBadge thread={thread} />
+                </td>
+                <td className={cn(TABLE_CELL, "whitespace-nowrap")}>
+                  {formatDateTime(thread.updatedAt, locale)}
+                </td>
+                <td className="py-6 text-right">
+                  <RowMore />
+                </td>
+              </tr>
             ))}
-          </TableBody>
-        </Table>
+          </tbody>
+        </TableFrame>
 
-        {threads.data.length === 0 && (
-          <div className="flex flex-col items-center mt-8 gap-4 self-center">
-            <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
-              {t("empty")}
-            </p>
-          </div>
+        {rows.length === 0 && (
+          <EmptyState
+            Icon={Messages2}
+            filtered={filtering}
+            text={filtering ? t("no_results") : t("empty")}
+          />
         )}
 
-        {/* Pagination */}
         {meta.lastPage > 1 && (
-          <div className="flex items-center gap-2 pb-4">
-            {hasPrev ? (
-              <Link
-                href={buildPageHref(currentPage - 1)}
-                className="w-[3.6rem] h-[3.6rem] flex items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
-              >
-                <ArrowLeft2 size="20" color="#E45B00" variant="Bulk" />
-              </Link>
-            ) : (
-              <span className="w-[3.6rem] h-[3.6rem] flex items-center justify-center rounded-full opacity-30 cursor-not-allowed">
-                <ArrowLeft2 size="20" color="#E45B00" variant="Bulk" />
-              </span>
-            )}
-
-            {getPageNumbers()[0] > meta.firstPage && (
-              <>
-                <Link
-                  href={buildPageHref(meta.firstPage)}
-                  className="w-[3.6rem] h-[3.6rem] flex items-center justify-center rounded-full text-[1.3rem] font-medium text-neutral-600 hover:bg-neutral-100 transition-colors"
-                >
-                  {meta.firstPage}
-                </Link>
-                {getPageNumbers()[0] > meta.firstPage + 1 && (
-                  <span className="text-[1.3rem] text-neutral-400 px-1">…</span>
-                )}
-              </>
-            )}
-
-            {getPageNumbers().map((page) => (
-              <Link
-                key={page}
-                href={buildPageHref(page)}
-                className={`w-[3.6rem] h-[3.6rem] flex items-center justify-center rounded-full text-[1.3rem] font-medium transition-colors ${
-                  page === currentPage
-                    ? "text-primary-500 pointer-events-none"
-                    : "text-neutral-600 hover:text-primary-500"
-                }`}
-              >
-                {page}
-              </Link>
-            ))}
-
-            {getPageNumbers().at(-1)! < meta.lastPage && (
-              <>
-                {getPageNumbers().at(-1)! < meta.lastPage - 1 && (
-                  <span className="text-[1.3rem] text-neutral-400 px-1">…</span>
-                )}
-                <Link
-                  href={buildPageHref(meta.lastPage)}
-                  className="w-[3.6rem] h-[3.6rem] flex items-center justify-center rounded-full text-[1.3rem] font-medium text-neutral-600 hover:bg-neutral-100 transition-colors"
-                >
-                  {meta.lastPage}
-                </Link>
-              </>
-            )}
-
-            {hasNext ? (
-              <Link
-                href={buildPageHref(currentPage + 1)}
-                className="w-[3.6rem] h-[3.6rem] flex items-center justify-center rounded-full hover:bg-neutral-100 transition-colors"
-              >
-                <ArrowRight2 size="20" color="#E45B00" variant="Bulk" />
-              </Link>
-            ) : (
-              <span className="w-[3.6rem] h-[3.6rem] flex items-center justify-center rounded-full opacity-30 cursor-not-allowed">
-                <ArrowRight2 size="20" color="#E45B00" variant="Bulk" />
-              </span>
-            )}
-          </div>
+          <TablePagination
+            page={meta.currentPage}
+            count={meta.lastPage}
+            onChange={(page) => update({ page: page > 1 ? String(page) : null })}
+            prevLabel={t("prev")}
+            nextLabel={t("next")}
+          />
         )}
-      </div>
-    </AdminLayout>
+      </Reveal>
+    </div>
   );
+}
+
+export function ThreadBadge({ thread }: { thread: Pick<SupportThread, "resolved" | "accepted"> }) {
+  const t = useTranslations("Support.status");
+  if (thread.resolved) return <Badge tone="success">{t("resolved")}</Badge>;
+  if (!thread.accepted) return <Badge tone="warning">{t("waiting")}</Badge>;
+  return <Badge tone="primary">{t("open")}</Badge>;
 }

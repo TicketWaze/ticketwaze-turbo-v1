@@ -1,6 +1,41 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+
+/**
+ * A refusal from the API, surfaced to the page as `result.code` (e.g.
+ * INVALID_CODE, CODE_EXPIRED, INVITATION_EXPIRED) so it can show the right
+ * message instead of a generic failure.
+ */
+class AdminAuthError extends CredentialsSignin {
+  constructor(code: string) {
+    super();
+    this.code = code;
+  }
+}
+
+/**
+ * POSTs to an admin auth endpoint that answers with `{ admin }` (a session),
+ * and turns any other answer into an AdminAuthError. Runs on this app's
+ * server, so the API throttles these routes per account, not per IP.
+ */
+async function adminSession(path: string, body: Record<string, unknown>) {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  }).catch(() => null);
+  if (response?.status === 429) throw new AdminAuthError("TOO_MANY_ATTEMPTS");
+  const data = await response?.json().catch(() => null);
+  if (data?.status !== "success" || !data.admin) {
+    throw new AdminAuthError(
+      String(data?.code ?? (data?.status === "same" ? "SAME_PASSWORD" : "FAILED")),
+    );
+  }
+  return { ...data.admin, id: data.admin.adminId };
+}
+
+const field = (value: unknown) => (typeof value === "string" ? value : "");
 
 function nextMidnightUnix(): number {
   const midnight = new Date();
@@ -49,28 +84,46 @@ const nextAuthResult = NextAuth({
         },
       },
     }),
+    // Password sign-in, second step: the 6-digit code emailed by
+    // POST /auth/admin/login (the page calls that one directly).
     Credentials({
-      credentials: {
-        googleIdToken: {},
-      },
-      authorize: async (credentials) => {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/login/google`,
+      id: "admin-code",
+      credentials: { email: {}, otp: {} },
+      authorize: (credentials) =>
+        adminSession("/auth/admin/verify-otp", {
+          email: field(credentials.email).toLowerCase(),
+          otp: field(credentials.otp),
+        }),
+    }),
+    // /auth/join: accept an invitation by choosing a password.
+    Credentials({
+      id: "admin-invitation",
+      credentials: { token: {}, password: {}, password_confirmation: {} },
+      authorize: (credentials) =>
+        adminSession(
+          `/auth/admin/invitation/${encodeURIComponent(field(credentials.token))}`,
           {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ idToken: credentials.googleIdToken }),
+            password: field(credentials.password),
+            password_confirmation: field(credentials.password_confirmation),
           },
-        );
-
-        const data = await response.json();
-
-        if (data.status !== "success") {
-          throw new Error(data.message || "Google sign-in failed");
-        }
-
-        return { ...data.admin, id: data.admin.adminId };
+        ),
+    }),
+    // Reset password, last step: the new password, signed straight in.
+    Credentials({
+      id: "admin-reset",
+      credentials: {
+        email: {},
+        resetToken: {},
+        password: {},
+        password_confirmation: {},
       },
+      authorize: (credentials) =>
+        adminSession("/auth/admin/forgot-password/reset", {
+          email: field(credentials.email).toLowerCase(),
+          resetToken: field(credentials.resetToken),
+          password: field(credentials.password),
+          password_confirmation: field(credentials.password_confirmation),
+        }),
     }),
   ],
 
@@ -95,11 +148,13 @@ const nextAuthResult = NextAuth({
             body: JSON.stringify({ idToken: account.id_token }),
           },
         );
-        const data = await res.json();
-        if (data.status !== "success") {
-          throw new Error(
-            encodeURIComponent(data.message || "Google authentication failed"),
-          );
+        const data = await res.json().catch(() => null);
+        if (data?.status !== "success") {
+          // Back to the sign-in page with a code it can explain, e.g.
+          // NOT_INVITED or DOMAIN_NOT_ALLOWED (next-intl adds the locale).
+          const code =
+            res.status === 429 ? "TOO_MANY_ATTEMPTS" : (data?.code ?? "GOOGLE_FAILED");
+          return `/auth/login?error=${encodeURIComponent(code)}`;
         }
         Object.assign(user, { ...data.admin, id: data.admin.adminId });
       }

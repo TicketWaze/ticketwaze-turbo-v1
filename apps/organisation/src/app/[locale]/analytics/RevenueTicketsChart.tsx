@@ -47,15 +47,15 @@ export default function RevenueTicketsChart({
       : ticketsByMonth.map((d) => d.count);
 
   const getGradient = (ctx, chartArea) => {
-    if (!chartArea) return "#F97316";
+    if (!chartArea) return "#E45B00";
     const gradient = ctx.createLinearGradient(
       0,
       chartArea.top,
       0,
       chartArea.bottom,
     );
-    gradient.addColorStop(0, "rgba(249, 115, 22, 0.3)");
-    gradient.addColorStop(1, "rgba(249, 115, 22, 0)");
+    gradient.addColorStop(0, "rgba(228, 91, 0, 0.10)");
+    gradient.addColorStop(1, "rgba(228, 91, 0, 0)");
     return gradient;
   };
 
@@ -64,10 +64,10 @@ export default function RevenueTicketsChart({
     datasets: [
       {
         data: dataValues,
-        borderColor: "#F97316",
-        borderWidth: 2,
-        pointBackgroundColor: "#F97316",
-        pointRadius: 4,
+        borderColor: "#E45B00",
+        borderWidth: 1.5,
+        pointBackgroundColor: "#E45B00",
+        pointRadius: 0,
         pointHoverRadius: 6,
         tension: 0.4,
         fill: true,
@@ -98,15 +98,15 @@ export default function RevenueTicketsChart({
       x: {
         grid: { display: false },
         ticks: {
-          font: { size: 12 },
-          color: "#9CA3AF",
+          font: { size: 10 },
+          color: "#8F96A1",
         },
       },
       y: {
-        grid: { color: "rgba(0,0,0,0.05)" },
+        grid: { color: "#F1F2F3" }, border: { display: false },
         ticks: {
-          font: { size: 12 },
-          color: "#9CA3AF",
+          font: { size: 10 },
+          color: "#8F96A1",
           callback: (value) =>
             mode === "revenue" ? `$${value}` : String(value),
         },
@@ -119,26 +119,26 @@ export default function RevenueTicketsChart({
       <div className="flex gap-2">
         <button
           onClick={() => setMode("revenue")}
-          className={`px-4 py-1.5 rounded-full text-[13px] font-sans transition-colors ${
+          className={`px-6 py-3 rounded-[3rem] text-[1.4rem] leading-8 font-sans cursor-pointer transition-colors ${
             mode === "revenue"
               ? "bg-primary-500 text-white"
-              : "bg-neutral-100 text-neutral-600"
+              : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
           }`}
         >
           {t("chart.revenue")}
         </button>
         <button
           onClick={() => setMode("tickets")}
-          className={`px-4 py-1.5 rounded-full text-[13px] font-sans transition-colors ${
+          className={`px-6 py-3 rounded-[3rem] text-[1.4rem] leading-8 font-sans cursor-pointer transition-colors ${
             mode === "tickets"
               ? "bg-primary-500 text-white"
-              : "bg-neutral-100 text-neutral-600"
+              : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200"
           }`}
         >
           {t("chart.tickets")}
         </button>
       </div>
-      <div className="h-70 lg:h-80">
+      <div className="h-[22rem] lg:h-[26rem]">
         <Line ref={chartRef} data={data} options={options} />
       </div>
     </div>

@@ -48,9 +48,7 @@ export async function UpdateUserProfile(
   revalidatePath("/settings/account");
 }
 
-export async function UpdateUserProfileImage(
-  body: FormData,
-) {
+export async function UpdateUserProfileImage(body: FormData) {
   try {
     const accessToken = await sessionToken();
     const res = await fetch(
@@ -84,10 +82,7 @@ export async function UpdateUserProfileImage(
   }
 }
 
-export async function UpdateUserPreferences(
-  body: unknown,
-  locale: string,
-) {
+export async function UpdateUserPreferences(body: unknown, locale: string) {
   try {
     const accessToken = await sessionToken();
     const res = await fetch(
@@ -120,6 +115,46 @@ export async function UpdateUserPreferences(
   } catch (err: any) {
     return {
       error: err?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+/** Settings › Account: the contact phone and/or the app language. */
+export async function UpdateAccount(
+  body: { whatsappPhoneNumber?: string; appLanguage?: "en" | "fr" },
+  locale: string,
+): Promise<{ status: "success" } | { status: "failed"; message: string }> {
+  try {
+    const accessToken = await sessionToken();
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/users/me/account`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify(body),
+      },
+    );
+    const response = await request.json().catch(() => null);
+    if (request.ok && response?.status === "success") {
+      revalidatePath("/settings/account");
+      return { status: "success" };
+    }
+    return {
+      status: "failed",
+      message:
+        response?.message ??
+        response?.errors?.[0]?.message ??
+        `Request failed (${request.status})`,
+    };
+  } catch (error: unknown) {
+    return {
+      status: "failed",
+      message: error instanceof Error ? error.message : "Something went wrong",
     };
   }
 }

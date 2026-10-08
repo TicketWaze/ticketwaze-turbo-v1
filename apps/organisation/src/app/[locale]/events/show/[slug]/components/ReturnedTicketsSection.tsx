@@ -40,7 +40,8 @@ export default function ReturnedTicketsSection({
 
   if (!shouldShow) return null;
 
-  const selected = ticketReturns.find((tr) => tr.ticketReturnId === selectedId) ?? null;
+  const selected =
+    ticketReturns.find((tr) => tr.ticketReturnId === selectedId) ?? null;
   const timezone = event.eventDays[0].timezone;
 
   return (
@@ -60,7 +61,9 @@ export default function ReturnedTicketsSection({
         <Drawer
           direction="right"
           open={selectedId !== null}
-          onOpenChange={(open) => { if (!open) setSelectedId(null); }}
+          onOpenChange={(open) => {
+            if (!open) setSelectedId(null);
+          }}
         >
           <Table className="mt-2">
             <TableHeader>
@@ -149,9 +152,12 @@ export default function ReturnedTicketsSection({
                     <Section>
                       <Row label={t("table.full_name")}>
                         {(selected.fullName ??
-                          `${selected.firstName ?? ""} ${selected.lastName ?? ""}`.trim()) || "—"}
+                          `${selected.firstName ?? ""} ${selected.lastName ?? ""}`.trim()) ||
+                          "—"}
                       </Row>
-                      <Row label={t("table.email")}>{selected.email ?? "—"}</Row>
+                      <Row label={t("table.email")}>
+                        {selected.email ?? "—"}
+                      </Row>
                     </Section>
 
                     <DrawerSeparator />

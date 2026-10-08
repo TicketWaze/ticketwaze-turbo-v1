@@ -1,23 +1,16 @@
 "use client";
+import ActivityMoreMenu from "@/components/activity/ActivityMoreMenu";
 import {
   AddEventToFavorite,
   RemoveEventToFavorite,
 } from "@/actions/eventActions";
 import { usePathname } from "@/i18n/navigation";
-import { Heart, MoreCircle } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import ReportEventComponent from "../../explore/[slug]/ReportEventComponent";
-import ReportOrganisationComponent from "../../explore/[slug]/ReportOrganisationComponent";
 import { Event, EventDay } from "@ticketwaze/typescript-config";
 import { useSession } from "next-auth/react";
-import PageLoader from "@/components/PageLoader";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import SaveButton from "@/components/activity/SaveButton";
 import AddToCalendar from "../../explore/[slug]/AddToCalendar";
 import { LinkPrimary } from "@/components/shared/Links";
 import ShareEvent from "@/components/shared/ShareEvent";
@@ -76,17 +69,18 @@ function useCountdownToNextDay(eventDays: EventDay[]): string | null {
 export default function EventActions({
   event,
   isFavorite,
+  moreInfo,
 }: {
   event: Event;
   isFavorite: boolean;
+  /** Extra ⋯ menu row (the "More information" dialog for in-person tickets). */
+  moreInfo?: React.ReactNode;
 }) {
   const t = useTranslations("Event");
   const { data: session } = useSession();
   const pathname = usePathname();
   const locale = useLocale();
-  const [isLoading, setIsLoading] = useState(false);
   async function AddToFavorite() {
-    setIsLoading(true);
     const result = await AddEventToFavorite(
       session?.user.accessToken ?? "",
       event.eventId,
@@ -94,25 +88,18 @@ export default function EventActions({
       pathname,
       locale,
     );
-    if (result.error) {
-      toast.error(result.message);
-    }
-
-    setIsLoading(false);
+    if (result.error) toast.error(result.message);
+    return !result.error;
   }
   async function RemoveToFavorite() {
-    setIsLoading(true);
     const result = await RemoveEventToFavorite(
       session?.user.accessToken ?? "",
       event.eventId,
       pathname,
       locale,
     );
-    if (result.error) {
-      toast.error(result.message);
-    }
-
-    setIsLoading(false);
+    if (result.error) toast.error(result.message);
+    return !result.error;
   }
   function useIsEventLive(eventDays: EventDay[]): boolean {
     const [isLive, setIsLive] = useState(false);
@@ -159,7 +146,9 @@ export default function EventActions({
     event.onlineProvider === "zoom"
       ? (event.tickets?.find((ticket) => ticket.zoomJoinUrl)?.zoomJoinUrl ??
         null)
-      : event.googleMeetLink;
+      : event.onlineProvider === "custom"
+        ? (event.onlineLink ?? null)
+        : event.googleMeetLink;
 
   // In-person events have a null link, and passing null to <Link> crashes it
   // ("Cannot read properties of null (reading 'pathname')").
@@ -168,61 +157,19 @@ export default function EventActions({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center justify-between">
-        <PageLoader isLoading={isLoading} />
         <div className="flex items-center justify-around lg:justify-start w-full lg:w-auto gap-8">
           <ShareEvent event={event} />
           {event.eventCategory !== "meet" && <AddToCalendar event={event} />}
-          {isFavorite ? (
-            <button
-              disabled={isLoading}
-              onClick={RemoveToFavorite}
-              className="w-14 h-14 group flex items-center justify-center rounded-[30px] cursor-pointer bg-primary-100"
-            >
-              <Heart size="20" color="#E45B00" variant="Bulk" />
-            </button>
-          ) : (
-            <button
-              disabled={isLoading}
-              onClick={AddToFavorite}
-              className="w-14 h-14 group flex items-center justify-center bg-neutral-100 rounded-[30px] cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500"
-            >
-              <Heart
-                size="20"
-                className='"stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500 transition-all ease-in-out duration-500'
-                variant="Bulk"
-              />
-            </button>
-          )}
-          <Popover>
-            <PopoverTrigger asChild>
-              <span className="w-14 h-14 group flex items-center justify-center bg-neutral-100 rounded-[30px] cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500">
-                <MoreCircle variant={"Bulk"} color={"#737C8A"} size={20} />
-                {/* {t('more')} */}
-              </span>
-            </PopoverTrigger>
-            <PopoverContent
-              className={
-                "bg-neutral-100 border border-neutral-200 right-8 p-4 pb-8 w-92  mb-8 rounded-2xl shadow-xl bottom-full flex flex-col gap-4"
-              }
-            >
-              <span
-                className={
-                  "font-medium py-2 border-b border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
-                }
-              >
-                {t("more")}
-              </span>
-
-              <ReportEventComponent
-                activityId={event.eventId}
-                organisationId={event.organisationId}
-              />
-              <div className="h-px bg-neutral-200 w-full"></div>
-              <ReportOrganisationComponent
-                organisationId={event.organisationId}
-              />
-            </PopoverContent>
-          </Popover>
+          <SaveButton
+            initialSaved={isFavorite}
+            save={AddToFavorite}
+            unsave={RemoveToFavorite}
+          />
+          <ActivityMoreMenu
+            activityId={event.eventId}
+            organisationId={event.organisationId}
+            extra={moreInfo}
+          />
         </div>
         <div className="hidden lg:flex flex-col items-end gap-1">
           <LinkPrimary

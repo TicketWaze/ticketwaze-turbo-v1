@@ -1,187 +1,195 @@
 "use client";
 import { TopBar } from "@/components/Layouts/Topbars";
 import { useLocale, useTranslations } from "next-intl";
+import { AnimatePresence, motion } from "framer-motion";
+import { useState } from "react";
 import ProfileImage from "./ProfileImage";
 import FormatDate from "@/lib/FormatDate";
-import * as z from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateUserProfile } from "@/actions/userActions";
 import { toast } from "sonner";
 import { User, UserAnalytic } from "@ticketwaze/typescript-config";
-import PageLoader from "@/components/PageLoader";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import { Input } from "@/components/shared/Inputs";
-import Separator from "@/components/shared/Separator";
-import ChangePassword from "./ChangePassword";
 import DeleteAccountModal from "./DeleteAccountModal";
-import { Link } from "@/i18n/navigation";
-import Image from "next/image";
-import SendIcon from "./send-sqaure-2.svg";
-import { useSession } from "next-auth/react";
+import ReferralDialog from "./ReferralDialog";import { useSession } from "next-auth/react";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import Whatsapp from "@/assets/icons/whatsApp.svg";
-import Twitter from "@/assets/icons/twitter.svg";
-import Linkedin from "@/assets/icons/linkedIn.svg";
-import { Copy, Gift } from "iconsax-reactjs";
+import { ArrowDown2, Calendar } from "iconsax-reactjs";
+import countries from "@/lib/Countries";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import TruncateUrl from "@/lib/TruncateUrl";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+interface ProfileData {
+  firstName: string;
+  lastName: string;
+  username: string;
+  address: string;
+  country: string;
+  state: string;
+  city: string;
+  dateOfBirth: string; // YYYY-MM-DD
+  gender: string;
+}
+type ProfileErrors = Partial<Record<keyof ProfileData, string>>;
+
+const USERNAME_PATTERN = /^@?[a-zA-Z0-9_.]{3,30}$/;
+const GENDERS = ["male", "female", "non-binary", "undisclosed"] as const;
+const ease = [0.22, 1, 0.36, 1] as const;
+const selectTriggerClass =
+  "bg-neutral-100 cursor-pointer rounded-[3rem] px-8 border-none w-full data-[size=default]:h-[6rem] text-[1.5rem] text-deep-200 leading-8 shadow-none";
+
+function fromUser(user: User): ProfileData {
+  const u = user as User & {
+    username?: string | null;
+    address?: string | null;
+  };
+  return {
+    firstName: user.firstName ?? "",
+    lastName: user.lastName ?? "",
+    username: u.username ?? "",
+    address: u.address ?? "",
+    // Haiti until the user picks another country.
+    country: user.country || "Haiti",
+    state: user.state ?? "",
+    city: user.city ?? "",
+    dateOfBirth: user.dateOfBirth ? String(user.dateOfBirth).slice(0, 10) : "",
+    gender: user.gender ?? "",
+  };
+}
 
 export default function ProfilePageContent({
   analytics,
   user,
+  startEditing = false,
 }: {
   analytics: UserAnalytic;
   user: User;
+  startEditing?: boolean;
 }) {
   const t = useTranslations("Profile");
-
-  const EditProfileSchema = z.object({
-    firstName: z.string().min(2, { error: t("errors.firstname_length") }),
-    lastName: z.string().min(2, { error: t("errors.lastname_length") }),
-  });
-  type TEditProfileSchema = z.infer<typeof EditProfileSchema>;
-  const { data: session, update } = useSession();
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting, isDirty },
-  } = useForm<TEditProfileSchema>({
-    resolver: zodResolver(EditProfileSchema),
-    values: {
-      firstName: user.firstName,
-      lastName: user.lastName,
-    },
-  });
+  const tSetup = useTranslations("Auth.flow.setup");
   const locale = useLocale();
-  async function submitHandler(data: TEditProfileSchema) {
-    const results = await UpdateUserProfile(
-      session?.user.accessToken ?? "",
-      data,
-      locale,
-    );
-    if (results.status !== "success") {
-      toast.error(results.error);
+  const { data: session, update } = useSession();
+
+  // Figma: the page reads as a summary; "Edit profile" unlocks the fields
+  // and turns into "Save changes".
+  const [editing, setEditing] = useState(startEditing);
+  const [saved, setSaved] = useState(() => fromUser(user));
+  const [data, setData] = useState(saved);
+  const [errors, setErrors] = useState<ProfileErrors>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const states = countries.find((c) => c.name === data.country)?.state ?? [];
+  const cities = states.find((s) => s.name === data.state)?.cities ?? [];
+  const isDirty = JSON.stringify(data) !== JSON.stringify(saved);
+
+  function setField<K extends keyof ProfileData>(field: K, value: string) {
+    setData((prev) => ({ ...prev, [field]: value }));
+    if (errors[field]) setErrors((e) => ({ ...e, [field]: undefined }));
+  }
+
+  function validate(): ProfileErrors {
+    const e: ProfileErrors = {};
+    if (data.firstName.trim().length < 2)
+      e.firstName = t("errors.firstname_length");
+    if (data.lastName.trim().length < 2)
+      e.lastName = t("errors.lastname_length");
+    // Optional for accounts made before usernames existed, but once given it
+    // has to be a valid one.
+    if (data.username.trim() && !USERNAME_PATTERN.test(data.username.trim()))
+      e.username = tSetup("errors.username");
+    return e;
+  }
+
+  async function onSave() {
+    if (!isDirty) {
+      setEditing(false);
       return;
     }
+    const found = validate();
+    if (Object.keys(found).length > 0) {
+      setErrors(found);
+      return;
+    }
+    setIsSubmitting(true);
+    const body = {
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      ...(data.username.trim() && {
+        username: data.username.trim().toLowerCase(),
+      }),
+      address: data.address.trim() || null,
+      ...(data.country && { country: data.country }),
+      ...(data.state && { state: data.state }),
+      ...(data.city && { city: data.city }),
+      ...(data.dateOfBirth && { dateOfBirth: data.dateOfBirth }),
+      ...(data.gender && { gender: data.gender }),
+    };
+    const results = await UpdateUserProfile(
+      session?.user.accessToken ?? "",
+      body,
+      locale,
+    );
+    setIsSubmitting(false);
+    if (results.status !== "success") {
+      if ("code" in results && results.code === "USERNAME_TAKEN") {
+        setErrors({ username: tSetup("errors.username_taken") });
+      } else {
+        toast.error(
+          ("message" in results && results.message) ||
+            ("error" in results && results.error) ||
+            "Something went wrong",
+        );
+      }
+      return;
+    }
+    setSaved(data);
+    setEditing(false);
+    toast.success(t("updated"));
     update({
-      user: { firstName: data.firstName, lastName: data.lastName },
+      user: { firstName: body.firstName, lastName: body.lastName },
     });
   }
-  const referralLink = `${process.env.NEXT_PUBLIC_ATTENDEE_URL}/auth/register?referral=${session?.user.referralCode}`;
+
+  const dobLabel = saved.dateOfBirth
+    ? saved.dateOfBirth.split("-").reverse().join(" / ")
+    : "";
+  const genderLabel = (g: string) =>
+    (GENDERS as readonly string[]).includes(g) ? tSetup(`genders.${g}`) : g;
+
   return (
     <>
-      <PageLoader isLoading={isSubmitting} />
       <TopBar title={t("title")}>
-        <Dialog>
-          <DialogTrigger>
-            <span className="px-6 py-[7.5px] border-2 border-transparent rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center gap-4 bg-neutral-100 text-neutral-700">
-              <Gift variant={"Bulk"} color={"#E45B00"} size={20} />
-              <span className="hidden lg:inline">{t("referralTitle")}</span>
-            </span>
-          </DialogTrigger>
-          <DialogContent className={"w-xl lg:w-208 "}>
-            <DialogHeader>
-              <DialogTitle
-                className={
-                  "font-medium border-b border-neutral-100 pb-8  text-[2.6rem] leading-12 text-black font-primary"
-                }
-              >
-                {t("referralTitle")}
-              </DialogTitle>
-              <DialogDescription className={"sr-only"}>
-                <span>Share event</span>
-              </DialogDescription>
-            </DialogHeader>
-            <div
-              className={
-                "flex flex-col w-auto justify-center items-center gap-12"
-              }
-            >
-              <p
-                className={
-                  "font-sans text-[1.8rem] leading-10 text-[#cdcdcd] text-center w-[320px] lg:w-full"
-                }
-              >
-                {t("referralDescription")}
-              </p>
-              <div
-                className={
-                  "border w-auto border-neutral-100 rounded-[100px] p-4 flex  items-center gap-4"
-                }
-              >
-                <span
-                  className={
-                    "lg:hidden text-neutral-700 text-[1.8rem] max-w-134"
-                  }
+        <div className="flex items-center gap-4">
+          <ReferralDialog />
+          <ButtonPrimary
+            onClick={editing ? onSave : () => setEditing(true)}
+            disabled={isSubmitting}
+            className="min-w-[13.2rem] active:scale-95 transition-transform"
+          >
+            {isSubmitting ? (
+              <LoadingCircleSmall />
+            ) : (
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={editing ? "save" : "edit"}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.15 }}
                 >
-                  {TruncateUrl(referralLink, 22)}
-                </span>
-                <span
-                  className={
-                    "hidden lg:block text-neutral-700 text-[1.8rem] max-w-134"
-                  }
-                >
-                  {TruncateUrl(referralLink)}
-                </span>
-                <button
-                  onClick={async () => {
-                    try {
-                      await navigator.clipboard.writeText(referralLink);
-                      toast.success("Url copied to clipboard");
-                    } catch {
-                      toast.error("Failed to copy url");
-                    }
-                  }}
-                  className={
-                    "border-2 border-primary-500 px-6 py-[.7rem] rounded-[10rem] font-normal text-[1.5rem] text-primary-500 leading-8 bg-primary-50 cursor-pointer flex"
-                  }
-                >
-                  <Copy size="20" color="#e45b00" variant="Bulk" />
-                  {t("copy")}
-                </button>
-              </div>
-              <div className="flex w-full justify-center items-center gap-12">
-                <Link
-                  href={`https://wa.me/?text=${encodeURIComponent(`*Check this out — it’s worth your time!* \n\nI've been using Ticketwaze for tickets to concerts, shows, sports and more. Join me with my referral code and let's experience great moments together!\nTap the link to explore - Reserve your spot now! \n\n${referralLink}`)}`}
-                  target="_blank"
-                  className="flex items-center justify-center w-18 h-18 bg-neutral-100 rounded-full"
-                >
-                  <Image src={Whatsapp} alt="whatsapp Icon" />
-                </Link>
-                {/* <div className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full">
-                      <Image src={Instagram} alt="instagram Icon" />
-                    </div> */}
-                <Link
-                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
-                    `Check this out — it’s worth your time! 🚀\nI've been using Ticketwaze for tickets to concerts, shows, sports and more. Join me with my referral code and let's experience great moments together!\nReserve your spot now: ${referralLink}`,
-                  )}`}
-                  target="_blank"
-                  className="flex items-center justify-center w-18 h-18 bg-neutral-100 rounded-full"
-                >
-                  <Image src={Twitter} alt="Twitter Icon" />
-                </Link>
-                {/* <div className="flex items-center justify-center w-[45px] h-[45px] bg-neutral-100 rounded-full">
-                      <Image src={Tiktok} alt="tiktok Icon" />
-                    </div> */}
-                <Link
-                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(referralLink)}`}
-                  target="_blank"
-                  className="flex items-center justify-center w-18 h-18 bg-neutral-100 rounded-full"
-                >
-                  <Image src={Linkedin} alt="LinkedIn Icon" />
-                </Link>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
+                  {editing ? t("save") : t("edit")}
+                </motion.span>
+              </AnimatePresence>
+            )}
+          </ButtonPrimary>
+        </div>
       </TopBar>
       <div
         className={
@@ -189,127 +197,264 @@ export default function ProfilePageContent({
         }
       >
         <ProfileImage user={user} />
-        <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-8">
           <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
             {t("personal")}
           </span>
-          <form
-            onSubmit={handleSubmit(submitHandler)}
-            id="edit-profile"
-            className="flex flex-col gap-8"
-          >
-            <div className="flex flex-col lg:flex-row items-center gap-8 w-full">
-              <Input
-                className="w-full flex-1"
-                {...register("firstName")}
-                type="text"
-                error={errors.firstName?.message}
+          <AnimatePresence mode="wait" initial={false}>
+            {editing ? (
+              <motion.form
+                key="edit"
+                id="edit-profile"
+                noValidate
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  onSave();
+                }}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25, ease }}
+                className="flex flex-col gap-8"
               >
-                {t("placeholders.firstname")}
-              </Input>
-              <Input
-                className="w-full flex-1"
-                {...register("lastName")}
-                type="text"
-                error={errors.lastName?.message}
+                <div className="flex flex-col lg:flex-row gap-8 w-full">
+                  <Input
+                    className="w-full lg:flex-1"
+                    value={data.firstName}
+                    onChange={(e) => setField("firstName", e.target.value)}
+                    autoComplete="given-name"
+                    error={errors.firstName}
+                    autoFocus
+                  >
+                    {t("placeholders.firstname")}
+                  </Input>
+                  <Input
+                    className="w-full lg:flex-1"
+                    value={data.lastName}
+                    onChange={(e) => setField("lastName", e.target.value)}
+                    autoComplete="family-name"
+                    error={errors.lastName}
+                  >
+                    {t("placeholders.lastname")}
+                  </Input>
+                </div>
+                {/* The email is the login, so it is not edited here. */}
+                <Input defaultValue={user.email} disabled readOnly>
+                  {t("placeholders.email")}
+                </Input>
+                <Input
+                  value={data.username}
+                  onChange={(e) => setField("username", e.target.value)}
+                  autoCapitalize="none"
+                  autoComplete="username"
+                  error={errors.username}
+                >
+                  {tSetup("username")}
+                </Input>
+                <Input
+                  value={data.address}
+                  onChange={(e) => setField("address", e.target.value)}
+                  autoComplete="street-address"
+                >
+                  {tSetup("address")}
+                </Input>
+                <Select
+                  value={data.country}
+                  onValueChange={(v) =>
+                    setData((prev) => ({
+                      ...prev,
+                      country: v,
+                      state: "",
+                      city: "",
+                    }))
+                  }
+                >
+                  <SelectTrigger
+                    aria-label={tSetup("country")}
+                    className={selectTriggerClass}
+                  >
+                    <SelectValue placeholder={tSetup("country")} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-100 text-[1.4rem]">
+                    {countries.map((c) => (
+                      <SelectItem
+                        key={c.name}
+                        value={c.name}
+                        className="text-[1.4rem] text-deep-100"
+                      >
+                        {c.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <div className="flex gap-8">
+                  <div className="flex-1 min-w-0">
+                    <Select
+                      value={data.state}
+                      disabled={!data.country}
+                      onValueChange={(v) =>
+                        setData((prev) => ({ ...prev, state: v, city: "" }))
+                      }
+                    >
+                      <SelectTrigger
+                        aria-label={tSetup("state")}
+                        className={selectTriggerClass}
+                      >
+                        <SelectValue placeholder={tSetup("state")} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-neutral-100 text-[1.4rem]">
+                        {states.map((s) => (
+                          <SelectItem
+                            key={s.name}
+                            value={s.name}
+                            className="text-[1.4rem] text-deep-100"
+                          >
+                            {s.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <Select
+                      value={data.city}
+                      disabled={!data.state}
+                      onValueChange={(v) => setField("city", v)}
+                    >
+                      <SelectTrigger
+                        aria-label={tSetup("city")}
+                        className={selectTriggerClass}
+                      >
+                        <SelectValue placeholder={tSetup("city")} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-neutral-100 text-[1.4rem]">
+                        {cities.map((city) => (
+                          <SelectItem
+                            key={city}
+                            value={city}
+                            className="text-[1.4rem] text-deep-100"
+                          >
+                            {city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Input
+                  type="date"
+                  value={data.dateOfBirth}
+                  max={new Date().toISOString().slice(0, 10)}
+                  onChange={(e) => setField("dateOfBirth", e.target.value)}
+                >
+                  {tSetup("dob")}
+                </Input>
+                <Select
+                  value={data.gender}
+                  onValueChange={(v) => setField("gender", v)}
+                >
+                  <SelectTrigger
+                    aria-label={tSetup("gender")}
+                    className={selectTriggerClass}
+                  >
+                    <SelectValue placeholder={tSetup("gender")} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white text-[1.4rem]">
+                    <SelectGroup>
+                      <SelectLabel className="text-[1.3rem] text-neutral-500">
+                        {tSetup("genders.title")}
+                      </SelectLabel>
+                      {GENDERS.map((g) => (
+                        <SelectItem
+                          key={g}
+                          value={g}
+                          className="text-[1.4rem] text-deep-100"
+                        >
+                          {tSetup(`genders.${g}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {/* Lets Enter submit from any field. */}
+                <button type="submit" className="hidden" />
+              </motion.form>
+            ) : (
+              <motion.div
+                key="view"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.25, ease }}
+                className="flex flex-col gap-8"
               >
-                {t("placeholders.lastname")}
-              </Input>
-            </div>
-            <Input defaultValue={user.email} disabled readOnly>
-              {t("placeholders.email")}
-            </Input>
-            {/* <div className="flex flex-col lg:flex-row items-center gap-8 w-full">
-              <Input
-                defaultValue={user.state}
-                disabled
-                readOnly
-                className="w-full flex-1"
-              >
-                {t("placeholders.state")}
-              </Input>
-              <Input
-                defaultValue={user.city}
-                disabled
-                readOnly
-                className="w-full flex-1"
-              >
-                {t("placeholders.city")}
-              </Input>
-            </div> */}
-            {/* <Input defaultValue={user.country} disabled readOnly>
-              {t("placeholders.country")}
-            </Input> */}
-            {/* <Input
-              defaultValue={FormatDate(user.dateOfBirth, locale, "local")}
-              disabled
-              readOnly
-            >
-              {t("placeholders.dob")}
-            </Input> */}
-            <ButtonPrimary type="submit" disabled={isSubmitting || !isDirty}>
-              {isSubmitting ? <LoadingCircleSmall /> : t("save")}
-            </ButtonPrimary>
-          </form>
-        </div>
-        <ChangePassword user={user} />
-        <div className="flex flex-col gap-8">
-          <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
+                <div className="flex flex-col lg:flex-row gap-8 w-full">
+                  <ReadField
+                    className="w-full lg:flex-1"
+                    label={t("placeholders.firstname")}
+                    value={saved.firstName}
+                  />
+                  <ReadField
+                    className="w-full lg:flex-1"
+                    label={t("placeholders.lastname")}
+                    value={saved.lastName}
+                  />
+                </div>
+                <ReadField label={t("placeholders.email")} value={user.email} />
+                <ReadField
+                  label={tSetup("username")}
+                  value={saved.username && `@${saved.username}`}
+                />
+                <ReadField label={tSetup("address")} value={saved.address} />
+                <ReadField
+                  label={tSetup("country")}
+                  value={saved.country}
+                  select
+                />
+                <div className="flex gap-8">
+                  <ReadField
+                    className="flex-1 min-w-0"
+                    label={tSetup("state")}
+                    value={saved.state}
+                    select
+                  />
+                  <ReadField
+                    className="flex-1 min-w-0"
+                    label={tSetup("city")}
+                    value={saved.city}
+                    select
+                  />
+                </div>
+                <ReadField
+                  label={tSetup("dob")}
+                  value={dobLabel}
+                  icon={<Calendar size={20} color="#ABB0B9" variant="Bulk" />}
+                />
+                <ReadField
+                  label={tSetup("gender")}
+                  value={saved.gender && genderLabel(saved.gender)}
+                  select
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+        <section className="flex flex-col gap-10">
+          <span className="font-medium text-[1.8rem] leading-10 text-deep-100">
             {t("event.title")}
           </span>
-          <div className="flex items-center justify-between">
-            <span className="font-normal text-[1.6rem] leading-[22.5px] text-neutral-600">
-              {t("event.attended")}
-            </span>
-            <span className="text-[1.6rem] font-medium leading-8 text-deep-100">
-              {analytics.eventAttended}
-            </span>
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <span className="font-normal text-[1.6rem] leading-[22.5px] text-neutral-600">
-              {t("event.tickets")}
-            </span>
-            <span className="text-[1.6rem] font-medium leading-8 text-deep-100">
-              {analytics.ticketPurchased}
-            </span>
-          </div>
-          <Separator />
-          <div className="flex items-center justify-between">
-            <span className="font-normal text-[1.6rem] leading-[22.5px] text-neutral-600">
-              {t("event.missed")}
-            </span>
-            <span className="text-[1.6rem] font-medium leading-8 text-deep-100">
-              {analytics.eventMissed}
-            </span>
-          </div>
-        </div>
-        <div className="flex flex-col gap-6">
-          <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
-            {t("others.title")}
-          </span>
-          <Link
-            href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/legals`}
-            className="flex items-center justify-between gap-3"
-          >
-            <span className="text-[1.6rem] text-deep-100">
-              {t("others.privacy")}
-            </span>
-            <Image src={SendIcon} alt="Send Icon" />
-          </Link>
-          <Separator />
-          <Link
-            href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${locale}/legals`}
-            className="flex items-center justify-between gap-3"
-          >
-            <span className="text-[1.6rem] text-deep-100">
-              {t("others.terms")}
-            </span>
-            <Image src={SendIcon} alt="Send Icon" />
-          </Link>
-        </div>
-        <div className="flex flex-col gap-10">
-          <span className="font-medium text-[1.8rem] mb-4 leading-10 text-deep-100">
+          <StatRow
+            label={t("event.attended")}
+            value={analytics.eventAttended}
+          />
+          <StatRow
+            label={t("event.tickets")}
+            value={analytics.ticketPurchased}
+          />
+          <StatRow label={t("event.missed")} value={analytics.eventMissed} />
+        </section>
+        <section className="flex flex-col gap-10">
+          <span className="font-medium text-[1.8rem] leading-10 text-deep-100">
             {t("account.title")}
           </span>
           <div className="flex items-center justify-between">
@@ -321,9 +466,55 @@ export default function ProfilePageContent({
             </span>
           </div>
           <DeleteAccountModal />
-        </div>
+        </section>
         <div></div>
       </div>
     </>
+  );
+}
+
+/**
+ * Figma's read-only field: the same pill as an input, value in light grey,
+ * with a chevron or icon where the edit control has one.
+ */
+function ReadField({
+  label,
+  value,
+  select,
+  icon,
+  className,
+}: {
+  label: string;
+  value?: string | null;
+  select?: boolean;
+  icon?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      aria-label={label}
+      className={`shrink-0 bg-neutral-50 rounded-[5rem] h-[6rem] px-8 flex items-center justify-between gap-4 text-[1.5rem] leading-8 ${className ?? ""}`}
+    >
+      <span
+        className={`truncate ${value ? "text-neutral-500" : "text-neutral-400"}`}
+      >
+        {value || label}
+      </span>
+      {select && <ArrowDown2 size={16} color="#ABB0B9" variant="Bold" />}
+      {icon}
+    </div>
+  );
+}
+
+function StatRow({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex items-center justify-between">
+      <span className="font-normal text-[1.6rem] leading-[22.5px] text-neutral-600">
+        {label}
+      </span>
+      <span className="text-[1.6rem] font-medium leading-8 text-deep-100">
+        {value}
+      </span>
+    </div>
   );
 }

@@ -27,7 +27,7 @@ export default function Details2() {
     },
   ];
   return (
-    <section className="bg-deep-300 py-[3rem] lg:py-[7.5rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center lg:items-start gap-[3.5rem] lg:gap-[100px]">
+    <section className="bg-deep-300 py-[3rem] lg:py-[10rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center lg:items-start gap-[3.5rem] lg:gap-[12rem]">
       <div className="flex flex-col gap-8 max-w-[800px]">
         <motion.h2
           initial={{ opacity: 0, y: 30 }}
@@ -43,12 +43,12 @@ export default function Details2() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="font-sans text-[1.8rem] lg:text-[2.6rem] leading-[2.5rem] lg:leading-[3.5rem] text-neutral-300"
+          className="font-sans text-[1.8rem] lg:text-[2.6rem] leading-[2.5rem] lg:leading-[3.5rem] lg:tracking-[-0.78px] text-neutral-300"
         >
           {t("description")}
         </motion.p>
       </div>
-      <ul className="hidden lg:flex justify-between w-full gap-8">
+      <ul className="hidden lg:flex justify-between w-full gap-10">
         {items.map(({ description, image, title }, index) => {
           return (
             <motion.li
@@ -57,21 +57,21 @@ export default function Details2() {
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.4 * (index + 1) }}
               key={title}
-              className="bg-deep-200 w-[340px] lg:w-auto flex-1 lg:max-w-[480px] rounded-[3rem] flex flex-col gap-[55px] overflow-hidden"
+              className="bg-deep-200 w-[340px] lg:w-auto flex-1 lg:max-w-[480px] rounded-[3rem] flex flex-col gap-[49px] overflow-hidden"
             >
               <div className="relative">
-                <Image src={bg} alt="background" />
+                <Image src={bg} alt="" className="w-full h-auto" />
                 <Image
                   src={image}
                   alt={title}
                   className="absolute top-[50%] left-[50%] -translate-y-[50%] -translate-x-[50%]"
                 />
               </div>
-              <div className="flex flex-col gap-8 px-[3rem] pb-12">
-                <span className="font-sans font-semibold text-[2.2rem] leading-[3rem] text-white">
+              <div className="flex flex-col gap-[15px] px-[2rem] pb-[2rem]">
+                <span className="font-sans font-semibold text-[2.2rem] leading-[3rem] tracking-[-0.66px] text-white">
                   {title}
                 </span>
-                <span className="font-normal font-sans text-[1.8rem] leading-[25px] text-neutral-300">
+                <span className="font-normal font-sans text-[1.8rem] leading-[25px] tracking-[-0.54px] text-neutral-300">
                   {description}
                 </span>
               </div>
@@ -79,7 +79,7 @@ export default function Details2() {
           );
         })}
       </ul>
-      <ul className="flex lg:hidden flex-col lg:flex-row gap-8">
+      <ul className="flex lg:hidden flex-col gap-[15px] w-full">
         {items.map(({ description, image, title }, index) => {
           return (
             <motion.li
@@ -91,7 +91,7 @@ export default function Details2() {
               className="bg-deep-200 flex-1 lg:max-w-[380px] rounded-[3rem] flex flex-col gap-[55px] overflow-hidden w-full"
             >
               <div className="relative">
-                <Image src={bg} alt="background" />
+                <Image src={bg} alt="" className="w-full h-auto" />
                 <Image
                   src={image}
                   alt={title}

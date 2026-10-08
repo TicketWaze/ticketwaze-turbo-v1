@@ -2,7 +2,11 @@
 import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { cookies } from "next/headers";
+import { GOOGLE_SIGNUP_COOKIE } from "./googleSignupIntent";
 import {
+  assertNoMfa,
+  verifyMfaLogin,
   needsRefresh,
   readJsonBody,
   refreshApiTokens,
@@ -119,8 +123,18 @@ const nextAuthResult = NextAuth({
         email: {},
         password: {},
         googleIdToken: {},
+        // Email 2FA, second step: the challenge from the first and the code.
+        challengeId: {},
+        code: {},
       },
       authorize: async (credentials) => {
+        if (credentials.challengeId) {
+          const data = await verifyMfaLogin(
+            credentials.challengeId,
+            credentials.code,
+          );
+          return data.user;
+        }
         if (credentials.googleIdToken) {
           const response = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
@@ -129,7 +143,8 @@ const nextAuthResult = NextAuth({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 idToken: credentials.googleIdToken as string,
-                noCreate: true,
+                // Same as the redirect flow below: new Google users get an account.
+                noCreate: false,
                 context: LOGIN_CONTEXT,
               }),
             },
@@ -161,6 +176,8 @@ const nextAuthResult = NextAuth({
         if (data.code === "ORGANISATION_SUSPENDED") {
           throw new OrganisationSuspendedError();
         }
+        // 2FA account: no session yet — the page asks for the emailed code.
+        assertNoMfa(data);
         if (data.status !== "success") {
           throw new Error(data.message || "Invalid credentials");
         }
@@ -175,6 +192,14 @@ const nextAuthResult = NextAuth({
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google") {
+        // A Google address without an account gets one, from the login page
+        // as from the register page: onboarding then sends the new organizer
+        // to the organisation name step and the set-up. The register page's
+        // mark only decides where a failure is reported. Read once, cleared.
+        const jar = await cookies();
+        const signup = jar.get(GOOGLE_SIGNUP_COOKIE)?.value === "1";
+        if (signup) jar.delete(GOOGLE_SIGNUP_COOKIE);
+        const errorPage = signup ? "/auth/register" : "/auth/login";
         try {
           const res = await fetch(
             `${process.env.NEXT_PUBLIC_API_URL}/auth/login/google`,
@@ -183,25 +208,21 @@ const nextAuthResult = NextAuth({
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 idToken: account.id_token,
-                noCreate: true,
+                noCreate: false,
                 context: LOGIN_CONTEXT,
               }),
             },
           );
           const data = await res.json();
           if (data.code === "ORGANISATION_SUSPENDED") {
-            return `/auth/login?error=organisation_suspended`;
+            return `${errorPage}?error=organisation_suspended`;
           }
           if (data.status !== "success") {
             // Returning a URL rather than throwing: Auth.js turns a thrown
-            // error into a bare `AccessDenied` code and discards the message,
-            // so the one thing the user needs to know — that this Google
-            // account has no Ticketwaze account yet — would be lost.
-            //
+            // error into a bare `AccessDenied` code and discards the message.
             // A stable code travels instead of the API's English sentence, so
-            // the login page can render the notice in the user's language.
-            const code = res.status === 404 ? "no_account" : "google_failed";
-            return `/auth/login?error=${code}`;
+            // the page can render the notice in the user's language.
+            return `${errorPage}?error=google_failed`;
           }
           Object.assign(user, {
             ...data.user,
@@ -209,7 +230,7 @@ const nextAuthResult = NextAuth({
           });
           return true;
         } catch {
-          return `/auth/login?error=google_failed`;
+          return `${errorPage}?error=google_failed`;
         }
       }
       return true;
@@ -227,7 +248,27 @@ const nextAuthResult = NextAuth({
 
       // Manual update() call (e.g. switching active organisation)
       if (trigger === "update" && session?.activeOrganisation) {
-        token.activeOrganisation = session.activeOrganisation;
+        const next = session.activeOrganisation;
+        const current = token.activeOrganisation as
+          | Record<string, unknown>
+          | null
+          | undefined;
+        // Same organisation, updated details (profile, logo, currency): a
+        // copy straight from the API carries no role, permissions or plan, so
+        // keep the ones the session has rather than locking the member out of
+        // every permission-gated button until the next refresh. Switching to
+        // another organisation replaces everything, as before.
+        const sameOrganisation =
+          current?.organisationId &&
+          current.organisationId === next.organisationId;
+        token.activeOrganisation = sameOrganisation
+          ? {
+              ...next,
+              myRole: next.myRole ?? current.myRole,
+              myPermissions: next.myPermissions ?? current.myPermissions,
+              membershipTier: next.membershipTier ?? current.membershipTier,
+            }
+          : next;
         return token;
       }
 

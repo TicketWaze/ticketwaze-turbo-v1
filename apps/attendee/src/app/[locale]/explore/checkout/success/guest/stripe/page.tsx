@@ -1,7 +1,7 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
-import PageLoader from "@/components/PageLoader";
+import { ResultSkeleton } from "@/components/skeletons/CheckoutSkeleton";
 import GuestSuccessContent from "./GuestSuccessContent";
 
 export default async function GuestStripeSuccess({
@@ -37,7 +37,7 @@ export default async function GuestStripeSuccess({
 
   return (
     <AttendeeLayout className="items-center justify-center" title="">
-      <PageLoader isLoading={true} />
+      <ResultSkeleton />
     </AttendeeLayout>
   );
 }

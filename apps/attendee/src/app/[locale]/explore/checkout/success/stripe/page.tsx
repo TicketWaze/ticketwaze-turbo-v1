@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
 import { getLocale } from "next-intl/server";
-import PageLoader from "@/components/PageLoader";
+import PurchaseSuccess from "@/components/PurchaseSuccess";
 
 export default async function SuccessStripe({
   searchParams,
@@ -26,21 +26,16 @@ export default async function SuccessStripe({
   );
   const response = await request.json();
 
-  if (response.status === "success" || response.status === "duplicate") {
-    redirect({
-      href: `/upcoming/${slugify(response.event.eventName, response.event.eventId)}?from=checkout`,
-      locale,
-    });
-  } else {
-    redirect({
-      href: `/explore`,
-      locale,
-    });
+  if (response.status !== "success" && response.status !== "duplicate") {
+    redirect({ href: `/explore`, locale });
   }
 
+  // Figma "Purchase successful", then on to the ticket in Upcoming.
   return (
     <AttendeeLayout className="items-center justify-center" title="">
-      <PageLoader isLoading={true} />
+      <PurchaseSuccess
+        redirectTo={`/upcoming/${slugify(response.event.eventName, response.event.eventId)}?from=checkout`}
+      />
     </AttendeeLayout>
   );
 }

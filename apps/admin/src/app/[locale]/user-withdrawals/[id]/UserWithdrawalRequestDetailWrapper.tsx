@@ -54,7 +54,7 @@ function StatusBadge({
   );
 }
 
-function RejectDialog({
+export function RejectDialog({
   requestId,
   trigger,
   t,

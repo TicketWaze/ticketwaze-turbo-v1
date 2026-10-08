@@ -1,23 +1,15 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import HTicket from "./HTicket";
-import {
-  ArrowLeft2,
-  ArrowRight2,
-  Warning2
-} from "iconsax-reactjs";
-import { useLocale, useTranslations } from "next-intl";
-import { QRCodeCanvas } from "qrcode.react";
-import { domToPng } from "modern-screenshot";
-import FormatDate from "@/lib/FormatDate";
-import Image from "next/image";
-import Logo from "@ticketwaze/ui/assets/images/logo-simple-orange.svg";
+import { ArrowLeft2, ArrowRight2, TicketExpired } from "iconsax-reactjs";
+import { useTranslations } from "next-intl";
 import { Event, Ticket } from "@ticketwaze/typescript-config";
-import Capitalize from "@/lib/Capitalize";
-import formatTime from "@/lib/formatTime";
-import { TicketExpired } from "iconsax-reactjs";
 
+/**
+ * Figma History ticket: the past ticket (no QR, nothing left to scan), then a
+ * bar with the pager and whether this ticket was scanned at the door.
+ */
 export default function TicketViewer({
   tickets,
   event,
@@ -26,229 +18,93 @@ export default function TicketViewer({
   event: Event;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
   const t = useTranslations("Event");
-  const isFree =
-    tickets[currentIndex].ticketPrice === 0 ||
-    tickets[currentIndex].ticketUsdPrice === 0;
-  /**
-   * A giveaway is priced at 0 too, so it must be checked BEFORE `isFree` —
-   * otherwise the holder is told their ticket was free when Ticketwaze bought
-   * it for them.
-   */
-  const priceLabel = tickets[currentIndex].isGiveaway
-    ? t("giveaway")
-    : // A reward the ORGANISER gave for buying several tickets. Priced at 0 as
-      // well, and checked before `isFree` for the same reason.
-      tickets[currentIndex].source === "reward"
-      ? t("reward")
-      : isFree
-        ? t("free")
-        : null;
 
-  const mockTickets = tickets;
-
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : mockTickets.length - 1));
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => (prev < mockTickets.length - 1 ? prev + 1 : 0));
-  };
-
-  if (mockTickets.length === 0) {
+  if (tickets.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-160 bg-gray-50 rounded-lg">
-        <p className="text-gray-500 text-lg">No tickets available</p>
+      <div className="flex items-center justify-center min-h-160 bg-neutral-100 rounded-[10px]">
+        <p className="text-neutral-600 text-[1.5rem]">{t("noTickets")}</p>
       </div>
     );
   }
 
-  const ticketRef = useRef<HTMLDivElement>(null);
+  const ticket = tickets[currentIndex];
+  const multiple = tickets.length > 1;
+  // Online tickets are never scanned, so used / not used means nothing there.
+  const showUsage = event.eventCategory !== "meet";
+  const used = ticket.status === "CHECKED";
 
-  const downloadImage = async () => {
-    if (!ticketRef.current) return;
-
-    try {
-      const element = ticketRef.current;
-      const parent = element.parentElement;
-
-      // Temporarily make visible for capture
-      if (parent) {
-        parent.style.position = "fixed";
-        parent.style.left = "0";
-        parent.style.top = "0";
-        parent.style.opacity = "1";
-        parent.style.zIndex = "9999";
-      }
-
-      // Wait for rendering
-      await new Promise((resolve) => setTimeout(resolve, 200));
-
-      // Convert to PNG using modern-screenshot
-      const dataUrl = await domToPng(element, {
-        scale: 2,
-        quality: 1,
-      });
-
-      // Hide element again
-      if (parent) {
-        parent.style.position = "absolute";
-        parent.style.left = "-9999px";
-        parent.style.opacity = "0";
-        parent.style.zIndex = "auto";
-      }
-
-      // Generate filename and download
-      const ticketName = tickets[currentIndex].ticketName || "ticket";
-      const eventName = event.eventName?.replace(/[^a-z0-9]/gi, "_") || "event";
-      const filename = `${eventName}_${ticketName}.png`;
-
-      const link = document.createElement("a");
-      link.download = filename;
-      link.href = dataUrl;
-      link.click();
-    } catch (error) {
-      console.error("Error generating PNG:", error);
-      alert("Failed to download ticket. Please try again.");
-    }
+  const go = (step: 1 | -1) => {
+    setDirection(step);
+    setCurrentIndex((i) => (i + step + tickets.length) % tickets.length);
   };
-  const locale = useLocale();
 
   return (
     <>
-      <HTicket ticket={tickets[currentIndex]} event={event} />
-
-      <div className="absolute -left-[999.9rem] opacity-0 pointer-events-none">
-        <div
-          ref={ticketRef}
-          className="bg-white shadow-lg p-6 rounded-xl w-full text-center flex flex-col gap-8 items-center"
-        >
-          <div
-            className={
-              `w-full h-auto relative  ${tickets[currentIndex].source === "reward" ? "perk-border" : "bg-neutral-100"} p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col  items-center`
-            }
+      <div className="relative overflow-hidden shrink-0">
+        <AnimatePresence mode="popLayout" initial={false} custom={direction}>
+          <motion.div
+            key={ticket.ticketId}
+            custom={direction}
+            initial={{ opacity: 0, x: direction * 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: direction * -40 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
-            <Image
-              src={Logo}
-              alt="Ticketwaze"
-              className="absolute w-full h-full opacity-10"
-            />
-            <div
-              className={
-                "flex items-center justify-between pt-6 gap-4 pb-4 w-full"
-              }
-            >
-              <span className="text-neutral-600">
-                1x {Capitalize(tickets[currentIndex].ticketType)}
-              </span>
-              {priceLabel ? (
-                <span className="text-deep-100 font-medium">{priceLabel}</span>
-              ) : (
-                `${event.currency === "USD" ? tickets[currentIndex].ticketUsdPrice : tickets[currentIndex].ticketPrice} ${event.currency}`
-              )}
-            </div>
-            <div className="flex flex-col gap-4 w-full">
-              <div className="h-[0.2rem] w-full rounded-[10px] bg-neutral-200"></div>
-              <div className={"flex items-center justify-between gap-4 w-full"}>
-                <span className="text-neutral-600">{t("ticketId")}</span>
-                <span className="text-primary-500 font-medium">
-                  {tickets[currentIndex].ticketName}
-                </span>
-              </div>
-      
-              <div className="h-[0.2rem] w-full rounded-[10px] bg-neutral-200"></div>
-              <div className={"flex items-center justify-between gap-4 w-full"}>
-                <span className="text-neutral-600">{t("date")}</span>
-                <span className="text-deep-100 font-medium">
-                  {FormatDate(
-                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
-                      .eventDate,
-                    locale,
-                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
-                      .timezone,
-                  )}
-                </span>
-              </div>
-              <div className={"flex items-center justify-between gap-4 w-full"}>
-                <span className="text-neutral-600">{t("time")}</span>
-                <span className="text-deep-100 font-medium">
-                  {formatTime(
-                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
-                      .startTime,
-                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
-                      .timezone,
-                    locale,
-                  )}{" "}
-                  -{" "}
-                  {formatTime(
-                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
-                      .endTime,
-                    event.eventDays.filter((day) => day.dayNumber === 1)[0]
-                      .timezone,
-                    locale,
-                  )}
-                </span>
-              </div>
-              {event.eventCategory !== "meet" && (
-                <div
-                  className={"flex items-center justify-between gap-4 w-full"}
-                >
-                  <span className="text-neutral-600">{t("location")}</span>
-                  <span className="text-deep-100 font-medium text-right">
-                    {event.address}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-          <span className="text-warning flex gap-4 items-center">
-            <Warning2 size="16" color="#ea961c" variant="TwoTone" />
-            {t("ticketWarning1")}{" "}
-            {!event.eventTicketTypes[0].isRefundable && t("ticketWarning2")}
-          </span>
-          {/* Same scanner-friendly settings as the upcoming ticket. */}
-          <QRCodeCanvas
-            value={tickets[currentIndex].ticketId.toUpperCase()}
-            size={300}
-            level="H"
-            marginSize={4}
-            bgColor="#FFFFFF"
-            fgColor="#000000"
-          />
-        </div>
+            <HTicket ticket={ticket} event={event} />
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {event.eventCategory !== "meet" && (
-        <div className="border border-neutral-100 rounded-[100px] py-4 px-6 flex justify-between">
-          <div className="flex items-center gap-[1.8rem]">
-            <button
-              onClick={goToPrevious}
-              disabled={mockTickets.length <= 1}
-              className="w-14 cursor-pointer h-14 disabled:cursor-not-allowed rounded-full bg-neutral-100 flex items-center justify-center"
+      {(multiple || showUsage) && (
+        <div className="border border-neutral-100 rounded-[100px] py-4 px-6 flex items-center justify-between gap-4">
+          {multiple ? (
+            <div className="flex items-center gap-[1.8rem]">
+              <button
+                onClick={() => go(-1)}
+                aria-label={t("previous")}
+                className="w-14 cursor-pointer h-14 rounded-full bg-neutral-100 flex items-center justify-center active:scale-90 transition-transform"
+              >
+                <ArrowLeft2 variant="Bulk" size={20} color="#0D0D0D" />
+              </button>
+              <span className="text-[2.2rem] leading-12 text-neutral-600 tabular-nums">
+                <span className="text-primary-500">{currentIndex + 1}</span>/
+                {tickets.length}
+              </span>
+              <button
+                onClick={() => go(1)}
+                aria-label={t("next")}
+                className="w-14 cursor-pointer h-14 rounded-full bg-neutral-100 flex items-center justify-center active:scale-90 transition-transform"
+              >
+                <ArrowRight2 variant="Bulk" size={20} color="#0D0D0D" />
+              </button>
+            </div>
+          ) : (
+            <span />
+          )}
+          {showUsage && (
+            <motion.div
+              key={used ? "used" : "not-used"}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2 }}
+              className="px-8 lg:px-12 py-[7.5px] bg-neutral-300 rounded-[100px] flex gap-4 items-center justify-center text-deep-100"
             >
-              <ArrowLeft2 variant="Bulk" size={20} color="#0D0D0D" />
-            </button>
-            <span className="text-[2.2rem] leading-12 text-neutral-600">
-              <span className="text-primary-500">{currentIndex + 1}</span>/
-              {mockTickets.length}
-            </span>
-            <button
-              onClick={goToNext}
-              disabled={mockTickets.length <= 1}
-              className="w-14 cursor-pointer h-14 disabled:cursor-not-allowed rounded-full bg-neutral-100 flex items-center justify-center"
-            >
-              <ArrowRight2 variant="Bulk" size={20} color="#0D0D0D" />
-            </button>
-          </div>
-          <div className="cursor-pointer px-12 py-[7.5px] bg-neutral-300  rounded-[100px] flex gap-4 items-center justify-center disabled:cursor-not-allowed text-deep-100 ">
-            <TicketExpired size="20" variant="Bulk" className="hidden lg:flex"/>
-            <span className="hidden lg:flex text-[1.5rem] ">
-              {t("not_used")}
-            </span>
-            <span className=" lg:hidden text-[1.5rem] ">
-              {t("not_used_m")}
-            </span>
-          </div>
+              <TicketExpired
+                size="20"
+                variant="Bulk"
+                color="#2E3237"
+                className="hidden lg:flex"
+              />
+              <span className="hidden lg:flex text-[1.5rem]">
+                {used ? t("used") : t("not_used")}
+              </span>
+              <span className="lg:hidden text-[1.5rem]">
+                {used ? t("used_m") : t("not_used_m")}
+              </span>
+            </motion.div>
+          )}
         </div>
       )}
     </>

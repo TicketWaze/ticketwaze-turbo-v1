@@ -1,7 +1,7 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { redirect } from "@/i18n/navigation";
 import { getLocale } from "next-intl/server";
-import PageLoader from "@/components/PageLoader";
+import PurchaseSuccess from "@/components/PurchaseSuccess";
 
 /**
  * Stripe's return page for a reservation.
@@ -31,18 +31,19 @@ export default async function SuccessReservationStripe({
   ).catch(() => null);
   const response = request ? await request.json().catch(() => null) : null;
 
-  if (response?.status === "success" && response.reservation?.reservationCode) {
-    redirect({
-      href: `/explore/reservations/${response.reservation.reservationCode}`,
-      locale,
-    });
-  } else {
+  if (
+    response?.status !== "success" ||
+    !response.reservation?.reservationCode
+  ) {
     redirect({ href: `/explore`, locale });
   }
 
   return (
     <AttendeeLayout className="items-center justify-center" title="">
-      <PageLoader isLoading={true} />
+      <PurchaseSuccess
+        kind="reservation"
+        redirectTo={`/explore/reservations/${response.reservation.reservationCode}`}
+      />
     </AttendeeLayout>
   );
 }

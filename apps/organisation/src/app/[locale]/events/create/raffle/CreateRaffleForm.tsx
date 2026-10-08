@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { openPicker } from "@/components/create/FormFields";
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
@@ -16,10 +17,13 @@ import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { AddCircle, InfoCircle, Trash, Warning2 } from "iconsax-reactjs";
 import { useRouter } from "@/i18n/navigation";
+import {
+  CreateFooter,
+  CreateHeader,
+  CreatedScreen,
+} from "@/components/create/CreateParts";
+import { Stagger } from "@/components/shared/motion";
 import { CreateRaffle } from "@/actions/EventActions";
-import BackButton from "@/components/shared/BackButton";
-import { ButtonPrimary } from "@/components/shared/buttons";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import RichTextEditor from "@/components/shared/RichTextEditor";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import UploadDocument from "@/assets/icons/document-upload.svg";
@@ -133,6 +137,9 @@ function Note({ children }: { children: React.ReactNode }) {
 
 export default function CreateRaffleForm() {
   const t = useTranslations("Events.create_event.raffle");
+  const tCreated = useTranslations("Events.create_event.created");
+  // Creating ends on the shared "created" screen while the list opens.
+  const [created, setCreated] = useState(false);
   const locale = useLocale();
   const router = useRouter();
   const { data: session } = useSession();
@@ -343,8 +350,8 @@ export default function CreateRaffleForm() {
         locale,
       );
       if (result.status === "success") {
-        toast.success(t("success"));
-        router.push("/events");
+        setCreated(true);
+        setTimeout(() => router.push("/events"), 1800);
       } else {
         toast.error(result.error);
       }
@@ -362,51 +369,41 @@ export default function CreateRaffleForm() {
     }
   };
 
-  return (
-    <div className="flex flex-col gap-8 overflow-y-scroll pb-12">
-      <BackButton text={t("back")} />
+  if (created) {
+    return (
+      <CreatedScreen
+        title={tCreated("raffle")}
+        description={tCreated("description_activity")}
+        pendingLabel={tCreated("opening_list")}
+      />
+    );
+  }
 
-      <h1 className="max-w-216 w-full mx-auto font-primary font-medium text-[2.6rem] leading-12 text-black">
-        {t("title")}
-      </h1>
+  return (
+    <div className="relative flex flex-col gap-10 h-full overflow-clip">
+      <CreateHeader
+        title={t("title")}
+        onBack={() => router.back()}
+        backLabel={t("back")}
+      />
 
       <form
+        id="create-raffle-form"
         onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col gap-12"
+        className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex flex-col gap-12 pb-28 lg:pb-8"
         noValidate
       >
-        {/* Cover image */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("cover")}</span>
-          {coverPreview ? (
-            <div className="relative w-full h-120">
-              <img
-                src={coverPreview}
-                alt="Preview"
-                className="w-full h-120 object-cover object-top rounded-2xl"
-              />
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleCover}
-                className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
-              />
-            </div>
-          ) : (
-            <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
-              <div className="flex flex-col items-center gap-4">
-                <Image
-                  src={UploadDocument}
-                  alt="upload"
-                  width={24}
-                  height={24}
+        <Stagger>
+          {/* Cover image */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("cover")}</span>
+            {coverPreview ? (
+              <div className="relative w-full h-120">
+                <img
+                  src={coverPreview}
+                  alt="Preview"
+                  className="w-full h-120 object-cover object-top rounded-2xl"
                 />
-                <p className="text-[1.5rem] leading-6 text-neutral-500">
-                  {t("cover_text")}{" "}
-                  <span className="font-medium text-primary-500">
-                    {t("browse")}
-                  </span>
-                </p>
                 <input
                   type="file"
                   accept="image/*"
@@ -414,398 +411,420 @@ export default function CreateRaffleForm() {
                   className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
                 />
               </div>
-            </div>
-          )}
-          {coverError && (
-            <span className="text-[1.2rem] text-failure">{coverError}</span>
-          )}
-        </div>
+            ) : (
+              <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
+                <div className="flex flex-col items-center gap-4">
+                  <Image
+                    src={UploadDocument}
+                    alt="upload"
+                    width={24}
+                    height={24}
+                  />
+                  <p className="text-[1.5rem] leading-6 text-neutral-500">
+                    {t("cover_text")}{" "}
+                    <span className="font-medium text-primary-500">
+                      {t("browse")}
+                    </span>
+                  </p>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleCover}
+                    className="absolute top-0 left-0 w-full h-full z-50 opacity-0 cursor-pointer"
+                  />
+                </div>
+              </div>
+            )}
+            {coverError && (
+              <span className="text-[1.2rem] text-failure">{coverError}</span>
+            )}
+          </div>
 
-        {/* Details */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("details")}</span>
-          <Field
-            label={t("name")}
-            error={
-              errors.name?.message ??
-              (titleStatus === "taken" ? t("errors.name_taken") : undefined)
-            }
-            counter={
-              <CharCounter
-                count={(watch("name") ?? "").length}
-                min={NAME_MIN_CHARS}
-                max={NAME_MAX_CHARS}
+          {/* Details */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("details")}</span>
+            <Field
+              label={t("name")}
+              error={
+                errors.name?.message ??
+                (titleStatus === "taken" ? t("errors.name_taken") : undefined)
+              }
+              counter={
+                <CharCounter
+                  count={(watch("name") ?? "").length}
+                  min={NAME_MIN_CHARS}
+                  max={NAME_MAX_CHARS}
+                />
+              }
+            >
+              <input
+                {...register("name")}
+                type="text"
+                maxLength={NAME_MAX_CHARS}
+                className={inputClass}
               />
-            }
-          >
-            <input
-              {...register("name")}
-              type="text"
-              maxLength={NAME_MAX_CHARS}
-              className={inputClass}
-            />
-          </Field>
-          <Field label={t("description")} error={errors.description?.message}>
+            </Field>
+            <Field label={t("description")} error={errors.description?.message}>
+              <Controller
+                control={control}
+                name="description"
+                render={({ field }) => (
+                  <RichTextEditor
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder={t("description_placeholder")}
+                    error={undefined}
+                  />
+                )}
+              />
+            </Field>
+          </div>
+
+          {/* Tags */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("tags")}</span>
+            <div
+              className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
+              onClick={() => tagInputRef.current?.focus()}
+            >
+              {tags.map((tag) => (
+                <button
+                  type="button"
+                  key={tag}
+                  onClick={() => removeTag(tag)}
+                  className="flex items-center gap-1 bg-primary-100/50 px-2 text-primary-500 rounded-full text-[1.4rem] whitespace-nowrap"
+                >
+                  #{tag}
+                </button>
+              ))}
+              <input
+                ref={tagInputRef}
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+                placeholder={t("tags_placeholder")}
+                className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
+              />
+            </div>
+            <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
+              <Warning2
+                size="24"
+                color="#737C8A"
+                variant="Bulk"
+                className="shrink-0"
+              />
+              <p className="text-[1.2rem] leading-8 text-neutral-800">
+                {t("tags_tip")}
+              </p>
+            </div>
+          </div>
+
+          {/* Location (optional) */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("location")}</span>
+            <p className="text-[1.2rem] leading-7 text-neutral-600">
+              {t("location_tip")}
+            </p>
             <Controller
               control={control}
-              name="description"
+              name="location"
               render={({ field }) => (
-                <RichTextEditor
-                  value={field.value}
-                  onChange={field.onChange}
-                  placeholder={t("description_placeholder")}
-                  error={undefined}
+                <LocationPicker
+                  value={field.value ?? null}
+                  onLocationSelect={(loc) => field.onChange(loc ?? undefined)}
                 />
               )}
             />
-          </Field>
-        </div>
-
-        {/* Tags */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("tags")}</span>
-          <div
-            className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
-            onClick={() => tagInputRef.current?.focus()}
-          >
-            {tags.map((tag) => (
-              <button
-                type="button"
-                key={tag}
-                onClick={() => removeTag(tag)}
-                className="flex items-center gap-1 bg-primary-100/50 px-2 text-primary-500 rounded-full text-[1.4rem] whitespace-nowrap"
-              >
-                #{tag}
-              </button>
-            ))}
-            <input
-              ref={tagInputRef}
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyDown={handleTagKeyDown}
-              placeholder={t("tags_placeholder")}
-              className="flex-1 outline-none min-w-48 bg-transparent placeholder:text-neutral-600"
-            />
           </div>
-          <div className="flex items-start gap-4 border p-4 rounded-2xl border-neutral-300">
-            <Warning2
-              size="24"
-              color="#737C8A"
-              variant="Bulk"
-              className="shrink-0"
-            />
-            <p className="text-[1.2rem] leading-8 text-neutral-800">
-              {t("tags_tip")}
+
+          {/* Pricing */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("pricing")}</span>
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex-1">
+                <Field
+                  label={t("ticket_price")}
+                  error={errors.ticketPrice?.message}
+                >
+                  <input
+                    {...register("ticketPrice")}
+                    type="number"
+                    min={0}
+                    step="1"
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+              <div className="flex-1">
+                <Field label={t("currency")}>
+                  <Controller
+                    control={control}
+                    name="currency"
+                    render={({ field }) => (
+                      <div className="flex gap-4">
+                        {(["HTG", "USD"] as const).map((c) => (
+                          <button
+                            type="button"
+                            key={c}
+                            onClick={() => field.onChange(c)}
+                            className={`flex-1 rounded-[1.5rem] border py-5 text-[1.4rem] transition-colors ${
+                              field.value === c
+                                ? "border-primary-500 bg-primary-50 text-primary-500"
+                                : "border-neutral-200 text-deep-100 hover:border-primary-500"
+                            }`}
+                          >
+                            {c === "HTG" ? "Gourdes (HTG)" : "US Dollar (USD)"}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  />
+                </Field>
+              </div>
+            </div>
+
+            {/* Who pays the fees. Sits directly under the currency, because it is
+              what decides whether the price above is what the payer pays or what
+              the organiser keeps. */}
+            <div className="flex items-center justify-between">
+              <p className="text-[1.5rem] leading-8 text-deep-100">
+                {t("absorb_fees")}
+              </p>
+              <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
+                <input
+                  className="peer sr-only"
+                  type="checkbox"
+                  checked={absorbFees}
+                  onChange={(e) => setValue("absorbFees", e.target.checked)}
+                />
+                <ToggleIcon />
+              </label>
+            </div>
+            <p className="text-[1.2rem] leading-7 text-neutral-600">
+              {t("absorb_fees_hint")}
             </p>
+
+            <AttendeePricePreview
+              price={watch("ticketPrice")}
+              currency={watch("currency")}
+              absorbFees={absorbFees}
+            />
           </div>
-        </div>
 
-        {/* Location (optional) */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("location")}</span>
-          <p className="text-[1.2rem] leading-7 text-neutral-600">
-            {t("location_tip")}
-          </p>
-          <Controller
-            control={control}
-            name="location"
-            render={({ field }) => (
-              <LocationPicker
-                value={field.value ?? null}
-                onLocationSelect={(loc) => field.onChange(loc ?? undefined)}
-              />
-            )}
-          />
-        </div>
-
-        {/* Pricing */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("pricing")}</span>
-          <div className="flex flex-col lg:flex-row gap-6">
-            <div className="flex-1">
+          {/* Supply */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("supply")}</span>
+            <div className="flex items-center justify-between">
+              <p className="text-[1.5rem] leading-8 text-deep-100">
+                {t("unlimited")}
+              </p>
+              <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
+                <input
+                  className="peer sr-only"
+                  type="checkbox"
+                  checked={unlimited}
+                  onChange={(e) => setValue("unlimited", e.target.checked)}
+                />
+                <ToggleIcon />
+              </label>
+            </div>
+            {!unlimited && (
               <Field
-                label={t("ticket_price")}
-                error={errors.ticketPrice?.message}
+                label={t("total_tickets")}
+                error={errors.totalTickets?.message}
               >
                 <input
-                  {...register("ticketPrice")}
+                  {...register("totalTickets")}
                   type="number"
-                  min={0}
+                  min={1}
                   step="1"
                   className={inputClass}
                 />
               </Field>
-            </div>
-            <div className="flex-1">
-              <Field label={t("currency")}>
-                <Controller
-                  control={control}
-                  name="currency"
-                  render={({ field }) => (
-                    <div className="flex gap-4">
-                      {(["HTG", "USD"] as const).map((c) => (
-                        <button
-                          type="button"
-                          key={c}
-                          onClick={() => field.onChange(c)}
-                          className={`flex-1 rounded-[1.5rem] border py-5 text-[1.4rem] transition-colors ${
-                            field.value === c
-                              ? "border-primary-500 bg-primary-50 text-primary-500"
-                              : "border-neutral-200 text-deep-100 hover:border-primary-500"
-                          }`}
-                        >
-                          {c === "HTG" ? "Gourdes (HTG)" : "US Dollar (USD)"}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                />
-              </Field>
-            </div>
-          </div>
-
-          {/* Who pays the fees. Sits directly under the currency, because it is
-              what decides whether the price above is what the payer pays or what
-              the organiser keeps. */}
-          <div className="flex items-center justify-between">
-            <p className="text-[1.5rem] leading-8 text-deep-100">
-              {t("absorb_fees")}
+            )}
+            <p className="text-[1.2rem] leading-7 text-neutral-600">
+              {t("unlimited_tip")}
             </p>
-            <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
-              <input
-                className="peer sr-only"
-                type="checkbox"
-                checked={absorbFees}
-                onChange={(e) => setValue("absorbFees", e.target.checked)}
-              />
-              <ToggleIcon />
-            </label>
           </div>
-          <p className="text-[1.2rem] leading-7 text-neutral-600">
-            {t("absorb_fees_hint")}
-          </p>
 
-          <AttendeePricePreview
-            price={watch("ticketPrice")}
-            currency={watch("currency")}
-            absorbFees={absorbFees}
-          />
-        </div>
-
-        {/* Supply */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("supply")}</span>
-          <div className="flex items-center justify-between">
-            <p className="text-[1.5rem] leading-8 text-deep-100">
-              {t("unlimited")}
-            </p>
-            <label className="relative inline-block h-12 w-20 cursor-pointer rounded-full bg-neutral-600 transition [-webkit-tap-highlight-color:transparent] has-checked:bg-primary-500">
+          {/* Schedule */}
+          <div className={cardClass}>
+            <span className={sectionTitle}>{t("schedule")}</span>
+            <div className="flex flex-col lg:flex-row gap-6">
+              <div className="flex-1">
+                <Field
+                  label={t("sales_start")}
+                  error={errors.salesStart?.message}
+                >
+                  <input
+                    {...register("salesStart")}
+                    type="datetime-local"
+                    onClick={(e) => openPicker(e.currentTarget)}
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+              <div className="flex-1">
+                <Field label={t("sales_end")} error={errors.salesEnd?.message}>
+                  <input
+                    {...register("salesEnd")}
+                    type="datetime-local"
+                    onClick={(e) => openPicker(e.currentTarget)}
+                    className={inputClass}
+                  />
+                </Field>
+              </div>
+            </div>
+            <Field label={t("draw_date")} error={errors.drawDate?.message}>
               <input
-                className="peer sr-only"
-                type="checkbox"
-                checked={unlimited}
-                onChange={(e) => setValue("unlimited", e.target.checked)}
-              />
-              <ToggleIcon />
-            </label>
-          </div>
-          {!unlimited && (
-            <Field
-              label={t("total_tickets")}
-              error={errors.totalTickets?.message}
-            >
-              <input
-                {...register("totalTickets")}
-                type="number"
-                min={1}
-                step="1"
+                {...register("drawDate")}
+                type="datetime-local"
+                onClick={(e) => openPicker(e.currentTarget)}
                 className={inputClass}
               />
             </Field>
-          )}
-          <p className="text-[1.2rem] leading-7 text-neutral-600">
-            {t("unlimited_tip")}
-          </p>
-        </div>
-
-        {/* Schedule */}
-        <div className={cardClass}>
-          <span className={sectionTitle}>{t("schedule")}</span>
-          <div className="flex flex-col lg:flex-row gap-6">
-            <div className="flex-1">
-              <Field
-                label={t("sales_start")}
-                error={errors.salesStart?.message}
-              >
-                <input
-                  {...register("salesStart")}
-                  type="datetime-local"
-                  className={inputClass}
-                />
-              </Field>
-            </div>
-            <div className="flex-1">
-              <Field label={t("sales_end")} error={errors.salesEnd?.message}>
-                <input
-                  {...register("salesEnd")}
-                  type="datetime-local"
-                  className={inputClass}
-                />
-              </Field>
-            </div>
-          </div>
-          <Field label={t("draw_date")} error={errors.drawDate?.message}>
-            <input
-              {...register("drawDate")}
-              type="datetime-local"
-              className={inputClass}
-            />
-          </Field>
-          <Field label={t("draw_mode")}>
-            <Controller
-              control={control}
-              name="drawMode"
-              render={({ field }) => (
-                <div className="flex flex-col lg:flex-row gap-4">
-                  {(
-                    [
-                      {
-                        value: "automatic",
-                        label: t("draw_mode_auto"),
-                        desc: t("draw_mode_auto_desc"),
-                      },
-                      {
-                        value: "manual",
-                        label: t("draw_mode_manual"),
-                        desc: t("draw_mode_manual_desc"),
-                      },
-                    ] as const
-                  ).map((mode) => (
-                    <button
-                      type="button"
-                      key={mode.value}
-                      onClick={() => field.onChange(mode.value)}
-                      className={`flex-1 text-left rounded-[1.5rem] border p-5 transition-colors ${
-                        field.value === mode.value
-                          ? "border-primary-500 bg-primary-50"
-                          : "border-neutral-200 hover:border-primary-500"
-                      }`}
-                    >
-                      <span className="block text-[1.5rem] font-medium text-deep-100">
-                        {mode.label}
-                      </span>
-                      <span className="block text-[1.3rem] leading-6 text-neutral-500">
-                        {mode.desc}
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            />
-          </Field>
-        </div>
-
-        {/* Prizes */}
-        <div className={cardClass}>
-          <div className="flex items-center justify-between">
-            <span className={sectionTitle}>{t("prizes")}</span>
-          </div>
-          <p className="text-[1.2rem] leading-7 text-neutral-600">
-            {t("prizes_tip")}
-          </p>
-          {typeof errors.prizes?.message === "string" && (
-            <span className="text-[1.2rem] text-failure">
-              {errors.prizes.message}
-            </span>
-          )}
-
-          {fields.map((field, index) => (
-            <div
-              key={field.id}
-              className="flex flex-col gap-4 rounded-[1.5rem] border border-neutral-200 p-5"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-[1.4rem] font-semibold text-deep-100">
-                  {t("prize_rank", { rank: index + 1 })}
-                </span>
-                {index > 0 && (
-                  <Trash
-                    variant="Bulk"
-                    color="#DE0028"
-                    size={20}
-                    className="cursor-pointer"
-                    onClick={() => removePrize(index, field.id)}
-                  />
+            <Field label={t("draw_mode")}>
+              <Controller
+                control={control}
+                name="drawMode"
+                render={({ field }) => (
+                  <div className="flex flex-col lg:flex-row gap-4">
+                    {(
+                      [
+                        {
+                          value: "automatic",
+                          label: t("draw_mode_auto"),
+                          desc: t("draw_mode_auto_desc"),
+                        },
+                        {
+                          value: "manual",
+                          label: t("draw_mode_manual"),
+                          desc: t("draw_mode_manual_desc"),
+                        },
+                      ] as const
+                    ).map((mode) => (
+                      <button
+                        type="button"
+                        key={mode.value}
+                        onClick={() => field.onChange(mode.value)}
+                        className={`flex-1 text-left rounded-[1.5rem] border p-5 transition-colors ${
+                          field.value === mode.value
+                            ? "border-primary-500 bg-primary-50"
+                            : "border-neutral-200 hover:border-primary-500"
+                        }`}
+                      >
+                        <span className="block text-[1.5rem] font-medium text-deep-100">
+                          {mode.label}
+                        </span>
+                        <span className="block text-[1.3rem] leading-6 text-neutral-500">
+                          {mode.desc}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 )}
-              </div>
-              <PrizeImagePicker
-                preview={prizeImages[field.id]?.preview ?? null}
-                onSelect={(file) => setPrizeImage(field.id, file)}
-                onClear={() => clearPrizeImage(field.id)}
-                error={
-                  missingPrizeImages[field.id]
-                    ? t("errors.prize_image")
-                    : undefined
-                }
               />
-              <Field
-                label={t("prize_title")}
-                error={errors.prizes?.[index]?.title?.message}
-              >
-                <input
-                  {...register(`prizes.${index}.title` as const)}
-                  type="text"
-                  maxLength={80}
-                  className={inputClass}
-                />
-              </Field>
-              <Field
-                label={t("prize_description")}
-                error={errors.prizes?.[index]?.description?.message}
-              >
-                <textarea
-                  {...register(`prizes.${index}.description` as const)}
-                  rows={2}
-                  maxLength={200}
-                  className={`${inputClass} resize-none`}
-                />
-              </Field>
+            </Field>
+          </div>
+
+          {/* Prizes */}
+          <div className={cardClass}>
+            <div className="flex items-center justify-between">
+              <span className={sectionTitle}>{t("prizes")}</span>
             </div>
-          ))}
+            <p className="text-[1.2rem] leading-7 text-neutral-600">
+              {t("prizes_tip")}
+            </p>
+            {typeof errors.prizes?.message === "string" && (
+              <span className="text-[1.2rem] text-failure">
+                {errors.prizes.message}
+              </span>
+            )}
 
-          <button
-            type="button"
-            onClick={() => append({ title: "", description: "" })}
-            className="flex items-center gap-3 self-start cursor-pointer"
-          >
-            <AddCircle color="#E45B00" variant="Bulk" size={20} />
-            <span className="text-[1.5rem] leading-8 text-primary-500">
-              {t("add_prize")}
-            </span>
-          </button>
-        </div>
+            {fields.map((field, index) => (
+              <div
+                key={field.id}
+                className="flex flex-col gap-4 rounded-[1.5rem] border border-neutral-200 p-5"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[1.4rem] font-semibold text-deep-100">
+                    {t("prize_rank", { rank: index + 1 })}
+                  </span>
+                  {index > 0 && (
+                    <Trash
+                      variant="Bulk"
+                      color="#DE0028"
+                      size={20}
+                      className="cursor-pointer"
+                      onClick={() => removePrize(index, field.id)}
+                    />
+                  )}
+                </div>
+                <PrizeImagePicker
+                  preview={prizeImages[field.id]?.preview ?? null}
+                  onSelect={(file) => setPrizeImage(field.id, file)}
+                  onClear={() => clearPrizeImage(field.id)}
+                  error={
+                    missingPrizeImages[field.id]
+                      ? t("errors.prize_image")
+                      : undefined
+                  }
+                />
+                <Field
+                  label={t("prize_title")}
+                  error={errors.prizes?.[index]?.title?.message}
+                >
+                  <input
+                    {...register(`prizes.${index}.title` as const)}
+                    type="text"
+                    maxLength={80}
+                    className={inputClass}
+                  />
+                </Field>
+                <Field
+                  label={t("prize_description")}
+                  error={errors.prizes?.[index]?.description?.message}
+                >
+                  <textarea
+                    {...register(`prizes.${index}.description` as const)}
+                    rows={2}
+                    maxLength={200}
+                    className={`${inputClass} resize-none`}
+                  />
+                </Field>
+              </div>
+            ))}
 
-        {/* Trust / rules notes */}
-        <div className={`${cardClass} !gap-4`}>
-          <Note>{t("fairness_note")}</Note>
-          <Note>{t("lock_note")}</Note>
-          <Note>{t("age_note")}</Note>
-        </div>
+            <button
+              type="button"
+              onClick={() => append({ title: "", description: "" })}
+              className="flex items-center gap-3 self-start cursor-pointer"
+            >
+              <AddCircle color="#E45B00" variant="Bulk" size={20} />
+              <span className="text-[1.5rem] leading-8 text-primary-500">
+                {t("add_prize")}
+              </span>
+            </button>
+          </div>
 
-        <div className="max-w-216 w-full mx-auto">
-          <ButtonPrimary
-            type="submit"
-            className="w-full"
-            disabled={
-              submitting ||
-              titleStatus === "checking" ||
-              titleStatus === "taken"
-            }
-          >
-            {submitting ? <LoadingCircleSmall /> : t("submit")}
-          </ButtonPrimary>
-        </div>
+          {/* Trust / rules notes */}
+          <div className={`${cardClass} !gap-4`}>
+            <Note>{t("fairness_note")}</Note>
+            <Note>{t("lock_note")}</Note>
+            <Note>{t("age_note")}</Note>
+          </div>
+        </Stagger>
       </form>
+
+      <CreateFooter
+        step={0}
+        total={1}
+        type="submit"
+        formId="create-raffle-form"
+        continueLabel={t("submit")}
+        loading={submitting}
+        disabled={titleStatus === "checking" || titleStatus === "taken"}
+      />
     </div>
   );
 }

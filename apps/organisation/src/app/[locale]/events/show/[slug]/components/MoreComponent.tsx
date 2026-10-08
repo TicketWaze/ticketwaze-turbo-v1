@@ -1,6 +1,5 @@
 "use client";
 import { Link, usePathname } from "@/i18n/navigation";
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import {
   Popover,
   PopoverContent,
@@ -8,6 +7,7 @@ import {
 } from "@/components/ui/popover";
 import {
   ClipboardText,
+  DocumentDownload,
   Gift,
   HamburgerMenu,
   MoreCircle,
@@ -16,8 +16,9 @@ import {
   Trash,
 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
-import { useRef, useState } from "react";
-import EventDrawerContent from "./EventDrawerContent";
+import React, { useRef, useState } from "react";
+import { motion } from "motion/react";
+import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogClose,
@@ -28,35 +29,45 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Event, MembershipTier, Ticket } from "@ticketwaze/typescript-config";
-import DownloadReport from "./DownloadReport";
+import { Event, MembershipTier } from "@ticketwaze/typescript-config";
 import { RequestEventDeletion } from "@/actions/EventActions";
 import { toast } from "sonner";
 import { ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { DateTime } from "luxon";
 
+const itemClass =
+  "w-full flex items-center justify-between gap-6 py-4 border-b border-neutral-200 font-sans text-[1.5rem] leading-8 text-neutral-700 cursor-pointer transition-colors hover:text-primary-500";
+
+/**
+ * The header's ⋯ menu (Figma 1651:57344): "Add discount code", "Event
+ * details" and "Export" first, as designed, then the post-design entries
+ * (attendees of a private activity, checkout questions, rewards) and Delete.
+ */
 export default function MoreComponent({
   event,
-  tickets,
   daysLeft,
   isFree,
-  isPast,
   slug,
   membershipTier,
   deletionStatus,
   onDeletionScheduled,
+  onShowDetails,
+  onExport,
+  onAddDiscount,
 }: {
   event: Event;
-  tickets: Ticket[];
   daysLeft: number | null;
   isFree: boolean;
-  isPast: boolean;
   slug: string;
   membershipTier: MembershipTier;
   deletionStatus: "pending_deletion" | "deleted" | null;
   onDeletionScheduled: (scheduledAt: string, reason: string) => void;
+  onShowDetails: () => void;
+  onExport: () => void;
+  /** Opens the Add Discount Code panel on the event page. */
+  onAddDiscount: () => void;
 }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const t = useTranslations("Events.single_event");
   const tRewards = useTranslations("Events.single_event.rewards");
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -89,198 +100,210 @@ export default function MoreComponent({
     onDeletionScheduled(result.scheduledDeletionAt, reason);
   }
 
-  return (
-    <Popover>
-      <PopoverTrigger>
-        <div
-          className={
-            "w-14 h-14 cursor-pointer rounded-full bg-neutral-100 flex items-center justify-center"
-          }
+  const canDiscount =
+    membershipTier.membershipName !== "free" &&
+    daysLeft !== null &&
+    daysLeft > 0 &&
+    !isFree &&
+    !isPendingDeletion &&
+    !isDeleted;
+  const canReward =
+    daysLeft !== null &&
+    daysLeft > 0 &&
+    !isFree &&
+    !isPendingDeletion &&
+    !isDeleted;
+  const canDelete =
+    daysLeft !== null && daysLeft > 0 && !isPendingDeletion && !isDeleted;
+
+  /* Each entry, in menu order; falsy entries are skipped. */
+  const items: React.ReactNode[] = [
+    canDiscount && (
+      <button
+        key="discount"
+        type="button"
+        className={cn(itemClass, "text-primary-500")}
+        onClick={() => {
+          setMenuOpen(false);
+          onAddDiscount();
+        }}
+      >
+        <span>{t("add_discount")}</span>
+        <TicketDiscount size="20" variant="Bulk" color={"#E45B00"} />
+      </button>
+    ),
+    <button
+      key="details"
+      type="button"
+      className={itemClass}
+      onClick={() => {
+        setMenuOpen(false);
+        onShowDetails();
+      }}
+    >
+      <span>{t("event_details")}</span>
+      <HamburgerMenu size="20" variant="Bulk" color={"#2E3237"} />
+    </button>,
+    !isDeleted && (
+      <button
+        key="export"
+        type="button"
+        className={itemClass}
+        onClick={() => {
+          setMenuOpen(false);
+          onExport();
+        }}
+      >
+        <span>{t("export")}</span>
+        <DocumentDownload size="20" variant="Bulk" color={"#2E3237"} />
+      </button>
+    ),
+    // The codes already made (post-design list), once there are any to see.
+    membershipTier.membershipName !== "free" &&
+      !isDeleted &&
+      (canDiscount || (event.discountCodes?.length ?? 0) > 0) && (
+        <Link
+          key="discount-codes"
+          href={`${slug}/discount-codes`}
+          className={itemClass}
         >
-          <MoreCircle variant={"Bulk"} size={20} color={"#737C8A"} />
-        </div>
+          <span>{t("discount.manage")}</span>
+          <TicketDiscount size="20" variant="Bulk" color={"#2E3237"} />
+        </Link>
+      ),
+    event.isPrivate && (
+      <Link
+        key="attendees"
+        href={`${slug}/attendees`}
+        className={cn(
+          itemClass,
+          isPendingDeletion && "pointer-events-none opacity-40",
+        )}
+      >
+        <span>{t("attendees.title")}</span>
+        <Profile2User size="20" variant="Bulk" color={"#2E3237"} />
+      </Link>
+    ),
+    /*
+      Gated on the tier's own flag rather than its NAME, so this entry and the
+      API agree by construction — the API asks
+      `SubscriptionHelper.can(org, 'checkoutForms')`, and this is the same
+      column. `membershipTier` counts trials on both sides, which is
+      deliberate: a trial is meant to showcase exactly this.
+    */
+    membershipTier.checkoutForms && !isPendingDeletion && !isDeleted && (
+      <Link key="forms" href={`${slug}/forms`} className={itemClass}>
+        <span>{t("forms.title")}</span>
+        <ClipboardText size="20" variant="Bulk" color={"#2E3237"} />
+      </Link>
+    ),
+    /*
+      REWARDS, ON EVERY PLAN INCLUDING FREE. Unlike a discount code, this costs
+      Ticketwaze nothing — it is the organiser's own gift to their buyers — so
+      there is nothing to gate on a membership tier. Paid activities only: a
+      reward is earned by buying.
+    */
+    canReward && (
+      <Link key="rewards" href={`${slug}/rewards`} className={itemClass}>
+        <span>{tRewards("title")}</span>
+        <Gift size="20" variant="Bulk" color={"#2E3237"} />
+      </Link>
+    ),
+    canDelete && (
+      <Dialog key="delete">
+        <DialogTrigger
+          className={cn(
+            itemClass,
+            "border-b-0 text-failure hover:text-failure/80",
+          )}
+        >
+          <span>{t("delete")}</span>
+          <Trash size="20" variant="Bulk" color={"#DE0028"} />
+        </DialogTrigger>
+        <DialogContent className={"w-xl lg:w-208"}>
+          <DialogHeader>
+            <DialogTitle
+              className={
+                "font-medium border-b border-neutral-100 pb-8 text-[2.6rem] leading-12 text-black font-primary"
+              }
+            >
+              {t("deletion.schedule_title")}
+            </DialogTitle>
+            <DialogDescription className={"sr-only"}>
+              Delete activity
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-8">
+            <p className="text-[1.5rem] leading-8 text-neutral-600">
+              {t("deletion.warning")}
+            </p>
+            <div className="flex flex-col gap-2">
+              <label className="text-[1.4rem] font-medium leading-8 text-deep-100">
+                {t("deletion.reason_label")}
+              </label>
+              <textarea
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                placeholder={t("deletion.reason_placeholder")}
+                rows={4}
+                className="w-full rounded-2xl border border-neutral-300 bg-neutral-50 px-6 py-4 text-[1.5rem] leading-8 text-deep-100 outline-none focus:border-neutral-400 resize-none"
+              />
+              <span
+                className={`text-[1.2rem] leading-6 text-right ${reason.length < 10 ? "text-failure" : "text-neutral-500"}`}
+              >
+                {reason.length} {t("deletion.chars")}
+              </span>
+            </div>
+            <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl p-4">
+              <span className="text-[1.4rem] leading-7 text-amber-700">
+                {graceDays > 0
+                  ? t("deletion.grace_days", { days: graceDays })
+                  : t("deletion.grace_immediate")}
+              </span>
+            </div>
+          </div>
+          <DialogFooter>
+            <ButtonRed
+              onClick={scheduleDeletion}
+              disabled={isLoading || reason.trim().length < 10}
+              className="w-full"
+            >
+              {isLoading ? <LoadingCircleSmall /> : t("deletion.schedule_cta")}
+            </ButtonRed>
+            <DialogClose ref={closeRef} className="sr-only" />
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    ),
+  ].filter(Boolean);
+
+  return (
+    <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+      <PopoverTrigger
+        aria-label={t("more")}
+        className="w-[3.5rem] h-[3.5rem] shrink-0 cursor-pointer rounded-full bg-neutral-100 flex items-center justify-center transition-colors hover:bg-neutral-200 data-[state=open]:bg-neutral-200"
+      >
+        <MoreCircle variant={"Bulk"} size={20} color={"#737C8A"} aria-hidden />
       </PopoverTrigger>
       <PopoverContent
-        className={"w-100 p-0 m-0 bg-none shadow-none border-none mx-4"}
+        align="end"
+        sideOffset={8}
+        className="w-[23.5rem] p-[1rem] bg-neutral-100 border border-neutral-200 rounded-[1rem] shadow-[0px_10px_30px_rgba(0,0,0,0.12)]"
       >
-        <ul
-          className={
-            "bg-neutral-100 border border-neutral-200 right-8 p-4 mb-8 rounded-2xl shadow-xl bottom-full flex flex-col gap-4"
-          }
-        >
-          <span
-            className={
-              "font-medium py-2 border-b border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
-            }
-          >
-            {t("more")}
-          </span>
-          <div className={"flex flex-col gap-4"}>
-            {event.isPrivate && (
-              <li>
-                <Link
-                  href={`${slug}/attendees`}
-                  className={`cursor-pointer font-normal group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full ${isPendingDeletion ? "pointer-events-none opacity-40" : ""}`}
-                >
-                  <span>{t("attendees.title")}</span>
-                  <Profile2User size="20" variant="Bulk" color={"#2E3237"} />
-                </Link>
-              </li>
-            )}
-            <li>
-              <Drawer direction={"right"}>
-                <DrawerTrigger className={"w-full"}>
-                  <div
-                    className={`font-normal cursor-pointer group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                  >
-                    <span>{t("details")}</span>
-                    <HamburgerMenu size="20" variant="Bulk" color={"#2E3237"} />
-                  </div>
-                </DrawerTrigger>
-                <EventDrawerContent event={event} />
-              </Drawer>
-            </li>
-            {membershipTier.membershipName !== "free" &&
-              isPast &&
-              event.adminStatus === "approved" &&
-              !isDeleted && (
-                <li>
-                  <DownloadReport event={event} tickets={tickets} />
-                </li>
-              )}
-            {/*
-              Gated on the tier's own flag rather than its NAME, so this entry
-              and the API agree by construction — the API asks
-              `SubscriptionHelper.can(org, 'checkoutForms')`, and this is the
-              same column. `membershipTier` counts trials on both sides, which
-              is deliberate: a trial is meant to showcase exactly this.
-            */}
-            {membershipTier.checkoutForms &&
-              !isPendingDeletion &&
-              !isDeleted && (
-                <li>
-                  <Link
-                    href={`${slug}/forms`}
-                    className={`cursor-pointer font-normal group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                  >
-                    <span>{t("forms.title")}</span>
-                    <ClipboardText size="20" variant="Bulk" color={"#2E3237"} />
-                  </Link>
-                </li>
-              )}
-            {/*
-              REWARDS, ON EVERY PLAN INCLUDING FREE. Unlike a discount code,
-              this costs Ticketwaze nothing — it is the organiser's own gift to
-              their buyers — so there is nothing to gate on a membership tier.
-              Paid activities only: a reward is earned by buying.
-            */}
-            {daysLeft !== null &&
-              daysLeft > 0 &&
-              !isFree &&
-              !isPendingDeletion &&
-              !isDeleted && (
-                <li>
-                  <Link
-                    href={`${slug}/rewards`}
-                    className={`cursor-pointer font-normal group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                  >
-                    <span>{tRewards("title")}</span>
-                    <Gift size="20" variant="Bulk" color={"#2E3237"} />
-                  </Link>
-                </li>
-              )}
-            {membershipTier.membershipName !== "free" &&
-              daysLeft !== null &&
-              daysLeft > 0 &&
-              !isFree &&
-              !isPendingDeletion &&
-              !isDeleted && (
-                <li>
-                  <Link
-                    href={`${slug}/discount-codes`}
-                    className={`cursor-pointer font-normal group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                  >
-                    <span>{t("discount.subtitle")}</span>
-                    <TicketDiscount
-                      size="20"
-                      variant="Bulk"
-                      color={"#2E3237"}
-                    />
-                  </Link>
-                </li>
-              )}
-            {daysLeft !== null && daysLeft > 0 && !isPendingDeletion && !isDeleted && (
-              <li>
-                <Dialog>
-                  <DialogTrigger className="w-full">
-                    <div
-                      className={`font-normal cursor-pointer group text-[1.5rem] border-b border-neutral-200 py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                    >
-                      <span className={"text-failure"}>{t("delete")}</span>
-                      <Trash size="20" variant="Bulk" color={"#DE0028"} />
-                    </div>
-                  </DialogTrigger>
-                  <DialogContent className={"w-xl lg:w-208"}>
-                    <DialogHeader>
-                      <DialogTitle
-                        className={
-                          "font-medium border-b border-neutral-100 pb-8 text-[2.6rem] leading-12 text-black font-primary"
-                        }
-                      >
-                        {t("deletion.schedule_title")}
-                      </DialogTitle>
-                      <DialogDescription className={"sr-only"}>
-                        Delete activity
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex flex-col gap-8">
-                      <p className="text-[1.5rem] leading-8 text-neutral-600">
-                        {t("deletion.warning")}
-                      </p>
-                      <div className="flex flex-col gap-2">
-                        <label className="text-[1.4rem] font-medium leading-8 text-deep-100">
-                          {t("deletion.reason_label")}
-                        </label>
-                        <textarea
-                          value={reason}
-                          onChange={(e) => setReason(e.target.value)}
-                          placeholder={t("deletion.reason_placeholder")}
-                          rows={4}
-                          className="w-full rounded-2xl border border-neutral-300 bg-neutral-50 px-6 py-4 text-[1.5rem] leading-8 text-deep-100 outline-none focus:border-neutral-400 resize-none"
-                        />
-                        <span
-                          className={`text-[1.2rem] leading-6 text-right ${reason.length < 10 ? "text-failure" : "text-neutral-500"}`}
-                        >
-                          {reason.length} {t("deletion.chars")}
-                        </span>
-                      </div>
-                      <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl p-4">
-                        <span className="text-[1.4rem] leading-7 text-amber-700">
-                          {graceDays > 0
-                            ? t("deletion.grace_days", { days: graceDays })
-                            : t("deletion.grace_immediate")}
-                        </span>
-                      </div>
-                    </div>
-                    <DialogFooter>
-                      <ButtonRed
-                        onClick={scheduleDeletion}
-                        disabled={isLoading || reason.trim().length < 10}
-                        className="w-full"
-                      >
-                        {isLoading ? (
-                          <LoadingCircleSmall />
-                        ) : (
-                          t("deletion.schedule_cta")
-                        )}
-                      </ButtonRed>
-                      <DialogClose ref={closeRef} className="sr-only" />
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </li>
-            )}
-          </div>
+        <p className="font-sans font-medium pb-2 border-b border-neutral-200 text-[1.4rem] text-deep-100 leading-8">
+          {t("more")}
+        </p>
+        <ul className="flex flex-col [&>li:last-child>*]:border-b-0">
+          {items.map((item, i) => (
+            <motion.li
+              key={(item as React.ReactElement).key ?? i}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: i * 0.03 }}
+            >
+              {item}
+            </motion.li>
+          ))}
         </ul>
       </PopoverContent>
     </Popover>

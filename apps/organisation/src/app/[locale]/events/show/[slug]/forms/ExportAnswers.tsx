@@ -51,7 +51,9 @@ export default function ExportAnswers({
       if (!answer) return "";
       // The "Other" marker travels with the text; without it a typed answer
       // and a chosen one read identically in a spreadsheet.
-      return answer.isOther ? `${answer.answer} (${t("other_tag")})` : answer.answer;
+      return answer.isOther
+        ? `${answer.answer} (${t("other_tag")})`
+        : answer.answer;
     });
   }
 
@@ -71,7 +73,8 @@ export default function ExportAnswers({
        * Answers are free text — a comma, a newline or a quote in one of them
        * would otherwise shift every later column on that row.
        */
-      const quote = (value: string) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+      const quote = (value: string) =>
+        `"${String(value ?? "").replace(/"/g, '""')}"`;
       const header = [
         t("col_attendee"),
         "Email",
@@ -123,7 +126,11 @@ export default function ExportAnswers({
 
       // Landscape: a column per question plus the attendee does not fit
       // portrait once a form asks more than three or four things.
-      const doc = new jsPDF({ unit: "pt", format: "a4", orientation: "landscape" });
+      const doc = new jsPDF({
+        unit: "pt",
+        format: "a4",
+        orientation: "landscape",
+      });
       const pageWidth = doc.internal.pageSize.getWidth();
       const margin = 40;
       const contentWidth = pageWidth - margin * 2;
@@ -169,7 +176,9 @@ export default function ExportAnswers({
         margin: { left: margin, right: margin },
         headStyles: { fillColor: [228, 91, 0], fontSize: 8 },
         styles: { fontSize: 8, cellPadding: 5, overflow: "linebreak" },
-        head: [[t("col_attendee"), ...questions.map(columnLabel), t("col_date")]],
+        head: [
+          [t("col_attendee"), ...questions.map(columnLabel), t("col_date")],
+        ],
         body: responses.map((response) => [
           `${response.fullName}\n${response.email}`,
           ...cellsFor(response).map((cell) => cell || "—"),

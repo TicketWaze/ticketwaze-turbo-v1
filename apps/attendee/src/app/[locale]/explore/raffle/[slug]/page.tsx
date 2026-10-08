@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import TrackActivityView from "@/components/activity/TrackActivityView";
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -24,9 +25,37 @@ import { notFound } from "next/navigation";
 import AnimatedEventPage from "../../[slug]/AnimatedEventPage";
 import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import RaffleActions from "./RaffleActions";
+import type { Metadata } from "next";
+import { publicPageMetadata, snippet } from "@/lib/seoMetadata";
 
 function Separator() {
   return <div className="bg-neutral-100 h-[0.2rem] w-full shrink-0"></div>;
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; locale: string }>;
+}): Promise<Metadata> {
+  const { slug, locale } = await params;
+  // Same request as the page below; Next dedupes it into one.
+  const request = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/explore/raffles/${extractIdFromSlug(slug)}`,
+    { next: { revalidate: 60 } },
+  ).catch(() => null);
+  const raffle: Raffle | undefined = request?.ok
+    ? (await request.json().catch(() => null))?.raffle
+    : undefined;
+  if (!raffle)
+    return { title: { absolute: "Ticketwaze" }, robots: { index: false } };
+
+  return publicPageMetadata({
+    locale,
+    path: `/explore/raffle/${slugify(raffle.title, raffle.raffleId)}`,
+    title: raffle.title,
+    description: snippet(raffle.description, raffle.title),
+    image: raffle.coverImageUrl,
+  });
 }
 
 export default async function RafflePage({
@@ -93,6 +122,7 @@ export default async function RafflePage({
 
   return (
     <AttendeeLayout title={raffle.title}>
+      <TrackActivityView activityId={raffle.raffleId} />
       <AnimatedEventPage>
         <BackButton text={t("back")} />
         <span className="font-primary font-medium text-[2.6rem] leading-12 text-black mb-4">

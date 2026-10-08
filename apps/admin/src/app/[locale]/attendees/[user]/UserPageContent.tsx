@@ -1,43 +1,36 @@
 "use client";
+import { useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
+import { MoreCircle } from "iconsax-reactjs";
 import AdminLayout from "@/components/Layouts/AdminLayout";
 import BackButton from "@/components/shared/BackButton";
-import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
-import MoreComponent from "./MoreComponent";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
 import Separator from "@/components/shared/Separator";
-import Image from "next/image";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "@/components/ui/select";
-import Informations from "./Informations";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { useTranslations, useLocale } from "next-intl";
-import { Input } from "@/components/shared/Inputs";
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { AdminUser, Ticket, UserAnalytic } from "@ticketwaze/typescript-config";
+import FilterPill from "@/components/shared/FilterPill";
+import SearchField from "@/components/shared/SearchField";
+import TablePagination from "@/components/shared/TablePagination";
 import SuspensionNotice from "@/components/shared/SuspensionNotice";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
+import { useRouter } from "@/i18n/navigation";
+import { usePermissions } from "@/hooks/usePermissions";
 import formatDate from "@/lib/FormatDate";
+import { cn } from "@/lib/utils";
 import { formatMoney } from "@ticketwaze/currency";
-import { useState } from "react";
+import { AdminUser, Ticket } from "@ticketwaze/typescript-config";
+import Informations from "./Informations";
+import ProfileActions from "./ProfileActions";
+import { PersonalInformation, ProfileCard, type ProfileFields } from "./ProfileDetails";
+import { analyticsStart } from "./periodStart";
+import { PERIODS, type Period } from "../../analytics/periods";
 
 /**
  * A ticket's price in its own activity's currency. Tickets carry both columns,
- * so reading the HTG one and labelling it with the activity's currency (what
- * this used to do) misreported every ticket sold in USD. Read off the
- * normalized `activity` — `ticket.event` is null for a raffle entry, which
- * silently forced those rows to HTG.
+ * so reading the HTG one and labelling it with the activity's currency
+ * misreported every ticket sold in USD. Read off the normalized `activity` —
+ * `ticket.event` is null for a raffle entry.
  */
 export function formatTicketPrice(ticket: Ticket, locale: string): string {
   const currency = ticket.activity?.currency ?? "HTG";
@@ -48,223 +41,170 @@ export function formatTicketPrice(ticket: Ticket, locale: string): string {
   );
 }
 
+export type AttendeeSummary = {
+  eventCount: number;
+  ticketsBought: number;
+  eventsMissed: number;
+  totalSpent: { htg: number; usd: number };
+};
+
+const USERNAME_PATTERN = /^@?[a-zA-Z0-9_.]{3,30}$/;
+
+function fieldsOf(user: AdminUser): ProfileFields {
+  const u = user as AdminUser & { username?: string | null; address?: string | null };
+  return {
+    firstName: user.firstName ?? "",
+    lastName: user.lastName ?? "",
+    username: u.username ?? "",
+    address: u.address ?? "",
+    country: user.country || "",
+    state: user.state ?? "",
+    city: user.city ?? "",
+    dateOfBirth: user.dateOfBirth ? String(user.dateOfBirth).slice(0, 10) : "",
+    gender: user.gender ?? "",
+  };
+}
+
+/**
+ * Figma "Admin" → Attendee → User Profile (4227:68377 summary, 4227:68704
+ * ticket history, 4229:69669 ticket details): Suspend account / Edit profile
+ * in the header, the orange identity card, Personal Information (editable on
+ * Edit), and the Activity Summary / Ticket History tabs. The suspension and
+ * deletion notices, and wallet credit (⋯), are kept from before.
+ */
 export default function UserPageContent({
   user,
-  totalSpent,
+  summary,
 }: {
   user: AdminUser | null;
-  totalSpent: number;
+  summary: AttendeeSummary | null;
 }) {
   const t = useTranslations("Attendees.profile");
+  const router = useRouter();
+  const { data: session } = useSession();
+  const { can } = usePermissions();
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(() => (user ? fieldsOf(user) : null));
+  const [draft, setDraft] = useState(saved);
+  const [errors, setErrors] = useState<Partial<Record<keyof ProfileFields, string>>>({});
 
-  if (!user) {
+  if (!user || !saved || !draft) {
     return (
       <AdminLayout>
         <div className="flex items-center justify-center h-full">
-          <p className="text-[1.6rem] text-neutral-600">Attendee not found.</p>
+          <p className="text-[1.6rem] text-neutral-600">{t("not_found")}</p>
         </div>
       </AdminLayout>
     );
+  }
+
+  async function save() {
+    if (!draft || !user) return;
+    const found: typeof errors = {};
+    if (draft.firstName.trim().length < 2) found.firstName = t("errors.name");
+    if (draft.lastName.trim().length < 2) found.lastName = t("errors.name");
+    if (draft.username.trim() && !USERNAME_PATTERN.test(draft.username.trim()))
+      found.username = t("errors.username");
+    setErrors(found);
+    if (Object.keys(found).length > 0) return;
+
+    setSaving(true);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/attendees/${user.userId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session?.user.accessToken}`,
+        },
+        body: JSON.stringify({
+          firstName: draft.firstName.trim(),
+          lastName: draft.lastName.trim(),
+          username: draft.username.trim() || null,
+          address: draft.address.trim() || null,
+          country: draft.country || null,
+          state: draft.state || null,
+          city: draft.city || null,
+          dateOfBirth: draft.dateOfBirth || null,
+          gender: draft.gender || null,
+        }),
+      },
+    ).catch(() => null);
+    const data = await response?.json().catch(() => null);
+    setSaving(false);
+    if (data?.status === "success") {
+      setSaved(draft);
+      setEditing(false);
+      toast.success(t("edit.saved"));
+      router.refresh();
+    } else if (data?.code === "USERNAME_TAKEN") {
+      setErrors({ username: t("errors.username_taken") });
+    } else {
+      toast.error(t("edit.failed"));
+    }
   }
 
   return (
     <AdminLayout>
       <div className={PAGE_SCROLLER}>
         <BackButton text={t("back")} />
-        {/*
-          Every action on this attendee lives behind one menu rather than as a
-          row of coloured buttons — see `MoreComponent`. Passed as the title's
-          `actions` slot so it shares the heading line at every width and stays
-          reachable while the page scrolls. Crediting stays offered on a
-          suspended account: refunding somebody is not the same decision as
-          letting them back in, and the two are often settled in that order.
-        */}
-        <PageTitle
-          as="h2"
-          actions={
-            <MoreComponent userId={user.userId} isSuspended={user.isSuspended} />
-          }
-        >
-          {t("title")}
-        </PageTitle>
-        {/* An active suspension is the first thing that explains everything
-            else on this page, so it sits above the record — and above the
-            deletion notice, since it is the stronger state. */}
+        <div className="sticky top-0 z-20 bg-white pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <h2 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
+            {t("title")}
+          </h2>
+          <ProfileActions
+            userId={user.userId}
+            isSuspended={user.isSuspended}
+            editing={editing}
+            saving={saving}
+            onEdit={() => setEditing(true)}
+            onCancel={() => {
+              setDraft(saved);
+              setErrors({});
+              setEditing(false);
+            }}
+            onSave={save}
+          />
+        </div>
         {user.suspension && <SuspensionNotice suspension={user.suspension} />}
-        {/* A pending deletion is time-boxed and irreversible once it runs, so it
-            is called out above the record rather than only listed inside it. */}
         {user.deletion && <DeletionNotice deletion={user.deletion} />}
 
-        {/*
-          `min-w-0` on both columns: a grid item defaults to `min-width:auto`,
-          which means it refuses to shrink below its content and widens its
-          own track instead of being contained by it. One long word — an
-          email, an activity name — is enough to push the page sideways
-          without it.
-        */}
-        <main className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] gap-8 lg:gap-16">
-          <div className="w-full min-w-0 flex flex-col gap-8">
-            <form className="flex flex-col gap-12 w-full pb-4 overflow-x-hidden">
-              <div className="w-full min-w-0 bg-primary-500 p-6 rounded-[20px] flex gap-10">
-                {/* `shrink-0` keeps the avatar square when the name is long. */}
-                <div className="w-40 h-40 shrink-0 rounded-[25px] bg-neutral-300 overflow-hidden">
-                  {user.profileImageUrl && (
-                    <Image
-                      src={user.profileImageUrl}
-                      alt={`${user.firstName} ${user.lastName}`}
-                      className="w-full h-full object-cover"
-                      width={100}
-                      height={100}
-                    />
-                  )}
-                </div>
-                <div className="flex flex-col justify-center min-w-0">
-                  {/* `break-words`: a single long surname has no break
-                      opportunity, so without it the card grows to fit it. */}
-                  <span className="text-[2.6rem] text-white font-medium leading-12 capitalize break-words">
-                    {user.firstName} <br /> {user.lastName}
-                  </span>
-                  {/* <div className="bg-deep-100 flex gap-2 p-4 rounded-[100px] text-center text-white font-semibold text-[1.4rem]">
-                    <Image src={image} alt="image" width={15} height={12} />
-                    <span>{t("change_profile")}</span>
-                  </div> */}
-                </div>
-              </div>
-              <div className="flex flex-col gap-6">
-                <h3 className="text-deep-100 font-primary font-medium text-[1.8rem] leading-10">
-                  {t("information")}
-                </h3>
-
-                {/*
-                  STACKED BELOW `sm`, and each half allowed to shrink.
-                  An `<input>` has an intrinsic width of about twenty
-                  characters and `Input` adds 4rem of padding, so two of them
-                  side by side need roughly 415px of room. On a phone the
-                  form's `overflow-x-hidden` was quietly CLIPPING the second
-                  one rather than overflowing — the field was simply not
-                  there to read. `min-w-0` is what lets a flex child shrink
-                  past its content at all.
-                */}
-                <div className={"flex flex-col sm:flex-row gap-6"}>
-                  <Input className="min-w-0 flex-1" type="text" disabled readOnly>
-                    {user.firstName}
-                  </Input>
-                  <Input className="min-w-0 flex-1" type="text" disabled readOnly>
-                    {user.lastName}
-                  </Input>
-                </div>
-
-                <Input type="email" disabled readOnly>
-                  {user.email}
-                </Input>
-
-                <Input type="text" disabled readOnly>
-                  {user.referralCode}
-                </Input>
-
-                {/* Same as the name pair above. */}
-                <div className={"flex flex-col sm:flex-row gap-6"}>
-                  <Select defaultValue={user.state ?? "unknown"} disabled>
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full min-w-0 flex-1 text-[1.4rem] text-neutral-700 leading-8">
-                      <SelectValue placeholder={user.state ?? "—"} />
-                    </SelectTrigger>
-                    <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                      <SelectGroup>
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          value={user.state ?? "unknown"}
-                        >
-                          {user.state ?? "—"}
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <Select defaultValue={user.city ?? "unknown"} disabled>
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full min-w-0 flex-1 text-[1.4rem] text-neutral-700 leading-8">
-                      <SelectValue placeholder={user.city ?? "—"} />
-                    </SelectTrigger>
-                    <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                      <SelectGroup>
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          value={user.city ?? "unknown"}
-                        >
-                          {user.city ?? "—"}
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {user.dateOfBirth && (
-                  <Input
-                    type="date"
-                    disabled
-                    readOnly
-                    defaultValue={user.dateOfBirth.slice(0, 10)}
-                    children={undefined}
-                  />
-                )}
-
-                <Select defaultValue={user.gender ?? "unknown"} disabled>
-                  <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] p-8 border-none w-full min-w-0 flex-1 text-[1.4rem] text-neutral-700 leading-8">
-                    <SelectValue placeholder={user.gender ?? "—"} />
-                  </SelectTrigger>
-                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                    <SelectGroup>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value={user.gender ?? "unknown"}
-                      >
-                        {user.gender ?? "—"}
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </form>
+        <div className="w-full grid grid-cols-1 lg:grid-cols-[15fr_21fr] gap-8 lg:gap-16">
+          <div className="w-full min-w-0 flex flex-col gap-12 pb-4">
+            <ProfileCard
+              userId={user.userId}
+              name={`${saved.firstName} ${saved.lastName}`}
+              imageUrl={user.profileImageUrl ?? null}
+              canEdit={can("attendees.edit")}
+            />
+            <PersonalInformation
+              email={user.email}
+              value={draft}
+              onChange={(next) => {
+                setDraft(next);
+                setErrors({});
+              }}
+              editing={editing}
+              errors={errors}
+            />
           </div>
 
           <div className="min-w-0 lg:min-h-[75vh]">
             <Tabs defaultValue="summary" className="w-full h-full">
-              {/*
-                `whitespace-normal` below `lg` is what stops this row pushing
-                the page sideways. `TabsTrigger` ships `whitespace-nowrap`,
-                and these two labels together ("Résumé des activités" +
-                "Historique des billets" in French) are wider than a phone —
-                with nowrap the list cannot shrink to fit, so it overflows the
-                viewport and the whole page scrolls on the x axis. Letting the
-                labels wrap to two lines costs a few pixels of height and
-                keeps them fully readable, which truncating would not.
-              */}
-              <TabsList
-                className={"w-full min-w-0 lg:w-fit mx-auto lg:mx-0 mb-8"}
-              >
-                <TabsTrigger
-                  value="summary"
-                  className="whitespace-normal lg:whitespace-nowrap"
-                >
+              <TabsList className="w-full min-w-0 lg:w-fit mx-auto lg:mx-0 mb-8">
+                <TabsTrigger value="summary" className="whitespace-normal lg:whitespace-nowrap">
                   {t("summary.title")}
                 </TabsTrigger>
-                <TabsTrigger
-                  value="ticket_history"
-                  className="whitespace-normal lg:whitespace-nowrap"
-                >
+                <TabsTrigger value="ticket_history" className="whitespace-normal lg:whitespace-nowrap">
                   {t("ticket_history.title")}
                 </TabsTrigger>
               </TabsList>
+              <ActivitySummary summary={summary} createdAt={user.createdAt} deletion={user.deletion} />
               <TicketHistory tickets={user.tickets ?? []} />
-              <ActivitySummary
-                userAnalytic={user.userAnalytic}
-                totalSpent={totalSpent}
-                createdAt={user.createdAt}
-                deletion={user.deletion}
-              />
             </Tabs>
           </div>
-        </main>
-
-
+        </div>
       </div>
     </AdminLayout>
   );
@@ -280,21 +220,16 @@ type AccountDeletion = NonNullable<AdminUser["deletion"]>;
 function DeletionNotice({ deletion }: { deletion: AccountDeletion }) {
   const t = useTranslations("Attendees.profile.deletion");
   const locale = useLocale();
-
   return (
     <div className="flex flex-col gap-2 rounded-[15px] border border-[#EA961C]/30 bg-[#FEF6E7] p-6">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-        <span className="text-[1.4rem] font-medium text-warning">
-          {t("title")}
-        </span>
+        <span className="text-[1.4rem] font-medium text-warning">{t("title")}</span>
         <span className="text-[1.1rem] font-bold uppercase text-warning bg-white/70 rounded-[30px] py-[0.3rem] px-3">
           {t("countdown", { days: deletion.daysLeft })}
         </span>
       </div>
       <p className="text-[1.4rem] leading-8 text-neutral-700">
-        {t("body", {
-          date: formatDate(deletion.scheduledFor, locale, "local"),
-        })}
+        {t("body", { date: formatDate(deletion.scheduledFor, locale, "local") })}
       </p>
       {deletion.reason && (
         <p className="text-[1.4rem] leading-8 text-neutral-700">
@@ -306,104 +241,55 @@ function DeletionNotice({ deletion }: { deletion: AccountDeletion }) {
   );
 }
 
+function SummaryRow({ label, children, tone }: { label: string; children: React.ReactNode; tone?: string }) {
+  return (
+    <li className="flex justify-between gap-8">
+      <span className="text-[1.5rem] text-neutral-600 leading-8 shrink-0">{label}</span>
+      <span className={cn("text-[1.5rem] text-deep-100 font-medium leading-8 text-right", tone)}>
+        {children}
+      </span>
+    </li>
+  );
+}
+
+/** Figma "Activity Summary": counts, total spent (HTG, USD under it), joined on. */
 function ActivitySummary({
-  userAnalytic,
-  totalSpent,
+  summary,
   createdAt,
   deletion,
 }: {
-  userAnalytic: UserAnalytic | null;
-  /**
-   * USD. A buyer's tickets can span events priced in different currencies, so a
-   * single total has to settle on one — the same denominator the platform
-   * analytics report in.
-   */
-  totalSpent: number;
+  summary: AttendeeSummary | null;
   createdAt: string;
   deletion?: AccountDeletion | null;
 }) {
   const t = useTranslations("Attendees.profile");
   const locale = useLocale();
   return (
-    <TabsContent value="summary" className="">
+    <TabsContent value="summary">
       <ul className="flex flex-col pt-4 gap-8">
-        <li className="flex justify-between">
-          <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
-            {t("summary.count")}
+        <SummaryRow label={t("summary.count")}>{summary?.eventCount ?? 0}</SummaryRow>
+        <SummaryRow label={t("summary.total_ticket_bought")}>{summary?.ticketsBought ?? 0}</SummaryRow>
+        <SummaryRow label={t("summary.missed")}>{summary?.eventsMissed ?? 0}</SummaryRow>
+        <SummaryRow label={t("summary.total_spent")}>
+          {formatMoney(summary?.totalSpent.htg ?? 0, "HTG", locale)}
+          <span className="block text-[1.2rem] font-normal text-neutral-500">
+            {formatMoney(summary?.totalSpent.usd ?? 0, "USD", locale)}
           </span>
-          <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {userAnalytic?.eventAttended ?? 0}
-          </span>
-        </li>
-
-        <li className="flex justify-between">
-          <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
-            {t("summary.total_ticket_bought")}
-          </span>
-          <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {userAnalytic?.ticketPurchased ?? 0}
-          </span>
-        </li>
-
-        <li className="flex justify-between">
-          <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
-            {t("summary.missed")}
-          </span>
-          <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {userAnalytic?.eventMissed ?? 0}
-          </span>
-        </li>
-
-        <li className="flex justify-between">
-          <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
-            {t("summary.total_spent")}
-          </span>
-          <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {formatMoney(totalSpent, "USD", locale)}
-          </span>
-        </li>
-
+        </SummaryRow>
         <Separator />
-
-        <li className="flex justify-between">
-          <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
-            {t("summary.joined_on")}
-          </span>
-          <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-            {formatDate(createdAt, locale, "local")}
-          </span>
-        </li>
-
+        <SummaryRow label={t("summary.joined_on")}>{formatDate(createdAt, locale, "local")}</SummaryRow>
         {/* Repeated from the banner on purpose: the banner is the alert, these
-            are the record — an operator reading the summary should not have to
-            scroll back up to find when the account goes and why. */}
+            are the record. */}
         {deletion && (
           <>
             <Separator />
-            <li className="flex justify-between">
-              <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
-                {t("deletion.requested_on")}
-              </span>
-              <span className="text-[1.6rem] text-deep-100 font-medium leading-8">
-                {formatDate(deletion.requestedAt, locale, "local")}
-              </span>
-            </li>
-            <li className="flex justify-between">
-              <span className="text-[1.6rem] text-neutral-600 leading-[22.5px]">
-                {t("deletion.scheduled_for")}
-              </span>
-              <span className="text-[1.6rem] text-warning font-medium leading-8">
-                {formatDate(deletion.scheduledFor, locale, "local")}
-              </span>
-            </li>
-            <li className="flex justify-between gap-8">
-              <span className="text-[1.6rem] text-neutral-600 leading-[22.5px] shrink-0">
-                {t("deletion.reason")}
-              </span>
-              <span className="text-[1.6rem] text-deep-100 font-medium leading-8 text-right">
-                {deletion.reason || t("deletion.no_reason")}
-              </span>
-            </li>
+            <SummaryRow label={t("deletion.requested_on")}>
+              {formatDate(deletion.requestedAt, locale, "local")}
+            </SummaryRow>
+            <SummaryRow label={t("deletion.scheduled_for")} tone="text-warning">
+              {formatDate(deletion.scheduledFor, locale, "local")}
+            </SummaryRow>
+            <SummaryRow label={t("deletion.reason")}>{deletion.reason || t("deletion.no_reason")}</SummaryRow>
           </>
         )}
       </ul>
@@ -411,184 +297,174 @@ function ActivitySummary({
   );
 }
 
+const CLASS_TONES = ["text-[#EF1870]", "text-[#7B2FF7]", "text-deep-100"];
+const PAGE_SIZE = 8;
+
+/**
+ * Figma "Ticket History": status / time / event search, then Event name,
+ * Ticket class, Amount paid, Check-in status, Purchase date and a ⋯ that opens
+ * the Ticket Details panel (also opened by clicking the row).
+ */
 function TicketHistory({ tickets }: { tickets: Ticket[] }) {
   const t = useTranslations("Attendees.profile.ticket_history");
+  const tPeriods = useTranslations("Analytics.filters.periods");
   const locale = useLocale();
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [periodFilter, setPeriodFilter] = useState<string>("all_period");
+  const [status, setStatus] = useState("all");
+  const [period, setPeriod] = useState<Period>("all");
+  const [term, setTerm] = useState("");
+  const [page, setPage] = useState(1);
 
-  const filteredTickets = tickets.filter((ticket) => {
-    if (statusFilter === "Checked-In" && ticket.status !== "CHECKED")
-      return false;
-    if (statusFilter === "pending" && ticket.status !== "PENDING") return false;
-    if (periodFilter === "last_week") {
-      const oneWeekAgo = new Date();
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-      return new Date(ticket.createdAt as unknown as string) >= oneWeekAgo;
-    }
-    if (periodFilter === "last_month") {
-      const oneMonthAgo = new Date();
-      oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
-      return new Date(ticket.createdAt as unknown as string) >= oneMonthAgo;
-    }
-    return true;
-  });
+  const classes = useMemo(
+    () => [...new Set(tickets.map((ticket) => ticket.ticketType))],
+    [tickets],
+  );
+
+  const filtered = useMemo(() => {
+    const from = analyticsStart(period);
+    const needle = term.trim().toLowerCase();
+    return tickets
+      .filter((ticket) => {
+        if (status === "checked" && ticket.status !== "CHECKED") return false;
+        if (status === "pending" && ticket.status !== "PENDING") return false;
+        if (status === "returned" && ticket.status !== "RETURNED") return false;
+        if (from && new Date(ticket.createdAt as unknown as string) < from) return false;
+        if (needle && !(ticket.activity?.name ?? "").toLowerCase().includes(needle)) return false;
+        return true;
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt as unknown as string).getTime() -
+          new Date(a.createdAt as unknown as string).getTime(),
+      );
+  }, [tickets, status, period, term]);
+
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const current = Math.min(page, pages);
+  const rows = filtered.slice((current - 1) * PAGE_SIZE, current * PAGE_SIZE);
+  const head = "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase text-left";
 
   return (
-    <TabsContent value="ticket_history" className="flex flex-col gap-8">
-      <div className="flex justify-end">
-        <div className="flex gap-4">
-          <Select defaultValue="all" onValueChange={(v) => setStatusFilter(v)}>
-            <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
-              <SelectValue placeholder="" />
-            </SelectTrigger>
-            <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-              <SelectGroup>
-                <SelectItem
-                  className={"text-[1.4rem] text-deep-100"}
-                  value="all"
-                >
-                  {t("filters.status")}
-                </SelectItem>
-                <SelectItem
-                  className={"text-[1.4rem] text-deep-100"}
-                  value="Checked-In"
-                >
-                  Checked-In
-                </SelectItem>
-                <SelectItem
-                  className={"text-[1.4rem] text-deep-100"}
-                  value="pending"
-                >
-                  Pending
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-          <Select
-            defaultValue="all_period"
-            onValueChange={(v) => setPeriodFilter(v)}
-          >
-            <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8">
-              <SelectValue placeholder="" />
-            </SelectTrigger>
-            <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-              <SelectGroup>
-                <SelectItem
-                  className={"text-[1.4rem] text-deep-100"}
-                  value="all_period"
-                >
-                  {t("filters.period")}
-                </SelectItem>
-                <SelectItem
-                  className={"text-[1.4rem] text-deep-100"}
-                  value="last_week"
-                >
-                  Last week
-                </SelectItem>
-                <SelectItem
-                  className={"text-[1.4rem] text-deep-100"}
-                  value="last_month"
-                >
-                  Last month
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
+    <TabsContent value="ticket_history" className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-center justify-end gap-4">
+        <FilterPill
+          label={t("filters.status_label")}
+          value={status}
+          defaultValue="all"
+          options={[
+            { value: "all", label: t("filters.status") },
+            { value: "checked", label: t("status.checked") },
+            { value: "pending", label: t("status.pending") },
+            { value: "returned", label: t("status.returned") },
+          ]}
+          onChange={(v) => {
+            setStatus(v);
+            setPage(1);
+          }}
+        />
+        <FilterPill
+          label={t("filters.period_label")}
+          value={period}
+          defaultValue="all"
+          placeholder={t("filters.period")}
+          options={PERIODS.map((p) => ({ value: p, label: tPeriods(p) }))}
+          onChange={(v) => {
+            setPeriod(v as Period);
+            setPage(1);
+          }}
+        />
+        <SearchField
+          value={term}
+          onChange={(v) => {
+            setTerm(v);
+            setPage(1);
+          }}
+          placeholder={t("filters.search")}
+          className="flex w-full sm:w-[22rem]"
+        />
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead
-              className={
-                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-              }
-            >
-              {t("table.name")}
-            </TableHead>
-            <TableHead
-              className={
-                "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-              }
-            >
-              {t("table.class")}
-            </TableHead>
-            <TableHead
-              className={
-                "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-              }
-            >
-              {t("table.amount")}
-            </TableHead>
-            <TableHead
-              className={
-                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-              }
-            >
-              {t("table.status")}
-            </TableHead>
-            <TableHead
-              className={
-                "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-              }
-            >
-              {t("table.purchase")}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
 
-        <TableBody>
-          {filteredTickets.map((ticket) => (
-            <Drawer key={ticket.ticketId} direction="right">
-              <DrawerTrigger asChild>
-                <TableRow>
-                  <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900">
-                    <span className="cursor-pointer">
-                      {ticket.activity?.name ?? "—"}
-                    </span>
-                  </TableCell>
-                  <TableCell className="py-6">
-                    <span className="py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870] px-2 rounded-[30px] bg-[#f5f5f5]">
-                      {ticket.ticketType}
-                    </span>
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900">
-                    {formatTicketPrice(ticket, locale)}
-                  </TableCell>
-                  <TableCell className="py-6">
-                    <span
-                      className={`py-[0.3rem] cursor-pointer text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-[#f5f5f5] ${
-                        ticket.status === "CHECKED"
-                          ? "text-[#349C2E]"
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[60rem] border-collapse">
+          <thead>
+            <tr className="border-b border-neutral-100">
+              <th className={head}>{t("table.name")}</th>
+              <th className={head}>{t("table.class")}</th>
+              <th className={head}>{t("table.amount")}</th>
+              <th className={head}>{t("table.status")}</th>
+              <th className={head}>{t("table.purchase")}</th>
+              <th className={head}>
+                <span className="sr-only">{t("table.details")}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((ticket) => (
+              <Drawer key={ticket.ticketId} direction="right">
+                <DrawerTrigger asChild>
+                  <tr className="border-b border-neutral-100 cursor-pointer hover:bg-neutral-50 transition-colors">
+                    <td className="py-5 pr-4 text-[1.5rem] leading-8 text-deep-100">
+                      <span className="block max-w-[18rem] truncate" title={ticket.activity?.name}>
+                        {ticket.activity?.name ?? "—"}
+                      </span>
+                    </td>
+                    <td className="py-5 pr-4">
+                      <span
+                        className={cn(
+                          "py-[0.3rem] px-3 rounded-[30px] bg-neutral-100 text-[1.1rem] font-bold uppercase whitespace-nowrap",
+                          CLASS_TONES[Math.max(0, classes.indexOf(ticket.ticketType)) % CLASS_TONES.length],
+                        )}
+                      >
+                        {ticket.ticketType}
+                      </span>
+                    </td>
+                    <td className="py-5 pr-4 text-[1.5rem] leading-8 text-deep-100 whitespace-nowrap">
+                      {formatTicketPrice(ticket, locale)}
+                    </td>
+                    <td className="py-5 pr-4">
+                      <span
+                        className={cn(
+                          "py-[0.3rem] px-3 rounded-[30px] text-[1.1rem] font-bold uppercase whitespace-nowrap",
+                          ticket.status === "CHECKED"
+                            ? "bg-success/10 text-success"
+                            : ticket.status === "RETURNED"
+                              ? "bg-failure/10 text-failure"
+                              : "bg-warning/15 text-[#C98A00]",
+                        )}
+                      >
+                        {ticket.status === "CHECKED"
+                          ? t("status.checked")
                           : ticket.status === "RETURNED"
-                            ? "text-failure"
-                            : "text-warning"
-                      }`}
-                    >
-                      {ticket.status === "CHECKED"
-                        ? t("status.check-in")
-                        : ticket.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900">
-                    {formatDate(
-                      ticket.createdAt as unknown as string,
-                      locale,
-                      "local",
-                    )}
-                  </TableCell>
-                </TableRow>
-              </DrawerTrigger>
-              <Informations ticket={ticket} />
-            </Drawer>
-          ))}
-        </TableBody>
-      </Table>
-      {filteredTickets.length === 0 && (
-        <p className="text-center text-[1.5rem] text-neutral-500 py-8">
-          No tickets found.
-        </p>
+                            ? t("status.returned")
+                            : t("status.pending")}
+                      </span>
+                    </td>
+                    <td className="py-5 pr-4 text-[1.5rem] leading-8 text-deep-100 whitespace-nowrap">
+                      {formatDate(ticket.createdAt as unknown as string, locale, "local")}
+                    </td>
+                    <td className="py-5 text-right">
+                      <span className="relative w-[2rem] h-[2rem] shrink-0 rounded-full bg-neutral-100 inline-flex items-center justify-center after:absolute after:-inset-[0.8rem] after:content-['']">
+                        <MoreCircle size="10" variant="Bulk" color="#737C8A" />
+                      </span>
+                    </td>
+                  </tr>
+                </DrawerTrigger>
+                <Informations ticket={ticket} />
+              </Drawer>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {filtered.length === 0 && (
+        <p className="text-center text-[1.5rem] text-neutral-500 py-8">{t("empty")}</p>
+      )}
+      {pages > 1 && (
+        <TablePagination
+          page={current}
+          count={pages}
+          onChange={setPage}
+          prevLabel={t("prev")}
+          nextLabel={t("next")}
+        />
       )}
     </TabsContent>
   );

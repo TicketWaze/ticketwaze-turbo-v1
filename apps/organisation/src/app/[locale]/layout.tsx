@@ -1,7 +1,7 @@
 import ClientErrorReporter from "@/components/ClientErrorReporter";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
+import { bricolageGrotesque, dmMono, dmSans } from "@ticketwaze/ui/fonts";
+import SectionIntlProvider from "@/components/i18n/SectionIntlProvider";
 import { Toaster } from "sonner";
 import { getTranslations } from "next-intl/server";
 import TopLoader from "@/components/shared/TopLoader";
@@ -13,23 +13,6 @@ import ConsentModeScript from "@/components/analytics/ConsentModeScript";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import { WebVitals } from "@/components/analytics/WebVitals";
 import { CookieConsentBanner } from "@/components/analytics/CookieConsentBanner";
-
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-primary",
-});
-
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["300", "400", "500"],
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["300", "400", "500"],
-});
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Metadata");
@@ -61,7 +44,9 @@ export default async function RootLayout({
         <ClientErrorReporter />
         {/* Consent Mode defaults — Next hoists beforeInteractive to <head> */}
         <ConsentModeScript />
-        <NextIntlClientProvider>
+        {/* Only what this shell's client parts use: each section's layout
+            provides its own messages (see SectionIntlProvider). */}
+        <SectionIntlProvider namespaces={["Consent"]}>
           <ConsentProvider>
             <Toaster richColors position="top-right" />
             <AuthProvider>{children}</AuthProvider>
@@ -71,7 +56,7 @@ export default async function RootLayout({
             <WebVitals />
             <CookieConsentBanner />
           </ConsentProvider>
-        </NextIntlClientProvider>
+        </SectionIntlProvider>
         <Analytics />
       </body>
     </html>

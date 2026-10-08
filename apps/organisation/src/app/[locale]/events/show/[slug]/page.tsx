@@ -23,6 +23,22 @@ export default async function Page({
   const t = await getTranslations("Events.single_event");
   const locale = await getLocale();
   const session = await auth();
+  // The organisation (for its plan) doesn't depend on the event: both
+  // requests start together and the event is awaited first.
+  const orgRequest = fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session?.user.accessToken}`,
+        "Accept-Language": locale,
+        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+      },
+    },
+  );
+  // Settled here so an early return (403, failed event) leaves no unhandled rejection.
+  orgRequest.catch(() => {});
   const eventRequest = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/events/${eventId}`,
     {
@@ -57,18 +73,7 @@ export default async function Page({
   const physicalTicketBatches: PhysicalTicketBatch[] =
     eventResponse.physicalTicketBatches ?? [];
 
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation?.organisationId}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.user.accessToken}`,
-        "Accept-Language": locale,
-        origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-      },
-    },
-  );
+  const request = await orgRequest;
   const response = await request.json().catch(() => null);
   // Without this the page rendered with membershipTier undefined, which reads
   // as "no plan" to every gate downstream — silently, with nothing shown.

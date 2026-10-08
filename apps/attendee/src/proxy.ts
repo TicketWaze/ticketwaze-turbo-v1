@@ -3,6 +3,16 @@ import { getLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { auth } from "@/lib/auth";
 
+/**
+ * The /auth pages a signed-in person may still open; every other one (login,
+ * register, verify-account) sends them back to the app.
+ */
+const SIGNED_IN_AUTH_PATHS = [
+  "/auth/onboarding", // the set-up after sign-up, and the organizer hand-off
+  "/auth/forgot-password", // Settings → change password → forgot it
+  "/auth/new-password",
+];
+
 const middleware = auth(async (req) => {
   const locale = await getLocale();
 
@@ -25,41 +35,42 @@ const middleware = auth(async (req) => {
   // Redirect to login only if user is not authenticated AND path is not public
   if (!req.auth && !isPublicPath) {
     const newUrl = new URL(`/${locale}/auth/login`, req.nextUrl.origin);
+    // Back to the page that was asked for (e.g. the profile reminder email's
+    // /profile?edit=1) once signed in. Locale-less, as the login page expects.
+    const path = req.nextUrl.pathname.replace(new RegExp(`^/${locale}(?=/|$)`), "");
+    if (path && path !== "/") {
+      newUrl.searchParams.set("callbackUrl", path + req.nextUrl.search);
+    }
     return Response.redirect(newUrl);
   }
 
   // Already signed in — possibly on the website or the organisation app, which
-  // share this session. The login and register pages have nothing to do.
+  // share this session. The auth pages have nothing to do, except the few a
+  // signed-in person still needs. Skipped when the page carries a sign-in
+  // error to report.
+  const authPrefix = `/${locale}/auth/`;
   if (
     req.auth &&
-    (req.nextUrl.pathname.startsWith(`/${locale}/auth/login`) ||
-      req.nextUrl.pathname.startsWith(`/${locale}/auth/register`)) &&
+    req.nextUrl.pathname.startsWith(authPrefix) &&
+    !SIGNED_IN_AUTH_PATHS.some((path) =>
+      req.nextUrl.pathname.startsWith(`/${locale}${path}`),
+    ) &&
     !req.nextUrl.searchParams.has("error")
   ) {
-    return Response.redirect(new URL(`/${locale}/explore`, req.nextUrl.origin));
+    // Back to where the login was headed, when that is a page of this app.
+    const callbackUrl = req.nextUrl.searchParams.get("callbackUrl");
+    const target =
+      callbackUrl?.startsWith("/") &&
+      !callbackUrl.startsWith("//") &&
+      !callbackUrl.startsWith("/auth/")
+        ? `/${locale}${callbackUrl}`
+        : `/${locale}/explore`;
+    return Response.redirect(new URL(target, req.nextUrl.origin));
   }
 
-  // Authenticated users who never completed onboarding are sent there before
-  // anything else (covers Google sign-ups mid-browse and abandoned flows).
-  // Auth pages stay reachable so the onboarding flow itself is not blocked.
-  // `isOnboarded === false` is checked strictly: sessions created before this
-  // field existed are left untouched. Long-lived sessions seeded before the
-  // user onboarded can carry a stale root flag, but their userPreference
-  // (written when onboarding completed) tells the truth — trust either.
-  const isAuthPath = req.nextUrl.pathname.startsWith(`/${locale}/auth/`);
-  const sessionUser = req.auth?.user as
-    | { isOnboarded?: boolean; userPreference?: { isOnboarded?: boolean } }
-    | undefined;
-  const isOnboarded =
-    sessionUser?.isOnboarded === true ||
-    sessionUser?.userPreference?.isOnboarded === true;
-  if (sessionUser && sessionUser.isOnboarded === false && !isOnboarded && !isAuthPath) {
-    const onboardingUrl = new URL(
-      `/${locale}/auth/onboarding`,
-      req.nextUrl.origin,
-    );
-    return Response.redirect(onboardingUrl);
-  }
+  // Accounts that skipped "Complete Account Set-up" (notably ones made from
+  // the organisation app) are NOT redirected there: they browse freely, and
+  // the API's Tuesday profile reminder (email + bell) asks for the details.
 
   // Get the response from next-intl middleware
   const response = createMiddleware(routing)(req);

@@ -15,7 +15,7 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { SuspendAttendeeAction } from "@/actions/Attendee";
-import type { DialogControl } from "./dialogControl";
+import type { DialogControl } from "@/lib/dialogControl";
 
 export function SuspendDialog({
   userId,

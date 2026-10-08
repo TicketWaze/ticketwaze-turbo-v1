@@ -25,19 +25,19 @@ export default function Hero() {
       name: t("accessible"),
     },
     {
-      name: "blank",
-    },
-    {
-      name: "blank",
-    },
-    {
       name: t("secured"),
+    },
+    {
+      name: "blank",
+    },
+    {
+      name: "blank",
     },
   ];
   return (
-    <section className="bg-white py-[2.5rem] px-4 lg:px-0 rounded-[3rem] flex flex-col gap-[6.5rem] lg:gap-[15.6rem] items-center overflow-hidden">
+    <section className="bg-white pt-[2.5rem] pb-[2.5rem] lg:pb-[5rem] px-4 lg:px-0 rounded-[3rem] flex flex-col gap-[6.5rem] lg:gap-[15.6rem] items-center overflow-hidden">
       <Navbar />
-      <div className="flex flex-col gap-8 max-w-[950px]">
+      <div className="flex flex-col items-center gap-8 max-w-[950px]">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -52,7 +52,7 @@ export default function Hero() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          className="text-[1.6rem] lg:text-[2.6rem] leading-[22.5px] lg:leading-[35px] text-neutral-700 font-sans text-center"
+          className="text-[1.6rem] lg:text-[2.6rem] leading-[22.5px] lg:leading-[35px] lg:tracking-[-0.78px] text-neutral-700 font-sans text-center w-full max-w-[850px]"
         >
           {t("description")}
         </motion.p>
@@ -62,7 +62,7 @@ export default function Hero() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className=" flex flex-col gap-0 lg:gap-8 items-center justify-center relative overflow-hidden"
+        className="flex flex-col gap-[13.5px] lg:gap-[21px] items-center justify-center relative overflow-hidden"
       >
         <InfiniteMovingCards items={slide1} direction="right" speed="fast" />
         <InfiniteMovingCards items={slide2} direction="left" speed="fast" />

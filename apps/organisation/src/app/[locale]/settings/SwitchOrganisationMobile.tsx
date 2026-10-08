@@ -21,6 +21,7 @@ import { Organisation } from "@ticketwaze/typescript-config";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import CreateOrganisationDialog from "@/components/Layouts/CreateOrganisationDialog";
+import { settingsCardClass } from "./parts";
 
 export default function SwitchOrganisationMobile() {
   const t = useTranslations("Settings");
@@ -98,36 +99,25 @@ export default function SwitchOrganisationMobile() {
         <li className="lg:hidden">
           <Dialog>
             <DialogTrigger className="w-full">
-              <div
-                className={
-                  "py-14 px-6 rounded-[10px] w-full bg-neutral-100 hover:bg-primary-50 flex justify-between transition-all duration-500 cursor-pointer group"
-                }
-              >
-                <div className={"flex items-center gap-6"}>
+              {/* Same card as the other Settings entries (parts.tsx). */}
+              <div className={settingsCardClass}>
+                <span className="flex items-center gap-5 min-w-0">
                   <ArrowSwapHorizontal
-                    size="25"
-                    className=" transition-all duration-500 stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"
+                    size="24"
                     variant="Bulk"
+                    className="shrink-0 fill-neutral-700 stroke-neutral-700 transition-colors group-hover:fill-primary-500 group-hover:stroke-primary-500"
                   />
-                  <span
-                    className={
-                      "font-primary font-medium text-[2.2rem] transition-all duration-500 leading-12 text-neutral-900 group-hover:text-primary-500"
-                    }
-                  >
+                  <span className="font-primary font-medium text-[1.8rem] leading-10 text-deep-100 truncate transition-colors group-hover:text-primary-500">
                     {t("switch")}
                   </span>
-                </div>
-                <div
-                  className={
-                    "w-14 h-14 rounded-full flex items-center justify-center transition-all duration-500 bg-neutral-200 group-hover:bg-primary-100"
-                  }
-                >
+                </span>
+                <span className="w-[3.2rem] h-[3.2rem] shrink-0 rounded-full bg-neutral-200 flex items-center justify-center transition-colors group-hover:bg-primary-100">
                   <ArrowRight2
-                    size="20"
-                    className=" transition-all duration-500 stroke-neutral-900 fill-neutral-900 group-hover:stroke-primary-500 group-hover:fill-primary-500"
+                    size="16"
                     variant="Bulk"
+                    className="fill-neutral-700 stroke-neutral-700 group-hover:fill-primary-500 group-hover:stroke-primary-500"
                   />
-                </div>
+                </span>
               </div>
             </DialogTrigger>
             <DialogContent className={"w-xl lg:w-208 flex flex-col gap-16 "}>

@@ -1,5 +1,5 @@
 "use client";
-import { ButtonNeutral } from "@/components/shared/buttons";
+import { ButtonPill } from "@/components/shared/buttons";
 import {
   Dialog,
   DialogContent,
@@ -64,10 +64,10 @@ export default function ShareOrganisation({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <ButtonNeutral className="gap-4">
+        <ButtonPill>
           <Send2 variant={"Bulk"} color={"#737C8A"} size={20} />
-          <span className="hidden lg:inline">{t("title")}</span>
-        </ButtonNeutral>
+          <span>{t("title")}</span>
+        </ButtonPill>
       </DialogTrigger>
       <DialogContent className={"w-xl lg:w-208 "}>
         <DialogHeader>

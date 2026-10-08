@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
+import { openPicker } from "@/components/create/FormFields";
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
@@ -702,6 +703,7 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
                 <input
                   {...register("salesStart")}
                   type="datetime-local"
+                  onClick={(e) => openPicker(e.currentTarget)}
                   className={inputClass}
                 />
               </Field>
@@ -711,6 +713,7 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
                 <input
                   {...register("salesEnd")}
                   type="datetime-local"
+                  onClick={(e) => openPicker(e.currentTarget)}
                   className={inputClass}
                 />
               </Field>
@@ -720,6 +723,7 @@ export default function EditRaffleForm({ raffle }: { raffle: Raffle }) {
             <input
               {...register("drawDate")}
               type="datetime-local"
+              onClick={(e) => openPicker(e.currentTarget)}
               className={inputClass}
             />
           </Field>

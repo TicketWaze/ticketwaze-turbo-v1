@@ -1,87 +1,107 @@
 "use client";
 import { useState } from "react";
-import { Star1 } from "iconsax-reactjs";
+import { motion } from "framer-motion";
+import { CloseCircle, Star1 } from "iconsax-reactjs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import {
+  DialogClose,
   DialogContent,
-  DialogTitle,
   DialogDescription,
-  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { useTranslations } from "next-intl";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 
 export default function RatingDialog({
   onRatingSubmit,
+  initialRating = 0,
 }: {
-  onRatingSubmit: (val: number) => void;
+  /** Saves the rating; resolves once the API has answered. */
+  onRatingSubmit: (val: number) => Promise<void>;
+  /** Pre-selected stars — the star tapped in the feedback email. Still confirmed here. */
+  initialRating?: number;
 }) {
   const t = useTranslations("History.activity.rating");
+  const tEvent = useTranslations("Event");
 
-  const [rating, setRating] = useState(0);
-  const [hover, setHover] = useState(0); // Stoke hover a pou yon ti stil
+  const [rating, setRating] = useState(initialRating);
+  const [hover, setHover] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleRatingSubmit = async () => {
-    if (rating === 0) return;
+  async function handleRatingSubmit() {
+    if (rating === 0 || isLoading) return;
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // 2. Appeler la fonction parente pour dire que c'est fini
-      // Cela servira à fermer ce dialog et ouvrir celui du succès
-      onRatingSubmit(rating);
-    } catch (error) {
-      console.error("Erreur lors de l'envoi:", error);
+      await onRatingSubmit(rating);
     } finally {
       setIsLoading(false);
     }
-  };
+  }
+
   return (
-    <DialogContent className="[&>button]:mr-6 [&>button]:mt-3">
-      <DialogHeader>
-        <DialogTitle>{t("title")}</DialogTitle>
-      </DialogHeader>
-      <div className="h-[0.1rem] w-full bg-neutral-200 -mt-4 mb-2"></div>
-      <DialogDescription className="text-neutral-400 leading-10 text-center text-[1.8rem]">
+    <DialogContent showCloseButton={false} className="gap-0">
+      {/* Figma: title + round close, a divider, then the prompt. */}
+      <div className="flex items-center justify-between gap-4 pb-6 border-b border-neutral-100">
+        <DialogTitle className="font-primary font-medium text-[2.2rem] leading-10 text-black">
+          {t("title")}
+        </DialogTitle>
+        <DialogClose
+          aria-label={tEvent("close")}
+          className="cursor-pointer active:scale-90 transition-transform"
+        >
+          <CloseCircle size={28} color="#737C8A" variant="Bulk" />
+        </DialogClose>
+      </div>
+      <DialogDescription className="pt-6 text-neutral-400 leading-10 text-center text-[1.8rem]">
         {t("text")}
       </DialogDescription>
 
-      <div className="flex items-center gap-2 justify-center py-8">
+      <div className="flex items-center gap-4 justify-center py-8">
         {Array.from({ length: 5 }).map((_, index) => {
           const starValue = index + 1;
           const isActive = starValue <= (hover || rating);
           return (
-            <button
+            <motion.button
               key={index}
+              type="button"
+              aria-label={`${starValue}/5`}
+              aria-pressed={starValue <= rating}
               onClick={() => setRating(starValue)}
               onMouseEnter={() => setHover(starValue)}
               onMouseLeave={() => setHover(0)}
-              className="transition-transform active:scale-90"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{
+                opacity: 1,
+                y: 0,
+                // Selected stars pop in sequence, so the choice reads as a sweep.
+                scale: starValue <= rating ? [1, 1.25, 1] : 1,
+              }}
+              transition={{
+                opacity: { duration: 0.25, delay: index * 0.05 },
+                y: { duration: 0.25, delay: index * 0.05 },
+                scale: { duration: 0.3, delay: index * 0.04 },
+              }}
+              whileTap={{ scale: 0.85 }}
+              className="cursor-pointer"
             >
               <Star1
                 size="50"
                 color={isActive ? "#E45B00" : "#ABB0B9"}
                 variant="Bulk"
               />
-            </button>
+            </motion.button>
           );
         })}
       </div>
 
-      <div className="flex flex-col gap-4">
-        <ButtonPrimary
-          type="submit"
-          disabled={rating === 0}
-          onClick={handleRatingSubmit}
-          className="w-full"
-        >
-          {isLoading ? (
-            <LoadingCircleSmall />
-          ) : (
-            `${t("submit")} (${rating}/5)`
-          )}
-        </ButtonPrimary>
-      </div>
+      <ButtonPrimary
+        type="button"
+        disabled={rating === 0 || isLoading}
+        onClick={handleRatingSubmit}
+        className="w-full"
+      >
+        {isLoading ? <LoadingCircleSmall /> : t("submit")}
+      </ButtonPrimary>
     </DialogContent>
   );
 }

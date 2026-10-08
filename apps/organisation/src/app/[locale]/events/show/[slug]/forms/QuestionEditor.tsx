@@ -138,7 +138,9 @@ export default function QuestionEditor({
                 placeholder={t("option_placeholder", { number: index + 1 })}
                 onChange={(e) =>
                   setOptions((prev) =>
-                    prev.map((value, i) => (i === index ? e.target.value : value)),
+                    prev.map((value, i) =>
+                      i === index ? e.target.value : value,
+                    ),
                   )
                 }
                 className="flex-1 bg-neutral-100 text-[1.5rem] w-full rounded-[5rem] p-8 outline-none"

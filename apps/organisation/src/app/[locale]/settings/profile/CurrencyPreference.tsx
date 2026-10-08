@@ -17,24 +17,28 @@ export default function CurrencyPreference({
   const t = useTranslations("Settings.profile.preferences");
   const locale = useLocale();
   const [isLoading, setIsLoading] = useState(false);
+  // Controlled, so a failed save puts the radio back on the saved currency.
+  const [currency, setCurrency] = useState(organisation.currency);
   const { data: session, update } = useSession();
-  async function updateCurrency(currency: string) {
+  async function updateCurrency(next: string) {
+    if (isLoading || next === currency) return;
+    const previous = currency;
+    setCurrency(next);
     setIsLoading(true);
     const response = await UpdateOrganisationCurrency(
       session?.activeOrganisation.organisationId ?? "",
-      {
-        currency,
-      },
+      { currency: next },
       locale,
     );
     if (response.status !== "success") {
+      setCurrency(previous);
       toast.error(response.error);
     } else {
       await update({
         ...session,
         activeOrganisation: {
           ...session?.activeOrganisation,
-          currency,
+          currency: next,
         },
       });
     }
@@ -47,7 +51,8 @@ export default function CurrencyPreference({
         {t("currency")}
       </span>
       <RadioGroup
-        defaultValue={organisation.currency}
+        value={currency}
+        disabled={isLoading}
         onValueChange={(e) => updateCurrency(e)}
         className="flex flex-col gap-6 w-full justify-between lg:justify-around"
       >

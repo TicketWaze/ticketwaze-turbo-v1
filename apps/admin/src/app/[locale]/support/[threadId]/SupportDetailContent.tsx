@@ -2,10 +2,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { AnimatePresence, motion } from "motion/react";
-import { useRouter } from "@/i18n/navigation";
-import BackButton from "@/components/shared/BackButton";
-import formatDate from "@/lib/FormatDate";
-import { type SupportThread, type SupportMessage } from "../SupportPageContent";
+import { toast } from "sonner";
+import { Copy, InfoCircle, Send2, TickCircle } from "iconsax-reactjs";
+import SettingsHeader from "@/components/shared/SettingsHeader";
+import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { Reveal } from "@/components/shared/motion";
+import { CARD, HEADER_PILL, PILL_TONE } from "@/components/shared/DataTable";
+import formatDateTime from "@/lib/formatDateTime";
+import { cn } from "@/lib/utils";
+import {
+  ThreadBadge,
+  type SupportThread,
+  type SupportMessage,
+} from "../SupportPageContent";
 import { getSocket } from "@/hooks/useSocket";
 import {
   Drawer,
@@ -14,19 +23,17 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Send2 } from "iconsax-reactjs";
-
-function formatTime(dateStr: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale === "fr" ? "fr-FR" : "en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(dateStr));
-}
 
 export type SupportThreadDetail = SupportThread & {
   messages: SupportMessage[];
 };
 
+/**
+ * One live-chat thread. The page does not scroll: the conversation does, with
+ * the composer pinned under it. Accept / Mark as resolved / Reopen sit in the
+ * header; the thread's details and internal notes are a side column on
+ * desktop and a bottom drawer ("Details") on phones.
+ */
 export default function SupportDetailContent({
   thread,
   chatUrl,
@@ -38,22 +45,16 @@ export default function SupportDetailContent({
 }) {
   const t = useTranslations("Support");
   const locale = useLocale();
-  const router = useRouter();
 
-  const [messages, setMessages] = useState<SupportMessage[]>(
-    thread.messages ?? [],
-  );
+  const [messages, setMessages] = useState<SupportMessage[]>(thread.messages ?? []);
   const [replyText, setReplyText] = useState("");
   const [notesText, setNotesText] = useState(thread.supportNotes ?? "");
+  const [savedNotes, setSavedNotes] = useState(thread.supportNotes ?? "");
   const [isResolved, setIsResolved] = useState(thread.resolved);
   const [isAccepted, setIsAccepted] = useState(thread.accepted);
-  const [isSendingReply, setIsSendingReply] = useState(false);
-  const [isSavingNotes, setIsSavingNotes] = useState(false);
-  const [isResolving, setIsResolving] = useState(false);
-  const [isReopening, setIsReopening] = useState(false);
-  const [isAccepting, setIsAccepting] = useState(false);
-  const [replySent, setReplySent] = useState(false);
-  const [notesSaved, setNotesSaved] = useState(false);
+  const [busy, setBusy] = useState<null | "reply" | "notes" | "resolve" | "reopen" | "accept">(
+    null,
+  );
   const [copied, setCopied] = useState(false);
   const [isCustomerTyping, setIsCustomerTyping] = useState(false);
 
@@ -61,7 +62,7 @@ export default function SupportDetailContent({
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "instant", block: "nearest" });
   }, [messages, isCustomerTyping]);
 
   useEffect(() => {
@@ -72,25 +73,16 @@ export default function SupportDetailContent({
     });
 
     const onThreadReopened = () => setIsResolved(false);
-
     const onTypingStart = ({ sender }: { sender: "customer" | "admin" }) => {
       if (sender === "customer") setIsCustomerTyping(true);
     };
-
     const onTypingStop = ({ sender }: { sender: "customer" | "admin" }) => {
       if (sender === "customer") setIsCustomerTyping(false);
     };
-
-    const onMessageNew = (msg: {
-      messageId: string;
-      sender: "customer" | "admin";
-      message: string;
-      createdAt: string;
-    }) => {
-      setMessages((prev) => {
-        if (prev.some((m) => m.messageId === msg.messageId)) return prev;
-        return [...prev, msg];
-      });
+    const onMessageNew = (msg: SupportMessage) => {
+      setMessages((prev) =>
+        prev.some((m) => m.messageId === msg.messageId) ? prev : [...prev, msg],
+      );
     };
 
     socket.on("message:new", onMessageNew);
@@ -121,103 +113,58 @@ export default function SupportDetailContent({
     getSocket().emit("typing:stop", { threadId: thread.threadId, sender: "admin" });
   }
 
+  /** One call to the thread's admin API; false (and a toast) when it fails. */
+  async function call(
+    action: NonNullable<typeof busy>,
+    path: string,
+    method: "POST" | "PATCH",
+    body?: object,
+  ) {
+    setBusy(action);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/support/${thread.threadId}/${path}`,
+      {
+        method,
+        headers: {
+          ...(body ? { "Content-Type": "application/json" } : {}),
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: body ? JSON.stringify(body) : undefined,
+      },
+    ).catch(() => null);
+    setBusy(null);
+    if (!response?.ok) toast.error(t("detail.error"));
+    return Boolean(response?.ok);
+  }
+
   async function sendReply() {
     const text = replyText.trim();
-    if (!text) return;
+    if (!text || busy) return;
     emitTypingStop();
-    setIsSendingReply(true);
-    setReplySent(false);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/support/${thread.threadId}/reply`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ message: text }),
-        },
-      );
-      if (!res.ok) throw new Error();
-      setReplyText("");
-      setReplySent(true);
-    } finally {
-      setIsSendingReply(false);
-    }
+    // The new message arrives back over the socket (message:new).
+    if (await call("reply", "reply", "POST", { message: text })) setReplyText("");
   }
 
   async function saveNotes() {
-    setIsSavingNotes(true);
-    setNotesSaved(false);
-    try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/support/${thread.threadId}/notes`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ notes: notesText }),
-        },
-      );
-      setNotesSaved(true);
-    } finally {
-      setIsSavingNotes(false);
+    if (await call("notes", "notes", "PATCH", { notes: notesText })) {
+      setSavedNotes(notesText);
+      toast.success(t("detail.notes_saved"));
     }
   }
 
   async function resolveThread() {
-    setIsResolving(true);
-    try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/support/${thread.threadId}/resolve`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify({ notes: notesText || undefined }),
-        },
-      );
+    if (await call("resolve", "resolve", "PATCH", { notes: notesText || undefined })) {
       setIsResolved(true);
-    } finally {
-      setIsResolving(false);
+      setSavedNotes(notesText);
     }
   }
 
   async function reopenThread() {
-    setIsReopening(true);
-    try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/support/${thread.threadId}/reopen`,
-        {
-          method: "PATCH",
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
-      );
-      setIsResolved(false);
-    } finally {
-      setIsReopening(false);
-    }
+    if (await call("reopen", "reopen", "PATCH")) setIsResolved(false);
   }
 
   async function acceptThread() {
-    setIsAccepting(true);
-    try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/support/${thread.threadId}/accept`,
-        {
-          method: "PATCH",
-          headers: { Authorization: `Bearer ${accessToken}` },
-        },
-      );
-      setIsAccepted(true);
-    } finally {
-      setIsAccepting(false);
-    }
+    if (await call("accept", "accept", "PATCH")) setIsAccepted(true);
   }
 
   function copyUrl() {
@@ -233,153 +180,133 @@ export default function SupportDetailContent({
     }
   }
 
-  // ── Shared: actions panel content (used in both drawer and desktop sidebar) ──
-  const ActionsPanel = (
-    <div className="flex flex-col gap-6 pb-4">
-      {/* Thread meta */}
-      <div className="flex flex-col gap-1">
-        <p className="text-[1.4rem] text-neutral-600">
-          <span className="text-neutral-400">{t("detail.email")}: </span>
-          {thread.email}
-        </p>
-        <p className="text-[1.4rem] text-neutral-600">
-          <span className="text-neutral-400">{t("detail.subject")}: </span>
-          <span className="font-medium">{thread.subject}</span>
-        </p>
-        <p className="text-[1.4rem] text-neutral-600">
-          <span className="text-neutral-400">
-            {t("detail.date") ?? "Date"}:{" "}
+  const label = "text-[1.3rem] leading-7 text-neutral-600";
+
+  const headerAction = !isAccepted ? (
+    <button
+      type="button"
+      onClick={acceptThread}
+      disabled={busy !== null}
+      className={cn(HEADER_PILL, PILL_TONE.primary)}
+    >
+      {busy === "accept" ? <LoadingCircleSmall /> : t("detail.accept")}
+    </button>
+  ) : isResolved ? (
+    <button
+      type="button"
+      onClick={reopenThread}
+      disabled={busy !== null}
+      className={cn(HEADER_PILL, PILL_TONE.neutral)}
+    >
+      {busy === "reopen" ? <LoadingCircleSmall /> : t("detail.mark_open")}
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={resolveThread}
+      disabled={busy !== null}
+      className={cn(HEADER_PILL, PILL_TONE.success)}
+    >
+      {busy === "resolve" ? <LoadingCircleSmall /> : t("detail.mark_resolved")}
+    </button>
+  );
+
+  // The details and notes: the right column on desktop, the drawer on phones.
+  const sidePanel = (
+    <div className="flex flex-col gap-6">
+      <div className={cn(CARD, "flex flex-col gap-6")}>
+        <div className="flex flex-col gap-1 min-w-0">
+          <span className={label}>{t("detail.email")}</span>
+          <a
+            href={`mailto:${thread.email}`}
+            className="text-[1.5rem] text-primary-500 truncate hover:underline"
+          >
+            {thread.email}
+          </a>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className={label}>{t("detail.subject")}</span>
+          <span className="text-[1.5rem] text-deep-100 break-words">{thread.subject}</span>
+        </div>
+        <div className="flex flex-col gap-1">
+          <span className={label}>{t("detail.started")}</span>
+          <span className="text-[1.5rem] text-deep-100">
+            {formatDateTime(thread.createdAt, locale)}
           </span>
-          {formatDate(thread.createdAt, locale, "local")}
-        </p>
+        </div>
+        {chatUrl && (
+          <div className="flex flex-col gap-2">
+            <span className={label}>{t("detail.chat_link")}</span>
+            <div className="flex items-center gap-3 bg-neutral-100 rounded-[3rem] pl-5 pr-2 py-2">
+              <a
+                href={chatUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[1.3rem] text-primary-500 truncate flex-1 hover:underline"
+              >
+                {chatUrl}
+              </a>
+              <button
+                type="button"
+                onClick={copyUrl}
+                aria-label={t("detail.copy")}
+                title={copied ? t("detail.copied") : t("detail.copy")}
+                className="shrink-0 w-[3.2rem] h-[3.2rem] rounded-full bg-white flex items-center justify-center cursor-pointer"
+              >
+                {copied ? (
+                  <TickCircle size="16" variant="Bulk" color="#349C2E" />
+                ) : (
+                  <Copy size="16" variant="Bulk" color="#737C8A" />
+                )}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Chat URL */}
-      {chatUrl && (
-        <div className="flex items-center gap-3 bg-neutral-50 border border-neutral-200 rounded-2xl px-4 py-3">
-          <span className="text-[1.2rem] text-neutral-400 shrink-0">
-            {t("detail.chat_link")}:
+      <div className={cn(CARD, "flex flex-col gap-4")}>
+        <div className="flex flex-col gap-1">
+          <span className="font-primary font-medium text-[1.6rem] leading-9 text-black">
+            {t("detail.notes")}
           </span>
-          <a
-            href={chatUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[1.3rem] text-primary-500 underline truncate flex-1"
-          >
-            {chatUrl}
-          </a>
-          <button
-            onClick={copyUrl}
-            className="shrink-0 text-[1.2rem] font-medium text-neutral-600 hover:text-primary-500 transition-colors px-3 py-1 bg-neutral-100 rounded-[3rem] cursor-pointer"
-          >
-            {copied ? t("detail.copied") : t("detail.copy")}
-          </button>
+          <span className={label}>{t("detail.notes_hint")}</span>
         </div>
-      )}
-
-      {/* Internal notes */}
-      <div className="flex flex-col gap-3">
-        <span className="text-[1.2rem] font-medium text-neutral-400 uppercase tracking-wide">
-          {t("detail.notes")}
-        </span>
         <textarea
-          className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 p-4 text-[1.4rem] text-neutral-900 leading-8 resize-none focus:outline-none focus:border-primary-500 transition-colors"
-          rows={3}
+          className="w-full rounded-[1rem] bg-neutral-100 p-5 text-[1.4rem] leading-8 text-deep-100 resize-none outline-none focus:ring-2 focus:ring-primary-200 transition-shadow"
+          rows={4}
+          maxLength={5000}
           placeholder={t("detail.notes_placeholder")}
           value={notesText}
-          onChange={(e) => {
-            setNotesText(e.target.value);
-            setNotesSaved(false);
-          }}
+          onChange={(e) => setNotesText(e.target.value)}
         />
-        <div className="flex justify-end">
-          <button
-            onClick={saveNotes}
-            disabled={isSavingNotes}
-            className="bg-neutral-100 hover:bg-neutral-200 text-neutral-800 text-[1.3rem] font-medium px-6 py-[0.6rem] rounded-[3rem] transition-colors disabled:opacity-50 cursor-pointer"
-          >
-            {isSavingNotes
-              ? "..."
-              : notesSaved
-                ? "✓ Saved"
-                : t("detail.save_notes")}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={saveNotes}
+          disabled={busy !== null || notesText === savedNotes}
+          className={cn(HEADER_PILL, PILL_TONE.neutral, "w-full lg:w-full")}
+        >
+          {busy === "notes" ? <LoadingCircleSmall /> : t("detail.save_notes")}
+        </button>
       </div>
-
-      {/* Resolve / Reopen */}
-      <div className="bg-neutral-100 h-px" />
-      {isResolved ? (
-        <button
-          onClick={reopenThread}
-          disabled={isReopening}
-          className="w-full bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[1.4rem] font-semibold py-4 rounded-2xl transition-colors disabled:opacity-50 cursor-pointer"
-        >
-          {isReopening ? "..." : t("detail.mark_open")}
-        </button>
-      ) : (
-        <button
-          onClick={resolveThread}
-          disabled={isResolving}
-          className="w-full bg-[#349C2E]/10 hover:bg-[#349C2E]/20 text-[#349C2E] text-[1.4rem] font-semibold py-4 rounded-2xl transition-colors disabled:opacity-50 cursor-pointer"
-        >
-          {isResolving ? "..." : t("detail.mark_resolved")}
-        </button>
-      )}
     </div>
   );
 
   return (
-    <div className="flex flex-col gap-4 h-full overflow-hidden">
-      <BackButton text={t("back")} onClick={() => router.push("/support")} />
-
-      {/* ── Thread header ──────────────────────────────────────────────────── */}
-      <div className="shrink-0 flex flex-col gap-2 pb-4 border-b border-neutral-100">
-        {/* Row: name + status + date + actions trigger */}
-        <div className="flex items-start gap-3 justify-between">
-          <div className="flex items-center gap-3 flex-wrap min-w-0">
-            <h2 className="font-primary font-medium text-[2.2rem] lg:text-[2.6rem] leading-tight truncate">
-              {thread.fullName}
-            </h2>
-            {isResolved ? (
-              <span className="shrink-0 py-[0.3rem] text-[1.1rem] font-bold leading-6 uppercase text-[#349C2E] px-2 rounded-[30px] bg-[#f5f5f5]">
-                {t("status.resolved")}
-              </span>
-            ) : !isAccepted ? (
-              <span className="shrink-0 py-[0.3rem] text-[1.1rem] font-bold leading-6 uppercase text-primary-500 px-2 rounded-[30px] bg-[#f5f5f5]">
-                Waiting
-              </span>
-            ) : (
-              <span className="shrink-0 py-[0.3rem] text-[1.1rem] font-bold leading-6 uppercase text-[#EA961C] px-2 rounded-[30px] bg-[#f5f5f5]">
-                {t("status.open")}
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3 shrink-0">
-            <span className="hidden lg:block text-[1.3rem] text-neutral-500">
-              {formatDate(thread.createdAt, locale, "local")}
-            </span>
-
-            {/* Mobile Actions drawer trigger */}
+    <div className="flex flex-1 min-h-0 flex-col overflow-hidden">
+      <SettingsHeader
+        title={thread.fullName}
+        back={{ href: "/support", label: t("title") }}
+        actions={
+          <div className="flex items-center gap-[1rem] w-full lg:w-auto">
+            <ThreadBadge thread={{ resolved: isResolved, accepted: isAccepted }} />
+            {headerAction}
             <Drawer direction="bottom">
               <DrawerTrigger asChild>
-                <button className="lg:hidden flex items-center gap-2 px-4 py-[0.6rem] bg-neutral-100 hover:bg-neutral-200 rounded-[3rem] text-[1.3rem] font-medium text-neutral-700 transition-colors cursor-pointer">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="5" r="1" />
-                    <circle cx="12" cy="12" r="1" />
-                    <circle cx="12" cy="19" r="1" />
-                  </svg>
-                  {t("detail.actions") ?? "Actions"}
+                <button
+                  type="button"
+                  className={cn(HEADER_PILL, PILL_TONE.neutral, "lg:hidden")}
+                >
+                  {t("detail.details")}
                 </button>
               </DrawerTrigger>
               <DrawerContent className="max-h-[85dvh]">
@@ -388,24 +315,19 @@ export default function SupportDetailContent({
                     {thread.fullName}
                   </DrawerTitle>
                 </DrawerHeader>
-                <div className="overflow-y-auto px-6 pb-8">{ActionsPanel}</div>
+                <div className="overflow-y-auto px-6 pb-8">{sidePanel}</div>
               </DrawerContent>
             </Drawer>
           </div>
-        </div>
-      </div>
+        }
+      />
 
-      {/* ── Main split ─────────────────────────────────────────────────────── */}
-      <div className="flex flex-col lg:flex-row gap-6 flex-1 min-h-0">
-        {/* Conversation ────────────────────────────────────────────────────── */}
-        <div className="flex flex-col flex-1 min-h-0 gap-3">
-          <span className="text-[1.2rem] font-medium text-neutral-400 uppercase tracking-wide shrink-0">
-            {t("detail.conversation")}
-          </span>
-
-          <div className="flex-1 overflow-y-auto flex flex-col gap-5 pr-1 min-h-0">
+      <div className="flex flex-col lg:flex-row gap-8 flex-1 min-h-0 pb-4">
+        {/* Conversation, with the composer pinned under it. */}
+        <Reveal className={cn(CARD, "flex flex-col flex-1 min-h-0 min-w-0 p-0 overflow-hidden")}>
+          <div className="flex-1 overflow-y-auto flex flex-col gap-5 p-8 min-h-0">
             {messages.length === 0 ? (
-              <p className="text-[1.4rem] text-neutral-400 text-center py-8">
+              <p className="text-[1.4rem] text-neutral-600 text-center py-8">
                 {t("detail.no_messages")}
               </p>
             ) : (
@@ -416,25 +338,26 @@ export default function SupportDetailContent({
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, ease: "easeOut" }}
-                    className={`flex flex-col gap-1 ${msg.sender === "admin" ? "items-end" : "items-start"}`}
+                    className={cn(
+                      "flex flex-col gap-1",
+                      msg.sender === "admin" ? "items-end" : "items-start",
+                    )}
                   >
-                    <span className="text-[1.2rem] text-neutral-400 px-2">
-                      {msg.sender === "admin"
-                        ? t("detail.admin_label")
-                        : thread.fullName}
+                    <span className="text-[1.2rem] text-neutral-600 px-2">
+                      {msg.sender === "admin" ? t("detail.admin_label") : thread.fullName}
                     </span>
                     <div
-                      className={`px-5 py-3 text-[1.4rem] leading-8 max-w-[80%] lg:max-w-[75%] whitespace-pre-wrap wrap-break-word ${
+                      className={cn(
+                        "px-5 py-3 text-[1.4rem] leading-8 max-w-[80%] lg:max-w-[75%] whitespace-pre-wrap wrap-break-word",
                         msg.sender === "admin"
-                          ? "bg-primary-500 text-white rounded-3xl rounded-br-[0.4rem]"
-                          : "bg-neutral-100 text-neutral-900 rounded-3xl rounded-bl-[0.4rem]"
-                      }`}
+                          ? "bg-primary-500 text-white rounded-[1.5rem] rounded-br-[0.4rem]"
+                          : "bg-neutral-100 text-deep-100 rounded-[1.5rem] rounded-bl-[0.4rem]",
+                      )}
                     >
                       {msg.message}
                     </div>
-                    <span className="text-[1.1rem] text-neutral-400 px-2">
-                      {formatDate(msg.createdAt, locale, "local")} ·{" "}
-                      {formatTime(msg.createdAt, locale)}
+                    <span className="text-[1.1rem] text-neutral-500 px-2">
+                      {formatDateTime(msg.createdAt, locale)}
                     </span>
                   </motion.div>
                 ))}
@@ -450,16 +373,19 @@ export default function SupportDetailContent({
                   transition={{ duration: 0.18 }}
                   className="flex flex-col gap-1 items-start"
                 >
-                  <span className="text-[1.2rem] text-neutral-400 px-2">
-                    {thread.fullName}
-                  </span>
-                  <div className="bg-neutral-100 rounded-[1.5rem] rounded-bl-[0.4rem] px-5 py-3 flex items-center gap-[6px]">
+                  <span className="text-[1.2rem] text-neutral-600 px-2">{thread.fullName}</span>
+                  <div className="bg-neutral-100 rounded-[1.5rem] rounded-bl-[0.4rem] px-5 py-4 flex items-center gap-[6px]">
                     {[0, 1, 2].map((i) => (
                       <motion.span
                         key={i}
-                        className="w-[0.5rem] h-[0.5rem] bg-neutral-400 rounded-full inline-block"
+                        className="w-[0.5rem] h-[0.5rem] bg-neutral-500 rounded-full inline-block"
                         animate={{ y: [0, -4, 0] }}
-                        transition={{ repeat: Infinity, duration: 0.7, delay: i * 0.13, ease: "easeInOut" }}
+                        transition={{
+                          repeat: Infinity,
+                          duration: 0.7,
+                          delay: i * 0.13,
+                          ease: "easeInOut",
+                        }}
                       />
                     ))}
                   </div>
@@ -469,66 +395,49 @@ export default function SupportDetailContent({
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Reply — pinned below the conversation on all screen sizes */}
-          <div className="shrink-0 pt-3 border-t border-neutral-100">
-            {!isAccepted ? (
-              <div className="flex flex-col items-center gap-3 py-4 rounded-2xl bg-neutral-50 border border-neutral-200">
-                <p className="text-[1.3rem] text-neutral-500 text-center">
-                  Accept this chat request to start replying to the customer.
-                </p>
-                <button
-                  onClick={acceptThread}
-                  disabled={isAccepting}
-                  className="px-8 py-[0.8rem] rounded-[3rem] bg-primary-500 hover:bg-primary-500/90 text-white text-[1.4rem] font-semibold transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
-                >
-                  {isAccepting ? "Accepting…" : "✓ Accept Chat"}
-                </button>
-              </div>
-            ) : isResolved ? (
-              <div className="flex items-center justify-center gap-3 py-3 rounded-2xl bg-[#349C2E]/5 border border-[#349C2E]/20">
-                <span className="text-[1.3rem] font-medium text-[#349C2E]">
-                  {t("status.resolved")}
-                </span>
-                <button
-                  onClick={reopenThread}
-                  disabled={isReopening}
-                  className="text-[1.2rem] font-medium text-neutral-500 underline disabled:opacity-50 cursor-pointer"
-                >
-                  {isReopening ? "..." : t("detail.mark_open")}
-                </button>
-              </div>
+          <div className="shrink-0 border-t border-neutral-100 p-4">
+            {!isAccepted || isResolved ? (
+              <p className="flex items-center justify-center gap-3 py-3 text-[1.4rem] text-neutral-600 text-center">
+                <InfoCircle size="18" variant="Bulk" color="#737C8A" className="shrink-0" />
+                {isResolved ? t("detail.resolved_hint") : t("detail.accept_hint")}
+              </p>
             ) : (
               <div className="flex gap-3 items-end">
                 <textarea
-                  className="flex-1 rounded-2xl border border-neutral-200 bg-neutral-50 p-4 text-[1.4rem] text-neutral-900 leading-8 resize-none focus:outline-none focus:border-primary-500 transition-colors"
+                  className="flex-1 rounded-[1.5rem] bg-neutral-100 px-5 py-4 text-[1.4rem] text-deep-100 leading-8 resize-none outline-none focus:ring-2 focus:ring-primary-200 transition-shadow"
                   rows={2}
                   placeholder={t("detail.reply_placeholder")}
+                  aria-label={t("detail.reply")}
                   value={replyText}
-                  disabled={isSendingReply}
+                  disabled={busy === "reply"}
                   onChange={(e) => {
                     setReplyText(e.target.value);
-                    setReplySent(false);
                     emitTypingStart();
                   }}
                   onBlur={emitTypingStop}
                   onKeyDown={handleKeyDown}
                 />
                 <button
+                  type="button"
                   onClick={sendReply}
-                  disabled={isSendingReply || !replyText.trim()}
-                  className="shrink-0 bg-primary-500 text-white px-6 py-4 rounded-2xl text-[1.3rem] font-medium disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed transition-colors"
+                  aria-label={t("detail.send_reply")}
+                  disabled={busy !== null || !replyText.trim()}
+                  className="shrink-0 w-[4.8rem] h-[4.8rem] rounded-full bg-primary-500 hover:bg-primary-600 flex items-center justify-center transition-colors disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed"
                 >
-                  {isSendingReply ? "..." : replySent ? "✓" : <Send2 />}
+                  {busy === "reply" ? (
+                    <LoadingCircleSmall />
+                  ) : (
+                    <Send2 size="20" variant="Bulk" color="#ffffff" />
+                  )}
                 </button>
               </div>
             )}
           </div>
-        </div>
+        </Reveal>
 
-        {/* Desktop right panel ─────────────────────────────────────────────── */}
-        <div className="hidden lg:flex flex-col gap-6 lg:w-[320px] xl:w-90 shrink-0 overflow-y-auto pb-4">
-          {ActionsPanel}
-        </div>
+        <Reveal delay={0.05} className="hidden lg:block lg:w-[32rem] xl:w-[36rem] shrink-0 overflow-y-auto">
+          {sidePanel}
+        </Reveal>
       </div>
     </div>
   );

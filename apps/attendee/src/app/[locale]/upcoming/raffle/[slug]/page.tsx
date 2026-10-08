@@ -153,7 +153,10 @@ export default async function MyRafflePage({
 type Outcome = "pending" | "won" | "lost" | "cancelled";
 
 /** What this buyer's entries came to, from their own entries vs the prizes. */
-function resolveOutcome(raffle: MyRaffle, entries: MyRaffle["entries"]): Outcome {
+function resolveOutcome(
+  raffle: MyRaffle,
+  entries: MyRaffle["entries"],
+): Outcome {
   if (raffle.status === "cancelled") return "cancelled";
   if (!raffle.drawnAt) return "pending";
   const mine = new Set(entries.map((entry) => entry.ticketId));
@@ -288,7 +291,9 @@ function MyEntries({
             )}
             <div className={"flex flex-col"}>
               <span
-                className={"font-normal text-[1.3rem] leading-8 text-neutral-600"}
+                className={
+                  "font-normal text-[1.3rem] leading-8 text-neutral-600"
+                }
               >
                 {t("myEntries.organiser")}
               </span>

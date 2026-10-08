@@ -136,7 +136,7 @@ export default function ContactSection() {
             ...data,
             turnstileToken: generalTurnstileToken,
           }),
-        }
+        },
       );
       const response = await request.json();
       if (response.status === "success") {
@@ -171,7 +171,7 @@ export default function ContactSection() {
             ...data,
             turnstileToken: supportTurnstileToken,
           }),
-        }
+        },
       );
       const response = await request.json();
       if (response.status === "success") {
@@ -190,8 +190,11 @@ export default function ContactSection() {
   }
 
   return (
-    <section className="bg-white py-[3rem] lg:py-[7.5rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center gap-[3.5rem] lg:gap-[100px]">
-      <Tabs defaultValue="general" className="flex flex-col gap-[50px] w-full ">
+    <section className="bg-white py-[3rem] lg:py-[10rem] px-[1.5rem] lg:px-[10rem] rounded-[3rem] flex flex-col items-center gap-[3.5rem] lg:gap-[100px]">
+      <Tabs
+        defaultValue="general"
+        className="flex flex-col gap-[50px] lg:gap-[60px] w-full"
+      >
         <TabsList>
           <TabsTrigger value="general">{t("general")}</TabsTrigger>
           <TabsTrigger value="support">{t("support")}</TabsTrigger>
@@ -200,20 +203,20 @@ export default function ContactSection() {
         {/* GENERAL TAB */}
         <TabsContent
           value="general"
-          className="w-full flex flex-col lg:flex-row gap-[4rem] lg:gap-[6rem]"
+          className="w-full flex flex-col lg:flex-row lg:justify-between gap-[4rem] lg:gap-[6rem]"
         >
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex-1 font-primary font-medium lg:font-bold text-[3.2rem] lg:text-[4.5rem] leading-[35px] lg:leading-[65px] text-deep-100"
+            className="lg:max-w-[600px] font-primary font-medium lg:font-bold text-[3.2rem] lg:text-[4.5rem] leading-[35px] lg:leading-[65px] text-deep-100"
           >
             {t("text-1")}
           </motion.h2>
           <form
             onSubmit={handleSubmitGeneral(submitGeneralHandler)}
-            className="flex-1 flex flex-col items-center w-full gap-[4rem]"
+            className="flex-1 flex flex-col items-center lg:items-end w-full lg:max-w-[530px] gap-[4rem]"
           >
             {/* Honeypot — visually hidden, real users never touch it */}
             <input
@@ -232,7 +235,7 @@ export default function ContactSection() {
               }}
             />
             <div className="flex flex-col gap-[1.5rem] w-full items-center">
-              <div className="w-full flex flex-col items-center max-w-[493px]">
+              <div className="w-full flex flex-col items-center max-w-[530px]">
                 <motion.input
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -242,7 +245,7 @@ export default function ContactSection() {
                   type="text"
                   {...registerGeneral("fullName")}
                   disabled={isSubmittingGeneral}
-                  className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
+                  className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[530px]"
                 />
                 {errorsGeneral.fullName && (
                   <span className="text-failure self-start text-[1.2rem] pl-8 font-primary leading-8">
@@ -250,7 +253,7 @@ export default function ContactSection() {
                   </span>
                 )}
               </div>
-              <div className="w-full flex flex-col items-center max-w-[493px]">
+              <div className="w-full flex flex-col items-center max-w-[530px]">
                 <motion.input
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -260,7 +263,7 @@ export default function ContactSection() {
                   {...registerGeneral("email")}
                   disabled={isSubmittingGeneral}
                   type="email"
-                  className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
+                  className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[530px]"
                 />
                 {errorsGeneral.email && (
                   <span className="text-failure self-start text-[1.2rem] pl-8 font-primary leading-8">
@@ -273,7 +276,7 @@ export default function ContactSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="w-full max-w-[493px]"
+                className="w-full max-w-[530px]"
               >
                 <Select
                   key={generalSelectKey}
@@ -282,11 +285,11 @@ export default function ContactSection() {
                     setValueGeneral(
                       "subject",
                       value as TGeneralContactSchema["subject"],
-                      { shouldValidate: true }
+                      { shouldValidate: true },
                     )
                   }
                 >
-                  <SelectTrigger className="w-full max-w-[493px]">
+                  <SelectTrigger className="w-full max-w-[530px]">
                     <SelectValue placeholder={t("subject")} />
                   </SelectTrigger>
                   <SelectContent position="popper">
@@ -310,7 +313,7 @@ export default function ContactSection() {
                 )}
               </motion.div>
 
-              <div className="w-full flex flex-col items-center max-w-[493px]">
+              <div className="w-full flex flex-col items-center max-w-[530px]">
                 <motion.textarea
                   {...registerGeneral("message")}
                   disabled={isSubmittingGeneral}
@@ -319,7 +322,7 @@ export default function ContactSection() {
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                   placeholder={t("message")}
-                  className="p-8 bg-neutral-100 h-[266px] resize-none rounded-[1.5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
+                  className="p-8 bg-neutral-100 h-[266px] resize-none rounded-[1.5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[530px]"
                 />
                 {generalMessageLength > 0 && (
                   <span
@@ -350,7 +353,7 @@ export default function ContactSection() {
               transition={{ duration: 0.5, delay: 0.2 }}
               type="submit"
               disabled={isSubmittingGeneral || !generalTurnstileToken}
-              className="px-12 py-8 w-full max-w-[493px] cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8 disabled:cursor-not-allowed disabled:bg-primary-500/50 flex items-center justify-center"
+              className="px-12 py-8 w-full max-w-[530px] cursor-pointer rounded-[10rem] border-2 border-primary-500 bg-primary-500 text-white text-[1.5rem] font-semibold tracking-[-0.75px] leading-8 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center"
             >
               {isSubmittingGeneral ? <LoadingCircleSmall /> : t("send")}
             </motion.button>
@@ -360,20 +363,20 @@ export default function ContactSection() {
         {/* SUPPORT TAB */}
         <TabsContent
           value="support"
-          className="w-full flex flex-col lg:flex-row gap-[4rem] lg:gap-[6rem]"
+          className="w-full flex flex-col lg:flex-row lg:justify-between gap-[4rem] lg:gap-[6rem]"
         >
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex-1 font-primary font-medium lg:font-bold text-[3.2rem] lg:text-[4.5rem] leading-[35px] lg:leading-[65px] text-deep-100"
+            className="lg:max-w-[600px] font-primary font-medium lg:font-bold text-[3.2rem] lg:text-[4.5rem] leading-[35px] lg:leading-[65px] text-deep-100"
           >
             {t("text-2")}
           </motion.h2>
           <form
             onSubmit={handleSubmitSupport(submitSupportHandler)}
-            className="flex-1 flex flex-col items-center w-full gap-[4rem]"
+            className="flex-1 flex flex-col items-center lg:items-end w-full lg:max-w-[530px] gap-[4rem]"
           >
             {/* Honeypot — visually hidden, real users never touch it */}
             <input
@@ -392,7 +395,7 @@ export default function ContactSection() {
               }}
             />
             <div className="flex flex-col w-full items-center gap-[1.5rem]">
-              <div className="w-full flex flex-col items-center max-w-[493px]">
+              <div className="w-full flex flex-col items-center max-w-[530px]">
                 <motion.input
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -402,7 +405,7 @@ export default function ContactSection() {
                   type="text"
                   {...registerSupport("fullName")}
                   disabled={isSubmittingSupport}
-                  className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
+                  className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[530px]"
                 />
                 {errorsSupport.fullName && (
                   <span className="text-failure self-start text-[1.2rem] pl-8 font-primary leading-8">
@@ -410,7 +413,7 @@ export default function ContactSection() {
                   </span>
                 )}
               </div>
-              <div className="w-full flex flex-col items-center max-w-[493px]">
+              <div className="w-full flex flex-col items-center max-w-[530px]">
                 <motion.input
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -420,7 +423,7 @@ export default function ContactSection() {
                   type="email"
                   {...registerSupport("email")}
                   disabled={isSubmittingSupport}
-                  className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
+                  className="p-8 bg-neutral-100 rounded-[5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[530px]"
                 />
                 {errorsSupport.email && (
                   <span className="text-failure self-start text-[1.2rem] pl-8 font-primary leading-8">
@@ -433,7 +436,7 @@ export default function ContactSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="w-full max-w-[493px]"
+                className="w-full max-w-[530px]"
               >
                 <Select
                   key={supportSelectKey}
@@ -442,11 +445,11 @@ export default function ContactSection() {
                     setValueSupport(
                       "subject",
                       value as TSupportContactSchema["subject"],
-                      { shouldValidate: true }
+                      { shouldValidate: true },
                     )
                   }
                 >
-                  <SelectTrigger className="w-full max-w-[493px]">
+                  <SelectTrigger className="w-full max-w-[530px]">
                     <SelectValue placeholder={t("subject")} />
                   </SelectTrigger>
                   <SelectContent position="popper">
@@ -468,7 +471,7 @@ export default function ContactSection() {
                   </span>
                 )}
               </motion.div>
-              <div className="w-full flex flex-col items-center max-w-[493px]">
+              <div className="w-full flex flex-col items-center max-w-[530px]">
                 <motion.textarea
                   {...registerSupport("message")}
                   disabled={isSubmittingSupport}
@@ -477,7 +480,7 @@ export default function ContactSection() {
                   viewport={{ once: true, amount: 0.3 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                   placeholder={t("message")}
-                  className="p-8 bg-neutral-100 h-[266px] resize-none rounded-[1.5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[493px]"
+                  className="p-8 bg-neutral-100 h-[266px] resize-none rounded-[1.5rem] text-[1.5rem] leading-8 placeholder:text-neutral-600 text-black focus:outline-none w-full max-w-[530px]"
                 />
                 {supportMessageLength > 0 && (
                   <span
@@ -506,7 +509,7 @@ export default function ContactSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="px-12 py-8 w-full max-w-[493px] cursor-pointer rounded-[10rem] bg-primary-500 text-white text-[1.5rem] font-medium leading-8 disabled:cursor-not-allowed disabled:bg-primary-500/50 flex items-center justify-center"
+              className="px-12 py-8 w-full max-w-[530px] cursor-pointer rounded-[10rem] border-2 border-primary-500 bg-primary-500 text-white text-[1.5rem] font-semibold tracking-[-0.75px] leading-8 disabled:cursor-not-allowed disabled:opacity-50 flex items-center justify-center"
               type="submit"
               disabled={isSubmittingSupport || !supportTurnstileToken}
             >

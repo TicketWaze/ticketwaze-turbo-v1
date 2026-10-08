@@ -46,12 +46,12 @@ export const InfiniteMovingCards = ({
       if (direction === "left") {
         containerRef.current.style.setProperty(
           "--animation-direction",
-          "forwards"
+          "forwards",
         );
       } else {
         containerRef.current.style.setProperty(
           "--animation-direction",
-          "reverse"
+          "reverse",
         );
       }
     }
@@ -75,9 +75,9 @@ export const InfiniteMovingCards = ({
       <ul
         ref={scrollerRef}
         className={cn(
-          "flex w-max min-w-full shrink-0 flex-nowrap gap-[13.5px] lg:gap-12 py-4",
+          "flex w-max min-w-full shrink-0 flex-nowrap gap-[13.5px] lg:gap-12",
           start && "animate-scroll",
-          pauseOnHover && "hover:[animation-play-state:paused]"
+          pauseOnHover && "hover:[animation-play-state:paused]",
         )}
       >
         {items.map((item, idx) => {
@@ -92,7 +92,7 @@ export const InfiniteMovingCards = ({
             return (
               <div
                 key={item.name}
-                className="w-[112px] uppercase lg:w-[350px] h-[45px] lg:h-[120px] bg-primary-500 rounded-[9px] lg:rounded-[2rem] font-medium lg:font-semibold text-[13.5px] lg:text-[3.5rem] leasing-[100%] text-white flex items-center justify-center"
+                className="w-[112px] uppercase lg:w-[350px] h-[45px] lg:h-[120px] bg-primary-500 rounded-[9px] lg:rounded-[2rem] font-medium lg:font-semibold text-[13.5px] lg:text-[3.5rem] lg:tracking-[-1.05px] leading-none text-white flex items-center justify-center"
               >
                 {item.name}
               </div>

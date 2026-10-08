@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
 import { getLocale } from "next-intl/server";
-import PageLoader from "@/components/PageLoader";
+import PurchaseSuccess from "@/components/PurchaseSuccess";
 
 export default async function SuccessRaffleStripe({
   searchParams,
@@ -27,24 +27,20 @@ export default async function SuccessRaffleStripe({
   const response = request ? await request.json().catch(() => null) : null;
 
   if (
-    response &&
-    (response.status === "success" || response.status === "duplicate") &&
-    response.raffle
+    !response ||
+    (response.status !== "success" && response.status !== "duplicate") ||
+    !response.raffle
   ) {
-    // A signed-in buyer's entries live in their upcoming list, which is where
-    // an event purchase lands too. The guest variant of this page keeps the
-    // public URL — a guest has no account page to land on.
-    redirect({
-      href: `/upcoming/raffle/${slugify(response.raffle.title, response.raffle.raffleId)}?from=checkout`,
-      locale,
-    });
-  } else {
     redirect({ href: `/explore`, locale });
   }
+  // A signed-in buyer's entries live in their upcoming list, which is where
+  // an event purchase lands too. The guest variant of this page keeps the
+  // public URL — a guest has no account page to land on.
+  const entriesPath = `/upcoming/raffle/${slugify(response.raffle.title, response.raffle.raffleId)}?from=checkout`;
 
   return (
     <AttendeeLayout className="items-center justify-center" title="">
-      <PageLoader isLoading={true} />
+      <PurchaseSuccess kind="raffle" redirectTo={entriesPath} />
     </AttendeeLayout>
   );
 }

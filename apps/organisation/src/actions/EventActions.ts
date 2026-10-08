@@ -167,6 +167,9 @@ export async function CreateInPersonEvent(
       revalidatePath("/events");
       return {
         status: "success",
+        // Opened right after the success screen.
+        eventId: response.eventId as string | undefined,
+        eventName: response.eventName as string | undefined,
       };
     } else {
       throw new Error(response.message);
@@ -989,7 +992,10 @@ export async function ScanTicketAction(
         presence: response.presence as "inside" | "outside",
         availableAction: response.availableAction as "check_in" | "check_out",
         canCheckIn: Boolean(response.canCheckIn),
-        checkInWindow: response.checkInWindow as "open" | "too_early" | "closed",
+        checkInWindow: response.checkInWindow as
+          | "open"
+          | "too_early"
+          | "closed",
         opensAt: (response.opensAt ?? null) as string | null,
         totalMinutesInside: (response.totalMinutesInside ?? 0) as number,
         entriesCount: (response.entriesCount ?? 0) as number,
@@ -1407,5 +1413,176 @@ export async function PublishComingSoonEvent(
     );
   } catch (error: any) {
     return { error: error?.message ?? "An unknown error occurred" };
+  }
+}
+
+/**
+ * The emailed copy of the detail page's Export. The browser builds the files
+ * (attendee list .xlsx, report .pdf) and hands them over as FormData; the API
+ * mails them to the signed-in account only.
+ */
+export async function EmailEventExport(
+  eventId: string,
+  formData: FormData,
+  locale: string,
+): Promise<{ status: "success" } | { status: "failed"; message: string }> {
+  try {
+    const session = await auth();
+    const accessToken = session?.user.accessToken;
+    const organisationId = session?.activeOrganisation?.organisationId;
+    if (!accessToken || !organisationId) {
+      return {
+        status: "failed",
+        message: "Your session has expired. Please log in again.",
+      };
+    }
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/events/${eventId}/export/email`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: formData,
+      },
+    );
+    const response = await request.json().catch(() => null);
+    if (request.ok && response?.status === "success") {
+      return { status: "success" };
+    }
+    return {
+      status: "failed",
+      message: response?.message ?? `Request failed (${request.status})`,
+    };
+  } catch (error: unknown) {
+    return {
+      status: "failed",
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Transaction Details › Resend ticket: the API mails the ticket again to its
+ * holder. `code` tells a returned or checked-in ticket, or a spent resend
+ * budget (`retryAfter` seconds), apart from other errors.
+ */
+export async function ResendTicketAction(
+  eventId: string,
+  ticketId: string,
+  locale: string,
+): Promise<
+  | { status: "success"; retryAfter: number }
+  | { status: "failed"; message: string; code?: string; retryAfter?: number }
+> {
+  try {
+    const session = await auth();
+    const accessToken = session?.user.accessToken;
+    const organisationId = session?.activeOrganisation?.organisationId;
+    if (!accessToken || !organisationId) {
+      return {
+        status: "failed",
+        message: "Your session has expired. Please log in again.",
+      };
+    }
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/events/${eventId}/tickets/${ticketId}/resend`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+      },
+    );
+    const response = await request.json().catch(() => null);
+    if (request.ok && response?.status === "success") {
+      return {
+        status: "success",
+        retryAfter: Number(response.retryAfter) || 0,
+      };
+    }
+    return {
+      status: "failed",
+      // A 429 from the route throttle carries no code of its own.
+      code:
+        response?.code ?? (request.status === 429 ? "RATE_LIMITED" : undefined),
+      retryAfter: Number(response?.retryAfter) || undefined,
+      message: response?.message ?? `Request failed (${request.status})`,
+    };
+  } catch (error: unknown) {
+    return {
+      status: "failed",
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}
+
+/**
+ * Create Ticket: appends ticket classes to an existing event (the API leaves
+ * the classes on sale untouched). `code` carries the API's refusal reason,
+ * e.g. DUPLICATE_NAME, SHAPE_CHANGE, EVENT_OVER, PLAN.
+ */
+export async function AddTicketTypesAction(
+  eventId: string,
+  ticketTypes: {
+    ticketTypeName: string;
+    ticketTypeDescription: string;
+    ticketTypePrice: number;
+    ticketTypeQuantity: number;
+    salesStartAt: string | null;
+    salesEndAt: string | null;
+  }[],
+  locale: string,
+): Promise<
+  { status: "success" } | { status: "failed"; message: string; code?: string }
+> {
+  try {
+    const session = await auth();
+    const accessToken = session?.user.accessToken;
+    const organisationId = session?.activeOrganisation?.organisationId;
+    if (!accessToken || !organisationId) {
+      return {
+        status: "failed",
+        message: "Your session has expired. Please log in again.",
+      };
+    }
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/organisations/${organisationId}/events/${eventId}/ticket-types`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+        },
+        body: JSON.stringify({ ticketTypes }),
+      },
+    );
+    const response = await request.json().catch(() => null);
+    if (request.ok && response?.status === "success") {
+      revalidatePath("/events", "layout");
+      return { status: "success" };
+    }
+    return {
+      status: "failed",
+      code: response?.code,
+      message:
+        response?.message ??
+        response?.errors?.[0]?.message ??
+        `Request failed (${request.status})`,
+    };
+  } catch (error: unknown) {
+    return {
+      status: "failed",
+      message:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
   }
 }

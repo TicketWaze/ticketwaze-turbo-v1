@@ -1,7 +1,6 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import BackButton from "@/components/shared/BackButton";
-import TopBar from "@/components/shared/TopBar";
+import { SettingsHeader } from "../parts";
 import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import { auth } from "@/lib/auth";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -39,58 +38,61 @@ export default async function IntegrationsPage() {
    * The connect button still works, and an organiser who genuinely is connected
    * sees the truth on the next load — which is better than a dead screen.
    */
-  let zoom: ZoomStatus = { connected: false, available: false };
-  try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${organisationId}/status`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.user.accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+  const readZoom = async (): Promise<ZoomStatus> => {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${organisationId}/status`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.accessToken}`,
+            "Accept-Language": locale,
+            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          },
+          cache: "no-store",
         },
-        cache: "no-store",
-      },
-    );
-    const response = await request.json();
-    if (response.status === "success" && response.zoom) {
-      zoom = response.zoom;
+      );
+      const response = await request.json();
+      if (response.status === "success" && response.zoom) {
+        return response.zoom;
+      }
+    } catch (error) {
+      console.error("Failed to read the Zoom connection status:", error);
     }
-  } catch (error) {
-    console.error("Failed to read the Zoom connection status:", error);
-  }
+    return { connected: false, available: false };
+  };
 
-  let google: GoogleStatus = { connected: false, available: false };
-  try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/status`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.user.accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+  const readGoogle = async (): Promise<GoogleStatus> => {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/status`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.accessToken}`,
+            "Accept-Language": locale,
+            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          },
+          cache: "no-store",
         },
-        cache: "no-store",
-      },
-    );
-    const response = await request.json();
-    if (response.status === "success" && response.google) {
-      google = response.google;
+      );
+      const response = await request.json();
+      if (response.status === "success" && response.google) {
+        return response.google;
+      }
+    } catch (error) {
+      console.error("Failed to read the Google connection status:", error);
     }
-  } catch (error) {
-    console.error("Failed to read the Google connection status:", error);
-  }
+    return { connected: false, available: false };
+  };
+  // Independent reads: run them side by side.
+  const [zoom, google] = await Promise.all([readZoom(), readGoogle()]);
 
   return (
-    <OrganizerLayout title={t("title")}>
-      <div className="flex flex-col gap-8">
-        <BackButton text={t("back")} />
-        <TopBar title={t("title")} />
-      </div>
+    <OrganizerLayout title="">
+      <SettingsHeader title={t("title")} />
       {/*
         The header stays put and this scrolls, matching the other settings
         screens. Without the scroll container the cards simply overflow the
@@ -98,7 +100,7 @@ export default async function IntegrationsPage() {
       */}
       <div
         className={
-          "flex flex-col gap-16 w-full lg:w-212 mx-auto overflow-y-scroll overflow-x-hidden h-full"
+          "flex flex-col gap-8 w-full max-w-[54rem] mx-auto pt-10 pb-16 flex-1 min-h-0 overflow-y-auto overflow-x-hidden"
         }
       >
         <GoogleIntegration google={google} />

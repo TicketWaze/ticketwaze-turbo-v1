@@ -201,7 +201,11 @@ export default function FormsPageContent({
         {questions.length > 0 && (
           <div className="max-w-216 w-full mx-auto flex flex-col gap-6">
             {questions.map((question) => (
-              <ReadOnlyCard key={question.eventFormQuestionId} question={question} t={t} />
+              <ReadOnlyCard
+                key={question.eventFormQuestionId}
+                question={question}
+                t={t}
+              />
             ))}
           </div>
         )}
@@ -263,7 +267,9 @@ export default function FormsPageContent({
               const locked = (question.answerCount ?? 0) > 0;
               const isBusy = busyId === question.eventFormQuestionId;
 
-              if (editing?.eventFormQuestionId === question.eventFormQuestionId) {
+              if (
+                editing?.eventFormQuestionId === question.eventFormQuestionId
+              ) {
                 return (
                   <QuestionEditor
                     key={question.eventFormQuestionId}
@@ -294,7 +300,9 @@ export default function FormsPageContent({
                         {locked && (
                           <span className="flex items-center gap-1 text-[1.1rem] font-semibold uppercase tracking-[0.04em] text-neutral-600 bg-neutral-100 px-[0.6rem] py-[0.2rem] rounded-full">
                             <Lock1 size="12" color="#737C8A" variant="Bulk" />
-                            {t("answers_count", { count: question.answerCount ?? 0 })}
+                            {t("answers_count", {
+                              count: question.answerCount ?? 0,
+                            })}
                           </span>
                         )}
                       </div>

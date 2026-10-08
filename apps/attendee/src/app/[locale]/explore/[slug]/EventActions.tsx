@@ -1,4 +1,5 @@
 "use client";
+import ActivityMoreMenu from "@/components/activity/ActivityMoreMenu";
 import {
   AddEventToFavorite,
   RemoveEventToFavorite,
@@ -7,21 +8,13 @@ import NoAuthDialog from "@/components/Layouts/NoAuthDialog";
 import BuyTicketAuthDialog from "./BuyTicketAuthDialog";
 import { usePathname } from "@/i18n/navigation";
 import { slugify } from "@/lib/Slugify";
-import { Heart, MoreCircle } from "iconsax-reactjs";
+import { ArchiveMinus } from "iconsax-reactjs";
+import SaveButton from "@/components/activity/SaveButton";
 import { useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
 import { toast } from "sonner";
-import ReportEventComponent from "./ReportEventComponent";
-import ReportOrganisationComponent from "./ReportOrganisationComponent";
 import { Event } from "@ticketwaze/typescript-config";
-import PageLoader from "@/components/PageLoader";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { LinkPrimary } from "@/components/shared/Links";
 import ShareEvent from "@/components/shared/ShareEvent";
 import ReserveButton from "./ReserveButton";
@@ -47,9 +40,7 @@ export default function EventActions({
   const { data: session } = useSession();
 
   const pathname = usePathname();
-  const [isLoading, setIsLoading] = useState(false);
   async function AddToFavorite() {
-    setIsLoading(true);
     const result = await AddEventToFavorite(
       session?.user?.accessToken as string,
       event.eventId,
@@ -57,100 +48,44 @@ export default function EventActions({
       pathname,
       locale,
     );
-    if (result.error) {
-      toast.error(result.message);
-    }
-    setIsLoading(false);
+    if (result.error) toast.error(result.message);
+    return !result.error;
   }
   async function RemoveToFavorite() {
-    setIsLoading(true);
     const result = await RemoveEventToFavorite(
       session?.user?.accessToken as string,
       event.eventId,
       pathname,
       locale,
     );
-    if (result.error) {
-      toast.error(result.message);
-    }
-    setIsLoading(false);
+    if (result.error) toast.error(result.message);
+    return !result.error;
   }
   return (
     <div className="flex items-center justify-between">
-      <PageLoader isLoading={isLoading} />
       <div className="flex  gap-8">
         <ShareEvent event={event} />
-        {session?.user && isFavorite && (
-          <button
-            disabled={isLoading}
-            onClick={RemoveToFavorite}
-            className="p-[7.5px] group flex items-center justify-center rounded-[30px] cursor-pointer bg-primary-100"
-          >
-            <Heart width={20} height={20} color="#E45B00" variant="Bulk" />
-          </button>
-        )}
-        {session?.user && !isFavorite && (
-          <button
-            disabled={isLoading}
-            onClick={AddToFavorite}
-            className="w-fit h-fit p-[7.5px] group flex items-center justify-center  bg-neutral-100 rounded-full cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500"
-          >
-            <Heart
-              width={20}
-              height={20}
-              className=" stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500 transition-all ease-in-out duration-500"
-              variant="Bulk"
-            />
-          </button>
-        )}
-        {!session?.user && (
+        {session?.user ? (
+          <SaveButton
+            initialSaved={isFavorite}
+            save={AddToFavorite}
+            unsave={RemoveToFavorite}
+          />
+        ) : (
           <Dialog>
-            <DialogTrigger>
-              <span className="w-fit h-fit p-[7.5px] group flex items-center justify-center bg-neutral-100 rounded-[30px] cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500">
-                <Heart
-                  width={20}
-                  height={20}
-                  className='"stroke-neutral-700 fill-neutral-700 group-hover:stroke-primary-500 group-hover:fill-primary-500 transition-all ease-in-out duration-500'
-                  variant="Bulk"
-                />
-              </span>
+            <DialogTrigger
+              aria-label={t("save")}
+              className="w-fit h-fit p-[7.5px] flex items-center justify-center bg-neutral-100 rounded-[30px] cursor-pointer hover:bg-primary-100 active:scale-90 transition-all duration-300"
+            >
+              <ArchiveMinus size={20} color="#737C8A" variant="Bulk" />
             </DialogTrigger>
-            <NoAuthDialog callbackUrl={pathname} />
+            <NoAuthDialog callbackUrl={pathname} intent="save" />
           </Dialog>
         )}
-        <Popover>
-          <PopoverTrigger asChild>
-            <span className="w-fit h-fit p-[7.5px] group flex items-center justify-center bg-neutral-100 rounded-[30px] cursor-pointer hover:bg-primary-100 transition-all ease-in-out duration-500">
-              <MoreCircle
-                variant={"Bulk"}
-                color={"#737C8A"}
-                width={20}
-                height={20}
-              />
-            </span>
-          </PopoverTrigger>
-          <PopoverContent
-            className={
-              "bg-neutral-100 border border-neutral-200 right-8 p-4 pb-8 w-92  mb-8 rounded-2xl shadow-xl bottom-full flex flex-col gap-4"
-            }
-          >
-            <span
-              className={
-                "font-medium py-2 border-b border-neutral-200 text-[1.4rem] text-deep-100 leading-8"
-              }
-            >
-              {t("more")}
-            </span>
-            <ReportEventComponent
-              activityId={event.eventId}
-              organisationId={event.organisationId}
-            />
-            <div className="h-px bg-neutral-200 w-full"></div>
-            <ReportOrganisationComponent
-              organisationId={event.organisationId}
-            />
-          </PopoverContent>
-        </Popover>
+        <ActivityMoreMenu
+          activityId={event.eventId}
+          organisationId={event.organisationId}
+        />
       </div>
       {/* The activity is over, or the organiser's sales cutoff has passed:
           tickets can no longer be bought, so show a note in place of the buy

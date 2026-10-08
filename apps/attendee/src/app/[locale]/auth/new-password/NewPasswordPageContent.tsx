@@ -1,4 +1,5 @@
 "use client";
+import { signOut } from "next-auth/react";
 import { useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
@@ -57,6 +58,9 @@ export default function NewPasswordPageContent() {
     );
     const response = await request.json();
     if (response.status === "success") {
+      // The reset revoked every session; clear this one so the sign-in
+      // page opens instead of bouncing back into the app.
+      await signOut({ redirect: false });
       router.push("/auth/login");
     } else if (response.status === "same") {
       toast.error(t("errors.sameError"));

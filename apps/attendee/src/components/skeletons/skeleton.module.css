@@ -1,0 +1,40 @@
+/*
+ * The skeleton bone: a grey block with a soft light band sweeping across it.
+ * Every bone shares one 1.6 s cycle anchored to the viewport (background-
+ * attachment: fixed), so the sweep reads as ONE light passing over the whole
+ * page rather than each block flashing on its own.
+ */
+.bone {
+  background-color: var(--color-neutral-100, #f1f2f3);
+  background-image: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 70%
+  );
+  background-size: 200vw 100%;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  animation: sweep 1.6s ease-in-out infinite;
+}
+
+/* A slightly darker bone, for the figures and titles that read first. */
+.strong {
+  background-color: var(--color-neutral-200, #e3e5e8);
+}
+
+@keyframes sweep {
+  from {
+    background-position: 100vw 0;
+  }
+  to {
+    background-position: -100vw 0;
+  }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .bone {
+    animation: none;
+  }
+}

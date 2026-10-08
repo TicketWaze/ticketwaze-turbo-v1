@@ -139,7 +139,15 @@ export function makeEditMeetSchema(
             .refine((val) => /^[1-9]\d*$/.test(val), {
               message: t("errors.ticketClass.quantity.decimal"),
             }),
-        }),
+          salesStartAt: z.string().optional(),
+          salesEndAt: z.string().optional(),
+        }).refine(
+          (ticket) =>
+            !ticket.salesStartAt ||
+            !ticket.salesEndAt ||
+            ticket.salesEndAt > ticket.salesStartAt,
+          { message: t("errors.ticketClass.salesWindow"), path: ["salesEndAt"] },
+        ),
       ),
       eventCurrency: z.string(),
       isFree: z.boolean(),

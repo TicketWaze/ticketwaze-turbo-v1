@@ -3,9 +3,7 @@ import ticketBG from "./ticket-bg.svg";
 import Logo from "@ticketwaze/ui/assets/images/logo-simple-orange.svg";
 import { useLocale, useTranslations } from "next-intl";
 import FormatDate from "@/lib/FormatDate";
-import { Warning2 } from "iconsax-reactjs";
 import { Event, Ticket } from "@ticketwaze/typescript-config";
-import Capitalize from "@/lib/Capitalize";
 import formatTime from "@/lib/formatTime";
 
 export default function HTicket({
@@ -32,6 +30,7 @@ export default function HTicket({
       : isFree
         ? t("free")
         : null;
+  const price = `${event.currency === "USD" ? ticket.ticketUsdPrice : ticket.ticketPrice} ${event.currency}`;
   return (
     <div className="flex flex-col gap-8 h-200 bg-linear-to-b from-neutral-50/10 to-neutral-100/50  lg:h-[68.1rem] relative shadow-[0_15px_25px_0_rgba(0,0,0,0.05)]">
       <Image src={ticketBG} alt={"ticket bg"} className="h-full w-full" />
@@ -48,9 +47,7 @@ export default function HTicket({
           {t("ticket")}
         </span>
         <div
-          className={
-            `w-full h-110 lg:h-136 relative rounded-[5px]  ${ticket.source === "reward" ? "perk-border" : "bg-neutral-100"} p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center `
-          }
+          className={`w-full h-110 lg:h-136 relative rounded-[5px]  ${ticket.source === "reward" ? "perk-border" : "bg-neutral-100"} p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center `}
         >
           <Image
             src={Logo}
@@ -59,17 +56,13 @@ export default function HTicket({
           />
 
           <div
-            className={
-              "flex items-center justify-between pt-6 gap-4 w-full"
-            }
+            className={"flex items-center justify-between pt-6 gap-4 w-full"}
           >
-            <span className="text-neutral-600">
-              1x {Capitalize(ticket.ticketType)}
-            </span>
+            <span className="text-neutral-600">1x {ticket.ticketType}</span>
             {priceLabel ? (
               <span className="text-deep-100 font-medium">{priceLabel}</span>
             ) : (
-              `${event.currency === "USD" ? ticket.ticketUsdPrice : ticket.ticketPrice} ${event.currency}`
+              price
             )}
           </div>
           <div className="flex flex-col gap-4 w-full">
@@ -80,7 +73,7 @@ export default function HTicket({
                 {ticket.ticketName}
               </span>
             </div>
-            
+
             <div className="h-[0.2rem] w-full rounded-[10px] bg-neutral-200"></div>
             <div className={"flex items-center justify-between gap-4 w-full"}>
               <span className="text-neutral-600">{t("date")}</span>
@@ -124,32 +117,28 @@ export default function HTicket({
             )}
           </div>
         </div>
-        {/* Your ticket is unique and linked to your personal access. Please do not
-        share it with others, as it may compromise your entry or benefits. Keep
-        it safe and secure. */}
       </div>
       <div
         className={
           "absolute bottom-[7%] h-[8.3rem] left-[50%] -translate-x-[50%] flex flex-col gap-8"
         }
       >
-        <div className={"flex flex-col gap-4 justify-center flex-wrap"}>
+        <div className={"flex flex-col gap-4 items-center justify-center"}>
           <span
             className={
-              "text-primary-500 text-[1.4rem] leading-8 px-6 py-2 bg-primary-50 rounded-[20px]"
+              "w-fit text-primary-500 text-[1.4rem] leading-8 px-6 py-2 bg-primary-50 rounded-[20px]"
             }
           >
-            {Capitalize(ticket.ticketType)}
+            {ticket.ticketType}
           </span>
-          {priceLabel ? (
-            <span
-              className={
-                "font-primary text-center font-medium text-[28px] leading-[3.2rem] text-[#000]"
-              }
-            >
-              {priceLabel}
-            </span>
-          ) : null}
+          {/* Figma: the type pill, then what was paid (or why it was 0). */}
+          <span
+            className={
+              "font-primary text-center font-medium text-[28px] leading-[3.2rem] text-[#000]"
+            }
+          >
+            {priceLabel ?? price}
+          </span>
         </div>
       </div>
     </div>

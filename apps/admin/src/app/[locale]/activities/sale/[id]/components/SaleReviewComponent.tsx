@@ -1,17 +1,20 @@
 "use client";
-import Image from "next/image";
 import { useState } from "react";
 import { useLocale } from "next-intl";
-import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { Sale, SaleFile } from "@ticketwaze/typescript-config";
 import { formatMoney } from "@ticketwaze/currency";
-import { ArrowLeft, DocumentDownload, Warning2 } from "iconsax-reactjs";
+import { DocumentDownload, ReceiptDiscount, Status, Warning2 } from "iconsax-reactjs";
 import { SaleStatusBadge, SaleStatusDialog } from "./SaleStatusDialog";
 import { InspectSaleFileAction } from "@/actions/Sale";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import EditActivityLink from "@/components/shared/EditActivityLink";
+import ActivityActionsMenu from "@/components/shared/ActivityActionsMenu";
+import ActivityHeaderActions, {
+  ActivitySuspensionNotice,
+} from "@/components/shared/ActivityHeaderActions";
+import ActivityDetailShell, { InfoList, InfoRow } from "@/components/shared/ActivityDetailShell";
+import useAdminCan from "@/lib/useAdminCan";
 import FeesHandlerDialog from "@/components/shared/FeesHandlerDialog";
 
 function formatBytes(bytes: number): string {
@@ -20,25 +23,6 @@ function formatBytes(bytes: number): string {
   if (mb < 1) return `${(bytes / 1024).toFixed(0)} KB`;
   if (mb < 1024) return `${mb.toFixed(1)} MB`;
   return `${(mb / 1024).toFixed(2)} GB`;
-}
-
-function Row({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="flex items-start justify-between gap-6 border-b border-neutral-100 py-4 last:border-0">
-      <span className="text-[1.4rem] font-medium text-neutral-600">
-        {label}
-      </span>
-      <span className="text-[1.5rem] leading-8 text-black text-right">
-        {value}
-      </span>
-    </div>
-  );
 }
 
 function Card({
@@ -110,7 +94,6 @@ export default function SaleReviewComponent({
   entitlementCount: number;
 }) {
   const locale = useLocale();
-  const router = useRouter();
   const { data: session } = useSession();
   const [downloading, setDownloading] = useState<string | null>(null);
 
@@ -141,163 +124,155 @@ export default function SaleReviewComponent({
     setDownloading(null);
   }
 
+  const canManage = useAdminCan("activity.manage");
+  const [dialog, setDialog] = useState<null | "status" | "fees">(null);
+  const control = (kind: "status" | "fees") => ({
+    hideTrigger: true,
+    open: dialog === kind,
+    onOpenChange: (next: boolean) => setDialog(next ? kind : null),
+  });
+  const suspension = sale as Sale & {
+    suspendedAt?: string | null;
+    suspensionReason?: string | null;
+  };
+  const when = (iso: string | null | undefined) =>
+    iso ? new Date(iso).toLocaleString(locale) : "Never";
+
   return (
-    <div className="flex flex-col gap-12 overflow-y-scroll">
-      <button
-        onClick={() => router.push("/activities")}
-        className="flex items-center gap-4 w-fit cursor-pointer"
-      >
-        <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center">
-          <ArrowLeft size="20" color="#0d0d0d" variant="Bulk" />
-        </div>
-        <span className="text-neutral-700 text-[1.4rem] leading-8">Back</span>
-      </button>
-
-      <div className="flex flex-col lg:flex-row lg:items-center gap-6 justify-between">
-        <div className="flex items-center gap-4 flex-wrap">
-          <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
-            {sale.title}
-          </h3>
-          <SaleStatusBadge status={sale.status} />
-        </div>
-        <EditActivityLink href={`/activities/sale/${sale.saleId}/edit`} />
-        <FeesHandlerDialog kind="sale" activityId={sale.saleId} />
-        <SaleStatusDialog sale={sale} hasFile={Boolean(currentFile)} />
-      </div>
-
-      {sale.status === "rejected" && sale.rejectionReason && (
-        <div className="flex flex-col gap-2 rounded-[15px] border border-[#E53935]/30 bg-[#FCE5EA] p-6">
-          <span className="text-[1.4rem] font-medium text-failure">
-            Rejection reason
-          </span>
-          <p className="text-[1.4rem] leading-8 text-neutral-700">
-            {sale.rejectionReason}
-          </p>
-        </div>
-      )}
-
-      {sale.coverImageUrl && (
-        <div className="relative w-full h-100 lg:h-140 rounded-[15px] overflow-hidden">
-          <Image
-            src={sale.coverImageUrl}
-            alt={sale.title}
-            fill
-            className="object-cover object-top"
-          />
-        </div>
-      )}
-
-      {sale.organisation && (
-        <div className="flex items-center gap-4">
-          {sale.organisation.profileImageUrl ? (
-            <Image
-              src={sale.organisation.profileImageUrl}
-              width={40}
-              height={40}
-              alt={sale.organisation.organisationName}
-              className="rounded-full"
+    <>
+      <ActivityDetailShell
+        title={sale.title}
+        badges={<SaleStatusBadge status={sale.status} />}
+        actions={
+          <ActivityHeaderActions
+            kind="sale"
+            activityId={sale.saleId}
+            editHref={`/activities/sale/${sale.saleId}/edit`}
+            editLabel="Edit product"
+            suspendedAt={suspension.suspendedAt}
+          >
+            <ActivityActionsMenu
+              label="Actions"
+              actions={[
+                {
+                  key: "status",
+                  label: "Review product",
+                  onSelect: () => setDialog("status"),
+                  icon: <Status size="20" variant="Bulk" color="#2E3237" />,
+                },
+                canManage && {
+                  key: "fees",
+                  label: "Fees",
+                  onSelect: () => setDialog("fees"),
+                  icon: <ReceiptDiscount size="20" variant="Bulk" color="#2E3237" />,
+                },
+              ]}
             />
-          ) : (
-            <span className="w-14 h-14 flex items-center justify-center bg-black rounded-full text-white uppercase font-medium text-[2rem] font-primary">
-              {sale.organisation.organisationName.slice(0, 1)}
-            </span>
-          )}
-          <span className="text-[1.5rem] text-deep-100 leading-8">
-            {sale.organisation.organisationName}
-          </span>
-        </div>
-      )}
-
-      <div
-        className="text-[1.5rem] leading-9 text-neutral-700"
-        dangerouslySetInnerHTML={{ __html: sale.description }}
+          </ActivityHeaderActions>
+        }
+        notices={
+          <>
+            <ActivitySuspensionNotice
+              suspendedAt={suspension.suspendedAt}
+              reason={suspension.suspensionReason}
+              organisationSuspended={
+                (sale.organisation as { isSuspended?: boolean } | undefined)?.isSuspended === true
+              }
+            />
+            {sale.status === "rejected" && sale.rejectionReason && (
+              <div className="flex flex-col gap-2 rounded-[15px] border border-failure/30 bg-[#FCE5EA] p-6">
+                <span className="text-[1.4rem] font-medium text-failure">Rejection reason</span>
+                <p className="text-[1.4rem] leading-8 text-neutral-700">{sale.rejectionReason}</p>
+              </div>
+            )}
+          </>
+        }
+        imageUrl={sale.coverImageUrl}
+        aboutTitle="About product"
+        aboutHtml={sale.description}
+        organisation={
+          sale.organisation
+            ? {
+                organisationId: sale.organisationId,
+                organisationName: sale.organisation.organisationName,
+                profileImageUrl: sale.organisation.profileImageUrl ?? null,
+              }
+            : null
+        }
+        details={[
+          { icon: "calendar", text: `Published: ${when(sale.publishedAt)}`, wide: true },
+        ]}
+        tabs={[
+          {
+            value: "sales",
+            label: "Product performance",
+            content: (
+              <InfoList>
+                <InfoRow label="Copies sold">{entitlementCount.toLocaleString()}</InfoRow>
+                <InfoRow label="Seller receives">
+                  {formatMoney(sale.price, sale.currencyCode, locale)}
+                </InfoRow>
+                {sale.pricing && (
+                  <InfoRow label="Buyer pays">
+                    {formatMoney(sale.pricing.buyerPays, sale.pricing.currency, locale)}
+                  </InfoRow>
+                )}
+                <InfoRow label="Tags">
+                  {sale.activityTags?.length ? sale.activityTags.join(", ") : "None"}
+                </InfoRow>
+                <InfoRow label="Submitted">{when(sale.createdAt)}</InfoRow>
+                <InfoRow label="Last reviewed">{when(sale.reviewedAt)}</InfoRow>
+                <InfoRow label="First published">{when(sale.publishedAt)}</InfoRow>
+              </InfoList>
+            ),
+          },
+          {
+            // THE FILE. Approving publishes whatever is in here, and the
+            // download button is the only real check.
+            value: "file",
+            label: "File",
+            content: (
+              <div className="flex flex-col gap-8 pt-4">
+                <Card title="Current file">
+                  {currentFile ? (
+                    <FilePanel
+                      file={currentFile}
+                      onInspect={handleInspect}
+                      downloading={downloading === currentFile.saleFileId}
+                    />
+                  ) : (
+                    <p className="text-[1.4rem] leading-8 text-neutral-600 py-4">
+                      No file has been uploaded. This product cannot be approved.
+                    </p>
+                  )}
+                </Card>
+                {/* A file swapped after an earlier approval is the pattern the
+                    review gate exists to catch, so the history is shown. */}
+                {olderFiles.length > 0 && (
+                  <Card title={`Previous versions (${olderFiles.length})`}>
+                    <p className="text-[1.3rem] leading-6 text-neutral-500 pb-2">
+                      Buyers keep the version they paid for. A new upload sends the product
+                      back here for review.
+                    </p>
+                    {olderFiles.map((file) => (
+                      <FilePanel
+                        key={file.saleFileId}
+                        file={file}
+                        onInspect={handleInspect}
+                        downloading={downloading === file.saleFileId}
+                      />
+                    ))}
+                  </Card>
+                )}
+              </div>
+            ),
+          },
+        ]}
       />
 
-      {/* THE FILE. The most important panel on the page: approving publishes
-          whatever is in here, and the download button is the only real check. */}
-      <Card title="File">
-        {currentFile ? (
-          <FilePanel
-            file={currentFile}
-            onInspect={handleInspect}
-            downloading={downloading === currentFile.saleFileId}
-          />
-        ) : (
-          <p className="text-[1.4rem] leading-8 text-neutral-600 py-4">
-            No file has been uploaded. This product cannot be approved.
-          </p>
-        )}
-      </Card>
-
-      {/* A file swapped after an earlier approval is the pattern the review
-          gate exists to catch, so the history is shown rather than hidden. */}
-      {olderFiles.length > 0 && (
-        <Card title={`Previous versions (${olderFiles.length})`}>
-          <p className="text-[1.3rem] leading-6 text-neutral-500 pb-2">
-            Buyers keep the version they paid for. A new upload sends the product
-            back here for review.
-          </p>
-          {olderFiles.map((file) => (
-            <FilePanel
-              key={file.saleFileId}
-              file={file}
-              onInspect={handleInspect}
-              downloading={downloading === file.saleFileId}
-            />
-          ))}
-        </Card>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <Card title="Product">
-          <Row
-            label="Seller receives"
-            value={formatMoney(sale.price, sale.currencyCode, locale)}
-          />
-          {sale.pricing && (
-            <Row
-              label="Buyer pays"
-              value={formatMoney(
-                sale.pricing.buyerPays,
-                sale.pricing.currency,
-                locale,
-              )}
-            />
-          )}
-          <Row label="Status" value={<SaleStatusBadge status={sale.status} />} />
-          <Row
-            label="Tags"
-            value={sale.activityTags?.length ? sale.activityTags.join(", ") : "None"}
-          />
-        </Card>
-
-        <Card title="History">
-          <Row
-            label="Submitted"
-            value={new Date(sale.createdAt).toLocaleString(locale)}
-          />
-          <Row
-            label="Last reviewed"
-            value={
-              sale.reviewedAt
-                ? new Date(sale.reviewedAt).toLocaleString(locale)
-                : "Never"
-            }
-          />
-          <Row
-            label="First published"
-            value={
-              sale.publishedAt
-                ? new Date(sale.publishedAt).toLocaleString(locale)
-                : "Never"
-            }
-          />
-          {/* Buyers make a rejection consequential: they keep their downloads,
-              so taking a product down does not undo what was already sold. */}
-          <Row label="Copies sold" value={String(entitlementCount)} />
-        </Card>
-      </div>
-    </div>
+      <SaleStatusDialog sale={sale} hasFile={Boolean(currentFile)} {...control("status")} />
+      <FeesHandlerDialog kind="sale" activityId={sale.saleId} {...control("fees")} />
+    </>
   );
 }
 

@@ -1,50 +1,31 @@
+import AdminLayout from "@/components/Layouts/AdminLayout";
 import { auth } from "@/lib/auth";
 import SupportPageContent, { type SupportThreadsResponse } from "./SupportPageContent";
 
 export default async function SupportPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; resolved?: string }>;
+  searchParams: Promise<{ page?: string; resolved?: string; search?: string }>;
 }) {
   const session = await auth();
-  const { page, resolved } = await searchParams;
+  const { page, resolved = "false", search = "" } = await searchParams;
 
-  // default to open threads
-  const resolvedFilter = resolved ?? "false";
+  const params = new URLSearchParams({ page: page ?? "1", limit: "15", resolved });
+  if (search) params.set("search", search);
 
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/admin/support?page=${page ?? "1"}&limit=15&resolved=${resolvedFilter}`,
-    {
-      method: "GET",
-      cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.user.accessToken}`,
-      },
-    },
-  );
-
-  const response = await request.json();
-  const threads: SupportThreadsResponse = response.threads ?? {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/support?${params}`, {
+    cache: "no-store",
+    headers: { Authorization: `Bearer ${session?.user.accessToken}` },
+  }).catch(() => null);
+  const data = await response?.json().catch(() => null);
+  const threads: SupportThreadsResponse = data?.threads ?? {
     data: [],
-    meta: {
-      total: 0,
-      perPage: 15,
-      currentPage: 1,
-      lastPage: 1,
-      firstPage: 1,
-      firstPageUrl: null,
-      lastPageUrl: null,
-      nextPageUrl: null,
-      previousPageUrl: null,
-    },
+    meta: { total: 0, perPage: 15, currentPage: 1, lastPage: 1 },
   };
 
   return (
-    <SupportPageContent
-      threads={threads}
-      resolved={resolvedFilter}
-      accessToken={session?.user.accessToken ?? ""}
-    />
+    <AdminLayout>
+      <SupportPageContent threads={threads} filters={{ resolved, search }} />
+    </AdminLayout>
   );
 }

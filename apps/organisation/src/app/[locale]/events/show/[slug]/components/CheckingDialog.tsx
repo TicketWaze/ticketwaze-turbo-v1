@@ -1,45 +1,61 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
-import { Event } from "@ticketwaze/typescript-config";
+import { Event, Ticket } from "@ticketwaze/typescript-config";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  CloseCircle,
-  LoginCurve,
-  LogoutCurve,
-  Scanner,
-  TickCircle,
-  Warning2,
-} from "iconsax-reactjs";
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { Scanner } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
-import { useRef, useState, useEffect } from "react";
-import { extractTicketCode } from "@/lib/ticketScanner";
-import TicketCamera from "@/components/shared/TicketCamera";
+import { useState } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "motion/react";
+import dynamic from "next/dynamic";
+import { extractTicketCode } from "@/lib/ticketCode";
 import {
   ScanTicketAction,
   CheckInTicketAction,
   CheckOutTicketAction,
 } from "@/actions/EventActions";
-import { usePathname } from "@/i18n/navigation";
-import PageLoader from "@/components/PageLoader";
-import { ButtonAccent, ButtonPrimary } from "@/components/shared/buttons";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import { ButtonPill } from "@/components/shared/buttons";
+import { ease } from "@/components/shared/motion";
+import { cn } from "@/lib/utils";
+import SuccessBadge from "@/assets/images/auth/success-badge.png";
 import { DateTime } from "luxon";
 import { isOvernight } from "@/lib/eventTime";
 
+// The scanner library is ~110 KB: fetched when the camera opens, not with the page.
+const TicketCamera = dynamic(() => import("@/components/shared/TicketCamera"), {
+  ssr: false,
+});
+
 type ScanResult = Awaited<ReturnType<typeof ScanTicketAction>>;
-type ActionResult =
-  | Awaited<ReturnType<typeof CheckInTicketAction>>
-  | Awaited<ReturnType<typeof CheckOutTicketAction>>;
-type Mode = "qr" | "ticket_id";
+type TicketInfo = { fullName: string; ticketName: string; ticketType: string };
+
+/**
+ * What the panel shows. Scanning or typing an ID goes straight to "working",
+ * then to a result; only a ticket that is currently INSIDE stops at "inside",
+ * where the checker can record the attendee leaving.
+ */
+type View =
+  | { kind: "idle" }
+  | { kind: "camera" }
+  | { kind: "working"; checkingOut?: boolean }
+  | {
+      kind: "inside";
+      scan: Extract<ScanResult, { status: "success" }>;
+    }
+  | {
+      kind: "done";
+      checkedOut: boolean;
+      ticket?: TicketInfo;
+      totalMinutesInside?: number;
+      entriesCount?: number;
+      sessionMinutes?: number;
+    }
+  | { kind: "error"; title: string; message?: string; ticket?: TicketInfo };
 
 function getCheckingWindowStatus(event: Event): {
   status: "open" | "too_early" | "closed";
@@ -85,462 +101,550 @@ function formatDuration(totalMinutes: number) {
   return `${mins}m`;
 }
 
-export default function CheckingDialog({ event }: { event: Event }) {
+const footerButton =
+  "flex-1 h-[5rem] lg:h-[4.6rem] rounded-[10rem] border-2 font-sans font-semibold text-[1.5rem] leading-8 cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+const primaryFooter = `${footerButton} bg-primary-500 border-primary-600 text-white hover:bg-primary-600`;
+const secondaryFooter = `${footerButton} bg-primary-50 border-primary-500 text-primary-500 hover:bg-primary-100`;
+
+/**
+ * The check-in side panel (Figma 1613:28605 → 1624:48008, mobile
+ * 2220:53291…55047): the camera box and a ticket-ID field together, then a
+ * single step to a result. Opening hours are enforced here as well as by the
+ * API: check-in opens one hour before the first day and closes at the end of
+ * the last.
+ */
+export default function CheckingDialog({
+  event,
+  tickets = [],
+  triggerClassName,
+}: {
+  event: Event;
+  /** The page's tickets, so a typed ticket name (TCK…) resolves to its id. */
+  tickets?: Ticket[];
+  triggerClassName?: string;
+}) {
   const t = useTranslations("Events.single_event");
-  const closeRef = useRef<HTMLButtonElement>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [mode, setMode] = useState<Mode>("qr");
-  const [isScanning, setIsScanning] = useState(false);
+  const ts = useTranslations("Events.single_event.scanner");
+  const [open, setOpen] = useState(false);
+  const [view, setView] = useState<View>({ kind: "idle" });
+  /** Whether the last code came from the camera, so Continue reopens it. */
+  const [fromCamera, setFromCamera] = useState(false);
   const [scannerKey, setScannerKey] = useState(0);
-  // Two-step flow: a scan produces a decision (scanResult); performing the
-  // chosen action produces a confirmation (actionResult).
-  const [scanResult, setScanResult] = useState<ScanResult | null>(null);
-  const [actionResult, setActionResult] = useState<ActionResult | null>(null);
-  const [ticketIdInput, setTicketIdInput] = useState("");
+  const [ticketId, setTicketId] = useState("");
   const pathname = usePathname();
+  const router = useRouter();
   const locale = useLocale();
-  // while the scanner stays open.
 
-  async function scan(raw: string) {
-    setIsScanning(false);
-    // Camera and keyboard input alike: pull out the ticket UUID, or say plainly
-    // that this is not a ticket instead of sending junk into the request path.
-    const id = extractTicketCode(raw);
+  function windowError(): View | null {
+    const win = getCheckingWindowStatus(event);
+    if (win.status === "too_early")
+      return {
+        kind: "error",
+        title: ts("not_open_title"),
+        message: ts("too_early", { time: win.opensAt ?? "" }),
+      };
+    if (win.status === "closed")
+      return {
+        kind: "error",
+        title: ts("not_open_title"),
+        message: ts("closed"),
+      };
+    return null;
+  }
+
+  function openChange(next: boolean) {
+    setOpen(next);
+    if (!next) {
+      setView({ kind: "idle" });
+      setTicketId("");
+    }
+  }
+
+  function startCamera() {
+    const blocked = windowError();
+    if (blocked) {
+      setView(blocked);
+      return;
+    }
+    setScannerKey((k) => k + 1);
+    setView({ kind: "camera" });
+  }
+
+  /** Scan → check in, in one go. Stops on "inside" or on any refusal. */
+  async function process(raw: string, camera: boolean) {
+    setFromCamera(camera);
+    // A QR carries the ticket's UUID; at the desk people type the short ticket
+    // name the table shows as "Ticket ID", so that is looked up too.
+    const byName = tickets.find(
+      (tk) => tk.ticketName.toLowerCase() === raw.trim().toLowerCase(),
+    );
+    const id = extractTicketCode(raw) ?? byName?.ticketId ?? null;
     if (!id) {
-      setScanResult({ status: "failed", message: t("scanner.not_a_ticket") });
-      return;
-    }
-    setIsLoading(true);
-    const response = await ScanTicketAction(event.eventId, id, locale);
-    setScanResult(response);
-    setIsLoading(false);
-  }
-
-  async function submitTicketId() {
-    const id = ticketIdInput.trim();
-    if (!id) return;
-    const win = getCheckingWindowStatus(event);
-    if (win.status === "too_early") {
-      setScanResult({
-        status: "failed",
-        message: t("scanner.too_early", { time: win.opensAt ?? "" }),
+      setView({
+        kind: "error",
+        title: ts("invalid_title"),
+        message: ts("not_a_ticket"),
       });
       return;
     }
-    if (win.status === "closed") {
-      setScanResult({
-        status: "failed",
-        message: t("scanner.closed"),
+    const blocked = windowError();
+    if (blocked) {
+      setView(blocked);
+      return;
+    }
+    setView({ kind: "working" });
+    const scan = await ScanTicketAction(event.eventId, id, locale);
+    if (scan.status !== "success") {
+      setView({
+        kind: "error",
+        title: ts("invalid_title"),
+        message: scan.message,
       });
       return;
     }
-    await scan(id);
-    setTicketIdInput("");
-  }
-
-  async function performCheckIn() {
-    if (!scanResult || scanResult.status !== "success") return;
-    setIsLoading(true);
-    const response = await CheckInTicketAction(
+    if (scan.availableAction === "check_out") {
+      setView({ kind: "inside", scan });
+      return;
+    }
+    if (!scan.canCheckIn) {
+      setView({
+        kind: "error",
+        title: ts("not_open_title"),
+        message:
+          scan.checkInWindow === "too_early"
+            ? ts("too_early", { time: scan.opensAt ?? "" })
+            : ts("closed"),
+        ticket: scan.ticket,
+      });
+      return;
+    }
+    const result = await CheckInTicketAction(
       event.eventId,
       pathname,
-      scanResult.ticket.ticketId,
+      scan.ticket.ticketId,
       locale,
     );
-    setActionResult(response);
-    setIsLoading(false);
+    if (result.status === "success") {
+      setView({
+        kind: "done",
+        checkedOut: false,
+        ticket: result.ticket ?? scan.ticket,
+        totalMinutesInside: scan.totalMinutesInside,
+        entriesCount: scan.entriesCount + 1,
+      });
+      router.refresh();
+    } else if (result.status === "already_checked") {
+      setView({
+        kind: "error",
+        title: ts("already_title"),
+        message: result.message,
+        ticket: result.ticket ?? scan.ticket,
+      });
+    } else {
+      setView({
+        kind: "error",
+        title: ts("error_title"),
+        message: result.message,
+      });
+    }
   }
 
-  async function performCheckOut() {
-    if (!scanResult || scanResult.status !== "success") return;
-    setIsLoading(true);
-    const response = await CheckOutTicketAction(
+  async function checkOut() {
+    if (view.kind !== "inside") return;
+    const { scan } = view;
+    setView({ kind: "working", checkingOut: true });
+    const result = await CheckOutTicketAction(
       event.eventId,
       pathname,
-      scanResult.ticket.ticketId,
+      scan.ticket.ticketId,
       locale,
     );
-    setActionResult(response);
-    setIsLoading(false);
-  }
-
-  // The camera itself lives in <TicketCamera>, which stops it on unmount —
-  // closing the dialog or leaving scan mode is enough to release it.
-  useEffect(() => {
-    if (isDialogOpen) return;
-    setIsScanning(false);
-    setScanResult(null);
-    setActionResult(null);
-    setMode("qr");
-    setTicketIdInput("");
-  }, [isDialogOpen]);
-
-  function switchMode(newMode: Mode) {
-    if (newMode === mode) return;
-    setIsScanning(false);
-    setScanResult(null);
-    setActionResult(null);
-    setTicketIdInput("");
-    setMode(newMode);
-  }
-
-  function startScanning() {
-    const win = getCheckingWindowStatus(event);
-    if (win.status === "too_early") {
-      setScanResult({
-        status: "failed",
-        message: t("scanner.too_early", { time: win.opensAt ?? "" }),
+    if (result.status === "success") {
+      setView({
+        kind: "done",
+        checkedOut: true,
+        ticket: scan.ticket,
+        sessionMinutes: result.sessionMinutes,
+        totalMinutesInside: result.totalMinutesInside,
+        entriesCount: scan.entriesCount,
       });
-      return;
-    }
-    setScanResult(null);
-    setActionResult(null);
-    setScannerKey((prev) => prev + 1);
-    setIsScanning(true);
-  }
-
-  function stopScanning() {
-    setIsScanning(false);
-    setScannerKey((prev) => prev + 1);
-  }
-
-  function handleScanNext() {
-    setScanResult(null);
-    setActionResult(null);
-    if (mode === "qr") {
-      startScanning();
+      router.refresh();
+    } else {
+      setView({
+        kind: "error",
+        title: ts("error_title"),
+        message: result.message,
+      });
     }
   }
 
-  const hasResult = !!scanResult || !!actionResult;
-  const showToggle = !isScanning && !hasResult;
+  /** Back to the start; straight into the camera when that is how we got here. */
+  function next() {
+    setTicketId("");
+    if (fromCamera) startCamera();
+    else setView({ kind: "idle" });
+  }
+
+  const showInputs = view.kind === "idle" || view.kind === "camera";
 
   return (
-    <>
-      <PageLoader isLoading={isLoading} />
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild className="w-full lg:w-fit">
-          <ButtonPrimary className="gap-4">
-            <Scanner variant={"Bulk"} color={"#fff"} size={20} />
-            {t("scan_ticket")}
-          </ButtonPrimary>
-        </DialogTrigger>
-        <DialogContent className={"w-[360px] lg:w-[520px]"}>
-          <DialogHeader>
-            <DialogTitle
-              className={`font-medium border-b border-neutral-100 pb-[2rem] text-[2.6rem] leading-12 text-black font-primary ${(isScanning || hasResult) && "hidden"}`}
-            >
-              {t("scan_ticket")}
-            </DialogTitle>
-            <DialogDescription className={"sr-only"}>
-              <span>Scan ticket</span>
-            </DialogDescription>
-          </DialogHeader>
+    <Drawer open={open} onOpenChange={openChange} direction="right">
+      <ButtonPill className={triggerClassName} onClick={() => setOpen(true)}>
+        <Scanner variant={"Bulk"} color={"#737C8A"} size={20} aria-hidden />
+        {t("check_in_short")}
+      </ButtonPill>
+      <DrawerContent className="bg-white border-none outline-none my-6 mr-4 lg:mr-6 p-6 lg:p-10 rounded-[30px] data-[vaul-drawer-direction=right]:w-[calc(100vw-2rem)] data-[vaul-drawer-direction=right]:lg:w-[58rem]">
+        <DrawerTitle className="font-primary font-medium text-center text-[2.2rem] leading-12 text-black pb-6 shrink-0">
+          {ts("title")}
+        </DrawerTitle>
+        <DrawerDescription className="sr-only">
+          {ts("id_description")}
+        </DrawerDescription>
 
-          <div className="flex flex-col w-auto justify-center items-center gap-[30px]">
-            {/* Mode toggle */}
-            {showToggle && (
-              <div className="flex w-full bg-neutral-100 rounded-full p-1">
-                <button
-                  onClick={() => switchMode("qr")}
-                  className={`flex-1 py-[8px] rounded-full text-[1.4rem] font-medium transition-colors ${
-                    mode === "qr"
-                      ? "bg-white text-black shadow-sm"
-                      : "text-neutral-500"
-                  }`}
+        <div className="flex-1 min-h-0 overflow-y-auto flex flex-col">
+          <AnimatePresence mode="wait" initial={false}>
+            {showInputs ? (
+              <motion.div
+                key="inputs"
+                className="flex flex-col gap-6"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.25, ease }}
+              >
+                <ScanBox
+                  active={view.kind === "camera"}
+                  onTap={startCamera}
+                  label={ts("tap_to_scan")}
                 >
-                  {t("scanner.tab_qr")}
-                </button>
-                <button
-                  onClick={() => switchMode("ticket_id")}
-                  className={`flex-1 py-[8px] rounded-full text-[1.4rem] font-medium transition-colors ${
-                    mode === "ticket_id"
-                      ? "bg-white text-black shadow-sm"
-                      : "text-neutral-500"
-                  }`}
-                >
-                  {t("ticketID")}
-                </button>
-              </div>
-            )}
-
-            <div
-              className={`w-full max-w-[350px] ${mode === "ticket_id" && !hasResult ? "min-h-[140px]" : "min-h-[280px]"} flex items-center justify-center`}
-            >
-              {actionResult ? (
-                <ActionResultView result={actionResult} />
-              ) : scanResult ? (
-                <ScanDecisionView result={scanResult} />
-              ) : mode === "ticket_id" ? (
-                <div className="flex flex-col gap-4 w-full">
-                  <div className="bg-neutral-100 rounded-[30px] flex items-center px-6 py-4">
-                    <input
-                      type="text"
-                      value={ticketIdInput}
-                      onChange={(e) => setTicketIdInput(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && submitTicketId()}
-                      placeholder={t("scanner.ticket_id_placeholder")}
-                      className="text-black font-normal text-[1.4rem] leading-8 w-full outline-none bg-transparent"
-                      autoFocus
+                  {view.kind === "camera" && (
+                    <TicketCamera
+                      key={scannerKey}
+                      onScan={(raw) => process(raw, true)}
+                      messages={{
+                        denied: ts("camera_denied"),
+                        unavailable: ts("camera_unavailable"),
+                        insecure: ts("camera_insecure"),
+                        failed: ts("camera_failed"),
+                        retry: ts("camera_retry"),
+                      }}
                     />
-                  </div>
-                </div>
-              ) : !isScanning ? (
-                <div className="w-full h-[280px] border-2 border-dashed border-neutral-300 rounded-lg flex items-center justify-center">
-                  <div className="text-center">
-                    <Scanner
-                      variant={"Bulk"}
-                      color={"#737C8A"}
-                      size={48}
-                      className="mx-auto mb-4"
-                    />
-                    <p className="text-neutral-500 text-[1.6rem] font-medium">
-                      {t("scanner.ready")}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <TicketCamera
-                  key={scannerKey}
-                  onScan={scan}
-                  messages={{
-                    denied: t("scanner.camera_denied"),
-                    unavailable: t("scanner.camera_unavailable"),
-                    insecure: t("scanner.camera_insecure"),
-                    failed: t("scanner.camera_failed"),
-                    retry: t("scanner.camera_retry"),
-                  }}
-                />
-              )}
-            </div>
-          </div>
-
-          <DialogFooter className="flex flex-col gap-2">
-            {actionResult ? (
-              <ButtonPrimary onClick={handleScanNext} className="w-full">
-                {t("scanner.scan_next")}
-              </ButtonPrimary>
-            ) : scanResult ? (
-              scanResult.status === "success" ? (
-                <div className="flex flex-col gap-2 w-full">
-                  {scanResult.availableAction === "check_out" ? (
-                    <ButtonPrimary
-                      onClick={performCheckOut}
-                      disabled={isLoading}
-                      className="w-full gap-4"
-                    >
-                      <LogoutCurve variant="Bulk" color="#fff" size={20} />
-                      {t("scanner.check_out")}
-                    </ButtonPrimary>
-                  ) : (
-                    <ButtonPrimary
-                      onClick={performCheckIn}
-                      disabled={isLoading || !scanResult.canCheckIn}
-                      className="w-full gap-4"
-                    >
-                      <LoginCurve variant="Bulk" color="#fff" size={20} />
-                      {t("scanner.check_in")}
-                    </ButtonPrimary>
                   )}
-                  <ButtonAccent onClick={handleScanNext} className="w-full">
-                    {t("scanner.scan_next")}
-                  </ButtonAccent>
-                </div>
-              ) : (
-                <ButtonPrimary onClick={handleScanNext} className="w-full">
-                  {t("scanner.scan_next")}
-                </ButtonPrimary>
-              )
-            ) : mode === "ticket_id" ? (
-              <ButtonPrimary
-                onClick={submitTicketId}
-                disabled={isLoading || !ticketIdInput.trim()}
-                className="w-full"
+                </ScanBox>
+                <p className="text-center font-sans text-[1.5rem] text-deep-100">
+                  {ts("or")}
+                </p>
+                <form
+                  className="flex items-center gap-4 rounded-[10rem] border border-primary-500 pl-6 pr-[.6rem] py-[.6rem] focus-within:shadow-[0_0_0_4px_rgba(228,91,0,0.08)]"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (ticketId.trim()) process(ticketId.trim(), false);
+                  }}
+                >
+                  <label className="flex-1 min-w-0 flex flex-col">
+                    <span className="font-sans text-[1.1rem] leading-6 text-neutral-500">
+                      {ts("ticket_id_label")}
+                    </span>
+                    <input
+                      value={ticketId}
+                      onChange={(e) => setTicketId(e.target.value)}
+                      placeholder={ts("ticket_id_placeholder")}
+                      className="w-full bg-transparent outline-none font-sans text-[1.5rem] leading-8 text-deep-100 placeholder:text-neutral-400"
+                    />
+                  </label>
+                  <button
+                    type="submit"
+                    disabled={!ticketId.trim()}
+                    className="shrink-0 rounded-[10rem] border border-primary-500 bg-primary-50 px-[1.4rem] py-[.8rem] font-sans text-[1.4rem] leading-6 text-primary-500 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {ts("check_in")}
+                  </button>
+                </form>
+              </motion.div>
+            ) : view.kind === "working" ? (
+              <motion.div
+                key="working"
+                className="flex-1 min-h-[30rem] flex items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
               >
-                {isLoading ? <LoadingCircleSmall /> : t("scanner.validate")}
-              </ButtonPrimary>
-            ) : isScanning ? (
-              <ButtonPrimary
-                onClick={stopScanning}
-                disabled={isLoading}
-                className="w-full bg-red-600 hover:bg-red-700"
-              >
-                {isLoading ? <LoadingCircleSmall /> : t("scanner.stop")}
-              </ButtonPrimary>
+                <p
+                  aria-live="polite"
+                  className="font-sans text-[1.6rem] text-primary-500 flex items-end"
+                >
+                  {view.checkingOut ? ts("checking_out") : ts("checking")}
+                  {[0, 1, 2].map((i) => (
+                    <motion.span
+                      key={i}
+                      aria-hidden
+                      animate={{ y: [0, -3, 0], opacity: [0.4, 1, 0.4] }}
+                      transition={{
+                        duration: 0.9,
+                        repeat: Infinity,
+                        delay: i * 0.15,
+                      }}
+                    >
+                      .
+                    </motion.span>
+                  ))}
+                </p>
+              </motion.div>
             ) : (
-              <ButtonPrimary
-                onClick={startScanning}
-                disabled={isLoading}
-                className="w-full"
+              <motion.div
+                key={view.kind}
+                className="flex-1 min-h-[30rem] flex flex-col items-center justify-center gap-8 text-center px-4"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3, ease }}
               >
-                {isLoading ? <LoadingCircleSmall /> : t("scanner.start")}
-              </ButtonPrimary>
+                <ResultVisual
+                  tone={
+                    view.kind === "error"
+                      ? "error"
+                      : view.kind === "inside"
+                        ? "info"
+                        : "success"
+                  }
+                />
+                <div className="flex flex-col gap-3 items-center">
+                  <h3 className="font-primary font-medium text-[2.2rem] lg:text-[2.6rem] leading-[1.2] text-black">
+                    {view.kind === "done"
+                      ? view.checkedOut
+                        ? ts("checkout_title")
+                        : ts("success_title")
+                      : view.kind === "inside"
+                        ? ts("inside_title")
+                        : view.title}
+                  </h3>
+                  <p className="font-sans text-[1.5rem] leading-8 text-neutral-600 max-w-[34rem]">
+                    {view.kind === "done"
+                      ? view.checkedOut
+                        ? ts("checkout_body", {
+                            name: view.ticket?.fullName ?? "",
+                          })
+                        : ts("success_body")
+                      : view.kind === "inside"
+                        ? ts("inside_body", { name: view.scan.ticket.fullName })
+                        : view.message}
+                  </p>
+                </div>
+                {(view.kind === "done" ||
+                  view.kind === "inside" ||
+                  (view.kind === "error" && view.ticket)) && (
+                  <TicketCard
+                    ticket={
+                      view.kind === "inside" ? view.scan.ticket : view.ticket!
+                    }
+                    stats={
+                      view.kind === "inside"
+                        ? [
+                            {
+                              label: ts("time_inside"),
+                              value: formatDuration(
+                                view.scan.totalMinutesInside,
+                              ),
+                            },
+                            {
+                              label: ts("entries"),
+                              value: String(view.scan.entriesCount),
+                            },
+                          ]
+                        : view.kind === "done"
+                          ? [
+                              view.checkedOut
+                                ? {
+                                    label: ts("stayed"),
+                                    value: formatDuration(
+                                      view.sessionMinutes ?? 0,
+                                    ),
+                                  }
+                                : {
+                                    label: ts("time_inside"),
+                                    value: formatDuration(
+                                      view.totalMinutesInside ?? 0,
+                                    ),
+                                  },
+                              {
+                                label: ts("entries"),
+                                value: String(view.entriesCount ?? 0),
+                              },
+                            ]
+                          : []
+                    }
+                  />
+                )}
+              </motion.div>
             )}
-            <DialogClose ref={closeRef} className="sr-only"></DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+          </AnimatePresence>
+        </div>
+
+        {/* Footer (Figma: Close + Add check-in device; the device button is
+            left out for now). */}
+        <div className="flex gap-4 pt-6 shrink-0">
+          {showInputs ? (
+            <button
+              type="button"
+              className={secondaryFooter}
+              onClick={() => openChange(false)}
+            >
+              {ts("close")}
+            </button>
+          ) : view.kind === "inside" ? (
+            <>
+              <button type="button" className={secondaryFooter} onClick={next}>
+                {ts("cancel")}
+              </button>
+              <button
+                type="button"
+                className={primaryFooter}
+                onClick={checkOut}
+              >
+                {ts("check_out")}
+              </button>
+            </>
+          ) : view.kind === "done" ? (
+            <button type="button" className={secondaryFooter} onClick={next}>
+              {ts("continue")}
+            </button>
+          ) : view.kind === "error" ? (
+            <button type="button" className={secondaryFooter} onClick={next}>
+              {ts("retry")}
+            </button>
+          ) : null}
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 }
 
-function TicketInfo({
-  ticket,
+/** Figma's grey square with the four black corner marks. */
+function ScanBox({
+  active,
+  onTap,
+  label,
+  children,
 }: {
-  ticket: { fullName: string; ticketName: string; ticketType: string };
+  active: boolean;
+  onTap: () => void;
+  label: string;
+  children?: React.ReactNode;
+}) {
+  const corner = "absolute w-[4.2rem] h-[4.2rem] border-black border-[.4rem]";
+  return (
+    <div className="relative w-full aspect-square lg:aspect-auto lg:h-[min(45rem,calc(100dvh-30rem))] lg:min-h-[18rem] rounded-[2rem] bg-neutral-100 overflow-hidden">
+      {active ? (
+        <div className="absolute inset-0 flex items-center justify-center [&>*]:w-full">
+          {children}
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={onTap}
+          className="absolute inset-0 flex items-center justify-center cursor-pointer font-sans text-[1.6rem] text-primary-500 group"
+        >
+          <motion.span
+            animate={{ opacity: [1, 0.55, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            {label}
+          </motion.span>
+        </button>
+      )}
+      {/* The corner marks sit over the camera feed too. */}
+      <div className="pointer-events-none absolute inset-[18%_16%]">
+        <span
+          className={cn(
+            corner,
+            "top-0 left-0 border-r-0 border-b-0 rounded-tl-[1.2rem]",
+          )}
+        />
+        <span
+          className={cn(
+            corner,
+            "top-0 right-0 border-l-0 border-b-0 rounded-tr-[1.2rem]",
+          )}
+        />
+        <span
+          className={cn(
+            corner,
+            "bottom-0 left-0 border-r-0 border-t-0 rounded-bl-[1.2rem]",
+          )}
+        />
+        <span
+          className={cn(
+            corner,
+            "bottom-0 right-0 border-l-0 border-t-0 rounded-br-[1.2rem]",
+          )}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ResultVisual({ tone }: { tone: "success" | "error" | "info" }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.6, rotate: -8 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      transition={{ type: "spring", stiffness: 260, damping: 16 }}
+    >
+      {tone === "success" ? (
+        <Image src={SuccessBadge} alt="" width={96} height={96} priority />
+      ) : (
+        <span
+          className={cn(
+            "w-[6.4rem] h-[6.4rem] rounded-[1.4rem] flex items-center justify-center font-primary font-bold text-[3.6rem] text-white shadow-[inset_0_-6px_0_rgba(0,0,0,0.15),0_10px_20px_rgba(0,0,0,0.12)]",
+            tone === "error"
+              ? "bg-linear-to-b from-[#F06464] to-[#D93636]"
+              : "bg-linear-to-b from-[#F5A524] to-[#E07B00]",
+          )}
+          aria-hidden
+        >
+          !
+        </span>
+      )}
+    </motion.div>
+  );
+}
+
+function TicketCard({
+  ticket,
+  stats,
+}: {
+  ticket: TicketInfo;
+  stats: { label: string; value: string }[];
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 w-full">
-      <span className="font-semibold text-[1.8rem] leading-8 text-neutral-800">
-        {ticket.fullName}
-      </span>
-      <span className="text-[1.4rem] text-neutral-500">
-        {ticket.ticketName}
-      </span>
-      <span className="uppercase text-[1.1rem] font-bold px-3 py-1 rounded-full bg-white border border-neutral-200 text-[#EF1870]">
-        {ticket.ticketType}
-      </span>
-    </div>
-  );
-}
-
-// The decision view shown after a successful scan: ticket identity, current
-// presence, time already spent inside, and the contextually-available action
-// (the actual button lives in the footer).
-function ScanDecisionView({ result }: { result: ScanResult }) {
-  const t = useTranslations("Events.single_event.scanner");
-  const locale = useLocale();
-
-  if (result.status !== "success") {
-    return (
-      <div className="flex flex-col items-center gap-6 p-6 bg-red-50 rounded-2xl border border-red-200 w-full">
-        <CloseCircle size={52} color="#dc2626" variant="Bulk" />
-        <span className="text-red-700 font-semibold text-[2rem] leading-8">
-          {t("failed")}
-        </span>
-        <p className="text-[1.4rem] text-neutral-600 text-center leading-7">
-          {result.message}
-        </p>
-      </div>
-    );
-  }
-
-  const inside = result.presence === "inside";
-  const since = result.currentSessionCheckedInAt
-    ? DateTime.fromISO(result.currentSessionCheckedInAt)
-        .setLocale(locale)
-        .toFormat("HH:mm")
-    : null;
-
-  return (
-    <div
-      className={`flex flex-col items-center gap-6 p-6 rounded-2xl border w-full ${
-        inside
-          ? "bg-green-50 border-green-200"
-          : "bg-neutral-50 border-neutral-200"
-      }`}
-    >
-      <span
-        className={`uppercase text-[1.1rem] font-bold px-4 py-1 rounded-full ${
-          inside ? "bg-green-100 text-green-700" : "bg-neutral-200 text-neutral-600"
-        }`}
-      >
-        {inside ? t("inside") : t("outside")}
-      </span>
-      <TicketInfo ticket={result.ticket} />
-      <div className="flex items-center justify-center gap-8 w-full pt-2 border-t border-neutral-200/70">
-        <div className="flex flex-col items-center">
-          <span className="text-[1.1rem] uppercase font-bold text-neutral-500">
-            {t("time_inside")}
-          </span>
-          <span className="text-[1.6rem] font-semibold text-neutral-800">
-            {formatDuration(result.totalMinutesInside)}
-          </span>
+    <div className="w-full max-w-[38rem] rounded-[1.5rem] border border-neutral-100 bg-neutral-50 p-6 flex flex-col gap-4">
+      <div className="flex items-center justify-between gap-4 text-left">
+        <div className="min-w-0">
+          <p className="font-sans font-semibold text-[1.6rem] leading-8 text-deep-100 truncate">
+            {ticket.fullName}
+          </p>
+          <p className="font-sans text-[1.3rem] leading-7 text-neutral-500">
+            {ticket.ticketName}
+          </p>
         </div>
-        <div className="flex flex-col items-center">
-          <span className="text-[1.1rem] uppercase font-bold text-neutral-500">
-            {t("entries")}
-          </span>
-          <span className="text-[1.6rem] font-semibold text-neutral-800">
-            {result.entriesCount}
-          </span>
-        </div>
-      </div>
-      {inside && since && (
-        <p className="text-[1.3rem] text-neutral-500">{t("since", { time: since })}</p>
-      )}
-      {!inside && !result.canCheckIn && (
-        <p className="text-[1.3rem] text-amber-600 text-center leading-7">
-          {result.checkInWindow === "too_early"
-            ? t("too_early", { time: result.opensAt ?? "" })
-            : t("closed")}
-        </p>
-      )}
-    </div>
-  );
-}
-
-// The confirmation view shown after a check-in or check-out completes.
-function ActionResultView({ result }: { result: ActionResult }) {
-  const t = useTranslations("Events.single_event.scanner");
-
-  if (result.status === "success") {
-    const isCheckout = "sessionMinutes" in result;
-    return (
-      <div className="flex flex-col items-center gap-6 p-6 bg-green-50 rounded-2xl border border-green-200 w-full">
-        <TickCircle size={52} color="#16a34a" variant="Bulk" />
-        <span className="text-green-700 font-semibold text-[2rem] leading-8">
-          {isCheckout ? t("checked_out") : t("checked_in")}
+        <span className="shrink-0 uppercase text-[1.1rem] font-bold px-3 py-1 rounded-full bg-white border border-neutral-200 text-[#EF1870]">
+          {ticket.ticketType}
         </span>
-        {result.ticket && <TicketInfo ticket={result.ticket} />}
-        {isCheckout && (
-          <div className="flex items-center justify-center gap-8 w-full pt-2 border-t border-green-200/70">
-            <div className="flex flex-col items-center">
+      </div>
+      {stats.length > 0 && (
+        <div className="flex border-t border-neutral-100 pt-4">
+          {stats.map((s) => (
+            <div key={s.label} className="flex-1 flex flex-col items-center">
               <span className="text-[1.1rem] uppercase font-bold text-neutral-500">
-                {t("stayed")}
+                {s.label}
               </span>
-              <span className="text-[1.6rem] font-semibold text-neutral-800">
-                {formatDuration(result.sessionMinutes)}
+              <span className="text-[1.6rem] font-semibold text-deep-100">
+                {s.value}
               </span>
             </div>
-            <div className="flex flex-col items-center">
-              <span className="text-[1.1rem] uppercase font-bold text-neutral-500">
-                {t("time_inside")}
-              </span>
-              <span className="text-[1.6rem] font-semibold text-neutral-800">
-                {formatDuration(result.totalMinutesInside)}
-              </span>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  if (result.status === "already_checked" || result.status === "not_inside") {
-    return (
-      <div className="flex flex-col items-center gap-6 p-6 bg-yellow-50 rounded-2xl border border-yellow-200 w-full">
-        <Warning2 size={52} color="#d97706" variant="Bulk" />
-        <span className="text-yellow-700 font-semibold text-[2rem] leading-8 text-center">
-          {result.message}
-        </span>
-        {"ticket" in result && result.ticket && (
-          <TicketInfo ticket={result.ticket} />
-        )}
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col items-center gap-6 p-6 bg-red-50 rounded-2xl border border-red-200 w-full">
-      <CloseCircle size={52} color="#dc2626" variant="Bulk" />
-      <span className="text-red-700 font-semibold text-[2rem] leading-8">
-        {t("failed")}
-      </span>
-      <p className="text-[1.4rem] text-neutral-600 text-center leading-7">
-        {result.message}
-      </p>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

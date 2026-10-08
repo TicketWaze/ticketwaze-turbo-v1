@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import Image from "next/image";
+import { ArrowRight2, Edit2 } from "iconsax-reactjs";
 import {
   EventRevision,
   RaffleRevision,
@@ -16,29 +17,28 @@ import {
   DialogFooter,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  ButtonNeutral,
-  ButtonPrimary,
-  ButtonRed,
-} from "@/components/shared/buttons";
+import { ButtonNeutral, ButtonRed } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import SettingsHeader from "@/components/shared/SettingsHeader";
+import FilterPill from "@/components/shared/FilterPill";
+import { Reveal } from "@/components/shared/motion";
+import {
+  Badge,
+  CARD,
+  EmptyState,
+  HEADER_PILL,
+  PILL_TONE,
+} from "@/components/shared/DataTable";
 import {
   ReviewEventRevisionAction,
   ReviewRaffleRevisionAction,
 } from "@/actions/Activity";
+import { Link } from "@/i18n/navigation";
 import formatDate from "@/lib/FormatDate";
-import PageLoader from "@/components/PageLoader";
+import { cn } from "@/lib/utils";
 
 const MIN_REASON_LENGTH = 10;
-
-/** Matches the status badge on the activities list. */
-function ChangedFieldBadge({ label }: { label: string }) {
-  return (
-    <span className="py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase px-2 rounded-[30px] bg-[#f5f5f5] text-warning">
-      {label}
-    </span>
-  );
-}
 
 /**
  * One before/after pair. Reviewing a diff is the whole point of this screen —
@@ -56,24 +56,24 @@ function FieldDiff({
 }) {
   const t = useTranslations("Activities.revisions");
   return (
-    <div className="flex flex-col gap-2 py-4 border-b border-neutral-100 last:border-b-0">
-      <span className="text-[1.1rem] font-bold uppercase leading-6 text-neutral-600">
+    <div className="flex flex-col gap-3 py-6 border-b border-neutral-100 last:border-b-0">
+      <span className="text-[1.1rem] font-bold uppercase leading-6 text-deep-100">
         {label}
       </span>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-[15px] bg-[#f5f5f5] p-4 flex flex-col gap-1">
-          <span className="text-[1.1rem] uppercase text-neutral-600">
+        <div className="rounded-[1rem] bg-neutral-100 p-5 flex flex-col gap-2">
+          <span className="text-[1.1rem] font-bold uppercase leading-6 text-neutral-600">
             {t("currently_live")}
           </span>
-          <div className="text-[1.4rem] leading-8 text-neutral-900 break-words">
+          <div className="text-[1.4rem] leading-8 text-deep-100 break-words">
             {before || "—"}
           </div>
         </div>
-        <div className="rounded-[15px] border border-warning bg-warning/10 p-4 flex flex-col gap-1">
-          <span className="text-[1.1rem] uppercase text-warning">
+        <div className="rounded-[1rem] border border-primary-200 bg-primary-50 p-5 flex flex-col gap-2">
+          <span className="text-[1.1rem] font-bold uppercase leading-6 text-primary-500">
             {t("proposed")}
           </span>
-          <div className="text-[1.4rem] leading-8 text-neutral-900 break-words">
+          <div className="text-[1.4rem] leading-8 text-deep-100 break-words">
             {after || "—"}
           </div>
         </div>
@@ -103,6 +103,19 @@ function PrizeList({
   );
 }
 
+function DiffImage({ src, alt }: { src?: string | null; alt: string }) {
+  if (!src) return null;
+  return (
+    <Image
+      src={src}
+      alt={alt}
+      width={220}
+      height={140}
+      className="rounded-[1rem] object-cover border border-neutral-100"
+    />
+  );
+}
+
 /** Rich text is stored as HTML; strip it so the diff stays readable. */
 function toPlainText(value: string | undefined) {
   if (!value) return "";
@@ -116,36 +129,97 @@ function toPlainText(value: string | undefined) {
 type RevisionRef = { kind: "event" | "raffle"; revisionId: string };
 
 /**
- * The approve / reject pair, identical for both kinds.
+ * One pending edit: the activity, who submitted it and when, the changed
+ * fields as badges, the diffs, then Reject / Approve.
  *
  * Module scope, not nested in the page component: a component declared inside
  * another is a new type on every render, so React unmounts and remounts it
  * instead of updating it.
  */
-function DecisionButtons({
+function RevisionCard({
   target,
+  title,
+  subtitle,
+  href,
+  typeLabel,
+  changed,
   isLoading,
   onApprove,
   onReject,
+  delay,
+  children,
 }: {
   target: RevisionRef;
+  title?: string;
+  subtitle: string;
+  href: string;
+  typeLabel: string;
+  changed: string[];
   isLoading: boolean;
   onApprove: (target: RevisionRef) => void;
   onReject: (target: RevisionRef) => void;
+  delay: number;
+  children: React.ReactNode;
 }) {
   const t = useTranslations("Activities.revisions");
   return (
-    <div className="flex flex-wrap items-center gap-4">
-      <ButtonPrimary disabled={isLoading} onClick={() => onApprove(target)}>
-        {t("approve")}
-      </ButtonPrimary>
-      <ButtonNeutral disabled={isLoading} onClick={() => onReject(target)}>
-        {t("reject")}
-      </ButtonNeutral>
-    </div>
+    <Reveal delay={delay} className={cn(CARD, "flex flex-col gap-2")}>
+      <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 pb-2">
+        <div className="flex flex-col gap-2 min-w-0">
+          <div className="flex items-center gap-3 flex-wrap">
+            <Link
+              href={href}
+              className="group inline-flex items-center gap-2 font-primary font-medium text-[1.8rem] leading-10 text-black hover:text-primary-500 transition-colors min-w-0"
+            >
+              <span className="truncate">{title}</span>
+              <ArrowRight2
+                size="16"
+                color="currentColor"
+                className="shrink-0 transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
+            <Badge tone="primary">{typeLabel}</Badge>
+          </div>
+          <span className="text-[1.4rem] leading-8 text-neutral-600">{subtitle}</span>
+        </div>
+        <div className="flex flex-wrap items-center gap-2 lg:justify-end lg:max-w-[40%]">
+          {changed.map((field) => (
+            <Badge key={field} tone="warning">
+              {t(`fields.${field}` as never)}
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col">{children}</div>
+
+      <div className="flex items-center gap-[1rem] pt-4 lg:justify-end">
+        <button
+          type="button"
+          disabled={isLoading}
+          onClick={() => onReject(target)}
+          className={cn(HEADER_PILL, PILL_TONE.danger)}
+        >
+          {t("reject")}
+        </button>
+        <button
+          type="button"
+          disabled={isLoading}
+          onClick={() => onApprove(target)}
+          className={cn(HEADER_PILL, PILL_TONE.primary)}
+        >
+          {t("approve")}
+        </button>
+      </div>
+    </Reveal>
   );
 }
 
+/**
+ * Settings → Pending Edits: changes organisers made to live events and
+ * raffles, held until an admin approves them. Oldest first, as the API sends
+ * them; the type pill narrows to one kind.
+ */
 export default function RevisionsPageContent({
   revisions,
   raffleRevisions = [],
@@ -161,6 +235,7 @@ export default function RevisionsPageContent({
   const [isLoading, setIsLoading] = useState(false);
   const [rejecting, setRejecting] = useState<RevisionRef | null>(null);
   const [reason, setReason] = useState("");
+  const [kind, setKind] = useState<"all" | "event" | "raffle">("all");
 
   function handleRejectOpenChange(open: boolean) {
     if (!open) {
@@ -208,253 +283,182 @@ export default function RevisionsPageContent({
     decide(target, "approve");
   }
 
+  const total = revisions.length + raffleRevisions.length;
+  const showEvents = kind !== "raffle";
+  const showRaffles = kind !== "event";
+  const shown = (showEvents ? revisions.length : 0) + (showRaffles ? raffleRevisions.length : 0);
+  let index = 0;
+  const nextDelay = () => Math.min(index++ * 0.05, 0.3);
+
   return (
-    <div className="overflow-y-scroll flex flex-col gap-8">
-      <PageLoader isLoading={isLoading} />
+    <div className={cn(PAGE_SCROLLER, "gap-0")} aria-busy={isLoading}>
+      <SettingsHeader
+        title={t("title")}
+        description={t("subtitle")}
+        actions={
+          total > 0 && (
+            <FilterPill
+              label={t("filter_label")}
+              value={kind}
+              defaultValue="all"
+              placeholder={t("filter_all", { count: total })}
+              options={[
+                { value: "all", label: t("filter_all", { count: total }) },
+                { value: "event", label: t("filter_events", { count: revisions.length }) },
+                { value: "raffle", label: t("filter_raffles", { count: raffleRevisions.length }) },
+              ]}
+              onChange={(v) => setKind(v as typeof kind)}
+            />
+          )
+        }
+      />
 
-      <div className="flex flex-col gap-2">
-        <h4 className="font-medium font-primary text-[1.8rem] leading-10 text-black">
-          {t("title")}
-        </h4>
-        <p className="text-[1.4rem] leading-8 text-neutral-600 max-w-216">
-          {t("subtitle")}
-        </p>
+      {shown === 0 && <EmptyState Icon={Edit2} text={t("empty")} />}
+
+      <div className="flex flex-col gap-8 pb-10">
+        {showEvents &&
+          revisions.map((revision) => {
+            const event = revision.event;
+            const changed = revision.changedFields ?? [];
+            const liveFirstDay = event?.eventDays?.find((d) => d.dayNumber === 1);
+            const proposedFirstDay = revision.payload?.eventDays?.find(
+              (d) => d.dayNumber === 1,
+            );
+
+            return (
+              <RevisionCard
+                key={revision.revisionId}
+                target={{ kind: "event", revisionId: revision.revisionId }}
+                title={event?.eventName}
+                subtitle={`${event?.organisation?.organisationName ?? ""} · ${t("submitted")} ${formatDate(revision.createdAt, locale, "local")}`}
+                href={`/activities/${revision.eventId}`}
+                typeLabel={t("type_event")}
+                changed={changed}
+                isLoading={isLoading}
+                onApprove={approve}
+                onReject={setRejecting}
+                delay={nextDelay()}
+              >
+                {changed.includes("name") && (
+                  <FieldDiff
+                    label={t("fields.name")}
+                    before={event?.eventName}
+                    after={revision.payload?.eventName}
+                  />
+                )}
+                {changed.includes("description") && (
+                  <FieldDiff
+                    label={t("fields.description")}
+                    before={toPlainText(event?.eventDescription)}
+                    after={toPlainText(revision.payload?.eventDescription)}
+                  />
+                )}
+                {changed.includes("venue") && (
+                  <FieldDiff
+                    label={t("fields.venue")}
+                    before={event?.address}
+                    after={revision.payload?.address}
+                  />
+                )}
+                {changed.includes("date") && (
+                  <FieldDiff
+                    label={t("fields.date")}
+                    before={
+                      liveFirstDay &&
+                      `${formatDate(liveFirstDay.eventDate, locale, "local")} · ${liveFirstDay.startTime}`
+                    }
+                    after={
+                      proposedFirstDay &&
+                      `${formatDate(proposedFirstDay.eventDate, locale, "local")} · ${proposedFirstDay.startTime}`
+                    }
+                  />
+                )}
+                {changed.includes("image") && (
+                  <FieldDiff
+                    label={t("fields.image")}
+                    before={<DiffImage src={event?.eventImageUrl} alt={t("currently_live")} />}
+                    after={<DiffImage src={revision.imageUrl} alt={t("proposed")} />}
+                  />
+                )}
+              </RevisionCard>
+            );
+          })}
+
+        {showRaffles &&
+          raffleRevisions.map((revision) => {
+            const raffle = revision.raffle;
+            const changed = revision.changedFields ?? [];
+
+            return (
+              <RevisionCard
+                key={revision.revisionId}
+                target={{ kind: "raffle", revisionId: revision.revisionId }}
+                title={raffle?.title}
+                subtitle={`${t("submitted")} ${formatDate(revision.createdAt, locale, "local")}`}
+                href={`/activities/raffle/${revision.raffleId}`}
+                typeLabel={t("type_raffle")}
+                changed={changed}
+                isLoading={isLoading}
+                onApprove={approve}
+                onReject={setRejecting}
+                delay={nextDelay()}
+              >
+                {changed.includes("name") && (
+                  <FieldDiff
+                    label={t("fields.name")}
+                    before={raffle?.title}
+                    after={revision.payload?.title}
+                  />
+                )}
+                {changed.includes("description") && (
+                  <FieldDiff
+                    label={t("fields.description")}
+                    before={toPlainText(raffle?.description)}
+                    after={toPlainText(revision.payload?.description)}
+                  />
+                )}
+                {changed.includes("prizes") && (
+                  <FieldDiff
+                    label={t("fields.prizes")}
+                    before={<PrizeList prizes={raffle?.prizes} />}
+                    after={<PrizeList prizes={revision.payload?.prizes} />}
+                  />
+                )}
+                {changed.includes("date") && (
+                  <FieldDiff
+                    label={t("fields.draw_date")}
+                    before={raffle?.drawAt && formatDate(raffle.drawAt, locale, "local")}
+                    after={
+                      revision.payload?.drawAt &&
+                      formatDate(revision.payload.drawAt, locale, "local")
+                    }
+                  />
+                )}
+                {changed.includes("sales_window") && (
+                  <FieldDiff
+                    label={t("fields.sales_close")}
+                    before={
+                      raffle?.salesEndAt && formatDate(raffle.salesEndAt, locale, "local")
+                    }
+                    after={
+                      revision.payload?.salesEndAt &&
+                      formatDate(revision.payload.salesEndAt, locale, "local")
+                    }
+                  />
+                )}
+                {changed.includes("image") && (
+                  <FieldDiff
+                    label={t("fields.image")}
+                    before={<DiffImage src={raffle?.coverImageUrl} alt={t("currently_live")} />}
+                    after={
+                      <DiffImage src={revision.payload?.coverImageUrl} alt={t("proposed")} />
+                    }
+                  />
+                )}
+              </RevisionCard>
+            );
+          })}
       </div>
-
-      {revisions.length === 0 && raffleRevisions.length === 0 && (
-        <p className="text-[1.6rem] leading-8 text-neutral-600">{t("empty")}</p>
-      )}
-
-      {revisions.length > 0 && raffleRevisions.length > 0 && (
-        <h5 className="font-medium font-primary text-[1.5rem] leading-8 text-neutral-900">
-          {t("events_heading")}
-        </h5>
-      )}
-
-      {revisions.map((revision) => {
-        const event = revision.event;
-        const changed = revision.changedFields ?? [];
-        const liveFirstDay = event?.eventDays?.find((d) => d.dayNumber === 1);
-        const proposedFirstDay = revision.payload?.eventDays?.find(
-          (d) => d.dayNumber === 1,
-        );
-
-        return (
-          <div
-            key={revision.revisionId}
-            className="flex flex-col gap-4 rounded-[15px] border border-neutral-100 p-6"
-          >
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-              <div className="flex flex-col gap-1">
-                <span className="text-[1.6rem] font-medium leading-8 text-neutral-900">
-                  {event?.eventName}
-                </span>
-                <span className="text-[1.3rem] leading-6 text-neutral-600">
-                  {event?.organisation?.organisationName} · {t("submitted")}{" "}
-                  {formatDate(revision.createdAt, locale, "local")}
-                </span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {changed.map((field) => (
-                  <ChangedFieldBadge
-                    key={field}
-                    label={t(`fields.${field}` as never)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col">
-              {changed.includes("name") && (
-                <FieldDiff
-                  label={t("fields.name")}
-                  before={event?.eventName}
-                  after={revision.payload?.eventName}
-                />
-              )}
-              {changed.includes("description") && (
-                <FieldDiff
-                  label={t("fields.description")}
-                  before={toPlainText(event?.eventDescription)}
-                  after={toPlainText(revision.payload?.eventDescription)}
-                />
-              )}
-              {changed.includes("venue") && (
-                <FieldDiff
-                  label={t("fields.venue")}
-                  before={event?.address}
-                  after={revision.payload?.address}
-                />
-              )}
-              {changed.includes("date") && (
-                <FieldDiff
-                  label={t("fields.date")}
-                  before={
-                    liveFirstDay &&
-                    `${formatDate(liveFirstDay.eventDate, locale, "local")} · ${liveFirstDay.startTime}`
-                  }
-                  after={
-                    proposedFirstDay &&
-                    `${formatDate(proposedFirstDay.eventDate, locale, "local")} · ${proposedFirstDay.startTime}`
-                  }
-                />
-              )}
-              {changed.includes("image") && (
-                <FieldDiff
-                  label={t("fields.image")}
-                  before={
-                    event?.eventImageUrl && (
-                      <Image
-                        src={event.eventImageUrl}
-                        alt={t("currently_live")}
-                        width={220}
-                        height={140}
-                        className="rounded-[15px] object-cover mt-2"
-                      />
-                    )
-                  }
-                  after={
-                    revision.imageUrl && (
-                      <Image
-                        src={revision.imageUrl}
-                        alt={t("proposed")}
-                        width={220}
-                        height={140}
-                        className="rounded-[15px] object-cover mt-2"
-                      />
-                    )
-                  }
-                />
-              )}
-            </div>
-
-            <DecisionButtons
-              target={{ kind: "event", revisionId: revision.revisionId }}
-              isLoading={isLoading}
-              onApprove={approve}
-              onReject={setRejecting}
-            />
-          </div>
-        );
-      })}
-
-      {raffleRevisions.length > 0 && revisions.length > 0 && (
-        <h5 className="font-medium font-primary text-[1.5rem] leading-8 text-neutral-900">
-          {t("raffles_heading")}
-        </h5>
-      )}
-
-      {raffleRevisions.map((revision) => {
-        const raffle = revision.raffle;
-        const changed = revision.changedFields ?? [];
-
-        return (
-          <div
-            key={revision.revisionId}
-            className="flex flex-col gap-4 rounded-[15px] border border-neutral-100 p-6"
-          >
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-              <div className="flex flex-col gap-1">
-                <span className="text-[1.6rem] font-medium leading-8 text-neutral-900">
-                  {raffle?.title}
-                </span>
-                <span className="text-[1.3rem] leading-6 text-neutral-600">
-                  {t("submitted")}{" "}
-                  {formatDate(revision.createdAt, locale, "local")}
-                </span>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                {changed.map((field) => (
-                  <ChangedFieldBadge
-                    key={field}
-                    label={t(`fields.${field}` as never)}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col">
-              {changed.includes("name") && (
-                <FieldDiff
-                  label={t("fields.name")}
-                  before={raffle?.title}
-                  after={revision.payload?.title}
-                />
-              )}
-              {changed.includes("description") && (
-                <FieldDiff
-                  label={t("fields.description")}
-                  before={toPlainText(raffle?.description)}
-                  after={toPlainText(revision.payload?.description)}
-                />
-              )}
-              {changed.includes("prizes") && (
-                <FieldDiff
-                  label={t("fields.prizes")}
-                  before={<PrizeList prizes={raffle?.prizes} />}
-                  after={<PrizeList prizes={revision.payload?.prizes} />}
-                />
-              )}
-              {changed.includes("date") && (
-                <FieldDiff
-                  label={t("fields.draw_date")}
-                  before={raffle?.drawAt && formatDate(raffle.drawAt, locale, "local")}
-                  after={
-                    revision.payload?.drawAt &&
-                    formatDate(revision.payload.drawAt, locale, "local")
-                  }
-                />
-              )}
-              {changed.includes("sales_window") && (
-                <FieldDiff
-                  label={t("fields.sales_close")}
-                  before={
-                    raffle?.salesEndAt && formatDate(raffle.salesEndAt, locale, "local")
-                  }
-                  after={
-                    revision.payload?.salesEndAt &&
-                    formatDate(revision.payload.salesEndAt, locale, "local")
-                  }
-                />
-              )}
-              {changed.includes("image") && (
-                <FieldDiff
-                  label={t("fields.image")}
-                  before={
-                    raffle?.coverImageUrl && (
-                      <Image
-                        src={raffle.coverImageUrl}
-                        alt={t("currently_live")}
-                        width={220}
-                        height={140}
-                        className="rounded-[15px] object-cover mt-2"
-                      />
-                    )
-                  }
-                  after={
-                    revision.payload?.coverImageUrl && (
-                      <Image
-                        src={revision.payload.coverImageUrl}
-                        alt={t("proposed")}
-                        width={220}
-                        height={140}
-                        className="rounded-[15px] object-cover mt-2"
-                      />
-                    )
-                  }
-                />
-              )}
-            </div>
-
-            <DecisionButtons
-              target={{ kind: "raffle", revisionId: revision.revisionId }}
-              isLoading={isLoading}
-              onApprove={approve}
-              onReject={setRejecting}
-            />
-          </div>
-        );
-      })}
 
       {/* Rejection takes a reason, the same way every other consequential admin
           decision does — see RefundActivityDialog and EventStatusDialog. */}
@@ -466,8 +470,6 @@ export default function RevisionsPageContent({
           <p className="text-[1.4rem] leading-8 text-neutral-600">
             {t("reject_description")}
           </p>
-          {/* Same markup as RefundActivityDialog's reason field — the other
-              place an admin has to justify a decision. */}
           <div className="flex flex-col gap-2">
             <label className="text-[1.4rem] font-medium text-black">
               {t("reason_label")} <span className="text-[#E53935]">*</span>

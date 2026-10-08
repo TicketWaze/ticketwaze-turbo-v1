@@ -1,25 +1,20 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import TopBar from "@/components/shared/TopBar";
+import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
+import BackButton from "@/components/shared/BackButton";
+import { WithdrawalRequest } from "@ticketwaze/typescript-config";
 import { auth } from "@/lib/auth";
-import { OrganisationWithdrawalRequest } from "@ticketwaze/typescript-config";
 import { getLocale, getTranslations } from "next-intl/server";
-import WithdrawalRequestPageContent from "./WithdrawalRequestPageContent";
+import { WithdrawalsTable } from "../components/FinanceTables";
 
-export default async function WithdrawalPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ page: string | undefined }>;
-}) {
+/** Every withdrawal, 15 a page, with the filter and search over all of them. */
+export default async function WithdrawalPage() {
   const t = await getTranslations("Finance");
   const locale = await getLocale();
   const session = await auth();
-  const { page } = await searchParams;
   const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/withdrawal?limit=15&page=${page ?? 1}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/organisations/${session?.activeOrganisation.organisationId}/withdrawal?limit=500&page=1`,
     {
-      method: "GET",
       headers: {
         "Content-Type": "application/json",
         "Accept-Language": locale,
@@ -28,9 +23,7 @@ export default async function WithdrawalPage({
       },
     },
   );
-  if (request.status === 403) {
-    return <UnauthorizedView />;
-  }
+  if (request.status === 403) return <UnauthorizedView />;
   const response = await request.json().catch(() => null);
   if (!request.ok || !response?.withdrawalRequest) {
     return (
@@ -39,12 +32,18 @@ export default async function WithdrawalPage({
       </OrganizerLayout>
     );
   }
-  const withdrawalRequest: OrganisationWithdrawalRequest =
-    response.withdrawalRequest;
+  const requests: WithdrawalRequest[] = response.withdrawalRequest.data ?? [];
   return (
     <OrganizerLayout title="">
-      <TopBar title={t("withdrawal.title")} />
-      <WithdrawalRequestPageContent withdrawalRequest={withdrawalRequest} />
+      <div className="flex flex-col gap-8 pb-16 flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+        <BackButton text={t("back")} />
+        <WithdrawalsTable
+          requests={requests}
+          currency={session?.activeOrganisation?.currency ?? "HTG"}
+          pageSize={15}
+          titleAs="h1"
+        />
+      </div>
     </OrganizerLayout>
   );
 }

@@ -84,7 +84,8 @@ export default function AttendeePricePreview({
    * what the organiser receives "depends on how they pay" — inside a band it
    * does not, because no processor percentage is deducted at all.
    */
-  const isFlatBand = htgFlatBandFee(numericPrice) !== null && currency === "HTG";
+  const isFlatBand =
+    htgFlatBandFee(numericPrice) !== null && currency === "HTG";
 
   if (absorbFees) {
     const net = getOrganiserNetRange(

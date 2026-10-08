@@ -20,6 +20,16 @@ const csp = mergeCsp(CSP_SOURCES.googleAuth, {
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  experimental: {
+    // Campaign images are uploaded through a server action, whose default body
+    // limit is 1MB — less than a single phone photo. They are downscaled in the
+    // browser first (lib/compressImage.ts), so this is headroom, not an
+    // invitation to send raw files. Keep in step with the API's multipart limit
+    // in config/bodyparser.ts.
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders({ csp, allow: ["camera"] }) }];
   },

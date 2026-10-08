@@ -1,17 +1,15 @@
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import { auth } from "@/lib/auth";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getLocale } from "next-intl/server";
 import SubscriptionPageContent from "./SubscriptionPageContent";
 import {
   OrganisationSubscription,
   MembershipTier,
 } from "@ticketwaze/typescript-config";
-import BackButton from "@/components/shared/BackButton";
 import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
 
 export default async function SubscriptionPage() {
-  const t = await getTranslations("Settings.subscriptions");
   const locale = await getLocale();
   const session = await auth();
   const request = await fetch(
@@ -42,18 +40,6 @@ export default async function SubscriptionPage() {
   const membershipTier: MembershipTier = response.membershipTier;
   return (
     <OrganizerLayout title="">
-      <BackButton text={t("back")} />
-      {/* <TopBar title={t("title")}>
-        <div className="flex-1 hidden lg:block p-[2px] rounded-[30px] bg-gradient-to-r from-primary-500 via-[#E752AE] to-[#DD068B]">
-          <LinkPrimary
-            className="bg-transparent gap-4 items-center"
-            href="/settings/subscriptions/upgrade"
-          >
-            <Crown size="24" color="#fff" variant="Bulk" />
-            {t("upgrade")}
-          </LinkPrimary>
-        </div>
-      </TopBar> */}
       <SubscriptionPageContent
         organisationSubscriptions={organisationSubscriptions}
         membershipTier={membershipTier}

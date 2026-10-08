@@ -33,6 +33,10 @@ import { Warning2 } from "iconsax-reactjs";
 import { Event } from "@ticketwaze/typescript-config";
 import RichTextEditor from "@/components/shared/RichTextEditor";
 import ToggleIcon from "@/components/shared/ToggleIcon";
+import { Section } from "@/components/create/CreateParts";
+
+const selectTriggerClass =
+  "bg-neutral-100 w-full rounded-[5rem] data-[size=default]:h-[6rem] shadow-none focus-visible:ring-0 focus-visible:border-primary-500 px-8 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus:border-primary-500 data-[placeholder]:text-neutral-600";
 import EventDocumentField from "@/components/shared/EventDocumentField";
 import type useEventDocumentField from "@/hooks/useEventDocumentField";
 
@@ -117,17 +121,13 @@ export default function BasicDetails({
   return (
     <div className="flex flex-col gap-12">
       {/* image */}
-      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
-          {t("thumbnail")}
-        </span>
-
+      <Section id="thumbnail" title={t("thumbnail")}>
         {imagePreview ? (
-          <div className="relative w-full h-[300px]">
+          <div className="relative w-full h-[18rem] rounded-[1rem] overflow-hidden group">
             <img
               src={imagePreview}
               alt="Preview"
-              className="w-full h-[300px] object-cover object-top rounded-2xl"
+              className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
             />
             <input
               type="file"
@@ -137,7 +137,7 @@ export default function BasicDetails({
             />
           </div>
         ) : (
-          <div className="py-24 px-[1.4rem] rounded-[7px] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] flex items-center justify-center relative">
+          <div className="py-20 px-[1.4rem] rounded-[.75rem] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] hover:bg-primary-50/40 transition-colors flex items-center justify-center relative">
             <div className="flex flex-col items-center gap-4 ">
               <p className="text-[1.5rem] leading-8 text-neutral-500 ">
                 {t("thumbnail_text")}{" "}
@@ -158,12 +158,9 @@ export default function BasicDetails({
         <span className="text-[1.2rem] px-8 py-2 text-failure">
           {errors.eventImage?.message}
         </span>
-      </div>
+      </Section>
       {/* Event details */}
-      <div className="p-[15px] max-w-[540px] w-full mx-auto rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
-          {t("event_details")}
-        </span>
+      <Section id="about" title={t("event_details")}>
         <Input
           {...register("eventName")}
           type="text"
@@ -196,10 +193,10 @@ export default function BasicDetails({
             />
           )}
         />
-      </div>
+      </Section>
 
       {/* mark as private */}
-      <div className="max-w-216 w-full mx-auto p-6 rounded-[15px] flex flex-col gap-6 border border-neutral-100">
+      <Section>
         <div className="flex items-center justify-between">
           <p className="text-[1.6rem] leading-8 text-deep-100 max-w-152">
             {t("mark_as_private")}
@@ -218,13 +215,10 @@ export default function BasicDetails({
         <p className="text-[1.2rem] leading-8 text-neutral-800">
           {t("private_tip")}
         </p>
-      </div>
+      </Section>
 
       {/* location */}
-      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
-          {t("location")}
-        </span>
+      <Section title={t("location")}>
         <Input
           {...register("address")}
           type="text"
@@ -243,7 +237,7 @@ export default function BasicDetails({
                 onValueChange={field.onChange}
                 defaultValue={availableCountries[0]}
               >
-                <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500">
+                <SelectTrigger className={selectTriggerClass}>
                   <SelectValue placeholder={t("country")} />
                 </SelectTrigger>
                 <SelectContent>
@@ -284,7 +278,7 @@ export default function BasicDetails({
                   }}
                   defaultValue={"sud"}
                 >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
+                  <SelectTrigger className={selectTriggerClass}>
                     <SelectValue placeholder={t("state")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -319,7 +313,7 @@ export default function BasicDetails({
                   value={field.value}
                   onValueChange={field.onChange}
                 >
-                  <SelectTrigger className="bg-neutral-100 w-full rounded-[5rem] p-12 text-[1.5rem] leading-8 placeholder:text-neutral-600 text-deep-200 outline-none border border-transparent focus:border-primary-500 z">
+                  <SelectTrigger className={selectTriggerClass}>
                     <SelectValue placeholder={t("city")} />
                   </SelectTrigger>
                   <SelectContent>
@@ -345,16 +339,13 @@ export default function BasicDetails({
             )}
           </div>
         </div>
-      </div>
+      </Section>
 
       {/* tags */}
-      <div className="max-w-[540px] w-full mx-auto p-[15px] rounded-[15px] flex flex-col gap-[15px] border border-neutral-100">
-        <span className="font-semibold text-[16px] leading-[22px] text-deep-100">
-          {t("event_tags")}
-        </span>
+      <Section title={t("event_tags")}>
         <div className="w-full">
           <div
-            className="flex flex-wrap gap-2 bg-neutral-100 w-full rounded-[5rem] p-[20px] text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
+            className="flex flex-wrap items-center gap-2 bg-neutral-100 w-full rounded-[5rem] min-h-[6rem] px-8 py-3 text-[1.5rem] leading-8 text-deep-200 outline-none border border-transparent focus-within:border-primary-500 cursor-text"
             onClick={() => inputRef.current?.focus()}
           >
             {tags.map((tag) => (
@@ -389,7 +380,7 @@ export default function BasicDetails({
             </p>
           </div>
         </div>
-      </div>
+      </Section>
 
       {/* Optional handout, delivered to ticket holders once the event starts. */}
       <EventDocumentField
@@ -407,9 +398,7 @@ export default function BasicDetails({
         error={document.error}
       />
 
-      <div></div>
-      <div></div>
-      <div></div>
+      <div className="h-24 lg:hidden" />
     </div>
   );
 }

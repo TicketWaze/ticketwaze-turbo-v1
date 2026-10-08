@@ -1,9 +1,12 @@
 import React from "react";
-import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-white-org.svg";
+import Logo from "@ticketwaze/ui/assets/images/logo-horizontal-white.svg";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
+import SectionIntlProvider from "@/components/i18n/SectionIntlProvider";
 import ticket from "@ticketwaze/ui/assets/images/ticket-auth-bg.svg";
 
+// Figma "Organizers + Mobile" → Authentication: same panel as the attendee
+// app (small logo, 45px headline); the copy stays organizer-specific.
 export default async function Layout({
   children,
 }: {
@@ -13,14 +16,16 @@ export default async function Layout({
   return (
     <section className="lg:p-8 lg:bg-primary-500 h-dvh overflow-hidden grid lg:grid-cols-2 gap-8">
       <div className="pt-12 pl-12 hidden lg:flex flex-col overflow-y-scroll no-scrollbar bg">
-        <Image
-          src={Logo}
-          alt="Ticket Waze Logo"
-          width={250}
-          height={40}
-          className="mb-20"
-        />
-        <h1 className="mb-8 font-primary font-bold text-[4.5rem] leading-[6.2rem] text-white max-w-240">
+        <a href={process.env.NEXT_PUBLIC_WEBSITE_URL ?? "https://ticketwaze.com"}>
+          <Image
+            src={Logo}
+            alt="Ticket Waze Logo"
+            width={140}
+            height={40}
+            className="mb-20"
+          />
+        </a>
+        <h1 className="mb-8 font-primary font-bold text-[4.5rem] leading-[6.2rem] text-white max-w-[53rem]">
           {t("title")}
         </h1>
         <p className="mb-14 text-[1.8rem] leading-10 text-neutral-200 max-w-[42.2rem]">
@@ -28,8 +33,9 @@ export default async function Layout({
         </p>
         <Image src={ticket} alt="Ticket auth" className=" self-center" />
       </div>
-      <main className="bg-white lg:rounded-[3rem] overflow-x-hidden px-6 lg:px-32 overflow-y-scroll">
-        {children}
+      <main className="bg-white lg:rounded-[3rem] px-6 lg:px-32 overflow-x-hidden overflow-y-scroll">
+        {/* The messages this section's client components use. */}
+        <SectionIntlProvider namespaces={["Auth"]}>{children}</SectionIntlProvider>
       </main>
     </section>
   );

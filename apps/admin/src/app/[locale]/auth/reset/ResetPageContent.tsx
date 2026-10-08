@@ -1,456 +1,401 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useLocale, useTranslations } from "next-intl";
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod/v4";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
+import { signIn } from "next-auth/react";
+import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
+import { useRouter } from "@/i18n/navigation";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { LinkAccent } from "@/components/shared/Links";
+import OtpCodeInput, { emptyOtp } from "@/components/auth/OtpCodeInput";
+import mail from "@/assets/icons/mail-big.svg";
+import successBadge from "@/assets/images/auth/success-badge.png";
+import {
+  AuthError,
+  AuthHeading,
+  AuthItem,
+  AuthScreen,
+  AuthStatus,
+  FooterPill,
+  FooterPillText,
+  SigningIn,
+  StepFooter,
+  backPillClass,
+  pillActionClass,
+} from "@/components/auth/AuthParts";
 
-type Step = "email" | "otp" | "password";
+type Step = "email" | "code" | "password" | "done";
 
-const stepVariants = {
-  initial: { opacity: 0, x: 40 },
-  animate: { opacity: 1, x: 0, transition: { duration: 0.4 } },
-  exit: { opacity: 0, x: -40, transition: { duration: 0.25 } },
+const slide = {
+  initial: { opacity: 0, x: 30 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -30 },
+  transition: { duration: 0.22, ease: "easeInOut" as const },
 };
 
-function formatTime(seconds: number) {
-  const m = Math.floor(seconds / 60).toString().padStart(2, "0");
-  const s = (seconds % 60).toString().padStart(2, "0");
-  return `${m}:${s}`;
-}
-
+/**
+ * Figma "Admin" → Authentication → Reset: email (1/2) → mail sent →
+ * Create Password (2/2) → "Password Created", signing you in. Figma mails a
+ * link; the API mails a 6-digit code, entered on the mail-sent screen.
+ */
 export default function ResetPageContent() {
-  const t = useTranslations("Auth.forgot");
+  const t = useTranslations("Auth.reset");
+  const tFlow = useTranslations("Auth.flow");
+  const tErrors = useTranslations("Auth.errors");
+  const tLogin = useTranslations("Auth.login");
   const locale = useLocale();
+  const router = useRouter();
 
   const [step, setStep] = useState<Step>("email");
-  const [pendingEmail, setPendingEmail] = useState("");
+  const [email, setEmail] = useState("");
   const [resetToken, setResetToken] = useState("");
-  const [otpValues, setOtpValues] = useState(["", "", "", "", "", ""]);
-  const [otpError, setOtpError] = useState("");
-  const [samePasswordError, setSamePasswordError] = useState("");
-  const [secondsLeft, setSecondsLeft] = useState(600);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isResending, setIsResending] = useState(false);
-  const otpRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const [resendIn, setResendIn] = useState(0);
 
-  const EmailSchema = z.object({
-    email: z.email(t("errors.email")),
-  });
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const id = setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => clearTimeout(id);
+  }, [resendIn]);
+
+  /**
+   * POST /auth/admin/forgot-password. The answer is the same whether or not
+   * the address is an admin (no enumeration), so any success moves on.
+   */
+  async function sendCode(address: string) {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept-Language": locale },
+        body: JSON.stringify({ email: address }),
+      },
+    ).catch(() => null);
+    if (response?.status === 429) return "throttled" as const;
+    const json = await response?.json().catch(() => null);
+    if (json?.status !== "success") return "failed" as const;
+    setResendIn(Number(json.resendAfterSeconds ?? 60));
+    return "sent" as const;
+  }
+
+  // ── Step 1: email ──────────────────────────────────────────────────────────
+
+  const EmailSchema = z.object({ email: z.email(t("errors.email")) });
   type TEmail = z.infer<typeof EmailSchema>;
   const emailForm = useForm<TEmail>({ resolver: zodResolver(EmailSchema) });
+  const [emailError, setEmailError] = useState("");
+
+  async function submitEmail(data: TEmail) {
+    setEmailError("");
+    const address = data.email.trim().toLowerCase();
+    const outcome = await sendCode(address);
+    if (outcome === "sent") {
+      setEmail(address);
+      setOtp(emptyOtp());
+      setOtpError("");
+      setStep("code");
+    } else {
+      setEmailError(outcome === "throttled" ? tErrors("too_many") : tErrors("generic"));
+    }
+  }
+
+  // ── Step 2: the emailed code ───────────────────────────────────────────────
+
+  const [otp, setOtp] = useState(emptyOtp);
+  const [otpError, setOtpError] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+
+  async function verify(entered?: string | React.SyntheticEvent) {
+    const code = typeof entered === "string" ? entered : otp.join("");
+    if (code.length < 6 || isVerifying) return;
+    setIsVerifying(true);
+    setOtpError("");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password/verify-otp`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept-Language": locale },
+        body: JSON.stringify({ email, otp: code }),
+      },
+    ).catch(() => null);
+    const json = await response?.json().catch(() => null);
+    setIsVerifying(false);
+    if (json?.status === "success" && json.resetToken) {
+      setResetToken(json.resetToken);
+      setStep("password");
+      return;
+    }
+    setOtp(emptyOtp());
+    setOtpError(
+      response?.status === 429
+        ? tErrors("too_many")
+        : json?.code === "CODE_EXPIRED"
+          ? t("sent.errors.expired")
+          : t("sent.errors.invalid"),
+    );
+  }
+
+  async function resend() {
+    if (resendIn > 0 || isResending) return;
+    setIsResending(true);
+    const outcome = await sendCode(email);
+    setIsResending(false);
+    setOtp(emptyOtp());
+    if (outcome === "sent") {
+      setOtpError("");
+      toast.success(t("sent.resent"));
+    } else {
+      setOtpError(outcome === "throttled" ? tErrors("too_many") : tErrors("generic"));
+    }
+  }
+
+  // ── Step 3: new password, then signed straight in ──────────────────────────
 
   const PasswordSchema = z
     .object({
       password: z
         .string()
-        .min(8, t("errors.password_length"))
-        .refine((p) => /[A-Z]/.test(p))
-        .refine((p) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p)),
+        .min(8, t("password.errors.password"))
+        .refine((p) => /[A-Z]/.test(p), t("password.errors.password"))
+        .refine(
+          (p) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(p),
+          t("password.errors.password"),
+        )
+        .refine((p) => /[0-9]/.test(p), t("password.errors.password")),
       password_confirmation: z.string(),
     })
     .refine((d) => d.password === d.password_confirmation, {
-      message: t("errors.password_match"),
+      message: t("password.errors.password_match"),
       path: ["password_confirmation"],
     });
   type TPassword = z.infer<typeof PasswordSchema>;
-  const passwordForm = useForm<TPassword>({ resolver: zodResolver(PasswordSchema) });
-
-  useEffect(() => {
-    if (step !== "otp") return;
-    setSecondsLeft(600);
-    const timer = setInterval(() => {
-      setSecondsLeft((s) => {
-        if (s <= 1) { clearInterval(timer); return 0; }
-        return s - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [step]);
-
-  async function submitEmail(data: TEmail) {
-    setIsLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: data.email }),
-        },
-      );
-      const json = await res.json();
-      toast.info(json.message || t("email.sent"));
-      setPendingEmail(data.email);
-      setStep("otp");
-    } catch {
-      toast.error(t("errors.failed"));
-    }
-    setIsLoading(false);
-  }
-
-  async function resendCode() {
-    setIsResending(true);
-    try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: pendingEmail }),
-        },
-      );
-      setOtpValues(["", "", "", "", "", ""]);
-      setOtpError("");
-      setSecondsLeft(600);
-      toast.success(t("otp.resent"));
-    } catch {
-      toast.error(t("errors.failed"));
-    }
-    setIsResending(false);
-  }
-
-  async function submitOtp() {
-    const otp = otpValues.join("");
-    if (otp.length < 6) return;
-    setIsLoading(true);
-    setOtpError("");
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password/verify-otp`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: pendingEmail, otp }),
-        },
-      );
-      const json = await res.json();
-      if (json.status !== "success") {
-        setOtpError(t("otp.error"));
-        setOtpValues(["", "", "", "", "", ""]);
-        otpRefs.current[0]?.focus();
-      } else {
-        setResetToken(json.resetToken);
-        setStep("password");
-      }
-    } catch {
-      setOtpError(t("otp.error"));
-    }
-    setIsLoading(false);
-  }
+  const passwordForm = useForm<TPassword>({
+    resolver: zodResolver(PasswordSchema),
+  });
+  const [passwordError, setPasswordError] = useState("");
 
   async function submitPassword(data: TPassword) {
-    setSamePasswordError("");
-    setIsLoading(true);
-    try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/auth/admin/forgot-password/reset`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: pendingEmail,
-            resetToken,
-            password: data.password,
-            password_confirmation: data.password_confirmation,
-          }),
-        },
-      );
-      const json = await res.json();
-      if (json.status === "success") {
-        toast.success(t("password.success"));
-        window.location.href = `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/auth/login`;
-      } else if (json.status === "same") {
-        setSamePasswordError(t("errors.same"));
-      } else {
-        toast.error(t("errors.token_expired"));
-        setResetToken("");
-        setOtpValues(["", "", "", "", "", ""]);
-        setOtpError("");
-        passwordForm.reset();
+    setPasswordError("");
+    const result = await signIn("admin-reset", {
+      email,
+      resetToken,
+      password: data.password,
+      password_confirmation: data.password_confirmation,
+      redirect: false,
+    });
+    if (result?.error) {
+      if (result.code === "SAME_PASSWORD") {
+        setPasswordError(t("password.errors.same"));
+      } else if (result.code === "RESET_EXPIRED") {
+        toast.error(t("password.errors.expired"));
         setStep("email");
+      } else if (result.code === "TOO_MANY_ATTEMPTS") {
+        setPasswordError(tErrors("too_many"));
+      } else {
+        setPasswordError(tErrors("generic"));
       }
-    } catch {
-      toast.error(t("errors.failed"));
+      return;
     }
-    setIsLoading(false);
+    setStep("done");
+    setTimeout(() => {
+      window.location.href = `${process.env.NEXT_PUBLIC_ADMIN_URL}/${locale}/analytics`;
+    }, 1600);
   }
 
-  function handleOtpChange(index: number, value: string) {
-    if (!/^\d*$/.test(value)) return;
-    const next = [...otpValues];
-    next[index] = value.slice(-1);
-    setOtpValues(next);
-    if (value && index < 5) otpRefs.current[index + 1]?.focus();
-  }
-
-  function handleOtpKeyDown(index: number, e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key === "Backspace" && !otpValues[index] && index > 0) {
-      otpRefs.current[index - 1]?.focus();
-    }
-  }
-
-  function handleOtpPaste(e: React.ClipboardEvent) {
-    e.preventDefault();
-    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
-    if (!pasted) return;
-    const next = ["", "", "", "", "", ""];
-    for (let i = 0; i < pasted.length; i++) next[i] = pasted[i];
-    setOtpValues(next);
-    otpRefs.current[Math.min(pasted.length, 5)]?.focus();
-  }
+  // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col items-center justify-between gap-8 h-full pb-4">
-      <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
-        <AnimatePresence mode="wait">
-          {/* ── Step 1: Email ─────────────────────────────── */}
-          {step === "email" && (
-            <motion.form
-              key="email"
-              id="forgot-email-form"
-              variants={stepVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              onSubmit={emailForm.handleSubmit(submitEmail)}
-              className="flex flex-col gap-16 items-center"
+    <div className="flex flex-col items-center w-full h-full">
+      <AnimatePresence mode="wait" initial={false}>
+        {step === "email" && (
+          <motion.div key="email" {...slide} className="w-full h-full">
+            <AuthScreen
+              footer={
+                <StepFooter
+                  step={1}
+                  total={2}
+                  onBack={() => router.push("/auth/login")}
+                />
+              }
             >
-              <div className="flex flex-col gap-8 items-center">
-                <motion.h3
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                  className="font-medium font-primary text-[3.2rem] leading-14 text-black"
-                >
-                  {t("email.title")}
-                </motion.h3>
-                <motion.p
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="text-[1.8rem] text-center leading-10 text-neutral-700"
-                >
-                  {t("email.description")}
-                </motion.p>
-              </div>
-              <div className="w-full flex flex-col gap-6">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                >
-                  <Input
-                    error={emailForm.formState.errors.email?.message}
-                    type="email"
-                    {...emailForm.register("email")}
-                  >
-                    {t("email.placeholder")}
-                  </Input>
-                </motion.div>
-              </div>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                className="w-full hidden lg:flex flex-col gap-8"
+              <form
+                onSubmit={emailForm.handleSubmit(submitEmail)}
+                noValidate
+                className="flex flex-col gap-16 items-center w-full"
               >
-                <ButtonPrimary type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? <LoadingCircleSmall /> : t("email.cta")}
-                </ButtonPrimary>
-              </motion.div>
-            </motion.form>
-          )}
-
-          {/* ── Step 2: OTP ───────────────────────────────── */}
-          {step === "otp" && (
-            <motion.div
-              key="otp"
-              variants={stepVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              className="flex flex-col gap-16 items-center"
-            >
-              <div className="flex flex-col gap-8 items-center">
-                <h3 className="font-medium font-primary text-[3.2rem] leading-14 text-black">
-                  {t("otp.title")}
-                </h3>
-                <p className="text-[1.8rem] text-center leading-10 text-neutral-700">
-                  {t("otp.description")}{" "}
-                  <span className="font-semibold text-deep-200">{pendingEmail}</span>
-                </p>
-              </div>
-
-              <div className="flex flex-col items-center gap-4 w-full">
-                <div className="flex gap-3 justify-center" onPaste={handleOtpPaste}>
-                  {otpValues.map((val, i) => (
-                    <input
-                      key={i}
-                      ref={(el) => { otpRefs.current[i] = el; }}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={val}
-                      onChange={(e) => handleOtpChange(i, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(i, e)}
-                      className="w-[5.2rem] h-[5.6rem] text-center text-[2rem] font-semibold bg-neutral-100 rounded-2xl border border-transparent focus:border-primary-500 outline-none transition-all duration-200 text-deep-200"
-                    />
-                  ))}
-                </div>
-                {otpError && (
-                  <span className="text-[1.2rem] text-failure">{otpError}</span>
-                )}
-                <div className="flex items-center gap-4">
-                  <span className="text-[1.4rem] text-neutral-600">
-                    {t("otp.expiry")} {formatTime(secondsLeft)}
-                  </span>
-                  {secondsLeft === 0 && (
-                    <button
-                      type="button"
-                      disabled={isResending}
-                      onClick={resendCode}
-                      className="text-[1.4rem] text-primary-500 hover:underline disabled:opacity-50"
+                <AuthHeading title={t("title")} description={t("description")} />
+                <AuthItem>
+                  <Input
+                    {...emailForm.register("email")}
+                    type="email"
+                    autoComplete="email"
+                    autoCapitalize="none"
+                    error={emailForm.formState.errors.email?.message}
+                  >
+                    {t("placeholders.email")}
+                  </Input>
+                </AuthItem>
+                <div className="w-full flex flex-col gap-6 items-center">
+                  <AuthError message={emailError} />
+                  <AuthItem>
+                    <ButtonPrimary
+                      type="submit"
+                      disabled={emailForm.formState.isSubmitting}
+                      className="w-full h-[6rem] active:scale-[0.98]"
                     >
-                      {isResending ? <LoadingCircleSmall /> : t("otp.resend")}
-                    </button>
-                  )}
+                      {emailForm.formState.isSubmitting ? (
+                        <LoadingCircleSmall />
+                      ) : (
+                        t("cta")
+                      )}
+                    </ButtonPrimary>
+                  </AuthItem>
                 </div>
-              </div>
+              </form>
+            </AuthScreen>
+          </motion.div>
+        )}
 
-              <div className="w-full hidden lg:flex flex-col gap-4">
-                <ButtonPrimary
-                  type="button"
-                  disabled={isLoading || otpValues.join("").length < 6}
-                  onClick={submitOtp}
-                  className="w-full"
-                >
-                  {isLoading ? <LoadingCircleSmall /> : t("otp.cta")}
-                </ButtonPrimary>
+        {step === "code" && (
+          <motion.div key="code" {...slide} className="w-full h-full">
+            <AuthScreen
+              centered
+              footer={
                 <button
                   type="button"
                   onClick={() => setStep("email")}
-                  className="text-[1.5rem] text-neutral-500 hover:text-primary-500 transition-colors text-center"
+                  className={backPillClass}
                 >
-                  {t("otp.back")}
+                  {tFlow("back")}
                 </button>
-              </div>
-            </motion.div>
-          )}
-
-          {/* ── Step 3: New Password ──────────────────────── */}
-          {step === "password" && (
-            <motion.form
-              key="password"
-              id="forgot-password-form"
-              variants={stepVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-              onSubmit={passwordForm.handleSubmit(submitPassword)}
-              className="flex flex-col gap-16 items-center"
+              }
             >
-              <div className="flex flex-col gap-8 items-center">
-                <h3 className="font-medium font-primary text-[3.2rem] leading-14 text-black">
-                  {t("password.title")}
-                </h3>
-                <p className="text-[1.8rem] text-center leading-10 text-neutral-700">
-                  {t("password.description")}
-                </p>
-              </div>
-              <div className="w-full flex flex-col gap-6">
-                <PasswordInput
-                  validate={true}
-                  t={t}
-                  error={passwordForm.formState.errors.password?.message}
-                  {...passwordForm.register("password")}
+              <AuthStatus
+                image={mail}
+                title={t("sent.title")}
+                description={
+                  <>
+                    {t("sent.description")}{" "}
+                    <span className="font-semibold text-deep-100 break-all">
+                      {email}
+                    </span>
+                  </>
+                }
+              >
+                <OtpCodeInput
+                  value={otp}
+                  onChange={(next) => {
+                    setOtp(next);
+                    setOtpError("");
+                  }}
+                  onSubmit={verify}
+                  error={otpError}
+                />
+                <AuthError message={otpError} />
+                <ButtonPrimary
+                  onClick={verify}
+                  disabled={isVerifying || otp.join("").length < 6}
+                  className="w-full h-[6rem] active:scale-[0.98]"
                 >
-                  {t("password.placeholders.password")}
-                </PasswordInput>
-                <PasswordInput
-                  error={passwordForm.formState.errors.password_confirmation?.message}
-                  {...passwordForm.register("password_confirmation")}
-                >
-                  {t("password.placeholders.confirm")}
-                </PasswordInput>
-                {samePasswordError && (
-                  <span className="text-[1.3rem] text-failure">{samePasswordError}</span>
-                )}
-              </div>
-              <div className="w-full hidden lg:flex flex-col gap-4">
-                <ButtonPrimary type="submit" disabled={isLoading} className="w-full">
-                  {isLoading ? <LoadingCircleSmall /> : t("password.cta")}
+                  {isVerifying ? <LoadingCircleSmall /> : t("sent.cta")}
                 </ButtonPrimary>
-              </div>
-            </motion.form>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* ── Mobile sticky footer ─────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
-        className="flex flex-col gap-4 w-full"
-      >
-        <div className="lg:hidden w-full">
-          {step === "email" && (
-            <ButtonPrimary
-              form="forgot-email-form"
-              type="submit"
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? <LoadingCircleSmall /> : t("email.cta")}
-            </ButtonPrimary>
-          )}
-          {step === "otp" && (
-            <div className="flex flex-col gap-4">
-              <ButtonPrimary
-                type="button"
-                disabled={isLoading || otpValues.join("").length < 6}
-                onClick={submitOtp}
-                className="w-full"
-              >
-                {isLoading ? <LoadingCircleSmall /> : t("otp.cta")}
-              </ButtonPrimary>
-              <button
-                type="button"
-                onClick={() => setStep("email")}
-                className="text-[1.5rem] text-neutral-500 hover:text-primary-500 transition-colors text-center"
-              >
-                {t("otp.back")}
-              </button>
-            </div>
-          )}
-          {step === "password" && (
-            <ButtonPrimary
-              form="forgot-password-form"
-              type="submit"
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? <LoadingCircleSmall /> : t("password.cta")}
-            </ButtonPrimary>
-          )}
-        </div>
-
-        {step === "email" && (
-          <div className="border border-neutral-100 w-full p-4 pl-6 flex items-center justify-between gap-4 lg:gap-[1.8rem] rounded-[100px]">
-            <span className="text-[1.8rem] leading-10 text-neutral-700">
-              {t("footer.text")}
-            </span>
-            <LinkAccent href="/auth/login">{t("footer.cta")}</LinkAccent>
-          </div>
+                <FooterPill>
+                  <FooterPillText>{t("sent.resend_text")}</FooterPillText>
+                  <button
+                    type="button"
+                    onClick={resend}
+                    disabled={resendIn > 0 || isResending}
+                    className={pillActionClass}
+                  >
+                    {isResending ? (
+                      <LoadingCircleSmall />
+                    ) : resendIn > 0 ? (
+                      tLogin("code.resend_in", { seconds: resendIn })
+                    ) : (
+                      t("sent.resend")
+                    )}
+                  </button>
+                </FooterPill>
+              </AuthStatus>
+            </AuthScreen>
+          </motion.div>
         )}
-      </motion.div>
+
+        {step === "password" && (
+          <motion.div key="password" {...slide} className="w-full h-full">
+            <AuthScreen footer={<StepFooter step={2} total={2} />}>
+              <form
+                onSubmit={passwordForm.handleSubmit(submitPassword)}
+                noValidate
+                className="flex flex-col gap-16 items-center w-full"
+              >
+                <AuthHeading
+                  title={t("password.title")}
+                  description={t("password.description")}
+                />
+                <div className="w-full flex flex-col gap-6">
+                  <AuthItem>
+                    <PasswordInput
+                      {...passwordForm.register("password")}
+                      autoComplete="new-password"
+                      validate
+                      t={(key: string) => t(`password.${key}` as never)}
+                      error={passwordForm.formState.errors.password?.message}
+                    >
+                      {t("password.placeholders.password")}
+                    </PasswordInput>
+                  </AuthItem>
+                  <AuthItem>
+                    <PasswordInput
+                      {...passwordForm.register("password_confirmation")}
+                      autoComplete="new-password"
+                      error={
+                        passwordForm.formState.errors.password_confirmation?.message
+                      }
+                    >
+                      {t("password.placeholders.confirm")}
+                    </PasswordInput>
+                  </AuthItem>
+                </div>
+                <div className="w-full flex flex-col gap-6 items-center">
+                  <AuthError message={passwordError} />
+                  <AuthItem>
+                    <ButtonPrimary
+                      type="submit"
+                      disabled={passwordForm.formState.isSubmitting}
+                      className="w-full h-[6rem] active:scale-[0.98]"
+                    >
+                      {passwordForm.formState.isSubmitting ? (
+                        <LoadingCircleSmall />
+                      ) : (
+                        t("password.cta")
+                      )}
+                    </ButtonPrimary>
+                  </AuthItem>
+                </div>
+              </form>
+            </AuthScreen>
+          </motion.div>
+        )}
+
+        {step === "done" && (
+          <motion.div key="done" {...slide} className="w-full h-full">
+            <AuthScreen centered>
+              <AuthStatus
+                image={successBadge}
+                title={t("done.title")}
+                description={t("done.description")}
+              >
+                <SigningIn />
+              </AuthStatus>
+            </AuthScreen>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

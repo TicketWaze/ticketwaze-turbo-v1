@@ -3,8 +3,8 @@
 import UpcomingCard from "@/components/UpcomingCard";
 import { slugify } from "@/lib/Slugify";
 import { MyRaffle } from "@ticketwaze/typescript-config";
-import { CloseCircle, Money3, SearchNormal, Star } from "iconsax-reactjs";
-import { useSession } from "next-auth/react";
+import { Money3, Star } from "iconsax-reactjs";
+import ListPageHeader from "@/components/ListPageHeader";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -17,7 +17,6 @@ export default function UpcomingPageContent({
   raffles?: MyRaffle[];
 }) {
   const t = useTranslations("Upcoming");
-  const { data: session } = useSession();
   const [query, setQuery] = useState("");
   const list: any[] = Array.isArray(events) ? events : [];
   const raffleList: MyRaffle[] = Array.isArray(raffles) ? raffles : [];
@@ -35,79 +34,13 @@ export default function UpcomingPageContent({
   const totalCount = list.length + raffleList.length;
   const filteredCount = filteredEvents.length + filteredRaffles.length;
 
-  const [mobileSearch, setMobileSearch] = useState(false);
   return (
     <>
-      <motion.header
-        className="w-full flex items-center justify-between"
-        initial={{ opacity: 0, y: -12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: "easeOut" }}
-      >
-        {!mobileSearch && (
-          <div className="flex flex-col gap-2">
-            {session?.user && (
-              <span className="text-[1.6rem] leading-8 text-neutral-600">
-                {t("subtitle")}{" "}
-                <span className="text-deep-100">{session?.user.firstName}</span>
-              </span>
-            )}
-            <span className="font-primary font-medium text-[1.8rem] lg:text-[2.6rem] leading-10 lg:leading-12 text-black">
-              {t("title")}
-            </span>
-          </div>
-        )}
-        <div className={`flex items-center gap-4 ${mobileSearch && "w-full"}`}>
-          {mobileSearch && (
-            <div
-              className={
-                "bg-neutral-100 w-full rounded-[30px] flex items-center justify-between lg:hidden px-6 py-4"
-              }
-            >
-              <input
-                placeholder={t("search")}
-                className={
-                  "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
-                }
-                autoFocus
-                onChange={(e) => setQuery(e.target.value)}
-              />
-              <button
-                onClick={() => {
-                  setMobileSearch(!mobileSearch);
-                  setQuery("");
-                }}
-              >
-                <CloseCircle size="20" color="#737c8a" variant="Bulk" />
-              </button>
-            </div>
-          )}
-          <div
-            className={
-              "hidden bg-neutral-100 rounded-[30px] lg:flex items-center justify-between w-[24.3rem] px-6 py-4"
-            }
-          >
-            <input
-              placeholder={t("search")}
-              className={
-                "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
-              }
-              onChange={(e) => setQuery(e.target.value)}
-            />
-            <SearchNormal size="20" color="#737c8a" variant="Bulk" />
-          </div>
-          {!mobileSearch && (
-            <button
-              onClick={() => setMobileSearch(!mobileSearch)}
-              className={
-                "w-14 h-14 bg-neutral-100 rounded-full flex lg:hidden items-center justify-center"
-              }
-            >
-              <SearchNormal size="20" color="#737c8a" variant="Bulk" />
-            </button>
-          )}
-        </div>
-      </motion.header>
+      <ListPageHeader
+        title={t("title")}
+        searchPlaceholder={t("search")}
+        onSearch={setQuery}
+      />
       <>
         <div className="pt-4 overflow-y-scroll flex flex-col gap-8 -mx-4">
           <ul className="list px-4 pb-8">
@@ -144,7 +77,10 @@ export default function UpcomingPageContent({
                   transition={{
                     duration: 0.35,
                     ease: "easeOut",
-                    delay: Math.min((filteredEvents.length + index) * 0.06, 0.3),
+                    delay: Math.min(
+                      (filteredEvents.length + index) * 0.06,
+                      0.3,
+                    ),
                   }}
                 >
                   <UpcomingCard

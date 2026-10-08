@@ -14,6 +14,8 @@ import { ButtonNeutral, ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useRouter } from "@/i18n/navigation";
+import type { DialogControl } from "@/lib/dialogControl";
 import { GrantSubscriptionAction } from "@/actions/Organisation";
 
 const DURATIONS = [14, 30, 90, 365] as const;
@@ -24,11 +26,20 @@ type Tier = (typeof TIERS)[number];
 
 export function GrantSubscriptionDialog({
   organisationId,
+  hideTrigger,
+  open: controlledOpen,
+  onOpenChange,
 }: {
   organisationId: string;
-}) {
+} & DialogControl) {
   const t = useTranslations("Organisations.profile.grant_subscription");
-  const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  function setOpen(next: boolean) {
+    if (onOpenChange) onOpenChange(next);
+    else setUncontrolledOpen(next);
+  }
   const [isLoading, setIsLoading] = useState(false);
   const [duration, setDuration] = useState<Duration>(30);
   const [tier, setTier] = useState<Tier>("pro");
@@ -47,6 +58,7 @@ export function GrantSubscriptionDialog({
     if ("status" in result && result.status === "success") {
       toast.success(t("success", { days: duration, plan: t(`tiers.${tier}`) }));
       setOpen(false);
+      router.refresh();
     } else {
       toast.error("error" in result ? result.error : t("error"));
     }
@@ -55,9 +67,11 @@ export function GrantSubscriptionDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <ButtonNeutral className="py-[7.5px]">{t("trigger")}</ButtonNeutral>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <ButtonNeutral className="py-[7.5px]">{t("trigger")}</ButtonNeutral>
+        </DialogTrigger>
+      )}
       <DialogContent>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">

@@ -3,10 +3,12 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import { cookies } from "next/headers";
 import {
+  assertNoMfa,
   needsRefresh,
   refreshApiTokens,
   sanitizeSessionUpdate,
   sharedSessionCookies,
+  verifyMfaLogin,
 } from "@ticketwaze/auth";
 
 const nextAuthResult = NextAuth({
@@ -36,8 +38,21 @@ const nextAuthResult = NextAuth({
         password: {},
         googleIdToken: {},
         referralCode: {},
+        // Email 2FA, second step: the challenge from the first and the code.
+        challengeId: {},
+        code: {},
       },
       authorize: async (credentials) => {
+        if (credentials.challengeId) {
+          const data = await verifyMfaLogin(
+            credentials.challengeId,
+            credentials.code,
+          );
+          return {
+            ...data.user,
+            deletionCancelled: data.deletionCancelled ?? false,
+          };
+        }
         if (credentials.googleIdToken) {
           const body: Record<string, string> = {
             idToken: credentials.googleIdToken as string,
@@ -81,11 +96,16 @@ const nextAuthResult = NextAuth({
 
         const data = await response.json();
 
+        // 2FA account: no session yet — the page asks for the emailed code.
+        assertNoMfa(data);
         if (data.status !== "success") {
           throw new Error(data.message || "Invalid credentials");
         }
 
-        return { ...data.user, deletionCancelled: data.deletionCancelled ?? false };
+        return {
+          ...data.user,
+          deletionCancelled: data.deletionCancelled ?? false,
+        };
       },
     }),
   ],

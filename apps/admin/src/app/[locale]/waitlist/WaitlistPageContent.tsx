@@ -3,23 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Note } from "iconsax-reactjs";
 import {
   Dialog,
   DialogClose,
@@ -34,14 +18,31 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ButtonNeutral, ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import SettingsHeader from "@/components/shared/SettingsHeader";
+import FilterPill from "@/components/shared/FilterPill";
+import SearchField from "@/components/shared/SearchField";
+import TablePagination from "@/components/shared/TablePagination";
+import { Reveal } from "@/components/shared/motion";
+import {
+  Badge,
+  EmptyState,
+  HEADER_PILL,
+  PILL_TONE,
+  RowMore,
+  TABLE_CELL,
+  TABLE_HEAD,
+  TABLE_ROW,
+  TableFrame,
+  type BadgeTone,
+} from "@/components/shared/DataTable";
 import formatDate from "@/lib/FormatDate";
+import { cn } from "@/lib/utils";
 import { InviteUsersAction, RemindUsersAction } from "@/actions/Waitlist";
-import SearchInput from "@/components/shared/SearchInput";
-import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import { Metric } from "../analytics/parts";
 
 export type WaitlistEntry = {
   waitlistUserId: string;
@@ -72,32 +73,41 @@ type Props = {
 };
 
 type Tab = "all" | "pending" | "invited" | "no_account";
+type Entity = "all" | "attendee" | "business" | "both";
 
-export default function WaitlistPageContent({
-  users,
-  stats,
-  accessToken,
-}: Props) {
+const PER_PAGE = 25;
+
+const ENTITY_TONE: Record<WaitlistEntry["entity"], BadgeTone> = {
+  attendee: "neutral",
+  business: "primary",
+  both: "warning",
+};
+
+/**
+ * Settings → Waitlist. The whole list comes in one go (see page.tsx) and is
+ * filtered here: a status pill (All / Not invited / Invited / No account), a
+ * type pill and an email search, 25 rows a page. Ticked rows are invited — or,
+ * on "No account", reminded — from the header; a row opens its drawer.
+ */
+export default function WaitlistPageContent({ users, stats, accessToken }: Props) {
   const t = useTranslations("Waitlist");
   const locale = useLocale();
   const router = useRouter();
 
   const [tab, setTab] = useState<Tab>("all");
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [entityFilter, setEntityFilter] = useState<
-    "all" | "attendee" | "business" | "both"
-  >("all");
+  const [entityFilter, setEntityFilter] = useState<Entity>("all");
   const [term, setTerm] = useState("");
-  const [isInvitingSelected, setIsInvitingSelected] = useState(false);
-  const [invitingOneId, setInvitingOneId] = useState<string | null>(null);
-  const [isRemindingSelected, setIsRemindingSelected] = useState(false);
-  const [remindingOneId, setRemindingOneId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [busy, setBusy] = useState<null | "invite_selected" | "remind_selected" | "invite_one" | "remind_one">(
+    null,
+  );
   const [confirmRemindOpen, setConfirmRemindOpen] = useState(false);
 
   // "All" shows everyone; "Not invited" only those still pending; "Invited"
   // only those already invited; "No account" the people who joined the waitlist
-  // and never came back to sign up. The entity Select filters within the
-  // active tab.
+  // and never came back to sign up. The type pill and search narrow within it.
   const tabUsers =
     tab === "invited"
       ? users.filter((u) => u.invitedAt)
@@ -106,66 +116,53 @@ export default function WaitlistPageContent({
         : tab === "no_account"
           ? users.filter((u) => !u.hasAccount)
           : users;
-  // Email is the only identifying field on an entry, so it is the only thing
-  // worth matching on. Narrows within the tab and entity pill rather than
-  // replacing them.
+  // Email is the only identifying field on an entry.
   const query = term.trim().toLowerCase();
-  const isSearching = query.length > 0;
+  const isFiltering = query.length > 0 || entityFilter !== "all";
   const displayedUsers = tabUsers
     .filter((u) => entityFilter === "all" || u.entity === entityFilter)
-    .filter((u) => !isSearching || u.email.toLowerCase().includes(query));
+    .filter((u) => !query || u.email.toLowerCase().includes(query));
+  const pageCount = Math.max(1, Math.ceil(displayedUsers.length / PER_PAGE));
+  const currentPage = Math.min(page, pageCount);
+  const pageUsers = displayedUsers.slice((currentPage - 1) * PER_PAGE, currentPage * PER_PAGE);
 
   // What the checkboxes are *for* changes with the tab: on "No account" they
-  // pick recipients for the reminder, everywhere else they pick people to
-  // invite. Only the "Invited" tab has neither (nothing left to re-invite, and
-  // signed-up members are not reminder material).
+  // pick recipients for the reminder, everywhere else people to invite. The
+  // "Invited" tab has neither (nothing left to re-invite, and signed-up
+  // members are not reminder material).
   const mode: "invite" | "remind" = tab === "no_account" ? "remind" : "invite";
   const showSelection = tab !== "invited";
-  const isBulkSending = isInvitingSelected || isRemindingSelected;
+  const canSelect = (u: WaitlistEntry) => (mode === "remind" ? !u.hasAccount : !u.invitedAt);
 
-  // Rows the current mode can actually act on — the rest render a disabled box
-  // rather than vanishing, so the list still reads as the whole waitlist.
-  const selectableUsers = displayedUsers.filter((u) =>
-    mode === "remind" ? !u.hasAccount : !u.invitedAt,
-  );
-
+  // The header box ticks the rows ON THIS PAGE only: a bulk send must never
+  // reach an address the admin has not had in front of them.
+  const selectablePage = pageUsers.filter(canSelect);
   const allChecked =
-    selectableUsers.length > 0 &&
-    selectableUsers.every((u) => selectedIds.has(u.waitlistUserId));
+    selectablePage.length > 0 && selectablePage.every((u) => selectedIds.has(u.waitlistUserId));
 
-  const someChecked = displayedUsers.some((u) =>
-    selectedIds.has(u.waitlistUserId),
-  );
+  const openUser = users.find((u) => u.waitlistUserId === openId) ?? null;
 
-  function handleTabChange(value: string) {
-    setTab(value as Tab);
-    setSelectedIds(new Set());
-  }
-
-  // Invite and remind both send every id in the set, not just the visible ones,
-  // so narrowing the list has to drop the selection — otherwise "select all,
-  // then search" silently mails the people the search just hid. Same reason the
-  // tabs do it.
-  function handleTermChange(value: string) {
-    setTerm(value);
-    setSelectedIds(new Set());
-  }
-
-  function handleEntityFilterChange(value: string) {
-    setEntityFilter(value as "all" | "attendee" | "business" | "both");
+  // Invite and remind send every id in the set, so narrowing the list drops
+  // the selection — otherwise "select all, then search" would mail the people
+  // the search just hid.
+  function narrow(apply: () => void) {
+    apply();
+    setPage(1);
     setSelectedIds(new Set());
   }
 
   function toggleSelectAll() {
-    if (allChecked) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(selectableUsers.map((u) => u.waitlistUserId)));
-    }
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      for (const u of selectablePage) {
+        if (allChecked) next.delete(u.waitlistUserId);
+        else next.add(u.waitlistUserId);
+      }
+      return next;
+    });
   }
 
-  function toggleSelect(id: string, e: React.MouseEvent) {
-    e.stopPropagation();
+  function toggleSelect(id: string) {
     setSelectedIds((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -174,47 +171,20 @@ export default function WaitlistPageContent({
     });
   }
 
-  async function handleInviteSelected() {
-    setIsInvitingSelected(true);
+  async function invite(userIds: string[], action: "invite_selected" | "invite_one") {
+    setBusy(action);
     try {
-      const result = await InviteUsersAction({
-        userIds: Array.from(selectedIds),
-        accessToken,
-        locale,
-      });
+      const result = await InviteUsersAction({ userIds, accessToken, locale });
       if ("status" in result) {
         toast.success(t("invite.success"));
-        setSelectedIds(new Set());
-        // Pull fresh data so newly-invited rows move to the Invited tab.
+        if (action === "invite_selected") setSelectedIds(new Set());
+        // Fresh data so newly-invited rows move to the Invited tab.
         router.refresh();
-      } else {
-        toast.error(result.error);
-      }
+      } else toast.error(result.error);
     } catch {
       toast.error(t("invite.error"));
     } finally {
-      setIsInvitingSelected(false);
-    }
-  }
-
-  async function handleInviteOne(userId: string) {
-    setInvitingOneId(userId);
-    try {
-      const result = await InviteUsersAction({
-        userIds: [userId],
-        accessToken,
-        locale,
-      });
-      if ("status" in result) {
-        toast.success(t("invite.success"));
-        router.refresh();
-      } else {
-        toast.error(result.error);
-      }
-    } catch {
-      toast.error(t("invite.error"));
-    } finally {
-      setInvitingOneId(null);
+      setBusy(null);
     }
   }
 
@@ -223,210 +193,231 @@ export default function WaitlistPageContent({
    * rendered, so the toast reports what actually went out rather than echoing
    * how many rows were ticked.
    */
-  async function sendReminder(userIds: string[]) {
-    const result = await RemindUsersAction({ userIds, accessToken, locale });
-    if (!("status" in result)) {
-      toast.error(result.error);
-      return;
-    }
-    if (result.skipped > 0) {
-      toast.success(
-        t("remind.partial", { sent: result.sent, skipped: result.skipped }),
-      );
-    } else {
-      toast.success(t("remind.success"));
-    }
-    // Pull fresh data so the reminder date and count on each row are current.
-    router.refresh();
-  }
-
-  async function handleRemindSelected() {
+  async function remind(userIds: string[], action: "remind_selected" | "remind_one") {
     setConfirmRemindOpen(false);
-    setIsRemindingSelected(true);
+    setBusy(action);
     try {
-      await sendReminder(Array.from(selectedIds));
-      setSelectedIds(new Set());
+      const result = await RemindUsersAction({ userIds, accessToken, locale });
+      if (!("status" in result)) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success(
+        result.skipped > 0
+          ? t("remind.partial", { sent: result.sent, skipped: result.skipped })
+          : t("remind.success"),
+      );
+      if (action === "remind_selected") setSelectedIds(new Set());
+      router.refresh();
     } catch {
       toast.error(t("remind.error"));
     } finally {
-      setIsRemindingSelected(false);
+      setBusy(null);
     }
   }
 
-  async function handleRemindOne(userId: string) {
-    setRemindingOneId(userId);
-    try {
-      await sendReminder([userId]);
-    } catch {
-      toast.error(t("remind.error"));
-    } finally {
-      setRemindingOneId(null);
-    }
-  }
-
-  // One source for both tab controls — the desktop pills and the mobile Select
-  // have to stay in step, and a second hand-written list is how they drift.
-  const tabOptions: { value: Tab; label: string }[] = [
-    { value: "all", label: `${t("tabs.all")} (${stats.total})` },
-    { value: "pending", label: `${t("tabs.pending")} (${stats.pending})` },
-    { value: "invited", label: `${t("tabs.invited")} (${stats.invited})` },
-    {
-      value: "no_account",
-      label: `${t("tabs.no_account")} (${stats.noAccount})`,
-    },
+  const tiles = [
+    { key: "total", value: stats.total },
+    { key: "pending", value: stats.pending },
+    { key: "no_account", value: stats.noAccount },
+    { key: "attendee", value: stats.attendee },
+    { key: "business", value: stats.business },
+    { key: "both", value: stats.both },
   ];
 
-  const statCards = [
-    { key: "total", label: t("stats.total"), value: stats.total },
-    { key: "pending", label: t("stats.pending"), value: stats.pending },
-    {
-      key: "no_account",
-      label: t("stats.no_account"),
-      value: stats.noAccount,
-    },
-    { key: "attendee", label: t("stats.attendee"), value: stats.attendee },
-    { key: "business", label: t("stats.business"), value: stats.business },
-    { key: "both", label: t("stats.both"), value: stats.both },
-  ];
+  const bulkAction =
+    showSelection && selectedIds.size > 0 ? (
+      <button
+        type="button"
+        onClick={
+          mode === "remind"
+            ? () => setConfirmRemindOpen(true)
+            : () => invite(Array.from(selectedIds), "invite_selected")
+        }
+        disabled={busy !== null}
+        className={cn(HEADER_PILL, PILL_TONE.primary)}
+      >
+        {busy === "invite_selected" || busy === "remind_selected" ? (
+          <LoadingCircleSmall />
+        ) : mode === "remind" ? (
+          t("remind.selected", { count: selectedIds.size })
+        ) : (
+          t("invite.selected", { count: selectedIds.size })
+        )}
+      </button>
+    ) : undefined;
+
+  const row = (label: string, value: React.ReactNode) => (
+    <p className="flex justify-between items-center gap-8 text-[1.4rem] leading-8 text-neutral-600">
+      <span className="shrink-0">{label}</span>
+      <span className="text-deep-100 font-medium text-right min-w-0 break-words">{value}</span>
+    </p>
+  );
 
   return (
-    <div className={PAGE_SCROLLER}>
-      {/* The heading is the only thing that stays put. It is a direct child of
-          the scroller because `sticky` is confined to its parent's box — the
-          bulk-send button used to share a wrapper with it, which pinned the
-          button too and, on mobile, stuck the pair to a wrapper that scrolled
-          away almost immediately. */}
-      <PageTitle>{t("title")}</PageTitle>
+    <div className={cn(PAGE_SCROLLER, "gap-0")}>
+      <SettingsHeader title={t("title")} actions={bulkAction} />
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-6 divide-x divide-neutral-100 border-neutral-100 border-b">
-        {statCards.map((card) => (
+      <Reveal className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 border-b border-neutral-100">
+        {tiles.map((tile, i) => (
           <div
-            key={card.key}
-            // `max-lg:odd:border-l-0` cancels the divider on the cell that
-            // starts each row of the two-column mobile grid — `divide-x` only
-            // knows to skip the very first child, not the first of each row.
-            className="pl-6 first:pl-0 max-lg:odd:border-l-0 max-lg:odd:pl-0 pb-8 lg:pl-10 lg:first:pl-0 lg:pb-12"
+            key={tile.key}
+            className={cn(
+              "py-6 pr-6 border-neutral-100",
+              // A rule before every tile that does not start a row.
+              i % 2 === 1 && "max-sm:pl-6 max-sm:border-l",
+              i % 3 !== 0 && "sm:max-xl:pl-6 sm:max-xl:border-l",
+              i > 0 && "xl:pl-6 xl:border-l",
+            )}
           >
-            <span className="text-[14px] text-neutral-600 leading-8 pb-2 block">
-              {card.label}
-            </span>
-            <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
-              {card.value}
-            </p>
+            <Metric label={t(`stats.${tile.key}`)}>{tile.value.toLocaleString(locale)}</Metric>
           </div>
         ))}
-      </div>
+      </Reveal>
 
-      {/* Tabs + entity filter + the bulk action for the active tab.
-          On mobile every control is a full-width pill stacked in one column:
-          tab picker, then type, then search. The four tab pills do not fit a
-          phone — they scrolled off the right edge with no sign they were there
-          — so below `lg` the tabs become a Select shaped like the type filter. */}
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <Tabs
-          value={tab}
-          onValueChange={handleTabChange}
-          className="hidden lg:flex"
-        >
-          <TabsList className="w-fit">
-            {tabOptions.map((option) => (
-              <TabsTrigger key={option.value} value={option.value}>
-                {option.label}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-
-        <Select value={tab} onValueChange={handleTabChange}>
-          <SelectTrigger className="bg-neutral-100 w-full cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none lg:hidden text-[1.4rem] text-neutral-700 leading-8">
-            <SelectValue placeholder="" />
-          </SelectTrigger>
-          <SelectContent className="bg-neutral-100 text-[1.4rem]">
-            <SelectGroup>
-              {tabOptions.map((option) => (
-                <SelectItem
-                  key={option.value}
-                  className="text-[1.4rem] text-deep-100"
-                  value={option.value}
-                >
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-
-        {/* `order-*` is what lets one markup order serve both axes: stacked as
-            type / search / action on mobile, and read as action / search /
-            count / type across the desktop row. */}
-        <div className="flex flex-col lg:flex-row lg:items-center gap-4 w-full lg:w-auto">
-          <Select value={entityFilter} onValueChange={handleEntityFilterChange}>
-            <SelectTrigger className="order-1 lg:order-4 bg-neutral-100 w-full cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none lg:w-fit text-[1.4rem] text-neutral-700 leading-8">
-              <SelectValue placeholder="" />
-            </SelectTrigger>
-            <SelectContent className="bg-neutral-100 text-[1.4rem]">
-              <SelectGroup>
-                <SelectItem className="text-[1.4rem] text-deep-100" value="all">
-                  {t("filters.all")}
-                </SelectItem>
-                <SelectItem
-                  className="text-[1.4rem] text-deep-100"
-                  value="attendee"
-                >
-                  {t("filters.attendee")}
-                </SelectItem>
-                <SelectItem
-                  className="text-[1.4rem] text-deep-100"
-                  value="business"
-                >
-                  {t("filters.business")}
-                </SelectItem>
-                <SelectItem className="text-[1.4rem] text-deep-100" value="both">
-                  {t("filters.both")}
-                </SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-
-          <SearchInput
-            className="order-2"
-            value={term}
-            onChange={handleTermChange}
-            placeholder={t("filters.search")}
-          />
-
-          {showSelection && someChecked && (
-            <span className="order-4 lg:order-3 text-[1.4rem] text-neutral-500 font-normal hidden lg:inline">
-              {selectedIds.size} {t("list.selected")}
-            </span>
-          )}
-
-          {showSelection && selectedIds.size > 0 && (
-            <button
-              onClick={
-                mode === "remind"
-                  ? () => setConfirmRemindOpen(true)
-                  : handleInviteSelected
-              }
-              disabled={isBulkSending}
-              className="order-3 lg:order-1 flex items-center justify-center gap-2 px-6 py-[0.8rem] rounded-[3rem] bg-primary-500 text-white text-[1.4rem] leading-8 font-medium disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer whitespace-nowrap"
-            >
-              {isBulkSending ? (
-                <LoadingCircleSmall />
-              ) : mode === "remind" ? (
-                t("remind.selected", { count: selectedIds.size })
-              ) : (
-                t("invite.selected", { count: selectedIds.size })
-              )}
-            </button>
-          )}
+      <Reveal delay={0.05} className="flex flex-col gap-6 pt-12">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <h4 className="font-primary font-medium text-[1.8rem] leading-10 text-black">
+            {t("list.title")}
+          </h4>
+          <div className="flex flex-wrap items-center gap-4">
+            <FilterPill
+              label={t("filters.status_label")}
+              value={tab}
+              defaultValue="all"
+              options={[
+                { value: "all", label: `${t("tabs.all")} (${stats.total})` },
+                { value: "pending", label: `${t("tabs.pending")} (${stats.pending})` },
+                { value: "invited", label: `${t("tabs.invited")} (${stats.invited})` },
+                { value: "no_account", label: `${t("tabs.no_account")} (${stats.noAccount})` },
+              ]}
+              onChange={(v) => narrow(() => setTab(v as Tab))}
+            />
+            <FilterPill
+              label={t("filters.type_label")}
+              value={entityFilter}
+              defaultValue="all"
+              options={(["all", "attendee", "business", "both"] as const).map((e) => ({
+                value: e,
+                label: t(`filters.${e}`),
+              }))}
+              onChange={(v) => narrow(() => setEntityFilter(v as Entity))}
+            />
+            <SearchField
+              value={term}
+              onChange={(v) => narrow(() => setTerm(v))}
+              placeholder={t("filters.search")}
+              className="flex w-full lg:w-[26rem]"
+            />
+          </div>
         </div>
-      </div>
 
-      {/* A bulk send is one click away from every address on the list, and it
-          cannot be recalled — so it asks first. The single-row send in the
-          drawer does not: that one is deliberate by construction. */}
+        <TableFrame minWidth="76rem">
+          <thead>
+            <tr className="border-b border-neutral-100">
+              {showSelection && (
+                <th className={cn(TABLE_HEAD, "w-12")}>
+                  <input
+                    type="checkbox"
+                    checked={allChecked}
+                    disabled={selectablePage.length === 0}
+                    onChange={toggleSelectAll}
+                    aria-label={t("list.select_page")}
+                    className="w-5 h-5 accent-primary-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                  />
+                </th>
+              )}
+              <th className={TABLE_HEAD}>{t("list.table.email")}</th>
+              <th className={TABLE_HEAD}>{t("list.table.entity")}</th>
+              <th className={TABLE_HEAD}>{t("list.table.joined")}</th>
+              <th className={TABLE_HEAD}>{t("list.table.status")}</th>
+              <th className={TABLE_HEAD}>{t("list.table.account")}</th>
+              <th className={TABLE_HEAD}>
+                <span className="sr-only">{t("list.table.actions")}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {pageUsers.map((user) => {
+              const selectable = canSelect(user);
+              return (
+                <tr
+                  key={user.waitlistUserId}
+                  className={TABLE_ROW}
+                  onClick={() => setOpenId(user.waitlistUserId)}
+                >
+                  {showSelection && (
+                    <td className="py-6 pr-4" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(user.waitlistUserId)}
+                        disabled={!selectable}
+                        onChange={() => toggleSelect(user.waitlistUserId)}
+                        aria-label={user.email}
+                        className="w-5 h-5 accent-primary-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
+                      />
+                    </td>
+                  )}
+                  <td className={cn(TABLE_CELL, "font-medium")}>
+                    <span className="block max-w-[32rem] truncate" title={user.email}>
+                      {user.email}
+                    </span>
+                  </td>
+                  <td className="py-6 pr-4">
+                    <Badge tone={ENTITY_TONE[user.entity]}>{t(`filters.${user.entity}`)}</Badge>
+                  </td>
+                  <td className={cn(TABLE_CELL, "whitespace-nowrap")}>
+                    {formatDate(user.createdAt, locale, "local")}
+                  </td>
+                  <td className="py-6 pr-4">
+                    <Badge tone={user.invitedAt ? "success" : "neutral"}>
+                      {user.invitedAt ? t("status.invited") : t("status.pending")}
+                    </Badge>
+                  </td>
+                  <td className="py-6 pr-4">
+                    <AccountBadge
+                      hasAccount={user.hasAccount}
+                      yes={t("status.has_account")}
+                      no={t("status.no_account")}
+                    />
+                  </td>
+                  <td className="py-6 text-right">
+                    <RowMore />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </TableFrame>
+
+        {displayedUsers.length === 0 && (
+          <EmptyState
+            Icon={Note}
+            filtered={isFiltering}
+            text={
+              isFiltering
+                ? t("no_results")
+                : tab === "no_account"
+                  ? t("no_account_empty")
+                  : t("list.empty")
+            }
+          />
+        )}
+
+        {pageCount > 1 && (
+          <TablePagination
+            page={currentPage}
+            count={pageCount}
+            onChange={setPage}
+            prevLabel={t("list.prev")}
+            nextLabel={t("list.next")}
+          />
+        )}
+      </Reveal>
+
+      {/* A bulk send is one click away from every ticked address, and it
+          cannot be recalled — so it asks first. The single send in the drawer
+          does not: that one is deliberate by construction. */}
       <Dialog open={confirmRemindOpen} onOpenChange={setConfirmRemindOpen}>
         <DialogContent>
           <DialogTitle className="font-primary font-medium text-[2rem] leading-10 text-black">
@@ -437,351 +428,115 @@ export default function WaitlistPageContent({
           </p>
           <DialogFooter className="flex gap-6 pt-8">
             <DialogClose asChild>
-              <ButtonNeutral className="flex-1">
-                {t("remind.cancel")}
-              </ButtonNeutral>
+              <ButtonNeutral className="flex-1">{t("remind.cancel")}</ButtonNeutral>
             </DialogClose>
             <ButtonPrimary
               className="flex-1"
-              disabled={isRemindingSelected}
-              onClick={handleRemindSelected}
+              disabled={busy !== null}
+              onClick={() => remind(Array.from(selectedIds), "remind_selected")}
             >
-              {isRemindingSelected ? (
-                <LoadingCircleSmall />
-              ) : (
-                t("remind.confirm_cta")
-              )}
+              {busy === "remind_selected" ? <LoadingCircleSmall /> : t("remind.confirm_cta")}
             </ButtonPrimary>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Table. `shrink-0` is load-bearing: without it the table's own
-          overflow wrapper collapses to the leftover height and scrolls by
-          itself, leaving the title, stats and filters pinned above it. See the
-          note on the Table component. */}
-      <Table containerClassName="shrink-0">
-        <TableHeader>
-          <TableRow>
-            {showSelection && (
-              <TableHead className="w-10 pb-6">
-                <input
-                  type="checkbox"
-                  checked={allChecked}
-                  onChange={toggleSelectAll}
-                  className="w-5 h-5 accent-primary-500 cursor-pointer"
-                />
-              </TableHead>
-            )}
-            <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("list.table.email")}
-            </TableHead>
-            <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("list.table.entity")}
-            </TableHead>
-            <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("list.table.joined")}
-            </TableHead>
-            <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("list.table.status")}
-            </TableHead>
-            <TableHead className="font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("list.table.account")}
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {displayedUsers.map((user) => {
-            const isSelectable =
-              mode === "remind" ? !user.hasAccount : !user.invitedAt;
-            return (
-              <TableRow key={user.waitlistUserId}>
-                {showSelection && (
-                  <TableCell
-                    onClick={(e) =>
-                      isSelectable && toggleSelect(user.waitlistUserId, e)
-                    }
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.has(user.waitlistUserId)}
-                      disabled={!isSelectable}
-                      onChange={() => {}}
-                      className="w-5 h-5 accent-primary-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-40"
-                    />
-                  </TableCell>
-                )}
-                <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900 max-w-56 lg:max-w-none">
-                  <Drawer direction="right">
-                    <DrawerTrigger>
-                      <span className="block truncate cursor-pointer">
-                        {user.email}
-                      </span>
-                    </DrawerTrigger>
-                    <DrawerContent
-                      className={
-                        "w-xl lg:w-208 bg-white my-6 p-12 rounded-[30px]"
-                      }
-                    >
-                      <div
-                        className={
-                          "w-full flex flex-col items-center overflow-y-scroll"
-                        }
-                      >
-                        <DrawerTitle className={"pb-16"}>
-                          <span
-                            className={
-                              "font-primary font-medium text-center text-[2.6rem] leading-12 text-black"
-                            }
-                          >
-                            {user.email}
-                          </span>
-                        </DrawerTitle>
-                        <DrawerDescription className={"w-full"}>
-                          <span className={"w-full flex flex-col gap-8"}>
-                            <span
-                              className={
-                                "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                              }
-                            >
-                              {t("drawer.email")}
-                              <span
-                                className={
-                                  "text-deep-100 font-medium leading-8"
-                                }
-                              >
-                                {user.email}
-                              </span>
-                            </span>
-                            <span
-                              className={
-                                "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                              }
-                            >
-                              {t("drawer.entity")}
-                              <span
-                                className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
-                                  user.entity === "attendee"
-                                    ? "bg-blue-50 text-blue-600"
-                                    : user.entity === "business"
-                                      ? "bg-orange-50 text-orange-600"
-                                      : "bg-purple-50 text-purple-600"
-                                }`}
-                              >
-                                {t(`filters.${user.entity}`)}
-                              </span>
-                            </span>
-                            <span
-                              className={
-                                "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                              }
-                            >
-                              {t("drawer.joined")}
-                              <span
-                                className={
-                                  "text-deep-100 font-medium leading-8"
-                                }
-                              >
-                                {formatDate(user.createdAt, locale, "local")}
-                              </span>
-                            </span>
-                            <span
-                              className={
-                                "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                              }
-                            >
-                              {t("drawer.status")}
-                              <span
-                                className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
-                                  user.invitedAt
-                                    ? "bg-neutral-100 text-success"
-                                    : "bg-neutral-100 text-neutral-500"
-                                }`}
-                              >
-                                {user.invitedAt
-                                  ? t("status.invited")
-                                  : t("status.pending")}
-                              </span>
-                            </span>
-                            {user.invitedAt && (
-                              <span
-                                className={
-                                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                                }
-                              >
-                                {t("drawer.invited_at")}
-                                <span
-                                  className={
-                                    "text-deep-100 font-medium leading-8"
-                                  }
-                                >
-                                  {formatDate(user.invitedAt, locale, "local")}
-                                </span>
-                              </span>
-                            )}
-                            <span
-                              className={
-                                "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                              }
-                            >
-                              {t("drawer.account")}
-                              <AccountBadge
-                                hasAccount={user.hasAccount}
-                                yes={t("drawer.has_account")}
-                                no={t("drawer.no_account")}
-                              />
-                            </span>
-                            {user.reminderCount > 0 && (
-                              <span
-                                className={
-                                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                                }
-                              >
-                                {t("drawer.reminder_count")}
-                                <span
-                                  className={
-                                    "text-deep-100 font-medium leading-8"
-                                  }
-                                >
-                                  {user.reminderCount}
-                                </span>
-                              </span>
-                            )}
-                            {user.remindedAt && (
-                              <span
-                                className={
-                                  "flex justify-between items-center text-[1.4rem] leading-8 text-neutral-600"
-                                }
-                              >
-                                {t("drawer.reminded_at")}
-                                <span
-                                  className={
-                                    "text-deep-100 font-medium leading-8"
-                                  }
-                                >
-                                  {formatDate(user.remindedAt, locale, "local")}
-                                </span>
-                              </span>
-                            )}
-                          </span>
-                        </DrawerDescription>
-                      </div>
-                      <DrawerFooter>
-                        <div className={"flex flex-col gap-6 w-full"}>
-                          {/* Reminding somebody who already has an account is
-                              the one thing this mail must never do, so the
-                              button is not offered for them at all. */}
-                          {!user.hasAccount && (
-                            <button
-                              onClick={() =>
-                                handleRemindOne(user.waitlistUserId)
-                              }
-                              disabled={remindingOneId === user.waitlistUserId}
-                              className={
-                                "w-full border-primary-500 bg-primary-50 text-primary-500 px-12 py-6 border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center disabled:cursor-not-allowed disabled:opacity-50"
-                              }
-                            >
-                              {remindingOneId === user.waitlistUserId ? (
-                                <LoadingCircleSmall />
-                              ) : user.reminderCount > 0 ? (
-                                t("drawer.remind_again")
-                              ) : (
-                                t("drawer.remind")
-                              )}
-                            </button>
-                          )}
-                          <div className={"flex gap-8 w-full items-center"}>
-                            <button
-                              onClick={() =>
-                                handleInviteOne(user.waitlistUserId)
-                              }
-                              disabled={
-                                invitingOneId === user.waitlistUserId ||
-                                !!user.invitedAt
-                              }
-                              className={
-                                "w-full bg-primary-500 disabled:bg-primary-500/50 hover:bg-primary-500/80 px-12 py-6 border-2 border-transparent rounded-[100px] text-center text-white font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center disabled:cursor-not-allowed"
-                              }
-                            >
-                              {invitingOneId === user.waitlistUserId ? (
-                                <LoadingCircleSmall />
-                              ) : user.invitedAt ? (
-                                t("drawer.already_invited")
-                              ) : (
-                                t("drawer.invite")
-                              )}
-                            </button>
-                            <DrawerClose asChild>
-                              <button
-                                className={
-                                  "w-full border-neutral-200 text-neutral-700 bg-neutral-100 px-4 py-6 border-2 rounded-[100px] text-center font-medium text-[1.5rem] h-auto leading-8 cursor-pointer transition-all duration-400 flex items-center justify-center"
-                                }
-                              >
-                                {t("drawer.close")}
-                              </button>
-                            </DrawerClose>
-                          </div>
-                        </div>
-                      </DrawerFooter>
-                    </DrawerContent>
-                  </Drawer>
-                </TableCell>
-                <TableCell className="text-[1.5rem] py-6 leading-8 text-neutral-900">
-                  <span
-                    className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
-                      user.entity === "attendee"
-                        ? "bg-blue-50 text-blue-600"
-                        : user.entity === "business"
-                          ? "bg-orange-50 text-orange-600"
-                          : "bg-purple-50 text-purple-600"
-                    }`}
-                  >
-                    {t(`filters.${user.entity}`)}
-                  </span>
-                </TableCell>
-                <TableCell className="text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900">
-                  {formatDate(user.createdAt, locale, "local")}
-                </TableCell>
-                <TableCell className="hidden lg:table-cell py-6">
-                  <span
-                    className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase ${
-                      user.invitedAt
-                        ? "bg-neutral-100 text-success"
-                        : "bg-neutral-100 text-neutral-500"
-                    }`}
-                  >
-                    {user.invitedAt ? t("status.invited") : t("status.pending")}
-                  </span>
-                </TableCell>
-                <TableCell className="hidden lg:table-cell py-6">
-                  <AccountBadge
-                    hasAccount={user.hasAccount}
-                    yes={t("status.has_account")}
-                    no={t("status.no_account")}
-                  />
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-
-      {displayedUsers.length === 0 && (
-        <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">
-          <div className="rounded-full bg-neutral-100 p-6 w-fit">
-            <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
-              <span className="text-[3rem]">📋</span>
+      <Drawer
+        direction="right"
+        open={openUser !== null}
+        onOpenChange={(open) => !open && setOpenId(null)}
+      >
+        {openUser && (
+          <DrawerContent className="my-8 p-12 rounded-[30px] w-full">
+            <div className="w-full flex flex-col items-center overflow-y-auto">
+              <DrawerTitle className="pb-12 max-w-full">
+                <span className="block font-primary font-medium text-center text-[2.6rem] leading-12 text-black break-words">
+                  {t("drawer.title")}
+                </span>
+              </DrawerTitle>
+              <DrawerDescription asChild className="w-full">
+                <div className="flex flex-col gap-6">
+                  {row(t("drawer.email"), openUser.email)}
+                  {row(
+                    t("drawer.entity"),
+                    <Badge tone={ENTITY_TONE[openUser.entity]}>
+                      {t(`filters.${openUser.entity}`)}
+                    </Badge>,
+                  )}
+                  {row(t("drawer.joined"), formatDate(openUser.createdAt, locale, "local"))}
+                  <div className="h-[2px] w-full bg-neutral-100" />
+                  {row(
+                    t("drawer.status"),
+                    <Badge tone={openUser.invitedAt ? "success" : "neutral"}>
+                      {openUser.invitedAt ? t("status.invited") : t("status.pending")}
+                    </Badge>,
+                  )}
+                  {openUser.invitedAt &&
+                    row(t("drawer.invited_at"), formatDate(openUser.invitedAt, locale, "local"))}
+                  {row(
+                    t("drawer.account"),
+                    <AccountBadge
+                      hasAccount={openUser.hasAccount}
+                      yes={t("drawer.has_account")}
+                      no={t("drawer.no_account")}
+                    />,
+                  )}
+                  {openUser.reminderCount > 0 &&
+                    row(t("drawer.reminder_count"), openUser.reminderCount)}
+                  {openUser.remindedAt &&
+                    row(t("drawer.reminded_at"), formatDate(openUser.remindedAt, locale, "local"))}
+                </div>
+              </DrawerDescription>
             </div>
-          </div>
-          <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
-            {isSearching
-              ? t("no_results")
-              : tab === "no_account"
-                ? t("no_account_empty")
-                : t("list.empty")}
-          </p>
-        </div>
-      )}
+            <DrawerFooter>
+              <div className="flex flex-col gap-4 w-full">
+                {/* Reminding somebody who already has an account is the one
+                    thing this mail must never do, so it is not offered. */}
+                {!openUser.hasAccount && (
+                  <button
+                    type="button"
+                    onClick={() => remind([openUser.waitlistUserId], "remind_one")}
+                    disabled={busy !== null}
+                    className={cn(HEADER_PILL, PILL_TONE.neutral, "w-full lg:w-full h-[4.8rem]")}
+                  >
+                    {busy === "remind_one" ? (
+                      <LoadingCircleSmall />
+                    ) : openUser.reminderCount > 0 ? (
+                      t("drawer.remind_again")
+                    ) : (
+                      t("drawer.remind")
+                    )}
+                  </button>
+                )}
+                <div className="flex gap-4 w-full">
+                  <DrawerClose asChild>
+                    <button
+                      type="button"
+                      className={cn(HEADER_PILL, PILL_TONE.neutral, "flex-1 lg:flex-1 h-[4.8rem]")}
+                    >
+                      {t("drawer.close")}
+                    </button>
+                  </DrawerClose>
+                  <button
+                    type="button"
+                    onClick={() => invite([openUser.waitlistUserId], "invite_one")}
+                    disabled={busy !== null || Boolean(openUser.invitedAt)}
+                    className={cn(HEADER_PILL, PILL_TONE.primary, "flex-1 lg:flex-1 h-[4.8rem]")}
+                  >
+                    {busy === "invite_one" ? (
+                      <LoadingCircleSmall />
+                    ) : openUser.invitedAt ? (
+                      t("drawer.already_invited")
+                    ) : (
+                      t("drawer.invite")
+                    )}
+                  </button>
+                </div>
+              </div>
+            </DrawerFooter>
+          </DrawerContent>
+        )}
+      </Drawer>
     </div>
   );
 }
@@ -791,24 +546,6 @@ export default function WaitlistPageContent({
  * a waitlist member without an account is the person this page exists to go
  * after, not an error state.
  */
-function AccountBadge({
-  hasAccount,
-  yes,
-  no,
-}: {
-  hasAccount: boolean;
-  yes: string;
-  no: string;
-}) {
-  return (
-    <span
-      className={`py-[0.3rem] px-2 rounded-[30px] text-[11px] font-bold uppercase whitespace-nowrap ${
-        hasAccount
-          ? "bg-neutral-100 text-success"
-          : "bg-orange-50 text-orange-600"
-      }`}
-    >
-      {hasAccount ? yes : no}
-    </span>
-  );
+function AccountBadge({ hasAccount, yes, no }: { hasAccount: boolean; yes: string; no: string }) {
+  return <Badge tone={hasAccount ? "success" : "warning"}>{hasAccount ? yes : no}</Badge>;
 }

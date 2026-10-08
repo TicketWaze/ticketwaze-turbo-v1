@@ -1,20 +1,27 @@
-import { ShieldSlash } from "iconsax-reactjs";
+import { ShieldSlash, type Icon } from "iconsax-reactjs";
+import { useTranslations } from "next-intl";
 
-export default function UnauthorizedView() {
+/**
+ * Figma "Admin" → No access (4300:82406): the section's icon in two grey
+ * circles and a short note, centred where the content would be. Pass the
+ * section's own icon (the chart for Analytics); a shield otherwise.
+ */
+export default function UnauthorizedView({
+  icon: IconComponent = ShieldSlash,
+}: {
+  icon?: Icon;
+}) {
+  const t = useTranslations("Layout");
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-6 py-24 text-center">
-      <div className="w-[7rem] h-[7rem] rounded-full bg-neutral-100 flex items-center justify-center">
-        <ShieldSlash size="32" color="#a3a3a3" variant="Bulk" />
+    <div className="flex-1 flex flex-col items-center justify-center gap-10 py-24 text-center">
+      <div className="w-[12rem] h-[12rem] rounded-full bg-neutral-100 flex items-center justify-center">
+        <div className="w-[9rem] h-[9rem] rounded-full bg-neutral-200/70 flex items-center justify-center">
+          <IconComponent size="40" color="#232529" variant="Bulk" />
+        </div>
       </div>
-      <div className="flex flex-col gap-2 max-w-[360px]">
-        <h2 className="font-primary font-semibold text-[2.2rem] leading-10 text-neutral-900">
-          Access Restricted
-        </h2>
-        <p className="text-[1.5rem] leading-8 text-neutral-500">
-          You don't have permission to view this page. Contact the owner to
-          request access.
-        </p>
-      </div>
+      <p className="max-w-[40rem] text-[1.5rem] leading-9 text-neutral-500">
+        {t("no_access")}
+      </p>
     </div>
   );
 }

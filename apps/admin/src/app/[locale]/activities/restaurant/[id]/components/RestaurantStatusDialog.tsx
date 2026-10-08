@@ -1,4 +1,5 @@
 "use client";
+import type { DialogControl } from "@/lib/dialogControl";
 
 import { useState } from "react";
 import { useLocale } from "next-intl";
@@ -68,11 +69,17 @@ export function StatusBadge({ status }: { status: AdminStatus }) {
 export function RestaurantStatusDialog({
   restaurant,
   className,
+  hideTrigger,
+  open: controlledOpen,
+  onOpenChange,
 }: {
   restaurant: Restaurant;
   className?: string;
-}) {
-  const [open, setOpen] = useState(false);
+} & DialogControl) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen ?? uncontrolledOpen;
+  const setOpen = (next: boolean) =>
+    onOpenChange ? onOpenChange(next) : setUncontrolledOpen(next);
   const [selected, setSelected] = useState<AdminStatus>(restaurant.adminStatus);
   const [step, setStep] = useState<"select" | "reason">("select");
   const [rejectionReason, setRejectionReason] = useState("");
@@ -130,17 +137,19 @@ export function RestaurantStatusDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <ButtonNeutral
-          className={cn(`py-[7.5px] flex items-center gap-3`, className)}
-        >
-          <span
-            className="w-[0.8rem] h-[0.8rem] rounded-full shrink-0"
-            style={{ backgroundColor: currentConfig.color }}
-          />
-          Change Status
-        </ButtonNeutral>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <ButtonNeutral
+            className={cn(`py-[7.5px] flex items-center gap-3`, className)}
+          >
+            <span
+              className="w-[0.8rem] h-[0.8rem] rounded-full shrink-0"
+              style={{ backgroundColor: currentConfig.color }}
+            />
+            Change Status
+          </ButtonNeutral>
+        </DialogTrigger>
+      )}
       <DialogContent className="overflow-hidden">
         <AnimatePresence mode="wait" initial={false}>
           {step === "select" ? (

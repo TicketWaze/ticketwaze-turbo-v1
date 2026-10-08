@@ -183,7 +183,7 @@ function ProfileImage({ user }: { user: User }) {
               <span
                 className={"font-semibold text-[1.5rem] leading-8 text-white"}
               >
-                {t("setProfile")}
+                {user.profileImageUrl ? t("changeProfile") : t("setProfile")}
               </span>
             </>
           )}

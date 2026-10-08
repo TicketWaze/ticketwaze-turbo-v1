@@ -36,11 +36,7 @@ export default function DeletionBanner({
 
   async function handleCancel() {
     setIsCancelling(true);
-    const result = await CancelEventDeletion(
-      eventId,
-      locale,
-      pathname,
-    );
+    const result = await CancelEventDeletion(eventId, locale, pathname);
     setIsCancelling(false);
     if ("error" in result) {
       toast.error(result.error);

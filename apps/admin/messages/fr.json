@@ -1,220 +1,136 @@
 {
   "Auth": {
     "layout": {
-      "badge": "Administrator"
+      "badge": "Administrateur"
+    },
+    "flow": {
+      "back": "Retour",
+      "or": "Ou",
+      "signing_in": "Connexion en cours"
+    },
+    "errors": {
+      "generic": "Une erreur est survenue. Veuillez réessayer.",
+      "too_many": "Trop de tentatives. Patientez quelques minutes puis réessayez."
     },
     "login": {
-      "title": "Se connecter",
-      "description": "Veuillez saisir les détails de votre compte pour continuer",
+      "title": "Connexion",
+      "description": "Veuillez saisir les informations de votre compte pour continuer",
       "placeholders": {
-        "email": "Adresse e-mail de l'Organisation",
+        "email": "Adresse e-mail",
         "password": "Mot de passe"
       },
-      "errors": {
-        "email": "Saisissez un e-mail valide",
-        "password": "Le mot de passe doit contenir au moins 8 caractères",
-        "loginFailed": "Échec de la connexion. Veuillez réessayer."
-      },
-      "otp": {
-        "title": "Vérifier l'identité",
-        "description": "Saisissez le code à 6 chiffres envoyé à votre adresse e-mail",
-        "cta": "Vérifier",
-        "back": "Retour à la connexion",
-        "error": "Code de vérification invalide",
-        "resend": "Renvoyer le code",
-        "resendIn": "Renvoyer dans",
-        "resent": "Un nouveau code a été envoyé",
-        "expiry": "Le code expire dans"
-      },
       "reset": "Réinitialiser le mot de passe",
-      "register": {
-        "text": "Pas encore de compte ?",
-        "cta": "S'inscrire"
-      },
-      "cta": {
-        "submit": "Se connecter",
-        "or": "Ou",
-        "google": "Continuer avec Google"
-      },
-      "footer": {
-        "cta": "Retour"
-      }
-    },
-    "register": {
+      "cta": "Se connecter",
+      "google": "Continuer avec Google",
       "errors": {
-        "characters": "Au moins 8 caractères",
-        "capital": "Au moins une lettre majuscule",
-        "special": "Au moins un caractère spécial",
-        "number": "Au moins un chiffre",
-        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
-        "password_match": "Les mots de passe ne correspondent pas",
-        "failed": "Une erreur s'est produite. Veuillez réessayer."
+        "email": "Saisissez une adresse e-mail valide",
+        "password": "Saisissez votre mot de passe",
+        "credentials": "E-mail ou mot de passe incorrect",
+        "wait": "Un code vient d'être envoyé. Réessayez dans {seconds}s."
       },
-      "email": {
-        "title": "Créer un compte",
-        "description": "Entrez votre adresse @ticketwaze.com pour commencer",
-        "placeholder": "Adresse e-mail administrateur",
-        "cta": "Envoyer le code",
+      "google_errors": {
+        "NOT_INVITED": "Vous devez être invité pour accéder au tableau de bord admin. Demandez une invitation à un administrateur.",
+        "DOMAIN_NOT_ALLOWED": "Seuls les comptes Google @ticketwaze.com peuvent se connecter ici.",
+        "TOO_MANY_ATTEMPTS": "Trop de tentatives. Patientez quelques minutes puis réessayez.",
+        "GOOGLE_FAILED": "La connexion avec Google a échoué. Veuillez réessayer."
+      },
+      "code": {
+        "title": "Vérification",
+        "description": "Saisissez le code à 6 chiffres envoyé à",
+        "cta": "Vérifier",
+        "resend_text": "Pas reçu d'e-mail ?",
+        "resend": "Renvoyer",
+        "resend_in": "Renvoyer dans {seconds}s",
+        "resent": "Un nouveau code est en route",
         "errors": {
-          "email": "Saisissez un e-mail valide",
-          "domain": "L'e-mail doit se terminer par @ticketwaze.com",
-          "alreadyRegistered": "Cette adresse e-mail est déjà enregistrée"
+          "invalid": "Ce code est incorrect",
+          "expired": "Ce code a expiré. Demandez-en un nouveau."
         }
-      },
-      "otp": {
-        "title": "Vérifiez votre e-mail",
-        "description": "Entrez le code à 6 chiffres envoyé à",
-        "expiry": "Le code expire dans",
-        "resend": "Renvoyer le code",
-        "resent": "Un nouveau code a été envoyé",
-        "cta": "Continuer",
-        "back": "Retour",
-        "error": "Code invalide ou expiré"
-      },
-      "password": {
-        "title": "Définir votre mot de passe",
-        "description": "Créez un mot de passe fort pour sécuriser votre compte",
-        "placeholders": {
-          "password": "Choisir un mot de passe",
-          "confirm": "Confirmer le mot de passe"
-        },
-        "cta": "Créer le compte",
-        "success": "Compte créé ! Vous pouvez maintenant vous connecter."
-      },
-      "footer": {
-        "text": "Vous avez déjà un compte ?",
-        "cta": "Se connecter"
       }
     },
     "join": {
       "title": "Rejoindre Ticketwaze",
-      "description": {
-        "hello": "Bonjour",
-        "main": ", complétez votre profil pour accéder à votre espace de travail."
-      },
+      "hello": "Bonjour",
+      "description": ", complétez votre profil pour accéder à votre espace de travail.",
       "placeholders": {
-        "password": "Choisir un mot de passe",
-        "confirm": "Confirmer le mot de passe"
+        "password": "Choisissez un mot de passe",
+        "confirm": "Confirmez le mot de passe"
       },
       "errors": {
         "characters": "Au moins 8 caractères",
-        "capital": "Au moins une lettre majuscule",
+        "capital": "Au moins une majuscule",
         "special": "Au moins un caractère spécial",
         "number": "Au moins un chiffre",
-        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
-        "password_match": "Les mots de passe ne correspondent pas"
+        "password": "Au moins 8 caractères, une majuscule, un chiffre et un caractère spécial",
+        "password_match": "Les mots de passe ne correspondent pas",
+        "INVITATION_NOT_FOUND": "Ce lien d'invitation n'est pas valide. Demandez une nouvelle invitation.",
+        "INVITATION_EXPIRED": "Cette invitation a expiré. Demandez à un administrateur de la renvoyer.",
+        "INVITATION_USED": "Cette invitation a déjà été utilisée. Connectez-vous.",
+        "ADMIN_EXISTS": "Cet e-mail a déjà un compte admin. Connectez-vous."
       },
-      "cta": {
-        "submit": "Rejoindre"
-      },
+      "invalid_title": "Invitation indisponible",
+      "cta": "Rejoindre",
       "footer": {
         "text": "Vous avez déjà un compte ?",
         "cta": "Se connecter"
       },
       "accepted": {
         "title": "Invitation acceptée !",
-        "text": "Votre compte est prêt. Commencez maintenant !",
-        "signing": "Connexion en cours..."
+        "description": "Votre compte est prêt. C'est parti !"
       }
     },
     "reset": {
       "title": "Réinitialiser le mot de passe",
-      "description": "Veuillez entrer les détails de votre compte pour continuer",
-      "errors": {
-        "email": "Entrez une adresse e-mail valide",
-        "notFound": "Aucun compte trouvé avec cette adresse e-mail"
-      },
+      "description": "Veuillez saisir les informations de votre compte pour continuer",
       "placeholders": {
-        "email": "Adresse e-mail de l'organisation"
+        "email": "Adresse e-mail"
       },
-      "cta": {
-        "submit": "Réinitialiser"
-      },
-      "back": "Retour"
-    },
-    "forgot": {
+      "cta": "Réinitialiser",
       "errors": {
-        "email": "Entrez une adresse e-mail valide",
-        "failed": "Une erreur s'est produite. Veuillez réessayer.",
-        "characters": "Au moins 8 caractères",
-        "capital": "Au moins une lettre majuscule",
-        "special": "Au moins un caractère spécial",
-        "number": "Au moins un chiffre",
-        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
-        "password_match": "Les mots de passe ne correspondent pas",
-        "same": "Le nouveau mot de passe doit être différent de l'actuel",
-        "token_expired": "Votre session de réinitialisation a expiré. Veuillez recommencer."
+        "email": "Saisissez une adresse e-mail valide"
       },
-      "email": {
-        "title": "Mot de passe oublié",
-        "description": "Entrez votre adresse e-mail administrateur et nous vous enverrons un code de réinitialisation",
-        "placeholder": "Adresse e-mail administrateur",
-        "cta": "Envoyer le code",
-        "sent": "Si cet e-mail est enregistré, un code a été envoyé"
-      },
-      "otp": {
-        "title": "Vérifiez votre e-mail",
-        "description": "Entrez le code à 6 chiffres envoyé à",
-        "expiry": "Le code expire dans",
-        "resend": "Renvoyer le code",
-        "resent": "Un nouveau code a été envoyé",
-        "cta": "Vérifier",
-        "back": "Retour",
-        "error": "Code invalide ou expiré"
+      "sent": {
+        "title": "Réinitialiser le mot de passe",
+        "description": "Saisissez le code à 6 chiffres envoyé à",
+        "cta": "Continuer",
+        "resend_text": "Pas reçu d'e-mail ?",
+        "resend": "Renvoyer",
+        "resent": "Si cet e-mail est enregistré, un nouveau code est en route",
+        "errors": {
+          "invalid": "Ce code est incorrect",
+          "expired": "Ce code a expiré. Demandez-en un nouveau."
+        }
       },
       "password": {
-        "title": "Créer un nouveau mot de passe",
-        "description": "Choisissez un mot de passe fort pour sécuriser votre compte",
+        "title": "Créer un mot de passe",
+        "description": "Choisissez un nouveau mot de passe pour votre compte",
         "placeholders": {
           "password": "Nouveau mot de passe",
-          "confirm": "Confirmer le mot de passe"
+          "confirm": "Confirmez le mot de passe"
         },
-        "cta": "Réinitialiser le mot de passe",
-        "success": "Mot de passe réinitialisé avec succès. Vous pouvez maintenant vous connecter."
+        "cta": "Créer",
+        "errors": {
+          "characters": "Au moins 8 caractères",
+          "capital": "Au moins une majuscule",
+          "special": "Au moins un caractère spécial",
+          "number": "Au moins un chiffre",
+          "password": "Au moins 8 caractères, une majuscule, un chiffre et un caractère spécial",
+          "password_match": "Les mots de passe ne correspondent pas",
+          "same": "Choisissez un mot de passe différent de l'actuel",
+          "expired": "Votre session de réinitialisation a expiré. Recommencez."
+        }
       },
-      "footer": {
-        "text": "Vous vous souvenez de votre mot de passe ?",
-        "cta": "Se connecter"
+      "done": {
+        "title": "Mot de passe créé",
+        "description": "Votre nouveau mot de passe est enregistré. Nous vous connectons."
       }
-    },
-    "email_sent": {
-      "title": "Réinitialiser le mot de passe",
-      "description": "Un e-mail de réinitialisation du mot de passe a été envoyé à",
-      "footer": {
-        "text": "Vous n’avez pas reçu d’e-mail ?",
-        "cta": "Renvoyer"
-      }
-    },
-    "new_password": {
-      "title": "Créer un mot de passe",
-      "description": "Choisissez un nouveau mot de passe pour votre compte",
-      "placeholders": {
-        "password": "Mot de passe",
-        "confirm": "Confirmer le mot de passe"
-      },
-      "errors": {
-        "password_length": "Le mot de passe doit contenir au moins 8 caractères",
-        "password_match": "Les mots de passe ne correspondent pas",
-        "sameError": "Vous avez déjà utilisé ce mot de passe. Vous ne pouvez pas réutiliser d'anciens mots de passe.",
-        "characters": "Au moins 8 caractères",
-        "capital": "Au moins une lettre majuscule",
-        "special": "Au moins un caractère spécial",
-        "number": "Au moins un chiffre",
-        "email": "Le champ e-mail ne peut pas être vide"
-      },
-      "cta": "Créer"
-    },
-    "password_created": {
-      "title": "Mot de passe créé",
-      "text": "Vous avez créé un nouveau mot de passe avec succès. Nous procédons à votre connexion.",
-      "signing": "Connexion en cours..."
     }
   },
   "Layout": {
     "sidebar": {
       "more": "Plus",
       "help": "Aide",
-      "logout": "Déconnexion",
+      "logout": "Se déconnecter",
       "verified": "Vérifié",
       "links": {
         "title1": "Utilisateurs",
@@ -228,19 +144,26 @@
         "tickets": "Billets",
         "payments": "Paiements",
         "payouts": "Versements",
+        "finance": "Finances",
         "user_withdrawals": "Retraits utilisateurs",
         "support": "Chat en direct",
         "contact": "Messages de contact",
         "pending_edits": "Modifications en attente",
-        "emails": "Emails"
-      }
+        "emails": "Emails",
+        "kyc": "KYC",
+        "organizers": "Organisateurs",
+        "events": "Événements"
+      },
+      "badge": "Admin",
+      "settings": "Paramètres"
     },
     "topbar": {
       "welcome": "Bon retour",
       "back": "Retour",
       "notification": "Notifications",
       "view": "Voir"
-    }
+    },
+    "no_access": "Vous n'avez pas l'autorisation de voir cette section. Contactez votre administrateur si vous avez besoin d'accéder à cette page."
   },
   "Activities": {
     "title": "Aperçu des activités",
@@ -328,12 +251,18 @@
             "name": "Nom de l'acheteur",
             "class": "Classe du billet",
             "amount": "Montant payé",
-            "status": "Statut",
+            "status": "Statut d’entrée",
             "purchase": "Date d'achat"
           },
           "filters": {
             "status": "Tous les statuts",
-            "period": "Toute la période"
+            "period": "Toute la période",
+            "search": "Rechercher par nom, e-mail, ID du billet",
+            "status_label": "Statut",
+            "period_label": "Acheté",
+            "checked": "Entré",
+            "pending": "En attente",
+            "returned": "Retourné"
           },
           "tickets": {
             "general": "Général",
@@ -341,8 +270,17 @@
             "premium": "Premium Vip"
           },
           "status": {
-            "check-in": "Enregistré"
-          }
+            "check-in": "Enregistré",
+            "CHECKED": "ENTRÉ",
+            "PENDING": "EN ATTENTE",
+            "RETURNED": "RETOURNÉ"
+          },
+          "menu": {
+            "details": "Détails du billet"
+          },
+          "empty": "Aucun participant trouvé.",
+          "prev": "Page précédente",
+          "next": "Page suivante"
         }
       },
       "edit": "Modifier",
@@ -422,7 +360,18 @@
       },
       "resend": {
         "success": "Billet envoyé à {email}",
-        "error": "Échec du renvoi du billet"
+        "error": "Échec du renvoi du billet",
+        "cooldown": "Envoyé · à nouveau dans {minutes} min",
+        "RESEND_COOLDOWN": "Ce billet vient d’être renvoyé. Réessayez dans {minutes} min.",
+        "RESEND_TICKET_DAILY": "Ce billet a déjà été renvoyé 3 fois aujourd’hui.",
+        "RESEND_ADMIN_DAILY": "La limite quotidienne de renvois des admins est atteinte. Réessayez dans {minutes} min."
+      },
+      "payment_methods": {
+        "moncash": "MonCash",
+        "natcash": "NatCash",
+        "stripe": "Carte",
+        "wallet": "Portefeuille",
+        "free": "Gratuit"
       }
     },
     "revisions": {
@@ -455,7 +404,13 @@
       },
       "events_heading": "Événements",
       "raffles_heading": "Tirages",
-      "reason_label": "Motif"
+      "reason_label": "Motif",
+      "filter_label": "Type d'activité",
+      "filter_all": "Toutes ({count})",
+      "filter_events": "Événements ({count})",
+      "filter_raffles": "Tombolas ({count})",
+      "type_event": "Événement",
+      "type_raffle": "Tombola"
     },
     "edit": {
       "back": "Retour à l'activité",
@@ -754,6 +709,115 @@
     "errors": {
       "name": "Le nom ne peut pas être vide",
       "email": "Saisissez une adresse e-mail valide"
+    },
+    "invitations": {
+      "title": "Invitations en attente",
+      "invite": "Inviter un admin",
+      "description": "La personne recevra un e-mail avec un lien pour choisir un mot de passe, ou pourra se connecter avec Google avec cette adresse. Le lien ne fonctionne qu'une fois et expire dans 7 jours.",
+      "email": "Adresse e-mail (@ticketwaze.com)",
+      "role": "Rôle",
+      "send": "Envoyer l'invitation",
+      "sent": "Invitation envoyée à {email}",
+      "resent": "Invitation renvoyée à {email}",
+      "revoked": "Invitation annulée",
+      "resend": "Renvoyer",
+      "revoke": "Annuler",
+      "empty": "Aucune invitation en attente.",
+      "expires": "expire le {date}",
+      "by": "invité par {email}",
+      "errors": {
+        "domain": "Saisissez une adresse e-mail @ticketwaze.com",
+        "exists": "Cette personne est déjà administrateur",
+        "already": "Cette adresse a déjà une invitation en attente",
+        "wait": "Une invitation vient d'être envoyée à cette adresse. Réessayez dans {minutes} min.",
+        "daily_total": "La limite quotidienne d'invitations est atteinte. Réessayez dans {minutes} min.",
+        "generic": "Une erreur est survenue. Veuillez réessayer."
+      }
+    },
+    "description": "Qui peut se connecter à ce tableau de bord, et ce que chacun peut faire.",
+    "roles": {
+      "0": "En attente",
+      "1": "Lecteur",
+      "2": "Support",
+      "3": "Modérateur",
+      "4": "Admin",
+      "5": "Propriétaire"
+    },
+    "team": {
+      "title": "Équipe",
+      "role_label": "Rôle",
+      "all_roles": "Tous les rôles",
+      "search": "Rechercher par e-mail",
+      "columns": {
+        "email": "E-mail",
+        "role": "Rôle",
+        "access": "Accès",
+        "status": "Statut",
+        "joined": "Inscrit le",
+        "actions": "Actions"
+      },
+      "you": "Vous",
+      "verified": "Vérifié",
+      "unverified": "Non vérifié",
+      "no_access": "Aucun accès",
+      "permission_count": "{count, plural, one {# permission} other {# permissions}}",
+      "empty": "Aucun administrateur pour l'instant.",
+      "no_results": "Aucun administrateur ne correspond à ces filtres.",
+      "error": "Une erreur s'est produite. Veuillez réessayer.",
+      "role_updated": "Rôle mis à jour.",
+      "permissions_updated": "Permissions mises à jour.",
+      "removed": "Administrateur retiré.",
+      "drawer": {
+        "title": "Administrateur",
+        "pending_alert": "Cet administrateur n'a encore aucun accès. Attribuez-lui un rôle ou des permissions personnalisées ci-dessous.",
+        "source": "Origine des permissions",
+        "custom": "Personnalisées",
+        "role_defaults": "Rôle par défaut",
+        "assign_role": "Attribuer un rôle",
+        "assign_hint": "Attribuer un rôle efface les permissions personnalisées.",
+        "custom_permissions": "Définir des permissions personnalisées",
+        "remove": "Retirer l'administrateur",
+        "close": "Fermer"
+      },
+      "permissions": {
+        "title": "Permissions personnalisées",
+        "description": "Remplacez les permissions par défaut du rôle de {email} par des permissions précises. Une sélection vide retire tout accès.",
+        "clear": "Tout effacer",
+        "save": "Enregistrer"
+      },
+      "remove": {
+        "title": "Retirer l'administrateur",
+        "body": "Retirer {email} ? Son accès est coupé immédiatement. Cette action est irréversible.",
+        "cancel": "Annuler",
+        "confirm": "Oui, retirer"
+      }
+    },
+    "permissions": {
+      "resources": {
+        "analytics": "Statistiques",
+        "support_chat": "Chat en direct",
+        "contact_message": "Messages de contact",
+        "waitlist": "Liste d'attente",
+        "attendees": "Participants",
+        "organisations": "Organisations",
+        "admins": "Administrateurs",
+        "activity": "Activités",
+        "tickets": "Billets",
+        "payouts": "Versements",
+        "payments": "Paiements",
+        "campaigns": "Campagnes e-mail"
+      },
+      "actions": {
+        "view": "Voir",
+        "create": "Créer",
+        "edit": "Modifier",
+        "delete": "Supprimer",
+        "credit": "Créditer le portefeuille",
+        "manage": "Gérer",
+        "giveaway": "Offrir des billets",
+        "checking": "Scanner les billets",
+        "send": "Envoyer"
+      }
     }
   },
   "Payouts": {
@@ -964,6 +1028,114 @@
     "settle": "Traiter le virement",
     "confirm_sent": "Marquer comme envoyé"
   },
+  "Finance": {
+    "title": "Finances",
+    "periods": {
+      "all": "Depuis le début",
+      "this_month": "Ce mois-ci",
+      "last_month": "Le mois dernier",
+      "this_year": "Cette année"
+    },
+    "summary": {
+      "total_earned": "Total gagné",
+      "moncash_earned": "Gagné via MonCash",
+      "stripe_earned": "Gagné via Stripe",
+      "total_net": "Gain net (est.)",
+      "moncash_net": "Net MonCash (est.)",
+      "stripe_net": "Net Stripe (est.)",
+      "includes_subscriptions": "Dont {amount} USD d'abonnements"
+    },
+    "activities": {
+      "title": "Activités",
+      "search": "Rechercher une activité ou une organisation",
+      "no_results": "Aucune activité ne correspond à « {term} ».",
+      "empty": "Aucune vente sur cette période.",
+      "table": {
+        "activity": "Activité",
+        "type": "Type",
+        "organisation": "Organisation",
+        "sold": "Vendus",
+        "collected": "Encaissé",
+        "earned": "Nos frais",
+        "net": "Net (est.)",
+        "actions": "Actions"
+      },
+      "prev": "Précédent",
+      "next": "Suivant"
+    },
+    "types": {
+      "event": "Événement",
+      "raffle": "Tombola",
+      "sale": "Vente numérique",
+      "restaurant": "Restaurant"
+    },
+    "drawer": {
+      "title": "Finances de l'activité",
+      "loading_error": "Impossible de charger les finances de cette activité.",
+      "close": "Fermer",
+      "organisation": "Organisation",
+      "type": "Type",
+      "currency": "Devise",
+      "period": "Période",
+      "fee_mode": "Frais",
+      "fee_mode_pass": "Payés par l'acheteur",
+      "fee_mode_absorb": "Absorbés par l'organisateur",
+      "fee_override": "Grille de frais personnalisée",
+      "balance_released": "Solde de l'organisateur libéré",
+      "not_released": "Pas encore",
+      "cancelled": "Annulée",
+      "yes": "Oui",
+      "no": "Non",
+      "sales": {
+        "title": "Ventes",
+        "units_sold": "Billets / unités vendus",
+        "orders": "Commandes payées",
+        "returned_orders": "Commandes retournées",
+        "giveaway_tickets": "Billets offerts",
+        "reward_tickets": "Billets de récompense",
+        "refunded_tickets": "Billets remboursés",
+        "first_sale": "Première vente",
+        "last_sale": "Dernière vente"
+      },
+      "money": {
+        "title": "Argent",
+        "collected": "Encaissé auprès des acheteurs",
+        "organiser_credit": "Crédité à l'organisateur",
+        "fees": "Nos frais (brut)",
+        "processing": "Frais de traitement (est.)",
+        "tokens": "Jetons utilisés (à notre charge)",
+        "giveaways": "Billets offerts (à notre charge)",
+        "refunds": "Coût des remboursements",
+        "refunds_hint": "Remboursé {paid} · organisateur débité {debited}",
+        "net": "Gain net (est.)"
+      },
+      "providers": {
+        "title": "Par moyen de paiement",
+        "provider": "Moyen",
+        "orders": "Commandes",
+        "collected": "Encaissé",
+        "fees": "Nos frais",
+        "net": "Net (est.)"
+      },
+      "pricing": {
+        "title": "Tarifs enregistrés",
+        "sold_of": "{sold} / {quantity} vendus",
+        "sold": "{sold} vendus",
+        "unlimited": "Illimité",
+        "empty": "Aucun tarif enregistré."
+      },
+      "items": {
+        "title": "Vendu au prix",
+        "empty": "Aucune vente détaillée."
+      },
+      "orders": {
+        "title": "Dernières commandes",
+        "empty": "Aucune commande sur cette période.",
+        "tokens": "dont {amount} en jetons"
+      }
+    },
+    "period_label": "Période"
+  },
   "Payments": {
     "title": "Paiements",
     "total_revenue": "Revenu total",
@@ -1075,38 +1247,128 @@
     }
   },
   "Organisations": {
-    "title": "Organisations",
-    "total": "Total",
-    "active": "Actifs",
-    "new": "Ce mois-ci",
+    "title": "Aperçu des organisateurs",
+    "total": "Total des organisateurs",
+    "active": "Organisateurs actifs",
+    "new": "Nouveaux organisateurs",
+    "active_hint": "Ont vendu au moins un billet sur la période.",
+    "trend": {
+      "up": "En hausse de {value} % sur la période précédente",
+      "down": "En baisse de {value} % sur la période précédente"
+    },
     "filters": {
-      "period": {
-        "actual": "Ce mois-ci"
-      },
+      "period": "Période",
       "status": "Tous les statuts",
+      "status_label": "Statut",
       "status_active": "Actif",
+      "status_inactive": "Inactif",
       "status_suspended": "Suspendu",
-      "time": "Toute la période",
-      "last_week": "Semaine dernière",
-      "last_month": "Mois dernier",
-      "search": "Rechercher une organisation"
+      "time": "Depuis le début",
+      "time_label": "Date d'inscription",
+      "search": "Rechercher par nom, e-mail, ID"
     },
     "organisations_list": {
-      "title": "Liste des organisations",
+      "title": "Liste des organisateurs",
       "table": {
         "name": "Nom",
-        "email": "Email",
-        "activity_count": "Nombre d'activités",
-        "joined": "Date d'inscription"
+        "email": "E-mail",
+        "status": "Statut",
+        "event_count": "Nombre d'activités",
+        "revenue": "Revenus",
+        "joined": "Date d'inscription",
+        "actions": "Actions"
       },
-      "no_history": "Une fois que les organisateurs s'inscrivent et créent des activités, ils apparaîtront ici.",
-      "no_results": "Aucune organisation ne correspond à votre recherche."
+      "status": {
+        "active": "ACTIF",
+        "inactive": "INACTIF",
+        "suspended": "SUSPENDU"
+      },
+      "status_hint": "Actif = a vendu un billet dans les 90 derniers jours.",
+      "revenue_hint": "Montant payé par les acheteurs sur les ventes réglées.",
+      "event_count_hint": "Toutes les activités : événements, tombolas, ventes et restaurants.",
+      "no_history": "Dès que des organisations s’inscrivent et créent des activités, elles apparaîtront ici.",
+      "no_results": "Aucun organisateur ne correspond à ces filtres.",
+      "menu": {
+        "view": "Voir le profil",
+        "suspend": "Suspendre le compte",
+        "reactivate": "Réactiver le compte"
+      },
+      "prev": "Page précédente",
+      "next": "Page suivante"
     },
     "profile": {
-      "title": "Profil",
-      "back": "Retour",
-      "profile": "Profil",
+      "title": "Profil de l'organisation",
+      "profile": "Profil de l'organisation",
       "information": "Informations de l'organisateur",
+      "not_found": "Organisation introuvable.",
+      "button": {
+        "edit": "Modifier le profil"
+      },
+      "change_logo": "Changer le logo",
+      "more": {
+        "title": "Plus d'actions",
+        "kyc": "Vérification d'identité (KYC)"
+      },
+      "edit": {
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "saved": "Profil mis à jour",
+        "failed": "Le profil n'a pas pu être enregistré."
+      },
+      "image": {
+        "done": "Logo mis à jour",
+        "failed": "Le logo n'a pas pu être envoyé.",
+        "too_big": "L'image doit faire 5 Mo maximum."
+      },
+      "errors": {
+        "name": "3 à 30 caractères",
+        "name_taken": "Une autre organisation utilise déjà ce nom",
+        "about": "350 caractères maximum"
+      },
+      "fields": {
+        "name": "Nom de l'organisation",
+        "address": "Adresse",
+        "country": "Pays",
+        "state": "Département",
+        "city": "Ville",
+        "about": "À propos",
+        "email": "E-mail de contact",
+        "phone": "Téléphone de contact",
+        "website": "Site web",
+        "owner_email": "E-mail de connexion",
+        "owner_phone": "Téléphone WhatsApp",
+        "language": "Langue de l'application"
+      },
+      "languages": {
+        "en": "Anglais",
+        "fr": "Français"
+      },
+      "summary": {
+        "title": "Résumé des activités",
+        "created": "Activités créées",
+        "cancelled": "Activités annulées",
+        "no_activities": "Aucune activité pour l'instant.",
+        "no_cancelled": "Aucune activité annulée.",
+        "joined_on": "Inscrit le",
+        "free": "Gratuit",
+        "types": {
+          "event": "Événement",
+          "raffle": "Tombola",
+          "sale": "Vente",
+          "restaurant": "Restaurant"
+        }
+      },
+      "finance": {
+        "title": "Finances",
+        "total_ticket_sold": "Total des billets vendus",
+        "total_revenue": "Revenu total",
+        "total_profit": "Bénéfice total",
+        "balance": "Solde",
+        "pending": "{amount} en attente",
+        "revenue_hint": "Montant payé par les acheteurs.",
+        "profit_hint": "Ce que l'organisation a gardé après les frais."
+      },
+      "back": "Retour",
       "suspend": {
         "trigger": "Suspendre le compte",
         "title": "Suspendre le compte",
@@ -1172,55 +1434,55 @@
         "expires": "Fin",
         "method": "Moyen de paiement",
         "none": "Cette organisation utilise le forfait gratuit."
-      },
-      "summary": {
-        "title": "Résumé des activités",
-        "created": "Activités créées",
-        "cancelled": "Activités annulées",
-        "no_activities": "Aucune activité active.",
-        "no_cancelled": "Aucune activité annulée.",
-        "joined_on": "Inscrit le"
-      },
-      "finance": {
-        "title": "Finances",
-        "total_ticket_sold": "Total des billets vendus",
-        "total_revenue": "Revenu total",
-        "pending_balance": "Solde en attente",
-        "balance": "Solde disponible"
       }
     }
   },
   "Attendees": {
-    "title": "Aperçu des participants",
+    "title": "Vue d'ensemble des participants",
     "total": "Total des participants",
     "active": "Participants actifs",
-    "guest": "Participants invités",
+    "repeat": "Participants réguliers",
+    "trend": {
+      "up": "En hausse de {value} % sur la période précédente",
+      "down": "En baisse de {value} % sur la période précédente"
+    },
     "filters": {
-      "period": {
-        "actual": "Ce mois-ci"
-      },
+      "period": "Période",
       "status": "Tous les statuts",
+      "status_label": "Statut",
       "status_active": "Actif",
+      "status_inactive": "Inactif",
       "status_suspended": "Suspendu",
-      "time": "Toute la période",
-      "search": "Rechercher un nom ou un email"
+      "time": "Depuis le début",
+      "time_label": "Date d'inscription",
+      "search": "Rechercher par nom, e-mail, ID"
     },
     "attendees_list": {
       "title": "Liste des participants",
       "table": {
         "name": "Nom",
-        "email": "Email",
-        "activity_count": "Nombre d'activités",
+        "email": "E-mail",
+        "phone": "Téléphone",
+        "event_count": "Événements",
         "status": "Statut",
-        "joined": "Date d'inscription"
+        "joined": "Inscrit le",
+        "actions": "Actions"
       },
       "status": {
         "active": "ACTIF",
-        "pending": "EN ATTENTE",
+        "inactive": "INACTIF",
         "suspended": "SUSPENDU"
       },
-      "no_history": "Une fois que les participants commencent à s'inscrire, acheter des billets et rejoindre des activités, ils apparaîtront ici.",
-      "no_results": "Aucun participant ne correspond à « {term} »."
+      "status_hint": "Actif = a acheté un billet au cours des 90 derniers jours.",
+      "no_history": "Dès que des participants s'inscriront, achèteront des billets et rejoindront des événements, ils apparaîtront ici.",
+      "no_results": "Aucun participant ne correspond à ces filtres.",
+      "menu": {
+        "view": "Voir le profil",
+        "suspend": "Suspendre le compte",
+        "reactivate": "Réactiver le compte"
+      },
+      "prev": "Page précédente",
+      "next": "Page suivante"
     },
     "profile": {
       "title": "Profil utilisateur",
@@ -1252,24 +1514,28 @@
       "information": "Informations personnelles",
       "summary": {
         "title": "Résumé des activités",
-        "count": "Nombre d'activités",
+        "count": "Nombre d'événements",
         "total_ticket_bought": "Total des billets achetés",
-        "missed": "Nombre d'activités manquées",
+        "missed": "Événements manqués",
         "total_spent": "Total dépensé",
         "joined_on": "Inscrit le"
       },
       "ticket_history": {
         "title": "Historique des billets",
         "table": {
-          "name": "Nom de l'activité",
-          "class": "Classe du billet",
+          "name": "Événement",
+          "class": "Catégorie",
           "amount": "Montant payé",
-          "status": "Statut d'enregistrement",
-          "purchase": "Date d'achat"
+          "status": "Statut d'entrée",
+          "purchase": "Date d'achat",
+          "details": "Détails"
         },
         "filters": {
           "status": "Tous les statuts",
-          "period": "Toute la période"
+          "period": "Depuis le début",
+          "status_label": "Statut d'entrée",
+          "period_label": "Date d'achat",
+          "search": "Rechercher un événement"
         },
         "tickets": {
           "general": "Général",
@@ -1277,8 +1543,14 @@
           "premium": "VIP Premium"
         },
         "status": {
-          "check-in": "Enregistré"
-        }
+          "check-in": "Enregistré",
+          "checked": "Entré",
+          "pending": "En attente",
+          "returned": "Remboursé"
+        },
+        "empty": "Aucun billet trouvé.",
+        "prev": "Page précédente",
+        "next": "Page suivante"
       },
       "Ticket": {
         "details": {
@@ -1345,6 +1617,41 @@
         "credit_denied": "Créditer un portefeuille requiert l'autorisation attendees.credit.",
         "suspend": "Suspendre le compte",
         "reactivate": "Réactiver le compte"
+      },
+      "not_found": "Participant introuvable.",
+      "edit": {
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "saved": "Profil mis à jour",
+        "failed": "Le profil n'a pas pu être enregistré."
+      },
+      "errors": {
+        "name": "Au moins 2 caractères",
+        "username": "3 à 30 lettres, chiffres, points ou tirets bas",
+        "username_taken": "Ce nom d'utilisateur est déjà pris"
+      },
+      "fields": {
+        "first_name": "Prénom",
+        "last_name": "Nom",
+        "email": "Adresse e-mail",
+        "username": "Nom d'utilisateur",
+        "address": "Adresse",
+        "country": "Pays",
+        "state": "Département",
+        "city": "Ville",
+        "dob": "Date de naissance",
+        "gender": "Genre"
+      },
+      "genders": {
+        "male": "Homme",
+        "female": "Femme",
+        "non-binary": "Non binaire",
+        "undisclosed": "Préfère ne pas dire"
+      },
+      "image": {
+        "done": "Photo de profil mise à jour",
+        "failed": "L'image n'a pas pu être envoyée.",
+        "too_big": "L'image doit faire 5 Mo maximum."
       }
     }
   },
@@ -1369,7 +1676,9 @@
       "attendee": "Participant",
       "business": "Entreprise",
       "both": "Les deux",
-      "search": "Rechercher dans la liste d'attente"
+      "search": "Rechercher dans la liste d'attente",
+      "status_label": "Statut",
+      "type_label": "Type"
     },
     "list": {
       "title": "Utilisateurs en attente",
@@ -1381,8 +1690,12 @@
         "entity": "Type",
         "joined": "Date d'inscription",
         "status": "Statut",
-        "account": "Compte"
-      }
+        "account": "Compte",
+        "actions": "Actions"
+      },
+      "select_page": "Sélectionner cette page",
+      "prev": "Précédent",
+      "next": "Suivant"
     },
     "status": {
       "pending": "En attente",
@@ -1433,57 +1746,55 @@
   },
   "Analytics": {
     "title": "Vue d'ensemble de la plateforme",
-    "description": "Suivez les métriques de la plateforme en temps réel et comprenez les tendances clés.",
-    "revenue": "Revenu total",
-    "users_registered": "Total des utilisateurs inscrits",
-    "attendees_registered": "Total des participants inscrits",
-    "organizers_registered": "Total des organisateurs inscrits",
-    "activity_created": "Total des événements créés",
-    "sold": "Total des billets vendus",
-    "avg_tickets": "Moy. de billets par participant",
-    "top_organizer_revenue": "Revenu du meilleur organisateur",
-    "noActivity": "Aucune Activité",
+    "description": "Suivez les indicateurs de la plateforme en temps réel et comprenez les grandes tendances.",
+    "kpis": {
+      "revenue": "Revenu total",
+      "users": "Total des utilisateurs inscrits",
+      "attendees": "Total des participants inscrits",
+      "organizers": "Total des organisateurs inscrits",
+      "events": "Total des événements créés",
+      "sold": "Total des billets vendus",
+      "avg": "Moy. de billets par participant",
+      "top_organizer": "Revenu du meilleur organisateur"
+    },
+    "trend": {
+      "up": "En hausse de {value} % sur la période précédente",
+      "down": "En baisse de {value} % sur la période précédente"
+    },
+    "filters": {
+      "event": "Événement",
+      "all_events": "Tous les événements",
+      "period": "Période",
+      "periods": {
+        "7d": "7 derniers jours",
+        "month": "Ce mois-ci",
+        "30d": "30 derniers jours",
+        "year": "Cette année",
+        "all": "Depuis le début"
+      }
+    },
     "income": {
       "title": "Performance des revenus",
       "revenue": "Croissance des revenus"
     },
-    "user_demographics": {
+    "demographics": {
       "title": "Démographie des utilisateurs",
-      "gender_distribution": {
-        "title": "Répartition par genre",
-        "gender": {
-          "male": "Homme",
-          "female": "Femme",
-          "others": "Autres"
-        }
-      },
-      "events_top": {
-        "title": "Meilleures activités"
-      }
+      "gender": "Répartition par genre",
+      "male": "Homme",
+      "female": "Femme",
+      "others": "Autres",
+      "top_events": "Meilleurs événements",
+      "top_classes": "Meilleures catégories de billets"
     },
-    "user": {
+    "growth": {
       "title": "Croissance des utilisateurs",
-      "chart": {
-        "today": "Auj.",
-        "sugn_ups": "Inscriptions",
-        "attendee": "Participant",
-        "organizer": "Organisateur"
-      }
+      "signups": "Inscriptions",
+      "attendee": "Participant",
+      "organizer": "Organisateur"
     },
-    "platform_health": {
-      "title": "Santé de la plateforme"
-    },
-    "top_organizers": {
-      "title": "Meilleurs organisateurs"
-    },
-    "payment_methods": {
-      "title": "Méthodes de paiement"
-    },
-    "activity_status": {
-      "title": "Statut des activités",
-      "approved": "Approuvées",
-      "in_review": "En révision",
-      "rejected": "Rejetées"
+    "chart": {
+      "now": "Auj.",
+      "no_data": "Aucune donnée"
     }
   },
   "Event": {
@@ -1495,13 +1806,17 @@
     "back": "Retour",
     "filters": {
       "open": "Ouverts",
-      "resolved": "Résolus"
+      "resolved": "Résolus",
+      "label": "Statut",
+      "all": "Tous",
+      "search": "Rechercher un expéditeur ou un objet"
     },
     "table": {
       "sender": "Expéditeur",
       "subject": "Sujet",
       "status": "Statut",
-      "date": "Date"
+      "date": "Date",
+      "actions": "Actions"
     },
     "status": {
       "open": "Ouvert",
@@ -1515,27 +1830,40 @@
       "notes_placeholder": "Ajouter des notes internes...",
       "save_notes": "Enregistrer",
       "mark_resolved": "Marquer comme résolu",
-      "resolved_badge": "Résolu"
+      "resolved_badge": "Résolu",
+      "reply": "Répondre par e-mail",
+      "received": "Reçu le",
+      "notes_hint": "Visibles uniquement par les administrateurs.",
+      "notes_saved": "Notes enregistrées.",
+      "resolved_toast": "Message marqué comme résolu.",
+      "error": "Une erreur s'est produite. Veuillez réessayer."
     },
-    "empty": "Aucun message de contact pour l'instant. Les messages des clients apparaîtront ici."
+    "empty": "Aucun message de contact pour l'instant. Les messages des clients apparaîtront ici.",
+    "no_results": "Aucun message ne correspond à ces filtres.",
+    "prev": "Précédent",
+    "next": "Suivant"
   },
   "Support": {
     "title": "Chat en direct",
     "back": "Retour",
     "filters": {
-      "all": "Tous les messages",
+      "all": "Tous",
       "open": "Ouverts",
-      "resolved": "Résolus"
+      "resolved": "Résolus",
+      "label": "Statut",
+      "search": "Rechercher un visiteur ou un objet"
     },
     "table": {
       "sender": "Expéditeur",
       "subject": "Sujet",
       "status": "Statut",
-      "date": "Date"
+      "date": "Dernière activité",
+      "actions": "Actions"
     },
     "status": {
       "open": "Ouvert",
-      "resolved": "Résolu"
+      "resolved": "Résolu",
+      "waiting": "En attente"
     },
     "detail": {
       "title": "Détails du fil",
@@ -1560,9 +1888,20 @@
       "mark_resolved": "Marquer comme résolu",
       "mark_open": "Rouvrir le fil",
       "resolved_badge": "Résolu",
-      "close": "Fermer"
+      "close": "Fermer",
+      "started": "Commencée le",
+      "details": "Détails",
+      "accept": "Accepter le chat",
+      "accept_hint": "Acceptez ce chat pour commencer à répondre.",
+      "resolved_hint": "Cette conversation est résolue. Rouvrez-la pour répondre.",
+      "notes_hint": "Visibles uniquement par les administrateurs.",
+      "notes_saved": "Notes enregistrées.",
+      "error": "Une erreur s'est produite. Veuillez réessayer."
     },
-    "empty": "Aucun message de support pour l'instant. Les messages des clients apparaîtront ici."
+    "empty": "Aucun message de support pour l'instant. Les messages des clients apparaîtront ici.",
+    "no_results": "Aucune conversation ne correspond à ces filtres.",
+    "prev": "Précédent",
+    "next": "Suivant"
   },
   "UserWithdrawals": {
     "list": {
@@ -1667,12 +2006,20 @@
         "name": "Campagne",
         "status": "Statut",
         "recipients": "Destinataires",
-        "created": "Créé le"
+        "created": "Créé le",
+        "actions": "Actions"
       },
       "empty": {
         "title": "Aucun email pour le moment",
         "description": "Rédigez votre premier email aux utilisateurs ou aux organisations. Rien n’est envoyé avant votre confirmation à la dernière étape."
-      }
+      },
+      "title": "Campagnes",
+      "status_label": "Statut",
+      "search": "Rechercher un nom ou un objet",
+      "no_results": "Aucune campagne ne correspond à ces filtres.",
+      "open": "Ouvrir",
+      "prev": "Précédent",
+      "next": "Suivant"
     },
     "compose": {
       "title": "Nouvel email",
@@ -1726,6 +2073,12 @@
       "buttonLabelPrompt": "Texte du bouton",
       "buttonUrlPrompt": "Adresse du bouton",
       "uploadFailed": "Cette image n’a pas pu être téléversée.",
+      "imageMove": "Glisser pour déplacer",
+      "imageRemove": "Supprimer l’image",
+      "grid": "Ajouter des images côte à côte (jusqu’à 3)",
+      "gridAdd": "Ajouter une image",
+      "gridRemove": "Supprimer la rangée",
+      "gridTooMany": "Une rangée contient au plus {max} images : seules les {max} premières ont été ajoutées.",
       "mergeTagsLabel": "Insérer :",
       "mergeTagsHint": "Remplacé par les informations du destinataire. Vide si nous n’avons pas son nom."
     },
@@ -1783,8 +2136,440 @@
       "source": {
         "user": "Utilisateur",
         "organisation": "Organisation",
-        "manual": "Saisie"
+        "manual": "Saisie",
+        "waitlist": "Liste d'attente",
+        "guest": "Acheteur invité"
       }
+    }
+  },
+  "Kyc": {
+    "link": "KYC",
+    "title": "KYC des organisations",
+    "pending_count": "{count, plural, =0 {Rien en attente} one {# dossier en attente} other {# dossiers en attente}}",
+    "filters": {
+      "pending": "En attente",
+      "approved": "Approuvés",
+      "rejected": "Refusés",
+      "all": "Tous",
+      "label": "Statut"
+    },
+    "table": {
+      "organisation": "Organisation",
+      "type": "Type",
+      "document": "Pièce d’identité",
+      "submitted": "Envoyé",
+      "status": "Statut",
+      "actions": "Actions"
+    },
+    "empty": "Aucun dossier ici.",
+    "status": {
+      "unverified": "Non vérifiée",
+      "pending": "En attente",
+      "approved": "Approuvé",
+      "rejected": "Refusé"
+    },
+    "types": {
+      "individual": "Individuel",
+      "business": "Entreprise enregistrée",
+      "ngo": "ONG / Association",
+      "public": "Institution publique"
+    },
+    "documents": {
+      "passport": "Passeport",
+      "id_card": "Carte d’identité nationale",
+      "drivers_licence": "Permis de conduire"
+    },
+    "kinds": {
+      "id_front": "Pièce — recto / page photo",
+      "id_back": "Pièce — verso",
+      "selfie": "Selfie",
+      "business_registration": "Enregistrement de l’entreprise",
+      "tax_id": "NIF",
+      "authority_proof": "Preuve d’habilitation",
+      "ngo_registration": "Certificat d’enregistrement / de reconnaissance",
+      "statutes": "Statuts",
+      "board_letter": "Lettre d’autorisation du conseil",
+      "official_letter": "Lettre officielle"
+    },
+    "review": {
+      "back": "Retour au KYC",
+      "owner": "Propriétaire",
+      "contact": "Contact",
+      "location": "Localisation",
+      "current": "Dossier actuel",
+      "history": "Dossiers précédents",
+      "submitted_on": "Envoyé le {date}",
+      "reviewed_on": "Examiné le {date}",
+      "reason": "Motif : {reason}",
+      "open": "Ouvrir",
+      "links_expire": "Les liens des documents expirent après 10 minutes. Rechargez la page pour les renouveler.",
+      "none": "Cette organisation n’a encore envoyé aucun document.",
+      "checklist": "Vérifiez que le visage du selfie correspond à la photo de la pièce, que le document est valide et que les papiers correspondent au type d’organisation.",
+      "approve": "Approuver",
+      "approved": "KYC approuvé. L’organisation peut maintenant créer des activités et retirer.",
+      "reject": "Refuser",
+      "reject_title": "Refuser ce dossier",
+      "reject_description": "L’organisateur reçoit ce motif par e-mail et peut envoyer de nouveaux documents.",
+      "reject_label": "Motif",
+      "reject_placeholder": "ex. La photo de la pièce est floue ; le nom sur l’enregistrement ne correspond pas.",
+      "reject_confirm": "Refuser le dossier",
+      "rejected": "Dossier refusé. L’organisateur a été prévenu par e-mail.",
+      "cancel": "Annuler",
+      "error": "Une erreur s’est produite. Veuillez réessayer."
+    },
+    "empty_pending": "Aucune soumission n'attend de vérification.",
+    "prev": "Précédent",
+    "next": "Suivant"
+  },
+  "Settings": {
+    "title": "Paramètres",
+    "description": "Support, modération et outils de la plateforme.",
+    "cards": {
+      "support": {
+        "title": "Chat en direct",
+        "description": "Répondez aux visiteurs et utilisateurs qui écrivent au support."
+      },
+      "contact": {
+        "title": "Messages de contact",
+        "description": "Messages envoyés depuis le formulaire de contact du site."
+      },
+      "kyc": {
+        "title": "KYC",
+        "description": "Vérifiez les documents de vérification des organisations."
+      },
+      "pending_edits": {
+        "title": "Modifications en attente",
+        "description": "Modifications d'événements publiés en attente de validation."
+      },
+      "waitlist": {
+        "title": "Liste d'attente",
+        "description": "Inscrits à la liste d'attente et invitations de lancement."
+      },
+      "finance": {
+        "title": "Finances",
+        "description": "Revenus de la plateforme, frais et mouvements d'argent."
+      },
+      "emails": {
+        "title": "E-mails",
+        "description": "Rédigez et envoyez des campagnes e-mail."
+      },
+      "admins": {
+        "title": "Administrateurs",
+        "description": "Invitez des admins et gérez leurs rôles et permissions."
+      }
+    }
+  },
+  "ActivitiesList": {
+    "title": "Aperçu des activités",
+    "total": "Total des activités",
+    "ongoing": "Activités en cours",
+    "suspended": "Activités suspendues",
+    "hints": {
+      "total": "Activités créées sur la période.",
+      "ongoing": "Activités qui ont eu lieu sur la période.",
+      "suspended": "Suspendues en ce moment, par un admin ou avec leur organisation."
+    },
+    "trend": {
+      "up": "En hausse de {value} % sur la période précédente",
+      "down": "En baisse de {value} % sur la période précédente"
+    },
+    "filters": {
+      "period": "Période",
+      "type_label": "Type",
+      "type": "Tous les types",
+      "types": {
+        "event": "Événements",
+        "raffle": "Tombolas",
+        "sale": "Ventes",
+        "restaurant": "Restaurants"
+      },
+      "status_label": "Statut",
+      "status": "Tous les statuts",
+      "time_label": "Créée",
+      "time": "Depuis le début",
+      "search": "Rechercher par nom d'activité, ID"
+    },
+    "status": {
+      "deleted": "SUPPRIMÉE",
+      "cancelled": "ANNULÉE",
+      "suspended": "SUSPENDUE",
+      "rejected": "REFUSÉE",
+      "requested": "DEMANDÉE",
+      "review": "EN EXAMEN",
+      "upcoming": "À VENIR",
+      "ongoing": "EN COURS",
+      "past": "PASSÉE",
+      "active": "ACTIVE",
+      "inactive": "INACTIVE",
+      "pending_edit": "MODIF. EN ATTENTE"
+    },
+    "status_options": {
+      "requested": "Demandée",
+      "review": "En examen",
+      "pending_edit": "Modification en attente",
+      "upcoming": "À venir",
+      "ongoing": "En cours",
+      "past": "Passée",
+      "active": "Active",
+      "inactive": "Inactive",
+      "rejected": "Refusée",
+      "suspended": "Suspendue",
+      "cancelled": "Annulée",
+      "deleted": "Supprimée"
+    },
+    "list": {
+      "title": "Liste des activités",
+      "table": {
+        "name": "Nom de l'activité",
+        "organisation": "Organisation",
+        "start": "Date de début",
+        "sold": "Billets vendus",
+        "status": "Statut",
+        "created": "Créée le",
+        "actions": "Actions"
+      },
+      "type_badge": {
+        "raffle": "Tombola",
+        "sale": "Vente",
+        "restaurant": "Restaurant"
+      },
+      "no_history": "Dès que des organisations publient des activités, elles apparaîtront ici pour examen et suivi.",
+      "no_results": "Aucune activité ne correspond à ces filtres.",
+      "menu": {
+        "view": "Voir l'activité",
+        "organisation": "Voir l'organisation",
+        "suspend": "Suspendre l'activité",
+        "reactivate": "Réactiver l'activité"
+      },
+      "prev": "Page précédente",
+      "next": "Page suivante"
+    },
+    "suspend": {
+      "trigger": "Suspendre l'activité",
+      "title": "Suspendre cette activité ?",
+      "description": "Elle quitte la plateforme et cesse de vendre immédiatement. Les billets déjà vendus restent valides et passent toujours à l'entrée. L'organisation reçoit la raison par e-mail.",
+      "reason_label": "Raison",
+      "reason_placeholder": "Expliquez pourquoi cette activité est suspendue...",
+      "cancel": "Annuler",
+      "confirm": "Suspendre",
+      "success": "Activité suspendue",
+      "success_no_email": "Activité suspendue (e-mail non envoyé : un e-mail vient d'être envoyé)",
+      "error": "L'activité n'a pas pu être suspendue."
+    },
+    "reactivate": {
+      "trigger": "Réactiver l'activité",
+      "title": "Réactiver cette activité ?",
+      "description": "Elle revient sur la plateforme et peut de nouveau vendre. L'organisation est prévenue par e-mail.",
+      "cancel": "Annuler",
+      "confirm": "Réactiver",
+      "success": "Activité réactivée",
+      "error": "L'activité n'a pas pu être réactivée."
+    },
+    "notice": {
+      "title": "Suspendue depuis le {date}",
+      "organisation": "Masquée : son organisation est suspendue",
+      "reason": "Raison",
+      "body": "Hors de la plateforme et ne vend plus. Les billets déjà vendus restent valides et passent toujours à l’entrée."
+    },
+    "detail": {
+      "back": "Retour",
+      "more": "Plus de détails",
+      "view_profile": "Voir le profil",
+      "followers": "{count} abonnés"
+    }
+  },
+  "TicketsList": {
+    "title": "Aperçu des billets",
+    "sold": "Total des billets vendus",
+    "created": "Total des billets créés",
+    "checkedIn": "Billets scannés",
+    "hints": {
+      "sold": "Billets payants achetés sur la période (billets gratuits, offerts et récompenses exclus).",
+      "created": "Tous les billets émis sur la période, gratuits compris.",
+      "checkedIn": "Billets scannés pour la première fois sur la période."
+    },
+    "trend": {
+      "up": "En hausse de {value} % sur la période précédente",
+      "down": "En baisse de {value} % sur la période précédente"
+    },
+    "filters": {
+      "period": "Période",
+      "status_label": "Statut",
+      "status": "Tous les statuts",
+      "checked": "Entré",
+      "pending": "En attente",
+      "returned": "Retourné",
+      "time_label": "Acheté",
+      "time": "Depuis le début",
+      "search": "Rechercher par activité, participant, ID"
+    },
+    "list": {
+      "title": "Liste des billets",
+      "table": {
+        "id": "ID du billet",
+        "attendee": "Participant",
+        "activity": "Activité",
+        "class": "Classe de billet",
+        "status": "Statut d’entrée",
+        "purchased": "Date d’achat",
+        "actions": "Actions"
+      },
+      "type_badge": {
+        "raffle": "Tombola",
+        "sale": "Vente",
+        "restaurant": "Restaurant"
+      },
+      "no_history": "Tous les billets des participants apparaîtront ici dès que les activités commenceront à vendre.",
+      "no_results": "Aucun billet ne correspond à ces filtres.",
+      "prev": "Page précédente",
+      "next": "Page suivante"
+    }
+  },
+  "PaymentsList": {
+    "title": "Paiements",
+    "revenue": "Revenu total",
+    "transactions": "Total des transactions",
+    "fees": "Frais de plateforme perçus",
+    "hints": {
+      "revenue": "Tout ce que les acheteurs ont payé sur la période : commandes d’activités et abonnements (comme Finances).",
+      "transactions": "Paiements réglés sur la période, abonnements compris.",
+      "fees": "Frais Ticketwaze perçus sur la période, bruts (comme Finances)."
+    },
+    "trend": {
+      "up": "En hausse de {value} % sur la période précédente",
+      "down": "En baisse de {value} % sur la période précédente"
+    },
+    "filters": {
+      "period": "Période",
+      "status_label": "Statut",
+      "status": "Tous les statuts",
+      "SUCCESSFUL": "Réussie",
+      "PENDING": "En attente",
+      "FAILED": "Échouée",
+      "RETURNED": "Remboursée",
+      "search": "Rechercher un ID de transaction"
+    },
+    "status": {
+      "SUCCESSFUL": "RÉUSSIE",
+      "PENDING": "EN ATTENTE",
+      "FAILED": "ÉCHOUÉE",
+      "RETURNED": "REMBOURSÉE"
+    },
+    "list": {
+      "title": "Transactions",
+      "table": {
+        "id": "ID de transaction",
+        "activity": "Activité",
+        "class": "Classe de billet",
+        "amount": "Montant payé",
+        "status": "Statut de la transaction",
+        "actions": "Actions"
+      },
+      "type_badge": {
+        "raffle": "Tombola",
+        "sale": "Vente",
+        "restaurant": "Restaurant"
+      },
+      "no_history": "Dès que vous recevrez des paiements, ils apparaîtront tous ici.",
+      "no_results": "Aucune transaction ne correspond à ces filtres.",
+      "prev": "Page précédente",
+      "next": "Page suivante"
+    },
+    "drawer": {
+      "title": "Détails de la transaction",
+      "buyer": "Nom du participant",
+      "tickets": "{count} billets",
+      "ticket": "Billet {n}",
+      "total": "Total"
+    }
+  },
+  "PayoutsList": {
+    "title": "Versements",
+    "paid": "Total des versements",
+    "pending": "Demandes de versement en attente",
+    "organisationsPaid": "Organisateurs payés",
+    "hints": {
+      "paid": "Argent versé sur la période, organisations et participants.",
+      "pending": "Demandes en attente en ce moment, organisations et participants.",
+      "organisationsPaid": "Organisations payées au moins une fois sur la période."
+    },
+    "trend": {
+      "up": "En hausse de {value} % sur la période précédente",
+      "down": "En baisse de {value} % sur la période précédente"
+    },
+    "period": "Période",
+    "kinds": {
+      "organisation": "Organisations",
+      "user": "Participants"
+    },
+    "requests": {
+      "title": "Demandes de versement",
+      "empty": "Les nouvelles demandes de versement des organisateurs apparaîtront ici lorsqu’ils retireront leurs gains."
+    },
+    "history": {
+      "title": "Historique des versements",
+      "empty": "Dès qu’un versement est traité, il apparaît ici pour le suivi et les rapports."
+    },
+    "filters": {
+      "status_label": "Statut",
+      "status": "Tous les statuts",
+      "search": "Rechercher un ID de transaction"
+    },
+    "no_results": "Aucun versement ne correspond à ces filtres.",
+    "table": {
+      "id": "ID du retrait",
+      "bank": "Banque",
+      "account": "Numéro de compte",
+      "amount": "Montant",
+      "request_status": "Statut de la demande",
+      "transaction_status": "Statut de la transaction",
+      "actions": "Actions"
+    },
+    "status": {
+      "PENDING": "EN ATTENTE",
+      "APPROVED": "À ENVOYER",
+      "SUCCESSFUL": "RÉUSSI",
+      "FAILED": "ÉCHOUÉ",
+      "ACCEPTED": "RÉUSSI",
+      "REJECTED": "REFUSÉ"
+    },
+    "status_options": {
+      "PENDING": "En attente",
+      "APPROVED": "À envoyer",
+      "SUCCESSFUL": "Réussi",
+      "FAILED": "Échoué",
+      "ACCEPTED": "Réussi",
+      "REJECTED": "Refusé"
+    },
+    "methods": {
+      "bank": "Banque",
+      "moncash": "MonCash",
+      "natcash": "NatCash",
+      "wise": "Wise",
+      "cash": "Espèces"
+    },
+    "view_all": "Tout voir",
+    "drawer": {
+      "request_title": "Détails de la demande",
+      "withdrawal_title": "Détails du retrait",
+      "amount": "Montant",
+      "request_date": "Date de la demande",
+      "requested_by": "Demandé par",
+      "organisation": "Organisation",
+      "request_status": "Statut de la demande",
+      "transaction_status": "Statut de la transaction",
+      "method": "Méthode",
+      "bank": "Banque",
+      "account_name": "Titulaire du compte",
+      "account": "Numéro de compte",
+      "processed": "Date de traitement",
+      "reason": "Raison",
+      "close": "Fermer",
+      "approve": "Approuver le versement",
+      "confirm_sent": "Confirmer l’envoi",
+      "reject": "Refuser",
+      "full_details": "Voir tous les détails",
+      "approved": "Versement approuvé"
     }
   }
 }

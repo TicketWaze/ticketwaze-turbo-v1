@@ -26,11 +26,18 @@ export function useCheckoutReductions(options: {
   activityId: string;
   /** Pre-discount subtotal, in the activity's currency. */
   subtotal: number;
+  /**
+   * The cart by ticket class (name + amount), so a code limited to some
+   * classes is quoted on just those. Omitted where there are no classes.
+   */
+  lines?: { ticketType: string; amount: number }[];
   accessToken: string;
   /** Guests have no wallet, so no tokens — the code still applies to them. */
   isGuest: boolean;
 }) {
-  const { activityId, subtotal, accessToken, isGuest } = options;
+  const { activityId, subtotal, lines, accessToken, isGuest } = options;
+  // Stable across renders while the cart is the same.
+  const linesKey = JSON.stringify(lines ?? null);
   const locale = useLocale();
 
   const [discount, setDiscount] = useState<AppliedDiscount | null>(null);
@@ -75,7 +82,11 @@ export function useCheckoutReductions(options: {
                 ? { Authorization: `Bearer ${accessToken}` }
                 : {}),
             },
-            body: JSON.stringify({ code, subtotal }),
+            body: JSON.stringify({
+              code,
+              subtotal,
+              ...(lines && lines.length > 0 ? { lines } : {}),
+            }),
           },
         );
         const response = await request.json();
@@ -102,7 +113,9 @@ export function useCheckoutReductions(options: {
         if (id === requestId.current) setIsChecking(false);
       }
     },
-    [activityId, subtotal, accessToken, locale],
+    // `linesKey` stands for `lines`, whose identity changes every render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activityId, subtotal, linesKey, accessToken, locale],
   );
 
   const clear = useCallback(() => {
@@ -131,7 +144,7 @@ export function useCheckoutReductions(options: {
     // `check` changes with `subtotal`, which is the dependency that matters;
     // `discount.code` guards against re-running for the same code twice.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [subtotal]);
+  }, [subtotal, linesKey]);
 
   /** The signed-in buyer's token balance, fetched once. */
   useEffect(() => {

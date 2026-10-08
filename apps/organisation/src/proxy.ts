@@ -6,6 +6,19 @@ import type { NextRequest } from "next/server";
 // Create the intl middleware first
 const intlMiddleware = createMiddleware(routing);
 
+/**
+ * The /auth pages a signed-in person may still open; every other one (login,
+ * register) sends them back to the app.
+ */
+const SIGNED_IN_AUTH_PATHS = [
+  "/auth/onboarding", // routing after sign-in, the set-up form and its name step
+  "/auth/verification", // KYC, step 3/3 and from the dashboard banner
+  "/auth/invitation/", // "Join <organisation>" from a team invite link
+  "/auth/logout",
+  "/auth/forgot-password", // Settings → Security → reset password
+  "/auth/new-password",
+];
+
 export default auth((req) => {
   // First, let next-intl handle locale detection and redirection
   const intlResponse = intlMiddleware(req as NextRequest);
@@ -36,11 +49,13 @@ export default auth((req) => {
     return Response.redirect(newUrl);
   }
 
-  // Already signed in (possibly on the website or the attendee app): the login
-  // page has nothing to do. Skipped when it carries a sign-in error to report.
+  // Already signed in (possibly on the website or the attendee app): the auth
+  // pages have nothing to do, except the few a signed-in person still needs.
+  // Skipped when the page carries a sign-in error to report.
   if (
     req.auth &&
-    pathWithoutLocale.startsWith("/auth/login") &&
+    isAuthPath &&
+    !SIGNED_IN_AUTH_PATHS.some((path) => pathWithoutLocale.startsWith(path)) &&
     !req.nextUrl.searchParams.has("error")
   ) {
     return Response.redirect(

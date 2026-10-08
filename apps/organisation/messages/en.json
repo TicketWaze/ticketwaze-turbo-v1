@@ -171,7 +171,7 @@
     },
     "register": {
       "title": "Create an Account",
-      "organizer": "Create an Account",
+      "organizer": "Organizer Account",
       "description": "Please complete the form below to continue.",
       "invalidToken": "This invitation link is no longer valid. It may have expired or already been used. Please request a new invite from the organisation to continue.",
       "login": "Log in",
@@ -189,15 +189,14 @@
         "cta": "Continue",
         "footer": {
           "text": "Already own an account?",
-          "cta": "Log in"
+          "cta": "Sign in"
         }
       },
       "placeholders": {
         "firstname": "First Name",
         "lastname": "Last Name",
         "email": "Email Address",
-        "organisation_name": "Organisation Name",
-        "organisation_email": "Organisation Email",
+        "organisation_name": "Organization Name",
         "password": "Create Password",
         "confirm": "Confirm Password"
       },
@@ -208,13 +207,31 @@
         "lastname_length": "Last name must be at least 2 characters",
         "firstname_validation": "First name must contain only letters, spaces, or hyphens",
         "lastname_validation": "Last name must contain only letters, spaces, or hyphens",
-        "email": "Email field cannot be blank"
+        "email": "Enter a valid email address.",
+        "organisation_name": "Organization name must be 3–30 characters.",
+        "organisation_name_taken": "An organisation with this name already exists.",
+        "exists": "An account already exists for this email. Sign in instead.",
+        "generic": "Something went wrong. Please try again.",
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number"
       },
       "cta": {
         "submit": "Create account",
         "google": "Continue with Google"
       },
-      "footer": "Back"
+      "footer": "Back",
+      "otp": {
+        "submit": "Verify",
+        "resending": "Sending...",
+        "sent": "A new code has been sent to your email.",
+        "errors": {
+          "invalid": "Incorrect code. Please try again.",
+          "expired": "This code has expired. Request a new one below.",
+          "notFound": "No code found. Request a new one below."
+        }
+      }
     },
     "verify": {
       "title": "Verify Account",
@@ -268,7 +285,7 @@
         "male": "Male",
         "female": "Female",
         "no": "Rather not say",
-        "about": "About Organizer",
+        "about": "About the organization",
         "email": "Contact Email Address",
         "phone": "Phone Number",
         "website": "Organisation Website Url",
@@ -302,7 +319,6 @@
         "email": "Enter a valid email",
         "password": "Password Field cannot be blank",
         "wrong": "Email address or password is incorrect",
-        "no_account": "No Ticketwaze account found for this Google account. Create an account first, then come back to access your dashboard.",
         "google_failed": "Google sign-in failed. Please try again.",
         "organisation_suspended": "This organisation is suspended, so its dashboard is unavailable. Check the email we sent for the reason, or contact support to appeal."
       },
@@ -320,9 +336,28 @@
         "google": "Continue with Google"
       },
       "footer": {
-        "text": "Don’t own an account ?",
+        "text": "Don’t own an account?",
         "cta": "Sign up"
-      }
+      },
+      "mfa": {
+        "title": "Enter your sign-in code",
+        "description": "Two-step verification is on. We sent a 6-digit code to",
+        "submit": "Verify and sign in",
+        "resend": "Resend code",
+        "resent": "A new code is on its way",
+        "resend_in": "Resend in {seconds}s",
+        "back": "Back",
+        "digit": "Digit",
+        "errors": {
+          "invalid": "That code isn't right.",
+          "invalid_left": "That code isn't right. {count, plural, one {# try} other {# tries}} left.",
+          "expired": "This code has expired. Request a new one.",
+          "too_many": "Too many wrong codes. Go back and sign in again.",
+          "restart": "This sign-in has expired. Go back and sign in again."
+        }
+      },
+      "organizer_title": "Organizer Account",
+      "reset": "Reset password"
     },
     "forgot": {
       "title": "Reset Password",
@@ -372,13 +407,305 @@
       "errors": {
         "password_length": "Password should be at least 8 Characters",
         "password_match": "Password doesn't match",
-        "sameError": "You used this password in the past. You cannot reuse past passwords."
+        "sameError": "You used this password in the past. You cannot reuse past passwords.",
+        "characters": "At least 8 characters",
+        "capital": "At least one capital letter",
+        "special": "At least one special character",
+        "number": "At least one number"
       },
       "cta": "Create"
     },
     "footer": {
       "text": "Didn't get a mail?",
       "cta": "Resend"
+    },
+    "flow": {
+      "splash": {
+        "create": "Create account",
+        "login": "Log in"
+      },
+      "role": {
+        "login_title": "Welcome back",
+        "login_description": "Choose an option to access your account.",
+        "register_title": "Create Account",
+        "register_description": "Choose an option to continue and set up your account.",
+        "attendee_title": "Attendee",
+        "attendee_description": "Easily browse, discover, and purchase tickets for a wide variety of events.",
+        "organizer_title": "Organizer",
+        "organizer_description": "Create and manage events effortlessly. Track ticket sales & monitor attendee data.",
+        "continue": "Continue"
+      },
+      "back": "Back",
+      "or": "Or",
+      "verify": {
+        "title": "Verify Account",
+        "description": "A verification mail has been sent to the email address you signed up with.",
+        "resend_text": "Didn’t get a mail?",
+        "resend": "Resend"
+      },
+      "reset_sent": {
+        "title": "Reset Password",
+        "description": "A password reset mail has been sent to the email address you provided"
+      },
+      "created": {
+        "title": "Account Created",
+        "description": "You’ve successfully created an account. We’re now signing you in."
+      },
+      "password_created": {
+        "title": "Password Created",
+        "description": "You’ve successfully created a new password. We’re now signing you in."
+      },
+      "signing_in": "Signing you in...",
+      "verified": {
+        "title": "Account Verified",
+        "description": "You’ve successfully verified your email. We’re now signing you in."
+      },
+      "setup": {
+        "title": "Complete Account Set-up",
+        "description": "Please fill the form below to complete your account set-up.",
+        "organisation_name": "Organization Name",
+        "name_step": {
+          "title": "Name Your Organization",
+          "description": "This is the name attendees will see on your activities and tickets. You can change it later in Settings.",
+          "submit": "Continue"
+        },
+        "address": "Address",
+        "country": "Country",
+        "state": "State",
+        "city": "City",
+        "about": "About the organization",
+        "contact_email": "Contact Email Address",
+        "contact_phone": "Contact Phone Number",
+        "submit": "Complete",
+        "errors": {
+          "organisation_name": "3–30 characters.",
+          "organisation_name_taken": "An organisation with this name already exists.",
+          "address": "Please enter your address.",
+          "country": "Please select your country.",
+          "state": "Please select your state.",
+          "city": "Please select your city.",
+          "about": "Tell attendees about you in 150–350 characters.",
+          "contact_email": "Please enter a valid email address.",
+          "contact_phone": "Please enter a valid phone number.",
+          "already_owned": "You already own an organisation.",
+          "generic": "We couldn't save your organisation. Please try again."
+        },
+        "links": {
+          "title": "Links",
+          "add": "Add link",
+          "optional": "optional",
+          "remove": "Remove {platform}",
+          "platforms": {
+            "instagram": "Instagram",
+            "website": "Website",
+            "tiktok": "TikTok",
+            "twitter": "X (Twitter)"
+          },
+          "placeholders": {
+            "instagram": "yourusername",
+            "website": "yourwebsite.com",
+            "tiktok": "yourusername",
+            "twitter": "yourusername"
+          },
+          "errors": {
+            "instagram": "Enter a valid Instagram username.",
+            "website": "Enter a valid website address.",
+            "tiktok": "Enter a valid TikTok username.",
+            "twitter": "Enter a valid X username."
+          }
+        }
+      },
+      "invitation": {
+        "title": "Join {name}",
+        "description": "Hello {email}, Fill in your profile details to unlock your workspace experience.",
+        "description_existing": "Hello {email}, sign in with this email address to join the workspace.",
+        "choose": "Choose Password",
+        "confirm": "Confirm Password",
+        "join": "Join",
+        "sign_in": "Sign in to join",
+        "accepted_title": "Invitation Accepted!",
+        "accepted_description": "Your account is now set up. Get started!",
+        "invalid_title": "Invitation unavailable",
+        "invalid_description": "This invitation link is invalid, already used or expired. Ask the organisation to send you a new one.",
+        "wrong_account": "You're signed in with another account. Sign out, then open the invitation link again.",
+        "sign_out": "Sign out",
+        "decline": "Decline",
+        "errors": {
+          "exists": "An account already exists for this email. Sign in to join.",
+          "generic": "We couldn't add you to this organisation. Please try again."
+        },
+        "description_signed_in": "You’ve been invited to join this organisation’s workspace on Ticketwaze."
+      }
+    },
+    "kyc": {
+      "skip": "Skip for now",
+      "not_now": "Not now",
+      "continue": "Continue",
+      "submit": "Submit for review",
+      "type": {
+        "title": "Verify your organisation",
+        "description": "Tell us what kind of organisation you run. It decides which documents we need.",
+        "individual": {
+          "title": "Individual organizer",
+          "description": "You organise activities in your own name."
+        },
+        "business": {
+          "title": "Registered business",
+          "description": "A company or sole proprietorship (SA, SARL, entreprise individuelle)."
+        },
+        "ngo": {
+          "title": "NGO / Non-profit",
+          "description": "An association, a foundation or an NGO."
+        },
+        "public": {
+          "title": "Public institution",
+          "description": "A ministry, municipality, public school or university."
+        }
+      },
+      "id": {
+        "title": "Representative’s ID",
+        "description": "Choose the identity document of the person managing this organisation.",
+        "passport": {
+          "title": "Passport",
+          "description": "Photo page only."
+        },
+        "id_card": {
+          "title": "National ID card",
+          "description": "Front and back."
+        },
+        "drivers_licence": {
+          "title": "Driver’s licence",
+          "description": "Front and back."
+        }
+      },
+      "identity": {
+        "title": "Upload your ID",
+        "description": "Clear photos with all four corners visible and no glare."
+      },
+      "documents": {
+        "title": "Organisation documents",
+        "description": "Scans or photos of your official papers. PDF is accepted."
+      },
+      "kinds": {
+        "passport_front": {
+          "label": "Passport photo page"
+        },
+        "id_front": {
+          "label": "Front of the document"
+        },
+        "id_back": {
+          "label": "Back of the document"
+        },
+        "selfie": {
+          "label": "Selfie",
+          "hint": "Just your face, looking at the camera, in good light. No ID in the photo."
+        },
+        "business_registration": {
+          "label": "Business registration (Patente / MCI certificate)"
+        },
+        "tax_id": {
+          "label": "NIF / tax ID document"
+        },
+        "authority_proof": {
+          "label": "Proof you may act for the business",
+          "hint": "Only if you are not the owner named on the registration."
+        },
+        "ngo_registration": {
+          "label": "Registration or recognition certificate",
+          "hint": "MPCE, MAST, or publication in Le Moniteur."
+        },
+        "statutes": {
+          "label": "Statutes (bylaws)"
+        },
+        "board_letter": {
+          "label": "Board letter authorising you"
+        },
+        "official_letter": {
+          "label": "Official letter on letterhead",
+          "hint": "Signed, authorising you to manage this account."
+        }
+      },
+      "upload": {
+        "cta": "Drop a file or",
+        "browse": "Browse",
+        "photo_hint": "JPG, PNG, WEBP or HEIC · 10 MB max",
+        "doc_hint": "PDF, JPG or PNG · 10 MB max",
+        "uploading": "Uploading...",
+        "uploaded": "Uploaded",
+        "replace": "Replace",
+        "retry": "Try again",
+        "optional": "Optional",
+        "errors": {
+          "type": "This file type isn’t accepted.",
+          "size": "Files must be 10 MB or smaller.",
+          "failed": "Upload failed. Please try again.",
+          "storage": "Uploads aren’t available right now. Please try again later."
+        }
+      },
+      "skip_dialog": {
+        "title": "Skip verification?",
+        "description": "You can verify later from your dashboard. Until then, you won’t be able to:",
+        "create": "Create activities",
+        "withdraw": "Withdraw money",
+        "verify": "Verify now",
+        "skip": "Skip for now"
+      },
+      "submitted": {
+        "title": "Documents submitted",
+        "description": "We’ll review them within 2 business days and email you the result.",
+        "dashboard": "Go to my dashboard"
+      },
+      "pending": {
+        "title": "Verification under review",
+        "description": "We received your documents. We’ll email you as soon as they’re reviewed."
+      },
+      "approved": {
+        "title": "Organisation verified",
+        "description": "You can create activities and withdraw money."
+      },
+      "rejected": {
+        "title": "Verification rejected",
+        "reason": "Reason: {reason}",
+        "description": "Please submit new documents."
+      },
+      "owner_only": {
+        "title": "Only the owner can verify",
+        "description": "Ask the owner of this organisation to complete the verification."
+      },
+      "errors": {
+        "generic": "We couldn’t submit your documents. Please try again.",
+        "already": "Your verification is already under review.",
+        "missing": "Upload every required document to continue."
+      },
+      "banner": {
+        "unverified": "Creating activities and withdrawing money are locked until your organisation is verified.",
+        "pending": "Your verification is under review. We’ll email you once it’s done.",
+        "rejected": "Your verification was rejected: {reason}",
+        "member": "Ask the owner to verify the organisation to create activities and withdraw money.",
+        "verify": "Verify now",
+        "resubmit": "Submit new documents"
+      },
+      "gate": {
+        "create_title": "Verify your organisation to create activities",
+        "withdraw_title": "Verify your organisation to withdraw money",
+        "description": "It takes a few minutes: an ID, a selfie and, for registered organisations, their official papers.",
+        "pending_description": "Your documents are under review. You’ll be able to continue once they’re approved.",
+        "verify": "Verify now",
+        "back": "Back to dashboard"
+      },
+      "selfie": {
+        "open": "Open camera",
+        "take": "Take photo",
+        "retake": "Retake",
+        "cancel": "Cancel",
+        "retry": "Try the camera again",
+        "upload": "Upload a photo",
+        "starting": "Starting camera...",
+        "uploading": "Uploading...",
+        "done": "Photo saved",
+        "denied": "Camera access is blocked. Allow it in your browser settings, or upload a photo instead.",
+        "unavailable": "No camera found on this device. Upload a photo instead."
+      }
     }
   },
   "Layout": {
@@ -421,9 +748,15 @@
     "revenue": "Total Revenue",
     "sold": "Tickets Sold",
     "filters": {
-      "first": {
-        "all": "All activities",
-        "date": "This month"
+      "activity": "Activity",
+      "period": "Period",
+      "allActivities": "All activities",
+      "periods": {
+        "7d": "Last 7 days",
+        "month": "This month",
+        "30d": "Last 30 days",
+        "year": "This year",
+        "all": "All time"
       }
     },
     "content": {
@@ -448,7 +781,10 @@
         "ticketsPlural": "tickets",
         "forecast": "Forecast",
         "ticketsSold": "Tickets Sold"
-      }
+      },
+      "monthly": "Monthly Ticket Sales",
+      "now": "Now",
+      "noData": "No data yet"
     },
     "event": {
       "event_demographics": {
@@ -472,7 +808,7 @@
         "click_on_event": "Total Clicks on Activity Page",
         "social_media_shares": "Social Media Shares",
         "add_favorite": "Add To Favorite",
-        "rated": "Arevage Rating",
+        "rated": "Average Rating",
         "reviews": "Total Reviews"
       }
     },
@@ -514,6 +850,14 @@
       "title": "Reviews",
       "average": "Average Rating",
       "total": "Total Reviews"
+    },
+    "trend": {
+      "up": "Up {value}% on the previous period",
+      "down": "Down {value}% on the previous period"
+    },
+    "more": {
+      "title": "More insights",
+      "topByViews": "Top Activities by Views"
     }
   },
   "Finance": {
@@ -597,7 +941,8 @@
       "revenue": "Total Revenue",
       "profit": "Total Profit",
       "pendingBalance": "Pending balance",
-      "availableBalance": "Available Balance"
+      "availableBalance": "Available Balance",
+      "balance": "Balance"
     },
     "filters": {
       "all": "All status",
@@ -645,8 +990,13 @@
         "checked_out": "Checked out",
         "close": "Close",
         "resend": "Resend Ticket",
-        "draw_date": "Draw date"
-      }
+        "draw_date": "Draw date",
+        "tickets": "Tickets",
+        "buyer": "Buyer"
+      },
+      "no_match": "No transactions match these filters.",
+      "clear_filters": "Clear filters",
+      "partly_returned": "Partly returned"
     },
     "withdrawal": {
       "title": "Withdrawal history",
@@ -661,6 +1011,22 @@
         "status": "Status",
         "date": "Date",
         "reason": "Rejection reason"
+      },
+      "no_match": "No withdrawals match these filters.",
+      "approved": "Approved",
+      "details": {
+        "title": "Withdrawal Details",
+        "amount": "Amount",
+        "request_date": "Request Date",
+        "requested_by": "Requested By",
+        "status": "Transaction Status",
+        "method": "Method",
+        "bank_name": "Bank Name",
+        "account_name": "Account Name",
+        "account_number": "Account Number",
+        "processed_date": "Processed Date",
+        "reason": "Reason",
+        "close": "Close"
       }
     },
     "wise": "Wise",
@@ -692,11 +1058,39 @@
     "cash_phone": "Phone number",
     "cash_phone_hint": "Must be exactly 8 digits (e.g. 47123456)",
     "cash_handover_note": "Our team will call this number to arrange where and when you can collect your funds. Bring an ID matching the name above.",
-    "no_fee_note": "You receive exactly this amount. Ticketwaze adds no withdrawal fee and deducts nothing further from it."
+    "no_fee_note": "You receive exactly this amount. Ticketwaze adds no withdrawal fee and deducts nothing further from it.",
+    "pending_line": "+ {amount} pending until your activities end",
+    "nothing_to_withdraw": "Nothing to withdraw yet",
+    "filters_title": "Filters",
+    "close": "Close",
+    "page_prev": "Previous page",
+    "page_next": "Next page",
+    "search_withdrawal": "Search for withdrawal id",
+    "initiate": {
+      "title": "Initiate Withdrawal",
+      "method_step": "Method",
+      "balance": "Balance",
+      "platform_fees": "Platform fees",
+      "pending_note": "{amount} more is pending until your activities end. It joins your balance after that.",
+      "receive_in": "Receive in",
+      "save_details": "Save details for future payment",
+      "create_pin": "Create withdrawal pin",
+      "pin_title": "Create Withdrawal Pin",
+      "enter_pin": "Enter Pin",
+      "confirm_pin": "Confirm Pin",
+      "create_pin_button": "Create Pin",
+      "pin_created": "Withdrawal PIN created",
+      "pin_mismatch": "The two PINs don’t match",
+      "pin_failed": "Couldn’t create the PIN. Try again.",
+      "success_title": "Withdrawal Initiated Successfully",
+      "success_description": "Your withdrawal request is on its way. Our team processes payouts within 1–3 business days, and you’ll get a confirmation once the money is sent.",
+      "opening": "Opening finance page…",
+      "no_pin": "Create your withdrawal PIN first."
+    }
   },
   "Events": {
     "title": "Activity Overview",
-    "search": "Search for activity",
+    "search": "Search activities",
     "create": "Create activity",
     "create_short": "Create",
     "description": "Your activities will show up here once you start creating.",
@@ -745,7 +1139,8 @@
         "email": "Email",
         "status": "Status",
         "date_purchased": "Purchased",
-        "answers": "Checkout answers"
+        "answers": "Checkout answers",
+        "amount": "Amount paid"
       },
       "create_ticket": "Create Ticket",
       "ticket": "Ticket Classes",
@@ -788,7 +1183,27 @@
         "time_inside": "Time Inside",
         "entries": "Entries",
         "stayed": "Stayed",
-        "since": "Inside since {time}"
+        "since": "Inside since {time}",
+        "title": "Check In",
+        "tap_to_scan": "Tap to scan",
+        "or": "or",
+        "ticket_id_label": "Ticket ID",
+        "checking": "Checking you in",
+        "checking_out": "Checking out",
+        "success_title": "Check-in Successful!",
+        "success_body": "The attendee has been marked as checked-in.",
+        "checkout_title": "Checked out",
+        "checkout_body": "{name} has left. Time inside is saved.",
+        "inside_title": "Already inside",
+        "inside_body": "{name} is checked in. Check them out if they are leaving.",
+        "already_title": "Attendee already checked in",
+        "not_open_title": "Check-in isn't open",
+        "error_title": "Check-in failed",
+        "invalid_title": "Invalid ticket",
+        "continue": "Continue",
+        "retry": "Retry",
+        "close": "Close",
+        "cancel": "Cancel"
       },
       "ticketID": "Ticket ID",
       "revenue": "Total Revenue",
@@ -831,8 +1246,8 @@
         "nothing": "Your discount codes will show up here once you start creating them",
         "errors": {
           "code": {
-            "min": "Discount code cannot be less than 6 characters",
-            "max": "Discount code cannot exceed 10 characters",
+            "min": "At least 4 characters",
+            "max": "At most 20 characters",
             "format": "Use letters and numbers only"
           },
           "value": {
@@ -847,6 +1262,11 @@
           "expiresIn": {
             "min": "1 hour is the minimum",
             "negative": "Hour cannot be negative"
+          },
+          "end": {
+            "required": "Pick an end date",
+            "before": "The end date must be on or after the start date",
+            "past": "The end date has already passed"
           }
         },
         "actions": "Actions",
@@ -865,7 +1285,28 @@
         "generate": "Generate a code",
         "per_user_limit": "Uses per customer (optional)",
         "min_purchase": "Minimum order (optional)",
-        "cost_notice": "Discounts come out of your proceeds. Ticketwaze fees are always calculated on your listed price, so a discount never changes the fees: you receive the discounted price."
+        "cost_notice": "Discounts come out of your proceeds. Ticketwaze fees are always calculated on your listed price, so a discount never changes the fees: you receive the discounted price.",
+        "notify_followers": "Notify my followers",
+        "notify_followers_description": "Send this code to everyone who follows your organisation, in their Ticketwaze notifications.",
+        "all_classes": "All ticket classes",
+        "more_options": "More options",
+        "success_title": "Discount Code Added Successfully!",
+        "success_description": "Your discount code is now active. Attendees can use it at checkout to enjoy savings on their tickets.",
+        "success_description_scheduled": "Your discount code starts on {date}. From then on, attendees can use it at checkout.",
+        "back_to_event": "Back to activity",
+        "share": "Share",
+        "code_copied": "Code {code} copied. Paste it in your post.",
+        "remove_class": "Remove {name}",
+        "page_title": "Discount codes",
+        "page_description": "Codes for {name}",
+        "manage": "Discount codes",
+        "col_applies": "Applies to",
+        "col_window": "Valid",
+        "col_used": "Used",
+        "col_status": "Status",
+        "scheduled": "Scheduled",
+        "live": "Active",
+        "off": "Off"
       },
       "rewards": {
         "title": "Rewards",
@@ -974,7 +1415,10 @@
         "time_inside": "Time inside",
         "entries": "Entries",
         "date_purchased": "Date purchased",
-        "description": "Once attendees start purchasing tickets, the details will appear here. Promote your activity to drive sales!"
+        "description": "Once attendees start purchasing tickets, the details will appear here. Promote your activity to drive sales!",
+        "no_match": "No tickets match these filters.",
+        "clear_filters": "Clear filters",
+        "check_time": "Check-in time"
       },
       "printed_tickets": {
         "title": "Printed tickets",
@@ -1091,7 +1535,74 @@
         "export_pdf": "Export PDF",
         "export_error": "Could not build the file. Please try again.",
         "generated": "Generated on {date}"
-      }
+      },
+      "check_in_short": "Check in",
+      "search_ticket": "Search for ticket, attendee",
+      "promote": "Promote activity",
+      "ticket_class_label": "Ticket class",
+      "filters_title": "Filters",
+      "checked_in_done": "{name} is checked in.",
+      "page_prev": "Previous page",
+      "page_next": "Next page",
+      "add_discount": "Add discount code",
+      "trend": {
+        "up": "Up {value}% on the previous 7 days",
+        "down": "Down {value}% on the previous 7 days"
+      },
+      "share_dialog": {
+        "copy": "Copy",
+        "copied": "Link copied",
+        "copy_failed": "Could not copy the link",
+        "paste_hint": "Link copied. Paste it in your {app} story, post or bio.",
+        "qr": "Download QR code"
+      },
+      "contact": "Contact Information",
+      "edit_section": "Edit {section}",
+      "cannot_edit_pending": "This activity is pending deletion and can't be edited.",
+      "export_dialog": {
+        "title": "Export Data",
+        "description": "The export includes attendee details, ticket types, prices, and check-in statuses.",
+        "email_note": "Exported files will also be sent to your registered email.",
+        "attendees": "Attendee list",
+        "attendees_hint": "Excel (.xlsx)",
+        "report": "Activity report",
+        "report_hint": "PDF",
+        "report_locked": "Available on paid plans",
+        "download": "Download file",
+        "preparing": "Preparing…",
+        "none": "Choose at least one file.",
+        "emailed": "A copy was sent to your email.",
+        "email_failed": "The files were downloaded, but the email copy could not be sent.",
+        "failed": "The export failed. Please try again."
+      },
+      "checked_in_kpi": "Attendees Checked-in",
+      "transaction": {
+        "day": "Day {n}",
+        "resend_done": "Ticket sent again to {email}",
+        "resend_checked": "Already checked in — nothing to resend.",
+        "resend_returned": "This ticket was returned and can no longer be resent.",
+        "resend_limited": "Too many resends for now. Try again later.",
+        "resend_failed": "Couldn’t resend the ticket. Try again.",
+        "sending": "Sending…",
+        "methods": {
+          "moncash": "MonCash",
+          "natcash": "NatCash",
+          "stripe": "Card",
+          "wallet": "Wallet",
+          "free": "Free"
+        },
+        "statuses": {
+          "SUCCESSFUL": "Successful",
+          "PENDING": "Pending",
+          "FAILED": "Failed",
+          "RETURNED": "Returned"
+        },
+        "sent_wait": "Sent · again in {minutes} min",
+        "resend_wait": "Already sent. You can resend it in {minutes} min.",
+        "resend_ticket_daily": "This ticket was already resent 3 times today. Try again tomorrow.",
+        "resend_org_daily": "Your organisation reached today’s resend limit. Try again in {hours} h."
+      },
+      "create_ticket_upgrade": "Adding ticket classes is available on Pro."
     },
     "create_event": {
       "title": "Create Activity",
@@ -1259,6 +1770,10 @@
             "connectedGeneric": "Connected. Each buyer gets their own join link."
           },
           "upgrade": "Upgrade"
+        },
+        "event": {
+          "title": "Event",
+          "description": "Physical or virtual: concerts, conferences, workshops, meetups…"
         }
       },
       "tagPlaceholder": "Type a hashtag and press enter or spacebar",
@@ -1336,7 +1851,7 @@
       "select_type": "Select activity type",
       "physical": "Physical",
       "online": "Online",
-      "proceed": "Proceed",
+      "proceed": "Continue",
       "event_details": "Activity Details",
       "event_name": "Activity name",
       "description": "Tell attendees what your activity is about, who's it for, and what they can expect.",
@@ -1366,7 +1881,24 @@
       "price": "Price",
       "quantity": "Quantity",
       "add_class": "Add ticket class",
-      "event_link": "Online Platforms",
+      "event_link": {
+        "title": "Event Link",
+        "platform_placeholder": "Select online platform",
+        "other": "Other link",
+        "ready": "Your account is connected.",
+        "ready_as": "Connected as {account}.",
+        "connect_zoom_hint": "Connect a licensed Zoom account and we will create the meeting and send each buyer their own link.",
+        "connect_google_hint": "Connect your Google account and we will create the Meet and invite each buyer.",
+        "auto_link_hint": "The meeting is created for you when the event is saved.",
+        "connect": "Connect account",
+        "link_placeholder": "Streaming / meeting link",
+        "password_placeholder": "Password (if needed)",
+        "private_hint": "Only people holding a ticket see the link and password.",
+        "errors": {
+          "platform": "Choose where the event takes place.",
+          "not_ready": "Connect this account first, or choose another platform."
+        }
+      },
       "leave_blank": "*Leave blank for free tickets",
       "zoom": "Make it a zoom meeting",
       "select_platform": "Select Online Platform",
@@ -1419,7 +1951,9 @@
             "max": "Max file size is 200ko.",
             "type": ".jpg, .jpeg, .png and .webp files are accepted."
           },
-          "nameCheckFailed": "We could not confirm this name is free. You can continue, but if it is already taken the activity will be refused when you submit."
+          "nameCheckFailed": "We could not confirm this name is free. You can continue, but if it is already taken the activity will be refused when you submit.",
+          "category": "Choose a category.",
+          "onlineLink": "Enter a full link starting with https://"
         },
         "dateAndTime": {
           "eventDate": "Event date is required",
@@ -1436,7 +1970,7 @@
           "exceedsGoogleDurationMinutes": "Your Google plan ends any Meet call with three or more people after {minutes} minutes, so Google would cut this event off partway through. Shorten it, split it across days, or connect a Google Workspace account."
         },
         "ticketClass": {
-          "name": "Ticket class description should be at least 3 characters",
+          "name": "Ticket class name should be at least 3 characters",
           "description": "Ticket class description should be at least 20 characters",
           "price": "Price cannot be empty",
           "priceMinHTG": "Price must be at least 100 HTG",
@@ -1451,7 +1985,8 @@
             "exceedsLimit": "Quantity cannot exceed your plan limit of {limit} free tickets",
             "exceedsZoomSeats": "The total number of tickets cannot exceed your Zoom plan’s {limit} seats.",
             "exceedsGoogleSeats": "The total number of tickets cannot exceed the {limit} people your Google plan can seat, once your own place as the host is counted."
-          }
+          },
+          "salesWindow": "Sales must end after they start."
         }
       },
       "restaurant": {
@@ -1630,7 +2165,45 @@
       },
       "absorb_fees": "Cover the fees for your attendees",
       "absorb_fees_hint": "Off, the fees are added to your price and your attendee pays them. On, the price you set is exactly what they pay and the fees come out of what you receive.",
-      "absorb_fees_locked": "You can change this at any time. It applies to future sales; tickets already sold keep the price they were bought at."
+      "absorb_fees_locked": "You can change this at any time. It applies to future sales; tickets already sold keep the price they were bought at.",
+      "title_event": "Create event",
+      "publish_title": "Publish event",
+      "create_cta": "Create event",
+      "publish_cta": "Publish event",
+      "event_kind_title": "Event Type",
+      "event_type_placeholder": "Select event type",
+      "kind": {
+        "physical": "Physical",
+        "virtual": "Virtual"
+      },
+      "category_placeholder": "Category (Concert, Conference…)",
+      "sales_start": "Sales start",
+      "sales_end": "Sales end",
+      "sales_window_hint": "Optional. Leave empty to sell as soon as the event is approved, until it ends.",
+      "created": {
+        "title": "Event Created Successfully",
+        "published_title": "Event Published Successfully",
+        "description": "Your event was sent for review — you will be notified as soon as it is live. Meanwhile you can manage it and track its performance from the dashboard.",
+        "opening": "Opening event...",
+        "raffle": "Raffle Created Successfully",
+        "sale": "Product Created Successfully",
+        "restaurant": "Venue Created Successfully",
+        "coming_soon": "Teaser Created Successfully",
+        "description_activity": "It was sent for review — you will be notified as soon as it is live. Meanwhile you can manage it from your activities.",
+        "opening_list": "Opening your activities..."
+      },
+      "edit_title": "Edit event",
+      "save_cta": "Save changes",
+      "free_locked": "Free or paid is set when the activity is created and can't be changed, so existing buyers keep what they paid for.",
+      "location_me": "My location",
+      "location_locating": "Finding your location…",
+      "location_hint": "Click anywhere on the map to drop a pin",
+      "location_search": "Search a place or an address",
+      "location_search_clear": "Clear search",
+      "location_search_empty": "No places found. Try another name, or click on the map.",
+      "location_search_error": "Search isn’t available right now. Click on the map to place the pin.",
+      "location_search_min": "Type at least {min} characters to search.",
+      "location_search_more": "{count, plural, one {# more character} other {# more characters}} to start searching."
     },
     "price_preview": {
       "title": "What your attendees will pay",
@@ -1692,7 +2265,27 @@
       "all_categories": "All categories",
       "empty_status": "Nothing here right now. Try another tab or clear the category filter.",
       "status_label": "Status",
-      "category_label": "Category"
+      "category_label": "Category",
+      "title": "Filters",
+      "reset": "Reset",
+      "apply": "{count, plural, =0 {No results} one {Show 1 result} other {Show # results}}",
+      "location": "Location",
+      "any_location": "All locations",
+      "date": "Date",
+      "dates": {
+        "any": "Any date",
+        "today": "Today",
+        "week": "This week",
+        "month": "This month",
+        "next30": "Next 30 days",
+        "past": "Past"
+      },
+      "popularity": "Popularity",
+      "sort": {
+        "default": "Recommended",
+        "views": "Most viewed",
+        "sold": "Most sold"
+      }
     },
     "restaurantCard": {
       "tag": "Bar & Restaurant",
@@ -1985,7 +2578,26 @@
         "deleted_notice": "This teaser has been deleted."
       }
     },
-    "coming_soon_label": "Coming soon"
+    "coming_soon_label": "Coming soon",
+    "search_empty": "No activity matches “{query}”.",
+    "badge": {
+      "requested": "Requested",
+      "review": "In review",
+      "rejected": "Rejected"
+    },
+    "online_link_label": "Online",
+    "create_ticket": {
+      "title": "Create Ticket",
+      "create": "Create",
+      "free_only": "This activity is free, so new ticket classes are free too.",
+      "paid_only": "New ticket classes on this activity are paid.",
+      "existing": "On sale now: {names}",
+      "success_title": "New Tickets Added Successfully",
+      "success_description": "Your additional tickets are now available for purchase. Attendees can start booking them immediately.",
+      "opening": "Opening event…",
+      "duplicate": "A ticket class with this name already exists",
+      "failed": "Couldn’t add the tickets. Try again."
+    }
   },
   "Sales": {
     "single_sale": {
@@ -2230,15 +2842,15 @@
       "title": "Account",
       "back": "Back",
       "edit": "Edit",
-      "save": "Save",
+      "save": "Save changes",
       "resize": "Resize your image",
-      "subtitle": "User Information",
+      "subtitle": "Organizer Information",
       "setProfile": "Set profile image",
       "personal": "Personal Information",
       "profileAlert": "Please sign in to your user dashboard to view or update the information linked to your profile. Once signed in, you’ll be able to review your details and make any necessary changes directly from your dashboard.",
       "securityTip": "Security tip",
       "2faTip": "Two‑factor authentication (2FA) cannot be disabled because your account is either the owner of, or belongs to, an organization. For security and compliance reasons, organization accounts must always keep 2FA enabled.",
-      "profileLink": "Link to your profile",
+      "profileLink": "Edit your name and photo in your Ticketwaze profile",
       "placeholders": {
         "firstname": "First Name",
         "lastname": "Last Name",
@@ -2248,7 +2860,7 @@
         "female": "Female",
         "no": "Rather not say",
         "dob": "Date of Birth",
-        "phone": "Phone Number"
+        "phone": "Contact Phone Number"
       },
       "errors": {
         "firstName": "First name cannot be blank",
@@ -2268,15 +2880,17 @@
         "title": "Account",
         "created": "Date created",
         "delete": "Delete Account"
-      }
+      },
+      "cancel": "Cancel",
+      "saved": "Account updated"
     },
     "profile": {
       "title": "Profile",
       "back": "Back",
       "edit": "Edit",
-      "save": "Save",
+      "save": "Save changes",
       "setProfile": "Set profile image",
-      "subtitle": "Organisation Profile",
+      "subtitle": "Organization Profile",
       "resize": "Resize your image",
       "share_profile": {
         "title": "Share Profile",
@@ -2293,11 +2907,15 @@
         "country": "Country",
         "city": "City",
         "state": "State/Region",
-        "website": "Organisation website",
+        "website": "Organization Website URL",
         "instagram": "Instagram handle",
         "twitter": "X (Twitter) handle",
         "social_links": "Social Links",
-        "social_links_premium": "Social links are only displayed on your public profile with a Premium membership."
+        "social_links_premium": "Social links are only displayed on your public profile with a Premium membership.",
+        "address": "Address",
+        "about": "About the organization",
+        "email": "Contact Email",
+        "phone": "Contact Phone Number"
       },
       "errors": {
         "name": {
@@ -2307,14 +2925,18 @@
         "description": {
           "min": "Organisation description cannot be less than 150 characters",
           "max": "Organisation description cannot be more than 350 characters"
-        }
+        },
+        "email": "Enter a valid email address"
       },
       "preferences": {
         "title": "Organisation Preferences",
         "currency": "Preferred Currency",
         "notifications": "Preferred notification provider",
         "none": "None"
-      }
+      },
+      "cancel": "Cancel",
+      "saved": "Profile updated",
+      "no_links": "No links added yet."
     },
     "team": {
       "title": "Team",
@@ -2346,7 +2968,7 @@
         "role": "Role",
         "status": "Status"
       },
-      "requiresAccount": "The person you're inviting must already have a Ticketwaze account.",
+      "requiresAccount": "They’ll get an email link to join. No Ticketwaze account needed: newcomers just choose a password.",
       "permissions": "Permissions",
       "customPermissions": "Custom",
       "preset": "Quick presets",
@@ -2380,13 +3002,27 @@
       "errors": {
         "name": "Name cannot be blank",
         "email": "Enter a valid email address"
-      }
+      },
+      "owner": "Owner",
+      "inactive": "Inactive",
+      "no_match": "No members match your search.",
+      "details_title": "Member Details",
+      "date_added": "Date Added",
+      "remove_member_full": "Remove member",
+      "edit_title": "Edit member",
+      "email_address": "Email Address",
+      "invited_toast": "Invitation sent to {email}",
+      "confirm_remove": "Are you sure you want to remove <b>{name}</b>? They will lose all access to this organization.",
+      "removed_title": "Member removed",
+      "removed_description": "You have successfully removed <b>{name}</b>, and they no longer have access to this organization.",
+      "returning": "Returning to team…",
+      "transferred": "Ownership transferred to {name}"
     },
     "security": {
       "title": "Security",
       "back": "Back",
       "subtitle": "Change Password",
-      "reset": "Forgot password ?",
+      "reset": "Reset password",
       "placeholders": {
         "password": "Current Password",
         "new": "New Password",
@@ -2395,24 +3031,41 @@
       "errors": {
         "blank": "Field cannot be blank",
         "password": "Password must be at least 8 characters",
-        "confirm": "Password must be the same"
+        "confirm": "Password must be the same",
+        "failed": "Couldn’t change your password. Try again."
       },
       "two_factor": "Two Factor Authentication",
       "securityTip": "Security tip",
-      "2faTip": "Two‑factor authentication (2FA) cannot be disabled because your account is either the owner of, or belongs to, an organization. For security and compliance reasons, organization accounts must always keep 2FA enabled.",
-      "passwordTip": "After updating your password, you'll need to sign in again on all you devices for security puposes.",
-      "enable": "Enable"
+      "tip_required": "Two-factor authentication is on because you belong to a verified organization. Each time you sign in with your email and password, we send a code to {email}. It stays on while you are a member.",
+      "tip_personal": "You turned on two-factor authentication from your Ticketwaze account settings. You can manage it there.",
+      "tip_off": "Two-factor authentication turns on automatically once your organization’s verification (KYC) is approved. Every email and password sign-in will then ask for a code sent to your email.",
+      "passwordTip": "After updating your password, you'll need to sign in again on all your devices for security purposes.",
+      "enable": "Enable",
+      "change": "Change Password",
+      "changed_title": "Password changed",
+      "changed_description": "You have successfully changed your password. Sign in again with your new password.",
+      "signing_out": "Signing you out…",
+      "add_title": "Create a Password",
+      "add_description": "You sign in with Google. Create a password to also sign in with your email and password.",
+      "add_cta": "Create password",
+      "added_title": "Password created",
+      "added_description": "You can now sign in with your email and password, or with Google. Sign in again to continue.",
+      "tip_no_password": "Two-factor authentication protects email and password sign-ins. You sign in with Google, so no code is needed. It applies once you create a password."
     },
     "payment": {
-      "title": "Banking",
+      "title": "Payment",
       "edit": "Edit",
-      "save": "Save",
+      "save": "Save changes",
       "back": "Back",
       "subtitle": "Withdrawal Account",
       "errors": {
         "bank_name": "Bank name cannot be blank",
         "bank_account_name": "Bank account name cannot be blank",
-        "bank_account_number": "Bank account number cannot be blank"
+        "bank_account_number": "Bank account number cannot be blank",
+        "bank_incomplete": "Fill in the bank name, account number and holder name.",
+        "moncash_invalid": "Enter the MonCash holder name and an 8-digit number.",
+        "natcash_invalid": "Enter the NatCash holder name and an 8-digit number.",
+        "save": "Couldn’t save your details. Try again."
       },
       "bank": "Bank Details",
       "bank_name": "Bank name",
@@ -2431,7 +3084,7 @@
       "reset": "Reset Withdrawal Pin",
       "description": "A Withdrawal Pin reset mail has been sent to",
       "newRequest": "You will be able to submit a new request in",
-      "no_mail": "Didn’t get a mail? ",
+      "no_mail": "Didn’t get a mail?",
       "resend": "Resend",
       "new_pin": "Set New Pin",
       "clearBanking": "Clear banking informations",
@@ -2439,7 +3092,22 @@
       "type": "Type the name of the organisation to confirm",
       "noBankingInfo": "You currently have no banking informations! Please insert some before trying to delete. If you think this was an error, please reach out support.",
       "failedDelete": "Failed to delete banking informations. Please check your internet connection. If this error persist, please reach out to support",
-      "successDelete": "Banking information deleted succesfully"
+      "successDelete": "Banking information deleted succesfully",
+      "cancel": "Cancel",
+      "saved": "Payment details updated",
+      "moncash": "MonCash",
+      "natcash": "NatCash",
+      "holder_name": "Account Holder Name",
+      "wallet_number": "Phone number (8 digits)",
+      "change_pin_title": "Change Withdrawal Pin",
+      "reset_title": "Reset Withdrawal Pin",
+      "reset_description": "We sent a link to {email}. Open it to set a new secure PIN and keep withdrawing your earnings safely.",
+      "pin": "Create Withdrawal Pin",
+      "confirmPin": "Confirm Withdrawal Pin",
+      "set_new_pin": "Set New Pin",
+      "pin_set_title": "Withdrawal PIN updated",
+      "pin_set_description": "Your new PIN is ready for your next withdrawal.",
+      "returning": "Returning to payment…"
     },
     "notification": {
       "title": "Notification",
@@ -2448,7 +3116,8 @@
       "ticket_sales": "Ticket Sales Updates",
       "event_check_in": "Activity Check-In Alerts",
       "payment_update": "Payment Updates",
-      "platform": "Platform Announcements"
+      "platform": "Platform Announcements",
+      "error": "Couldn’t save your notification settings. Try again."
     },
     "subscriptions": {
       "title": "Subscriptions",
@@ -2592,6 +3261,13 @@
         "error_title": "Something went wrong",
         "error_desc": "We couldn't activate your subscription. Please try again or contact support.",
         "error_retry": "Try again"
+      },
+      "billing": "Billing",
+      "ends": "Ends",
+      "status": {
+        "active": "Active",
+        "canceled": "Canceled",
+        "expired": "Expired"
       }
     },
     "integrations": {
@@ -2645,6 +3321,12 @@
           "durationHours": "{hours} hours"
         }
       }
-    }
+    },
+    "back": "Back"
+  },
+  "SaveStatus": {
+    "saving": "Saving…",
+    "saved": "Saved",
+    "error": "Not saved"
   }
 }

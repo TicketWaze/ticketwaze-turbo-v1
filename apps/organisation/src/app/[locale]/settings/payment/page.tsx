@@ -1,22 +1,18 @@
+import { Suspense } from "react";
 import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import { getTranslations, getLocale } from "next-intl/server";
-import PaymentInformationsForm from "./PaymentInformationsForm";
-import BackButton from "@/components/shared/BackButton";
-import TopBar from "@/components/shared/TopBar";
+import { getLocale } from "next-intl/server";
 import { auth } from "@/lib/auth";
 import { Organisation } from "@ticketwaze/typescript-config";
-import PinHandler from "./PinHandler";
 import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
 import FetchFailedErrorView from "@/components/shared/FetchFailedErrorView";
+import PaymentContent from "./PaymentContent";
 
-export default async function Page() {
-  const t = await getTranslations("Settings.payment");
+export default async function PaymentPage() {
   const locale = await getLocale();
   const session = await auth();
   const request = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${session?.activeOrganisation.organisationId}`,
     {
-      method: "GET",
       headers: {
         "Content-Type": "application/json",
         "Accept-Language": locale,
@@ -25,29 +21,23 @@ export default async function Page() {
       },
     },
   );
-  if (request.status === 403) {
-    return <UnauthorizedView />;
-  }
+  if (request.status === 403) return <UnauthorizedView />;
   const response = await request.json().catch(() => null);
   if (!request.ok || !response?.organisation) {
     return (
-      <OrganizerLayout title={t("title")}>
+      <OrganizerLayout title="">
         <FetchFailedErrorView />
       </OrganizerLayout>
     );
   }
-  const organisation: Organisation = response.organisation;
   return (
-    <OrganizerLayout title={t("title")}>
-      <div className="flex flex-col gap-8">
-        <BackButton text={t("back")} />
-        <TopBar title={t("title")}>
-          <div className="hidden lg:block">
-            <PinHandler organisation={organisation} />
-          </div>
-        </TopBar>
-      </div>
-      <PaymentInformationsForm organisation={organisation} />
+    <OrganizerLayout
+      title=""
+      className="h-full w-full flex flex-col overflow-y-auto"
+    >
+      <Suspense>
+        <PaymentContent organisation={response.organisation as Organisation} />
+      </Suspense>
     </OrganizerLayout>
   );
 }

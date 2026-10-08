@@ -5,7 +5,6 @@ import { useLocale, useTranslations } from "next-intl";
 import FormatDate from "@/lib/FormatDate";
 import { Warning2 } from "iconsax-reactjs";
 import { Event, Ticket } from "@ticketwaze/typescript-config";
-import Capitalize from "@/lib/Capitalize";
 import formatTime from "@/lib/formatTime";
 
 export default function UpcomingTicket({
@@ -17,6 +16,14 @@ export default function UpcomingTicket({
 }) {
   const t = useTranslations("Event");
   const locale = useLocale();
+  const joinUrl =
+    event.eventCategory === "meet"
+      ? event.onlineProvider === "zoom"
+        ? (ticket.zoomJoinUrl ?? null)
+        : event.onlineProvider === "custom"
+          ? (event.onlineLink ?? null)
+          : (event.googleMeetLink ?? null)
+      : null;
   const isFree = ticket.ticketPrice === 0 || ticket.ticketUsdPrice === 0;
   /**
    * A giveaway is priced at 0 too, so it must be checked BEFORE `isFree` —
@@ -48,9 +55,7 @@ export default function UpcomingTicket({
           {t("ticket")}
         </span>
         <div
-          className={
-            `w-full h-[250px] lg:h-[296px] relative  ${ticket.source === "reward" ? "perk-border" : "bg-neutral-100"} p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center `
-          }
+          className={`w-full h-[250px] lg:h-[296px] relative  ${ticket.source === "reward" ? "perk-border" : "bg-neutral-100"} p-6 pt-0 text-center font-mono text-[1.4rem] flex flex-col justify-between items-center `}
         >
           <Image
             src={Logo}
@@ -61,9 +66,7 @@ export default function UpcomingTicket({
           <div
             className={"flex items-center justify-between pt-6 gap-4 w-full"}
           >
-            <span className="text-neutral-600">
-              1x {Capitalize(ticket.ticketType)}
-            </span>
+            <span className="text-neutral-600">1x {ticket.ticketType}</span>
             {priceLabel ? (
               <span className="text-deep-100 font-medium">{priceLabel}</span>
             ) : (
@@ -117,6 +120,30 @@ export default function UpcomingTicket({
                 )}
               </span>
             </div>
+            {/* Online: where to join (Figma "Event link"). Google Meet is one
+                link on the event; Zoom issues one per ticket holder. */}
+            {joinUrl && (
+              <div className={"flex items-center justify-between gap-4 w-full"}>
+                <span className="text-neutral-600">{t("eventLink")}</span>
+                <a
+                  href={joinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-deep-100 font-medium text-right truncate max-w-[60%] underline underline-offset-4 hover:text-primary-500"
+                >
+                  {joinUrl.replace(/^https?:\/\//, "")}
+                </a>
+              </div>
+            )}
+            {/* "Other link" events may need a password to get in. */}
+            {joinUrl && event.onlineProvider === "custom" && event.onlinePassword && (
+              <div className={"flex items-center justify-between gap-4 w-full"}>
+                <span className="text-neutral-600">{t("eventPassword")}</span>
+                <span className="text-deep-100 font-medium text-right select-all">
+                  {event.onlinePassword}
+                </span>
+              </div>
+            )}
             {event.eventCategory !== "meet" && (
               <div className={"flex items-center justify-between gap-4 w-full"}>
                 <span className="text-neutral-600">{t("location")}</span>
@@ -147,7 +174,7 @@ export default function UpcomingTicket({
               "text-primary-500 text-[1.4rem] leading-8 px-[15px] py-[5px] bg-primary-50 rounded-[20px]"
             }
           >
-            {Capitalize(ticket.ticketType)}
+            {ticket.ticketType}
           </span>
           {priceLabel ? (
             <span

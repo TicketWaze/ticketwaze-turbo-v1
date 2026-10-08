@@ -239,6 +239,8 @@ export interface OrganisationMember {
   hasCustomPermissions: boolean;
 }
 
+export type KycStatus = "unverified" | "pending" | "approved" | "rejected";
+
 export interface Organisation {
   organisationId: string;
   userId: string;
@@ -262,7 +264,8 @@ export interface Organisation {
   availableBalance: number;
   usdPendingBalance: number;
   usdAvailableBalance: number;
-  withdrawalPin: string | null;
+  /** Whether a withdrawal PIN is set. The PIN hash itself is never sent. */
+  hasWithdrawalPin: boolean;
   moncashAccountName: string | null;
   moncashNumber: string | null;
   natcashAccountName: string | null;
@@ -270,6 +273,9 @@ export interface Organisation {
   isVerified: boolean;
   isPublished: boolean;
   membershipTierId: string;
+  /** KYC review state; anything but "approved" locks creating activities and withdrawing. */
+  kycStatus?: KycStatus;
+  address?: string | null;
   /**
    * OAuth tokens are deliberately ABSENT from this type.
    *
@@ -403,6 +409,9 @@ export interface EventTicketType {
   ticketTypeQuantity: number;
   ticketTypeQuantitySold: number;
   isRefundable: boolean;
+  /** This class's own sales window (ISO); either end may be null. */
+  salesStartAt?: string | null;
+  salesEndAt?: string | null;
   createdAt?: DateTime;
   updatedAt?: DateTime;
 }
@@ -530,7 +539,13 @@ export interface Event {
    * Which platform hosts an online event. Null on in-person events; existing
    * online events are backfilled to "google_meet".
    */
-  onlineProvider?: "google_meet" | "zoom" | null;
+  onlineProvider?: "google_meet" | "zoom" | "custom" | null;
+  /**
+   * "Other link" events: the organiser's own URL and optional password. Only
+   * present for ticket holders and the organiser, never on the public event.
+   */
+  onlineLink?: string | null;
+  onlinePassword?: string | null;
   /**
    * The event's GENERIC Zoom link. Deliberately not what a buyer joins with —
    * each buyer is registered separately and gets their own link on their
@@ -1161,6 +1176,10 @@ export interface DiscountCode {
   /** Uses allowed per signed-in buyer. Null means no per-buyer cap. */
   perUserLimit: number | null;
   expiresAt: Date;
+  /** Not usable before this moment. Null means from creation. */
+  startsAt: Date | null;
+  /** Ticket class names the code covers (case-insensitive); null = every class. */
+  appliesTo: string[] | null;
   usageLimit: number;
   /** Reservations plus confirmations. A released redemption does not count. */
   usageCount: number;
@@ -1298,6 +1317,9 @@ export interface WithdrawalRequest {
   wiseApprovedAt: DateTime | null;
   /** When the transfer actually settled, which is not when it was approved. */
   processedAt: DateTime | null;
+  /** The member who asked for it; null on requests made before it was recorded. */
+  requestedByUserId?: string | null;
+  requestedBy?: Pick<User, "userId" | "firstName" | "lastName"> | null;
 }
 
 export interface OrganisationSubscription {

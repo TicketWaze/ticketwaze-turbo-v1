@@ -44,7 +44,8 @@ export default async function OnlinePlatformPage({
    * card can show the upgrade path instead of a connect button that would
    * strand a free organiser at publish time.
    */
-  const tierRequest = await fetch(
+  // Started, not awaited: the plan and both statuses below load together.
+  const tierPending = fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/organisations/me/${organisationId}`,
     {
       method: "GET",
@@ -56,6 +57,68 @@ export default async function OnlinePlatformPage({
       },
     },
   );
+  /**
+   * A Zoom read that fails is reported as "not connected", never as an error
+   * page: Google Meet is still a perfectly good answer on this screen, and
+   * blocking both platforms because one status call timed out would be worse
+   * than offering the one that works.
+   */
+  const zoomPending = (async (): Promise<ZoomStatus> => {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${organisationId}/status`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.accessToken}`,
+            "Accept-Language": locale,
+            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          },
+          cache: "no-store",
+        },
+      );
+      const response = await request.json();
+      if (response.status === "success" && response.zoom) {
+        return response.zoom;
+      }
+    } catch (error) {
+      console.error("Failed to read the Zoom connection status:", error);
+    }
+    return { connected: false, available: false };
+  })();
+
+  /**
+   * Google's connection state has to come from the API now: the refresh token
+   * used to be serialized onto the organisation and read in the browser, which
+   * was a credential leak and is no longer sent.
+   */
+  const googlePending = (async (): Promise<GoogleStatus> => {
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/status`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session?.user.accessToken}`,
+            "Accept-Language": locale,
+            origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          },
+          cache: "no-store",
+        },
+      );
+      const response = await request.json();
+      if (response.status === "success" && response.google) {
+        return response.google;
+      }
+    } catch (error) {
+      console.error("Failed to read the Google connection status:", error);
+    }
+    return { connected: false, available: false };
+  })();
+
+  const tierRequest = await tierPending;
   const tierResponse = await tierRequest.json().catch(() => null);
   const membershipTier = tierResponse?.membershipTier;
   if (!tierRequest.ok || !membershipTier) {
@@ -65,63 +128,7 @@ export default async function OnlinePlatformPage({
       </OrganizerLayout>
     );
   }
-
-  /**
-   * A Zoom read that fails is reported as "not connected", never as an error
-   * page: Google Meet is still a perfectly good answer on this screen, and
-   * blocking both platforms because one status call timed out would be worse
-   * than offering the one that works.
-   */
-  let zoom: ZoomStatus = { connected: false, available: false };
-  try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/zoom/${organisationId}/status`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.user.accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-        },
-        cache: "no-store",
-      },
-    );
-    const response = await request.json();
-    if (response.status === "success" && response.zoom) {
-      zoom = response.zoom;
-    }
-  } catch (error) {
-    console.error("Failed to read the Zoom connection status:", error);
-  }
-
-  /**
-   * Google's connection state has to come from the API now: the refresh token
-   * used to be serialized onto the organisation and read in the browser, which
-   * was a credential leak and is no longer sent.
-   */
-  let googleStatus: GoogleStatus = { connected: false, available: false };
-  try {
-    const request = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/events/google/${organisationId}/status`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session?.user.accessToken}`,
-          "Accept-Language": locale,
-          origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
-        },
-        cache: "no-store",
-      },
-    );
-    const response = await request.json();
-    if (response.status === "success" && response.google) {
-      googleStatus = response.google;
-    }
-  } catch (error) {
-    console.error("Failed to read the Google connection status:", error);
-  }
+  const [zoom, googleStatus] = await Promise.all([zoomPending, googlePending]);
 
   return (
     <OrganizerLayout title="OnlinePlatformPage">

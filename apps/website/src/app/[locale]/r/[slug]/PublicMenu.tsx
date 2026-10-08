@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import ImageLightbox from "@/components/ImageLightbox";
 import type { PublicMenuData, PublicRestaurant } from "./page";
@@ -31,6 +31,20 @@ export default function PublicMenu({
 }) {
   const t = useTranslations("PublicMenu");
   const locale = useLocale();
+
+  // A scan of the menu counts as a view of the restaurant on the organiser's
+  // analytics. Anonymous and fire-and-forget; the API dedupes repeat visits.
+  useEffect(() => {
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/activities/${restaurant.restaurantId}/view`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+        keepalive: true,
+      },
+    ).catch(() => {});
+  }, [restaurant.restaurantId]);
 
   // Open on whatever is actually being served right now — a guest scanning at
   // 21:00 should land on the dinner menu, not on breakfast because it sorts

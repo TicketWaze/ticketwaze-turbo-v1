@@ -1,10 +1,11 @@
 import ClientErrorReporter from "@/components/ClientErrorReporter";
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, DM_Mono, DM_Sans } from "next/font/google";
+import { bricolageGrotesque, dmMono, dmSans } from "@ticketwaze/ui/fonts";
 import "@ticketwaze/ui/styles/globals.css";
 import { NextIntlClientProvider } from "next-intl";
 import { Toaster } from "sonner";
 import { getTranslations } from "next-intl/server";
+import { OG_IMAGE } from "@/lib/seo";
 import TopLoader from "@/components/TopLoader";
 import LiveChatWidgetMount from "@/components/LiveChatWidgetMount";
 import { Analytics } from "@vercel/analytics/next";
@@ -13,23 +14,6 @@ import ConsentModeScript from "@/components/analytics/ConsentModeScript";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import { WebVitals } from "@/components/analytics/WebVitals";
 import { CookieConsentBanner } from "@/components/analytics/CookieConsentBanner";
-
-const bricolageGrotesque = Bricolage_Grotesque({
-  subsets: ["latin"],
-  variable: "--font-primary",
-});
-
-const dmMono = DM_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  weight: ["300", "400", "500"],
-});
-
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["300", "400", "500"],
-});
 
 const siteUrl = "https://ticketwaze.com";
 
@@ -86,14 +70,7 @@ export async function generateMetadata({
       siteName: "Ticketwaze",
       title: t("title"),
       description: t("description"),
-      images: [
-        {
-          url: "/opengraph-image.png",
-          width: 1200,
-          height: 630,
-          alt: "Ticketwaze – Every Ticket, Every Activity, One Platform",
-        },
-      ],
+      images: [OG_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
@@ -101,7 +78,7 @@ export async function generateMetadata({
       creator: "@ticketwaze",
       title: t("title"),
       description: t("description"),
-      images: ["/opengraph-image.png"],
+      images: [OG_IMAGE.url],
     },
     alternates: {
       canonical: `${siteUrl}${localePath}`,

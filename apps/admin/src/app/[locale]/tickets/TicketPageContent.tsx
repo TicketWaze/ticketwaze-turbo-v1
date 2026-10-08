@@ -1,561 +1,291 @@
 "use client";
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import Image from "next/image";
-import TicketImage from "@ticketwaze/ui/assets/icons/ticket-2.svg";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-} from "@/components/ui/table";
-import { useTranslations } from "next-intl";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { useSession } from "next-auth/react";
-import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
-import TicketDetails from "./TicketDetails";
-import SearchInput from "@/components/shared/SearchInput";
-import PageLoader from "@/components/PageLoader";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
-import { Ticket } from "@ticketwaze/typescript-config";
+import { useEffect, useState, useTransition } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { Ticket as TicketIcon, MoreCircle } from "iconsax-reactjs";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import FilterPill from "@/components/shared/FilterPill";
+import SearchField from "@/components/shared/SearchField";
+import TablePagination from "@/components/shared/TablePagination";
+import { Reveal } from "@/components/shared/motion";
+import TicketDetailsDrawer, { type TicketDetailsData } from "@/components/shared/TicketDetailsDrawer";
+import { CHECK_BADGE, ticketClassColor } from "@/components/shared/ticketBadges";
+import { Drawer } from "@/components/ui/drawer";
+import { usePathname, useRouter } from "@/i18n/navigation";
+import formatDateTime from "@/lib/formatDateTime";
+import { cn } from "@/lib/utils";
+import { Metric, TrendBadge } from "../analytics/parts";
+import { PERIODS, readPeriod, type Period } from "../analytics/periods";
 
-/** The filter pill. Shared by all three selects so they stay identical. */
-const pillTrigger =
-  "bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none w-fit text-[1.4rem] text-neutral-700 leading-8";
-
-const statusColors: Record<"PENDING" | "CHECKED" | "RETURNED", string> = {
-  PENDING: "text-[#EA961C]",
-  CHECKED: "text-success",
-  RETURNED: "text-[#EF1870]",
+type TicketRow = TicketDetailsData & {
+  createdAt: string;
+  activity: TicketDetailsData["activity"] & { activityId: string; type: string };
 };
 
-function getTicketTypeColor(ticketType: string) {
-  const upper = ticketType.toUpperCase();
-  if (upper.includes("PREMIUM")) return "#2E3237";
-  if (upper.includes("VIP")) return "#7A19C7";
-  return "#EF1870";
-}
+export type TicketsData = {
+  period: Period;
+  stats: { sold: number; created: number; checkedIn: number };
+  trends: { sold: number | null; created: number | null; checkedIn: number | null };
+  tickets: {
+    data: TicketRow[];
+    meta: { total: number; perPage: number; currentPage: number; lastPage: number };
+  };
+};
 
-function formatDate(dateStr: string) {
-  try {
-    return new Date(dateStr).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    });
-  } catch {
-    return dateStr;
-  }
-}
-
+/**
+ * Figma "Admin" → Tickets (4334:88723 empty / 4351:91910 data): the overview
+ * tiles under a period pill, then every ticket of every activity type with
+ * status, purchase-time and search filters (no class filter — user decision),
+ * a row ⋯ and numbered pages. A row opens the shared Ticket Details drawer
+ * (4353:92712) with the data the API already sent. Filters live in the URL.
+ * See the API's services/admin_tickets.ts for what the tiles count.
+ */
 export default function TicketPageContent({
-  tickets,
-  stats,
-  activeStatus,
-  period,
-  search,
-  activityType,
+  data,
+  filters,
 }: {
-  tickets: Ticket[];
-  stats: { total: number; returned: number; checkedIn: number };
-  activeStatus: string;
-  period?: string;
-  search?: string;
-  activityType?: string;
+  data: TicketsData | null;
+  filters: { status: string | null; purchased: string | null; search: string };
 }) {
-  const t = useTranslations("Tickets");
+  const t = useTranslations("TicketsList");
+  const tPeriods = useTranslations("Analytics.filters.periods");
+  const tStatus = useTranslations("Activities.activity.resume.attendance.status");
+  const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
-  const [term, setTerm] = useState(search ?? "");
+  const searchParams = useSearchParams();
+  const [pending, startTransition] = useTransition();
+  const [term, setTerm] = useState(filters.search);
+  const [selected, setSelected] = useState<TicketRow | null>(null);
 
-  /**
-   * Search results live beside the server-rendered rows rather than replacing
-   * them: null means "not searching", so clearing the box restores the filtered
-   * list already on screen without a round trip.
-   */
-  const [searchRows, setSearchRows] = useState<Ticket[] | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
-
-  const isSearchActive = term.trim().length > 0;
-  const rows = searchRows ?? tickets;
-  const history = rows.length > 0;
-
-  const selectedStatus = ["PENDING", "CHECKED", "RETURNED"].includes(
-    activeStatus,
-  )
-    ? activeStatus
-    : "all";
-
-  const selectedActivityType = ["event", "raffle"].includes(activityType ?? "")
-    ? activityType!
-    : "all_activities";
-
-  // The server is the source of truth for what is on screen, so a completed
-  // navigation is what clears the loader.
-  useEffect(() => {
-    setIsLoading(false);
-  }, [activeStatus, period, search, activityType]);
-
-  /**
-   * One request per keystroke, with the previous one aborted as the next goes
-   * out. Aborting is what keeps the results honest: without it a slow early
-   * request can land after a faster later one and overwrite the newer results
-   * with stale rows.
-   *
-   * The request goes straight to the API rather than through a navigation so it
-   * is cancellable — the admin origin is CORS allow-listed, and the bearer token
-   * is the same one the server components use.
-   *
-   * The filters are part of the request: a search runs INSIDE the current pills
-   * rather than against every record, and the effect re-runs when a pill changes
-   * so the results follow it. `selectedStatus` of "all" is a value the API
-   * ignores, which is how "no status narrowing" is expressed.
-   */
-  useEffect(() => {
-    abortRef.current?.abort();
-
-    const trimmed = term.trim();
-    if (!trimmed) {
-      setSearchRows(null);
-      setIsSearching(false);
-      return;
+  function update(changes: Record<string, string | null>) {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === null || value === "") params.delete(key);
+      else params.set(key, value);
     }
-
-    const token = session?.user.accessToken;
-    if (!token) return;
-
-    const controller = new AbortController();
-    abortRef.current = controller;
-    setIsSearching(true);
-
-    const params = new URLSearchParams({
-      status: selectedStatus,
-      search: trimmed,
-      limit: "50",
+    // Any new filter starts again from the first page.
+    if (!("page" in changes)) params.delete("page");
+    const query = params.toString();
+    startTransition(() => {
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
     });
-    if (period) params.set("period", period);
-    if (selectedActivityType !== "all_activities") {
-      params.set("activityType", selectedActivityType);
-    }
+  }
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/admin/tickets/requests?${params.toString()}`,
-      {
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        setSearchRows(data?.tickets?.data ?? []);
-        setIsSearching(false);
-      })
-      .catch((error) => {
-        // An aborted request was replaced by a newer one; it owns the state now.
-        if (error?.name === "AbortError") return;
-        setSearchRows([]);
-        setIsSearching(false);
-      });
+  // Search follows typing, 300 ms after the last key.
+  useEffect(() => {
+    if (term.trim() === filters.search) return;
+    const id = setTimeout(() => update({ search: term.trim() || null }), 300);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term]);
 
-    return () => controller.abort();
-  }, [
-    term,
-    session?.user.accessToken,
-    selectedStatus,
-    period,
-    selectedActivityType,
-  ]);
+  const period = readPeriod(data?.period);
+  const rows = data?.tickets.data ?? [];
+  const meta = data?.tickets.meta;
+  const filtering = Boolean(filters.status || filters.purchased || filters.search);
 
-  /**
-   * Changing a pill KEEPS the search term. The two narrow the same list
-   * together, so the effect above simply re-runs against the new filters.
-   *
-   * The full-page loader is only for the server-rendered list; while a search is
-   * active the rows come from the fetch above, which has its own inline spinner.
-   */
-  const navigate = (params: URLSearchParams) => {
-    if (!isSearchActive) setIsLoading(true);
-    router.push(`${pathname}?${params.toString()}`);
-  };
+  const trend = (value: number | null) => (
+    <TrendBadge
+      value={value}
+      label={
+        value === null
+          ? ""
+          : t(value < 0 ? "trend.down" : "trend.up", { value: Math.abs(value) })
+      }
+    />
+  );
 
-  // `status` is always written to the URL, "all" included: an absent param
-  // falls back to the page's PENDING default, so omitting it would turn
-  // "All status" back into "Pending".
-  const handleStatusChange = (value: string) => {
-    const params = new URLSearchParams();
-    params.set("status", value);
-    if (period) params.set("period", period);
-    if (activityType) params.set("activityType", activityType);
-    navigate(params);
-  };
+  const tiles = data
+    ? (["sold", "created", "checkedIn"] as const).map((key) => ({
+        key,
+        value: data.stats[key],
+        trend: data.trends[key],
+      }))
+    : [];
 
-  const handlePeriodChange = (value: string) => {
-    const params = new URLSearchParams();
-    params.set("status", selectedStatus);
-    if (value !== "all_period") params.set("period", value);
-    if (activityType) params.set("activityType", activityType);
-    navigate(params);
-  };
-
-  const handleActivityTypeChange = (value: string) => {
-    const params = new URLSearchParams();
-    params.set("status", selectedStatus);
-    if (period) params.set("period", period);
-    if (value !== "all_activities") params.set("activityType", value);
-    navigate(params);
-  };
+  const head = "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase text-left";
+  const cell = "py-6 pr-4 text-[1.5rem] leading-8 text-deep-100";
+  const badge = "py-[0.3rem] px-2 rounded-[30px] text-[1.1rem] font-bold leading-6 uppercase whitespace-nowrap";
 
   return (
-    <div className={PAGE_SCROLLER}>
-      <PageLoader isLoading={isLoading} />
-      <PageTitle>{t("title")}</PageTitle>
-      <div
-        className={
-          "grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b"
-        }
-      >
-        <div className={"pb-12"}>
-          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
-            {t("total_sold")}
-          </span>
-          <p
-            className={
-              "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
-            }
-          >
-            {stats.total}
-          </p>
-        </div>
-        <div className={"pl-10"}>
-          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
-            {t("total_created")}
-          </span>
-          <p
-            className={
-              "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
-            }
-          >
-            {stats.returned}
-          </p>
-        </div>
-        <div className={"pl-0 lg:pl-10"}>
-          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
-            {t("checked-in")}
-          </span>
-          <p
-            className={
-              "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
-            }
-          >
-            {stats.checkedIn}
-          </p>
-        </div>
+    <div className={cn(PAGE_SCROLLER, "gap-0")} aria-busy={pending}>
+      {/* Heading + the tiles' period pill. */}
+      <div className="sticky top-0 z-20 bg-white pb-8 flex items-center justify-between gap-6">
+        <h3 className="font-primary font-medium text-[2.6rem] leading-12 text-black">
+          {t("title")}
+        </h3>
+        <FilterPill
+          label={t("filters.period")}
+          value={period}
+          defaultValue="month"
+          options={PERIODS.map((p) => ({ value: p, label: tPeriods(p) }))}
+          onChange={(v) => update({ period: v === "month" ? null : v })}
+          pending={pending}
+        />
       </div>
-      {/* The list scrolls inside the page rather than the page itself, so the
-          topbar and the stat tiles stay put. Same wrapper as the payments
-          table. */}
-      <div className="flex flex-col gap-8">
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <h4 className="hidden font-medium lg:inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
-              {t("tickets_list.title")}
-            </h4>
-            <div className="flex flex-col gap-4 w-full lg:w-auto lg:flex-row lg:items-center">
-              <SearchInput
-                value={term}
-                onChange={setTerm}
-                placeholder={t("filters.search")}
-              />
-              {/* On mobile the search owns its own full-width row and the pills
-                  wrap together underneath, rather than each control stacking
-                  onto a line of its own. `lg:contents` dissolves this wrapper at
-                  desktop so the pills sit inline exactly as before. */}
-              <div className="flex flex-wrap items-center gap-3 lg:contents">
-                {/* Controlled, not defaultValue: the pills describe what is on
-                screen, and they keep applying while a search is running. */}
-                <Select
-                  value={selectedActivityType}
-                  onValueChange={handleActivityTypeChange}
-                >
-                  <SelectTrigger className={pillTrigger}>
-                    <SelectValue placeholder="" />
-                  </SelectTrigger>
-                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                    <SelectGroup>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="all_activities"
-                      >
-                        {t("filters.activity_type")}
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="event"
-                      >
-                        {t("filters.activity_event")}
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="raffle"
-                      >
-                        {t("filters.activity_raffle")}
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Select value={selectedStatus} onValueChange={handleStatusChange}>
-                  <SelectTrigger className={pillTrigger}>
-                    <SelectValue placeholder="" />
-                  </SelectTrigger>
-                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                    <SelectGroup>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="all"
-                      >
-                        {t("filters.status")}
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="CHECKED"
-                      >
-                        Checked-In
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="PENDING"
-                      >
-                        Pending
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="RETURNED"
-                      >
-                        Returned
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-                <Select
-                  value={period ?? "all_period"}
-                  onValueChange={handlePeriodChange}
-                >
-                  <SelectTrigger className={pillTrigger}>
-                    <SelectValue placeholder="" />
-                  </SelectTrigger>
-                  <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                    <SelectGroup>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="all_period"
-                      >
-                        {t("filters.time")}
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="last_week"
-                      >
-                        Last week
-                      </SelectItem>
-                      <SelectItem
-                        className={"text-[1.4rem] text-deep-100"}
-                        value="last_month"
-                      >
-                        Last month
-                      </SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-          {/* The results area owns the search loader: the header, stats and filters
-          stay usable while a query is in flight. */}
-          <div className="relative min-h-40">
-            {isSearching && (
-              <div className="absolute inset-0 z-10 flex items-start justify-center pt-20 bg-white/70">
-                <LoadingCircleSmall />
-              </div>
+
+      <Reveal className="grid grid-cols-2 lg:grid-cols-3 border-b border-neutral-100">
+        {tiles.map((tile, i) => (
+          <div
+            key={tile.key}
+            title={t(`hints.${tile.key}`)}
+            className={cn(
+              "py-6 pr-6 lg:pr-10 border-neutral-100",
+              i === 1 && "pl-6 lg:pl-10 border-l",
+              i === 2 && "col-span-2 lg:col-span-1 border-t lg:border-t-0 lg:pl-10 lg:border-l",
             )}
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead
-                    className={
-                      "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("tickets_list.table.transaction_id")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("tickets_list.table.attendee")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("tickets_list.table.activity_name")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("tickets_list.table.ticket_class")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("tickets_list.table.check-in")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("tickets_list.table.purchase")}
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              {history ? (
-                <TableBody>
-                  {rows.map((ticket) => (
-                    <Drawer key={ticket.ticketId} direction="right">
-                      <DrawerTrigger asChild>
-                        <TableRow className="cursor-pointer">
-                          <TableCell
-                            className={
-                              "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                            }
-                          >
-                            <span className={"cursor-pointer"}>
-                              {ticket.ticketName}
-                            </span>
-                          </TableCell>
-                          <TableCell
-                            className={
-                              "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                            }
-                          >
-                            <span className={"cursor-pointer"}>
-                              {ticket.fullName}
-                            </span>
-                          </TableCell>
-                          {/* Clipped so a long activity name cannot widen the
-                              column and squeeze the rest of the row. The full
-                              value stays available on hover. */}
-                          <TableCell
-                            className={
-                              "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                            }
-                          >
-                            <span
-                              className="block max-w-[24rem] truncate"
-                              title={ticket.activity?.name ?? undefined}
-                            >
-                              {ticket.activity?.name ?? "—"}
-                            </span>
-                          </TableCell>
-                          <TableCell
-                            className={
-                              "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                            }
-                          >
-                            <span
-                              style={{
-                                color: getTicketTypeColor(
-                                  ticket.ticketType ?? "",
-                                ),
-                              }}
-                              className="py-[0.3rem] px-2 bg-neutral-100 font-bold rounded-[30px] text-[11px] uppercase"
-                            >
-                              {ticket.ticketType}
-                            </span>
-                          </TableCell>
-                          <TableCell className="py-6">
-                            <span
-                              className={`py-[0.3rem] px-2 cursor-pointer text-[1.1rem] font-bold text-center uppercase ${statusColors[ticket.status] ?? "text-neutral-600"} rounded-[30px] bg-neutral-100`}
-                            >
-                              {ticket.status}
-                            </span>
-                          </TableCell>
-                          <TableCell
-                            className={
-                              "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-                            }
-                          >
-                            {formatDate(ticket.createdAt as unknown as string)}
-                          </TableCell>
-                        </TableRow>
-                      </DrawerTrigger>
-                      <TicketDetails ticket={ticket} />
-                    </Drawer>
-                  ))}
-                </TableBody>
-              ) : null}
-            </Table>
-            {/* An empty search is not an empty system: the "nothing sold yet"
-            illustration would be wrong while a query is narrowing the list. */}
-            {!history &&
-              !isSearching &&
-              (isSearchActive ? (
-                <p className="text-[1.8rem] text-neutral-600 leading-10 text-center mt-16">
-                  {t("tickets_list.no_results", { term: term.trim() })}
-                </p>
-              ) : /* The stat tiles count every ticket ever sold, ignoring the
-                     filters, so they say precisely which empty this is: nothing
-                     sold yet, or nothing matching the current pills. Guessing
-                     from the pills instead would be wrong, since the page opens
-                     on a status filter by default. */
-              stats.total > 0 ? (
-                <p className="text-[1.8rem] text-neutral-600 leading-10 text-center mt-16">
-                  {t("tickets_list.no_filtered")}
-                </p>
-              ) : (
-                <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">
-                  <div className="rounded-full bg-neutral-100 p-6 w-fit">
-                    <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
-                      <Image
-                        src={TicketImage}
-                        alt="no ticket history"
-                        width={50}
-                        height={50}
-                      />
-                    </div>
-                  </div>
-                  <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
-                    {t("tickets_list.no_history")}
-                  </p>
-                </div>
-              ))}
+          >
+            <Metric label={t(tile.key)} trend={trend(tile.trend)}>
+              {tile.value.toLocaleString(locale)}
+            </Metric>
+          </div>
+        ))}
+      </Reveal>
+
+      <Reveal delay={0.05} className="flex flex-col gap-6 pt-12">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <h4 className="font-primary font-medium text-[1.8rem] leading-10 text-black">
+            {t("list.title")}
+          </h4>
+          <div className="flex flex-wrap items-center gap-4">
+            <FilterPill
+              label={t("filters.status_label")}
+              value={filters.status ?? "all"}
+              defaultValue="all"
+              placeholder={t("filters.status")}
+              options={[
+                { value: "all", label: t("filters.status") },
+                { value: "CHECKED", label: t("filters.checked") },
+                { value: "PENDING", label: t("filters.pending") },
+                { value: "RETURNED", label: t("filters.returned") },
+              ]}
+              onChange={(v) => update({ status: v === "all" ? null : v })}
+              pending={pending}
+            />
+            <FilterPill
+              label={t("filters.time_label")}
+              value={filters.purchased ?? "all"}
+              defaultValue="all"
+              placeholder={t("filters.time")}
+              options={PERIODS.map((p) => ({ value: p, label: tPeriods(p) }))}
+              onChange={(v) => update({ purchased: v === "all" ? null : v })}
+              pending={pending}
+            />
+            <SearchField
+              value={term}
+              onChange={setTerm}
+              placeholder={t("filters.search")}
+              className="flex w-full lg:w-[26rem]"
+            />
           </div>
         </div>
-      </div>
+
+        <div className={cn("overflow-x-auto transition-opacity", pending && "opacity-60")}>
+          <table className="w-full min-w-[84rem] border-collapse">
+            <thead>
+              <tr className="border-b border-neutral-100">
+                <th className={head}>{t("list.table.id")}</th>
+                <th className={head}>{t("list.table.attendee")}</th>
+                <th className={head}>{t("list.table.activity")}</th>
+                <th className={head}>{t("list.table.class")}</th>
+                <th className={head}>{t("list.table.status")}</th>
+                <th className={head}>{t("list.table.purchased")}</th>
+                <th className={head}>
+                  <span className="sr-only">{t("list.table.actions")}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => (
+                <tr
+                  key={row.ticketId}
+                  onClick={() => setSelected(row)}
+                  className="border-b border-neutral-100 cursor-pointer hover:bg-neutral-50 transition-colors"
+                >
+                  <td className={cn(cell, "whitespace-nowrap")}>{row.ticketName}</td>
+                  <td className={cell}>
+                    <span className="block max-w-[18rem] truncate" title={row.fullName}>
+                      {row.fullName}
+                    </span>
+                  </td>
+                  <td className={cn(cell, "font-medium")}>
+                    <span className="flex items-center gap-3 max-w-[22rem]">
+                      <span className="truncate" title={row.activity.name}>
+                        {row.activity.name}
+                      </span>
+                      {row.activity.type !== "event" &&
+                        ["raffle", "sale", "restaurant"].includes(row.activity.type) && (
+                          <span className="shrink-0 bg-primary-50 text-primary-500 text-[1rem] font-bold uppercase rounded-[30px] px-2 py-[0.2rem]">
+                            {t(`list.type_badge.${row.activity.type}`)}
+                          </span>
+                        )}
+                    </span>
+                  </td>
+                  <td className="py-6 pr-4">
+                    <span
+                      style={{ color: ticketClassColor(row.ticketType) }}
+                      className={cn(badge, "inline-block max-w-[14rem] truncate bg-neutral-100")}
+                    >
+                      {row.ticketType}
+                    </span>
+                  </td>
+                  <td className="py-6 pr-4">
+                    <span className={cn(badge, CHECK_BADGE[row.status])}>{tStatus(row.status)}</span>
+                  </td>
+                  <td className={cn(cell, "whitespace-nowrap")}>
+                    {formatDateTime(row.createdAt, locale)}
+                  </td>
+                  <td className="py-6 text-right">
+                    <span
+                      aria-hidden
+                      className="relative w-[2rem] h-[2rem] shrink-0 rounded-full bg-neutral-100 inline-flex items-center justify-center after:absolute after:-inset-[0.8rem] after:content-['']"
+                    >
+                      <MoreCircle size="10" variant="Bulk" color="#737C8A" />
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {rows.length === 0 &&
+          (filtering ? (
+            <p className="text-[1.6rem] text-neutral-600 leading-10 text-center py-16">
+              {t("list.no_results")}
+            </p>
+          ) : (
+            <div className="flex flex-col items-center gap-10 py-16">
+              <div className="rounded-full bg-neutral-100 p-6">
+                <div className="rounded-full bg-neutral-200 p-8">
+                  <TicketIcon size="44" variant="Bulk" color="#454A53" />
+                </div>
+              </div>
+              <p className="max-w-[44rem] text-[1.6rem] text-neutral-600 leading-9 text-center">
+                {t("list.no_history")}
+              </p>
+            </div>
+          ))}
+
+        {meta && meta.lastPage > 1 && (
+          <TablePagination
+            page={meta.currentPage}
+            count={meta.lastPage}
+            onChange={(page) => update({ page: page > 1 ? String(page) : null })}
+            prevLabel={t("list.prev")}
+            nextLabel={t("list.next")}
+          />
+        )}
+      </Reveal>
+
+      <Drawer
+        direction="right"
+        open={selected !== null}
+        onOpenChange={(open) => !open && setSelected(null)}
+      >
+        {selected && <TicketDetailsDrawer ticket={selected} />}
+      </Drawer>
     </div>
   );
 }

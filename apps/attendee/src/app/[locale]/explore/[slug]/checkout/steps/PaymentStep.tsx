@@ -1,18 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
-import {
-  ArrowRight2,
-  Card,
-  InfoCircle,
-  MoneyRecive,
-} from "iconsax-reactjs";
+import { ArrowRight2, Card, InfoCircle, MoneyRecive } from "iconsax-reactjs";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { Event, EventTicketType } from "@ticketwaze/typescript-config";
 import moncash from "../moncash.svg";
 import natcash from "@/assets/images/natcash.png";
-import { FeeBreakdown, PaymentType, SelectedTicket } from "../checkout.types";
-import TicketSummaryCard from "../TicketSummaryCard";
+import { PaymentType } from "../checkout.types";
 import { NATCASH_ENABLED } from "@/lib/paymentMethods";
 
 interface Props {
@@ -21,10 +14,6 @@ interface Props {
   isGuest: boolean;
   paymentType: PaymentType;
   onSelectPayment: (type: PaymentType) => void;
-  selectedWithIndex: SelectedTicket[];
-  ticketTypes: EventTicketType[];
-  event: Event;
-  feeBreakdown: FeeBreakdown;
   /**
    * The discount-code and token controls, passed in rather than built here.
    *
@@ -42,10 +31,6 @@ export default function PaymentStep({
   isGuest,
   paymentType,
   onSelectPayment,
-  selectedWithIndex,
-  ticketTypes,
-  event,
-  feeBreakdown,
   reductions,
 }: Props) {
   const t = useTranslations("Checkout");
@@ -136,16 +121,6 @@ export default function PaymentStep({
             {reductions}
           </>
         )}
-      </div>
-      <div className="lg:hidden flex flex-col gap-8">
-        <TicketSummaryCard
-          selectedWithIndex={selectedWithIndex}
-          ticketTypes={ticketTypes}
-          event={event}
-          isFree={isFree}
-          feeBreakdown={feeBreakdown}
-          paymentType={paymentType}
-        />
       </div>
     </motion.div>
   );

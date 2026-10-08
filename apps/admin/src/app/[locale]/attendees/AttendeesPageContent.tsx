@@ -1,443 +1,352 @@
 "use client";
+import { useEffect, useState, useTransition } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { useSearchParams } from "next/navigation";
+import { ProfileCircle, MoreCircle } from "iconsax-reactjs";
 import AdminLayout from "@/components/Layouts/AdminLayout";
-import { useTranslations, useLocale } from "next-intl";
-import Image from "next/image";
-import User from "@ticketwaze/ui/assets/icons/user-square.svg";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useRouter, usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
-import {
-  AdminAttendeesRequest,
-  AdminAttendeeStats,
-  AdminUser,
-} from "@ticketwaze/typescript-config";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import FilterPill from "@/components/shared/FilterPill";
+import SearchField from "@/components/shared/SearchField";
+import TablePagination from "@/components/shared/TablePagination";
+import { Reveal } from "@/components/shared/motion";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import formatDate from "@/lib/FormatDate";
-import { useState, useEffect, useRef } from "react";
-import PageLoader from "@/components/PageLoader";
-import PageTitle, { PAGE_SCROLLER } from "@/components/shared/PageTitle";
-import SearchInput from "@/components/shared/SearchInput";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import { cn } from "@/lib/utils";
+import { Metric, TrendBadge } from "../analytics/parts";
+import { PERIODS, readPeriod, type Period } from "../analytics/periods";
+import { SuspendDialog } from "./[user]/SuspendDialog";
+import { ReactivateDialog } from "./[user]/ReactivateDialog";
 
+type Status = "active" | "inactive" | "suspended";
+
+export type AttendeesData = {
+  period: Period;
+  stats: { total: number; active: number; repeat: number };
+  trends: { total: number | null; active: number | null; repeat: number | null };
+  users: {
+    data: {
+      userId: string;
+      firstName: string;
+      lastName: string;
+      email: string;
+      phone: string | null;
+      eventCount: number;
+      status: Status;
+      createdAt: string;
+    }[];
+    meta: { total: number; perPage: number; currentPage: number; lastPage: number };
+  };
+};
+
+const STATUS_BADGE: Record<Status, string> = {
+  active: "bg-success/10 text-success",
+  inactive: "bg-warning/15 text-[#C98A00]",
+  suspended: "bg-failure/10 text-failure",
+};
+
+/**
+ * Figma "Admin" → Attendee (4116:66233 empty / 4129:96983 data): the
+ * overview tiles under a period pill, then the list with status, date-joined
+ * and search filters, a row ⋯ menu and numbered pages. Every filter lives in
+ * the URL. See the API's services/admin_attendees.ts for what the tiles and
+ * statuses mean.
+ */
 export default function AttendeesPageContent({
-  users,
-  stats,
-  status,
-  period,
-  search,
+  data,
+  filters,
 }: {
-  users: AdminAttendeesRequest;
-  stats: AdminAttendeeStats;
-  status?: string;
-  period?: string;
-  search?: string;
+  data: AttendeesData | null;
+  filters: { status: string | null; joined: string | null; search: string };
 }) {
   const t = useTranslations("Attendees");
+  const tPeriods = useTranslations("Analytics.filters.periods");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
-  const [term, setTerm] = useState(search ?? "");
+  const searchParams = useSearchParams();
+  const [pending, startTransition] = useTransition();
+  const [term, setTerm] = useState(filters.search);
+  const [dialog, setDialog] = useState<{ kind: "suspend" | "reactivate"; userId: string } | null>(
+    null,
+  );
 
-  /**
-   * Search results live beside the server-rendered rows rather than replacing
-   * them: null means "not searching", so clearing the box restores the filtered
-   * list already on screen without a round trip.
-   */
-  const [searchRows, setSearchRows] = useState<AdminUser[] | null>(null);
-  const [isSearching, setIsSearching] = useState(false);
-  const abortRef = useRef<AbortController | null>(null);
-
-  const isSearchActive = term.trim().length > 0;
-  const data = searchRows ?? users.data;
-
-  useEffect(() => {
-    setIsLoading(false);
-  }, [status, period, search]);
-
-  /**
-   * One request per keystroke, with the previous one aborted as the next goes
-   * out. Aborting is what keeps the results honest: without it a slow early
-   * request can land after a faster later one and overwrite the newer results
-   * with stale rows.
-   */
-  useEffect(() => {
-    abortRef.current?.abort();
-
-    const trimmed = term.trim();
-    if (!trimmed) {
-      setSearchRows(null);
-      setIsSearching(false);
-      return;
+  function update(changes: Record<string, string | null>) {
+    const params = new URLSearchParams(searchParams.toString());
+    for (const [key, value] of Object.entries(changes)) {
+      if (value === null || value === "") params.delete(key);
+      else params.set(key, value);
     }
-
-    const token = session?.user.accessToken;
-    if (!token) return;
-
-    const controller = new AbortController();
-    abortRef.current = controller;
-    setIsSearching(true);
-
-    // Searching deliberately ignores the status and period pills so it runs
-    // against every record.
-    const params = new URLSearchParams({ search: trimmed, limit: "50" });
-
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/admin/attendees?${params.toString()}`,
-      {
-        signal: controller.signal,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    )
-      .then((response) => response.json())
-      .then((response) => {
-        setSearchRows(response?.users?.data ?? []);
-        setIsSearching(false);
-      })
-      .catch((error) => {
-        // An aborted request was replaced by a newer one; it owns the state now.
-        if (error?.name === "AbortError") return;
-        setSearchRows([]);
-        setIsSearching(false);
-      });
-
-    return () => controller.abort();
-  }, [term, session?.user.accessToken]);
-
-  /**
-   * Picking a filter ends the search — the two are alternative ways of choosing
-   * rows, and leaving a stale term in the box would misdescribe what is listed.
-   *
-   * The push goes to `pathname` rather than a hardcoded "/attendees" so the
-   * locale segment already in the URL survives the navigation.
-   */
-  const navigate = (params: URLSearchParams) => {
-    abortRef.current?.abort();
-    setTerm("");
-    setSearchRows(null);
-    setIsSearching(false);
-    setIsLoading(true);
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
-  function handleStatusChange(value: string) {
-    const params = new URLSearchParams();
-    if (value !== "all") params.set("status", value);
-    if (period) params.set("period", period);
-    navigate(params);
+    // Any new filter starts again from the first page.
+    if (!("page" in changes)) params.delete("page");
+    const query = params.toString();
+    startTransition(() => {
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+    });
   }
 
-  function handlePeriodChange(value: string) {
-    const params = new URLSearchParams();
-    if (status) params.set("status", status);
-    if (value !== "all_period") params.set("period", value);
-    navigate(params);
-  }
+  // Search follows typing, 300 ms after the last key.
+  useEffect(() => {
+    if (term.trim() === filters.search) return;
+    const id = setTimeout(() => update({ search: term.trim() || null }), 300);
+    return () => clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [term]);
+
+  const period = readPeriod(data?.period);
+  const rows = data?.users.data ?? [];
+  const meta = data?.users.meta;
+  const filtering = Boolean(filters.status || filters.joined || filters.search);
+
+  const trend = (value: number | null) => (
+    <TrendBadge
+      value={value}
+      label={value === null ? "" : t(value < 0 ? "trend.down" : "trend.up", { value: Math.abs(value) })}
+    />
+  );
+
+  const tiles = data
+    ? [
+        { label: t("total"), value: data.stats.total, trend: data.trends.total },
+        { label: t("active"), value: data.stats.active, trend: data.trends.active },
+        { label: t("repeat"), value: data.stats.repeat, trend: data.trends.repeat },
+      ]
+    : [];
+
+  const head = "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase text-left";
 
   return (
     <AdminLayout>
-      <PageLoader isLoading={isLoading} />
-      <div className={PAGE_SCROLLER}>
-        <PageTitle>{t("title")}</PageTitle>
-        <div
-          className={
-            "grid grid-cols-2 lg:grid-cols-3 divide-x divide-neutral-100 border-neutral-100 border-b"
-          }
-        >
-          <div className={"pb-12"}>
-            <span
-              className={
-                "flex justify-between text-[14px] text-neutral-600 leading-8 pb-2"
-              }
-            >
-              {t("total")}
-            </span>
-            <p
-              className={
-                "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
-              }
-            >
-              {stats.total.toLocaleString()}
-            </p>
-          </div>
-          <div className={"pl-10"}>
-            <span
-              className={
-                "flex justify-between text-[14px] text-neutral-600 leading-8 pb-2"
-              }
-            >
-              {t("active")}
-            </span>
-            <p
-              className={
-                "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
-              }
-            >
-              {stats.active.toLocaleString()}
-            </p>
-          </div>
-          <div className={"pl-0 lg:pl-10"}>
-            <span
-              className={
-                "flex justify-between text-[14px] text-neutral-600 leading-8 pb-2"
-              }
-            >
-              {t("guest")}
-            </span>
-            <p
-              className={
-                "font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary"
-              }
-            >
-              {stats.guest.toLocaleString()}
-            </p>
-          </div>
+      <div className={cn(PAGE_SCROLLER, "gap-0")} aria-busy={pending}>
+        {/* Heading + the tiles' period pill. */}
+        <div className="sticky top-0 z-20 bg-white pb-8 flex items-center justify-between gap-6">
+          <h3 className="font-primary font-medium text-[2.6rem] leading-12 text-black">
+            {t("title")}
+          </h3>
+          <FilterPill
+            label={t("filters.period")}
+            value={period}
+            defaultValue="month"
+            options={PERIODS.map((p) => ({ value: p, label: tPeriods(p) }))}
+            onChange={(v) => update({ period: v === "month" ? null : v })}
+            pending={pending}
+          />
         </div>
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-8">
-            <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center">
-              <h4 className="font-medium inline-flex items-center gap-2 font-primary text-[1.8rem] leading-10 text-black">
-                {t("attendees_list.title")}
-              </h4>
-              <div className="flex flex-col lg:flex-row gap-4 w-full lg:w-auto">
-                <SearchInput
-                  value={term}
-                  onChange={setTerm}
-                  placeholder={t("filters.search")}
-                />
-                <div className="flex flex-row gap-4 w-full lg:w-auto">
-                  {/* Controlled, not defaultValue: a search runs against every record,
-              so while one is active the pills have to show that no status or
-              period narrowing is in effect. */}
-                  <Select
-                    value={isSearchActive ? "all" : (status ?? "all")}
-                    onValueChange={handleStatusChange}
-                  >
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none flex-1 lg:flex-none w-full lg:w-fit min-w-0 text-[1.4rem] text-neutral-700 leading-8">
-                      <SelectValue placeholder="" />
-                    </SelectTrigger>
-                    <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                      <SelectGroup>
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          value="all"
-                        >
-                          {t("filters.status")}
-                        </SelectItem>
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          value="active"
-                        >
-                          {t("filters.status_active")}
-                        </SelectItem>
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          value="suspended"
-                        >
-                          {t("filters.status_suspended")}
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={
-                      isSearchActive ? "all_period" : (period ?? "all_period")
-                    }
-                    onValueChange={handlePeriodChange}
-                  >
-                    <SelectTrigger className="bg-neutral-100 cursor-pointer rounded-[3rem] py-[0.8rem] px-6 border-none flex-1 lg:flex-none w-full lg:w-fit min-w-0 text-[1.4rem] text-neutral-700 leading-8">
-                      <SelectValue placeholder="" />
-                    </SelectTrigger>
-                    <SelectContent className={"bg-neutral-100 text-[1.4rem]"}>
-                      <SelectGroup>
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          value="all_period"
-                        >
-                          {t("filters.time")}
-                        </SelectItem>
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          value="last_week"
-                        >
-                          Last week
-                        </SelectItem>
-                        <SelectItem
-                          className={"text-[1.4rem] text-deep-100"}
-                          value="last_month"
-                        >
-                          Last month
-                        </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-            </div>
-            {/* The results area owns the search loader: the header, stats and filters
-          stay usable while a query is in flight. */}
-            <div className="relative min-h-40">
-              {isSearching && (
-                <div className="absolute inset-0 z-10 flex items-start justify-center pt-20 bg-white/70">
-                  <LoadingCircleSmall />
-                </div>
+
+        <Reveal className="grid grid-cols-2 lg:grid-cols-3 border-b border-neutral-100">
+          {tiles.map((tile, i) => (
+            <div
+              key={tile.label}
+              className={cn(
+                "py-6 pr-6 lg:pr-10 border-neutral-100",
+                i === 1 && "pl-6 lg:pl-10 border-l",
+                i === 2 && "col-span-2 lg:col-span-1 border-t lg:border-t-0 lg:pl-10 lg:border-l",
               )}
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead
-                      className={
-                        "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                      }
-                    >
-                      {t("attendees_list.table.name")}
-                    </TableHead>
-                    <TableHead
-                      className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                      }
-                    >
-                      {t("attendees_list.table.email")}
-                    </TableHead>
-                    <TableHead
-                      className={
-                        "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                      }
-                    >
-                      {t("attendees_list.table.activity_count")}
-                    </TableHead>
-                    <TableHead
-                      className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                      }
-                    >
-                      {t("attendees_list.table.status")}
-                    </TableHead>
-                    <TableHead
-                      className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                      }
-                    >
-                      {t("attendees_list.table.joined")}
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                {data.length > 0 ? (
-                  <TableBody>
-                    {data.map((attendee) => (
-                      <TableRow
-                        key={attendee.userId}
-                        className="cursor-pointer"
-                        onClick={() =>
-                          router.push(`/attendees/${attendee.userId}`)
-                        }
-                      >
-                        <TableCell
-                          className={
-                            "text-[1.5rem] py-6 leading-8 text-neutral-900"
-                          }
-                        >
-                          <span className="block max-w-[16rem] lg:max-w-[28rem] truncate cursor-pointer">
-                            {attendee.firstName} {attendee.lastName}
-                          </span>
-                        </TableCell>
-                        <TableCell
-                          className={
-                            "text-[1.5rem] py-6 hidden lg:table-cell leading-8 text-neutral-900"
-                          }
-                        >
-                          <span
-                            title={attendee.email}
-                            className="block max-w-[16rem] lg:max-w-[28rem] truncate cursor-pointer"
-                          >
-                            {attendee.email}
-                          </span>
-                        </TableCell>
-                        <TableCell
-                          className={
-                            "text-[1.5rem] font-medium leading-8 text-neutral-900"
-                          }
-                        >
-                          {attendee.userAnalytic?.eventAttended ?? 0}
-                        </TableCell>
-                        <TableCell
-                          className={
-                            "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                          }
-                        >
-                          {attendee.isSuspended ? (
-                            <span className="py-[0.3rem] px-2 bg-neutral-100 text-failure font-bold rounded-[30px] text-[11px]">
-                              {t("attendees_list.status.suspended")}
-                            </span>
-                          ) : attendee.isVerified ? (
-                            <span className="py-[0.3rem] px-2 bg-neutral-100 text-success font-bold rounded-[30px] text-[11px]">
-                              {t("attendees_list.status.active")}
-                            </span>
-                          ) : (
-                            <span className="py-[0.3rem] px-2 bg-neutral-100 text-warning font-bold rounded-[30px] text-[11px]">
-                              {t("attendees_list.status.pending")}
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell
-                          className={
-                            "text-[1.5rem] hidden lg:table-cell leading-8 text-neutral-900"
-                          }
-                        >
-                          {formatDate(attendee.createdAt, locale, "local")}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                ) : null}
-              </Table>
-              {/* An empty search is not an empty system: the "no attendees"
-          illustration would be wrong while a query is narrowing the list. */}
-              {data.length === 0 &&
-                !isSearching &&
-                (isSearchActive ? (
-                  <p className="text-[1.8rem] text-neutral-600 leading-10 text-center mt-16">
-                    {t("attendees_list.no_results", { term: term.trim() })}
-                  </p>
-                ) : (
-                  <div className="flex flex-col w-fit gap-12 items-center mt-8 self-center">
-                    <div className="rounded-full bg-neutral-100 p-6 w-fit">
-                      <div className="flex items-center rounded-full bg-neutral-200 p-8 w-fit justify-center">
-                        <Image
-                          src={User}
-                          alt="no attendee history"
-                          width={50}
-                          height={50}
-                        />
-                      </div>
-                    </div>
-                    <p className="max-w-172 text-[1.8rem] text-neutral-600 leading-10 text-center">
-                      {t("attendees_list.no_history")}
-                    </p>
-                  </div>
-                ))}
+            >
+              <Metric label={tile.label} trend={trend(tile.trend)}>
+                {tile.value.toLocaleString(locale)}
+              </Metric>
+            </div>
+          ))}
+        </Reveal>
+
+        {/* The list */}
+        <Reveal delay={0.05} className="flex flex-col gap-6 pt-12">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <h4 className="font-primary font-medium text-[1.8rem] leading-10 text-black">
+              {t("attendees_list.title")}
+            </h4>
+            <div className="flex flex-wrap items-center gap-4">
+              <FilterPill
+                label={t("filters.status_label")}
+                value={filters.status ?? "all"}
+                defaultValue="all"
+                placeholder={t("filters.status")}
+                options={[
+                  { value: "all", label: t("filters.status") },
+                  { value: "active", label: t("filters.status_active") },
+                  { value: "inactive", label: t("filters.status_inactive") },
+                  { value: "suspended", label: t("filters.status_suspended") },
+                ]}
+                onChange={(v) => update({ status: v === "all" ? null : v })}
+                pending={pending}
+              />
+              <FilterPill
+                label={t("filters.time_label")}
+                value={filters.joined ?? "all"}
+                defaultValue="all"
+                placeholder={t("filters.time")}
+                options={PERIODS.map((p) => ({ value: p, label: tPeriods(p) }))}
+                onChange={(v) => update({ joined: v === "all" ? null : v })}
+                pending={pending}
+              />
+              <SearchField
+                value={term}
+                onChange={setTerm}
+                placeholder={t("filters.search")}
+                className="flex w-full lg:w-[26rem]"
+              />
             </div>
           </div>
-        </div>
+
+          <div className={cn("overflow-x-auto transition-opacity", pending && "opacity-60")}>
+            <table className="w-full min-w-[72rem] border-collapse">
+              <thead>
+                <tr className="border-b border-neutral-100">
+                  <th className={head}>{t("attendees_list.table.name")}</th>
+                  <th className={head}>{t("attendees_list.table.email")}</th>
+                  <th className={head}>{t("attendees_list.table.phone")}</th>
+                  <th className={head}>{t("attendees_list.table.event_count")}</th>
+                  <th className={head} title={t("attendees_list.status_hint")}>
+                    {t("attendees_list.table.status")}
+                  </th>
+                  <th className={head}>{t("attendees_list.table.joined")}</th>
+                  <th className={head}>
+                    <span className="sr-only">{t("attendees_list.table.actions")}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr
+                    key={row.userId}
+                    onClick={() => router.push(`/attendees/${row.userId}`)}
+                    className="border-b border-neutral-100 cursor-pointer hover:bg-neutral-50 transition-colors"
+                  >
+                    <td className="py-6 pr-4 text-[1.5rem] leading-8 text-deep-100">
+                      <span className="block max-w-[20rem] truncate">
+                        {row.firstName} {row.lastName}
+                      </span>
+                    </td>
+                    <td className="py-6 pr-4 text-[1.5rem] leading-8 text-deep-100">
+                      <span className="block max-w-[24rem] truncate" title={row.email}>
+                        {row.email}
+                      </span>
+                    </td>
+                    <td className="py-6 pr-4 text-[1.5rem] leading-8 text-deep-100 whitespace-nowrap">
+                      {row.phone || "—"}
+                    </td>
+                    <td className="py-6 pr-4 text-[1.5rem] leading-8 text-deep-100">
+                      {row.eventCount}
+                    </td>
+                    <td className="py-6 pr-4">
+                      <span
+                        className={cn(
+                          "py-[0.3rem] px-3 rounded-[30px] text-[1.1rem] font-bold uppercase",
+                          STATUS_BADGE[row.status],
+                        )}
+                      >
+                        {t(`attendees_list.status.${row.status}`)}
+                      </span>
+                    </td>
+                    <td className="py-6 pr-4 text-[1.5rem] leading-8 text-deep-100 whitespace-nowrap">
+                      {formatDate(row.createdAt, locale, "local")}
+                    </td>
+                    <td className="py-6 text-right" onClick={(e) => e.stopPropagation()}>
+                      <RowMenu
+                        suspended={row.status === "suspended"}
+                        onView={() => router.push(`/attendees/${row.userId}`)}
+                        onSuspend={() => setDialog({ kind: "suspend", userId: row.userId })}
+                        onReactivate={() => setDialog({ kind: "reactivate", userId: row.userId })}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {rows.length === 0 &&
+            (filtering ? (
+              <p className="text-[1.6rem] text-neutral-600 leading-10 text-center py-16">
+                {t("attendees_list.no_results")}
+              </p>
+            ) : (
+              <div className="flex flex-col items-center gap-10 py-16">
+                <div className="rounded-full bg-neutral-100 p-6">
+                  <div className="rounded-full bg-neutral-200 p-8">
+                    <ProfileCircle size="44" variant="Bulk" color="#454A53" />
+                  </div>
+                </div>
+                <p className="max-w-[44rem] text-[1.6rem] text-neutral-600 leading-9 text-center">
+                  {t("attendees_list.no_history")}
+                </p>
+              </div>
+            ))}
+
+          {meta && meta.lastPage > 1 && (
+            <TablePagination
+              page={meta.currentPage}
+              count={meta.lastPage}
+              onChange={(page) => update({ page: page > 1 ? String(page) : null })}
+              prevLabel={t("attendees_list.prev")}
+              nextLabel={t("attendees_list.next")}
+            />
+          )}
+        </Reveal>
       </div>
+
+      {/* Rendered here, not inside the row's popover (see lib/dialogControl.ts). */}
+      {dialog && (
+        <>
+          <SuspendDialog
+            userId={dialog.userId}
+            open={dialog.kind === "suspend"}
+            onOpenChange={(open) => !open && setDialog(null)}
+            hideTrigger
+          />
+          <ReactivateDialog
+            userId={dialog.userId}
+            open={dialog.kind === "reactivate"}
+            onOpenChange={(open) => !open && setDialog(null)}
+            hideTrigger
+          />
+        </>
+      )}
     </AdminLayout>
+  );
+}
+
+function RowMenu({
+  suspended,
+  onView,
+  onSuspend,
+  onReactivate,
+}: {
+  suspended: boolean;
+  onView: () => void;
+  onSuspend: () => void;
+  onReactivate: () => void;
+}) {
+  const t = useTranslations("Attendees.attendees_list.menu");
+  const [open, setOpen] = useState(false);
+  const item =
+    "w-full text-left px-[1rem] py-[.8rem] rounded-[.75rem] text-[1.4rem] leading-8 cursor-pointer hover:bg-neutral-100";
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        aria-label="More"
+        className="relative w-[2rem] h-[2rem] shrink-0 rounded-full bg-neutral-100 inline-flex items-center justify-center after:absolute after:-inset-[0.8rem] after:content-[''] cursor-pointer hover:bg-neutral-200"
+      >
+        <MoreCircle size="10" variant="Bulk" color="#737C8A" />
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        className="w-[20rem] p-[.6rem] bg-white border border-neutral-100 rounded-[1rem] shadow-[0px_5px_10px_0px_rgba(0,0,0,0.1)]"
+      >
+        <button type="button" className={cn(item, "text-deep-100")} onClick={() => { setOpen(false); onView(); }}>
+          {t("view")}
+        </button>
+        {suspended ? (
+          <button type="button" className={cn(item, "text-success")} onClick={() => { setOpen(false); onReactivate(); }}>
+            {t("reactivate")}
+          </button>
+        ) : (
+          <button type="button" className={cn(item, "text-failure")} onClick={() => { setOpen(false); onSuspend(); }}>
+            {t("suspend")}
+          </button>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }

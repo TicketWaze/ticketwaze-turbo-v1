@@ -1,26 +1,54 @@
 "use client";
-import { ButtonPrimary, ButtonSecondary } from "@/components/shared/buttons";
-import { Input, PasswordInput } from "@/components/shared/Inputs";
-import { LinkAccent } from "@/components/shared/Links";
-import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { useRouter } from "@/i18n/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale, useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
 import { AnimatePresence, motion } from "motion/react";
+import { signIn, signOut } from "next-auth/react";
+import { Input, PasswordInput } from "@/components/shared/Inputs";
+import { ButtonPrimary } from "@/components/shared/buttons";
+import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import mail from "@/assets/icons/mail-big.svg";
+import successBadge from "@/assets/images/auth/success-badge.png";
+import {
+  AuthError,
+  AuthHeading,
+  AuthItem,
+  AuthScreen,
+  AuthStatus,
+  FooterPill,
+  FooterPillText,
+  SigningIn,
+  StepFooter,
+  backPillClass,
+  pillActionClass,
+} from "@/components/auth/AuthParts";
+import OtpCodeInput, { emptyOtp } from "@/components/auth/OtpCodeInput";
 
-type ResetStep = "email" | "otp" | "password";
+type ResetStep = "email" | "otp" | "password" | "done";
+
+const slide = {
+  initial: { opacity: 0, x: 30 },
+  animate: { opacity: 1, x: 0 },
+  exit: { opacity: 0, x: -30 },
+  transition: { duration: 0.22, ease: "easeInOut" as const },
+};
+
+// Figma "Organizers + Mobile" → Authentication → Reset: email (1/2) → mail
+// sent → new password (2/2) → "Password Created", signing in. Figma mails a
+// link; the app mails a 6-digit code, entered on the mail-sent screen.
 
 export default function ForgotPasswordPageWrapper({
   email: initialEmail,
 }: {
-  email: string | undefined;
+  email?: string;
 }) {
   const t = useTranslations("Auth.forgot");
   const tPassword = useTranslations("Auth.new_password");
+  const tFlow = useTranslations("Auth.flow");
   const router = useRouter();
   const locale = useLocale();
 
@@ -40,7 +68,7 @@ export default function ForgotPasswordPageWrapper({
     formState: { isSubmitting, errors },
   } = useForm<TForgotPasswordSchema>({
     resolver: zodResolver(ForgotPasswordSchema),
-    defaultValues: { email: initialEmail ?? "" },
+    defaultValues: { email: initialEmail },
   });
 
   async function submitEmail(data: TForgotPasswordSchema) {
@@ -51,7 +79,7 @@ export default function ForgotPasswordPageWrapper({
         headers: {
           "Content-Type": "application/json",
           "Accept-Language": locale,
-          Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL ?? "",
         },
         body: JSON.stringify(data),
       },
@@ -70,49 +98,19 @@ export default function ForgotPasswordPageWrapper({
     }
   }
 
-  // ── Step 2: OTP ────────────────────────────────────────────────────────────
+  // ── Step 2: OTP (Figma shows a reset-link mail; the app sends a code) ─────
 
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(emptyOtp);
   const [otpError, setOtpError] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [isResending, setIsResending] = useState(false);
-  const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  function handleOtpChange(index: number, value: string) {
-    const digit = value.replace(/\D/g, "").slice(-1);
-    const next = [...otp];
-    next[index] = digit;
-    setOtp(next);
-    setOtpError("");
-    if (digit && index < 5) otpRefs.current[index + 1]?.focus();
-  }
-
-  function handleOtpKeyDown(
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      otpRefs.current[index - 1]?.focus();
-    }
-    if (e.key === "Enter") handleVerifyOtp();
-  }
-
-  function handleOtpPaste(e: React.ClipboardEvent<HTMLInputElement>) {
-    e.preventDefault();
-    const digits = e.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
-      .slice(0, 6);
-    const next = ["", "", "", "", "", ""];
-    digits.split("").forEach((ch, i) => (next[i] = ch));
-    setOtp(next);
-    const focusIndex = Math.min(digits.length, 5);
-    otpRefs.current[focusIndex]?.focus();
-  }
-
-  async function handleVerifyOtp() {
-    const otpString = otp.join("");
-    if (otpString.length < 6) return;
+  async function handleVerifyOtp(entered?: string | React.SyntheticEvent) {
+    // OtpCodeInput passes the code it just completed; the Verify button
+    // passes its click event, so fall back to state then.
+    const otpString =
+      typeof entered === "string" ? entered : otp.join("");
+    if (otpString.length < 6 || isVerifying) return;
     setIsVerifying(true);
     setOtpError("");
     try {
@@ -152,8 +150,7 @@ export default function ForgotPasswordPageWrapper({
     if (!email) return;
     setIsResending(true);
     setOtpError("");
-    setOtp(["", "", "", "", "", ""]);
-    otpRefs.current[0]?.focus();
+    setOtp(emptyOtp());
     try {
       const request = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`,
@@ -162,7 +159,7 @@ export default function ForgotPasswordPageWrapper({
           headers: {
             "Content-Type": "application/json",
             "Accept-Language": locale,
-            Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+            Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL ?? "",
           },
           body: JSON.stringify({ email }),
         },
@@ -186,10 +183,14 @@ export default function ForgotPasswordPageWrapper({
 
   const NewPasswordSchema = z
     .object({
-      password: z.string().min(8, tPassword("errors.password_length")),
-      password_confirmation: z
+      password: z
         .string()
-        .min(8, tPassword("errors.password_length")),
+        .min(8, tPassword("errors.password_length"))
+        .refine((password) => /[A-Z]/.test(password))
+        .refine((password) =>
+          /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+        ),
+      password_confirmation: z.string(),
     })
     .refine((data) => data.password === data.password_confirmation, {
       message: tPassword("errors.password_match"),
@@ -212,7 +213,7 @@ export default function ForgotPasswordPageWrapper({
         headers: {
           "Content-Type": "application/json",
           "Accept-Language": locale,
-          Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL!,
+          Origin: process.env.NEXT_PUBLIC_ORGANISATION_URL ?? "",
           Authorization: `Bearer ${resetToken}`,
         },
         body: JSON.stringify(data),
@@ -220,8 +221,8 @@ export default function ForgotPasswordPageWrapper({
     );
     const response = await request.json();
     if (response.status === "success") {
-      toast.success(t("success"));
-      router.push("/auth/login");
+      setStep("done");
+      await signInWithNewPassword(data.password);
     } else if (response.status === "same") {
       toast.error(tPassword("errors.sameError"));
     } else {
@@ -229,340 +230,168 @@ export default function ForgotPasswordPageWrapper({
     }
   }
 
-  // ── Shared footer ──────────────────────────────────────────────────────────
+  // ── Step 4: "Password Created", then sign straight in ──────────────────────
 
-  const stepNumber = step === "email" ? 1 : step === "otp" ? 2 : 3;
-  const footer = (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.7 }}
-      className="flex items-center w-fit gap-[1.8rem] border border-neutral-100 p-6 rounded-[10rem] mb-8"
-    >
-      <p className="text-[2.2rem] font-normal leading-12 text-center text-neutral-700">
-        <span className="text-primary-500">{stepNumber}</span>/3
-      </p>
-      <LinkAccent href="/auth/login">{t("back")}</LinkAccent>
-    </motion.div>
-  );
+  async function signInWithNewPassword(password: string) {
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+    if (result?.error) {
+      // The reset itself succeeded; fall back to the sign-in form.
+      // The reset revoked every session; clear this one so the sign-in
+      // page opens instead of bouncing back into the app.
+      await signOut({ redirect: false });
+      toast.success(t("success"));
+      router.push(`/auth/login?email=${encodeURIComponent(email)}`);
+      return;
+    }
+    // Onboarding picks the destination: dashboard, invitation or set-up.
+    window.location.href = `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`;
+  }
 
   // ── Render ─────────────────────────────────────────────────────────────────
 
   const otpFilled = otp.join("").length === 6;
+  const backToLogin = () => router.push("/auth/login?start");
 
   return (
-    <div className="flex flex-col items-center justify-between w-full h-full pb-4">
+    <div className="flex flex-col items-center w-full h-full">
       <AnimatePresence mode="wait" initial={false}>
         {step === "email" && (
-          <motion.div
-            key="email"
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="flex flex-col justify-between w-full h-full"
-          >
-            <form
-              onSubmit={handleSubmit(submitEmail)}
-              className="flex flex-col items-center h-full pb-4"
+          <motion.div key="email" {...slide} className="w-full h-full">
+            <AuthScreen
+              footer={<StepFooter step={1} total={2} onBack={backToLogin} />}
             >
-              <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
-                <div className="flex flex-col gap-16 items-center">
-                  <div className="flex flex-col gap-8 items-center">
-                    <motion.h3
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                      className="font-medium text-center font-primary text-[3.2rem] leading-14 text-black"
-                    >
-                      {t("title")}
-                    </motion.h3>
-                    <motion.p
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                      className="text-[1.8rem] text-center leading-10 text-neutral-700"
-                    >
-                      {t("description")}
-                    </motion.p>
-                  </div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="w-full flex flex-col gap-6"
+              <form
+                onSubmit={handleSubmit(submitEmail)}
+                className="flex flex-col gap-16 items-center w-full"
+              >
+                <AuthHeading
+                  title={t("title")}
+                  description={t("description")}
+                />
+                <AuthItem>
+                  <Input
+                    {...register("email")}
+                    type="email"
+                    className="w-full"
+                    error={errors.email?.message}
                   >
-                    <Input
-                      error={errors.email?.message}
-                      type="email"
-                      {...register("email")}
-                    >
-                      {t("placeholders.email")}
-                    </Input>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    className="w-full hidden lg:block"
-                  >
-                    <ButtonPrimary
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full"
-                    >
-                      {isSubmitting ? <LoadingCircleSmall /> : t("cta")}
-                    </ButtonPrimary>
-                  </motion.div>
-                </div>
-              </div>
-              <div className="flex flex-col gap-6 w-full items-center">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                  className="w-full"
-                >
+                    {t("placeholders.email")}
+                  </Input>
+                </AuthItem>
+                <AuthItem>
                   <ButtonPrimary
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full lg:hidden"
+                    className="w-full h-[6rem] active:scale-[0.98]"
                   >
                     {isSubmitting ? <LoadingCircleSmall /> : t("cta")}
                   </ButtonPrimary>
-                </motion.div>
-                {footer}
-              </div>
-            </form>
+                </AuthItem>
+              </form>
+            </AuthScreen>
           </motion.div>
         )}
 
         {step === "otp" && (
-          <motion.div
-            key="otp"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 30 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="flex flex-col justify-between w-full h-full"
-          >
-            <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
-              <div className="flex flex-col gap-16 items-center">
-                <div className="flex flex-col gap-8 items-center text-center">
-                  <motion.h3
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="font-medium font-primary text-[3.2rem] leading-14 text-black"
-                  >
-                    {t("otp.title")}
-                  </motion.h3>
-                  <motion.p
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
-                    className="text-[1.8rem] leading-10 text-neutral-700"
-                  >
-                    {t("otp.description")}{" "}
-                    <span className="font-semibold">{email}</span>
-                  </motion.p>
-                </div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                  className="flex gap-4 justify-center"
+          <motion.div key="otp" {...slide} className="w-full h-full">
+            <AuthScreen
+              centered
+              footer={
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep("email");
+                    setOtp(emptyOtp());
+                    setOtpError("");
+                  }}
+                  className={backPillClass}
                 >
-                  {otp.map((digit, index) => (
-                    <input
-                      key={index}
-                      ref={(el) => {
-                        otpRefs.current[index] = el;
-                      }}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      onPaste={index === 0 ? handleOtpPaste : undefined}
-                      className="w-[5.2rem] h-[5.2rem] text-center text-[2.2rem] font-semibold border-2 border-neutral-200 rounded-[10px] outline-none focus:border-primary-500 transition-colors duration-200 text-deep-100 bg-neutral-50"
-                    />
-                  ))}
-                </motion.div>
-
-                {otpError && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-[1.3rem] text-center"
-                  >
-                    {otpError}
-                  </motion.p>
-                )}
-
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                  className="w-full hidden lg:flex flex-col gap-6"
-                >
-                  <ButtonPrimary
-                    onClick={handleVerifyOtp}
-                    disabled={isVerifying || !otpFilled}
-                    className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isVerifying ? <LoadingCircleSmall /> : t("otp.submit")}
-                  </ButtonPrimary>
-                  <ButtonSecondary
-                    onClick={handleResend}
-                    disabled={isResending}
-                    className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isResending ? t("otp.resending") : t("otp.resend")}
-                  </ButtonSecondary>
-                </motion.div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-6 w-full items-center">
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.5 }}
-                className="flex flex-col gap-4 w-full lg:hidden"
+                  {tFlow("back")}
+                </button>
+              }
+            >
+              <AuthStatus
+                image={mail}
+                title={tFlow("reset_sent.title")}
+                description={
+                  <>
+                    {tFlow("reset_sent.description")}{" "}
+                    <span className="font-semibold text-deep-100">{email}</span>
+                  </>
+                }
               >
+                <OtpCodeInput
+                  value={otp}
+                  onChange={(next) => {
+                    setOtp(next);
+                    setOtpError("");
+                  }}
+                  onSubmit={handleVerifyOtp}
+                  error={otpError}
+                />
+                <AuthError message={otpError} />
                 <ButtonPrimary
                   onClick={handleVerifyOtp}
                   disabled={isVerifying || !otpFilled}
-                  className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full h-[6rem] active:scale-[0.98]"
                 >
                   {isVerifying ? <LoadingCircleSmall /> : t("otp.submit")}
                 </ButtonPrimary>
-                <ButtonSecondary
-                  onClick={handleResend}
-                  disabled={isResending}
-                  className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isResending ? t("otp.resending") : t("otp.resend")}
-                </ButtonSecondary>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.6 }}
-                className="flex items-center w-fit gap-[1.8rem] border border-neutral-100 p-6 rounded-[10rem] mb-8"
-              >
-                <p className="text-[2.2rem] font-normal leading-12 text-center text-neutral-700">
-                  <span className="text-primary-500">2</span>/3
-                </p>
-                <button
-                  onClick={() => {
-                    setStep("email");
-                    setOtp(["", "", "", "", "", ""]);
-                    setOtpError("");
-                  }}
-                  className="font-normal text-[1.4rem] leading-[25px] text-center text-primary-500"
-                >
-                  {t("otp.wrong")}
-                </button>
-              </motion.div>
-            </div>
+                <FooterPill>
+                  <FooterPillText>{tFlow("verify.resend_text")}</FooterPillText>
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={isResending}
+                    className={pillActionClass}
+                  >
+                    {isResending ? t("otp.resending") : tFlow("verify.resend")}
+                  </button>
+                </FooterPill>
+              </AuthStatus>
+            </AuthScreen>
           </motion.div>
         )}
 
         {step === "password" && (
-          <motion.div
-            key="password"
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 30 }}
-            transition={{ duration: 0.22, ease: "easeInOut" }}
-            className="flex flex-col justify-between w-full h-full"
-          >
-            <form
-              onSubmit={handlePasswordSubmit(submitPassword)}
-              className="flex flex-col items-center h-full pb-4"
-            >
-              <div className="flex-1 flex lg:justify-center flex-col w-full pt-18">
-                <div className="flex flex-col gap-16 items-center">
-                  <div className="flex flex-col gap-8 items-center">
-                    <motion.h3
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                      className="font-medium font-primary text-[3.2rem] leading-14 text-black"
+          <motion.div key="password" {...slide} className="w-full h-full">
+            <AuthScreen footer={<StepFooter step={2} total={2} />}>
+              <form
+                onSubmit={handlePasswordSubmit(submitPassword)}
+                className="flex flex-col gap-16 items-center w-full"
+              >
+                <AuthHeading
+                  title={tPassword("title")}
+                  description={tPassword("description")}
+                />
+                <div className="w-full flex flex-col gap-6">
+                  <AuthItem>
+                    <PasswordInput
+                      t={tPassword}
+                      validate={true}
+                      {...registerPassword("password")}
                     >
-                      {tPassword("title")}
-                    </motion.h3>
-                    <motion.p
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                      className="text-[1.8rem] text-center leading-10 text-neutral-700"
+                      {tPassword("placeholders.password")}
+                    </PasswordInput>
+                  </AuthItem>
+                  <AuthItem>
+                    <PasswordInput
+                      error={passwordErrors.password_confirmation?.message}
+                      {...registerPassword("password_confirmation")}
                     >
-                      {tPassword("description")}
-                    </motion.p>
-                  </div>
-                  <div className="w-full flex flex-col gap-6">
-                    <motion.div
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.4 }}
-                    >
-                      <PasswordInput
-                        error={passwordErrors.password?.message}
-                        {...registerPassword("password")}
-                      >
-                        {tPassword("placeholders.password")}
-                      </PasswordInput>
-                    </motion.div>
-                    <motion.div
-                      initial={{ opacity: 0, y: 30 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.5 }}
-                    >
-                      <PasswordInput
-                        error={passwordErrors.password_confirmation?.message}
-                        {...registerPassword("password_confirmation")}
-                      >
-                        {tPassword("placeholders.confirm")}
-                      </PasswordInput>
-                    </motion.div>
-                  </div>
-                  <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.6 }}
-                    className="w-full hidden lg:block"
-                  >
-                    <ButtonPrimary
-                      type="submit"
-                      disabled={isSubmittingPassword}
-                      className="w-full"
-                    >
-                      {isSubmittingPassword ? (
-                        <LoadingCircleSmall />
-                      ) : (
-                        tPassword("cta")
-                      )}
-                    </ButtonPrimary>
-                  </motion.div>
+                      {tPassword("placeholders.confirm")}
+                    </PasswordInput>
+                  </AuthItem>
                 </div>
-              </div>
-              <div className="flex flex-col items-center gap-6 w-full">
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.6 }}
-                  className="w-full"
-                >
+                <AuthItem>
                   <ButtonPrimary
                     type="submit"
                     disabled={isSubmittingPassword}
-                    className="w-full lg:hidden"
+                    className="w-full h-[6rem] active:scale-[0.98]"
                   >
                     {isSubmittingPassword ? (
                       <LoadingCircleSmall />
@@ -570,10 +399,23 @@ export default function ForgotPasswordPageWrapper({
                       tPassword("cta")
                     )}
                   </ButtonPrimary>
-                </motion.div>
-                {footer}
-              </div>
-            </form>
+                </AuthItem>
+              </form>
+            </AuthScreen>
+          </motion.div>
+        )}
+
+        {step === "done" && (
+          <motion.div key="done" {...slide} className="w-full h-full">
+            <AuthScreen centered>
+              <AuthStatus
+                image={successBadge}
+                title={tFlow("password_created.title")}
+                description={tFlow("password_created.description")}
+              >
+                <SigningIn />
+              </AuthStatus>
+            </AuthScreen>
           </motion.div>
         )}
       </AnimatePresence>

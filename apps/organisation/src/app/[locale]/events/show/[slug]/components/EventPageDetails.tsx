@@ -1,19 +1,9 @@
 "use client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Money3, SearchNormal } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import { DateTime } from "luxon";
-import FormatDate from "@/lib/FormatDate";
+import { Send2 } from "iconsax-reactjs";
+import { toast } from "sonner";
 import {
   Event,
   EventPerformer,
@@ -23,20 +13,74 @@ import {
   TicketReturn,
   PhysicalTicketBatch,
 } from "@ticketwaze/typescript-config";
+import { ButtonPill } from "@/components/shared/buttons";
+import { Reveal } from "@/components/shared/motion";
+import { Metric, TrendBadge, Unit } from "@/app/[locale]/analytics/parts";
+import { ticketsOrganisationTotal } from "@/lib/ticketEarnings";
+import { eventStartsAt, isEventInProgress, isEventPast } from "@/lib/eventTime";
+import { cn } from "@/lib/utils";
 import MoreComponent from "./MoreComponent";
 import CheckingDialog from "./CheckingDialog";
 import StartMeetingButton from "./StartMeetingButton";
 import DeletionBanner from "./DeletionBanner";
-import Informations from "./Informations";
 import EventArtist from "./EventArtist";
-import TopBar from "@/components/shared/TopBar";
-import Capitalize from "@/lib/Capitalize";
-import { ticketsOrganisationTotal } from "@/lib/ticketEarnings";
-import ShareEvent from "./ShareEvent";
+import TicketsTable from "./TicketsTable";
 import ReturnedTicketsSection from "./ReturnedTicketsSection";
 import PrintedTicketsSection from "./PrintedTicketsSection";
-import { eventStartsAt, isEventPast } from "@/lib/eventTime";
+import { useRouter } from "@/i18n/navigation";
+import dynamic from "next/dynamic";
+import MountOnOpen from "@/components/shared/MountOnOpen";
 
+// Dialogs and drawers download on first open, not with the page: between
+// them they carry QR and poster rendering, form validation and the exports.
+const ShareEvent = dynamic(() => import("./ShareEvent"), { ssr: false });
+const ExportDialog = dynamic(() => import("./ExportDialog"), { ssr: false });
+const EventDrawerContent = dynamic(() => import("./EventDrawerContent"), {
+  ssr: false,
+});
+const AddDiscountDrawer = dynamic(
+  () => import("../discount-codes/AddDiscountDrawer"),
+  { ssr: false },
+);
+
+/**
+ * % change of `value` over the last 7 days against the 7 before; null when
+ * there is nothing to compare (no sales in either week).
+ */
+function weekTrend(
+  tickets: Ticket[],
+  value: (tickets: Ticket[]) => number,
+): number | null {
+  const now = DateTime.now();
+  const inWindow = (from: DateTime, to: DateTime) =>
+    tickets.filter((tk) => {
+      const at = DateTime.fromISO(String(tk.createdAt));
+      return at >= from && at < to;
+    });
+  const current = value(inWindow(now.minus({ days: 7 }), now));
+  const previous = value(
+    inWindow(now.minus({ days: 14 }), now.minus({ days: 7 })),
+  );
+  if (previous === 0) return current > 0 ? 100 : null;
+  const change = Math.round(((current - previous) / previous) * 100);
+  return change === 0 ? null : change;
+}
+
+// 2×2 on mobile (dividers between columns and rows), one row of four on desktop.
+const kpiTiles = [
+  "max-lg:pr-6 max-lg:pb-8 max-lg:border-r lg:pr-[2.5rem] lg:pb-10",
+  "max-lg:pl-6 max-lg:pb-8 lg:px-[2.5rem] lg:pb-10",
+  "max-lg:pr-6 max-lg:pt-8 max-lg:border-r max-lg:border-t lg:px-[2.5rem] lg:pb-10",
+  "max-lg:pl-6 max-lg:pt-8 max-lg:border-t lg:pl-[2.5rem] lg:pb-10",
+].map((c) => cn(c, "border-neutral-100"));
+
+/**
+ * An event's page (Figma Events › 1651:57073 / 1712:34749, mobile 2217:51788):
+ * title and actions, four KPIs, then its tickets. Once it has started
+ * (ongoing 1626:52530, or over) the countdown gives way to the check-in count
+ * and the table's last column to each ticket's check-in time. The post-design blocks
+ * (performers, printed and returned tickets, deletion notices) follow.
+ */
 export default function EventPageDetails({
   event,
   tickets,
@@ -58,10 +102,7 @@ export default function EventPageDetails({
 }) {
   const t = useTranslations("Events.single_event");
   const locale = useLocale();
-  const isFree = event.eventTicketTypes[0]?.ticketTypePrice == 0;
-  const sortedTicketClasses = [...event.eventTicketTypes].sort((a, b) => {
-    return a.ticketTypeName.localeCompare(b.ticketTypeName);
-  });
+  const isFree = event.eventTicketTypes.every((c) => c.ticketTypePrice == 0);
   const today = DateTime.now();
   /**
    * Start, end, and the countdown between them — all through the shared helper
@@ -74,9 +115,10 @@ export default function EventPageDetails({
   const daysLeft = eventStart ? eventStart.diff(today, "days").days : null;
   const roundedDays = Math.ceil(daysLeft && daysLeft > 0 ? daysLeft : 0);
   const isUpcoming = eventStart !== null && today < eventStart;
-
-  // The report is only available once the activity is fully over.
   const isPast = isEventPast(event.eventDays, today);
+  const isOngoing = isEventInProgress(event.eventDays, today);
+  /** Once doors open (ongoing or over) the page reports attendance instead of the countdown (Figma 1626:52530). */
+  const started = eventStart !== null && !isUpcoming;
 
   const [deletionStatus, setDeletionStatus] = useState(
     event.deletionStatus ?? null,
@@ -88,129 +130,201 @@ export default function EventPageDetails({
     event.scheduledDeletionAt ?? null,
   );
   const isPendingDeletion = deletionStatus === "pending_deletion";
+  const isDeleted = deletionStatus === "deleted";
+  const live =
+    event.adminStatus === "approved" && !isPendingDeletion && !isDeleted;
 
-  const [query, setQuery] = useState("");
-  const filteredtickets = tickets.filter((ticket) => {
-    const search = query.toLowerCase();
-    return ticket.ticketName.toLowerCase().includes(search);
-  });
+  const [shareOpen, setShareOpen] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [discountOpen, setDiscountOpen] = useState(false);
+  const router = useRouter();
+
+  /** Discount success › Share: the code goes to the clipboard, then Share opens. */
+  function shareDiscount(code: string) {
+    // Not awaited: Share opens at once, the toast confirms the copy.
+    navigator.clipboard
+      ?.writeText(code)
+      .then(() => toast.success(t("discount.code_copied", { code })))
+      .catch(() => {});
+    setDiscountOpen(false);
+    setShareOpen(true);
+  }
+
+  const canShare = (isUpcoming || isOngoing) && live;
+  const canCheckIn = live && event.eventCategory !== "meet" && !isPast;
+  const canMeet = live && event.eventCategory === "meet" && !isPast;
+  // New ticket classes (Create Ticket): in-person events until they end.
+  const canCreateTicket =
+    !isPast &&
+    !isPendingDeletion &&
+    !isDeleted &&
+    event.eventCategory === "physical";
+
+  /* ── KPIs ── */
+  const fmt = (n: number) => n.toLocaleString(locale);
+  const sold = (list: Ticket[]) =>
+    list.filter((tk) => tk.status !== "RETURNED").length;
+  const soldCount = sold(tickets);
+  const capacity = event.eventTicketTypes.reduce(
+    (sum, c) => sum + Number(c.ticketTypeQuantity || 0),
+    0,
+  );
+  const left = Math.max(0, capacity - soldCount);
+  const checkedIn = tickets.filter((tk) => tk.status === "CHECKED").length;
+  const revenue = ticketsOrganisationTotal(tickets, event.currency);
+  const revenueTrend = isFree
+    ? null
+    : weekTrend(tickets, (list) =>
+        ticketsOrganisationTotal(list, event.currency),
+      );
+  const soldTrend = weekTrend(tickets, sold);
+  // Tickets left a week ago were today's plus what sold since.
+  const soldThisWeek = tickets.filter(
+    (tk) =>
+      tk.status !== "RETURNED" &&
+      DateTime.fromISO(String(tk.createdAt)) >= today.minus({ days: 7 }),
+  ).length;
+  const leftTrend =
+    soldThisWeek > 0 && left + soldThisWeek > 0
+      ? -Math.round((soldThisWeek / (left + soldThisWeek)) * 100)
+      : null;
+  const trendLabel = (value: number | null) =>
+    value === null
+      ? ""
+      : t(value < 0 ? "trend.down" : "trend.up", { value: Math.abs(value) });
+  const trend = (value: number | null, inverse = false) => (
+    <span className="hidden lg:inline-flex">
+      <TrendBadge value={value} label={trendLabel(value)} inverse={inverse} />
+    </span>
+  );
+
+  const more = (
+    <MoreComponent
+      daysLeft={daysLeft}
+      event={event}
+      isFree={isFree}
+      slug={slug}
+      membershipTier={membershipTier}
+      deletionStatus={deletionStatus}
+      onDeletionScheduled={(scheduledAt, reason) => {
+        setDeletionStatus("pending_deletion");
+        setScheduledDeletionAt(scheduledAt);
+        setDeletionReason(reason);
+      }}
+      onShowDetails={() => setDetailsOpen(true)}
+      onExport={() => setExportOpen(true)}
+      onAddDiscount={() => setDiscountOpen(true)}
+    />
+  );
+  const createTicket = canCreateTicket && (
+    <ButtonPill
+      tone="primary"
+      onClick={() =>
+        membershipTier.customTicketTypes
+          ? router.push(`/events/show/${slug}/tickets/new`)
+          : toast.info(t("create_ticket_upgrade"))
+      }
+    >
+      {t("create_ticket")}
+    </ButtonPill>
+  );
+
   return (
-    <div className={"flex flex-col gap-12 overflow-y-scroll"}>
-      <TopBar title={event.eventName}>
-        <div className="hidden lg:flex items-center gap-4">
-          {isUpcoming &&
-            event.adminStatus === "approved" &&
-            !isPendingDeletion &&
-            deletionStatus !== "deleted" && <ShareEvent event={event} />}
-          {event.adminStatus === "approved" &&
-            event.eventCategory !== "meet" &&
-            !isPast &&
-            !isPendingDeletion &&
-            deletionStatus !== "deleted" && <CheckingDialog event={event} />}
-          {/* The online counterpart of the scan button: check-in is disabled
-              for online events, so this slot is free and this is what the
-              organiser actually needs there. Same conditions, same design. */}
-          {event.adminStatus === "approved" &&
-            event.eventCategory === "meet" &&
-            !isPast &&
-            !isPendingDeletion &&
-            deletionStatus !== "deleted" && (
-              <StartMeetingButton event={event} />
-            )}
-          <MoreComponent
-            daysLeft={daysLeft}
-            event={event}
-            tickets={tickets}
-            isPast={isPast}
-            isFree={isFree}
-            slug={slug}
-            membershipTier={membershipTier}
-            deletionStatus={deletionStatus}
-            onDeletionScheduled={(scheduledAt, reason) => {
-              setDeletionStatus("pending_deletion");
-              setScheduledDeletionAt(scheduledAt);
-              setDeletionReason(reason);
-            }}
-          />
-        </div>
-      </TopBar>
-      {/* count details */}
-      <ul
-        className={
-          "grid grid-cols-2 lg:grid-cols-4 divide-x divide-y divide-neutral-100 border-neutral-100 border-b"
-        }
+    <div className="flex flex-col gap-12 lg:gap-16 pb-16 overflow-y-auto">
+      {/* Title + actions */}
+      <Reveal
+        y={-12}
+        className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between"
       >
-        <li className={"pb-12"}>
-          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
-            {t("revenue")}
-          </span>
-          <p className={"font-medium text-[25px] leading-12 font-primary"}>
-            {/* What the organisation KEEPS, not what buyers handed over. When
-                the event absorbs the fees Ticketwaze takes its cut off the top,
-                so the face prices in the table below add up to more than this. */}
-            {ticketsOrganisationTotal(tickets, event.currency)}{" "}
-            <span
-              className={
-                "font-normal text-[1.6rem] lg:text-[25px] text-neutral-500"
-              }
+        <h1 className="font-primary font-medium text-[2.2rem] lg:text-[2.6rem] leading-[1.2] text-black break-words min-w-0">
+          {event.eventName}
+        </h1>
+        <div className="hidden lg:flex items-center gap-4 shrink-0">
+          {canCheckIn && <CheckingDialog event={event} tickets={tickets} />}
+          {canMeet && <StartMeetingButton event={event} />}
+          {canShare && (
+            <ButtonPill onClick={() => setShareOpen(true)}>
+              <Send2 variant="Bulk" color="#737C8A" size={20} aria-hidden />
+              {t("share")}
+            </ButtonPill>
+          )}
+          {createTicket}
+          {more}
+        </div>
+      </Reveal>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 border-b border-neutral-100 divide-neutral-100 lg:divide-x pb-8 lg:pb-0">
+        <Reveal className={kpiTiles[0]} delay={0.06}>
+          <Metric
+            label={t("revenue")}
+            size="responsive"
+            trend={trend(revenueTrend)}
+          >
+            {fmt(revenue)} <Unit>{event.currency}</Unit>
+          </Metric>
+        </Reveal>
+        <Reveal className={kpiTiles[1]} delay={0.11}>
+          <Metric label={t("sold")} size="responsive" trend={trend(soldTrend)}>
+            {fmt(soldCount)} <Unit>/ {fmt(capacity)}</Unit>
+          </Metric>
+        </Reveal>
+        <Reveal className={kpiTiles[2]} delay={0.16}>
+          <Metric
+            label={t("left")}
+            size="responsive"
+            trend={trend(leftTrend, true)}
+          >
+            {fmt(left)} <Unit>/ {fmt(capacity)}</Unit>
+          </Metric>
+        </Reveal>
+        <Reveal className={kpiTiles[3]} delay={0.21}>
+          {started ? (
+            <Metric label={t("checked_in_kpi")} size="responsive">
+              {fmt(checkedIn)}
+            </Metric>
+          ) : (
+            <Metric label={t("count_down")} size="responsive">
+              {roundedDays} <Unit>{t("day")}</Unit>
+            </Metric>
+          )}
+        </Reveal>
+      </div>
+
+      {/* Phone actions (Figma 2217:51788) */}
+      <Reveal delay={0.2} className="flex lg:hidden items-center gap-4">
+        {createTicket}
+        {canCheckIn && <CheckingDialog event={event} tickets={tickets} />}
+        {canMeet && <StartMeetingButton event={event} />}
+        <div className="ml-auto flex items-center gap-4">
+          {canShare && (
+            <button
+              type="button"
+              onClick={() => setShareOpen(true)}
+              aria-label={t("share")}
+              className="w-[3.5rem] h-[3.5rem] rounded-full bg-neutral-100 flex items-center justify-center cursor-pointer"
             >
-              {event.currency}
-            </span>
-          </p>
-        </li>
-        {event.eventTicketTypes.map((t, index) => {
-          const quantity = tickets.filter(
-            (ticket) =>
-              ticket.ticketType.toLowerCase() ===
-              t.ticketTypeName.toLowerCase(),
-          ).length;
-          return (
-            <li
-              key={t.ticketTypeName}
-              className={`${index % 2 === 0 ? "pl-10 " : "pl-0 pt-8 "} lg:pt-0 lg:pl-10 pb-12 ${index === 2 && "pt-8"}`}
-            >
-              <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
-                {Capitalize(t.ticketTypeName)}
-              </span>
-              <p className={"font-medium text-[25px] leading-12 font-primary"}>
-                {quantity}{" "}
-                <span className={"font-normal text-[20px] text-neutral-500"}>
-                  / {t.ticketTypeQuantity}
-                </span>
-              </p>
-            </li>
-          );
-        })}
-        <li
-          className={`${event.eventTicketTypes.length == 1 && "py-8 lg:pl-10 lg:py-0"} `}
-        >
-          <span className={"text-[14px] text-neutral-600 leading-8 pb-2"}>
-            {t("count_down")}
-          </span>
-          <p className={"font-medium  text-[25px] leading-12 font-primary"}>
-            {roundedDays}
-            <span className={"font-normal text-[20px] text-neutral-500"}>
-              {" "}
-              {t("day")}
-            </span>
-          </p>
-        </li>
-      </ul>
-      {isPendingDeletion &&
-        scheduledDeletionAt &&
-        deletionStatus === "pending_deletion" && (
-          <DeletionBanner
-            eventId={event.eventId}
-            scheduledDeletionAt={scheduledDeletionAt}
-            deletionReason={deletionReason}
-            onCancelled={() => {
-              setDeletionStatus(null);
-              setScheduledDeletionAt(null);
-              setDeletionReason(null);
-            }}
-          />
-        )}
-      {deletionStatus === "deleted" && (
+              <Send2 variant="Bulk" color="#737C8A" size={20} aria-hidden />
+            </button>
+          )}
+          {more}
+        </div>
+      </Reveal>
+
+      {isPendingDeletion && scheduledDeletionAt && (
+        <DeletionBanner
+          eventId={event.eventId}
+          scheduledDeletionAt={scheduledDeletionAt}
+          deletionReason={deletionReason}
+          onCancelled={() => {
+            setDeletionStatus(null);
+            setScheduledDeletionAt(null);
+            setDeletionReason(null);
+          }}
+        />
+      )}
+      {isDeleted && (
         <div className="flex items-start gap-4 rounded-[15px] border border-neutral-200 bg-neutral-50 p-6">
           <div className="w-[0.8rem] h-[0.8rem] rounded-full bg-neutral-400 mt-[0.6rem] shrink-0" />
           <p className="text-[1.5rem] leading-8 text-neutral-600">
@@ -218,655 +332,57 @@ export default function EventPageDetails({
           </p>
         </div>
       )}
-      <div className="flex lg:hidden items-center w-full gap-8 justify-between">
-        {isUpcoming &&
-        event.adminStatus === "approved" &&
-        !isPendingDeletion &&
-        deletionStatus !== "deleted" ? (
-          <ShareEvent event={event} />
-        ) : (
-          <div></div>
-        )}
-        <MoreComponent
-          daysLeft={daysLeft}
+
+      {!isDeleted && (
+        <TicketsTable
           event={event}
           tickets={tickets}
-          isPast={isPast}
-          isFree={isFree}
-          slug={slug}
-          membershipTier={membershipTier}
-          deletionStatus={deletionStatus}
-          onDeletionScheduled={(scheduledAt, reason) => {
-            setDeletionStatus("pending_deletion");
-            setScheduledDeletionAt(scheduledAt);
-            setDeletionReason(reason);
-          }}
+          orders={orders}
+          canCheckIn={canCheckIn}
+          showCheckTime={started}
+          onPromote={canShare ? () => setShareOpen(true) : undefined}
         />
-      </div>
-      {event.eventCategory !== "meet" &&
-        event.adminStatus === "approved" &&
-        !isPast &&
-        !isPendingDeletion &&
-        deletionStatus !== "deleted" && (
-          <div className="flex lg:hidden items-center w-full gap-4 justify-between">
-            <CheckingDialog event={event} />
-          </div>
-        )}
-      {/* Mobile counterpart, mirroring the scan button above it. */}
-      {event.eventCategory === "meet" &&
-        event.adminStatus === "approved" &&
-        !isPast &&
-        !isPendingDeletion &&
-        deletionStatus !== "deleted" && (
-          <div className="flex lg:hidden items-center w-full gap-4 justify-between">
-            <StartMeetingButton event={event} />
-          </div>
-        )}
-      {isUpcoming && deletionStatus !== "deleted" && (
-        <EventArtist event={event} eventPerformers={eventPerformers} />
       )}
 
-      {/* ticket tabs details */}
-      {deletionStatus !== "deleted" && (
-        <Tabs defaultValue="all" className="w-full h-full ">
-          <div
-            className={"flex flex-col lg:flex-row gap-6 w-full justify-between"}
-          >
-            <TabsList
-              className={`w-full order-2 lg:order-1  lg:max-w-[31.8rem] lg:w-auto mx-auto lg:mx-0 ${sortedTicketClasses.length === 1 && "hidden"}`}
-            >
-              <TabsTrigger value="all">All</TabsTrigger>
-              {sortedTicketClasses.length > 1 &&
-                sortedTicketClasses.map((ticketClass) => {
-                  return (
-                    <TabsTrigger
-                      key={ticketClass.ticketTypeName}
-                      value={ticketClass.ticketTypeName}
-                    >
-                      {Capitalize(ticketClass.ticketTypeName)}
-                    </TabsTrigger>
-                  );
-                })}
-            </TabsList>
-            {tickets.length > 0 && (
-              <div
-                className={
-                  "bg-neutral-100 order-1 lg:order-2 w-full rounded-[30px] flex items-center justify-between lg:w-[24.3rem] px-6 py-4"
-                }
-              >
-                <input
-                  placeholder={t("search")}
-                  className={
-                    "text-black font-normal text-[1.4rem] leading-8 w-full outline-none"
-                  }
-                  onChange={(e) => setQuery(e.target.value)}
-                />
-                <SearchNormal size="20" color="#737c8a" variant="Bulk" />
-              </div>
-            )}
-          </div>
-          <TabsContent value="all" className={"w-full"}>
-            <Table className={"mt-4"}>
-              <TableHeader>
-                <TableRow>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("table.id")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("table.name")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("table.ticket_class")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("table.amount")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("table.check")}
-                  </TableHead>
-                  <TableHead
-                    className={
-                      "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                    }
-                  >
-                    {t("table.date_purchased")}
-                  </TableHead>
-                  {/* <TableHead
-                  className={
-                    'font-bold hidden lg:table-cell text-[1.1rem] pb-[15px] w-[40px] leading-[15px] text-deep-100 uppercase'
-                  }
-                >
-                  {single_event.table.date_purchased}
-                </TableHead> */}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredtickets.map((ticket) => {
-                  const [order] = orders.filter(
-                    (order) => ticket.orderId === order.orderId,
-                  );
-                  return (
-                    <Drawer key={ticket.ticketId} direction={"right"}>
-                      <DrawerTrigger asChild>
-                        <TableRow className={"cursor-pointer"}>
-                          <TableCell
-                            className={
-                              "hidden lg:table-cell text-[1.5rem] py-6 leading-8 text-neutral-900"
-                            }
-                          >
-                            {ticket.ticketName}
-                          </TableCell>
-                          <TableCell
-                            className={
-                              "text-[1.5rem] leading-8 text-neutral-900"
-                            }
-                          >
-                            {ticket.fullName}
-                          </TableCell>
-                          <TableCell className={"hidden lg:table-cell"}>
-                            <span
-                              className={
-                                "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                              }
-                            >
-                              {ticket.ticketType}
-                            </span>
-                          </TableCell>
-                          <TableCell
-                            className={
-                              "hidden lg:table-cell text-[1.5rem] font-medium leading-8 text-neutral-900"
-                            }
-                          >
-                            {event.currency === "USD"
-                              ? ticket.ticketUsdPrice
-                              : ticket.ticketPrice}{" "}
-                            {event.currency}
-                          </TableCell>
-                          <TableCell>
-                            {ticket.status === "CHECKED" && (
-                              <span
-                                className={
-                                  "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                                }
-                              >
-                                {t("filters.checked")}
-                              </span>
-                            )}
-                            {ticket.status === "PENDING" && (
-                              <span
-                                className={
-                                  "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                                }
-                              >
-                                {t("filters.pending")}
-                              </span>
-                            )}
-                            {ticket.status === "RETURNED" && (
-                              <span
-                                className={
-                                  "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-neutral-500  px-2 rounded-[30px] bg-[#f5f5f5]"
-                                }
-                              >
-                                {t("filters.returned")}
-                              </span>
-                            )}
-                            <TimeInsideBadge ticket={ticket} />
-                          </TableCell>
-                          <TableCell
-                            className={
-                              "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                            }
-                          >
-                            {FormatDate(
-                              ticket.createdAt,
-                              locale,
-                              event.eventDays[0].timezone,
-                            )}
-                          </TableCell>
-                          {/* <TableCell className={'text-[1.5rem] leading-8 text-neutral-900'}>
-                        <Popover>
-                          <PopoverTrigger>
-                            <button
-                              className={
-                                'w-[35px] h-[35px] cursor-pointer rounded-full bg-neutral-100 flex items-center justify-center'
-                              }
-                            >
-                              <MoreCircle variant={'Bulk'} size={20} color={'#737C8A'} />
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className={
-                              'w-[250px] p-0 m-0 bg-none shadow-none border-none mx-4'
-                            }
-                          >
-                            <ul
-                              className={
-                                'bg-neutral-100 border border-neutral-200 right-8 p-4  mb-8 rounded-[1rem] shadow-xl bottom-full flex flex-col gap-4'
-                              }
-                            >
-                              <span
-                                className={
-                                  'font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8'
-                                }
-                              >
-                                {t('more')}
-                              </span>
-                              <div className={'flex flex-col gap-4'}>
-                                <li className={''}>
-                                  <Drawer direction={'right'}>
-                                    <DrawerTrigger className={'w-full'}>
-                                      <button
-                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 border-b-[1px] border-neutral-200 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                                      >
-                                        <span className={''}>{t('details')}</span>
-                                        <HambergerMenu
-                                          size="20"
-                                          variant="Bulk"
-                                          color={'#2E3237'}
-                                        />
-                                      </button>
-                                    </DrawerTrigger>
-                                    <Informations />
-                                  </Drawer>
-                                </li>
-                                <li className={''}>
-                                  <button
-                                    className={`font-normal group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                                  >
-                                    <span className={'text-primary-500'}>
-                                      {single_event.mark_as_check}
-                                    </span>
-                                    <TickCircle size="20" variant="Bulk" color={'#E45B00'} />
-                                  </button>
-                                </li>
-                              </div>
-                            </ul>
-                          </PopoverContent>
-                        </Popover>
-                      </TableCell> */}
-                        </TableRow>
-                      </DrawerTrigger>
-                      <Informations
-                        event={event}
-                        ticket={ticket}
-                        order={order as Order}
-                      />
-                    </Drawer>
-                  );
-                })}
-              </TableBody>
-            </Table>
-            {tickets.length === 0 && (
-              <div
-                className={
-                  "w-132 lg:w-184 mx-auto flex flex-col items-center mt-8 gap-20"
-                }
-              >
-                <div
-                  className={
-                    "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
-                  }
-                >
-                  <div
-                    className={
-                      "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
-                    }
-                  >
-                    <Money3 size="50" color="#0d0d0d" variant="Bulk" />
-                  </div>
-                </div>
-                <div
-                  className={"flex flex-col gap-12 items-center text-center"}
-                >
-                  <p
-                    className={
-                      "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
-                    }
-                  >
-                    {t("table.description")}
-                  </p>
-                  <div></div>
-                </div>
-              </div>
-            )}
-          </TabsContent>
-          {event.eventTicketTypes.map((ticketClass, index) => {
-            return (
-              <TabsContent
-                key={ticketClass.ticketTypeName}
-                value={ticketClass.ticketTypeName}
-                className={"w-full"}
-              >
-                <Table className={"mt-4"}>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead
-                        className={
-                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.id")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.name")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.ticket_class")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.amount")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.check")}
-                      </TableHead>
-                      <TableHead
-                        className={
-                          "font-bold hidden lg:table-cell text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase"
-                        }
-                      >
-                        {t("table.date_purchased")}
-                      </TableHead>
-                      {/* <TableHead
-                      className={
-                        "font-bold hidden lg:table-cell text-[1.1rem] pb-6 w-[40px] leading-6 text-deep-100 uppercase"
-                      }
-                    >
-                      {single_event.table.date_purchased}
-                    </TableHead> */}
-                    </TableRow>
-                  </TableHeader>
-                  {filteredtickets
-                    .filter(
-                      (ticket) =>
-                        ticket.ticketType === ticketClass.ticketTypeName,
-                    )
-                    .map((ticket) => {
-                      const [order] = orders.filter(
-                        (order) => ticket.orderId === order.orderId,
-                      );
-                      return (
-                        <Drawer key={ticket.ticketId} direction={"right"}>
-                          <DrawerTrigger asChild>
-                            <TableRow className={"cursor-pointer"}>
-                              <TableCell
-                                className={
-                                  "hidden lg:table-cell text-[1.5rem] py-6 leading-8 text-neutral-900"
-                                }
-                              >
-                                {ticket.ticketName}
-                              </TableCell>
-                              <TableCell
-                                className={
-                                  "text-[1.5rem] leading-8 text-neutral-900"
-                                }
-                              >
-                                {ticket.fullName}
-                              </TableCell>
-                              <TableCell className={"hidden lg:table-cell"}>
-                                {ticket.ticketType === "general" && (
-                                  <span
-                                    className={
-                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EF1870]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                                    }
-                                  >
-                                    general
-                                  </span>
-                                )}
-                                {ticket.ticketType === "vip" && (
-                                  <span
-                                    className={
-                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#7A19C7]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                                    }
-                                  >
-                                    vip
-                                  </span>
-                                )}
-                                {ticket.ticketType === "vvip" && (
-                                  <span
-                                    className={
-                                      "py-[p.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-deep-100  px-2 rounded-[30px] bg-[#f5f5f5]"
-                                    }
-                                  >
-                                    Premium vip
-                                  </span>
-                                )}
-                              </TableCell>
-                              <TableCell
-                                className={
-                                  "hidden lg:table-cell text-[1.5rem] font-medium leading-8 text-neutral-900"
-                                }
-                              >
-                                {event.currency === "USD"
-                                  ? ticket.ticketUsdPrice
-                                  : ticket.ticketPrice}{" "}
-                                {event.currency}
-                              </TableCell>
-                              <TableCell>
-                                {ticket.status === "CHECKED" && (
-                                  <span
-                                    className={
-                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#349C2E]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                                    }
-                                  >
-                                    {t("filters.checked")}
-                                  </span>
-                                )}
-                                {ticket.status === "PENDING" && (
-                                  <span
-                                    className={
-                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-[#EA961C]  px-2 rounded-[30px] bg-[#f5f5f5]"
-                                    }
-                                  >
-                                    {t("filters.pending")}
-                                  </span>
-                                )}
-                                {ticket.status === "RETURNED" && (
-                                  <span
-                                    className={
-                                      "py-[0.3rem] text-[1.1rem] font-bold leading-6 text-center uppercase text-neutral-500  px-2 rounded-[30px] bg-[#f5f5f5]"
-                                    }
-                                  >
-                                    {t("filters.returned")}
-                                  </span>
-                                )}
-                                <TimeInsideBadge ticket={ticket} />
-                              </TableCell>
-                              <TableCell
-                                className={
-                                  "hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900"
-                                }
-                              >
-                                {FormatDate(
-                                  ticket.createdAt,
-                                  locale,
-                                  event.eventDays[0].timezone,
-                                )}
-                              </TableCell>
-                              {/* <TableCell className={'text-[1.5rem] leading-8 text-neutral-900'}>
-                        <Popover>
-                          <PopoverTrigger>
-                            <button
-                              className={
-                                'w-[35px] h-[35px] cursor-pointer rounded-full bg-neutral-100 flex items-center justify-center'
-                              }
-                            >
-                              <MoreCircle variant={'Bulk'} size={20} color={'#737C8A'} />
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent
-                            className={
-                              'w-[250px] p-0 m-0 bg-none shadow-none border-none mx-4'
-                            }
-                          >
-                            <ul
-                              className={
-                                'bg-neutral-100 border border-neutral-200 right-8 p-4  mb-8 rounded-[1rem] shadow-xl bottom-full flex flex-col gap-4'
-                              }
-                            >
-                              <span
-                                className={
-                                  'font-medium py-[5px] border-b-[1px] border-neutral-200 text-[1.4rem] text-deep-100 leading-8'
-                                }
-                              >
-                                {t('more')}
-                              </span>
-                              <div className={'flex flex-col gap-4'}>
-                                <li className={''}>
-                                  <Drawer direction={'right'}>
-                                    <DrawerTrigger className={'w-full'}>
-                                      <button
-                                        className={`font-normal cursor-pointer group text-[1.5rem] py-4 border-b-[1px] border-neutral-200 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                                      >
-                                        <span className={''}>{t('details')}</span>
-                                        <HambergerMenu
-                                          size="20"
-                                          variant="Bulk"
-                                          color={'#2E3237'}
-                                        />
-                                      </button>
-                                    </DrawerTrigger>
-                                    <Informations />
-                                  </Drawer>
-                                </li>
-                                <li className={''}>
-                                  <button
-                                    className={`font-normal group text-[1.5rem] py-4 leading-8 text-neutral-700 hover:text-primary-500 flex items-center justify-between w-full`}
-                                  >
-                                    <span className={'text-primary-500'}>
-                                      {single_event.mark_as_check}
-                                    </span>
-                                    <TickCircle size="20" variant="Bulk" color={'#E45B00'} />
-                                  </button>
-                                </li>
-                              </div>
-                            </ul>
-                          </PopoverContent>
-                        </Popover>
-                      </TableCell> */}
-                            </TableRow>
-                          </DrawerTrigger>
-                          <Informations
-                            event={event}
-                            ticket={ticket}
-                            order={order as Order}
-                          />
-                        </Drawer>
-                      );
-                    })}
-                </Table>
-                {filteredtickets.filter(
-                  (ticket) => ticket.ticketType === ticketClass.ticketTypeName,
-                ).length === 0 && (
-                  <div
-                    className={
-                      "w-132 lg:w-184 mx-auto flex flex-col items-center mt-8 gap-2"
-                    }
-                  >
-                    <div
-                      className={
-                        "w-48 h-48 rounded-full flex items-center justify-center bg-neutral-100"
-                      }
-                    >
-                      <div
-                        className={
-                          "w-36 h-36 rounded-full flex items-center justify-center bg-neutral-200"
-                        }
-                      >
-                        <Money3 size="50" color="#0d0d0d" variant="Bulk" />
-                      </div>
-                    </div>
-                    <div
-                      className={
-                        "flex flex-col gap-12 items-center text-center"
-                      }
-                    >
-                      <p
-                        className={
-                          "text-[1.8rem] leading-10 text-neutral-600 max-w-132 lg:max-w-[42.2rem]"
-                        }
-                      >
-                        {t("table.description")}
-                      </p>
-                      <div></div>
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
-            );
-          })}
-        </Tabs>
+      {isUpcoming && !isDeleted && (
+        <Reveal delay={0.3}>
+          <EventArtist event={event} eventPerformers={eventPerformers} />
+        </Reveal>
       )}
-
       <PrintedTicketsSection event={event} batches={physicalTicketBatches} />
       <ReturnedTicketsSection event={event} ticketReturns={ticketReturns} />
-    </div>
-  );
-}
 
-function formatDuration(totalMinutes: number) {
-  const m = Math.max(0, Math.round(totalMinutes));
-  const h = Math.floor(m / 60);
-  const mins = m % 60;
-  if (h > 0) return `${h}h ${mins}m`;
-  return `${mins}m`;
-}
-
-// Compact attendance summary shown under the check-in status in the records
-// table: total time inside, plus a live "inside" marker when the attendee has
-// an open session.
-function TimeInsideBadge({ ticket }: { ticket: Ticket }) {
-  const t = useTranslations("Events.single_event");
-  if (ticket.status !== "CHECKED" || !ticket.entriesCount) return null;
-  return (
-    <span className="block mt-2 text-[1.1rem] font-medium leading-6 text-neutral-500">
-      {formatDuration(ticket.totalMinutesInside ?? 0)}
-      {ticket.presence === "inside" && (
-        <span className="ml-1 text-[#349C2E]">• {t("filters.inside")}</span>
-      )}
-    </span>
-  );
-}
-
-export function Separator() {
-  return (
-    <div className={"w-full py-6"}>
-      <div className={"bg-neutral-200 w-full h-[0.2rem]"}></div>
+      <MountOnOpen open={shareOpen}>
+        <ShareEvent
+          event={event}
+          open={shareOpen}
+          onOpenChange={setShareOpen}
+        />
+      </MountOnOpen>
+      <MountOnOpen open={exportOpen}>
+        <ExportDialog
+          event={event}
+          tickets={tickets}
+          membershipTier={membershipTier}
+          open={exportOpen}
+          onOpenChange={setExportOpen}
+        />
+      </MountOnOpen>
+      <MountOnOpen open={detailsOpen}>
+        <EventDrawerContent
+          event={event}
+          open={detailsOpen}
+          onOpenChange={setDetailsOpen}
+        />
+      </MountOnOpen>
+      <MountOnOpen open={discountOpen}>
+        <AddDiscountDrawer
+          event={event}
+          open={discountOpen}
+          onOpenChange={setDiscountOpen}
+          onShare={shareDiscount}
+        />
+      </MountOnOpen>
     </div>
   );
 }

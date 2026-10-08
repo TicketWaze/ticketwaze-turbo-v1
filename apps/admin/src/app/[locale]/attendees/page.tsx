@@ -1,70 +1,45 @@
 import { auth } from "@/lib/auth";
-import AttendeesPageContent from "./AttendeesPageContent";
-import {
-  AdminAttendeesRequest,
-  AdminAttendeeStats,
-} from "@ticketwaze/typescript-config";
+import AttendeesPageContent, { type AttendeesData } from "./AttendeesPageContent";
 
 export default async function AttendeesPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    status?: string;
-    page?: string;
     period?: string;
+    status?: string;
+    joined?: string;
     search?: string;
+    page?: string;
   }>;
 }) {
   const session = await auth();
-  const { status, page, period, search } = await searchParams;
+  const filters = await searchParams;
 
-  const params = new URLSearchParams();
-  if (status) params.set("status", status);
-  if (page) params.set("page", page);
-  if (period) params.set("period", period);
-  if (search) params.set("search", search);
-  params.set("limit", "10");
+  const params = new URLSearchParams({ limit: "12" });
+  for (const key of ["period", "status", "joined", "search", "page"] as const) {
+    const value = filters[key];
+    if (value) params.set(key, value);
+  }
 
-  const request = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/admin/attendees?${params.toString()}`,
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/admin/attendees?${params}`,
     {
-      method: "GET",
       cache: "no-store",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${session?.user.accessToken}`,
-      },
+      headers: { Authorization: `Bearer ${session?.user.accessToken}` },
     },
-  );
-  const response = await request.json();
-
-  const users: AdminAttendeesRequest = response.users ?? {
-    data: [],
-    meta: {
-      total: 0,
-      perPage: 10,
-      currentPage: 1,
-      lastPage: 1,
-      firstPage: 1,
-      firstPageUrl: null,
-      lastPageUrl: null,
-      nextPageUrl: null,
-      previousPageUrl: null,
-    },
-  };
-  const stats: AdminAttendeeStats = response.stats ?? {
-    total: 0,
-    active: 0,
-    guest: 0,
-  };
+  ).catch(() => null);
+  const data = (await response?.json().catch(() => null)) as
+    | (AttendeesData & { status: string })
+    | null;
 
   return (
     <AttendeesPageContent
-      users={users}
-      stats={stats}
-      status={status}
-      period={period}
-      search={search}
+      data={data?.status === "success" ? data : null}
+      filters={{
+        status: filters.status ?? null,
+        joined: filters.joined ?? null,
+        search: filters.search ?? "",
+      }}
     />
   );
 }

@@ -1,13 +1,10 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
-import BrandedLoader from "@/components/shared/BrandedLoader";
+import { ListPageSkeleton } from "@/components/skeletons/ListSkeletons";
 
 export default function Loading() {
   return (
-    <AttendeeLayout
-      title=""
-      className="h-full flex items-center justify-center"
-    >
-      <BrandedLoader />
+    <AttendeeLayout title="">
+      <ListPageSkeleton card="activity" header="back" />
     </AttendeeLayout>
   );
 }

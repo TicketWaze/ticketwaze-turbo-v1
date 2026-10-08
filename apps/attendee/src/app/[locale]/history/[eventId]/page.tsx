@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { auth } from "@/lib/auth";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
+import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
+import SignedOutState from "@/components/SignedOutState";
 import { redirect } from "@/i18n/navigation";
 import HistoryEventContent from "./HistoryEventContent";
 
@@ -13,7 +15,17 @@ export default async function HistoryEventPage({
   const locale = await getLocale();
   const session = await auth();
   if (!session) {
-    redirect({ href: "/auth/login", locale });
+    // Same signed-out screen as the History list; signing in comes back here.
+    const t = await getTranslations("History");
+    return (
+      <AttendeeLayout title={t("title")}>
+        <SignedOutState
+          page="history"
+          title={t("title")}
+          returnPath={`/history/${eventId}`}
+        />
+      </AttendeeLayout>
+    );
   }
 
   // Per-user, never cached. On any failure fall back to the history list rather

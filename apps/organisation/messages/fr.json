@@ -79,45 +79,45 @@
         "error": "Veuillez sélectionner une option",
         "onboarded": "Utilisateur déjà enregistré",
         "success": {
-          "title": "Tout est prêt !",
+          "title": "Tout est prêt !",
           "description": "Vous allez être redirigé vers votre tableau de bord..."
         },
         "steps": {
           "name": {
-            "title": "Comment s'appelle votre organisation ?",
+            "title": "Comment s'appelle votre organisation ?",
             "description": "Vous pouvez le modifier à tout moment depuis vos paramètres.",
             "placeholder": "Nom de l'organisation"
           },
           "type": {
-            "title": "Quel type d'organisation êtes-vous ?"
+            "title": "Quel type d'organisation êtes-vous ?"
           },
           "volume": {
-            "title": "Combien d'événements organisez-vous par an ?",
+            "title": "Combien d'événements organisez-vous par an ?",
             "description": "Cela nous aide à personnaliser votre expérience."
           },
           "activities": {
-            "title": "Quels types d'activités organisez-vous ?",
+            "title": "Quels types d'activités organisez-vous ?",
             "description": "Sélectionnez tout ce qui s'applique.",
             "error": "Veuillez sélectionner au moins un type d'activité."
           },
           "business": {
-            "title": "Quelle est votre structure juridique ?"
+            "title": "Quelle est votre structure juridique ?"
           },
           "goal": {
-            "title": "Quel est votre principal objectif pour les 12 prochains mois ?"
+            "title": "Quel est votre principal objectif pour les 12 prochains mois ?"
           }
         },
         "first": {
-          "question": "Quel est le nom de votre organisation ?"
+          "question": "Quel est le nom de votre organisation ?"
         },
         "second": {
-          "question": "Quel type d’organisation souhaitez-vous créer ?",
+          "question": "Quel type d’organisation souhaitez-vous créer ?",
           "single": "Je suis un entrepreneur solo, DJ ou formateur.",
           "agency": "J’ai une équipe qui gère plusieurs activités.",
           "entreprise": "Je représente un lieu, un stade ou une grande entreprise."
         },
         "third": {
-          "question": "Quels types de services proposez-vous principalement ?",
+          "question": "Quels types de services proposez-vous principalement ?",
           "musics": "Musique",
           "theater": "Théâtre",
           "arts": "Arts",
@@ -130,21 +130,21 @@
           "booking": "Réservation"
         },
         "fourth": {
-          "question": "Quelle est la taille de votre organisation ?",
+          "question": "Quelle est la taille de votre organisation ?",
           "solo": "Juste moi (1 personne)",
           "small": "Petite équipe (2 à 10 personnes)",
           "large": "Grande équipe (10+ personnes)"
         },
         "fifth": {
-          "question": "Comment avez-vous entendu parler de nous ?",
+          "question": "Comment avez-vous entendu parler de nous ?",
           "media": "Réseaux sociaux",
           "friend": "Ami/Collègue",
           "advertisement": "Publicité"
         },
         "last": {
           "1": "Merci d’avoir terminé la configuration. Le profil de votre organisation sera paramétré en fonction des services choisis, de la structure de votre équipe et de vos préférences. Vous pouvez désormais commencer à créer des activités, gérer des réservations et inviter des membres de votre équipe à collaborer.",
-          "2": "Important : nous allons maintenant vous rediriger vers le tableau de bord de l’organisation. Pour des raisons de sécurité, vous devrez vous reconnecter avec vos identifiants Ticketwaze fraîchement créés avant d’accéder à votre tableau de bord.",
-          "3": "Veuillez noter : Ticketwaze ne partage pas les données ou informations de vente de votre organisation avec des tiers sans votre consentement explicite. Les paiements seront traités selon vos besoins, sous réserve de vérification et des délais de traitement applicables. Vous pouvez consulter ou modifier les paramètres de votre organisation et les rôles de votre équipe à tout moment depuis votre tableau de bord.",
+          "2": "Important : nous allons maintenant vous rediriger vers le tableau de bord de l’organisation. Pour des raisons de sécurité, vous devrez vous reconnecter avec vos identifiants Ticketwaze fraîchement créés avant d’accéder à votre tableau de bord.",
+          "3": "Veuillez noter : Ticketwaze ne partage pas les données ou informations de vente de votre organisation avec des tiers sans votre consentement explicite. Les paiements seront traités selon vos besoins, sous réserve de vérification et des délais de traitement applicables. Vous pouvez consulter ou modifier les paramètres de votre organisation et les rôles de votre équipe à tout moment depuis votre tableau de bord.",
           "4": {
             "1": "En continuant, vous reconnaissez avoir lu et accepté nos Conditions d’utilisation et nos ",
             "2": "Conditions d'utilisation et politique de confidentialité",
@@ -163,15 +163,15 @@
       },
       "suspended": {
         "title": "Cette organisation est suspendue",
-        "description": "{name} a été suspendue : son tableau de bord n’est donc pas accessible. Votre compte Ticketwaze et vos billets ne sont pas concernés.",
+        "description": "{name} a été suspendue : son tableau de bord n’est donc pas accessible. Votre compte Ticketwaze et vos billets ne sont pas concernés.",
         "support": "Contacter le support",
         "back": "Voir mes billets"
       }
     },
     "register": {
       "title": "Créer un compte",
-      "organizer": "Créer un compte",
-      "description": "Veuillez compléter le formulaire ci-dessous pour continuer.",
+      "organizer": "Compte organisateur",
+      "description": "Veuillez remplir le formulaire ci-dessous pour continuer.",
       "invalidToken": "Ce lien d’invitation n’est plus valide. Il a peut-être expiré ou déjà été utilisé. Veuillez demander une nouvelle invitation à l’organisateur de l’activité pour continuer.",
       "login": "Se connecter",
       "choice": {
@@ -187,16 +187,15 @@
         },
         "cta": "Continuer",
         "footer": {
-          "text": "Vous avez déjà un compte ?",
+          "text": "Déjà un compte ?",
           "cta": "Se connecter"
         }
       },
       "placeholders": {
         "firstname": "Prénom",
-        "lastname": "Nom de famille",
+        "lastname": "Nom",
         "email": "Adresse e-mail",
-        "organisation_name": "Nom de l'organisation",
-        "organisation_email": "E-mail de l'organisation",
+        "organisation_name": "Nom de l’organisation",
         "password": "Créer un mot de passe",
         "confirm": "Confirmer le mot de passe"
       },
@@ -207,20 +206,38 @@
         "lastname_length": "Le nom de famille doit contenir au moins 2 caractères",
         "firstname_validation": "Le prénom ne doit contenir que des lettres, espaces ou traits d'union",
         "lastname_validation": "Le nom de famille ne doit contenir que des lettres, espaces ou traits d'union",
-        "email": "Le champ e-mail ne peut pas être vide"
+        "email": "Saisissez une adresse e-mail valide.",
+        "organisation_name": "Le nom de l’organisation doit contenir 3 à 30 caractères.",
+        "organisation_name_taken": "Une organisation porte déjà ce nom.",
+        "exists": "Un compte existe déjà pour cet e-mail. Connectez-vous plutôt.",
+        "generic": "Une erreur s’est produite. Veuillez réessayer.",
+        "characters": "Au moins 8 caractères",
+        "capital": "Au moins une lettre majuscule",
+        "special": "Au moins un caractère spécial",
+        "number": "Au moins un chiffre"
       },
       "cta": {
         "submit": "Créer un compte",
         "google": "Continuer avec Google"
       },
-      "footer": "Retour"
+      "footer": "Retour",
+      "otp": {
+        "submit": "Vérifier",
+        "resending": "Envoi...",
+        "sent": "Un nouveau code a été envoyé à votre e-mail.",
+        "errors": {
+          "invalid": "Code incorrect. Veuillez réessayer.",
+          "expired": "Ce code a expiré. Demandez-en un nouveau ci-dessous.",
+          "notFound": "Aucun code trouvé. Demandez-en un nouveau ci-dessous."
+        }
+      }
     },
     "verify": {
       "title": "Vérifier le compte",
       "description": "Un e-mail de vérification a été envoyé à",
       "wrong": "Email incorrect?",
       "footer": {
-        "text": "Vous n'avez pas reçu d'e-mail ?",
+        "text": "Vous n'avez pas reçu d'e-mail ?",
         "cta": "Renvoyer"
       }
     },
@@ -267,7 +284,7 @@
         "male": "Homme",
         "female": "Femme",
         "no": "Préfère ne pas dire",
-        "about": "À propos de l'organisateur",
+        "about": "À propos de l’organisation",
         "email": "Adresse e-mail de contact",
         "phone": "Numéro de téléphone",
         "website": "URL du site web de l'organisation",
@@ -301,7 +318,6 @@
         "email": "Saisissez un e-mail valide",
         "password": "Le champ mot de passe ne peut pas être vide",
         "wrong": "Adresse email ou mot de passe incorrect",
-        "no_account": "Aucun compte Ticketwaze n'est associé à ce compte Google. Créez d'abord un compte, puis revenez pour accéder à votre tableau de bord.",
         "google_failed": "La connexion avec Google a échoué. Veuillez réessayer.",
         "organisation_suspended": "Cette organisation est suspendue, son tableau de bord n'est donc pas accessible. Consultez l'e-mail que nous vous avons envoyé pour en connaître la raison, ou contactez le support pour faire appel."
       },
@@ -319,9 +335,28 @@
         "google": "Continuer avec Google"
       },
       "footer": {
-        "text": "Pas de compte ?",
-        "cta": "S'inscrire"
-      }
+        "text": "Pas encore de compte ?",
+        "cta": "S’inscrire"
+      },
+      "mfa": {
+        "title": "Saisissez votre code de connexion",
+        "description": "La vérification en deux étapes est activée. Nous avons envoyé un code à 6 chiffres à",
+        "submit": "Vérifier et se connecter",
+        "resend": "Renvoyer le code",
+        "resent": "Un nouveau code est en route",
+        "resend_in": "Renvoyer dans {seconds}s",
+        "back": "Retour",
+        "digit": "Chiffre",
+        "errors": {
+          "invalid": "Ce code est incorrect.",
+          "invalid_left": "Ce code est incorrect. {count, plural, one {# essai restant} other {# essais restants}}.",
+          "expired": "Ce code a expiré. Demandez-en un nouveau.",
+          "too_many": "Trop de codes incorrects. Revenez en arrière et reconnectez-vous.",
+          "restart": "Cette connexion a expiré. Revenez en arrière et reconnectez-vous."
+        }
+      },
+      "organizer_title": "Compte organisateur",
+      "reset": "Réinitialiser le mot de passe"
     },
     "forgot": {
       "title": "Réinitialiser le mot de passe",
@@ -342,7 +377,7 @@
         "submit": "Vérifier",
         "resend": "Renvoyer le code",
         "resending": "Envoi en cours...",
-        "wrong": "Mauvais email ?",
+        "wrong": "Mauvais email ?",
         "sent": "Un nouveau code a été envoyé à votre adresse e-mail.",
         "errors": {
           "invalid": "Code incorrect. Veuillez réessayer.",
@@ -356,7 +391,7 @@
       "title": "Réinitialiser le mot de passe",
       "description": "Un e-mail de réinitialisation du mot de passe a été envoyé à",
       "footer": {
-        "text": "Vous n'avez pas reçu d'e-mail ?",
+        "text": "Vous n'avez pas reçu d'e-mail ?",
         "cta": "Renvoyer"
       }
     },
@@ -371,13 +406,305 @@
       "errors": {
         "password_length": "Le mot de passe doit contenir au moins 8 caractères",
         "password_match": "Le mot de passe ne correspond pas",
-        "sameError": "Vous avez déjà utilisé ce mot de passe. Vous ne pouvez pas réutiliser un ancien mot de passe."
+        "sameError": "Vous avez déjà utilisé ce mot de passe. Vous ne pouvez pas réutiliser un ancien mot de passe.",
+        "characters": "Au moins 8 caractères",
+        "capital": "Au moins une lettre majuscule",
+        "special": "Au moins un caractère spécial",
+        "number": "Au moins un chiffre"
       },
       "cta": "Créer"
     },
     "footer": {
-      "text": "Vous n'avez pas reçu d'e-mail ?",
+      "text": "Vous n'avez pas reçu d'e-mail ?",
       "cta": "Renvoyer"
+    },
+    "flow": {
+      "splash": {
+        "create": "Créer un compte",
+        "login": "Se connecter"
+      },
+      "role": {
+        "login_title": "Bon retour",
+        "login_description": "Choisissez une option pour accéder à votre compte.",
+        "register_title": "Créer un compte",
+        "register_description": "Choisissez une option pour continuer et configurer votre compte.",
+        "attendee_title": "Participant",
+        "attendee_description": "Parcourez, découvrez et achetez facilement des billets pour une grande variété d’événements.",
+        "organizer_title": "Organisateur",
+        "organizer_description": "Créez et gérez vos événements sans effort. Suivez les ventes de billets et les données des participants.",
+        "continue": "Continuer"
+      },
+      "back": "Retour",
+      "or": "Ou",
+      "verify": {
+        "title": "Vérifier le compte",
+        "description": "Un e-mail de vérification a été envoyé à l’adresse avec laquelle vous vous êtes inscrit.",
+        "resend_text": "Vous n’avez pas reçu d’e-mail ?",
+        "resend": "Renvoyer"
+      },
+      "reset_sent": {
+        "title": "Réinitialiser le mot de passe",
+        "description": "Un e-mail de réinitialisation a été envoyé à l’adresse e-mail indiquée"
+      },
+      "created": {
+        "title": "Compte créé",
+        "description": "Votre compte a été créé avec succès. Nous vous connectons maintenant."
+      },
+      "password_created": {
+        "title": "Mot de passe créé",
+        "description": "Votre nouveau mot de passe a été créé avec succès. Nous vous connectons maintenant."
+      },
+      "signing_in": "Connexion en cours...",
+      "verified": {
+        "title": "Compte vérifié",
+        "description": "Votre e-mail a bien été vérifié. Nous vous connectons maintenant."
+      },
+      "setup": {
+        "title": "Finaliser le compte",
+        "description": "Veuillez remplir le formulaire ci-dessous pour finaliser votre compte.",
+        "organisation_name": "Nom de l’organisation",
+        "name_step": {
+          "title": "Nommez votre organisation",
+          "description": "C’est le nom que les participants verront sur vos activités et vos billets. Vous pourrez le modifier plus tard dans les Paramètres.",
+          "submit": "Continuer"
+        },
+        "address": "Adresse",
+        "country": "Pays",
+        "state": "Département",
+        "city": "Ville",
+        "about": "À propos de l’organisation",
+        "contact_email": "E-mail de contact",
+        "contact_phone": "Téléphone de contact",
+        "submit": "Terminer",
+        "errors": {
+          "organisation_name": "3 à 30 caractères.",
+          "organisation_name_taken": "Une organisation porte déjà ce nom.",
+          "address": "Veuillez saisir votre adresse.",
+          "country": "Veuillez choisir votre pays.",
+          "state": "Veuillez choisir votre département.",
+          "city": "Veuillez choisir votre ville.",
+          "about": "Présentez-vous aux participants en 150 à 350 caractères.",
+          "contact_email": "Veuillez saisir une adresse e-mail valide.",
+          "contact_phone": "Veuillez saisir un numéro de téléphone valide.",
+          "already_owned": "Vous possédez déjà une organisation.",
+          "generic": "Impossible d’enregistrer votre organisation. Veuillez réessayer."
+        },
+        "links": {
+          "title": "Liens",
+          "add": "Ajouter un lien",
+          "optional": "facultatif",
+          "remove": "Retirer {platform}",
+          "platforms": {
+            "instagram": "Instagram",
+            "website": "Site web",
+            "tiktok": "TikTok",
+            "twitter": "X (Twitter)"
+          },
+          "placeholders": {
+            "instagram": "votrenom",
+            "website": "votresite.com",
+            "tiktok": "votrenom",
+            "twitter": "votrenom"
+          },
+          "errors": {
+            "instagram": "Saisissez un nom d’utilisateur Instagram valide.",
+            "website": "Saisissez une adresse de site web valide.",
+            "tiktok": "Saisissez un nom d’utilisateur TikTok valide.",
+            "twitter": "Saisissez un nom d’utilisateur X valide."
+          }
+        }
+      },
+      "invitation": {
+        "title": "Rejoindre {name}",
+        "description": "Bonjour {email}, complétez votre profil pour accéder à votre espace de travail.",
+        "description_existing": "Bonjour {email}, connectez-vous avec cette adresse e-mail pour rejoindre l’espace de travail.",
+        "choose": "Choisir un mot de passe",
+        "confirm": "Confirmer le mot de passe",
+        "join": "Rejoindre",
+        "sign_in": "Se connecter pour rejoindre",
+        "accepted_title": "Invitation acceptée !",
+        "accepted_description": "Votre compte est prêt. C’est parti !",
+        "invalid_title": "Invitation indisponible",
+        "invalid_description": "Ce lien d’invitation est invalide, déjà utilisé ou expiré. Demandez à l’organisation de vous en envoyer un nouveau.",
+        "wrong_account": "Vous êtes connecté avec un autre compte. Déconnectez-vous, puis rouvrez le lien d’invitation.",
+        "sign_out": "Se déconnecter",
+        "decline": "Refuser",
+        "errors": {
+          "exists": "Un compte existe déjà pour cet e-mail. Connectez-vous pour rejoindre.",
+          "generic": "Impossible de vous ajouter à cette organisation. Veuillez réessayer."
+        },
+        "description_signed_in": "Vous avez été invité à rejoindre l’espace de travail de cette organisation sur Ticketwaze."
+      }
+    },
+    "kyc": {
+      "skip": "Passer pour l’instant",
+      "not_now": "Plus tard",
+      "continue": "Continuer",
+      "submit": "Envoyer pour vérification",
+      "type": {
+        "title": "Vérifiez votre organisation",
+        "description": "Indiquez le type d’organisation que vous gérez. Il détermine les documents demandés.",
+        "individual": {
+          "title": "Organisateur individuel",
+          "description": "Vous organisez des activités en votre nom."
+        },
+        "business": {
+          "title": "Entreprise enregistrée",
+          "description": "Une société ou une entreprise individuelle (SA, SARL…)."
+        },
+        "ngo": {
+          "title": "ONG / Association",
+          "description": "Une association, une fondation ou une ONG."
+        },
+        "public": {
+          "title": "Institution publique",
+          "description": "Un ministère, une mairie, une école ou une université publique."
+        }
+      },
+      "id": {
+        "title": "Pièce d’identité du représentant",
+        "description": "Choisissez la pièce d’identité de la personne qui gère cette organisation.",
+        "passport": {
+          "title": "Passeport",
+          "description": "Page photo uniquement."
+        },
+        "id_card": {
+          "title": "Carte d’identité nationale",
+          "description": "Recto et verso."
+        },
+        "drivers_licence": {
+          "title": "Permis de conduire",
+          "description": "Recto et verso."
+        }
+      },
+      "identity": {
+        "title": "Envoyez votre pièce d’identité",
+        "description": "Photos nettes, les quatre coins visibles, sans reflet."
+      },
+      "documents": {
+        "title": "Documents de l’organisation",
+        "description": "Scans ou photos de vos documents officiels. Le PDF est accepté."
+      },
+      "kinds": {
+        "passport_front": {
+          "label": "Page photo du passeport"
+        },
+        "id_front": {
+          "label": "Recto du document"
+        },
+        "id_back": {
+          "label": "Verso du document"
+        },
+        "selfie": {
+          "label": "Selfie",
+          "hint": "Uniquement votre visage, face à la caméra, avec un bon éclairage. Pas de pièce d’identité sur la photo."
+        },
+        "business_registration": {
+          "label": "Enregistrement de l’entreprise (Patente / certificat MCI)"
+        },
+        "tax_id": {
+          "label": "Document NIF"
+        },
+        "authority_proof": {
+          "label": "Preuve que vous pouvez agir pour l’entreprise",
+          "hint": "Seulement si vous n’êtes pas le propriétaire inscrit à l’enregistrement."
+        },
+        "ngo_registration": {
+          "label": "Certificat d’enregistrement ou de reconnaissance",
+          "hint": "MPCE, MAST, ou publication au Moniteur."
+        },
+        "statutes": {
+          "label": "Statuts"
+        },
+        "board_letter": {
+          "label": "Lettre du conseil vous autorisant"
+        },
+        "official_letter": {
+          "label": "Lettre officielle sur papier à en-tête",
+          "hint": "Signée, vous autorisant à gérer ce compte."
+        }
+      },
+      "upload": {
+        "cta": "Déposez un fichier ou",
+        "browse": "Parcourir",
+        "photo_hint": "JPG, PNG, WEBP ou HEIC · 10 Mo max",
+        "doc_hint": "PDF, JPG ou PNG · 10 Mo max",
+        "uploading": "Envoi...",
+        "uploaded": "Envoyé",
+        "replace": "Remplacer",
+        "retry": "Réessayer",
+        "optional": "Facultatif",
+        "errors": {
+          "type": "Ce type de fichier n’est pas accepté.",
+          "size": "Les fichiers doivent faire 10 Mo maximum.",
+          "failed": "L’envoi a échoué. Veuillez réessayer.",
+          "storage": "Les envois ne sont pas disponibles pour le moment. Veuillez réessayer plus tard."
+        }
+      },
+      "skip_dialog": {
+        "title": "Passer la vérification ?",
+        "description": "Vous pourrez la faire plus tard depuis votre tableau de bord. D’ici là, vous ne pourrez pas :",
+        "create": "Créer des activités",
+        "withdraw": "Retirer de l’argent",
+        "verify": "Vérifier maintenant",
+        "skip": "Passer pour l’instant"
+      },
+      "submitted": {
+        "title": "Documents envoyés",
+        "description": "Nous les examinerons sous 2 jours ouvrables et vous enverrons le résultat par e-mail.",
+        "dashboard": "Aller au tableau de bord"
+      },
+      "pending": {
+        "title": "Vérification en cours",
+        "description": "Nous avons reçu vos documents. Vous recevrez un e-mail dès qu’ils seront examinés."
+      },
+      "approved": {
+        "title": "Organisation vérifiée",
+        "description": "Vous pouvez créer des activités et retirer de l’argent."
+      },
+      "rejected": {
+        "title": "Vérification refusée",
+        "reason": "Motif : {reason}",
+        "description": "Veuillez envoyer de nouveaux documents."
+      },
+      "owner_only": {
+        "title": "Seul le propriétaire peut vérifier",
+        "description": "Demandez au propriétaire de cette organisation de compléter la vérification."
+      },
+      "errors": {
+        "generic": "Impossible d’envoyer vos documents. Veuillez réessayer.",
+        "already": "Votre vérification est déjà en cours d’examen.",
+        "missing": "Envoyez tous les documents requis pour continuer."
+      },
+      "banner": {
+        "unverified": "La création d’activités et les retraits sont bloqués tant que votre organisation n’est pas vérifiée.",
+        "pending": "Votre vérification est en cours. Vous recevrez un e-mail une fois terminée.",
+        "rejected": "Votre vérification a été refusée : {reason}",
+        "member": "Demandez au propriétaire de vérifier l’organisation pour créer des activités et retirer de l’argent.",
+        "verify": "Vérifier maintenant",
+        "resubmit": "Envoyer de nouveaux documents"
+      },
+      "gate": {
+        "create_title": "Vérifiez votre organisation pour créer des activités",
+        "withdraw_title": "Vérifiez votre organisation pour retirer de l’argent",
+        "description": "Quelques minutes suffisent : une pièce d’identité, un selfie et, pour les organisations enregistrées, leurs documents officiels.",
+        "pending_description": "Vos documents sont en cours d’examen. Vous pourrez continuer dès leur approbation.",
+        "verify": "Vérifier maintenant",
+        "back": "Retour au tableau de bord"
+      },
+      "selfie": {
+        "open": "Ouvrir la caméra",
+        "take": "Prendre la photo",
+        "retake": "Reprendre",
+        "cancel": "Annuler",
+        "retry": "Réessayer la caméra",
+        "upload": "Importer une photo",
+        "starting": "Démarrage de la caméra...",
+        "uploading": "Envoi...",
+        "done": "Photo enregistrée",
+        "denied": "L’accès à la caméra est bloqué. Autorisez-le dans les réglages du navigateur, ou importez une photo.",
+        "unavailable": "Aucune caméra trouvée sur cet appareil. Importez une photo à la place."
+      }
     }
   },
   "Layout": {
@@ -420,9 +747,15 @@
     "revenue": "Revenus totaux",
     "sold": "Billets vendus",
     "filters": {
-      "first": {
-        "all": "Toutes les activités",
-        "date": "Ce mois-ci"
+      "activity": "Activité",
+      "period": "Période",
+      "allActivities": "Toutes les activités",
+      "periods": {
+        "7d": "7 derniers jours",
+        "month": "Ce mois-ci",
+        "30d": "30 derniers jours",
+        "year": "Cette année",
+        "all": "Depuis le début"
       }
     },
     "content": {
@@ -447,7 +780,10 @@
         "ticketsPlural": "tickets",
         "forecast": "Prévisions",
         "ticketsSold": "Billets vendus"
-      }
+      },
+      "monthly": "Ventes de billets mensuelles",
+      "now": "Auj.",
+      "noData": "Pas encore de données"
     },
     "event": {
       "event_demographics": {
@@ -513,6 +849,14 @@
       "title": "Avis",
       "average": "Note moyenne",
       "total": "Total des avis"
+    },
+    "trend": {
+      "up": "En hausse de {value} % par rapport à la période précédente",
+      "down": "En baisse de {value} % par rapport à la période précédente"
+    },
+    "more": {
+      "title": "Plus d’analyses",
+      "topByViews": "Activités les plus vues"
     }
   },
   "Finance": {
@@ -596,7 +940,8 @@
       "revenue": "Revenu total",
       "profit": "Bénéfice total",
       "pendingBalance": "Solde en attente",
-      "availableBalance": "Solde disponible"
+      "availableBalance": "Solde disponible",
+      "balance": "Solde"
     },
     "filters": {
       "all": "Tous les statuts",
@@ -644,8 +989,13 @@
         "checked_out": "Sorti",
         "close": "Fermer",
         "resend": "Renvoyer le billet",
-        "draw_date": "Date du tirage"
-      }
+        "draw_date": "Date du tirage",
+        "tickets": "Billets",
+        "buyer": "Acheteur"
+      },
+      "no_match": "Aucune transaction ne correspond à ces filtres.",
+      "clear_filters": "Effacer les filtres",
+      "partly_returned": "Partiellement retourné"
     },
     "withdrawal": {
       "title": "Historique des retraits",
@@ -660,6 +1010,22 @@
         "status": "Statut",
         "date": "Date",
         "reason": "Motif du rejet"
+      },
+      "no_match": "Aucun retrait ne correspond à ces filtres.",
+      "approved": "Approuvé",
+      "details": {
+        "title": "Détails du retrait",
+        "amount": "Montant",
+        "request_date": "Date de la demande",
+        "requested_by": "Demandé par",
+        "status": "Statut de la transaction",
+        "method": "Méthode",
+        "bank_name": "Nom de la banque",
+        "account_name": "Titulaire du compte",
+        "account_number": "Numéro de compte",
+        "processed_date": "Date de traitement",
+        "reason": "Motif",
+        "close": "Fermer"
       }
     },
     "wise": "Wise",
@@ -691,7 +1057,35 @@
     "cash_phone": "Numéro de téléphone",
     "cash_phone_hint": "Doit comporter exactement 8 chiffres (ex. 47123456)",
     "cash_handover_note": "Notre équipe appellera ce numéro pour convenir du lieu et de l'heure de la remise. Présentez une pièce d'identité au nom indiqué ci-dessus.",
-    "no_fee_note": "Vous recevez exactement ce montant. Ticketwaze n'ajoute aucuns frais de retrait et ne déduit rien de plus."
+    "no_fee_note": "Vous recevez exactement ce montant. Ticketwaze n'ajoute aucuns frais de retrait et ne déduit rien de plus.",
+    "pending_line": "+ {amount} en attente jusqu’à la fin de vos activités",
+    "nothing_to_withdraw": "Rien à retirer pour le moment",
+    "filters_title": "Filtres",
+    "close": "Fermer",
+    "page_prev": "Page précédente",
+    "page_next": "Page suivante",
+    "search_withdrawal": "Rechercher un ID de retrait",
+    "initiate": {
+      "title": "Initier un retrait",
+      "method_step": "Méthode",
+      "balance": "Solde",
+      "platform_fees": "Frais de la plateforme",
+      "pending_note": "{amount} de plus est en attente jusqu’à la fin de vos activités. Ce montant rejoindra ensuite votre solde.",
+      "receive_in": "Recevoir en",
+      "save_details": "Enregistrer pour les prochains paiements",
+      "create_pin": "Créer un code de retrait",
+      "pin_title": "Créer un code de retrait",
+      "enter_pin": "Saisir le code",
+      "confirm_pin": "Confirmer le code",
+      "create_pin_button": "Créer le code",
+      "pin_created": "Code de retrait créé",
+      "pin_mismatch": "Les deux codes ne correspondent pas",
+      "pin_failed": "Impossible de créer le code. Réessayez.",
+      "success_title": "Retrait initié avec succès",
+      "success_description": "Votre demande de retrait est en route. Notre équipe traite les paiements sous 1 à 3 jours ouvrables et vous recevrez une confirmation dès l’envoi des fonds.",
+      "opening": "Ouverture de la page Finance…",
+      "no_pin": "Créez d’abord votre code de retrait."
+    }
   },
   "Events": {
     "title": "Aperçu des activités",
@@ -744,7 +1138,8 @@
         "email": "Email",
         "status": "Statut",
         "date_purchased": "Acheté le",
-        "answers": "Réponses au paiement"
+        "answers": "Réponses au paiement",
+        "amount": "Montant payé"
       },
       "create_ticket": "Créer un billet",
       "ticket": "Classes de billets",
@@ -787,7 +1182,27 @@
         "time_inside": "Temps à l'intérieur",
         "entries": "Entrées",
         "stayed": "Durée",
-        "since": "À l'intérieur depuis {time}"
+        "since": "À l'intérieur depuis {time}",
+        "title": "Check-in",
+        "tap_to_scan": "Touchez pour scanner",
+        "or": "ou",
+        "ticket_id_label": "ID du billet",
+        "checking": "Enregistrement en cours",
+        "checking_out": "Sortie en cours",
+        "success_title": "Check-in réussi !",
+        "success_body": "Le participant a été enregistré.",
+        "checkout_title": "Sortie enregistrée",
+        "checkout_body": "{name} est sorti(e). Le temps passé est enregistré.",
+        "inside_title": "Déjà à l'intérieur",
+        "inside_body": "{name} est déjà enregistré(e). Enregistrez sa sortie s'il ou elle s'en va.",
+        "already_title": "Participant déjà enregistré",
+        "not_open_title": "Le check-in n'est pas ouvert",
+        "error_title": "Échec du check-in",
+        "invalid_title": "Billet invalide",
+        "continue": "Continuer",
+        "retry": "Réessayer",
+        "close": "Fermer",
+        "cancel": "Annuler"
       },
       "ticketID": "ID du billet",
       "revenue": "Revenus totaux",
@@ -830,8 +1245,8 @@
         "nothing": "Vos codes de réduction apparaîtront ici une fois que vous commencerez à les créer",
         "errors": {
           "code": {
-            "min": "Le code de réduction ne peut pas contenir moins de 6 caractères",
-            "max": "Le code de réduction ne peut pas dépasser 10 caractères",
+            "min": "Au moins 4 caractères",
+            "max": "Au plus 20 caractères",
             "format": "Utilisez uniquement des lettres et des chiffres"
           },
           "value": {
@@ -846,6 +1261,11 @@
           "expiresIn": {
             "min": "1 heure est le minimum",
             "negative": "L'heure ne peut pas être négative"
+          },
+          "end": {
+            "required": "Choisissez une date de fin",
+            "before": "La date de fin doit être le jour du début ou après",
+            "past": "La date de fin est déjà passée"
           }
         },
         "actions": "Actions",
@@ -864,7 +1284,28 @@
         "generate": "Générer un code",
         "per_user_limit": "Utilisations par client (facultatif)",
         "min_purchase": "Commande minimum (facultatif)",
-        "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze sont toujours calculés sur votre prix affiché : une réduction ne modifie jamais les frais, et vous recevez le prix réduit."
+        "cost_notice": "Les réductions sont déduites de vos recettes. Les frais Ticketwaze sont toujours calculés sur votre prix affiché : une réduction ne modifie jamais les frais, et vous recevez le prix réduit.",
+        "notify_followers": "Prévenir mes abonnés",
+        "notify_followers_description": "Envoyer ce code à toutes les personnes qui suivent votre organisation, dans leurs notifications Ticketwaze.",
+        "all_classes": "Toutes les classes de billets",
+        "more_options": "Plus d'options",
+        "success_title": "Code promo ajouté avec succès !",
+        "success_description": "Votre code promo est actif. Les participants peuvent l’utiliser au paiement pour économiser sur leurs billets.",
+        "success_description_scheduled": "Votre code promo commence le {date}. À partir de là, les participants pourront l’utiliser au paiement.",
+        "back_to_event": "Retour à l'activité",
+        "share": "Partager",
+        "code_copied": "Code {code} copié. Collez-le dans votre publication.",
+        "remove_class": "Retirer {name}",
+        "page_title": "Codes promo",
+        "page_description": "Codes pour {name}",
+        "manage": "Codes promo",
+        "col_applies": "S'applique à",
+        "col_window": "Validité",
+        "col_used": "Utilisés",
+        "col_status": "Statut",
+        "scheduled": "Programmé",
+        "live": "Actif",
+        "off": "Désactivé"
       },
       "rewards": {
         "title": "Récompenses",
@@ -973,7 +1414,10 @@
         "time_inside": "Temps à l'intérieur",
         "entries": "Entrées",
         "date_purchased": "Date d'achat",
-        "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !"
+        "description": "Une fois que les participants commenceront à acheter des billets, les détails apparaîtront ici. Faites la promotion de votre activité pour stimuler les ventes !",
+        "no_match": "Aucun billet ne correspond à ces filtres.",
+        "clear_filters": "Effacer les filtres",
+        "check_time": "Heure d'enregistrement"
       },
       "printed_tickets": {
         "title": "Billets imprimés",
@@ -1090,7 +1534,74 @@
         "export_pdf": "Exporter en PDF",
         "export_error": "Impossible de générer le fichier. Veuillez réessayer.",
         "generated": "Généré le {date}"
-      }
+      },
+      "check_in_short": "Check-in",
+      "search_ticket": "Rechercher un billet, un participant",
+      "promote": "Promouvoir l'activité",
+      "ticket_class_label": "Catégorie de billet",
+      "filters_title": "Filtres",
+      "checked_in_done": "{name} est enregistré(e).",
+      "page_prev": "Page précédente",
+      "page_next": "Page suivante",
+      "add_discount": "Ajouter un code promo",
+      "trend": {
+        "up": "En hausse de {value} % sur les 7 jours précédents",
+        "down": "En baisse de {value} % sur les 7 jours précédents"
+      },
+      "share_dialog": {
+        "copy": "Copier",
+        "copied": "Lien copié",
+        "copy_failed": "Impossible de copier le lien",
+        "paste_hint": "Lien copié. Collez-le dans votre story, publication ou bio {app}.",
+        "qr": "Télécharger le code QR"
+      },
+      "contact": "Coordonnées",
+      "edit_section": "Modifier : {section}",
+      "cannot_edit_pending": "Cette activité est en cours de suppression et ne peut pas être modifiée.",
+      "export_dialog": {
+        "title": "Exporter les données",
+        "description": "L'export comprend les informations des participants, les types de billets, les prix et les statuts de check-in.",
+        "email_note": "Les fichiers exportés seront aussi envoyés à votre adresse e-mail.",
+        "attendees": "Liste des participants",
+        "attendees_hint": "Excel (.xlsx)",
+        "report": "Rapport de l'activité",
+        "report_hint": "PDF",
+        "report_locked": "Disponible avec les forfaits payants",
+        "download": "Télécharger",
+        "preparing": "Préparation…",
+        "none": "Choisissez au moins un fichier.",
+        "emailed": "Une copie a été envoyée à votre adresse e-mail.",
+        "email_failed": "Les fichiers ont été téléchargés, mais la copie par e-mail n'a pas pu être envoyée.",
+        "failed": "L'export a échoué. Veuillez réessayer."
+      },
+      "checked_in_kpi": "Participants enregistrés",
+      "transaction": {
+        "day": "Jour {n}",
+        "resend_done": "Billet renvoyé à {email}",
+        "resend_checked": "Déjà enregistré — rien à renvoyer.",
+        "resend_returned": "Ce billet a été retourné et ne peut plus être renvoyé.",
+        "resend_limited": "Trop de renvois pour le moment. Réessayez plus tard.",
+        "resend_failed": "Impossible de renvoyer le billet. Réessayez.",
+        "sending": "Envoi…",
+        "methods": {
+          "moncash": "MonCash",
+          "natcash": "NatCash",
+          "stripe": "Carte",
+          "wallet": "Portefeuille",
+          "free": "Gratuit"
+        },
+        "statuses": {
+          "SUCCESSFUL": "Réussie",
+          "PENDING": "En attente",
+          "FAILED": "Échouée",
+          "RETURNED": "Retournée"
+        },
+        "sent_wait": "Envoyé · à nouveau dans {minutes} min",
+        "resend_wait": "Déjà envoyé. Vous pourrez le renvoyer dans {minutes} min.",
+        "resend_ticket_daily": "Ce billet a déjà été renvoyé 3 fois aujourd’hui. Réessayez demain.",
+        "resend_org_daily": "Votre organisation a atteint la limite de renvois du jour. Réessayez dans {hours} h."
+      },
+      "create_ticket_upgrade": "L'ajout de classes de billets est disponible avec Pro."
     },
     "create_event": {
       "title": "Créer une activité",
@@ -1258,6 +1769,10 @@
             "connectedGeneric": "Connecté. Chaque acheteur reçoit son propre lien."
           },
           "upgrade": "Passer à la version supérieure"
+        },
+        "event": {
+          "title": "Événement",
+          "description": "En présentiel ou en ligne : concerts, conférences, ateliers, rencontres…"
         }
       },
       "tagPlaceholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d’espace",
@@ -1365,7 +1880,24 @@
       "price": "Prix",
       "quantity": "Quantité",
       "add_class": "Ajouter une catégorie de billet",
-      "event_link": "Plateformes en ligne",
+      "event_link": {
+        "title": "Lien de l’événement",
+        "platform_placeholder": "Choisir la plateforme en ligne",
+        "other": "Autre lien",
+        "ready": "Votre compte est connecté.",
+        "ready_as": "Connecté en tant que {account}.",
+        "connect_zoom_hint": "Connectez un compte Zoom sous licence : nous créerons la réunion et enverrons à chaque acheteur son propre lien.",
+        "connect_google_hint": "Connectez votre compte Google : nous créerons le Meet et inviterons chaque acheteur.",
+        "auto_link_hint": "La réunion est créée pour vous à l’enregistrement de l’événement.",
+        "connect": "Connecter le compte",
+        "link_placeholder": "Lien de diffusion / de réunion",
+        "password_placeholder": "Mot de passe (si nécessaire)",
+        "private_hint": "Seules les personnes munies d’un billet voient le lien et le mot de passe.",
+        "errors": {
+          "platform": "Choisissez où se déroule l’événement.",
+          "not_ready": "Connectez d’abord ce compte ou choisissez une autre plateforme."
+        }
+      },
       "leave_blank": "*Laissez vide pour des billets gratuits",
       "zoom": "En faire une réunion Zoom",
       "select_platform": "Sélectionnez une plateforme en ligne",
@@ -1418,7 +1950,9 @@
             "max": "La taille maximale du fichier est de 200ko.",
             "type": "Les fichiers .jpg, .jpeg, .png et .webp sont acceptés."
           },
-          "nameCheckFailed": "Nous n’avons pas pu vérifier si ce nom est libre. Vous pouvez continuer, mais s’il est déjà pris, l’activité sera refusée au moment de l’envoi."
+          "nameCheckFailed": "Nous n’avons pas pu vérifier si ce nom est libre. Vous pouvez continuer, mais s’il est déjà pris, l’activité sera refusée au moment de l’envoi.",
+          "category": "Choisissez une catégorie.",
+          "onlineLink": "Saisissez un lien complet commençant par https://"
         },
         "dateAndTime": {
           "eventDate": "La date de l’événement est requise",
@@ -1446,7 +1980,8 @@
             "exceedsLimit": "La quantité ne peut pas dépasser la limite de {limit} billets gratuits de votre forfait",
             "exceedsZoomSeats": "Le nombre total de billets ne peut pas dépasser les {limit} places de votre forfait Zoom.",
             "exceedsGoogleSeats": "Le nombre total de billets ne peut pas dépasser les {limit} personnes que votre forfait Google peut accueillir, une fois votre propre place d’hôte comptée."
-          }
+          },
+          "salesWindow": "La fin des ventes doit suivre leur début."
         }
       },
       "restaurant": {
@@ -1625,7 +2160,45 @@
       },
       "absorb_fees": "Prendre les frais en charge pour vos participants",
       "absorb_fees_hint": "Désactivé, les frais s’ajoutent à votre prix et votre participant les paie. Activé, le prix que vous fixez est exactement ce qu’il paie et les frais sont déduits de ce que vous recevez.",
-      "absorb_fees_locked": "Vous pouvez modifier ce réglage à tout moment. Il s’applique aux ventes futures ; les billets déjà vendus conservent le prix auquel ils ont été achetés."
+      "absorb_fees_locked": "Vous pouvez modifier ce réglage à tout moment. Il s’applique aux ventes futures ; les billets déjà vendus conservent le prix auquel ils ont été achetés.",
+      "title_event": "Créer un événement",
+      "publish_title": "Publier l’événement",
+      "create_cta": "Créer l’événement",
+      "publish_cta": "Publier l’événement",
+      "event_kind_title": "Type d’événement",
+      "event_type_placeholder": "Choisir le type d’événement",
+      "kind": {
+        "physical": "En présentiel",
+        "virtual": "En ligne"
+      },
+      "category_placeholder": "Catégorie (Concert, Conférence…)",
+      "sales_start": "Début des ventes",
+      "sales_end": "Fin des ventes",
+      "sales_window_hint": "Facultatif. Laissez vide pour vendre dès l’approbation de l’événement, jusqu’à sa fin.",
+      "created": {
+        "title": "Événement créé avec succès",
+        "published_title": "Événement publié avec succès",
+        "description": "Votre événement a été envoyé pour validation — vous serez prévenu dès qu’il sera en ligne. En attendant, vous pouvez le gérer et suivre ses performances depuis le tableau de bord.",
+        "opening": "Ouverture de l’événement...",
+        "raffle": "Tombola créée avec succès",
+        "sale": "Produit créé avec succès",
+        "restaurant": "Établissement créé avec succès",
+        "coming_soon": "Annonce créée avec succès",
+        "description_activity": "Elle a été envoyée pour validation — vous serez prévenu dès sa mise en ligne. En attendant, vous pouvez la gérer depuis vos activités.",
+        "opening_list": "Ouverture de vos activités..."
+      },
+      "edit_title": "Modifier l'événement",
+      "save_cta": "Enregistrer les modifications",
+      "free_locked": "Gratuit ou payant est fixé à la création de l'activité et ne peut plus changer, afin que les acheteurs gardent ce qu'ils ont payé.",
+      "location_me": "Ma position",
+      "location_locating": "Recherche de votre position…",
+      "location_hint": "Cliquez sur la carte pour placer un repère",
+      "location_search": "Rechercher un lieu ou une adresse",
+      "location_search_clear": "Effacer la recherche",
+      "location_search_empty": "Aucun lieu trouvé. Essayez un autre nom ou cliquez sur la carte.",
+      "location_search_error": "La recherche n’est pas disponible pour le moment. Cliquez sur la carte pour placer le repère.",
+      "location_search_min": "Saisissez au moins {min} caractères pour rechercher.",
+      "location_search_more": "Encore {count, plural, one {# caractère} other {# caractères}} pour lancer la recherche."
     },
     "sale_price_preview": {
       "title": "Ce que vos acheteurs paieront",
@@ -1687,7 +2260,27 @@
       "all_categories": "Toutes les catégories",
       "empty_status": "Rien ici pour le moment. Essayez un autre onglet ou retirez le filtre de catégorie.",
       "status_label": "Statut",
-      "category_label": "Catégorie"
+      "category_label": "Catégorie",
+      "title": "Filtres",
+      "reset": "Réinitialiser",
+      "apply": "{count, plural, =0 {Aucun résultat} one {Voir 1 résultat} other {Voir # résultats}}",
+      "location": "Lieu",
+      "any_location": "Tous les lieux",
+      "date": "Date",
+      "dates": {
+        "any": "Toutes les dates",
+        "today": "Aujourd’hui",
+        "week": "Cette semaine",
+        "month": "Ce mois-ci",
+        "next30": "30 prochains jours",
+        "past": "Passées"
+      },
+      "popularity": "Popularité",
+      "sort": {
+        "default": "Recommandé",
+        "views": "Les plus vues",
+        "sold": "Les plus vendues"
+      }
     },
     "restaurantCard": {
       "tag": "Bar & Restaurant",
@@ -1980,7 +2573,26 @@
         "deleted_notice": "Cette annonce a été supprimée."
       }
     },
-    "coming_soon_label": "Bientôt disponible"
+    "coming_soon_label": "Bientôt disponible",
+    "search_empty": "Aucune activité ne correspond à « {query} ».",
+    "badge": {
+      "requested": "Demandé",
+      "review": "En révision",
+      "rejected": "Refusé"
+    },
+    "online_link_label": "En ligne",
+    "create_ticket": {
+      "title": "Créer un billet",
+      "create": "Créer",
+      "free_only": "Cette activité est gratuite, les nouvelles classes le sont donc aussi.",
+      "paid_only": "Les nouvelles classes de billets de cette activité sont payantes.",
+      "existing": "En vente : {names}",
+      "success_title": "Nouveaux billets ajoutés avec succès",
+      "success_description": "Vos billets supplémentaires sont disponibles à l’achat. Les participants peuvent les réserver dès maintenant.",
+      "opening": "Ouverture de l'événement…",
+      "duplicate": "Une classe de billets porte déjà ce nom",
+      "failed": "Impossible d'ajouter les billets. Réessayez."
+    }
   },
   "Sales": {
     "single_sale": {
@@ -2225,15 +2837,15 @@
       "title": "Compte",
       "back": "Retour",
       "edit": "Modifier",
-      "save": "Sauvegarder",
+      "save": "Enregistrer",
       "resize": "Redimensionner votre image",
-      "subtitle": "Informations utilisateur",
+      "subtitle": "Informations de l'organisateur",
       "setProfile": "Définir l'image de profil",
       "personal": "Informations personnelles",
       "profileAlert": "Veuillez vous connecter à votre tableau de bord afin de consulter ou de mettre à jour les informations liées à votre profil. Une fois connecté, vous pourrez vérifier vos données et effectuer les modifications nécessaires directement depuis votre tableau de bord.",
       "securityTip": "Conseil de sécurité",
       "2faTip": "L’authentification à deux facteurs (2FA) ne peut pas être désactivée, car votre compte est propriétaire ou membre d’une organisation. Pour des raisons de sécurité et de conformité, les comptes organisationnels doivent toujours conserver la 2FA activée.",
-      "profileLink": "Lien vers votre profil",
+      "profileLink": "Modifier votre nom et votre photo dans votre profil Ticketwaze",
       "placeholders": {
         "firstname": "Prénom",
         "lastname": "Nom de famille",
@@ -2263,13 +2875,15 @@
         "title": "Compte",
         "created": "Date de création",
         "delete": "Supprimer le compte"
-      }
+      },
+      "cancel": "Annuler",
+      "saved": "Compte mis à jour"
     },
     "profile": {
       "title": "Profil",
       "back": "Retour",
       "edit": "Modifier",
-      "save": "Sauvegarder",
+      "save": "Enregistrer",
       "setProfile": "Définir l'image de profil",
       "subtitle": "Profil de l'organisation",
       "resize": "Redimensionner votre image",
@@ -2292,7 +2906,11 @@
         "instagram": "Identifiant Instagram",
         "twitter": "Identifiant X (Twitter)",
         "social_links": "Réseaux sociaux",
-        "social_links_premium": "Les liens sociaux ne sont affichés sur votre profil public qu'avec un abonnement Premium."
+        "social_links_premium": "Les liens sociaux ne sont affichés sur votre profil public qu'avec un abonnement Premium.",
+        "address": "Adresse",
+        "about": "À propos de l'organisation",
+        "email": "E-mail de contact",
+        "phone": "Téléphone de contact"
       },
       "errors": {
         "name": {
@@ -2302,14 +2920,18 @@
         "description": {
           "min": "La description de l'organisation ne peut pas contenir moins de 150 caractères",
           "max": "La description de l'organisation ne peut pas contenir plus de 350 caractères"
-        }
+        },
+        "email": "Saisissez une adresse e-mail valide"
       },
       "preferences": {
         "title": "Préférences de l'organisation",
         "currency": "Devise préférée",
         "notifications": "Fournisseur de notifications préféré",
         "none": "Aucun"
-      }
+      },
+      "cancel": "Annuler",
+      "saved": "Profil mis à jour",
+      "no_links": "Aucun lien ajouté pour le moment."
     },
     "team": {
       "title": "Équipe",
@@ -2341,7 +2963,7 @@
         "role": "Rôle",
         "status": "Statut"
       },
-      "requiresAccount": "La personne que vous invitez doit déjà posséder un compte Ticketwaze.",
+      "requiresAccount": "La personne recevra un lien par e-mail pour rejoindre l’équipe. Pas besoin de compte Ticketwaze : il suffit de choisir un mot de passe.",
       "permissions": "Permissions",
       "customPermissions": "Personnalisé",
       "preset": "Préréglages rapides",
@@ -2375,13 +2997,27 @@
       "errors": {
         "name": "Le nom ne peut pas être vide",
         "email": "Saisissez une adresse e-mail valide"
-      }
+      },
+      "owner": "Propriétaire",
+      "inactive": "Inactif",
+      "no_match": "Aucun membre ne correspond à votre recherche.",
+      "details_title": "Détails du membre",
+      "date_added": "Date d'ajout",
+      "remove_member_full": "Retirer le membre",
+      "edit_title": "Modifier le membre",
+      "email_address": "Adresse e-mail",
+      "invited_toast": "Invitation envoyée à {email}",
+      "confirm_remove": "Voulez-vous vraiment retirer <b>{name}</b> ? Cette personne perdra tout accès à cette organisation.",
+      "removed_title": "Membre retiré",
+      "removed_description": "Vous avez retiré <b>{name}</b>, qui n'a plus accès à cette organisation.",
+      "returning": "Retour à l'équipe…",
+      "transferred": "Propriété transférée à {name}"
     },
     "security": {
       "title": "Sécurité",
       "back": "Retour",
       "subtitle": "Changer le mot de passe",
-      "reset": "Mot de passe oublié ?",
+      "reset": "Réinitialiser le mot de passe",
       "placeholders": {
         "password": "Mot de passe actuel",
         "new": "Nouveau mot de passe",
@@ -2390,24 +3026,41 @@
       "errors": {
         "blank": "Le champ ne peut pas être vide",
         "password": "Le mot de passe doit contenir au moins 8 caractères",
-        "confirm": "Le mot de passe doit être identique"
+        "confirm": "Le mot de passe doit être identique",
+        "failed": "Impossible de changer le mot de passe. Réessayez."
       },
       "two_factor": "Authentification à deux facteurs",
       "securityTip": "Conseil de sécurité",
-      "2faTip": "L’authentification à deux facteurs (2FA) ne peut pas être désactivée, car votre compte est propriétaire ou membre d’une organisation. Pour des raisons de sécurité et de conformité, les comptes organisationnels doivent toujours conserver la 2FA activée.",
-      "passwordTip": "Après avoir mis à jour votre mot de passe, vous devrez vous reconnecter sur tous vos appareils pour des raisons de sécurité.",
-      "enable": "Activer"
+      "tip_required": "L’authentification à deux facteurs est activée car vous faites partie d’une organisation vérifiée. À chaque connexion avec votre e-mail et votre mot de passe, nous envoyons un code à {email}. Elle reste activée tant que vous en êtes membre.",
+      "tip_personal": "Vous avez activé l’authentification à deux facteurs depuis les paramètres de votre compte Ticketwaze. Vous pouvez la gérer depuis ces paramètres.",
+      "tip_off": "L’authentification à deux facteurs s’active automatiquement dès que la vérification (KYC) de votre organisation est approuvée. Chaque connexion par e-mail et mot de passe demandera alors un code envoyé à votre e-mail.",
+      "passwordTip": "Après la modification, vous devrez vous reconnecter sur tous vos appareils par mesure de sécurité.",
+      "enable": "Activer",
+      "change": "Changer le mot de passe",
+      "changed_title": "Mot de passe modifié",
+      "changed_description": "Votre mot de passe a été modifié. Reconnectez-vous avec le nouveau.",
+      "signing_out": "Déconnexion en cours…",
+      "add_title": "Créer un mot de passe",
+      "add_description": "Vous vous connectez avec Google. Créez un mot de passe pour pouvoir aussi vous connecter avec votre e-mail et votre mot de passe.",
+      "add_cta": "Créer le mot de passe",
+      "added_title": "Mot de passe créé",
+      "added_description": "Vous pouvez maintenant vous connecter avec votre e-mail et votre mot de passe, ou avec Google. Reconnectez-vous pour continuer.",
+      "tip_no_password": "L’authentification à deux facteurs protège les connexions par e-mail et mot de passe. Vous vous connectez avec Google, aucun code n’est donc demandé. Elle s’appliquera dès que vous créerez un mot de passe."
     },
     "payment": {
-      "title": "Banque",
+      "title": "Paiement",
       "edit": "Modifier",
-      "save": "Sauvegarder",
+      "save": "Enregistrer",
       "back": "Retour",
       "subtitle": "Compte de retrait",
       "errors": {
         "bank_name": "Le nom de la banque ne peut pas être vide",
         "bank_account_name": "Le nom du compte bancaire ne peut pas être vide",
-        "bank_account_number": "Le numéro de compte bancaire ne peut pas être vide"
+        "bank_account_number": "Le numéro de compte bancaire ne peut pas être vide",
+        "bank_incomplete": "Renseignez la banque, le numéro de compte et le titulaire.",
+        "moncash_invalid": "Saisissez le titulaire MonCash et un numéro à 8 chiffres.",
+        "natcash_invalid": "Saisissez le titulaire NatCash et un numéro à 8 chiffres.",
+        "save": "Impossible d'enregistrer. Réessayez."
       },
       "bank": "Détails bancaires",
       "bank_name": "Nom de la banque",
@@ -2426,7 +3079,7 @@
       "reset": "Réinitialiser le code PIN de retrait",
       "description": "Un e-mail de réinitialisation du code PIN de retrait a été envoyé à",
       "newRequest": "Vous pourrez effectuer une nouvelle demande dans",
-      "no_mail": "Vous n'avez pas reçu d'e-mail ? ",
+      "no_mail": "Pas reçu d'e-mail ?",
       "resend": "Renvoyer",
       "new_pin": "Définir un nouveau code PIN",
       "clearBanking": "Effacer les informations bancaires",
@@ -2434,7 +3087,22 @@
       "type": "Saisissez le nom de l’organisation pour confirmer",
       "noBankingInfo": "Vous n’avez actuellement aucune information bancaire ! Veuillez en ajouter avant d’essayer de supprimer. Si vous pensez qu’il s’agit d’une erreur, veuillez contacter le support.",
       "failedDelete": "Échec de la suppression des informations bancaires. Veuillez vérifier votre connexion Internet. Si l’erreur persiste, veuillez contacter le support.",
-      "successDelete": "Informations bancaires supprimées avec succès"
+      "successDelete": "Informations bancaires supprimées avec succès",
+      "cancel": "Annuler",
+      "saved": "Coordonnées de paiement mises à jour",
+      "moncash": "MonCash",
+      "natcash": "NatCash",
+      "holder_name": "Nom du titulaire",
+      "wallet_number": "Numéro de téléphone (8 chiffres)",
+      "change_pin_title": "Changer le code de retrait",
+      "reset_title": "Réinitialiser le code de retrait",
+      "reset_description": "Nous avons envoyé un lien à {email}. Ouvrez-le pour définir un nouveau code sécurisé et continuer à retirer vos gains en toute sécurité.",
+      "pin": "Créer le code de retrait",
+      "confirmPin": "Confirmer le code de retrait",
+      "set_new_pin": "Définir le nouveau code",
+      "pin_set_title": "Code de retrait mis à jour",
+      "pin_set_description": "Votre nouveau code est prêt pour votre prochain retrait.",
+      "returning": "Retour au paiement…"
     },
     "notification": {
       "title": "Notification",
@@ -2443,7 +3111,8 @@
       "ticket_sales": "Mises à jour des ventes de billets",
       "event_check_in": "Alertes d'enregistrement d'activité",
       "payment_update": "Mises à jour de paiement",
-      "platform": "Annonces de la plateforme"
+      "platform": "Annonces de la plateforme",
+      "error": "Impossible d’enregistrer vos préférences de notification. Réessayez."
     },
     "subscriptions": {
       "title": "Abonnements",
@@ -2587,6 +3256,13 @@
         "error_title": "Une erreur est survenue",
         "error_desc": "Nous n'avons pas pu activer votre abonnement. Veuillez réessayer ou contacter le support.",
         "error_retry": "Réessayer"
+      },
+      "billing": "Facturation",
+      "ends": "Se termine",
+      "status": {
+        "active": "Actif",
+        "canceled": "Annulé",
+        "expired": "Expiré"
       }
     },
     "integrations": {
@@ -2640,6 +3316,12 @@
           "durationHours": "{hours} heures"
         }
       }
-    }
+    },
+    "back": "Retour"
+  },
+  "SaveStatus": {
+    "saving": "Enregistrement…",
+    "saved": "Enregistré",
+    "error": "Non enregistré"
   }
 }

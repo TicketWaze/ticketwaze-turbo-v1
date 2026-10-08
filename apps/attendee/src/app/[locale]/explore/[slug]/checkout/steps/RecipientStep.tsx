@@ -4,24 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Sms, Warning2 } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
 import { Control, useWatch } from "react-hook-form";
-import { Event, EventTicketType } from "@ticketwaze/typescript-config";
-import Capitalize from "@/lib/Capitalize";
+import { EventTicketType } from "@ticketwaze/typescript-config";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import { Input } from "@/components/shared/Inputs";
-import {
-  AttendeeFormData,
-  FeeBreakdown,
-  GuestInfo,
-  PaymentType,
-  SelectedTicket,
-  TicketFormData,
-} from "../checkout.types";
-import TicketSummaryCard from "../TicketSummaryCard";
+import { AttendeeFormData, GuestInfo, TicketFormData } from "../checkout.types";
 
 interface AttendeeCardProps {
   attendeeIndex: number;
   ticketTypeName: string;
-  sameTypeCount: number;
   isGuest: boolean;
   control: Control<{
     tickets: TicketFormData[];
@@ -34,7 +24,6 @@ interface AttendeeCardProps {
 function AttendeeCard({
   attendeeIndex,
   ticketTypeName,
-  sameTypeCount,
   isGuest,
   control,
   register,
@@ -50,7 +39,8 @@ function AttendeeCard({
   return (
     <div className="border border-neutral-100 rounded-[15px] flex flex-col gap-6 p-6">
       <div className="flex items-center w-full justify-between font-semibold text-[1.6rem] leading-8 text-deep-100">
-        <span>#{sameTypeCount + 1}</span>
+        {/* Numbered across the whole order (#1, #2, #3), as in Figma. */}
+        <span>#{attendeeIndex + 1}</span>
         <span>{ticketTypeName}</span>
       </div>
 
@@ -110,14 +100,9 @@ interface Props {
   delta: number;
   watchedAttendees: AttendeeFormData[];
   ticketTypes: EventTicketType[];
-  event: Event;
-  isFree: boolean;
   isGuest: boolean;
   guestInfo: GuestInfo;
   onGuestInfoChange: (info: GuestInfo) => void;
-  selectedWithIndex: SelectedTicket[];
-  feeBreakdown: FeeBreakdown;
-  paymentType: PaymentType;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   register: (name: string, options?: object) => any;
   control: Control<{
@@ -130,14 +115,9 @@ export default function RecipientStep({
   delta,
   watchedAttendees,
   ticketTypes,
-  event,
-  isFree,
   isGuest,
   guestInfo,
   onGuestInfoChange,
-  selectedWithIndex,
-  feeBreakdown,
-  paymentType,
   register,
   control,
 }: Props) {
@@ -200,37 +180,20 @@ export default function RecipientStep({
           const ticketType = ticketTypes.find(
             (tt) => tt.eventTicketTypeId === attendee?.ticketTypeId,
           );
-          const sameTypeCount = watchedAttendees
-            .slice(0, attendeeIndex)
-            .filter((a) => a.ticketTypeId === attendee?.ticketTypeId).length;
 
           return (
             <AttendeeCard
               key={`attendee-${attendeeIndex}-${attendee.ticketTypeId}`}
               attendeeIndex={attendeeIndex}
               ticketTypeName={
-                ticketType
-                  ? Capitalize(ticketType.ticketTypeName)
-                  : "Unknown Ticket"
+                ticketType ? ticketType.ticketTypeName : "Unknown Ticket"
               }
-              sameTypeCount={sameTypeCount}
               isGuest={isGuest}
               control={control}
               register={register}
             />
           );
         })}
-      </div>
-
-      <div className="lg:hidden flex flex-col gap-8">
-        <TicketSummaryCard
-          selectedWithIndex={selectedWithIndex}
-          ticketTypes={ticketTypes}
-          event={event}
-          isFree={isFree}
-          feeBreakdown={feeBreakdown}
-          paymentType={paymentType}
-        />
       </div>
     </motion.div>
   );

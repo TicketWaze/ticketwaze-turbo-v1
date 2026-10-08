@@ -36,14 +36,14 @@ export default async function DiscountCode({
   const eventResponse = await eventRequest.json().catch(() => null);
   if (!eventRequest.ok || !eventResponse?.event) {
     return (
-      <OrganizerLayout title="Discount codes">
+      <OrganizerLayout title="">
         <FetchFailedErrorView />
       </OrganizerLayout>
     );
   }
   const event: Event = eventResponse.event;
   return (
-    <OrganizerLayout title="Discount codes">
+    <OrganizerLayout title="">
       <BackButton text={t("back")} />
       <DiscountPageContent event={event} />
     </OrganizerLayout>

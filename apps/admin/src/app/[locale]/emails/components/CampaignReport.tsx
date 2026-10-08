@@ -2,21 +2,25 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ArrowLeft } from "iconsax-reactjs";
-import { Link } from "@/i18n/navigation";
+import { PAGE_SCROLLER } from "@/components/shared/PageTitle";
+import SettingsHeader from "@/components/shared/SettingsHeader";
+import { Reveal } from "@/components/shared/motion";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Badge,
+  CARD,
+  HEADER_PILL,
+  PILL_TONE,
+  TABLE_CELL,
+  TABLE_HEAD,
+  TableFrame,
+} from "@/components/shared/DataTable";
+import { cn } from "@/lib/utils";
+import { Metric } from "../../analytics/parts";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { usePermissions } from "@/hooks/usePermissions";
 import formatDate from "@/lib/FormatDate";
 import { CancelCampaignAction, FetchCampaignAction } from "@/actions/Campaign";
-import type { CampaignStatus } from "./EmailsPageContent";
+import { CAMPAIGN_TONE, type CampaignStatus } from "./EmailsPageContent";
 
 export interface CampaignDetail {
   emailCampaignId: string;
@@ -57,15 +61,6 @@ interface Props {
   initialFailures: CampaignFailure[];
   accessToken: string;
 }
-
-const STATUS_STYLES: Record<CampaignStatus, string> = {
-  draft: "bg-neutral-100 text-neutral-700",
-  queued: "bg-primary-50 text-primary-600",
-  sending: "bg-primary-50 text-primary-600",
-  sent: "bg-success/10 text-success",
-  failed: "bg-failure/10 text-failure",
-  cancelled: "bg-neutral-100 text-neutral-500",
-};
 
 /** A send moves in the background, so these two states are the ones worth watching. */
 const IN_FLIGHT: CampaignStatus[] = ["queued", "sending"];
@@ -137,177 +132,136 @@ export default function CampaignReport({
   const done = progress.sent + progress.failed + progress.skipped;
   const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
-  return (
-    <div className="overflow-y-scroll flex flex-col gap-8 pb-24">
-      {/* Header */}
-      <div className="flex flex-col gap-4">
-        <Link
-          href="/emails"
-          className="flex items-center gap-2 text-[1.4rem] leading-8 text-neutral-600 hover:text-primary-500 transition-colors w-fit"
-        >
-          <ArrowLeft size="18" />
-          {t("compose.backToList")}
-        </Link>
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-4">
-              <h3 className="font-medium font-primary text-[2.6rem] leading-12 text-black">
-                {campaign.name}
-              </h3>
-              <span
-                className={`inline-flex px-4 py-[0.2rem] rounded-[3rem] text-[1.3rem] leading-8 font-medium ${STATUS_STYLES[campaign.status]}`}
-              >
-                {t(`status.${campaign.status}`)}
-              </span>
-            </div>
-            <p className="text-[1.4rem] leading-8 text-neutral-600">
-              {campaign.subjectFr}
-            </p>
-          </div>
+  const tiles = [
+    { key: "recipients", value: total },
+    { key: "delivered", value: progress.sent },
+    { key: "failed", value: progress.failed, danger: true },
+    { key: "skipped", value: progress.skipped },
+  ];
 
-          {isRunning && can("campaigns.send") && (
-            <button
-              onClick={handleCancel}
-              disabled={isCancelling}
-              className="flex items-center justify-center gap-2 px-6 py-[0.8rem] rounded-[3rem] border border-failure text-failure text-[1.4rem] leading-8 font-medium cursor-pointer disabled:opacity-50 hover:bg-failure/5 transition-colors"
-            >
-              {isCancelling ? <LoadingCircleSmall /> : t("report.stop")}
-            </button>
-          )}
-        </div>
-      </div>
+  return (
+    <div className={cn(PAGE_SCROLLER, "gap-0")}>
+      <SettingsHeader
+        title={campaign.name}
+        description={campaign.subjectFr}
+        back={{ href: "/emails", label: t("title") }}
+        actions={
+          <div className="flex items-center gap-[1rem] w-full lg:w-auto">
+            <Badge tone={CAMPAIGN_TONE[campaign.status]}>{t(`status.${campaign.status}`)}</Badge>
+            {isRunning && can("campaigns.send") && (
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={isCancelling}
+                className={cn(HEADER_PILL, PILL_TONE.danger)}
+              >
+                {isCancelling ? <LoadingCircleSmall /> : t("report.stop")}
+              </button>
+            )}
+          </div>
+        }
+      />
 
       {campaign.lastError && (
-        <div className="px-8 py-6 rounded-[10px] bg-failure/5">
-          <p className="text-[1.4rem] leading-8 text-failure">
-            {campaign.lastError}
-          </p>
+        <div className="px-8 py-6 mb-8 rounded-[1rem] bg-failure/5">
+          <p className="text-[1.4rem] leading-8 text-failure">{campaign.lastError}</p>
         </div>
       )}
 
-      {/* Progress */}
       {isRunning && (
-        <div className="flex flex-col gap-3">
+        <Reveal className="flex flex-col gap-3 pb-8">
           <div className="flex items-center justify-between">
             <span className="text-[1.4rem] leading-8 text-neutral-700">
               {t("report.progress", { done, total })}
             </span>
-            <span className="text-[1.4rem] leading-8 text-neutral-500">
-              {percent}%
-            </span>
+            <span className="text-[1.4rem] leading-8 text-neutral-600">{percent}%</span>
           </div>
           <div className="w-full h-[0.8rem] rounded-[3rem] bg-neutral-100 overflow-hidden">
             <div
-              className="h-full bg-primary-500 transition-[width] duration-700"
+              className="h-full bg-primary-500 rounded-[3rem] transition-[width] duration-700"
               style={{ width: `${percent}%` }}
             />
           </div>
-          <p className="text-[1.3rem] leading-6 text-neutral-500">
-            {t("report.progressHint")}
-          </p>
-        </div>
+          <p className="text-[1.3rem] leading-6 text-neutral-600">{t("report.progressHint")}</p>
+        </Reveal>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-neutral-100 border-neutral-100 border-b">
-        <div className="pb-8 lg:pb-12">
-          <span className="text-[14px] text-neutral-600 leading-8 pb-2 block">
-            {t("report.stats.recipients")}
-          </span>
-          <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
-            {total}
-          </p>
-        </div>
-        <div className="pl-6 lg:pl-10 pb-8 lg:pb-12">
-          <span className="text-[14px] text-neutral-600 leading-8 pb-2 block">
-            {t("report.stats.delivered")}
-          </span>
-          <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
-            {progress.sent}
-          </p>
-        </div>
-        <div className="pt-8 lg:pt-0 lg:pl-10 pb-8 lg:pb-12">
-          <span className="text-[14px] text-neutral-600 leading-8 pb-2 block">
-            {t("report.stats.failed")}
-          </span>
-          <p
-            className={`font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary ${progress.failed > 0 ? "text-failure" : ""}`}
+      <Reveal className="grid grid-cols-2 lg:grid-cols-4 border-b border-neutral-100">
+        {tiles.map((tile, i) => (
+          <div
+            key={tile.key}
+            className={cn(
+              "py-6 pr-6 border-neutral-100",
+              i % 2 === 1 && "pl-6 lg:pl-10 border-l",
+              i === 2 && "max-lg:border-t lg:pl-10 lg:border-l",
+              i === 3 && "max-lg:border-t",
+            )}
           >
-            {progress.failed}
-          </p>
-        </div>
-        <div className="pl-6 lg:pl-10 pt-8 lg:pt-0 pb-8 lg:pb-12">
-          <span className="text-[14px] text-neutral-600 leading-8 pb-2 block">
-            {t("report.stats.skipped")}
-          </span>
-          <p className="font-medium text-[1.6rem] lg:text-[25px] leading-12 font-primary">
-            {progress.skipped}
-          </p>
-        </div>
-      </div>
+            <Metric label={t(`report.stats.${tile.key}`)}>
+              <span className={tile.danger && tile.value > 0 ? "text-failure" : undefined}>
+                {tile.value.toLocaleString(locale)}
+              </span>
+            </Metric>
+          </div>
+        ))}
+      </Reveal>
 
-      {/* Audience + timing */}
-      <div className="flex flex-col gap-4 p-8 rounded-[10px] border border-neutral-200">
-        <span className="text-[1.4rem] leading-8 text-neutral-700 font-medium">
+      <Reveal delay={0.05} className={cn(CARD, "flex flex-col gap-4 mt-12")}>
+        <span className="font-primary font-medium text-[1.6rem] leading-9 text-black">
           {t("report.audience")}
         </span>
-        <ul className="flex flex-col gap-2 text-[1.4rem] leading-8 text-neutral-600">
-          {campaign.toAllUsers && <li>· {t("recipients.allUsers")}</li>}
-          {campaign.toAllOrganisations && (
-            <li>· {t("recipients.allOrganisations")}</li>
-          )}
+        <div className="flex flex-wrap gap-2">
+          {campaign.toAllUsers && <Badge>{t("recipients.allUsers")}</Badge>}
+          {campaign.toAllOrganisations && <Badge>{t("recipients.allOrganisations")}</Badge>}
           {campaign.manualEmails?.length > 0 && (
-            <li>
-              · {t("report.manualCount", { count: campaign.manualEmails.length })}
-            </li>
-          )}
-        </ul>
-        <div className="flex flex-col gap-1 pt-4 border-t border-neutral-100 text-[1.3rem] leading-6 text-neutral-500">
-          <span>
-            {t("report.createdAt")}:{" "}
-            {formatDate(campaign.createdAt, locale, "local")}
-          </span>
-          {campaign.queuedAt && (
-            <span>
-              {t("report.sentAt")}:{" "}
-              {formatDate(campaign.queuedAt, locale, "local")}
-            </span>
+            <Badge>{t("report.manualCount", { count: campaign.manualEmails.length })}</Badge>
           )}
         </div>
-      </div>
-
-      {/* Failures */}
-      {failures.length > 0 && (
-        <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-neutral-100">
           <div className="flex flex-col gap-1">
-            <span className="text-[1.4rem] leading-8 text-neutral-700 font-medium">
-              {t("report.failures")}
-            </span>
-            <span className="text-[1.3rem] leading-6 text-neutral-500">
-              {t("report.failuresHint")}
+            <span className="text-[1.3rem] leading-7 text-neutral-600">{t("report.createdAt")}</span>
+            <span className="text-[1.5rem] text-deep-100">
+              {formatDate(campaign.createdAt, locale, "local")}
             </span>
           </div>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>{t("report.columns.email")}</TableHead>
-                <TableHead>{t("report.columns.source")}</TableHead>
-                <TableHead>{t("report.columns.reason")}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {failures.map((failure) => (
-                <TableRow key={failure.email}>
-                  <TableCell>{failure.email}</TableCell>
-                  <TableCell>{t(`report.source.${failure.source}`)}</TableCell>
-                  <TableCell className="text-failure">
-                    {failure.error}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          {campaign.queuedAt && (
+            <div className="flex flex-col gap-1">
+              <span className="text-[1.3rem] leading-7 text-neutral-600">{t("report.sentAt")}</span>
+              <span className="text-[1.5rem] text-deep-100">
+                {formatDate(campaign.queuedAt, locale, "local")}
+              </span>
+            </div>
+          )}
         </div>
+      </Reveal>
+
+      {failures.length > 0 && (
+        <Reveal delay={0.1} className="flex flex-col gap-6 pt-12 pb-10">
+          <div className="flex flex-col gap-1">
+            <h4 className="font-primary font-medium text-[1.8rem] leading-10 text-black">
+              {t("report.failures")}
+            </h4>
+            <span className="text-[1.4rem] leading-8 text-neutral-600">{t("report.failuresHint")}</span>
+          </div>
+          <TableFrame minWidth="64rem">
+            <thead>
+              <tr className="border-b border-neutral-100">
+                <th className={TABLE_HEAD}>{t("report.columns.email")}</th>
+                <th className={TABLE_HEAD}>{t("report.columns.source")}</th>
+                <th className={TABLE_HEAD}>{t("report.columns.reason")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {failures.map((failure) => (
+                <tr key={failure.email} className="border-b border-neutral-100">
+                  <td className={TABLE_CELL}>{failure.email}</td>
+                  <td className={TABLE_CELL}>{t(`report.source.${failure.source}`)}</td>
+                  <td className={cn(TABLE_CELL, "text-failure")}>{failure.error}</td>
+                </tr>
+              ))}
+            </tbody>
+          </TableFrame>
+        </Reveal>
       )}
     </div>
   );
