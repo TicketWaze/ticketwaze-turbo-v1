@@ -13,6 +13,7 @@ import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import UnauthorizedView from "@/components/shared/UnauthorizedView";
 import CampaignEditor from "@/components/shared/CampaignEditor";
 import { usePermissions } from "@/hooks/usePermissions";
+import { compressImage } from "@/lib/compressImage";
 import {
   CreateCampaignAction,
   PreviewAudienceAction,
@@ -118,7 +119,7 @@ export default function CampaignComposer({ accessToken, campaign }: Props) {
 
   async function uploadImage(file: File): Promise<string> {
     const formData = new FormData();
-    formData.append("image", file);
+    formData.append("image", await compressImage(file));
     const result = await UploadCampaignImageAction(formData, auth);
     if ("error" in result) throw new Error(result.error);
     return result.url;

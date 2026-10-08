@@ -2073,6 +2073,12 @@
       "buttonLabelPrompt": "Texte du bouton",
       "buttonUrlPrompt": "Adresse du bouton",
       "uploadFailed": "Cette image n’a pas pu être téléversée.",
+      "imageMove": "Glisser pour déplacer",
+      "imageRemove": "Supprimer l’image",
+      "grid": "Ajouter des images côte à côte (jusqu’à 3)",
+      "gridAdd": "Ajouter une image",
+      "gridRemove": "Supprimer la rangée",
+      "gridTooMany": "Une rangée contient au plus {max} images : seules les {max} premières ont été ajoutées.",
       "mergeTagsLabel": "Insérer :",
       "mergeTagsHint": "Remplacé par les informations du destinataire. Vide si nous n’avons pas son nom."
     },

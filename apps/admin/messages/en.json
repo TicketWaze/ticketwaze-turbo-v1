@@ -2080,6 +2080,12 @@
       "buttonLabelPrompt": "Button label",
       "buttonUrlPrompt": "Button link address",
       "uploadFailed": "That image could not be uploaded.",
+      "imageMove": "Drag to move",
+      "imageRemove": "Remove image",
+      "grid": "Add images side by side (up to 3)",
+      "gridAdd": "Add image",
+      "gridRemove": "Remove row",
+      "gridTooMany": "A row holds up to {max} images, so only the first {max} were added.",
       "mergeTagsLabel": "Insert:",
       "mergeTagsHint": "Replaced with the recipient details. Empty for anyone we have no name for."
     },

@@ -8,6 +8,7 @@ import {
   AlignLeft,
   AlignRight,
   Bold,
+  Columns3,
   Heading2,
   Heading3,
   ImagePlus,
@@ -24,10 +25,23 @@ import {
 import { toast } from "sonner";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import {
+  CAMPAIGN_CONTENT_WIDTH,
+  CAMPAIGN_GRID_MAX,
   CampaignButton,
   CampaignImage,
+  CampaignImageGrid,
   CampaignTextAlign,
 } from "@/components/shared/CampaignEditorExtensions";
+
+/** The image's own width, so a small logo is not blown up to full width. */
+function naturalWidth(src: string): Promise<number | null> {
+  return new Promise((resolve) => {
+    const image = new window.Image();
+    image.onload = () => resolve(image.naturalWidth || null);
+    image.onerror = () => resolve(null);
+    image.src = src;
+  });
+}
 
 /**
  * STEP ONE OF THE COMPOSER: the body of the email.
@@ -108,6 +122,7 @@ export default function CampaignEditor({
   const [isUploading, setIsUploading] = useState(false);
   const lastInternalHtml = useRef(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const gridInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => setMounted(true), []);
 
@@ -125,7 +140,25 @@ export default function CampaignEditor({
         },
       }),
       Placeholder.configure({ placeholder: placeholder ?? "" }),
-      CampaignImage,
+      CampaignImage.configure({
+        labels: {
+          move: t("editor.imageMove"),
+          left: t("editor.alignLeft"),
+          center: t("editor.alignCenter"),
+          right: t("editor.alignRight"),
+          remove: t("editor.imageRemove"),
+        },
+      }),
+      CampaignImageGrid.configure({
+        upload: onUploadImage,
+        labels: {
+          move: t("editor.imageMove"),
+          add: t("editor.gridAdd"),
+          removeImage: t("editor.imageRemove"),
+          remove: t("editor.gridRemove"),
+          uploadFailed: t("editor.uploadFailed"),
+        },
+      }),
       CampaignButton,
       CampaignTextAlign,
     ],
@@ -178,7 +211,39 @@ export default function CampaignEditor({
     setIsUploading(true);
     try {
       const url = await onUploadImage(file);
-      editor?.chain().focus().setCampaignImage({ src: url, alt: "" }).run();
+      const natural = await naturalWidth(url);
+      const width = Math.min(
+        natural ?? CAMPAIGN_CONTENT_WIDTH,
+        CAMPAIGN_CONTENT_WIDTH,
+      );
+      editor
+        ?.chain()
+        .focus()
+        .setCampaignImage({ src: url, alt: "", width })
+        .run();
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t("editor.uploadFailed"),
+      );
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  /** Uploads up to three images at once and drops them in as one row. */
+  async function uploadGrid(files: File[]) {
+    setIsUploading(true);
+    try {
+      const urls = await Promise.all(
+        files.slice(0, CAMPAIGN_GRID_MAX).map(onUploadImage),
+      );
+      editor
+        ?.chain()
+        .focus()
+        .setCampaignImageGrid({
+          images: urls.map((src) => ({ src, alt: "" })),
+        })
+        .run();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : t("editor.uploadFailed"),
@@ -354,6 +419,13 @@ export default function CampaignEditor({
             {isUploading ? <LoadingCircleSmall /> : <ImagePlus size={16} />}
           </ToolbarBtn>
           <ToolbarBtn
+            title={t("editor.grid")}
+            disabled={isUploading}
+            onClick={() => gridInputRef.current?.click()}
+          >
+            <Columns3 size={16} />
+          </ToolbarBtn>
+          <ToolbarBtn
             title={t("editor.divider")}
             onClick={() => editor.chain().focus().setHorizontalRule().run()}
           >
@@ -361,8 +433,16 @@ export default function CampaignEditor({
           </ToolbarBtn>
         </div>
 
+        {/* The column is the email's own content width, so an image sized
+            here is the size it lands in the inbox. The top padding leaves room
+            for the image toolbar above a first-line image. */}
         <div className="px-8 py-6" onClick={() => editor.chain().focus().run()}>
-          <EditorContent editor={editor} />
+          <div
+            className="mx-auto pt-10"
+            style={{ maxWidth: CAMPAIGN_CONTENT_WIDTH }}
+          >
+            <EditorContent editor={editor} />
+          </div>
         </div>
       </div>
 
@@ -399,6 +479,22 @@ export default function CampaignEditor({
           // Cleared so picking the same file twice in a row still fires.
           event.target.value = "";
           if (file) void uploadAndInsert(file);
+        }}
+      />
+      {/* Pick one to three images; they become one row. */}
+      <input
+        ref={gridInputRef}
+        type="file"
+        multiple
+        accept="image/png,image/jpeg,image/webp,image/gif"
+        className="hidden"
+        onChange={(event) => {
+          const files = Array.from(event.target.files ?? []);
+          event.target.value = "";
+          if (files.length > CAMPAIGN_GRID_MAX) {
+            toast.info(t("editor.gridTooMany", { max: CAMPAIGN_GRID_MAX }));
+          }
+          if (files.length) void uploadGrid(files);
         }}
       />
     </div>
