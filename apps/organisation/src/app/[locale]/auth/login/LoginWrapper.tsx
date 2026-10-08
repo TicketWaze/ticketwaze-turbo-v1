@@ -5,6 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { safeNextPath, withNext } from "@/lib/nextPath";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
@@ -54,9 +55,14 @@ export default function LoginWrapper() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email") ?? undefined;
-  // Arriving from the attendee app's "Organizer" choice, or from a link that
-  // already names the account, means the role was chosen: go to the form.
-  const skipRole = Boolean(email) || searchParams.get("role") === "organizer";
+  // Where to go once signed in (an emailed link, e.g. "Verify my
+  // organisation"); onboarding lands there instead of the dashboard.
+  const next = safeNextPath(searchParams.get("next"));
+  // Arriving from the attendee app's "Organizer" choice, from a link that
+  // already names the account, or headed for a dashboard page means the role
+  // was chosen: go to the form.
+  const skipRole =
+    Boolean(email) || Boolean(next) || searchParams.get("role") === "organizer";
   const [view, setView] = useState<View>(skipRole ? "credentials" : "role");
   const [splashDone, setSplashDone] = useState(
     skipRole || searchParams.has("start"),
@@ -125,7 +131,7 @@ export default function LoginWrapper() {
     const session = await update();
     const lang = session?.user?.userPreference?.appLanguage ?? locale;
     window.location.assign(
-      `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${lang}/auth/onboarding`,
+      `${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${lang}${withNext("/auth/onboarding", next)}`,
     );
   }
 
@@ -328,7 +334,7 @@ export default function LoginWrapper() {
                     <OrDivider />
                     <AuthItem>
                       <GoogleSignInButton
-                        callbackUrl={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}/auth/onboarding`}
+                        callbackUrl={`${process.env.NEXT_PUBLIC_ORGANISATION_URL}/${locale}${withNext("/auth/onboarding", next)}`}
                       />
                     </AuthItem>
                     <AuthItem>

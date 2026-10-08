@@ -224,7 +224,6 @@ export default async function AnalyticsPage({
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            {isFree && <UpgradeButton label={t("upgrade")} />}
             <AnalyticsFilters
               events={analytics.events ?? []}
               eventId={eventId}
