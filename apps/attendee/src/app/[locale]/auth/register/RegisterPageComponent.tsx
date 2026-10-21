@@ -198,8 +198,7 @@ export default function RegisterPageComponent({
   async function handleVerifyOtp(entered?: string | React.SyntheticEvent) {
     // OtpCodeInput passes the code it just completed; the Verify button
     // passes its click event, so fall back to state then.
-    const otpString =
-      typeof entered === "string" ? entered : otp.join("");
+    const otpString = typeof entered === "string" ? entered : otp.join("");
     if (otpString.length < 6 || isVerifying) return;
     setIsVerifying(true);
     setOtpError("");
@@ -239,9 +238,13 @@ export default function RegisterPageComponent({
         }
       } else {
         const msg: string = response.message ?? "";
-        if (msg.includes("expired")) {
+        // The API's `code`; the message text only for an API not yet deployed.
+        if (response.code === "CODE_EXPIRED" || msg.includes("expired")) {
           setOtpError(t("otp.errors.expired"));
-        } else if (msg.includes("No verification code")) {
+        } else if (
+          response.code === "CODE_NOT_FOUND" ||
+          msg.includes("No verification code")
+        ) {
           setOtpError(t("otp.errors.notFound"));
         } else {
           setOtpError(t("otp.errors.invalid"));

@@ -320,7 +320,8 @@
         "password": "Password Field cannot be blank",
         "wrong": "Email address or password is incorrect",
         "google_failed": "Google sign-in failed. Please try again.",
-        "organisation_suspended": "This organisation is suspended, so its dashboard is unavailable. Check the email we sent for the reason, or contact support to appeal."
+        "organisation_suspended": "This organisation is suspended, so its dashboard is unavailable. Check the email we sent for the reason, or contact support to appeal.",
+        "unverified": "Your email isn’t confirmed yet. We’ve emailed you a code: sign up again with this email to enter it."
       },
       "forgot": "Forgot password",
       "method": {

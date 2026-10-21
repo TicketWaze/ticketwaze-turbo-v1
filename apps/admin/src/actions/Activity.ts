@@ -439,8 +439,8 @@ export async function GiveawayTicketsAction(
         status: "success" as const,
         ticketsIssued: data.ticketsIssued as number,
         ticketTypeName: data.ticketTypeName as string,
-        creditedHtg: data.creditedHtg as number,
-        creditedUsd: data.creditedUsd as number,
+        maxCreditHtg: data.maxCreditHtg as number,
+        maxCreditUsd: data.maxCreditUsd as number,
       };
     }
     throw new Error(data.message);

@@ -2,6 +2,7 @@ import { CredentialsSignin } from "next-auth";
 import {
   encodeMfaChallenge,
   encodeMfaFailure,
+  encodeUnverified,
   type MfaCodeFailure,
 } from "./mfa-shared";
 
@@ -49,6 +50,26 @@ export function assertNoMfa(data: {
       email: data.email ?? "",
       resendAfterSeconds: data.resendAfterSeconds,
     });
+  }
+}
+
+export class EmailNotVerifiedError extends CredentialsSignin {
+  constructor(retryAfterSeconds?: number) {
+    super();
+    this.code = encodeUnverified(retryAfterSeconds);
+  }
+}
+
+/**
+ * Throws `EmailNotVerifiedError` when a login answer says the email was never
+ * confirmed (the API has emailed a fresh code; see readUnverifiedCode).
+ */
+export function assertVerified(data: {
+  code?: string;
+  retryAfterSeconds?: number;
+}) {
+  if (data?.code === "EMAIL_NOT_VERIFIED") {
+    throw new EmailNotVerifiedError(data.retryAfterSeconds);
   }
 }
 

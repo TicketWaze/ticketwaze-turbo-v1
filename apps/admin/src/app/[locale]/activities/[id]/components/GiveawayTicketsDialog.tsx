@@ -64,9 +64,10 @@ function giveawayBlockedReason(event: Event): string | null {
  * show, and a quantity per person is a different feature with a different
  * conversation about inventory.
  *
- * TICKETWAZE PAYS. The organisation is credited the tier's face value in both
- * currencies, so the cost is shown before the button rather than discovered in
- * the ledger afterwards — it is the part of this decision that spends money.
+ * TICKETWAZE PAYS, BUT ONLY FOR USED SEATS. Nothing is credited when the
+ * tickets are given: after the event the organisation is paid each SCANNED
+ * seat (every seat, on an online event) at face value minus our fee. The face
+ * value is shown before the button as the ceiling of what this can cost.
  *
  * Recipients must hold an account: the search only returns accounts, so there
  * is no path here to gift a bare email address. Someone who already holds a
@@ -205,14 +206,14 @@ export default function GiveawayTicketsDialog({
       return;
     }
 
-    // The credited amount is reported rather than swallowed: it is what
-    // Ticketwaze just spent, and the organiser's balance now shows it.
+    // The ceiling is reported rather than swallowed: it is the most Ticketwaze
+    // can end up paying for this, once the scans are in.
     toast.success(
-      `Gave ${result.ticketsIssued} ${result.ticketTypeName} ticket(s). Organiser credited ${formatMoney(
-        result.creditedHtg,
+      `Gave ${result.ticketsIssued} ${result.ticketTypeName} ticket(s). The organiser will be paid up to ${formatMoney(
+        result.maxCreditHtg,
         "HTG",
         locale,
-      )} / ${formatMoney(result.creditedUsd, "USD", locale)}.`,
+      )} / ${formatMoney(result.maxCreditUsd, "USD", locale)} after the event, for the tickets that get scanned.`,
       { duration: 10000 },
     );
     handleOpenChange(false);
@@ -422,7 +423,7 @@ export default function GiveawayTicketsDialog({
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Why these tickets are being given away. Recorded on the organiser's balance ledger."
+              placeholder="Why these tickets are being given away. Posted with the giveaway in the activity feed."
               rows={2}
               maxLength={500}
               className="w-full resize-none rounded-2xl border-2 border-neutral-200 px-4 py-3 text-[1.4rem] leading-7 text-black placeholder:text-neutral-400 focus:border-black focus:outline-none transition-colors"
@@ -445,9 +446,11 @@ export default function GiveawayTicketsDialog({
                 </span>
               </div>
               <p className="text-[1.25rem] leading-6 text-neutral-600">
-                Ticketwaze covers this. The organiser&apos;s pending balance is
-                credited the same amount in both HTG and USD, and these seats
-                come out of the ticket type&apos;s inventory.
+                Face value, the most this can cost. Ticketwaze pays the
+                organiser only for tickets that get scanned (every ticket on an
+                online event), after the event, minus our fee. Nothing is
+                credited now. These seats come out of the ticket type&apos;s
+                inventory.
               </p>
             </div>
           )}

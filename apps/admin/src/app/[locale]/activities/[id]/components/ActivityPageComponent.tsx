@@ -131,19 +131,20 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
    * was credited nothing, and it takes no tier inventory — so counting it here
    * would push this figure above the tier counters in the tile below and add a
    * row that can never contribute to revenue. An admin giveaway stays counted:
-   * the organisation WAS credited the face value and the seat does come out of
-   * the tier, so on both counts it behaves like a sale.
+   * Ticketwaze pays the organisation for the seat if it is used, and the seat
+   * does come out of the tier, so on both counts it behaves like a sale.
    */
   const rewardTickets = soldTickets.filter((o) => o.source === "reward");
   const purchasedTickets = soldTickets.filter((o) => o.source !== "reward");
   /**
    * Revenue is what the ORGANISATION EARNED, not what buyers paid — the two
-   * differ on a giveaway (price 0, face value credited) and on a fee-absorbing
+   * differ on a giveaway (price 0, paid net of fee only if scanned) and on a fee-absorbing
    * activity (price higher than the earnings). See lib/ticketEarnings.
    */
   const totalRevenue = ticketsOrganisationTotal(
     purchasedTickets,
     event.currency,
+    event.eventCategory === "meet",
   );
 
   const ticketTypes = event.eventTicketTypes ?? [];

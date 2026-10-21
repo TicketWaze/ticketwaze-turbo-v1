@@ -11,6 +11,7 @@ import {
   Setting2,
   Ticket,
   UserSquare,
+  Briefcase,
 } from "iconsax-reactjs";
 import { useLocale, useTranslations } from "next-intl";
 import { signOut } from "next-auth/react";
@@ -52,6 +53,7 @@ export default function MobileNavigation({ className }: { className?: string }) 
     { label: t("links.organisations"), path: "/organisations", Icon: Building, badge: 0 },
     { label: t("links.tickets"), path: "/tickets", Icon: Ticket, badge: 0 },
     { label: t("links.payments"), path: "/payments", Icon: Money, badge: 0 },
+    { label: t("links.partners"), path: "/partners", Icon: Briefcase, badge: 0 },
     { label: t("links.payouts"), path: "/payouts", Icon: MoneyRecive, badge: 0 },
     { label: t("settings"), path: "/settings", Icon: Setting2, badge: settingsBadge },
   ];

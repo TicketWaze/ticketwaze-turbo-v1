@@ -1,5 +1,6 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import ExplorePageContent from "./ExplorePageContent";
+import ProfileCompletionCard from "@/components/ProfileCompletionCard";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { publicPageMetadata } from "@/lib/seoMetadata";
@@ -107,6 +108,7 @@ export default async function Explore({
       className="overflow-x-hidden"
       forceWelcomeModal={welcome === "1"}
     >
+      <ProfileCompletionCard />
       <ExplorePageContent
         events={events}
         pastEvents={pastEvents}

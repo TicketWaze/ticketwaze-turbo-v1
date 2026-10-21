@@ -12,6 +12,7 @@ import {
   Ticket,
   UserSquare,
   type Icon,
+  Briefcase,
 } from "iconsax-reactjs";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useLocale, useTranslations } from "next-intl";
@@ -63,6 +64,7 @@ function Sidebar({ className }: { className: string }) {
         { label: t("links.activities"), path: "/activities", Icon: Calendar },
         { label: t("links.tickets"), path: "/tickets", Icon: Ticket },
         { label: t("links.payments"), path: "/payments", Icon: Money },
+        { label: t("links.partners"), path: "/partners", Icon: Briefcase },
         { label: t("links.payouts"), path: "/payouts", Icon: MoneyRecive },
       ],
     },

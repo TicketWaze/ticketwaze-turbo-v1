@@ -30,11 +30,15 @@ import TermsNote from "@/components/auth/TermsNote";
 import OtpCodeInput, { emptyOtp } from "@/components/auth/OtpCodeInput";
 import { AuthError, AuthStatus } from "@/components/auth/AuthParts";
 import mail from "@/assets/icons/mail-big.svg";
-import { readMfaCode, type MfaChallenge } from "@ticketwaze/auth/mfa";
+import {
+  readMfaCode,
+  readUnverifiedCode,
+  type MfaChallenge,
+} from "@ticketwaze/auth/mfa";
 import { ResendLoginCodeAction } from "@/actions/mfaActions";
 import { authHref, safeCallbackPath } from "@/lib/authRedirect";
 
-type View = "role" | "credentials" | "code";
+type View = "role" | "credentials" | "code" | "verify";
 
 const slide = {
   initial: { opacity: 0, x: 30 },
@@ -82,6 +86,7 @@ export default function LoginPageContent({
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<TLoginSchema>({
     resolver: zodResolver(LoginSchema),
@@ -117,8 +122,7 @@ export default function LoginPageContent({
   async function handleVerifyCode(entered?: string | React.SyntheticEvent) {
     // OtpCodeInput passes the code it just completed; the Verify button
     // passes its click event, so fall back to state then.
-    const code =
-      typeof entered === "string" ? entered : otp.join("");
+    const code = typeof entered === "string" ? entered : otp.join("");
     if (!challenge || code.length < 6 || isVerifying) return;
     setIsVerifying(true);
     const result = await signIn("credentials", {
@@ -157,6 +161,86 @@ export default function LoginPageContent({
       setResendIn(result.retryAfterSeconds ?? 60);
     } else {
       setOtpError(mfaMessage(result.code));
+    }
+  }
+
+  /**
+   * Unconfirmed email: the API refused the session and emailed a sign-up code.
+   * Verifying it confirms the account; the password typed a moment ago then
+   * signs in as usual (2FA included, though a brand-new account rarely has it).
+   */
+  async function handleVerifyEmail(entered?: string | React.SyntheticEvent) {
+    const code = typeof entered === "string" ? entered : otp.join("");
+    if (code.length < 6 || isVerifying) return;
+    setIsVerifying(true);
+    setOtpError("");
+    try {
+      const { email, password } = getValues();
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/verify-email`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept-Language": locale,
+          },
+          body: JSON.stringify({
+            email,
+            otp: code,
+            ...(referralCode ? { referralCode } : {}),
+          }),
+        },
+      );
+      const response = await request.json().catch(() => null);
+      if (response?.status !== "success") {
+        setOtpError(
+          response?.code === "CODE_EXPIRED"
+            ? t("unverified.errors.expired")
+            : response?.code === "CODE_NOT_FOUND"
+              ? t("unverified.errors.notFound")
+              : t("unverified.errors.invalid"),
+        );
+        setOtp(emptyOtp());
+        return;
+      }
+      await submitHandler({ email, password });
+    } catch {
+      toast.error(t("unverified.errors.network"));
+    } finally {
+      setIsVerifying(false);
+    }
+  }
+
+  async function handleResendVerification() {
+    if (resendIn > 0 || isResending) return;
+    setIsResending(true);
+    try {
+      const request = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/auth/verify-email/resend`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept-Language": locale,
+          },
+          body: JSON.stringify({ email: getValues("email") }),
+        },
+      );
+      const response = await request.json().catch(() => null);
+      if (response?.status === "success") {
+        toast.success(t("mfa.resent"));
+        setOtp(emptyOtp());
+        setOtpError("");
+        setResendIn(60);
+      } else if (response?.code === "RESEND_TOO_SOON") {
+        setResendIn(Number(response.retryAfterSeconds) || 60);
+      } else {
+        toast.error(t("unverified.errors.network"));
+      }
+    } catch {
+      toast.error(t("unverified.errors.network"));
+    } finally {
+      setIsResending(false);
     }
   }
 
@@ -200,6 +284,13 @@ export default function LoginPageContent({
         setOtpError("");
         setResendIn(mfa.challenge.resendAfterSeconds);
         setView("code");
+      } else if (readUnverifiedCode(result.code)) {
+        // Right password, email never confirmed: a fresh code was emailed
+        // (unless one went out moments ago — then wait before resending).
+        setOtp(emptyOtp());
+        setOtpError("");
+        setResendIn(readUnverifiedCode(result.code)!.retryAfterSeconds);
+        setView("verify");
       } else {
         toast.error("Login failed");
       }
@@ -400,6 +491,73 @@ export default function LoginPageContent({
                     <button
                       type="button"
                       onClick={handleResendCode}
+                      disabled={isResending || resendIn > 0}
+                      className={`${pillActionClass} disabled:opacity-60`}
+                    >
+                      {resendIn > 0
+                        ? t("mfa.resend_in", { seconds: resendIn })
+                        : tFlow("verify.resend")}
+                    </button>
+                  </FooterPill>
+                </AuthStatus>
+              </AuthScreen>
+            </motion.div>
+          )}
+
+          {view === "verify" && (
+            <motion.div key="verify" {...slide} className="w-full h-full">
+              <AuthScreen
+                centered
+                footer={
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setView("credentials");
+                      setOtp(emptyOtp());
+                      setOtpError("");
+                    }}
+                    className={backPillClass}
+                  >
+                    {tFlow("back")}
+                  </button>
+                }
+              >
+                <AuthStatus
+                  image={mail}
+                  title={t("unverified.title")}
+                  description={
+                    <>
+                      {t("unverified.description")}{" "}
+                      <span className="font-semibold text-deep-100">
+                        {getValues("email")}
+                      </span>
+                    </>
+                  }
+                >
+                  <OtpCodeInput
+                    value={otp}
+                    onChange={(next) => {
+                      setOtp(next);
+                      setOtpError("");
+                    }}
+                    onSubmit={handleVerifyEmail}
+                    error={otpError}
+                  />
+                  <AuthError message={otpError} />
+                  <ButtonPrimary
+                    onClick={handleVerifyEmail}
+                    disabled={isVerifying || otp.join("").length < 6}
+                    className="w-full h-[6rem] active:scale-[0.98]"
+                  >
+                    {isVerifying ? <LoadingCircleSmall /> : t("mfa.submit")}
+                  </ButtonPrimary>
+                  <FooterPill>
+                    <FooterPillText>
+                      {tFlow("verify.resend_text")}
+                    </FooterPillText>
+                    <button
+                      type="button"
+                      onClick={handleResendVerification}
                       disabled={isResending || resendIn > 0}
                       className={`${pillActionClass} disabled:opacity-60`}
                     >
