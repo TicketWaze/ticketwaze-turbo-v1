@@ -9,6 +9,7 @@ import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
 import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
 import PrintTicketsDialog from "./PrintTicketsDialog";
+import ShareEvent from "./ShareEvent";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -22,6 +23,7 @@ import {
   Scanner as ScannerIcon,
   Star1,
   Printer,
+  Share,
 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -131,19 +133,20 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
    * was credited nothing, and it takes no tier inventory — so counting it here
    * would push this figure above the tier counters in the tile below and add a
    * row that can never contribute to revenue. An admin giveaway stays counted:
-   * the organisation WAS credited the face value and the seat does come out of
-   * the tier, so on both counts it behaves like a sale.
+   * Ticketwaze pays the organisation for the seat if it is used, and the seat
+   * does come out of the tier, so on both counts it behaves like a sale.
    */
   const rewardTickets = soldTickets.filter((o) => o.source === "reward");
   const purchasedTickets = soldTickets.filter((o) => o.source !== "reward");
   /**
    * Revenue is what the ORGANISATION EARNED, not what buyers paid — the two
-   * differ on a giveaway (price 0, face value credited) and on a fee-absorbing
+   * differ on a giveaway (price 0, paid net of fee only if scanned) and on a fee-absorbing
    * activity (price higher than the earnings). See lib/ticketEarnings.
    */
   const totalRevenue = ticketsOrganisationTotal(
     purchasedTickets,
     event.currency,
+    event.eventCategory === "meet",
   );
 
   const ticketTypes = event.eventTicketTypes ?? [];
@@ -208,7 +211,14 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
    * a popover is unmounted by the same click that opens it.
    */
   const [openDialog, setOpenDialog] = useState<
-    null | "status" | "giveaway" | "fees" | "refund" | "checking" | "print"
+    | null
+    | "status"
+    | "giveaway"
+    | "fees"
+    | "refund"
+    | "checking"
+    | "print"
+    | "share"
   >(null);
 
   /**
@@ -297,6 +307,12 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
 
   // Edit is Figma's orange header button now; the menu keeps the rest.
   const actions = [
+    {
+      key: "share",
+      label: t("activity.actions.share"),
+      onSelect: () => setOpenDialog("share"),
+      icon: <Share size="20" variant="Bulk" color="#2E3237" />,
+    },
     {
       key: "status",
       label: t("activity.actions.status"),
@@ -624,6 +640,11 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         hideTrigger
         open={openDialog === "status"}
         onOpenChange={(next) => setOpenDialog(next ? "status" : null)}
+      />
+      <ShareEvent
+        event={event}
+        open={openDialog === "share"}
+        onOpenChange={(next) => setOpenDialog(next ? "share" : null)}
       />
       <PrintTicketsDialog
         event={event}

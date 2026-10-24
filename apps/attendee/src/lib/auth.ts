@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import { cookies } from "next/headers";
 import {
   assertNoMfa,
+  assertVerified,
   needsRefresh,
   refreshApiTokens,
   sanitizeSessionUpdate,
@@ -98,6 +99,8 @@ const nextAuthResult = NextAuth({
 
         // 2FA account: no session yet — the page asks for the emailed code.
         assertNoMfa(data);
+        // Never-confirmed email: a fresh code was emailed; the page asks for it.
+        assertVerified(data);
         if (data.status !== "success") {
           throw new Error(data.message || "Invalid credentials");
         }

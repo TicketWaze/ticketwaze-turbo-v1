@@ -77,3 +77,21 @@ export function readMfaCode(
   }
   return null;
 }
+
+/**
+ * UNVERIFIED EMAIL — the right password on an account whose email was never
+ * confirmed. The API refuses the session and emails a fresh sign-up code;
+ * `authorize` fails with code `unverified:<retryAfterSeconds>` (0 when the code
+ * just went out) so the login page can open its verify-code step.
+ */
+export function encodeUnverified(retryAfterSeconds?: number) {
+  return `unverified:${retryAfterSeconds ?? 0}`;
+}
+
+/** Reads the `code` returned by `signIn("credentials", …)`; null if it is not this. */
+export function readUnverifiedCode(
+  code: string | null | undefined,
+): { retryAfterSeconds: number } | null {
+  if (!code?.startsWith("unverified:")) return null;
+  return { retryAfterSeconds: Number(code.slice(11)) || 0 };
+}

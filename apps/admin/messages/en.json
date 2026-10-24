@@ -152,7 +152,8 @@
         "emails": "Emails",
         "kyc": "KYC",
         "organizers": "Organizers",
-        "events": "Events"
+        "events": "Events",
+        "partners": "Partners"
       },
       "badge": "Admin",
       "settings": "Settings"
@@ -444,7 +445,8 @@
         "scan": "Scan ticket",
         "print": "Print tickets",
         "sponsor": "Feature on landing page",
-        "unsponsor": "Remove from landing page"
+        "unsponsor": "Remove from landing page",
+        "share": "Share"
       },
       "sponsor": {
         "added": "Featured on the landing page.",
@@ -481,6 +483,17 @@
         "entries": "Entries",
         "stayed": "Stayed",
         "since": "Inside since {time}"
+      },
+      "share": {
+        "title": "Share Activity",
+        "description": "Spread the word and invite your friends! Share this activity on social media or via direct message.",
+        "dialog": {
+          "copy": "Copy",
+          "copied": "Link copied",
+          "copy_failed": "Could not copy the link",
+          "paste_hint": "Link copied. Paste it in your {app} story, post or bio.",
+          "qr": "Download QR code"
+        }
       }
     },
     "Ticket": {
@@ -2577,6 +2590,56 @@
       "reject": "Reject",
       "full_details": "View full details",
       "approved": "Payout approved"
+    }
+  },
+  "PartnersList": {
+    "title": "Partners",
+    "intro": "Payments Ticketwaze Pay collects on behalf of our partners. This money is theirs: it is not counted in Payments, Finance or Analytics.",
+    "collected": "Collected for {name}",
+    "breakdown": "{count, plural, =0 {No payments} one {# payment} other {# payments}} · MonCash {moncash} · Card {stripe}",
+    "unnotified": "{count, plural, one {# paid payment} other {# paid payments}} not yet confirmed to the partner",
+    "inactive": "Disabled",
+    "not_notified": "Partner not notified yet",
+    "filters": {
+      "partner_label": "Partner",
+      "partner": "All partners",
+      "status_label": "Status",
+      "status": "All statuses",
+      "SUCCESSFUL": "Successful",
+      "PENDING": "Pending",
+      "FAILED": "Failed",
+      "CANCELLED": "Cancelled",
+      "search": "Reference, payer or transaction"
+    },
+    "status": {
+      "SUCCESSFUL": "SUCCESSFUL",
+      "PENDING": "PENDING",
+      "FAILED": "FAILED",
+      "CANCELLED": "CANCELLED"
+    },
+    "provider": {
+      "moncash": "MonCash",
+      "stripe": "Card"
+    },
+    "purpose": {
+      "admission_fee": "Admission fee"
+    },
+    "list": {
+      "title": "Payments",
+      "table": {
+        "reference": "Reference",
+        "partner": "Partner",
+        "payer": "Payer",
+        "provider": "Method",
+        "amount": "Amount",
+        "date": "Date",
+        "status": "Status"
+      },
+      "no_history": "Our partners’ payments will show up here.",
+      "no_results": "No payment matches these filters.",
+      "prev": "Previous page",
+      "next": "Next page",
+      "fee": "incl. {fee} fees"
     }
   }
 }

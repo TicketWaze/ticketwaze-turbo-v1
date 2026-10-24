@@ -152,7 +152,8 @@
         "emails": "Emails",
         "kyc": "KYC",
         "organizers": "Organisateurs",
-        "events": "Événements"
+        "events": "Événements",
+        "partners": "Partenaires"
       },
       "badge": "Admin",
       "settings": "Paramètres"
@@ -293,7 +294,8 @@
         "scan": "Scanner le billet",
         "print": "Imprimer des billets",
         "sponsor": "Mettre en avant sur la page d’accueil",
-        "unsponsor": "Retirer de la page d’accueil"
+        "unsponsor": "Retirer de la page d’accueil",
+        "share": "Partager"
       },
       "sponsor": {
         "added": "Mise en avant sur la page d’accueil.",
@@ -330,6 +332,17 @@
         "entries": "Entrées",
         "stayed": "Durée",
         "since": "À l'intérieur depuis {time}"
+      },
+      "share": {
+        "title": "Partager",
+        "description": "Faites passer le mot et invitez vos amis ! Partagez cette activité sur les réseaux sociaux ou par message direct.",
+        "dialog": {
+          "copy": "Copier",
+          "copied": "Lien copié",
+          "copy_failed": "Impossible de copier le lien",
+          "paste_hint": "Lien copié. Collez-le dans votre story, publication ou bio {app}.",
+          "qr": "Télécharger le code QR"
+        }
       }
     },
     "Ticket": {
@@ -2570,6 +2583,56 @@
       "reject": "Refuser",
       "full_details": "Voir tous les détails",
       "approved": "Versement approuvé"
+    }
+  },
+  "PartnersList": {
+    "title": "Partenaires",
+    "intro": "Paiements encaissés par Ticketwaze Pay pour le compte de nos partenaires. Cet argent leur revient : il n’est compté ni dans Paiements, ni dans Finances, ni dans Analyses.",
+    "collected": "Encaissé pour {name}",
+    "breakdown": "{count, plural, =0 {Aucun paiement} one {# paiement} other {# paiements}} · MonCash {moncash} · Carte {stripe}",
+    "unnotified": "{count, plural, one {# paiement payé} other {# paiements payés}} pas encore confirmé(s) au partenaire",
+    "inactive": "Désactivé",
+    "not_notified": "Partenaire pas encore notifié",
+    "filters": {
+      "partner_label": "Partenaire",
+      "partner": "Tous les partenaires",
+      "status_label": "Statut",
+      "status": "Tous les statuts",
+      "SUCCESSFUL": "Réussi",
+      "PENDING": "En attente",
+      "FAILED": "Échoué",
+      "CANCELLED": "Annulé",
+      "search": "Référence, payeur ou transaction"
+    },
+    "status": {
+      "SUCCESSFUL": "RÉUSSI",
+      "PENDING": "EN ATTENTE",
+      "FAILED": "ÉCHOUÉ",
+      "CANCELLED": "ANNULÉ"
+    },
+    "provider": {
+      "moncash": "MonCash",
+      "stripe": "Carte"
+    },
+    "purpose": {
+      "admission_fee": "Frais d’admission"
+    },
+    "list": {
+      "title": "Paiements",
+      "table": {
+        "reference": "Référence",
+        "partner": "Partenaire",
+        "payer": "Payeur",
+        "provider": "Moyen",
+        "amount": "Montant",
+        "date": "Date",
+        "status": "Statut"
+      },
+      "no_history": "Les paiements de nos partenaires apparaîtront ici.",
+      "no_results": "Aucun paiement ne correspond à ces filtres.",
+      "prev": "Page précédente",
+      "next": "Page suivante",
+      "fee": "dont {fee} de frais"
     }
   }
 }

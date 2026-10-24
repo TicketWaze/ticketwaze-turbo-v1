@@ -1,0 +1,26 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ticketwaze",
+      "sha256_cert_fingerprints": [
+        "86:2A:8E:D8:F8:4B:B3:2D:3C:6C:32:4B:4C:61:BD:EA:10:F1:53:6A:56:E1:1D:7D:85:8B:CF:B0:9C:86:52:C1"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.ticketwaze.dev",
+      "sha256_cert_fingerprints": [
+        "B6:3C:0C:D9:E2:D7:50:C2:FF:BC:B4:CD:CB:06:C7:A9:61:24:5C:AC:B8:F0:77:00:EF:74:C9:A1:89:BF:31:BF"
+      ]
+    }
+  }
+]

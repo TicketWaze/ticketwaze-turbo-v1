@@ -134,7 +134,9 @@ export async function refreshApiTokens(token: Token): Promise<Token | null> {
         : {}),
       // Name and photo, so a change made in one app (or the mobile app) reaches
       // every navbar within one access-token period.
-      ...(typeof data.firstName === "string" ? { firstName: data.firstName } : {}),
+      ...(typeof data.firstName === "string"
+        ? { firstName: data.firstName }
+        : {}),
       ...(typeof data.lastName === "string" ? { lastName: data.lastName } : {}),
       ...("profileImageUrl" in (data ?? {})
         ? { profileImageUrl: data.profileImageUrl ?? null }
@@ -227,7 +229,9 @@ export async function readSharedSession(
 export {
   MfaRequiredError,
   MfaCodeError,
+  EmailNotVerifiedError,
   assertNoMfa,
+  assertVerified,
   verifyMfaLogin,
   resendMfaLogin,
 } from "./mfa";

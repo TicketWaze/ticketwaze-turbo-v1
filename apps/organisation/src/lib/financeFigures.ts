@@ -26,13 +26,20 @@ export function financeFigures(
   >,
   currency: string,
 ) {
-  const tickets: Ticket[] = orders
-    .flatMap((order) => order.tickets ?? [])
-    .filter((ticket) => ticket.status !== "RETURNED");
+  // Each ticket with whether its event is online — an unused giveaway seat
+  // earns only there (see `ticketOrganisationAmount`).
+  const tickets: { ticket: Ticket; online: boolean }[] = orders
+    .flatMap((order) =>
+      (order.tickets ?? []).map((ticket) => ({
+        ticket,
+        online: order.activity?.eventCategory === "meet",
+      })),
+    )
+    .filter(({ ticket }) => ticket.status !== "RETURNED");
   const round = (n: number) => Math.round(n * 100) / 100;
   const revenue = round(
     tickets.reduce(
-      (sum, ticket) =>
+      (sum, { ticket }) =>
         sum +
         (Number(
           currency === "USD" ? ticket.ticketUsdPrice : ticket.ticketPrice,
@@ -42,7 +49,8 @@ export function financeFigures(
   );
   const profit = round(
     tickets.reduce(
-      (sum, ticket) => sum + ticketOrganisationAmount(ticket, currency),
+      (sum, { ticket, online }) =>
+        sum + ticketOrganisationAmount(ticket, currency, online),
       0,
     ),
   );

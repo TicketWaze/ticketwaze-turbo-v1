@@ -71,6 +71,16 @@
           "too_many": "Too many wrong codes. Go back and sign in again.",
           "restart": "This sign-in has expired. Go back and sign in again."
         }
+      },
+      "unverified": {
+        "title": "Verify your email",
+        "description": "Your email isn’t confirmed yet. We sent a 6-digit code to",
+        "errors": {
+          "invalid": "Incorrect code. Please try again.",
+          "expired": "This code has expired. Request a new one below.",
+          "notFound": "No code found. Request a new one below.",
+          "network": "Something went wrong. Please try again."
+        }
       }
     },
     "register": {
@@ -1801,5 +1811,11 @@
     "saving": "Saving…",
     "saved": "Saved",
     "error": "Not saved"
+  },
+  "ProfileNotice": {
+    "title": "Your profile is {done}/{total} complete",
+    "description": "Add the details you skipped when you signed up. It only takes a minute.",
+    "cta": "Complete my profile",
+    "later": "Later"
   }
 }

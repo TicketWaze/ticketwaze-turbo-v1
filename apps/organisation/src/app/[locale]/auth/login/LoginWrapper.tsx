@@ -10,7 +10,11 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod/v4";
 import { AnimatePresence, motion } from "motion/react";
-import { readMfaCode, type MfaChallenge } from "@ticketwaze/auth/mfa";
+import {
+  readMfaCode,
+  readUnverifiedCode,
+  type MfaChallenge,
+} from "@ticketwaze/auth/mfa";
 import { Input, PasswordInput } from "@/components/shared/Inputs";
 import { ButtonPrimary } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
@@ -153,6 +157,10 @@ export default function LoginWrapper() {
         setOtpError("");
         setResendIn(mfa.challenge.resendAfterSeconds);
         setView("code");
+      } else if (readUnverifiedCode(result.code)) {
+        // Email never confirmed: the API emailed a code; signing up again
+        // with the same email is where this app enters it.
+        toast.error(t("errors.unverified"), { duration: 15000 });
       } else if (result.code === "organisation_suspended") {
         toast.error(t("errors.organisation_suspended"), { duration: 15000 });
       } else {
@@ -167,8 +175,7 @@ export default function LoginWrapper() {
   async function handleVerifyCode(entered?: string | React.SyntheticEvent) {
     // OtpCodeInput passes the code it just completed; the Verify button
     // passes its click event, so fall back to state then.
-    const code =
-      typeof entered === "string" ? entered : otp.join("");
+    const code = typeof entered === "string" ? entered : otp.join("");
     if (!challenge || code.length < 6 || isVerifying) return;
     setIsVerifying(true);
     const result = await signIn("credentials", {

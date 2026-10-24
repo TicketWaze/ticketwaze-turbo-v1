@@ -172,11 +172,19 @@ export default function EventPageDetails({
   );
   const left = Math.max(0, capacity - soldCount);
   const checkedIn = tickets.filter((tk) => tk.status === "CHECKED").length;
-  const revenue = ticketsOrganisationTotal(tickets, event.currency);
+  const revenue = ticketsOrganisationTotal(
+    tickets,
+    event.currency,
+    event.eventCategory === "meet",
+  );
   const revenueTrend = isFree
     ? null
     : weekTrend(tickets, (list) =>
-        ticketsOrganisationTotal(list, event.currency),
+        ticketsOrganisationTotal(
+          list,
+          event.currency,
+          event.eventCategory === "meet",
+        ),
       );
   const soldTrend = weekTrend(tickets, sold);
   // Tickets left a week ago were today's plus what sold since.

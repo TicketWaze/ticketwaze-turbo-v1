@@ -21,6 +21,23 @@ import { Ticket } from "@ticketwaze/typescript-config";
  * reading `ticketPrice`.
  */
 
+/**
+ * AN ADMIN-GIVEAWAY SEAT EARNS ONLY ONCE IT IS USED. Nobody paid for it
+ * (`ticketPrice` 0); the row carries what Ticketwaze pays the organisation for
+ * it (`organisationAmount`, net of our fee), and that is paid after the event
+ * only if the ticket was scanned (`CHECKED`) — or on any online event, where
+ * there is nothing to scan. Mirrors the API's `ticketEarnedAmount`.
+ */
+function isUnearnedGiveaway(
+  ticket: Pick<Ticket, "ticketPrice" | "organisationAmount" | "status">,
+  onlineEvent: boolean,
+): boolean {
+  const isGiveaway =
+    Number(ticket.ticketPrice) === 0 &&
+    Number(ticket.organisationAmount ?? 0) > 0;
+  return isGiveaway && !onlineEvent && ticket.status !== "CHECKED";
+}
+
 /** One ticket's earnings, in the currency the caller is displaying. */
 export function ticketOrganisationAmount(
   ticket: Pick<
@@ -29,9 +46,13 @@ export function ticketOrganisationAmount(
     | "ticketUsdPrice"
     | "organisationAmount"
     | "organisationUsdAmount"
+    | "status"
   >,
   currency: string | null | undefined,
+  /** The ticket's event is online (`eventCategory` "meet"). */
+  onlineEvent = false,
 ): number {
+  if (isUnearnedGiveaway(ticket, onlineEvent)) return 0;
   const earned =
     currency === "USD"
       ? (ticket.organisationUsdAmount ?? ticket.ticketUsdPrice)
@@ -47,11 +68,14 @@ export function ticketsOrganisationTotal(
     | "ticketUsdPrice"
     | "organisationAmount"
     | "organisationUsdAmount"
+    | "status"
   >[],
   currency: string | null | undefined,
+  onlineEvent = false,
 ): number {
   const total = tickets.reduce(
-    (sum, ticket) => sum + ticketOrganisationAmount(ticket, currency),
+    (sum, ticket) =>
+      sum + ticketOrganisationAmount(ticket, currency, onlineEvent),
     0,
   );
   return Math.round(total * 100) / 100;

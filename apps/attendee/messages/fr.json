@@ -77,6 +77,16 @@
           "too_many": "Trop de codes incorrects. Revenez en arrière et reconnectez-vous.",
           "restart": "Cette connexion a expiré. Revenez en arrière et reconnectez-vous."
         }
+      },
+      "unverified": {
+        "title": "Vérifiez votre e-mail",
+        "description": "Votre e-mail n’est pas encore confirmé. Nous avons envoyé un code à 6 chiffres à",
+        "errors": {
+          "invalid": "Code incorrect. Veuillez réessayer.",
+          "expired": "Ce code a expiré. Demandez-en un nouveau ci-dessous.",
+          "notFound": "Aucun code trouvé. Demandez-en un nouveau ci-dessous.",
+          "network": "Une erreur est survenue. Veuillez réessayer."
+        }
       }
     },
     "register": {
@@ -1845,5 +1855,11 @@
     "saving": "Enregistrement…",
     "saved": "Enregistré",
     "error": "Non enregistré"
+  },
+  "ProfileNotice": {
+    "title": "Votre profil est complet à {done}/{total}",
+    "description": "Ajoutez les informations laissées de côté à l’inscription. Cela ne prend qu’une minute.",
+    "cta": "Compléter mon profil",
+    "later": "Plus tard"
   }
 }
