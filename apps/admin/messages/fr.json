@@ -294,7 +294,8 @@
         "scan": "Scanner le billet",
         "print": "Imprimer des billets",
         "sponsor": "Mettre en avant sur la page d’accueil",
-        "unsponsor": "Retirer de la page d’accueil"
+        "unsponsor": "Retirer de la page d’accueil",
+        "share": "Partager"
       },
       "sponsor": {
         "added": "Mise en avant sur la page d’accueil.",
@@ -331,6 +332,17 @@
         "entries": "Entrées",
         "stayed": "Durée",
         "since": "À l'intérieur depuis {time}"
+      },
+      "share": {
+        "title": "Partager",
+        "description": "Faites passer le mot et invitez vos amis ! Partagez cette activité sur les réseaux sociaux ou par message direct.",
+        "dialog": {
+          "copy": "Copier",
+          "copied": "Lien copié",
+          "copy_failed": "Impossible de copier le lien",
+          "paste_hint": "Lien copié. Collez-le dans votre story, publication ou bio {app}.",
+          "qr": "Télécharger le code QR"
+        }
       }
     },
     "Ticket": {

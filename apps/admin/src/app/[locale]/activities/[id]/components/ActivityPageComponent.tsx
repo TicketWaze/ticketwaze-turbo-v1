@@ -9,6 +9,7 @@ import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
 import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
 import PrintTicketsDialog from "./PrintTicketsDialog";
+import ShareEvent from "./ShareEvent";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -22,6 +23,7 @@ import {
   Scanner as ScannerIcon,
   Star1,
   Printer,
+  Share,
 } from "iconsax-reactjs";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
@@ -209,7 +211,14 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
    * a popover is unmounted by the same click that opens it.
    */
   const [openDialog, setOpenDialog] = useState<
-    null | "status" | "giveaway" | "fees" | "refund" | "checking" | "print"
+    | null
+    | "status"
+    | "giveaway"
+    | "fees"
+    | "refund"
+    | "checking"
+    | "print"
+    | "share"
   >(null);
 
   /**
@@ -298,6 +307,12 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
 
   // Edit is Figma's orange header button now; the menu keeps the rest.
   const actions = [
+    {
+      key: "share",
+      label: t("activity.actions.share"),
+      onSelect: () => setOpenDialog("share"),
+      icon: <Share size="20" variant="Bulk" color="#2E3237" />,
+    },
     {
       key: "status",
       label: t("activity.actions.status"),
@@ -625,6 +640,11 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
         hideTrigger
         open={openDialog === "status"}
         onOpenChange={(next) => setOpenDialog(next ? "status" : null)}
+      />
+      <ShareEvent
+        event={event}
+        open={openDialog === "share"}
+        onOpenChange={(next) => setOpenDialog(next ? "share" : null)}
       />
       <PrintTicketsDialog
         event={event}

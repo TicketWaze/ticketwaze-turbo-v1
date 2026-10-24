@@ -445,7 +445,8 @@
         "scan": "Scan ticket",
         "print": "Print tickets",
         "sponsor": "Feature on landing page",
-        "unsponsor": "Remove from landing page"
+        "unsponsor": "Remove from landing page",
+        "share": "Share"
       },
       "sponsor": {
         "added": "Featured on the landing page.",
@@ -482,6 +483,17 @@
         "entries": "Entries",
         "stayed": "Stayed",
         "since": "Inside since {time}"
+      },
+      "share": {
+        "title": "Share Activity",
+        "description": "Spread the word and invite your friends! Share this activity on social media or via direct message.",
+        "dialog": {
+          "copy": "Copy",
+          "copied": "Link copied",
+          "copy_failed": "Could not copy the link",
+          "paste_hint": "Link copied. Paste it in your {app} story, post or bio.",
+          "qr": "Download QR code"
+        }
       }
     },
     "Ticket": {
