@@ -295,7 +295,8 @@
         "tickets": "Tickets",
         "payouts": "Payouts",
         "payments": "Payments",
-        "campaigns": "Email Campaigns"
+        "campaigns": "Email Campaigns",
+        "partners": "Partners (Ticketwaze Pay)"
       },
       "actions": {
         "view": "View",
@@ -2640,6 +2641,107 @@
       "prev": "Previous page",
       "next": "Next page",
       "fee": "incl. {fee} fees"
+    },
+    "manage": {
+      "title": "Configuration",
+      "intro": "The platforms allowed to take payments through Ticketwaze Pay: their API key, where we confirm each payment, and the sites a payer may return to.",
+      "new": "New partner",
+      "empty": "No partners yet. Create one to get its API key.",
+      "none": "None",
+      "active": "Active",
+      "paused_badge": "Paused",
+      "columns": {
+        "partner": "Partner",
+        "key": "API key",
+        "webhook": "Webhook",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "fields": {
+        "name": "Name",
+        "slug": "Identifier",
+        "slug_hint": "Lowercase letters, digits and dashes. Cannot be changed afterwards.",
+        "webhook": "Webhook URL",
+        "webhook_hint": "Receives “payment.succeeded” for every successful payment. Must be https. For BTI: BTI’s API followed by /api/v1/webhooks/ticketwaze.",
+        "origins": "Return origins",
+        "origins_hint": "One per line, e.g. https://admission.bti.edu.ht. A payer can only be sent back to these sites."
+      },
+      "drawer": {
+        "payments": "Payments",
+        "created": "Created",
+        "paused_alert": "This partner is paused: its calls are refused. Payments already started still complete and are confirmed to it.",
+        "no_webhook": "Without a webhook URL, successful payments are not confirmed to the partner.",
+        "edit": "Edit",
+        "rotate_key": "Regenerate API key",
+        "rotate_secret": "Regenerate webhook secret",
+        "pause": "Pause",
+        "resume": "Resume",
+        "cannot_delete": "This partner has payments: it cannot be deleted, only paused.",
+        "close": "Close",
+        "delete": "Delete"
+      },
+      "form": {
+        "create_title": "New partner",
+        "create_description": "Its API key and webhook secret will be shown once, right after it is created.",
+        "edit_title": "Edit partner",
+        "edit_description": "A webhook change takes effect at once, including for confirmations still waiting to be sent.",
+        "create": "Create partner",
+        "save": "Save"
+      },
+      "confirm": {
+        "cancel": "Cancel",
+        "pause": {
+          "title": "Pause this partner?",
+          "body": "{name} will no longer be able to create payments: its calls are refused at once. Its keys stay the same and you can resume it.",
+          "action": "Pause"
+        },
+        "resume": {
+          "title": "Resume this partner?",
+          "body": "{name} will be able to take payments again with its current key.",
+          "action": "Resume"
+        },
+        "rotate-key": {
+          "title": "Regenerate the API key?",
+          "body": "{name}’s old key stops working immediately. Its online payments are cut off until the new key is installed on its side.",
+          "action": "Regenerate"
+        },
+        "rotate-secret": {
+          "title": "Regenerate the secret?",
+          "body": "{name}’s next webhooks, including pending ones, will be signed with the new secret. It will reject them until it installs it.",
+          "action": "Regenerate"
+        },
+        "delete": {
+          "title": "Delete this partner?",
+          "body": "{name} and its key will be deleted for good.",
+          "action": "Delete"
+        }
+      },
+      "credentials": {
+        "title": "{name}’s credentials",
+        "warning": "Copy them now: they will never be shown again. If you lose them, you will have to regenerate them.",
+        "key": "API key",
+        "secret": "Webhook secret",
+        "copy": "Copy",
+        "copy_all": "Copy all",
+        "copied": "Copied",
+        "copy_failed": "Could not copy. Select the text by hand.",
+        "where": "Put them in the environment variables of the partner’s server (for BTI: its API), then redeploy.",
+        "done": "I’ve copied them, close"
+      },
+      "created": "{name} was created.",
+      "saved": "Changes saved.",
+      "paused": "Partner paused.",
+      "resumed": "Partner resumed.",
+      "deleted": "Partner deleted.",
+      "errors": {
+        "SLUG_TAKEN": "Another partner already uses this identifier.",
+        "WEBHOOK_NOT_HTTPS": "The webhook URL must start with https:// (http only for localhost).",
+        "ORIGIN_NOT_HTTPS": "Each origin must start with https:// (http only for localhost).",
+        "INVALID_URL": "One of the addresses is not a valid URL.",
+        "INVALID_FIELDS": "Check the name, identifier and addresses.",
+        "PARTNER_HAS_PAYMENTS": "This partner has payments: pause it instead.",
+        "generic": "Something went wrong. Try again."
+      }
     }
   }
 }

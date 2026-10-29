@@ -82,11 +82,13 @@ const PERMISSION_GROUPS: { resource: string; actions: string[] }[] = [
   { resource: "payouts", actions: [...ACTIONS, "send"] },
   { resource: "payments", actions: ACTIONS },
   { resource: "campaigns", actions: ["view", "create", "delete", "send"] },
+  { resource: "partners", actions: ["manage"] },
 ];
 
 /**
  * Actions that spend money or reach every account, and cannot be undone once
- * pressed. Called out in the grid so granting one is a decision rather than a
+ * pressed — or, for `partners.manage`, change who may charge payers through
+ * Ticketwaze Pay. Called out in the grid so granting one is a decision rather than a
  * tick alongside four harmless ones — these are the keys deliberately held out
  * of the Admin role bundle on the API side.
  */
@@ -95,6 +97,7 @@ const IRREVERSIBLE_ACTIONS = new Set([
   "campaigns.send",
   "tickets.giveaway",
   "attendees.credit",
+  "partners.manage",
 ]);
 
 /**
