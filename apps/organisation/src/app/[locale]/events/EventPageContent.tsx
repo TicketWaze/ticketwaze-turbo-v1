@@ -4,11 +4,18 @@ import { DateTime } from "luxon";
 import { isOvernight } from "@/lib/eventTime";
 import { Money3, SearchNormal1, Setting4 } from "iconsax-reactjs";
 import { useTranslations } from "next-intl";
-import { Event, Raffle, Restaurant, Sale } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  Raffle,
+  Restaurant,
+  Sale,
+  Season,
+} from "@ticketwaze/typescript-config";
 import EventCard from "@/components/shared/EventCard";
 import RaffleCard from "@/components/shared/RaffleCard";
 import RestaurantCard from "@/components/shared/RestaurantCard";
 import SaleCard from "@/components/shared/SaleCard";
+import SeasonCard from "@/components/shared/SeasonCard";
 import FilterPill, { FilterOption } from "@/components/shared/FilterPill";
 import SearchField from "@/components/shared/SearchField";
 import { LinkPrimary } from "@/components/shared/Links";
@@ -24,7 +31,13 @@ import { AnimatePresence, motion } from "motion/react";
 import { cardMotion, tabSpring } from "@/components/shared/motion";
 
 type Category = "upcoming" | "ongoing" | "past";
-type ActivityFilter = "all" | "events" | "raffles" | "restaurants" | "sales";
+type ActivityFilter =
+  | "all"
+  | "events"
+  | "raffles"
+  | "restaurants"
+  | "sales"
+  | "seasons";
 /** Where an activity sits in its own lifecycle, whatever kind it is. */
 type StatusFilter = "all" | "ongoing" | "upcoming" | "past";
 type DateFilter = "any" | "today" | "week" | "month" | "next30" | "past";
@@ -50,6 +63,18 @@ export type ActivityStats = Record<string, { views: number; sold: number }>;
 function categorizeRaffle(raffle: Raffle): Category {
   if (raffle.drawnAt) return "past";
   return DateTime.fromISO(raffle.drawAt) < DateTime.now() ? "past" : "upcoming";
+}
+
+/**
+ * A SEASON runs from its first kick-off to its last final whistle. One with no
+ * match yet is ahead of the organiser, so it reads as upcoming.
+ */
+function categorizeSeason(season: Season): Category {
+  if (!season.startsAt) return "upcoming";
+  const now = DateTime.now();
+  if (now < DateTime.fromISO(season.startsAt)) return "upcoming";
+  if (season.endsAt && now > DateTime.fromISO(season.endsAt)) return "past";
+  return "ongoing";
 }
 
 function categorizeSale(sale: Sale): Category {
@@ -166,6 +191,15 @@ type Item =
       category: Category;
       city: null;
       sale: Sale;
+    }
+  | {
+      kind: "season";
+      id: string;
+      name: string;
+      createdAt: string;
+      category: Category;
+      city: string | null;
+      season: Season;
     };
 
 /**
@@ -190,6 +224,11 @@ function inDateWindow(item: Item, filter: DateFilter): boolean {
     const d = DateTime.fromISO(item.raffle.drawAt);
     return d.isValid && overlaps(d, d);
   }
+  if (item.kind === "season" && item.season.startsAt) {
+    const s = DateTime.fromISO(item.season.startsAt);
+    const e = item.season.endsAt ? DateTime.fromISO(item.season.endsAt) : s;
+    return overlaps(s, e);
+  }
   return false;
 }
 
@@ -198,6 +237,7 @@ export default function EventPageContent({
   raffles = [],
   restaurants = [],
   sales = [],
+  seasons = [],
   stats = {},
   canCreate = false,
 }: {
@@ -205,6 +245,7 @@ export default function EventPageContent({
   raffles?: Raffle[];
   restaurants?: Restaurant[];
   sales?: Sale[];
+  seasons?: Season[];
   /** Views and tickets sold per activity id, for the Popularity sort. */
   stats?: ActivityStats;
   canCreate?: boolean;
@@ -264,8 +305,17 @@ export default function EventPageContent({
         city: null,
         sale,
       })),
+      ...seasons.map((season) => ({
+        kind: "season" as const,
+        id: season.seasonId,
+        name: season.name,
+        createdAt: season.createdAt,
+        category: categorizeSeason(season),
+        city: season.city ?? null,
+        season,
+      })),
     ],
-    [events, raffles, restaurants, sales],
+    [events, raffles, restaurants, sales, seasons],
   );
 
   /** Cities the organisation actually runs things in, A→Z. */
@@ -290,6 +340,7 @@ export default function EventPageContent({
         if (kind === "raffles" && item.kind !== "raffle") return false;
         if (kind === "restaurants" && item.kind !== "restaurant") return false;
         if (kind === "sales" && item.kind !== "sale") return false;
+        if (kind === "seasons" && item.kind !== "season") return false;
         if (status !== "all" && item.category !== status) return false;
         if (location !== "all" && item.city?.trim().toLowerCase() !== location)
           return false;
@@ -318,6 +369,7 @@ export default function EventPageContent({
     { value: "raffles", label: t("filter.raffles") },
     { value: "restaurants", label: t("filter.restaurants") },
     { value: "sales", label: t("filter.sales") },
+    { value: "seasons", label: t("filter.seasons") },
   ];
   const locationOptions: FilterOption[] = [
     { value: "all", label: t("filter.any_location") },
@@ -525,6 +577,11 @@ export default function EventPageContent({
                     <RestaurantCard restaurant={item.restaurant} />
                   ) : item.kind === "sale" ? (
                     <SaleCard sale={item.sale} />
+                  ) : item.kind === "season" ? (
+                    <SeasonCard
+                      season={item.season}
+                      ongoing={item.category === "ongoing"}
+                    />
                   ) : (
                     <EventCard
                       event={item.event}

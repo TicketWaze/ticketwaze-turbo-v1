@@ -23,19 +23,50 @@ import {
   CreateHeader,
   CreatedScreen,
   EVENT_CATEGORIES,
+  Section,
   StepPanel,
 } from "@/components/create/CreateParts";
 import { slugify } from "@/lib/Slugify";
 import { EventDay } from "./types";
-import { Event, MembershipTier } from "@ticketwaze/typescript-config";
+import {
+  Event,
+  MembershipTier,
+  Season,
+} from "@ticketwaze/typescript-config";
+import MatchFields, {
+  appendMatchFields,
+  emptyTeam,
+  MatchFieldsErrors,
+  MatchFieldsValue,
+  validateMatchFields,
+} from "@/components/season/MatchFields";
+
+/** The event name a match gets until the organiser types their own. */
+function matchName(value: MatchFieldsValue): string {
+  const home = value.home.name.trim();
+  const away = value.away.name.trim();
+  if (!home && !away) return "";
+  // The name field holds 50 characters; the teams come first, then the round.
+  const base = `${home} vs ${away}`;
+  const round = value.round.trim();
+  const full = round ? `${base} · ${round}` : base;
+  return (full.length <= 50 ? full : base).slice(0, 50);
+}
 
 export default function CreateInPersonEventForm({
   eventType,
   membershipTier,
   teaser,
+  season,
   topSlot,
   onExit,
 }: {
+  /**
+   * Set when this wizard adds a MATCH to a season: the venue, description,
+   * cover and sport come from the season, the teams are asked first, and the
+   * event is created with the match fields alongside.
+   */
+  season?: Season;
   /** Initial category (Concert, Festival…); chosen in the form when empty. */
   eventType: string;
   membershipTier: MembershipTier;
@@ -67,7 +98,17 @@ export default function CreateInPersonEventForm({
   const [isRefundable, setIsRefundable] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
   // Chosen in Event Details now (it used to be its own page before the form).
-  const [category, setCategory] = useState(eventType || "");
+  // A match is filed as a tournament, the closest existing category.
+  const [category, setCategory] = useState(
+    eventType || (season ? "tournament" : ""),
+  );
+  const tMatch = useTranslations("Events.season.match");
+  const [match, setMatch] = useState<MatchFieldsValue>({
+    home: emptyTeam(),
+    away: emptyTeam(),
+    round: "",
+  });
+  const [matchErrors, setMatchErrors] = useState<MatchFieldsErrors>({});
   const [categoryError, setCategoryError] = useState<string>();
   // Set once the event exists: the success screen shows while we open it.
   const [created, setCreated] = useState(false);
@@ -125,12 +166,14 @@ export default function CreateInPersonEventForm({
       // A teaser answered the "what and where" questions already; the wizard
       // exists to collect what it could not: dates, tickets and a precise venue.
       eventName: teaser?.eventName ?? "",
-      eventDescription: teaser?.eventDescription ?? "",
-      address: teaser?.address ?? "",
-      state: teaser?.state ?? "",
-      city: teaser?.city ?? "",
-      country: teaser?.country || "Haiti",
-      location: { lat: undefined, lng: undefined },
+      eventDescription:
+        teaser?.eventDescription ?? season?.description ?? "",
+      // A match starts at the season's home venue; the organiser can change it.
+      address: teaser?.address ?? season?.address ?? "",
+      state: teaser?.state ?? season?.state ?? "",
+      city: teaser?.city ?? season?.city ?? "",
+      country: teaser?.country || season?.country || "Haiti",
+      location: season?.location ?? { lat: undefined, lng: undefined },
       eventImage: undefined as unknown as File,
       eventDays: [
         {
@@ -141,7 +184,7 @@ export default function CreateInPersonEventForm({
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         },
       ],
-      activityTags: teaser?.activityTags ?? [],
+      activityTags: teaser?.activityTags ?? (season ? [season.sport] : []),
       ticketTypes: [
         {
           ticketTypeName: membershipTier.customTicketTypes ? "" : "General",
@@ -189,6 +232,10 @@ export default function CreateInPersonEventForm({
     formData.append("isPrivate", JSON.stringify(isPrivate));
     if (data.ticketSalesEndAt) {
       formData.append("ticketSalesEndAt", data.ticketSalesEndAt);
+    }
+    if (season) {
+      formData.append("seasonId", season.seasonId);
+      appendMatchFields(formData, match);
     }
     /**
      * A free plan's activity-wide switch still collapses to the one locked
@@ -248,7 +295,10 @@ export default function CreateInPersonEventForm({
       setCreated(true);
       const newId = "eventId" in result ? result.eventId : undefined;
       const newName = "eventName" in result ? result.eventName : undefined;
-      const target = teaser
+      // A new match goes back to its season, where the next one is added.
+      const target = season
+        ? `/events/season/${slugify(season.name, season.seasonId)}`
+        : teaser
         ? `/events/show/${slugify(teaser.eventName, teaser.eventId)}`
         : newId
           ? `/events/show/${slugify(newName ?? data.eventName, newId)}`
@@ -334,8 +384,12 @@ export default function CreateInPersonEventForm({
     }
     const categoryMissing = currentStep === 0 && !category;
     setCategoryError(categoryMissing ? t("errors.basicDetails.category") : undefined);
+    const teamErrors =
+      currentStep === 0 && season ? validateMatchFields(match, tMatch) : {};
+    setMatchErrors(teamErrors);
+    const teamsMissing = Object.keys(teamErrors).length > 0;
     const output = await trigger(fields, { shouldFocus: true });
-    if (!output || categoryMissing) {
+    if (!output || categoryMissing || teamsMissing) {
       scrollToFirstError();
       return;
     }
@@ -369,6 +423,45 @@ export default function CreateInPersonEventForm({
     teaser?.eventImageUrl ?? null,
   );
 
+  /**
+   * A match starts with its season's cover. Fetched through our own proxy so it
+   * becomes a File the event create can upload; if it fails the organiser just
+   * picks an image as for any event.
+   */
+  useEffect(() => {
+    if (!season?.coverImageUrl) return;
+    let cancelled = false;
+    fetch(`/api/proxy-image?url=${encodeURIComponent(season.coverImageUrl)}`)
+      .then((response) => (response.ok ? response.blob() : null))
+      .then((blob) => {
+        if (!blob || cancelled) return;
+        const file = new File([blob], "season-cover.jpg", {
+          type: blob.type || "image/jpeg",
+        });
+        setValue("eventImage", file);
+        setImagePreview(URL.createObjectURL(file));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [season?.coverImageUrl, setValue]);
+
+  /**
+   * Teams typed → the event name follows ("Home vs Away · Round"), until the
+   * organiser types a name of their own.
+   */
+  const onMatchChange = (next: MatchFieldsValue) => {
+    const current = getValues("eventName") ?? "";
+    if (!current || current === matchName(match)) {
+      setValue("eventName", matchName(next), { shouldValidate: Boolean(current) });
+    }
+    setMatch(next);
+    if (Object.keys(matchErrors).length) {
+      setMatchErrors(validateMatchFields(next, tMatch));
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target;
     const file = input.files?.[0];
@@ -394,9 +487,13 @@ export default function CreateInPersonEventForm({
   if (created) {
     return (
       <CreatedScreen
-        title={t(teaser ? "created.published_title" : "created.title")}
+        title={
+          season
+            ? t("created.match")
+            : t(teaser ? "created.published_title" : "created.title")
+        }
         description={t("created.description")}
-        pendingLabel={t("created.opening")}
+        pendingLabel={t(season ? "created.opening_season" : "created.opening")}
       />
     );
   }
@@ -407,7 +504,11 @@ export default function CreateInPersonEventForm({
     // permanently. `clip` clips identically but is not a scroll container.
     <div className="relative flex flex-col gap-10 overflow-clip h-full">
       <CreateHeader
-        title={t(teaser ? "publish_title" : "title_event")}
+        title={
+          season
+            ? tMatch("add_title")
+            : t(teaser ? "publish_title" : "title_event")
+        }
         steps={steps.map((s) => s.name)}
         current={currentStep}
         onBack={
@@ -435,7 +536,20 @@ export default function CreateInPersonEventForm({
                 setIsPrivate={setIsPrivate}
                 nameStatus={nameStatus}
                 nameLocked={isPublishing}
-                topSlot={topSlot}
+                topSlot={
+                  season ? (
+                    <Section title={tMatch("section")}>
+                      <MatchFields
+                        value={match}
+                        onChange={onMatchChange}
+                        errors={matchErrors}
+                      />
+                    </Section>
+                  ) : (
+                    topSlot
+                  )
+                }
+                initialLocation={season?.location ?? undefined}
                 category={category}
                 onCategoryChange={(value) => {
                   setCategory(value);
@@ -490,7 +604,9 @@ export default function CreateInPersonEventForm({
         onContinue={next}
         continueLabel={
           currentStep === steps.length - 1
-            ? t(teaser ? "publish_cta" : "create_cta")
+            ? season
+              ? tMatch("create_cta")
+              : t(teaser ? "publish_cta" : "create_cta")
             : undefined
         }
         loading={isSubmitting}

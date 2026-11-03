@@ -69,7 +69,12 @@ export default function OrganizerActions({
         <div className="lg:hidden">
           {/* `p-6` + the 20px icon + the 2px border makes this exactly as tall
               as the Follow button's `py-6`. */}
-          <ShareEvent url={shareUrl} triggerClassName="p-3 rounded-full" />
+          <ShareEvent
+            url={shareUrl}
+            title={organisation.organisationName}
+            description={organisation.organisationDescription}
+            triggerClassName="p-3 rounded-full"
+          />
         </div>
         <FollowButton
           organisationId={organisation.organisationId}

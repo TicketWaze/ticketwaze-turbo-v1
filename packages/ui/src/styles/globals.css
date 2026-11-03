@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* Shared components outside the apps, which Tailwind would not scan. */
+@source "../share";
+
 @custom-variant dark (&:is(.dark *));
 
 * {

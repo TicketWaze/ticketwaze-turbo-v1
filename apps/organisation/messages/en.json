@@ -1775,6 +1775,10 @@
         "event": {
           "title": "Event",
           "description": "Physical or virtual: concerts, conferences, workshops, meetups…"
+        },
+        "season": {
+          "title": "Sports season",
+          "description": "A championship or league season: add each match and sell its tickets."
         }
       },
       "tagPlaceholder": "Type a hashtag and press enter or spacebar",
@@ -2191,7 +2195,10 @@
         "restaurant": "Venue Created Successfully",
         "coming_soon": "Teaser Created Successfully",
         "description_activity": "It was sent for review — you will be notified as soon as it is live. Meanwhile you can manage it from your activities.",
-        "opening_list": "Opening your activities..."
+        "opening_list": "Opening your activities...",
+        "season": "Season Created Successfully",
+        "match": "Match Created Successfully",
+        "opening_season": "Opening season..."
       },
       "edit_title": "Edit event",
       "save_cta": "Save changes",
@@ -2286,7 +2293,9 @@
         "default": "Recommended",
         "views": "Most viewed",
         "sold": "Most sold"
-      }
+      },
+      "seasons": "Seasons",
+      "empty_seasons": "No season yet. Create your team’s season to start selling match tickets."
     },
     "restaurantCard": {
       "tag": "Bar & Restaurant",
@@ -2598,6 +2607,128 @@
       "opening": "Opening event…",
       "duplicate": "A ticket class with this name already exists",
       "failed": "Couldn’t add the tickets. Try again."
+    },
+    "seasonCard": {
+      "matches": "{count, plural, =0 {No match yet} one {1 match} other {# matches}}",
+      "no_dates": "Dates to come",
+      "status": {
+        "requested": "Requested",
+        "review": "In review",
+        "rejected": "Rejected",
+        "suspended": "Suspended"
+      }
+    },
+    "season": {
+      "create_title": "Create Season",
+      "edit_title": "Edit Season",
+      "back": "Back",
+      "cover": "Season cover",
+      "cover_text": "Drag and drop an image, or",
+      "browse": "Browse",
+      "details": "Season details",
+      "name": "Season name",
+      "name_placeholder": "e.g. Violette AC — Championnat National 2027",
+      "description": "Description",
+      "description_placeholder": "Tell fans about the season, the team and the competition.",
+      "sport": "Sport",
+      "sport_placeholder": "Choose a sport",
+      "sports": {
+        "football": "Football",
+        "basketball": "Basketball",
+        "volleyball": "Volleyball",
+        "baseball": "Baseball",
+        "handball": "Handball",
+        "rugby": "Rugby",
+        "boxing": "Boxing",
+        "other": "Other sport"
+      },
+      "competition": "Competition or league",
+      "competition_placeholder": "e.g. Championnat National D1",
+      "venue": "Home venue",
+      "venue_hint": "Each new match starts with this venue. You can change it for any match.",
+      "venue_name": "Stadium or venue name",
+      "venue_name_placeholder": "e.g. Parc Sylvio Cator",
+      "address": "Address",
+      "country": "Country",
+      "state": "State",
+      "city": "City",
+      "select": "Select",
+      "review_note": "Your season is reviewed by our team before its page goes public. Each match is reviewed on its own, like any event.",
+      "submit": "Create season",
+      "save": "Save changes",
+      "saved": "Season updated",
+      "errors": {
+        "name": "The name must be at least 3 characters.",
+        "name_taken": "A season with this name already exists.",
+        "description": "The description must be at least 150 characters.",
+        "sport": "Choose a sport.",
+        "competition": "Enter the competition or league.",
+        "address": "Enter the address.",
+        "country": "Choose a country.",
+        "state": "Choose a state.",
+        "city": "Choose a city.",
+        "cover": "Add a cover image.",
+        "too_large": "This image is too large. Try a smaller one.",
+        "submit_failed": "Something went wrong. Please try again.",
+        "location": "Pick the venue on the map."
+      },
+      "page": {
+        "matches": "Matches",
+        "add_match": "Add match",
+        "edit": "Edit season",
+        "delete": "Delete season",
+        "delete_title": "Delete this season?",
+        "delete_body": "The season and its page are removed. This cannot be undone.",
+        "delete_confirm": "Delete",
+        "delete_cancel": "Cancel",
+        "deleted": "Season deleted",
+        "delete_blocked": "Seasons with matches cannot be deleted.",
+        "no_matches": "No match yet",
+        "no_matches_hint": "Add your first match: it is created like an event, with its own date, venue and tickets.",
+        "upcoming": "Upcoming",
+        "played": "Played",
+        "sold": "{sold}/{total} sold",
+        "competition": "Competition",
+        "sport": "Sport",
+        "venue": "Home venue",
+        "status_requested": "This season is waiting for review. Its public page opens once it is approved.",
+        "status_review": "This season is being reviewed.",
+        "status_rejected": "This season was rejected: {reason}. Edit it to send it for review again.",
+        "status_rejected_no_reason": "This season was rejected. Edit it to send it for review again.",
+        "status_suspended": "This season is suspended by Ticketwaze.",
+        "match_status": {
+          "requested": "Requested",
+          "review": "In review",
+          "rejected": "Rejected",
+          "cancelled": "Cancelled",
+          "live": "Live",
+          "over": "Over"
+        }
+      },
+      "match": {
+        "section": "Match",
+        "home": "Home team",
+        "away": "Away team",
+        "team_placeholder": "Team name",
+        "logo_add": "Add logo",
+        "logo_change": "Change logo",
+        "logo_remove": "Remove logo",
+        "round_optional": "Round (optional)",
+        "round_placeholder": "e.g. Matchday 3, Quarter-final",
+        "vs": "vs",
+        "add_title": "Add Match",
+        "edit_teams": "Edit teams",
+        "edit_teams_title": "Edit match",
+        "save": "Save",
+        "cancel": "Cancel",
+        "saved": "Match updated",
+        "part_of": "Match of {season}",
+        "errors": {
+          "home": "Enter the home team.",
+          "away": "Enter the away team."
+        },
+        "create_cta": "Create match"
+      }
     }
   },
   "Sales": {

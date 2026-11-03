@@ -378,6 +378,8 @@ export default function EditInPersonEventForm({
         try {
           const proxiedUrl = `/api/proxy-image?url=${encodeURIComponent(event.eventImageUrl)}`;
           const response = await fetch(proxiedUrl);
+          // A refused or failed fetch must not become a bogus "image" File.
+          if (!response.ok) return;
           const blob = await response.blob();
           const file = new File([blob], "event-image.jpg", {
             type: blob.type || "image/jpeg",

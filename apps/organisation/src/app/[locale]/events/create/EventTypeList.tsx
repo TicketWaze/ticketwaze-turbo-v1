@@ -16,7 +16,7 @@ import SaleCover from "@/assets/images/online.jpg";
 // import Reservations from "@/assets/images/reservations.jpg";
 // import Transportations from "@/assets/images/transportations.jpg";
 // import Tours from "@/assets/images/tours.jpg";
-// import match from "@/assets/images/match.jpg";
+import SeasonCover from "@/assets/images/match.jpg";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 import { cardMotion } from "@/components/shared/motion";
@@ -63,6 +63,13 @@ export default function EventTypeList({
       description: t("list.event.description"),
       image: InPerson,
       value: "event",
+    },
+    // A sports season: the container its matches (ordinary events) hang off.
+    {
+      title: t("list.season.title"),
+      description: t("list.season.description"),
+      image: SeasonCover,
+      value: "season",
     },
 
     {

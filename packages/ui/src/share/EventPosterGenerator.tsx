@@ -7,20 +7,17 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { slugify } from "@/lib/Slugify";
-import { attendeeEventLink } from "@/lib/attendeeLink";
+} from "./dialog";
 import { Event } from "@ticketwaze/typescript-config";
 import { DateTime } from "luxon";
 import { Download, ImagePlay, Share2 } from "lucide-react";
-import { useLocale } from "next-intl";
 import QRCode from "qrcode";
 import { useRef, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { Calendar, Location, DollarSquare } from "iconsax-reactjs";
 
 // ─── pour transformer les icon en texte ──────────────────────────────────────────────────────────────
-function iconToDataUrl(IconComponent: typeof Calendar, color: string) {
+function iconToDataUrl(IconComponent: React.ComponentType<any>, color: string) {
   const svgString = renderToStaticMarkup(
     <IconComponent size="34" color={color} variant="Bulk" />,
   );
@@ -575,12 +572,24 @@ async function buildPoster(
 
 // ─── React component ──────────────────────────────────────────────────────────
 
-export default function EventPosterGenerator({ event }: { event: Event }) {
-  const locale = useLocale();
+/**
+ * The Instagram poster (1080×1350) of an event: cover, title, date, venue,
+ * price and a QR code of `link`. Shared by the share modal of every app.
+ */
+export default function EventPosterGenerator({
+  event,
+  link,
+  locale,
+}: {
+  event: Event;
+  link: string;
+  locale: string;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [phase, setPhase] = useState<"idle" | "busy" | "done">("idle");
 
-  const eventLink = attendeeEventLink(event);
+  const eventLink = link;
+  const fileSlug = link.split("?")[0]!.split("/").filter(Boolean).pop() ?? "event";
 
   async function generate() {
     const canvas = canvasRef.current;
@@ -599,7 +608,7 @@ export default function EventPosterGenerator({ event }: { event: Event }) {
     if (!canvas) return;
     const a = document.createElement("a");
     a.href = canvas.toDataURL("image/png");
-    a.download = `${slugify(event.eventName, event.eventId)}-poster.png`;
+    a.download = `${fileSlug}-poster.png`;
     a.click();
   }
 
@@ -612,7 +621,7 @@ export default function EventPosterGenerator({ event }: { event: Event }) {
     if (!blob) return;
     const file = new File(
       [blob],
-      `${slugify(event.eventName, event.eventId)}-poster.png`,
+      `${fileSlug}-poster.png`,
       {
         type: "image/png",
       },

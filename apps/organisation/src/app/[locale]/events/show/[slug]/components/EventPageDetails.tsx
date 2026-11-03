@@ -30,6 +30,7 @@ import PrintedTicketsSection from "./PrintedTicketsSection";
 import { useRouter } from "@/i18n/navigation";
 import dynamic from "next/dynamic";
 import MountOnOpen from "@/components/shared/MountOnOpen";
+import MatchHeader from "@/components/season/MatchHeader";
 
 // Dialogs and drawers download on first open, not with the page: between
 // them they carry QR and poster rendering, form validation and the exports.
@@ -261,6 +262,13 @@ export default function EventPageDetails({
           {more}
         </div>
       </Reveal>
+
+      {/* A match of a season: the teams and the way back to the season. */}
+      {event.match && (
+        <Reveal delay={0.04}>
+          <MatchHeader match={event.match} />
+        </Reveal>
+      )}
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 border-b border-neutral-100 divide-neutral-100 lg:divide-x pb-8 lg:pb-0">

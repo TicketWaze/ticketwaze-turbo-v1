@@ -468,6 +468,8 @@ export interface Event {
    */
   comingSoonDate?: string | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
+  /** Set when this event is a match of a season (teams, round). */
+  match?: Match | null;
   /**
    * When an admin featured this event on the website's landing page, or null.
    * It shows there only while it is also public, approved and not over.
@@ -1645,4 +1647,63 @@ export interface EventFormResponse {
   email: string;
   answeredAt: string;
   answers: TicketFormAnswer[];
+}
+
+/* ── Seasons and matches (docs/match-events-plan.md) ─────────────────────── */
+
+export type SeasonSport =
+  | "football"
+  | "basketball"
+  | "volleyball"
+  | "baseball"
+  | "handball"
+  | "rugby"
+  | "boxing"
+  | "other";
+
+export interface Season {
+  seasonId: string;
+  organisationId: string;
+  name: string;
+  description: string;
+  sport: SeasonSport;
+  competition: string;
+  coverImageUrl: string;
+  /** Default home venue: each new match starts from it. */
+  venueName: string | null;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  location: { lat: number; lng: number } | null;
+  timezone: string;
+  adminStatus: "requested" | "review" | "approved" | "rejected";
+  rejectionReason?: string | null;
+  suspendedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** Organiser list only. */
+  matchCount?: number;
+  /** Organiser list only: first kick-off and last final whistle, ISO. */
+  startsAt?: string | null;
+  endsAt?: string | null;
+}
+
+/** What a match adds to its event. */
+export interface Match {
+  eventId: string;
+  seasonId: string;
+  homeTeamName: string;
+  homeTeamLogoUrl: string | null;
+  awayTeamName: string;
+  awayTeamLogoUrl: string | null;
+  round: string | null;
+}
+
+/** A match as the season endpoints return it: with its event and title. */
+export interface SeasonMatch extends Match {
+  /** "Home vs Away". */
+  title: string;
+  isOver: boolean;
+  event: Event;
 }

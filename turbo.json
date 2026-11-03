@@ -1,6 +1,15 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "globalPassThroughEnv": [
+    "LOCALAPPDATA",
+    "APPDATA",
+    "USERPROFILE",
+    "HOMEDRIVE",
+    "HOMEPATH",
+    "XDG_CACHE_HOME",
+    "SWC_NATIVE_BINDING_CACHE"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

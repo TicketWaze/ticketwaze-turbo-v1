@@ -1774,6 +1774,10 @@
         "event": {
           "title": "Événement",
           "description": "En présentiel ou en ligne : concerts, conférences, ateliers, rencontres…"
+        },
+        "season": {
+          "title": "Saison sportive",
+          "description": "Un championnat ou une saison de ligue : ajoutez chaque match et vendez ses billets."
         }
       },
       "tagPlaceholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d’espace",
@@ -2186,7 +2190,10 @@
         "restaurant": "Établissement créé avec succès",
         "coming_soon": "Annonce créée avec succès",
         "description_activity": "Elle a été envoyée pour validation — vous serez prévenu dès sa mise en ligne. En attendant, vous pouvez la gérer depuis vos activités.",
-        "opening_list": "Ouverture de vos activités..."
+        "opening_list": "Ouverture de vos activités...",
+        "season": "Saison créée avec succès",
+        "match": "Match créé avec succès",
+        "opening_season": "Ouverture de la saison..."
       },
       "edit_title": "Modifier l'événement",
       "save_cta": "Enregistrer les modifications",
@@ -2281,7 +2288,9 @@
         "default": "Recommandé",
         "views": "Les plus vues",
         "sold": "Les plus vendues"
-      }
+      },
+      "seasons": "Saisons",
+      "empty_seasons": "Aucune saison pour le moment. Créez la saison de votre équipe pour vendre des billets de match."
     },
     "restaurantCard": {
       "tag": "Bar & Restaurant",
@@ -2593,6 +2602,128 @@
       "opening": "Ouverture de l'événement…",
       "duplicate": "Une classe de billets porte déjà ce nom",
       "failed": "Impossible d'ajouter les billets. Réessayez."
+    },
+    "seasonCard": {
+      "matches": "{count, plural, =0 {Aucun match} one {1 match} other {# matchs}}",
+      "no_dates": "Dates à venir",
+      "status": {
+        "requested": "Demandée",
+        "review": "En révision",
+        "rejected": "Rejetée",
+        "suspended": "Suspendue"
+      }
+    },
+    "season": {
+      "create_title": "Créer une saison",
+      "edit_title": "Modifier la saison",
+      "back": "Retour",
+      "cover": "Image de la saison",
+      "cover_text": "Glissez-déposez une image, ou",
+      "browse": "Parcourir",
+      "details": "Détails de la saison",
+      "name": "Nom de la saison",
+      "name_placeholder": "ex. Violette AC — Championnat National 2027",
+      "description": "Description",
+      "description_placeholder": "Présentez la saison, l’équipe et la compétition aux supporters.",
+      "sport": "Sport",
+      "sport_placeholder": "Choisissez un sport",
+      "sports": {
+        "football": "Football",
+        "basketball": "Basketball",
+        "volleyball": "Volleyball",
+        "baseball": "Baseball",
+        "handball": "Handball",
+        "rugby": "Rugby",
+        "boxing": "Boxe",
+        "other": "Autre sport"
+      },
+      "competition": "Compétition ou ligue",
+      "competition_placeholder": "ex. Championnat National D1",
+      "venue": "Stade à domicile",
+      "venue_hint": "Chaque nouveau match commence avec ce lieu. Vous pouvez le changer pour n’importe quel match.",
+      "venue_name": "Nom du stade ou du lieu",
+      "venue_name_placeholder": "ex. Parc Sylvio Cator",
+      "address": "Adresse",
+      "country": "Pays",
+      "state": "Département",
+      "city": "Ville",
+      "select": "Sélectionner",
+      "review_note": "Notre équipe vérifie votre saison avant que sa page soit publique. Chaque match est vérifié séparément, comme tout événement.",
+      "submit": "Créer la saison",
+      "save": "Enregistrer",
+      "saved": "Saison mise à jour",
+      "errors": {
+        "name": "Le nom doit contenir au moins 3 caractères.",
+        "name_taken": "Une saison porte déjà ce nom.",
+        "description": "La description doit contenir au moins 150 caractères.",
+        "sport": "Choisissez un sport.",
+        "competition": "Indiquez la compétition ou la ligue.",
+        "address": "Indiquez l’adresse.",
+        "country": "Choisissez un pays.",
+        "state": "Choisissez un département.",
+        "city": "Choisissez une ville.",
+        "cover": "Ajoutez une image.",
+        "too_large": "Cette image est trop lourde. Essayez-en une plus petite.",
+        "submit_failed": "Une erreur est survenue. Veuillez réessayer.",
+        "location": "Placez le lieu sur la carte."
+      },
+      "page": {
+        "matches": "Matchs",
+        "add_match": "Ajouter un match",
+        "edit": "Modifier la saison",
+        "delete": "Supprimer la saison",
+        "delete_title": "Supprimer cette saison ?",
+        "delete_body": "La saison et sa page seront supprimées. Cette action est définitive.",
+        "delete_confirm": "Supprimer",
+        "delete_cancel": "Annuler",
+        "deleted": "Saison supprimée",
+        "delete_blocked": "Une saison qui a des matchs ne peut pas être supprimée.",
+        "no_matches": "Aucun match pour le moment",
+        "no_matches_hint": "Ajoutez votre premier match : il se crée comme un événement, avec sa date, son lieu et ses billets.",
+        "upcoming": "À venir",
+        "played": "Joués",
+        "sold": "{sold}/{total} vendus",
+        "competition": "Compétition",
+        "sport": "Sport",
+        "venue": "Stade à domicile",
+        "status_requested": "Cette saison attend d’être vérifiée. Sa page publique ouvrira une fois approuvée.",
+        "status_review": "Cette saison est en cours de vérification.",
+        "status_rejected": "Cette saison a été rejetée : {reason}. Modifiez-la pour la soumettre à nouveau.",
+        "status_rejected_no_reason": "Cette saison a été rejetée. Modifiez-la pour la soumettre à nouveau.",
+        "status_suspended": "Cette saison est suspendue par Ticketwaze.",
+        "match_status": {
+          "requested": "Demandé",
+          "review": "En révision",
+          "rejected": "Rejeté",
+          "cancelled": "Annulé",
+          "live": "En cours",
+          "over": "Terminé"
+        }
+      },
+      "match": {
+        "section": "Match",
+        "home": "Équipe à domicile",
+        "away": "Équipe visiteuse",
+        "team_placeholder": "Nom de l’équipe",
+        "logo_add": "Ajouter un logo",
+        "logo_change": "Changer le logo",
+        "logo_remove": "Retirer le logo",
+        "round_optional": "Journée (facultatif)",
+        "round_placeholder": "ex. Journée 3, Quart de finale",
+        "vs": "vs",
+        "add_title": "Ajouter un match",
+        "edit_teams": "Modifier les équipes",
+        "edit_teams_title": "Modifier le match",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "saved": "Match mis à jour",
+        "part_of": "Match de {season}",
+        "errors": {
+          "home": "Indiquez l’équipe à domicile.",
+          "away": "Indiquez l’équipe visiteuse."
+        },
+        "create_cta": "Créer le match"
+      }
     }
   },
   "Sales": {
