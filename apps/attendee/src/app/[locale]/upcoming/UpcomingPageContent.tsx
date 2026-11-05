@@ -2,7 +2,7 @@
 "use client";
 import UpcomingCard from "@/components/UpcomingCard";
 import { slugify } from "@/lib/Slugify";
-import { MyRaffle } from "@ticketwaze/typescript-config";
+import { MyRaffle, MySeasonPasses } from "@ticketwaze/typescript-config";
 import { Money3, Star } from "iconsax-reactjs";
 import ListPageHeader from "@/components/ListPageHeader";
 import { useTranslations } from "next-intl";
@@ -12,9 +12,11 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function UpcomingPageContent({
   events,
   raffles,
+  seasons,
 }: {
   events: any;
   raffles?: MyRaffle[];
+  seasons?: MySeasonPasses[];
 }) {
   const t = useTranslations("Upcoming");
   const [query, setQuery] = useState("");
@@ -31,8 +33,15 @@ export default function UpcomingPageContent({
   const filteredRaffles = raffleList.filter((raffle) =>
     raffle.title?.toLowerCase().includes(search),
   );
-  const totalCount = list.length + raffleList.length;
-  const filteredCount = filteredEvents.length + filteredRaffles.length;
+  // Season passes lead: a pass covers several upcoming matches, and the API
+  // returns them by next kick-off.
+  const seasonList: MySeasonPasses[] = Array.isArray(seasons) ? seasons : [];
+  const filteredSeasons = seasonList.filter((season) =>
+    season.name?.toLowerCase().includes(search),
+  );
+  const totalCount = list.length + raffleList.length + seasonList.length;
+  const filteredCount =
+    filteredEvents.length + filteredRaffles.length + filteredSeasons.length;
 
   return (
     <>
@@ -44,6 +53,28 @@ export default function UpcomingPageContent({
       <>
         <div className="pt-4 overflow-y-scroll flex flex-col gap-8 -mx-4">
           <ul className="list px-4 pb-8">
+            {filteredSeasons.map((season, index) => (
+              <motion.li
+                key={season.seasonId}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{
+                  duration: 0.35,
+                  ease: "easeOut",
+                  delay: Math.min(index * 0.06, 0.3),
+                }}
+              >
+                <UpcomingCard
+                  href={`upcoming/season/${slugify(season.name, season.seasonId)}`}
+                  image={season.coverImageUrl}
+                  name={season.name}
+                  eventDays={[]}
+                  countdownTo={season.nextMatch.startsAt ?? undefined}
+                  tickets={season.passes.length}
+                  unitLabel={t("passes", { count: season.passes.length })}
+                />
+              </motion.li>
+            ))}
             {filteredEvents.map((event: any, index) => {
               const slug = slugify(event.eventName, event.eventId);
               return (

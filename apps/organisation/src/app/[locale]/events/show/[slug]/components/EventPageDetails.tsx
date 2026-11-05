@@ -365,7 +365,10 @@ export default function EventPageDetails({
           <EventArtist event={event} eventPerformers={eventPerformers} />
         </Reveal>
       )}
-      <PrintedTicketsSection event={event} batches={physicalTicketBatches} />
+      <PrintedTicketsSection
+        batches={physicalTicketBatches}
+        timezone={event.eventDays[0]?.timezone ?? "local"}
+      />
       <ReturnedTicketsSection event={event} ticketReturns={ticketReturns} />
 
       <MountOnOpen open={shareOpen}>

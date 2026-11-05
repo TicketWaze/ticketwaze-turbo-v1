@@ -117,7 +117,9 @@ export default function WelcomeModal({
   }
 
   function goNext() {
-    slide(() => setStep((s) => s + 1));
+    // Clamped: clicks during the slide-out queue up, and a quick double-click
+    // used to step past the last slide and crash the page.
+    slide(() => setStep((s) => Math.min(s + 1, STEPS.length - 1)));
   }
 
   async function explore() {

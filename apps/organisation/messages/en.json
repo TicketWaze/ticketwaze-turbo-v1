@@ -1431,8 +1431,11 @@
           "ticket_type": "Ticket type",
           "quantity": "Quantity",
           "face_value": "Face value",
-          "scanned": "Scanned"
-        }
+          "scanned": "Scanned",
+          "used": "Used"
+        },
+        "season_note": "Printed by Ticketwaze to be sold by hand. Each one gets in at one match of the holder's choice and is locked to the first match it is scanned at. They are separate from your online tickets and passes and are not counted in your sales or revenue.",
+        "season_summary": "{printed} printed · {scanned} used"
       },
       "ticket_returns": {
         "title": "Returned Tickets",
@@ -2701,7 +2704,7 @@
           "review": "In review",
           "rejected": "Rejected",
           "cancelled": "Cancelled",
-          "live": "Live",
+          "live": "On sale",
           "over": "Over"
         }
       },
@@ -2724,10 +2727,55 @@
         "saved": "Match updated",
         "part_of": "Match of {season}",
         "errors": {
-          "home": "Enter the home team.",
           "away": "Enter the away team."
         },
-        "create_cta": "Create match"
+        "create_cta": "Create match",
+        "home_hint": "Your organisation: its name and profile picture."
+      },
+      "passes": {
+        "title": "Season passes",
+        "hint": "One QR code for every match of the season. Each pass takes a seat in the ticket type you choose at every match, so a match can never be oversold.",
+        "needs_match": "Add a match first: a pass needs a match to seat its holders at.",
+        "add": "Add a pass",
+        "create_title": "New season pass",
+        "edit_title": "Edit season pass",
+        "name": "Pass name (e.g. Pass Tribune)",
+        "description": "Description (optional)",
+        "price": "Price",
+        "quantity": "Passes for sale",
+        "mapping_title": "Seat at each match",
+        "mapping_hint": "Choose the ticket type pass holders get at each upcoming match. Every pass sold takes one seat there.",
+        "mapping_hint_sold": "{sold, plural, one {# pass is} other {# passes are}} already sold: the ticket type you choose needs that many free seats.",
+        "choose_ticket_type": "Choose a ticket type",
+        "seats_left": "{count, plural, one {# seat left} other {# seats left}}",
+        "sold": "{sold} / {total} sold",
+        "sits_in": "{tiers} at {count, plural, one {# match} other {# matches}}",
+        "create": "Create the pass",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "delete": "Delete",
+        "created": "Season pass created.",
+        "saved": "Season pass saved.",
+        "deleted": "Season pass deleted.",
+        "errors": {
+          "name": "Give the pass a name of at least 2 characters.",
+          "price": "Enter a price above 0.",
+          "quantity": "Enter a whole number of passes, at least 1.",
+          "quantity_below_sold": "{sold} passes are already sold; the quantity cannot go below that.",
+          "mapping": "Choose a ticket type for this match.",
+          "not_enough_seats": "Only {left} seats left there; {needed} pass holders need one.",
+          "has_sales": "A pass that has been bought cannot be deleted."
+        },
+        "new_match": {
+          "title": "Season passes at this match",
+          "hint": "Pass holders get a seat at every match. Choose the ticket type each pass sits in here; it must have room for all of its holders.",
+          "holders": "{count, plural, =0 {No holder yet} one {# holder} other {# holders}}",
+          "choose": "Choose a ticket type",
+          "errors": {
+            "choose": "Choose one of this match’s ticket types.",
+            "too_small": "This ticket type needs at least {count} seats for pass holders."
+          }
+        }
       }
     }
   },

@@ -27,6 +27,7 @@ type MatchWithSeason = Match & {
 };
 
 const fromMatch = (match: Match): MatchFieldsValue => ({
+  // Shown only: the home team is the organiser.
   home: emptyTeam(match.homeTeamLogoUrl, match.homeTeamName),
   away: emptyTeam(match.awayTeamLogoUrl, match.awayTeamName),
   round: match.round ?? "",
@@ -96,7 +97,11 @@ export default function MatchHeader({ match }: { match: MatchWithSeason }) {
           </Link>
         )}
         <div className="flex items-center gap-4 min-w-0 flex-wrap">
-          <TeamCrest name={match.homeTeamName} logoUrl={match.homeTeamLogoUrl} size={44} />
+          <TeamCrest
+            name={match.homeTeamName}
+            logoUrl={match.homeTeamLogoUrl}
+            size={44}
+          />
           <span className="font-medium text-[1.6rem] text-deep-100">
             {match.homeTeamName}
           </span>
@@ -106,9 +111,15 @@ export default function MatchHeader({ match }: { match: MatchWithSeason }) {
           <span className="font-medium text-[1.6rem] text-deep-100">
             {match.awayTeamName}
           </span>
-          <TeamCrest name={match.awayTeamName} logoUrl={match.awayTeamLogoUrl} size={44} />
+          <TeamCrest
+            name={match.awayTeamName}
+            logoUrl={match.awayTeamLogoUrl}
+            size={44}
+          />
           {match.round && (
-            <span className="text-[1.3rem] text-neutral-600">· {match.round}</span>
+            <span className="text-[1.3rem] text-neutral-600">
+              · {match.round}
+            </span>
           )}
         </div>
       </div>
@@ -130,7 +141,10 @@ export default function MatchHeader({ match }: { match: MatchWithSeason }) {
               {t("edit_teams")}
             </ButtonPill>
           </DialogTrigger>
-          <ModalShell title={t("edit_teams_title")} className="lg:w-[64rem] max-w-[64rem]">
+          <ModalShell
+            title={t("edit_teams_title")}
+            className="lg:w-[64rem] max-w-[64rem]"
+          >
             <div className="flex flex-col gap-8 pt-8 overflow-y-auto">
               <MatchFields value={value} onChange={setValue} errors={errors} />
               <div className="flex gap-4">
@@ -139,7 +153,11 @@ export default function MatchHeader({ match }: { match: MatchWithSeason }) {
                     {t("cancel")}
                   </ButtonPrimary>
                 </DialogClose>
-                <ButtonPrimary className="flex-1" disabled={saving} onClick={save}>
+                <ButtonPrimary
+                  className="flex-1"
+                  disabled={saving}
+                  onClick={save}
+                >
                   {t("save")}
                 </ButtonPrimary>
               </div>

@@ -57,7 +57,10 @@ const selectTriggerClass =
  * event description, because each match starts from this text.
  */
 const plainLength = (html: string) =>
-  html.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().length;
+  html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .trim().length;
 
 function makeSchema(t: (key: string) => string) {
   return z.object({
@@ -127,10 +130,7 @@ export default function SeasonForm({ season }: { season?: Season }) {
     },
   });
 
-  const nameStatus = useSeasonNameAvailability(
-    watch("name"),
-    season?.seasonId,
-  );
+  const nameStatus = useSeasonNameAvailability(watch("name"), season?.seasonId);
   const country = watch("country");
   const state = watch("state");
   const states = countries.find((c) => c.name === country)?.state ?? [];
@@ -229,7 +229,11 @@ export default function SeasonForm({ season }: { season?: Season }) {
 
       <form
         id="season-form"
-        onSubmit={handleSubmit(onSubmit)}
+        // The cover is outside the schema, so its error is raised alongside
+        // the field errors rather than only once every field is valid.
+        onSubmit={handleSubmit(onSubmit, () => {
+          if (!isEdit && !coverFile) setCoverError(t("errors.cover"));
+        })}
         className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex flex-col gap-12 pb-28 lg:pb-8"
         noValidate
       >
@@ -314,11 +318,7 @@ export default function SeasonForm({ season }: { season?: Season }) {
               <p className="text-[1.3rem] leading-7 text-neutral-600 -mt-2">
                 {t("venue_hint")}
               </p>
-              <Input
-                {...register("venueName")}
-                type="text"
-                maxLength={150}
-              >
+              <Input {...register("venueName")} type="text" maxLength={150}>
                 {t("venue_name")}
               </Input>
               <Input

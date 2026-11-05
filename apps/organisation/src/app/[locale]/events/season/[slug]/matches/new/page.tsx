@@ -77,6 +77,7 @@ export default async function NewMatchPage({
         eventType=""
         membershipTier={me.membershipTier}
         season={loaded.season}
+        passTypes={loaded.passTypes}
       />
     </OrganizerLayout>
   );

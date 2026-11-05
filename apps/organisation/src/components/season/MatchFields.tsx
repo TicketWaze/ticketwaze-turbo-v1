@@ -15,14 +15,21 @@ export type TeamSide = {
 };
 
 export type MatchFieldsValue = {
+  /**
+   * Shown only: the home team is always the organiser (its name and profile
+   * picture, set by the API). Kept here for the event name ("Home vs Away").
+   */
   home: TeamSide;
   away: TeamSide;
   round: string;
 };
 
-export type MatchFieldsErrors = { home?: string; away?: string };
+export type MatchFieldsErrors = { away?: string };
 
-export const emptyTeam = (logoUrl: string | null = null, name = ""): TeamSide => ({
+export const emptyTeam = (
+  logoUrl: string | null = null,
+  name = "",
+): TeamSide => ({
   name,
   logo: null,
   logoUrl,
@@ -35,14 +42,12 @@ export function appendMatchFields(
   value: MatchFieldsValue,
   { edit = false }: { edit?: boolean } = {},
 ) {
-  fd.append("homeTeamName", value.home.name.trim());
   fd.append("awayTeamName", value.away.name.trim());
   fd.append("round", value.round.trim());
-  if (value.home.logo) fd.append("homeTeamLogo", value.home.logo);
   if (value.away.logo) fd.append("awayTeamLogo", value.away.logo);
   if (edit) {
-    if (value.home.removed && !value.home.logo) fd.append("removeHomeTeamLogo", "true");
-    if (value.away.removed && !value.away.logo) fd.append("removeAwayTeamLogo", "true");
+    if (value.away.removed && !value.away.logo)
+      fd.append("removeAwayTeamLogo", "true");
   }
 }
 
@@ -51,7 +56,6 @@ export function validateMatchFields(
   t: (key: string) => string,
 ): MatchFieldsErrors {
   const errors: MatchFieldsErrors = {};
-  if (!value.home.name.trim()) errors.home = t("errors.home");
   if (!value.away.name.trim()) errors.away = t("errors.away");
   return errors;
 }
@@ -92,9 +96,16 @@ function TeamField({
         {label}
       </span>
       <div className="flex items-center gap-4">
-        <label className="relative cursor-pointer shrink-0 group" title={t("logo_add")}>
+        <label
+          className="relative cursor-pointer shrink-0 group"
+          title={t("logo_add")}
+        >
           {side.logoUrl ? (
-            <TeamCrest name={side.name || "?"} logoUrl={side.logoUrl} size={60} />
+            <TeamCrest
+              name={side.name || "?"}
+              logoUrl={side.logoUrl}
+              size={60}
+            />
           ) : (
             <span className="w-[60px] h-[60px] rounded-full border border-dashed border-neutral-300 bg-[#FBFBFB] flex items-center justify-center group-hover:border-primary-500 transition-colors">
               <Gallery size="22" color="#737c8a" variant="Bulk" />
@@ -134,7 +145,30 @@ function TeamField({
   );
 }
 
-/** Home team, away team (name + optional logo each) and the round. */
+/** The home team: the organiser, shown as it will appear (not editable). */
+function HomeTeam({ label, side }: { label: string; side: TeamSide }) {
+  const t = useTranslations("Events.season.match");
+  return (
+    <div className="flex-1 min-w-0 flex flex-col gap-3">
+      <span className="text-[1.4rem] font-medium text-neutral-700 px-2">
+        {label}
+      </span>
+      <div className="flex items-center gap-4">
+        <TeamCrest name={side.name || "?"} logoUrl={side.logoUrl} size={60} />
+        <div className="min-w-0 flex-1 bg-neutral-100 rounded-[5rem] px-8 h-[6rem] flex flex-col justify-center">
+          <span className="text-[1.5rem] leading-8 text-deep-200 truncate">
+            {side.name}
+          </span>
+        </div>
+      </div>
+      <span className="text-[1.2rem] text-neutral-600 px-2 min-h-6">
+        {t("home_hint")}
+      </span>
+    </div>
+  );
+}
+
+/** Home team (the organiser), away team (name + optional logo) and the round. */
 export default function MatchFields({
   value,
   onChange,
@@ -148,12 +182,7 @@ export default function MatchFields({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col lg:flex-row gap-6 lg:items-start">
-        <TeamField
-          label={t("home")}
-          side={value.home}
-          error={errors.home}
-          onChange={(home) => onChange({ ...value, home })}
-        />
+        <HomeTeam label={t("home")} side={value.home} />
         <span className="hidden lg:flex self-center pt-4 text-[1.4rem] font-primary font-bold text-neutral-500">
           {t("vs")}
         </span>
