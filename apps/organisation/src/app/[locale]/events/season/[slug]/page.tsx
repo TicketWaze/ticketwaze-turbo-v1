@@ -48,6 +48,8 @@ export default async function SeasonPage({
       <SeasonPageDetails
         season={loaded.season}
         matches={loaded.matches}
+        passTypes={loaded.passTypes}
+        printedBatches={loaded.printedBatches}
         canCreate={policy.createEvent()}
         canEdit={policy.editEvent()}
       />

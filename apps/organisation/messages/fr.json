@@ -1430,8 +1430,11 @@
           "ticket_type": "Type de billet",
           "quantity": "Quantité",
           "face_value": "Valeur faciale",
-          "scanned": "Scannés"
-        }
+          "scanned": "Scannés",
+          "used": "Utilisés"
+        },
+        "season_note": "Imprimés par Ticketwaze pour être vendus à la main. Chacun fait entrer à un match au choix et reste lié au premier match où il est scanné. Ils sont séparés de vos billets et abonnements en ligne et ne comptent ni dans vos ventes ni dans vos revenus.",
+        "season_summary": "{printed} imprimés · {scanned} utilisés"
       },
       "ticket_returns": {
         "title": "Billets retournés",
@@ -2696,7 +2699,7 @@
           "review": "En révision",
           "rejected": "Rejeté",
           "cancelled": "Annulé",
-          "live": "En cours",
+          "live": "En vente",
           "over": "Terminé"
         }
       },
@@ -2719,10 +2722,55 @@
         "saved": "Match mis à jour",
         "part_of": "Match de {season}",
         "errors": {
-          "home": "Indiquez l’équipe à domicile.",
           "away": "Indiquez l’équipe visiteuse."
         },
-        "create_cta": "Créer le match"
+        "create_cta": "Créer le match",
+        "home_hint": "Votre organisation : son nom et sa photo de profil."
+      },
+      "passes": {
+        "title": "Abonnements de saison",
+        "hint": "Un seul QR code pour tous les matchs de la saison. Chaque abonnement prend une place dans le type de billet choisi à chaque match, donc aucun match ne peut être survendu.",
+        "needs_match": "Ajoutez d’abord un match : un abonnement a besoin d’un match où placer ses détenteurs.",
+        "add": "Ajouter un abonnement",
+        "create_title": "Nouvel abonnement",
+        "edit_title": "Modifier l’abonnement",
+        "name": "Nom de l’abonnement (ex. Pass Tribune)",
+        "description": "Description (facultative)",
+        "price": "Prix",
+        "quantity": "Abonnements en vente",
+        "mapping_title": "Place à chaque match",
+        "mapping_hint": "Choisissez le type de billet des abonnés à chaque match à venir. Chaque abonnement vendu y prend une place.",
+        "mapping_hint_sold": "{sold, plural, one {# abonnement est déjà vendu} other {# abonnements sont déjà vendus}} : le type de billet choisi doit avoir autant de places libres.",
+        "choose_ticket_type": "Choisir un type de billet",
+        "seats_left": "{count, plural, one {# place restante} other {# places restantes}}",
+        "sold": "{sold} / {total} vendus",
+        "sits_in": "{tiers} à {count, plural, one {# match} other {# matchs}}",
+        "create": "Créer l’abonnement",
+        "save": "Enregistrer",
+        "saving": "Enregistrement…",
+        "delete": "Supprimer",
+        "created": "Abonnement créé.",
+        "saved": "Abonnement enregistré.",
+        "deleted": "Abonnement supprimé.",
+        "errors": {
+          "name": "Donnez à l’abonnement un nom d’au moins 2 caractères.",
+          "price": "Indiquez un prix supérieur à 0.",
+          "quantity": "Indiquez un nombre entier d’abonnements, au moins 1.",
+          "quantity_below_sold": "{sold} abonnements sont déjà vendus : la quantité ne peut pas être inférieure.",
+          "mapping": "Choisissez un type de billet pour ce match.",
+          "not_enough_seats": "Il ne reste que {left} places ; {needed} abonnés en ont besoin.",
+          "has_sales": "Un abonnement déjà acheté ne peut pas être supprimé."
+        },
+        "new_match": {
+          "title": "Abonnements à ce match",
+          "hint": "Les abonnés ont une place à chaque match. Choisissez le type de billet de chaque abonnement ici ; il doit avoir de la place pour tous ses détenteurs.",
+          "holders": "{count, plural, =0 {Aucun abonné pour l’instant} one {# abonné} other {# abonnés}}",
+          "choose": "Choisir un type de billet",
+          "errors": {
+            "choose": "Choisissez un des types de billet de ce match.",
+            "too_small": "Ce type de billet doit avoir au moins {count} places pour les abonnés."
+          }
+        }
       }
     }
   },

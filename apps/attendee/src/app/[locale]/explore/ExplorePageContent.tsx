@@ -6,6 +6,7 @@ import EventCard from "@/components/shared/EventCard";
 import RaffleCard from "@/components/shared/RaffleCard";
 import RestaurantCard from "@/components/shared/RestaurantCard";
 import SaleCard from "@/components/shared/SaleCard";
+import SeasonCard from "@/components/shared/SeasonCard";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import {
   Tooltip,
@@ -15,6 +16,7 @@ import {
 import { Link } from "@/i18n/navigation";
 import {
   Event,
+  ExploreSeason,
   PublicSale,
   Raffle,
   Restaurant,
@@ -62,15 +64,18 @@ export default function ExplorePageContent({
   raffles = [],
   restaurants = [],
   sales = [],
+  seasons = [],
 }: {
   events: ListedEvent[];
   pastEvents?: ListedEvent[];
   raffles?: Raffle[];
   restaurants?: Restaurant[];
   sales?: PublicSale[];
+  seasons?: ExploreSeason[];
   wallet: null;
 }) {
   const t = useTranslations("Explore");
+  const seasonT = useTranslations("Season");
   const { data: session } = useSession();
   const [query, setQuery] = useState("");
   const [mobileSearch, setMobileSearch] = useState(false);
@@ -83,23 +88,33 @@ export default function ExplorePageContent({
   const matches = (text: string) => text.toLowerCase().includes(q);
 
   // Options come from what is actually listed, so no filter can lead nowhere.
-  const { topCategories, categoryOptions, cityOptions } = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const event of events)
-      counts.set(event.eventType, (counts.get(event.eventType) ?? 0) + 1);
-    const all = new Set([...events, ...pastEvents].map((e) => e.eventType));
-    const cities = new Set(
-      [...events, ...pastEvents].map((e) => e.city).filter(Boolean),
-    );
-    return {
-      topCategories: [...counts.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, TOP_CATEGORY_TABS)
-        .map(([category]) => category),
-      categoryOptions: [...all].filter(Boolean).sort(),
-      cityOptions: [...cities].sort() as string[],
-    };
-  }, [events, pastEvents]);
+  const { topCategories, categoryOptions, cityOptions, sportOptions } =
+    useMemo(() => {
+      const counts = new Map<string, number>();
+      for (const event of events)
+        counts.set(event.eventType, (counts.get(event.eventType) ?? 0) + 1);
+      const all = new Set([...events, ...pastEvents].map((e) => e.eventType));
+      const cities = new Set(
+        [...events, ...pastEvents].map((e) => e.city).filter(Boolean),
+      );
+      // Sports of the matches and seasons on the page; empty (and the filter
+      // hidden) when there is no sport at all.
+      const sports = new Set(
+        [
+          ...[...events, ...pastEvents].map((e) => e.match?.season?.sport),
+          ...seasons.map((season) => season.sport),
+        ].filter(Boolean),
+      );
+      return {
+        topCategories: [...counts.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, TOP_CATEGORY_TABS)
+          .map(([category]) => category),
+        categoryOptions: [...all].filter(Boolean).sort(),
+        cityOptions: [...cities].sort() as string[],
+        sportOptions: [...sports].sort() as string[],
+      };
+    }, [events, pastEvents, seasons]);
 
   const categoryLabel = (category: string) =>
     t.has(`categories.${category}`)
@@ -114,6 +129,16 @@ export default function ExplorePageContent({
     pastEvents.filter((e) => matches(e.eventName)),
     filters,
   );
+  // Seasons answer to the search box and the sport filter; any other filter
+  // is about single activities, so they step aside like the rows below.
+  const otherFiltersActive = hasActiveFilters({ ...filters, sport: undefined });
+  const filteredSeasons = otherFiltersActive
+    ? []
+    : seasons.filter(
+        (season) =>
+          (matches(season.name) || matches(season.competition)) &&
+          (!filters.sport || season.sport === filters.sport),
+      );
   // Raffles, sales and restaurants have no topic, date or view count, so they
   // step aside while any filter is on and only answer to the search box.
   const filteredRaffles = filtersActive
@@ -131,13 +156,15 @@ export default function ExplorePageContent({
     pastEvents.length > 0 ||
     raffles.length > 0 ||
     restaurants.length > 0 ||
-    sales.length > 0;
+    sales.length > 0 ||
+    seasons.length > 0;
   const noResults =
     filteredEvents.length === 0 &&
     filteredPastEvents.length === 0 &&
     filteredRaffles.length === 0 &&
     filteredRestaurants.length === 0 &&
-    filteredSales.length === 0;
+    filteredSales.length === 0 &&
+    filteredSeasons.length === 0;
   // "Similar activities" for an empty search: the most viewed upcoming ones.
   const suggestions = noResults
     ? [...events]
@@ -293,6 +320,18 @@ export default function ExplorePageContent({
               }))}
               onChange={(category) => setFilters((f) => ({ ...f, category }))}
             />
+            {sportOptions.length > 0 && (
+              <FilterSelect
+                label={t("filters.sport")}
+                resetLabel={t("filters.allSports")}
+                value={filters.sport}
+                options={sportOptions.map((value) => ({
+                  value,
+                  label: seasonT(`sports.${value}`),
+                }))}
+                onChange={(sport) => setFilters((f) => ({ ...f, sport }))}
+              />
+            )}
             <FilterSelect
               label={t("filters.location")}
               resetLabel={t("filters.allLocations")}
@@ -356,6 +395,22 @@ export default function ExplorePageContent({
                 ))}
               </AnimatePresence>
             </motion.ul>
+          )}
+          {filteredSeasons.length > 0 && (
+            <section className="flex flex-col gap-6">
+              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black lg:px-4">
+                {t("seasons")}
+              </span>
+              <div className="-mx-4">
+                <ul className="list pt-4 px-4 pb-8 lg:pb-0">
+                  {filteredSeasons.map((season, index) => (
+                    <motion.li key={season.seasonId} {...cardMotion(index)}>
+                      <SeasonCard season={season} />
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+            </section>
           )}
           {filteredRaffles.length > 0 && (
             <section className="flex flex-col gap-6">

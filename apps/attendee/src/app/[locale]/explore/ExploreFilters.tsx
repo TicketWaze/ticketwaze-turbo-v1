@@ -19,6 +19,7 @@ export type DateRange = { from: string; to?: string }; // YYYY-MM-DD
 export type ExploreFilterState = {
   category?: string; // events.event_type
   city?: string;
+  sport?: string; // a match's season sport
   date?: DateRange;
   sort: "soonest" | "popular";
 };
@@ -41,12 +42,13 @@ export function applyExploreFilters<T extends WithViews>(
   events: T[],
   filters: ExploreFilterState,
 ): T[] {
-  const { category, city, date, sort } = filters;
+  const { category, city, sport, date, sort } = filters;
   const from = date?.from;
   const to = date?.to ?? date?.from;
   const filtered = events.filter((event) => {
     if (category && event.eventType !== category) return false;
     if (city && event.city !== city) return false;
+    if (sport && event.match?.season?.sport !== sport) return false;
     if (from && to) {
       if (!activityDays(event).some((day) => day >= from && day <= to))
         return false;
@@ -62,6 +64,7 @@ export function hasActiveFilters(filters: ExploreFilterState) {
   return Boolean(
     filters.category ||
     filters.city ||
+    filters.sport ||
     filters.date ||
     filters.sort === "popular",
   );
@@ -102,7 +105,13 @@ export function CategoryTabs({
               />
             )}
             <span className="relative">
-              {category ? t(`categories.${category}`) : t("filters.all")}
+              {!category
+                ? t("filters.all")
+                : // Same fallback as the Category dropdown, for a type
+                  // that has no label yet.
+                  t.has(`categories.${category}`)
+                  ? t(`categories.${category}`)
+                  : category.charAt(0).toUpperCase() + category.slice(1)}
             </span>
           </button>
         );

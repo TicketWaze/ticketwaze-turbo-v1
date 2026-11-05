@@ -5,7 +5,9 @@ import { cn } from "@/lib/utils";
 function initials(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
   const letters =
-    words.length > 1 ? words[0]![0]! + words[1]![0]! : (words[0] ?? "?").slice(0, 2);
+    words.length > 1
+      ? words[0]![0]! + words[1]![0]!
+      : (words[0] ?? "?").slice(0, 2);
   return letters.toUpperCase();
 }
 
@@ -31,7 +33,11 @@ export default function TeamCrest({
       title={name}
     >
       {logoUrl ? (
-        <img src={logoUrl} alt={name} className="w-full h-full object-contain" />
+        <img
+          src={logoUrl}
+          alt={name}
+          className="w-full h-full object-contain"
+        />
       ) : (
         <span
           className="font-primary font-bold text-neutral-700"

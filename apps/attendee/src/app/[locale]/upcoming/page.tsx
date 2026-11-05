@@ -3,7 +3,7 @@ import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { auth } from "@/lib/auth";
 import UpcomingPageContent from "./UpcomingPageContent";
 import { getTranslations } from "next-intl/server";
-import { Event, MyRaffle } from "@ticketwaze/typescript-config";
+import { Event, MyRaffle, MySeasonPasses } from "@ticketwaze/typescript-config";
 
 export default async function UpcomingPage() {
   const session = await auth();
@@ -25,13 +25,15 @@ export default async function UpcomingPage() {
   // Raffle entries are tickets against an activity with no `events` row, so
   // they never come back from /events/upcoming and are fetched separately.
   let raffles: MyRaffle[] = [];
+  // Season passes are tickets under a season, so they come separately too.
+  let seasons: MySeasonPasses[] = [];
 
   const headers = {
     Authorization: `Bearer ${session?.user.accessToken}`,
     "Content-Type": "application/json",
   };
 
-  const [eventResult, raffleResult] = await Promise.allSettled([
+  const [eventResult, raffleResult, seasonResult] = await Promise.allSettled([
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/events/upcoming`, {
       method: "GET",
       headers,
@@ -42,7 +44,27 @@ export default async function UpcomingPage() {
       headers,
       cache: "no-store",
     }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/season-passes/mine`, {
+      method: "GET",
+      headers,
+      cache: "no-store",
+    }),
   ]);
+
+  if (seasonResult.status === "fulfilled") {
+    try {
+      const seasonResponse = await seasonResult.value.json();
+      if (seasonResult.value.ok && Array.isArray(seasonResponse?.seasons)) {
+        seasons = seasonResponse.seasons;
+      } else {
+        console.error("Failed to load season passes:", seasonResponse);
+      }
+    } catch (error) {
+      console.error("Error parsing season passes:", error);
+    }
+  } else {
+    console.error("Error fetching season passes:", seasonResult.reason);
+  }
 
   if (eventResult.status === "fulfilled") {
     try {
@@ -76,7 +98,11 @@ export default async function UpcomingPage() {
 
   return (
     <AttendeeLayout title="Upcoming" className="overflow-x-hidden">
-      <UpcomingPageContent events={events} raffles={raffles} />
+      <UpcomingPageContent
+        events={events}
+        raffles={raffles}
+        seasons={seasons}
+      />
     </AttendeeLayout>
   );
 }

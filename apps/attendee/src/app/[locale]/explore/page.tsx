@@ -10,6 +10,7 @@ import {
   PublicSale,
   Raffle,
   Restaurant,
+  ExploreSeason,
 } from "@ticketwaze/typescript-config";
 
 /**
@@ -41,21 +42,29 @@ export default async function Explore({
   // open, so it is on screen the moment /explore paints instead of after a
   // client round trip the user could outrun on a slow connection.
   const { welcome } = await searchParams;
-  const [request, rafflesRequest, restaurantsRequest, salesRequest] =
-    await Promise.all([
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
-        next: { revalidate: 60 },
-      }),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/raffles`, {
-        next: { revalidate: 60 },
-      }),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/restaurants`, {
-        next: { revalidate: 60 },
-      }),
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/sales`, {
-        next: { revalidate: 60 },
-      }),
-    ]);
+  const [
+    request,
+    rafflesRequest,
+    restaurantsRequest,
+    salesRequest,
+    seasonsRequest,
+  ] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/raffles`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/restaurants`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/sales`, {
+      next: { revalidate: 60 },
+    }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/seasons`, {
+      next: { revalidate: 60 },
+    }),
+  ]);
   const response = await request.json();
   const pastEvents: Event[] = response.pastEvents ?? [];
   // Teasers come back as their own array: they have no event_days, so the
@@ -102,6 +111,14 @@ export default async function Explore({
     sales = [];
   }
 
+  let seasons: ExploreSeason[] = [];
+  try {
+    const seasonsResponse = await seasonsRequest.json();
+    seasons = seasonsResponse.seasons ?? [];
+  } catch {
+    seasons = [];
+  }
+
   return (
     <AttendeeLayout
       title="Explore"
@@ -115,6 +132,7 @@ export default async function Explore({
         raffles={raffles}
         restaurants={restaurants}
         sales={sales}
+        seasons={seasons}
         wallet={null}
       />
     </AttendeeLayout>

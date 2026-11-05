@@ -12,20 +12,37 @@ import {
   Trash,
   Ticket,
 } from "iconsax-reactjs";
-import { Season, SeasonMatch } from "@ticketwaze/typescript-config";
+import {
+  PhysicalTicketBatch,
+  Season,
+  SeasonMatch,
+  SeasonPassType,
+} from "@ticketwaze/typescript-config";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Dialog, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import ModalShell from "@/components/shared/ModalShell";
-import { ButtonPill, ButtonPrimary, ButtonRed } from "@/components/shared/buttons";
+import {
+  ButtonPill,
+  ButtonPrimary,
+  ButtonRed,
+} from "@/components/shared/buttons";
 import { Reveal } from "@/components/shared/motion";
 import TeamCrest from "@/components/season/TeamCrest";
+import PassTypesSection from "@/components/season/PassTypesSection";
+import PrintedTicketsSection from "../../show/[slug]/components/PrintedTicketsSection";
 import { seasonDateRange } from "@/components/shared/SeasonCard";
 import { DeleteSeason } from "@/actions/SeasonActions";
 import { slugify } from "@/lib/Slugify";
 import { eventStartsAt } from "@/lib/eventTime";
 import { cn } from "@/lib/utils";
 
-type MatchState = "requested" | "review" | "rejected" | "cancelled" | "live" | "over";
+type MatchState =
+  | "requested"
+  | "review"
+  | "rejected"
+  | "cancelled"
+  | "live"
+  | "over";
 
 function matchState(match: SeasonMatch): MatchState {
   const event = match.event;
@@ -86,7 +103,9 @@ function Fact({
       </span>
       <div className="min-w-0">
         <p className="text-[1.2rem] leading-6 text-neutral-600">{label}</p>
-        <p className="text-[1.5rem] leading-8 text-deep-100 truncate">{value}</p>
+        <p className="text-[1.5rem] leading-8 text-deep-100 truncate">
+          {value}
+        </p>
       </div>
     </li>
   );
@@ -125,7 +144,10 @@ function MatchRow({ match }: { match: SeasonMatch }) {
         </div>
 
         <div className="flex items-center gap-4 flex-1 min-w-0">
-          <TeamCrest name={match.homeTeamName} logoUrl={match.homeTeamLogoUrl} />
+          <TeamCrest
+            name={match.homeTeamName}
+            logoUrl={match.homeTeamLogoUrl}
+          />
           <span className="font-medium text-[1.5rem] leading-8 text-deep-100 truncate">
             {match.homeTeamName}
           </span>
@@ -135,12 +157,17 @@ function MatchRow({ match }: { match: SeasonMatch }) {
           <span className="font-medium text-[1.5rem] leading-8 text-deep-100 truncate">
             {match.awayTeamName}
           </span>
-          <TeamCrest name={match.awayTeamName} logoUrl={match.awayTeamLogoUrl} />
+          <TeamCrest
+            name={match.awayTeamName}
+            logoUrl={match.awayTeamLogoUrl}
+          />
         </div>
 
         <div className="flex items-center justify-between lg:justify-end gap-6 shrink-0">
           {match.round && (
-            <span className="text-[1.3rem] text-neutral-600">{match.round}</span>
+            <span className="text-[1.3rem] text-neutral-600">
+              {match.round}
+            </span>
           )}
           <span className="flex items-center gap-2 text-[1.3rem] text-neutral-700">
             <Ticket size="16" color="#737c8a" variant="Bulk" />
@@ -168,11 +195,15 @@ function MatchRow({ match }: { match: SeasonMatch }) {
 export default function SeasonPageDetails({
   season,
   matches,
+  passTypes,
+  printedBatches,
   canCreate,
   canEdit,
 }: {
   season: Season;
   matches: SeasonMatch[];
+  passTypes: SeasonPassType[];
+  printedBatches: PhysicalTicketBatch[];
   canCreate: boolean;
   canEdit: boolean;
 }) {
@@ -193,8 +224,9 @@ export default function SeasonPageDetails({
         ? (eventStartsAt(matches[0].event.eventDays)?.toISO() ?? null)
         : null,
       endsAt: matches.length
-        ? (eventStartsAt(matches[matches.length - 1]!.event.eventDays)?.toISO() ??
-          null)
+        ? (eventStartsAt(
+            matches[matches.length - 1]!.event.eventDays,
+          )?.toISO() ?? null)
         : null,
     },
     locale,
@@ -323,6 +355,21 @@ export default function SeasonPageDetails({
         />
       </ul>
 
+      {season.adminStatus !== "rejected" && (
+        <PassTypesSection
+          seasonId={season.seasonId}
+          passTypes={passTypes}
+          matches={matches}
+          canEdit={canEdit}
+        />
+      )}
+
+      <PrintedTicketsSection
+        batches={printedBatches}
+        timezone={season.timezone}
+        kind="season"
+      />
+
       {matches.length === 0 ? (
         <div className="flex flex-col items-center text-center gap-4 py-16">
           <div className="w-[9rem] h-[9rem] rounded-full bg-neutral-100 flex items-center justify-center">
@@ -366,4 +413,3 @@ export default function SeasonPageDetails({
     </div>
   );
 }
-

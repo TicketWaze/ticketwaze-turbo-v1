@@ -32,6 +32,7 @@ import {
   Event,
   MembershipTier,
   Season,
+  SeasonPassType,
 } from "@ticketwaze/typescript-config";
 import MatchFields, {
   appendMatchFields,
@@ -40,6 +41,12 @@ import MatchFields, {
   MatchFieldsValue,
   validateMatchFields,
 } from "@/components/season/MatchFields";
+import NewMatchPassMappings, {
+  PassMappingErrors,
+  PassMappingValue,
+  tierNamesOf,
+  validatePassMappings,
+} from "@/components/season/NewMatchPassMappings";
 
 /** The event name a match gets until the organiser types their own. */
 function matchName(value: MatchFieldsValue): string {
@@ -58,9 +65,12 @@ export default function CreateInPersonEventForm({
   membershipTier,
   teaser,
   season,
+  passTypes = [],
   topSlot,
   onExit,
 }: {
+  /** A match's season's pass types: each must be seated at the new match. */
+  passTypes?: SeasonPassType[];
   /**
    * Set when this wizard adds a MATCH to a season: the venue, description,
    * cover and sport come from the season, the teams are asked first, and the
@@ -103,12 +113,23 @@ export default function CreateInPersonEventForm({
     eventType || (season ? "tournament" : ""),
   );
   const tMatch = useTranslations("Events.season.match");
-  const [match, setMatch] = useState<MatchFieldsValue>({
+  const [matchState, setMatch] = useState<MatchFieldsValue>({
     home: emptyTeam(),
     away: emptyTeam(),
     round: "",
   });
+  // The home team is always the organiser (the API sets it the same way).
+  const match: MatchFieldsValue = {
+    ...matchState,
+    home: emptyTeam(
+      organisation?.profileImageUrl ?? null,
+      organisation?.organisationName ?? "",
+    ),
+  };
   const [matchErrors, setMatchErrors] = useState<MatchFieldsErrors>({});
+  const tPasses = useTranslations("Events.season.passes.new_match");
+  const [passMapping, setPassMapping] = useState<PassMappingValue>({});
+  const [passErrors, setPassErrors] = useState<PassMappingErrors>({});
   const [categoryError, setCategoryError] = useState<string>();
   // Set once the event exists: the success screen shows while we open it.
   const [created, setCreated] = useState(false);
@@ -166,8 +187,7 @@ export default function CreateInPersonEventForm({
       // A teaser answered the "what and where" questions already; the wizard
       // exists to collect what it could not: dates, tickets and a precise venue.
       eventName: teaser?.eventName ?? "",
-      eventDescription:
-        teaser?.eventDescription ?? season?.description ?? "",
+      eventDescription: teaser?.eventDescription ?? season?.description ?? "",
       // A match starts at the season's home venue; the organiser can change it.
       address: teaser?.address ?? season?.address ?? "",
       state: teaser?.state ?? season?.state ?? "",
@@ -236,6 +256,17 @@ export default function CreateInPersonEventForm({
     if (season) {
       formData.append("seasonId", season.seasonId);
       appendMatchFields(formData, match);
+      if (passTypes.length > 0) {
+        formData.append(
+          "passMappings",
+          JSON.stringify(
+            passTypes.map((pass) => ({
+              seasonPassTypeId: pass.seasonPassTypeId,
+              ticketTypeName: (passMapping[pass.seasonPassTypeId] ?? "").trim(),
+            })),
+          ),
+        );
+      }
     }
     /**
      * A free plan's activity-wide switch still collapses to the one locked
@@ -299,10 +330,10 @@ export default function CreateInPersonEventForm({
       const target = season
         ? `/events/season/${slugify(season.name, season.seasonId)}`
         : teaser
-        ? `/events/show/${slugify(teaser.eventName, teaser.eventId)}`
-        : newId
-          ? `/events/show/${slugify(newName ?? data.eventName, newId)}`
-          : "/events";
+          ? `/events/show/${slugify(teaser.eventName, teaser.eventId)}`
+          : newId
+            ? `/events/show/${slugify(newName ?? data.eventName, newId)}`
+            : "/events";
       setTimeout(() => router.push(target), 1800);
     }
     if (result.error) toast.error(result.error);
@@ -383,13 +414,27 @@ export default function CreateInPersonEventForm({
       fields = steps[currentStep]?.fields as FieldName[];
     }
     const categoryMissing = currentStep === 0 && !category;
-    setCategoryError(categoryMissing ? t("errors.basicDetails.category") : undefined);
+    setCategoryError(
+      categoryMissing ? t("errors.basicDetails.category") : undefined,
+    );
     const teamErrors =
       currentStep === 0 && season ? validateMatchFields(match, tMatch) : {};
     setMatchErrors(teamErrors);
     const teamsMissing = Object.keys(teamErrors).length > 0;
+    // On the ticket step of a match: where each season pass sits.
+    const seatErrors =
+      currentStep === 2 && season && passTypes.length > 0
+        ? validatePassMappings(
+            passTypes,
+            passMapping,
+            getValues("ticketTypes"),
+            (k, v) => tPasses(k, v),
+          )
+        : {};
+    setPassErrors(seatErrors);
+    const passesUnseated = Object.keys(seatErrors).length > 0;
     const output = await trigger(fields, { shouldFocus: true });
-    if (!output || categoryMissing || teamsMissing) {
+    if (!output || categoryMissing || teamsMissing || passesUnseated) {
       scrollToFirstError();
       return;
     }
@@ -454,7 +499,9 @@ export default function CreateInPersonEventForm({
   const onMatchChange = (next: MatchFieldsValue) => {
     const current = getValues("eventName") ?? "";
     if (!current || current === matchName(match)) {
-      setValue("eventName", matchName(next), { shouldValidate: Boolean(current) });
+      setValue("eventName", matchName(next), {
+        shouldValidate: Boolean(current),
+      });
     }
     setMatch(next);
     if (Object.keys(matchErrors).length) {
@@ -569,7 +616,9 @@ export default function CreateInPersonEventForm({
                 errors={errors}
                 eventDays={eventDays as EventDay[]}
                 setEventDays={
-                  setEventDays as React.Dispatch<React.SetStateAction<EventDay[]>>
+                  setEventDays as React.Dispatch<
+                    React.SetStateAction<EventDay[]>
+                  >
                 }
                 setValue={setValue}
                 t={(k) => t(k)}
@@ -592,6 +641,17 @@ export default function CreateInPersonEventForm({
                 control={control}
                 membershipTier={membershipTier}
               />
+              {season && passTypes.length > 0 && (
+                <div className="pt-8">
+                  <NewMatchPassMappings
+                    passTypes={passTypes}
+                    tierNames={tierNamesOf(watch("ticketTypes") ?? [])}
+                    value={passMapping}
+                    onChange={setPassMapping}
+                    errors={passErrors}
+                  />
+                </div>
+              )}
             </StepPanel>
           )}
         </AnimatePresence>

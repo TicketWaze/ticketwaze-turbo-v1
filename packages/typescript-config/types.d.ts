@@ -1698,6 +1698,27 @@ export interface Match {
   awayTeamName: string;
   awayTeamLogoUrl: string | null;
   round: string | null;
+  /**
+   * Public event payloads only: the season, while its public page exists
+   * (approved, not suspended). Null otherwise.
+   */
+  season?: Pick<Season, "seasonId" | "name" | "sport" | "competition"> | null;
+}
+
+/** A season in Explore's seasons row (GET /explore/seasons). */
+export interface ExploreSeason extends Season {
+  matchCount: number;
+  upcomingCount: number;
+  nextMatch: {
+    eventId: string;
+    title: string;
+    round: string | null;
+    homeTeamName: string;
+    awayTeamName: string;
+    homeTeamLogoUrl: string | null;
+    awayTeamLogoUrl: string | null;
+    startsAt: string | null;
+  };
 }
 
 /** A match as the season endpoints return it: with its event and title. */
@@ -1706,4 +1727,51 @@ export interface SeasonMatch extends Match {
   title: string;
   isOver: boolean;
   event: Event;
+}
+
+/** A season the signed-in user holds passes for (GET /season-passes/mine). */
+export interface MySeasonPasses {
+  seasonId: string;
+  name: string;
+  sport: SeasonSport;
+  competition: string;
+  coverImageUrl: string;
+  upcomingCount: number;
+  nextMatch: { eventId: string; title: string; startsAt: string | null };
+  passes: { ticketId: string; ticketName: string; ticketType: string }[];
+}
+
+/** One pass as its holder sees it; the QR encodes `ticketId`. */
+export interface HeldSeasonPass {
+  ticketId: string;
+  ticketName: string;
+  ticketType: string;
+  fullName: string;
+  ticketPrice: number;
+  ticketUsdPrice: number;
+}
+
+/** Where a pass type seats its holders at one match. */
+export interface SeasonPassMapping {
+  seasonPassMappingId: string;
+  seasonPassTypeId: string;
+  eventId: string;
+  eventTicketTypeId: string;
+  /** How many of that ticket type's sold seats are this pass's holders. */
+  seatsReserved: number;
+}
+
+/** A season pass type as its organiser manages it. */
+export interface SeasonPassType {
+  seasonPassTypeId: string;
+  seasonId: string;
+  name: string;
+  description: string | null;
+  /** HTG, like ticket types; `usdPrice` is its USD twin. */
+  price: number;
+  usdPrice: number;
+  currency: "HTG" | "USD";
+  quantity: number;
+  quantitySold: number;
+  mappings: SeasonPassMapping[];
 }

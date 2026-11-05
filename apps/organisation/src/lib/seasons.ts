@@ -1,10 +1,22 @@
 // Server components only (reads the session through `auth()`).
 import { getLocale } from "next-intl/server";
-import { Season, SeasonMatch } from "@ticketwaze/typescript-config";
+import {
+  PhysicalTicketBatch,
+  Season,
+  SeasonMatch,
+  SeasonPassType,
+} from "@ticketwaze/typescript-config";
 import { auth } from "@/lib/auth";
 
 export type SeasonLoad =
-  | { status: "ok"; season: Season; matches: SeasonMatch[] }
+  | {
+      status: "ok";
+      season: Season;
+      matches: SeasonMatch[];
+      passTypes: SeasonPassType[];
+      /** Printed season tickets Ticketwaze made: a record, not sales. */
+      printedBatches: PhysicalTicketBatch[];
+    }
   | { status: "forbidden" }
   | { status: "failed" };
 
@@ -28,7 +40,13 @@ export async function loadSeason(seasonId: string): Promise<SeasonLoad> {
     if (request.status === 403) return { status: "forbidden" };
     const body = await request.json().catch(() => null);
     if (!request.ok || !body?.season) return { status: "failed" };
-    return { status: "ok", season: body.season, matches: body.matches ?? [] };
+    return {
+      status: "ok",
+      season: body.season,
+      matches: body.matches ?? [],
+      passTypes: body.passTypes ?? [],
+      printedBatches: body.printedBatches ?? [],
+    };
   } catch {
     return { status: "failed" };
   }
