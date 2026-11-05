@@ -4,10 +4,10 @@ _Status: brainstorm agreed 2 Nov 2026. Open questions at the end must be answere
 
 ## Model
 - **Season**: a new activity type (like raffles and sales). Holds the competition/league, sport, default home venue, cover, description and season pass types. Has its own public page listing all its matches. No places integration in v1, entry only.
-- **Match**: a normal physical event linked to a season, plus home and away teams (name + logo) and matchday/round. Own ticket types and prices, same as a basic event. Starts with the season's venue; the organiser can change it per match. Matches can be added during the season.
+- **Match**: a normal physical event linked to a season, plus home and away teams (name + logo) and matchday/round. The home team is always the organiser: its name and profile picture, kept in step when they change (decided 5 Nov 2026). Only matches that sell tickets are listed; no ticketless away fixtures. Own ticket types and prices, same as a basic event. Starts with the season's venue; the organiser can change it per match. Matches can be added during the season.
 - **Season pass**: one QR code valid at every match of the season, including matches added later. An organiser can sell several pass types (e.g. "Pass Tribune", "Pass VIP"), each with its own price and quantity. Each pass type is mapped, per match, to one of that match's ticket types. Every pass sold takes one seat from the mapped ticket type at every match, so a match can never be oversold. On sale at a fixed price until the last match.
 - **Printed season ticket**: belongs to the season and a pass type (category). Rules:
-  - the first scan at a match locks it to that match;
+  - the first check-in at a match locks it to that match (a scan alone does not);
   - check in and out as many times as needed during that match;
   - void once that match ends;
   - never scanned: stays valid for a later match;
@@ -15,10 +15,10 @@ _Status: brainstorm agreed 2 Nov 2026. Open questions at the end must be answere
 
 ## Money and changes
 - **Payout**: pass money stays pending. Each time a match ends, release the season's pending pass money divided by the number of matches still to play (counting the one that just ended); the last match releases whatever is left. Handles matches added or cancelled mid-season.
-- **Pass returns**: full refund to the wallet, only before the season's first match starts. No returns after.
+- **Pass returns**: none. Season passes are not refundable (decided 5 Nov 2026; this replaced "full refund before the first match", which phase 6 had built and was then removed).
 - **Postponed match**: new date; every ticket and pass stays valid.
-- **Cancelled match**: single-match tickets refunded as today. Pass holders lose that match; its share of pass money moves to the remaining matches.
-- **Pass extras in v1**: discount codes, ticket returns, transfer/gift, rewards.
+- **Cancelled match**: single-match tickets refunded as today. Pass holders lose that match; its share of pass money moves to the remaining matches. If no match is left to play, the rest is released to the organiser.
+- **Pass extras in v1**: discount codes, transfer/gift, rewards.
 
 ## Build phases
 1. **API**: season tables (season, season pass types, pass type ↔ match ticket type mapping), match fields, season/match create, edit and approval.
@@ -153,35 +153,21 @@ Phases 1–3 deliver working single matches; season passes follow.
     - running a release again pays nothing twice.
     - New `seasons.pass_released_htg/usd` columns (migration 1785400000007, applied on staging).
     - A cancelled match counts for nothing, so its share moves to the matches after it. A match added mid-season takes a share of whatever is still pending.
-  - **Pass returns**: `POST /season-passes/return { tickets: [...] }`.
-    - Allowed until the season's first match kicks off (`seasonFirstMatchStartsAt`: approved, listed, uncancelled matches); refused after with `RETURN_CLOSED`.
-    - Only the buyer can return. The refund is the pass's `ticketPrice` (what was paid before fees, as for any ticket return), credited to the same wallet buckets as an event return.
-    - One transaction (the wallet is locked first, then the pass types, as in checkout):
-      - every match seat and the pass stock are freed;
-      - the organiser is debited what it earned;
-      - `ticket_returns` rows are written under the season;
-      - the passes are marked RETURNED (kept, not deleted);
-      - a fully returned order becomes RETURNED and gives back its discount slot and tokens.
-    - The usual return email is sent.
-    - **Attendee app**: "Rendre cet abonnement" under the pass QR, with a confirmation showing the amount, that fees aren't refunded, and the deadline. The pass-page API now sends `returnsCloseAt` and a per-pass `canReturn`.
+    - The hourly release still reaches a cancelled match at its old end time. It takes no share while another match is still to play; when none is left, it releases the rest to the organiser (note "season pass money (no match left to play)").
+  - **Pass returns**: built, then removed the same day: season passes are not refundable. No return route, no button; checkout says "non-refundable, even if a match is cancelled".
   - **Cancelled or postponed match**:
     - Postponing needs nothing: passes are valid at whichever date the match has.
     - A match's season-pass holders are now included in its holder lists (`holderActivityIds` in `services/season_matches.ts`, used by `liveHolders` and `ticketHoldersToNotify`). They get the change notice and email, and the bell for a scheduled deletion.
     - An admin cancel-and-refund of a match emails its pass holders (`sendMatchCancelledToPassHolders`, FR + EN in one message): nothing is refunded, and the pass stays valid for every other match.
-  - **Test**: `api/tmp/test_season_pass_money.mjs` (staging, 14 checks). Releases go through the real `/tasks/balance-release/notify` route with a QStash signature made from the `.env` key.
-  - **Notes**:
-    - App ace commands don't run on this Windows machine (the command loader reports "Invalid URL" for every file in `commands/`, even from the build), so the test signs the task request instead.
-    - If every match left is cancelled, the pass money stays pending until an admin decides; nothing releases it automatically. in the org dashboard and the new-match wizard
-    - the buy section on the attendee season page
-  - Phase 6 must add a season branch to the hourly balance release: pass money sits in pending until then, and the fanout only scans events and raffles.
-  - Found while mapping checkout, all pre-existing:
-    - No event checkout locks ticket-type stock (two buyers can oversell).
-    - The wallet route writes outside its own transaction, which may deadlock when tokens are spent.
-    - The scanner does not check the order status.
+  - **Test**: `api/tmp/test_season_pass_money.mjs` (staging, 11 checks). Releases go through the real `/tasks/balance-release/notify` route with a QStash signature made from the `.env` key.
+  - **Note**: app ace commands don't run on this Windows machine (the command loader reports "Invalid URL" for every file in `commands/`, even from the build), so the test signs the task request instead.
+- **Decisions of 5 Nov 2026** (after phase 6):
+  - Passes are not refundable; money left when every remaining match is cancelled goes to the organiser.
+  - The home team is always the organiser. The add-match form shows it read-only; the API ignores any home team sent and copies the organisation's name and profile picture, and `Organisation` re-copies them to its matches when either changes.
+  - Only ticketed matches are listed. No Figma frames: the pages stay as built.
+- **Git**: committed on `feature/match-events` in both repos. The API branch also merges `fix/checkout-hardening` (locked ticket stock, one-transaction wallet route, paid-only scans); the one conflict, in `ticket_checking.ts`, keeps both rules.
+- **Local mail guard** (`api/start/mail_guard.ts`): with `MAIL_SKIP_TEST_RECIPIENTS=true` in a local `.env`, mail to `@resend.dev` test addresses and to team notification inboxes is dropped and logged, so test runs do not spend the email quota.
 
 ## Open questions
-1. **Figma**: are there frames for the season page, match page, create flow and pass?
-2. **Transfer/gift**: no ticket can be transferred today. Simple version (holder enters recipient's email, pass moves to their account)? Transferable after it has been used?
-3. **Rewards**: rule is "one reward per event". One reward per season for a pass?
-4. **Home team**: always the organiser's own team, or can an organiser (e.g. a league) sell matches between two other teams?
-5. **Away matches**: show them on the season page as fixtures without tickets, or only matches that sell tickets?
+1. **Transfer/gift** (phase 7): no ticket can be transferred today. Simple version (holder enters recipient's email, pass moves to their account)? Transferable after it has been used?
+2. **Rewards** (phase 7): rule is "one reward per event". One reward per season for a pass?
