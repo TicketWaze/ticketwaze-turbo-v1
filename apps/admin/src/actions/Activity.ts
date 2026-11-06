@@ -491,3 +491,45 @@ export async function SetEventSponsoredAction(
     };
   }
 }
+
+/** Approve, reject (with a reason) or send back for review a season page. */
+export async function UpdateSeasonStatusAction(
+  seasonId: string,
+  adminStatus: string,
+  accessToken: string,
+  locale: string,
+  rejectionReason?: string,
+) {
+  try {
+    const request = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/admin/season/${seasonId}/status`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+          "Accept-Language": locale,
+          origin: process.env.NEXT_PUBLIC_ADMIN_URL!,
+        },
+        body: JSON.stringify({
+          status: adminStatus,
+          ...(adminStatus === "rejected" && rejectionReason
+            ? { rejectionReason }
+            : {}),
+        }),
+      },
+    );
+    const data = await request.json();
+    if (data.status === "success") {
+      revalidatePath(`/activities/season/${seasonId}`);
+      return { status: "success" };
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error: unknown) {
+    return {
+      error:
+        error instanceof Error ? error.message : "An unknown error occurred",
+    };
+  }
+}

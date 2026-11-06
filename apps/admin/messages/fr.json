@@ -686,6 +686,53 @@
           "title": "Le titre du produit doit contenir au moins 10 caractères.",
           "price": "Le prix doit être un nombre positif."
         }
+      },
+      "season": {
+        "title": "Modifier la saison",
+        "notice": {
+          "matches": "Les matchs gardent leurs propres dates, lieu et billets : modifiez-les sur la page de chaque match. L'organisateur reçoit un e-mail sur cette modification."
+        },
+        "venue_hint": "Le stade par défaut : les nouveaux matchs partent de lui. Les matchs existants gardent le leur.",
+        "fields": {
+          "name": "Nom de la saison",
+          "competition": "Compétition / ligue",
+          "sport": "Sport",
+          "cover": "Image de couverture",
+          "cover_keep": "Laissez vide pour garder l'image actuelle.",
+          "cover_new": "L'image actuelle sera remplacée à l'enregistrement.",
+          "venue_name": "Nom du stade ou du lieu (facultatif)"
+        },
+        "sports": {
+          "football": "Football",
+          "basketball": "Basketball",
+          "volleyball": "Volleyball",
+          "baseball": "Baseball",
+          "handball": "Handball",
+          "rugby": "Rugby",
+          "boxing": "Boxe",
+          "other": "Autre"
+        },
+        "changes": {
+          "cover": "l'image de couverture"
+        },
+        "errors": {
+          "competition": "La compétition doit compter au moins 2 caractères.",
+          "location": "Placez un repère sur la carte : chaque nouveau match part de lui."
+        },
+        "match": {
+          "part_of": "Match de {season}",
+          "edit": "Modifier le match",
+          "title": "Modifier le match",
+          "home": "Équipe à domicile : {name} (toujours l'organisateur).",
+          "away": "Équipe visiteuse",
+          "round": "Journée (facultatif)",
+          "logo": "Logo de l'équipe visiteuse",
+          "remove_logo": "Retirer le logo actuel",
+          "away_required": "Indiquez l'équipe visiteuse.",
+          "saved": "Match mis à jour.",
+          "save": "Enregistrer",
+          "cancel": "Annuler"
+        }
       }
     }
   },
@@ -1081,7 +1128,8 @@
       "event": "Événement",
       "raffle": "Tombola",
       "sale": "Vente numérique",
-      "restaurant": "Restaurant"
+      "restaurant": "Restaurant",
+      "season": "Saison"
     },
     "drawer": {
       "title": "Finances de l'activité",
@@ -1369,7 +1417,8 @@
           "event": "Événement",
           "raffle": "Tombola",
           "sale": "Vente",
-          "restaurant": "Restaurant"
+          "restaurant": "Restaurant",
+          "season": "Saison"
         }
       },
       "finance": {
@@ -2295,7 +2344,8 @@
         "event": "Événements",
         "raffle": "Tombolas",
         "sale": "Ventes",
-        "restaurant": "Restaurants"
+        "restaurant": "Restaurants",
+        "season": "Saisons"
       },
       "status_label": "Statut",
       "status": "Tous les statuts",
@@ -2345,7 +2395,8 @@
       "type_badge": {
         "raffle": "Tombola",
         "sale": "Vente",
-        "restaurant": "Restaurant"
+        "restaurant": "Restaurant",
+        "season": "Saison"
       },
       "no_history": "Dès que des organisations publient des activités, elles apparaîtront ici pour examen et suivi.",
       "no_results": "Aucune activité ne correspond à ces filtres.",
@@ -2431,7 +2482,8 @@
       "type_badge": {
         "raffle": "Tombola",
         "sale": "Vente",
-        "restaurant": "Restaurant"
+        "restaurant": "Restaurant",
+        "season": "Saison"
       },
       "no_history": "Tous les billets des participants apparaîtront ici dès que les activités commenceront à vendre.",
       "no_results": "Aucun billet ne correspond à ces filtres.",
@@ -2482,7 +2534,8 @@
       "type_badge": {
         "raffle": "Tombola",
         "sale": "Vente",
-        "restaurant": "Restaurant"
+        "restaurant": "Restaurant",
+        "season": "Saison"
       },
       "no_history": "Dès que vous recevrez des paiements, ils apparaîtront tous ici.",
       "no_results": "Aucune transaction ne correspond à ces filtres.",

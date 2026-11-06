@@ -9,6 +9,7 @@ import EventImageLightbox from "@/components/shared/EventImageLightbox";
 import { EventStatusDialog } from "./EventStatusDialog";
 import GiveawayTicketsDialog from "./GiveawayTicketsDialog";
 import PrintTicketsDialog from "./PrintTicketsDialog";
+import AdminMatchBar from "./AdminMatchBar";
 import ShareEvent from "./ShareEvent";
 import RefundActivityDialog from "@/components/shared/RefundActivityDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -415,6 +416,7 @@ export default function ActivityPageComponent({ event }: { event: Event }) {
           (event.organisation as { isSuspended?: boolean }).isSuspended === true
         }
       />
+      {event.match && <AdminMatchBar match={event.match} />}
       <main className="w-full gap-16 flex-1 min-h-0 overflow-y-auto lg:overflow-hidden flex flex-col lg:grid lg:grid-cols-[15fr_21fr]">
         <div className="flex flex-col gap-8 lg:overflow-y-auto lg:min-h-0">
           <EventImageLightbox

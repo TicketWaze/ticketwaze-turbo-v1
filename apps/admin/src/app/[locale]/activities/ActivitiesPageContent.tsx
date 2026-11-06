@@ -58,6 +58,7 @@ export const ACTIVITY_HREF: Record<ActivityKind, (id: string) => string> = {
   raffle: (id) => `/activities/raffle/${id}`,
   sale: (id) => `/activities/sale/${id}`,
   restaurant: (id) => `/activities/restaurant/${id}`,
+  season: (id) => `/activities/season/${id}`,
 };
 
 export const STATUS_BADGE: Record<ActivityStatus | "pending_edit", string> = {
@@ -90,7 +91,7 @@ const STATUS_FILTER = [
   "deleted",
 ] as const;
 
-const TYPES: ActivityKind[] = ["event", "raffle", "sale", "restaurant"];
+const TYPES: ActivityKind[] = ["event", "raffle", "sale", "restaurant", "season"];
 
 /**
  * Figma "Admin" → Events (4264:77180 empty / 4264:82176 data), worded
