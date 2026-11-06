@@ -79,7 +79,8 @@
       "soldOut": "Complet",
       "comingSoon": "Bientôt",
       "from": "À partir de",
-      "free": "Gratuit"
+      "free": "Gratuit",
+      "free_and_paid": "Billets gratuits et payants"
     },
     "details1": {
       "title": "La billetterie simplifiée",

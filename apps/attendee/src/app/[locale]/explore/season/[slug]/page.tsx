@@ -148,8 +148,10 @@ export default async function SeasonPage({
         : soldOut
           ? t("page.soldOut")
           : price.kind === "priced"
-            ? `${t("page.from")} ${price.amount.toLocaleString(locale)} ${price.currency}`
-            : t("page.free");
+            ? `${price.from ? `${t("page.from")} ` : ""}${price.amount.toLocaleString(locale)} ${price.currency}`
+            : price.kind === "mixed"
+              ? t("page.free_and_paid")
+              : t("page.free");
 
     const row = (
       <div

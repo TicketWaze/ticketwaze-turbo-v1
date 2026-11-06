@@ -3,7 +3,10 @@ import { Event } from "@ticketwaze/typescript-config";
 export type ActivityCardPrice =
   | { kind: "teaser" }
   | { kind: "free" }
-  | { kind: "priced"; amount: number; currency: string };
+  /** Free and paid tiers side by side: the card says "Free & paid tickets". */
+  | { kind: "mixed" }
+  /** "From" only when the paid tiers have more than one price; one price is quoted bare. */
+  | { kind: "priced"; amount: number; currency: string; from: boolean };
 
 /**
  * The price to advertise on an activity card — the ORGANISER'S price, with no
@@ -57,14 +60,17 @@ export function getActivityCardPrice(event: Event): ActivityCardPrice {
   if (prices.length === 0) return { kind: "free" };
 
   /**
-   * An activity that MIXES a free tier with paid ones lands here, and quotes
-   * the cheapest PAID tier rather than "Free".
-   *
-   * Deliberate: the card is rendered with a "from" prefix, so quoting the
-   * cheapest paid tier understates how cheaply someone can get in — they
-   * discover a free option on the activity page — whereas "Free" would promise
-   * a price the food ticket does not honour. Under-promising beats
-   * over-promising on a public listing.
+   * A free tier beside paid ones leads with the free entry and says paid
+   * options exist ("Free & paid tickets") — quoting only the cheapest paid
+   * tier hid the fact that people can get in for nothing.
    */
-  return { kind: "priced", amount: Math.min(...prices), currency };
+  if (prices.length < ticketTypes.length) return { kind: "mixed" };
+
+  // "From" only when there is actually a range: one price is quoted bare.
+  return {
+    kind: "priced",
+    amount: Math.min(...prices),
+    currency,
+    from: new Set(prices).size > 1,
+  };
 }

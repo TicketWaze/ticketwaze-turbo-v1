@@ -978,6 +978,7 @@
   "Event": {
     "from": "À partir de",
     "free": "Gratuit",
+    "free_and_paid": "Billets gratuits et payants",
     "coming_soon_label": "Bientôt disponible",
     "reserve_place": {
       "cta": "Réserver",
@@ -1899,6 +1900,7 @@
       "open": "Ouvrir dans Maps",
       "from": "Dès",
       "free": "Gratuit",
+      "free_and_paid": "Billets gratuits et payants",
       "soldOut": "Complet",
       "cancelled": "Annulé",
       "played": "Joué"

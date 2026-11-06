@@ -934,6 +934,7 @@
   "Event": {
     "from": "From",
     "free": "Free",
+    "free_and_paid": "Free & paid tickets",
     "coming_soon_label": "Coming soon",
     "reserve_place": {
       "cta": "Reserve my place",
@@ -1855,6 +1856,7 @@
       "open": "Open in Maps",
       "from": "From",
       "free": "Free",
+      "free_and_paid": "Free & paid tickets",
       "soldOut": "Sold out",
       "cancelled": "Cancelled",
       "played": "Played"
