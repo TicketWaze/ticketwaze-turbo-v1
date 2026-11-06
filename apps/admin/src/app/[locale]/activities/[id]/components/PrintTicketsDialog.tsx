@@ -65,19 +65,23 @@ const MAX_BATCH = 500;
  */
 export default function PrintTicketsDialog({
   event,
+  season: seasonOnly,
   open,
   onOpenChange,
 }: {
-  event: Event;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
+} & (
+  | { event: Event; season?: undefined }
+  /** The season page: only the "Season tickets" job, no tabs. */
+  | { event?: undefined; season: { seasonId: string; name: string } }
+)) {
   const locale = useLocale();
   const { data: session } = useSession();
   const token = session?.user.accessToken ?? "";
 
-  const ticketTypes = event.eventTicketTypes ?? [];
-  const [mode, setMode] = useState<Mode>("physical");
+  const ticketTypes = event?.eventTicketTypes ?? [];
+  const [mode, setMode] = useState<Mode>(event ? "physical" : "season");
   const [ticketTypeId, setTicketTypeId] = useState(
     ticketTypes[0]?.eventTicketTypeId ?? "",
   );
@@ -87,8 +91,10 @@ export default function PrintTicketsDialog({
   const [batches, setBatches] = useState<Batch[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
-  const api = `${process.env.NEXT_PUBLIC_API_URL}/admin/event/${event.eventId}/print`;
-  const seasonId = event.match?.seasonId ?? null;
+  const api = event
+    ? `${process.env.NEXT_PUBLIC_API_URL}/admin/event/${event.eventId}/print`
+    : "";
+  const seasonId = seasonOnly?.seasonId ?? event?.match?.seasonId ?? null;
   const seasonApi = seasonId
     ? `${process.env.NEXT_PUBLIC_API_URL}/admin/season/${seasonId}/print`
     : null;
@@ -140,8 +146,8 @@ export default function PrintTicketsDialog({
   }, [api, token, locale]);
 
   useEffect(() => {
-    if (open && token) loadBatches();
-  }, [open, token, loadBatches]);
+    if (open && token && api) loadBatches();
+  }, [open, token, api, loadBatches]);
 
   /**
    * Fetch a PDF and save it. The API answers JSON when it refuses, so a
@@ -166,7 +172,7 @@ export default function PrintTicketsDialog({
     setTimeout(() => URL.revokeObjectURL(objectUrl), 10_000);
   }
 
-  const slug = event.eventName.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+  const slug = (event?.eventName ?? seasonOnly?.name ?? "tickets").replace(/[^a-z0-9]+/gi, "-").toLowerCase();
   const qty = Number(quantity);
   const qtyValid = Number.isInteger(qty) && qty >= 1 && qty <= MAX_BATCH;
 
@@ -276,7 +282,7 @@ export default function PrintTicketsDialog({
     }
   }
 
-  const currency = event.currency === "USD" ? "USD" : "HTG";
+  const currency = event?.currency === "USD" ? "USD" : "HTG";
 
   /** Previous print runs of the current tab, with reprint and cancel. */
   const renderRuns = (list: Batch[] | null | undefined) =>
@@ -393,13 +399,16 @@ export default function PrintTicketsDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <DialogTitle>Print tickets</DialogTitle>
+            <DialogTitle>
+              {event ? "Print tickets" : "Print season tickets"}
+            </DialogTitle>
             <DialogDescription className="text-[1.3rem] leading-6 text-neutral-500">
-              {event.eventName} · Letter landscape (11&quot; × 8.5&quot;), 10 tickets per
-              sheet
+              {event ? event.eventName : seasonOnly?.name} · Letter landscape
+              (11&quot; × 8.5&quot;), 10 tickets per sheet
             </DialogDescription>
           </div>
 
+          {event && (
           <div className="flex w-full bg-neutral-100 rounded-full p-1">
             {(
               [
@@ -423,6 +432,7 @@ export default function PrintTicketsDialog({
               </button>
             ))}
           </div>
+          )}
 
           {mode === "physical" ? (
             <>

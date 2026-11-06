@@ -838,6 +838,53 @@
           "title": "The product title must be at least 10 characters.",
           "price": "The price must be a positive number."
         }
+      },
+      "season": {
+        "title": "Edit season",
+        "notice": {
+          "matches": "Matches keep their own dates, venue and tickets: edit those on each match's page. The organiser is emailed about this change."
+        },
+        "venue_hint": "The default home venue: new matches start from it. Existing matches keep their own.",
+        "fields": {
+          "name": "Season name",
+          "competition": "Competition / league",
+          "sport": "Sport",
+          "cover": "Cover image",
+          "cover_keep": "Leave empty to keep the current cover.",
+          "cover_new": "The current cover will be replaced when you save.",
+          "venue_name": "Stadium or venue name (optional)"
+        },
+        "sports": {
+          "football": "Football",
+          "basketball": "Basketball",
+          "volleyball": "Volleyball",
+          "baseball": "Baseball",
+          "handball": "Handball",
+          "rugby": "Rugby",
+          "boxing": "Boxing",
+          "other": "Other"
+        },
+        "changes": {
+          "cover": "the cover image"
+        },
+        "errors": {
+          "competition": "The competition needs at least 2 characters.",
+          "location": "Set a map pin: every new match starts from it."
+        },
+        "match": {
+          "part_of": "Match of {season}",
+          "edit": "Edit match",
+          "title": "Edit match",
+          "home": "Home team: {name} (always the organiser).",
+          "away": "Away team",
+          "round": "Round (optional)",
+          "logo": "Away team logo",
+          "remove_logo": "Remove the current logo",
+          "away_required": "Enter the away team.",
+          "saved": "Match updated.",
+          "save": "Save",
+          "cancel": "Cancel"
+        }
       }
     }
   },
@@ -1088,7 +1135,8 @@
       "event": "Event",
       "raffle": "Raffle",
       "sale": "Digital sale",
-      "restaurant": "Restaurant"
+      "restaurant": "Restaurant",
+      "season": "Season"
     },
     "drawer": {
       "title": "Activity finance",
@@ -1376,7 +1424,8 @@
           "event": "Event",
           "raffle": "Raffle",
           "sale": "Sale",
-          "restaurant": "Restaurant"
+          "restaurant": "Restaurant",
+          "season": "Season"
         }
       },
       "finance": {
@@ -2302,7 +2351,8 @@
         "event": "Events",
         "raffle": "Raffles",
         "sale": "Sales",
-        "restaurant": "Restaurants"
+        "restaurant": "Restaurants",
+        "season": "Seasons"
       },
       "status_label": "Status",
       "status": "All status",
@@ -2352,7 +2402,8 @@
       "type_badge": {
         "raffle": "Raffle",
         "sale": "Sale",
-        "restaurant": "Restaurant"
+        "restaurant": "Restaurant",
+        "season": "Season"
       },
       "no_history": "Once activities are published by organisations, they will appear here for review and tracking.",
       "no_results": "No activities match these filters.",
@@ -2438,7 +2489,8 @@
       "type_badge": {
         "raffle": "Raffle",
         "sale": "Sale",
-        "restaurant": "Restaurant"
+        "restaurant": "Restaurant",
+        "season": "Season"
       },
       "no_history": "You’ll see all attendee ticket records here once activities begin selling.",
       "no_results": "No tickets match these filters.",
@@ -2489,7 +2541,8 @@
       "type_badge": {
         "raffle": "Raffle",
         "sale": "Sale",
-        "restaurant": "Restaurant"
+        "restaurant": "Restaurant",
+        "season": "Season"
       },
       "no_history": "Once you start receiving payments, you’ll see them all here.",
       "no_results": "No transactions match these filters.",

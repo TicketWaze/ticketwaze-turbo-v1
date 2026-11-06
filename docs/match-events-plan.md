@@ -165,7 +165,15 @@ Phases 1–3 deliver working single matches; season passes follow.
   - Passes are not refundable; money left when every remaining match is cancelled goes to the organiser.
   - The home team is always the organiser. The add-match form shows it read-only; the API ignores any home team sent and copies the organisation's name and profile picture, and `Organisation` re-copies them to its matches when either changes.
   - Only ticketed matches are listed. No Figma frames: the pages stay as built.
-- **Git**: committed on `feature/match-events` in both repos. The API branch also merges `fix/checkout-hardening` (locked ticket stock, one-transaction wallet route, paid-only scans); the one conflict, in `ticket_checking.ts`, keeps both rules.
+- **Git**: committed on `feature/match-events` in both repos and merged to `staging` (6 Nov). The API branch also merges `fix/checkout-hardening` (locked ticket stock, one-transaction wallet route, paid-only scans); the one conflict, in `ticket_checking.ts`, keeps both rules.
+- **Phase 7 (pass extras): paused** by the user on 5 Nov 2026.
+- **Phase 9 (admin): done 6 Nov 2026** (ahead of phase 8).
+  - `GET /admin/season/:id` now returns the organisation, every match (date order, its own review status, single tickets sold, capacity), pass types with sales, pass money (buyers paid, organiser's share, released by played matches) and the printed runs.
+  - Seasons join the shared admin suspension (`PATCH /admin/activities/season/:id/suspend|reactivate`): a suspended season has no public page and sells no pass; holders keep their passes.
+  - Admin app: `/activities/season/[id]` on the shared activity layout. Header: status badge, sport · competition, Suspend, Edit season, ⋯ (Change status, Print season tickets). Tabs: Matches (each opens the match's own admin page), Passes, Printed. The print dialog also opens on its own from the season page.
+  - **Admin edits** (user asked for them, 6 Nov): `PUT /admin/season/:id` (the organiser's fields and rules via `updateSeasonValidator`; applies at once, keeps the review status, emails the organiser and posts to Discord) and `PUT /admin/season/:id/matches/:eventId` (away team, logo, round; home team stays the organiser). Both the organiser's and the admin's match edit go through `applyMatchFields` in `services/season_matches.ts`. Admin app: `/activities/season/[id]/edit` (`EditSeasonForm`, same layout as the other activity edits) and, on a match's admin page, `AdminMatchBar` (season link, teams, "Edit match" dialog). Dates, venue and tickets of a match stay on the event edit.
+  - Admin › Activities: "Seasons" type filter; season rows link to the season page; "Season" labels in the Finance, Tickets and Payments type badges.
+  - Test: `api/tmp/test_admin_seasons.mjs` (staging). Headless: `node tmp/ui_admin_print.mjs <outDir> season`.
 - **Local mail guard** (`api/start/mail_guard.ts`): with `MAIL_SKIP_TEST_RECIPIENTS=true` in a local `.env`, mail to `@resend.dev` test addresses and to team notification inboxes is dropped and logged, so test runs do not spend the email quota.
 
 ## Open questions
