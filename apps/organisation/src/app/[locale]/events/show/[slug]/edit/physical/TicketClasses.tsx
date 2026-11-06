@@ -81,7 +81,6 @@ export default function StepTicket({
   setValue,
   control,
   membershipTier,
-  event,
 }: Props) {
   const { fields, append, remove } = useFieldArray({
     control,
@@ -132,10 +131,10 @@ export default function StepTicket({
       ticketTypeDescription: "",
       ticketTypePrice: "",
       ticketTypeQuantity: "",
-      // A class added on EDIT inherits the activity's free-ness: `events.is_free`
-      // is derived from the classes, and the API refuses a save that moves it
-      // (it would move every buyer onto a different checkout).
-      isFree: event.isFree,
+      // A class added on EDIT starts paid and has its own free switch (below):
+      // a free activity may take paid packages beside its free entry. Only the
+      // classes already saved are frozen.
+      isFree: false,
       salesStartAt: "",
       salesEndAt: "",
     });
@@ -148,6 +147,18 @@ export default function StepTicket({
    * who paid must not find the same class free the next day, nor a free ticket
    * priced afterwards. The API refuses the flip (`findFlippedTier`).
    */
+  /**
+   * A class added in this edit has no id yet, so its free switch is still
+   * open (Pro only — the free plan has a single locked class). Switching
+   * clears the price so a stale number cannot ride behind the hidden input.
+   */
+  const isNewTier = (index: number) =>
+    perTicketFreeToggle && !watchedTicketTypes[index]?.eventTicketTypeId;
+  function toggleNewTierFree(index: number) {
+    setValue(`ticketTypes.${index}.isFree`, !isTierFree(index));
+    setValue(`ticketTypes.${index}.ticketTypePrice`, "");
+  }
+
   const lockedNote = (
     <p className="text-[1.2rem] leading-7 text-neutral-600 -mt-2">
       {t("free_locked")}
@@ -311,10 +322,15 @@ export default function StepTicket({
                       </p>
                       <Toggle
                         checked={perTicketFreeToggle ? tierFree : isFree}
-                        disabled
+                        disabled={!isNewTier(index)}
+                        onChange={
+                          isNewTier(index)
+                            ? () => toggleNewTierFree(index)
+                            : undefined
+                        }
                       />
                     </div>
-                    {lockedNote}
+                    {!isNewTier(index) && lockedNote}
 
                     <Input
                       {...register(
@@ -447,7 +463,7 @@ export default function StepTicket({
             })}
           </AnimatePresence>
 
-          {fields.length <= 2 && (
+          {fields.length < 4 && (
             <div className="w-full max-w-[54rem] mx-auto flex justify-end">
               <button
                 type="button"

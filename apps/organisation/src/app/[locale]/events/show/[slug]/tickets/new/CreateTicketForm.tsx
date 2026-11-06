@@ -22,8 +22,8 @@ import { useRouter } from "@/i18n/navigation";
 import { AddTicketTypesAction } from "@/actions/EventActions";
 import { slugify } from "@/lib/Slugify";
 
-/** New classes per submit, like the create form's three. */
-const MAX_NEW = 3;
+/** New classes per submit, like the create form's four. */
+import { MAX_TICKET_CLASSES } from "./limits";
 
 const blank = (isFree: boolean) => ({
   ticketTypeName: "",
@@ -38,9 +38,9 @@ const blank = (isFree: boolean) => ({
 /**
  * Create Ticket (Figma 1785:39235 / 1785:39329 / 1785:39804): new ticket
  * classes for an event that already exists, appended to the ones on sale.
- * The activity's free/paid shape is fixed — an all-free event gets free
- * classes, a paid one paid classes, and only a mixed event (Pro) gets the
- * per-class free switch — mirroring what the API accepts.
+ * Every new class has its own free switch, whatever the activity already
+ * sells: a free entry can get paid packages beside it (the activity becomes
+ * mixed) and a paid activity a free class. Existing classes are untouched.
  */
 export default function CreateTicketForm({
   event,
@@ -57,14 +57,13 @@ export default function CreateTicketForm({
   const eventHref = `/events/show/${slugify(event.eventName, event.eventId)}`;
 
   const existing = event.eventTicketTypes;
+  // The 4 classes are per activity, so the ones already on sale count too.
+  const maxNew = Math.max(1, MAX_TICKET_CLASSES - existing.length);
   const existingNames = new Set(
     existing.map((c) => c.ticketTypeName.trim().toLowerCase()),
   );
   const isFreeTier = (price: number | string) => Number(price) <= 0;
   const existingFree = existing.filter((c) => isFreeTier(c.ticketTypePrice));
-  const mixed =
-    existingFree.length > 0 && existingFree.length < existing.length;
-  const freeOnly = event.isFree;
   const freeSeatsUsed = existingFree.reduce(
     (sum, c) => sum + Number(c.ticketTypeQuantity || 0),
     0,
@@ -171,7 +170,7 @@ export default function CreateTicketForm({
     formState: { errors, isSubmitting },
   } = useForm<Values>({
     resolver: zodResolver(schema),
-    defaultValues: { ticketTypes: [blank(freeOnly)] },
+    defaultValues: { ticketTypes: [blank(false)] },
   });
   const { fields, append, remove } = useFieldArray({
     control,
@@ -255,8 +254,6 @@ export default function CreateTicketForm({
             {tc("existing", {
               names: existing.map((c) => c.ticketTypeName).join(", "),
             })}
-            {" · "}
-            {freeOnly ? tc("free_only") : !mixed ? tc("paid_only") : null}
           </span>
         </motion.p>
 
@@ -292,7 +289,7 @@ export default function CreateTicketForm({
                     )
                   }
                 >
-                  {mixed && (
+                  {/* Every new class chooses free or paid on its own. */}
                     <div className="flex items-center justify-between gap-6">
                       <p className="text-[1.6rem] leading-8 text-deep-100">
                         {t("mark_ticket_as_free")}
@@ -313,7 +310,6 @@ export default function CreateTicketForm({
                         <ToggleIcon />
                       </label>
                     </div>
-                  )}
 
                   <Input
                     {...register(
@@ -436,12 +432,12 @@ export default function CreateTicketForm({
           })}
         </AnimatePresence>
 
-        {fields.length < MAX_NEW && (
+        {fields.length < maxNew && (
           <div className="w-full max-w-[54rem] mx-auto flex justify-end">
             <button
               type="button"
               onClick={() => {
-                append(blank(freeOnly));
+                append(blank(false));
                 setLengths((prev) => [...prev, 0]);
               }}
               className="cursor-pointer flex gap-3 items-center group"

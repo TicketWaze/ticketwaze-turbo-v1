@@ -465,7 +465,7 @@ export default function StepTicket({
             })}
           </AnimatePresence>
 
-          {fields.length <= 2 && (
+          {fields.length < 4 && (
             <div className="w-full max-w-[54rem] mx-auto flex justify-end">
               <button
                 type="button"

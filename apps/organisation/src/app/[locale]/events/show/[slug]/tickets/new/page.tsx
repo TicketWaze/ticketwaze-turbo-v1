@@ -9,6 +9,7 @@ import { auth } from "@/lib/auth";
 import { extractIdFromSlug } from "@/lib/Slugify";
 import { isEventPast } from "@/lib/eventTime";
 import CreateTicketForm from "./CreateTicketForm";
+import { MAX_TICKET_CLASSES } from "./limits";
 
 /**
  * Create Ticket for an existing event (Figma 1785:39235). Only reachable
@@ -67,7 +68,9 @@ export default async function CreateTicketPage({
     event.eventCategory !== "physical" ||
     event.deletionStatus ||
     isEventPast(event.eventDays) ||
-    !membershipTier.customTicketTypes
+    !membershipTier.customTicketTypes ||
+    // Already at the plan's 4 classes: nothing left to add (the API refuses).
+    event.eventTicketTypes.length >= MAX_TICKET_CLASSES
   ) {
     redirect(`/${locale}/events/show/${slug}`);
   }

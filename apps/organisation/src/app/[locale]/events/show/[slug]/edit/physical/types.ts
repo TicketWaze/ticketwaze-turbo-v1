@@ -1,5 +1,7 @@
 // Mirror of what your component expects for the form result
 export type TicketType = {
+  /** Set on classes already saved; absent on one added in this edit. */
+  eventTicketTypeId?: string;
   ticketTypeName: string;
   ticketTypeDescription: string;
   ticketTypePrice: string;
@@ -10,8 +12,9 @@ export type TicketType = {
   /**
    * Is this tier given away?
    *
-   * Form-only, and READ-ONLY on this form: whether a tier is free is settled
-   * when the activity is created and the API refuses a flip afterwards. It is
+   * Form-only. Read-only on a saved class: whether it is free is settled when
+   * it is created and the API refuses a flip afterwards. A class added in this
+   * edit picks it freely (a free activity may gain paid packages). It is
    * derived from the stored price here purely so a free tier renders the way it
    * does on the create form instead of showing an editable price of 0.
    */
