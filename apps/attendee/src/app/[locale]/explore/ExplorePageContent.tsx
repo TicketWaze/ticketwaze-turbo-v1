@@ -36,6 +36,7 @@ import {
   FilterSelect,
   applyExploreFilters,
   hasActiveFilters,
+  matchSport,
 } from "./ExploreFilters";
 
 type ListedEvent = Event & { viewCount?: number };
@@ -71,6 +72,7 @@ export default function ExplorePageContent({
   wallet: null;
 }) {
   const t = useTranslations("Explore");
+  const seasonT = useTranslations("Season");
   const { data: session } = useSession();
   const [query, setQuery] = useState("");
   const [mobileSearch, setMobileSearch] = useState(false);
@@ -83,23 +85,30 @@ export default function ExplorePageContent({
   const matches = (text: string) => text.toLowerCase().includes(q);
 
   // Options come from what is actually listed, so no filter can lead nowhere.
-  const { topCategories, categoryOptions, cityOptions } = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const event of events)
-      counts.set(event.eventType, (counts.get(event.eventType) ?? 0) + 1);
-    const all = new Set([...events, ...pastEvents].map((e) => e.eventType));
-    const cities = new Set(
-      [...events, ...pastEvents].map((e) => e.city).filter(Boolean),
-    );
-    return {
-      topCategories: [...counts.entries()]
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, TOP_CATEGORY_TABS)
-        .map(([category]) => category),
-      categoryOptions: [...all].filter(Boolean).sort(),
-      cityOptions: [...cities].sort() as string[],
-    };
-  }, [events, pastEvents]);
+  const { topCategories, categoryOptions, cityOptions, sportOptions } =
+    useMemo(() => {
+      const counts = new Map<string, number>();
+      for (const event of events)
+        counts.set(event.eventType, (counts.get(event.eventType) ?? 0) + 1);
+      const all = new Set([...events, ...pastEvents].map((e) => e.eventType));
+      const cities = new Set(
+        [...events, ...pastEvents].map((e) => e.city).filter(Boolean),
+      );
+      // Sports of the matches on the page; empty (and the filter hidden)
+      // when there is no match at all.
+      const sports = new Set(
+        [...events, ...pastEvents].map((e) => matchSport(e)).filter(Boolean),
+      );
+      return {
+        topCategories: [...counts.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, TOP_CATEGORY_TABS)
+          .map(([category]) => category),
+        categoryOptions: [...all].filter(Boolean).sort(),
+        cityOptions: [...cities].sort() as string[],
+        sportOptions: [...sports].sort() as string[],
+      };
+    }, [events, pastEvents]);
 
   const categoryLabel = (category: string) =>
     t.has(`categories.${category}`)
@@ -293,6 +302,18 @@ export default function ExplorePageContent({
               }))}
               onChange={(category) => setFilters((f) => ({ ...f, category }))}
             />
+            {sportOptions.length > 0 && (
+              <FilterSelect
+                label={t("filters.sport")}
+                resetLabel={t("filters.allSports")}
+                value={filters.sport}
+                options={sportOptions.map((value) => ({
+                  value,
+                  label: seasonT(`sports.${value}`),
+                }))}
+                onChange={(sport) => setFilters((f) => ({ ...f, sport }))}
+              />
+            )}
             <FilterSelect
               label={t("filters.location")}
               resetLabel={t("filters.allLocations")}

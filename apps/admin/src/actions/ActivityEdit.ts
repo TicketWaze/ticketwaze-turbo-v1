@@ -178,3 +178,35 @@ export async function UpdateSaleAsAdminAction(args: {
     ...args,
   });
 }
+
+export async function UpdateSeasonAsAdminAction(args: {
+  seasonId: string;
+  formData: FormData;
+  accessToken: string;
+  locale: string;
+}): Promise<UpdateEventResult> {
+  return putActivity({
+    path: `/admin/season/${args.seasonId}`,
+    detailRoute: "/[locale]/activities/season/[id]",
+    ...args,
+  });
+}
+
+/** A match's own fields (away team, logo, round). */
+export async function UpdateMatchAsAdminAction(args: {
+  /** Null for a standalone match. */
+  seasonId: string | null;
+  eventId: string;
+  formData: FormData;
+  accessToken: string;
+  locale: string;
+}): Promise<UpdateEventResult> {
+  const { seasonId, eventId, ...rest } = args;
+  return putActivity({
+    path: seasonId
+      ? `/admin/season/${seasonId}/matches/${eventId}`
+      : `/admin/matches/${eventId}`,
+    detailRoute: "/[locale]/activities/[id]",
+    ...rest,
+  });
+}

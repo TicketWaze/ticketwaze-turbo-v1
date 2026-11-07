@@ -177,7 +177,17 @@ export default function EditInPersonEventForm({
     formData.append("eventDays", JSON.stringify(data.eventDays));
     formData.append("eventCurrency", data.eventCurrency);
     formData.append("isRefundable", JSON.stringify(isRefundable));
-    formData.append("isFree", JSON.stringify(isFree));
+    // On Pro the activity is free only while every class is: a paid package
+    // added beside a free entry makes it mixed, and the API checks that paid
+    // class's minimum price only when this is false.
+    formData.append(
+      "isFree",
+      JSON.stringify(
+        membershipTier.customTicketTypes
+          ? data.ticketTypes.every((ticket) => ticket.isFree)
+          : isFree,
+      ),
+    );
     formData.append("absorbFees", JSON.stringify(data.absorbFees));
     formData.append("isPrivate", JSON.stringify(isPrivate));
     // Always sent (even empty) so clearing the field removes the cutoff.
@@ -378,6 +388,8 @@ export default function EditInPersonEventForm({
         try {
           const proxiedUrl = `/api/proxy-image?url=${encodeURIComponent(event.eventImageUrl)}`;
           const response = await fetch(proxiedUrl);
+          // A refused or failed fetch must not become a bogus "image" File.
+          if (!response.ok) return;
           const blob = await response.blob();
           const file = new File([blob], "event-image.jpg", {
             type: blob.type || "image/jpeg",

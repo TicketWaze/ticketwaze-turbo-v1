@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import type {
   Event,
+  ExploreSeason,
   PublicSale,
   Raffle,
   Restaurant,
@@ -42,7 +43,7 @@ function entry(
 
 /**
  * Every public page a search engine should know about: the explore feed and
- * each public event, raffle, sale and restaurant. Organiser pages are linked
+ * each public event, season, raffle, sale and restaurant. Organiser pages are linked
  * from every event page, so crawlers reach them from there.
  *
  * Upcoming events get the highest priority — they are what people search for,
@@ -50,14 +51,16 @@ function entry(
  * low priority: their pages still answer searches for the event's name.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [eventsRes, rafflesRes, salesRes, restaurantsRes] = await Promise.all([
-    getJson<{ events?: Event[]; pastEvents?: Event[]; comingSoon?: Event[] }>(
-      "/events",
-    ),
-    getJson<{ raffles?: Raffle[] }>("/explore/raffles"),
-    getJson<{ sales?: PublicSale[] }>("/explore/sales"),
-    getJson<{ restaurants?: Restaurant[] }>("/explore/restaurants"),
-  ]);
+  const [eventsRes, rafflesRes, salesRes, restaurantsRes, seasonsRes] =
+    await Promise.all([
+      getJson<{ events?: Event[]; pastEvents?: Event[]; comingSoon?: Event[] }>(
+        "/events",
+      ),
+      getJson<{ raffles?: Raffle[] }>("/explore/raffles"),
+      getJson<{ sales?: PublicSale[] }>("/explore/sales"),
+      getJson<{ restaurants?: Restaurant[] }>("/explore/restaurants"),
+      getJson<{ seasons?: ExploreSeason[] }>("/explore/seasons"),
+    ]);
 
   const isPublic = (event: Event) => !event.isPrivate;
   const eventPath = (event: Event) =>
@@ -85,6 +88,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         lastModified: lastModified(event.updatedAt),
         changeFrequency: "monthly",
         priority: 0.3,
+      }),
+    ),
+    ...(seasonsRes?.seasons ?? []).flatMap((season) =>
+      entry(`/explore/season/${slugify(season.name, season.seasonId)}`, {
+        lastModified: lastModified(season.updatedAt),
+        changeFrequency: "daily",
+        priority: 0.8,
       }),
     ),
     ...(rafflesRes?.raffles ?? []).flatMap((raffle) =>

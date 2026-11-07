@@ -130,11 +130,14 @@ export default function EventCard({ event }: { event: Event }) {
             t("comingSoon")
           ) : cardPrice.kind === "priced" ? (
             <>
-              {t("from")} {cardPrice.amount.toLocaleString()}{" "}
+              {cardPrice.from && `${t("from")} `}
+              {cardPrice.amount.toLocaleString()}{" "}
               <span className="font-normal text-neutral-700">
                 {cardPrice.currency}
               </span>
             </>
+          ) : cardPrice.kind === "mixed" ? (
+            t("free_and_paid")
           ) : (
             t("free")
           )}

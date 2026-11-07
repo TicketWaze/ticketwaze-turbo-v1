@@ -1,21 +1,45 @@
+/**
+ * Same-origin copy of an activity image, so canvases that draw it (the share
+ * modal's poster, the restaurant menu QR card) are not tainted and can be
+ * downloaded, and the edit forms can reload the current cover as a File.
+ *
+ * It only fetches from our own image CDN: an open "fetch any URL" endpoint
+ * would let anyone use the server to reach addresses they cannot reach
+ * themselves (internal services, cloud metadata). Same rules as the admin's
+ * and attendee's routes.
+ */
+const ALLOWED_HOSTS = new Set(
+  [process.env.NEXT_PUBLIC_CLOUDFRONT_HOSTNAME].filter(Boolean) as string[],
+);
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const url = searchParams.get("url");
 
   if (!url) return new Response("Missing url", { status: 400 });
 
+  let target: URL;
   try {
-    const response = await fetch(url);
+    target = new URL(url);
+  } catch {
+    return new Response("Invalid url", { status: 400 });
+  }
+  if (target.protocol !== "https:" || !ALLOWED_HOSTS.has(target.hostname))
+    return new Response("Host not allowed", { status: 403 });
+
+  try {
+    const response = await fetch(target, { redirect: "error" });
     if (!response.ok)
       return new Response("Upstream error", { status: response.status });
 
-    const blob = await response.blob();
+    const contentType = response.headers.get("Content-Type") ?? "image/jpeg";
+    if (!contentType.startsWith("image/"))
+      return new Response("Not an image", { status: 415 });
 
-    return new Response(blob, {
+    return new Response(await response.blob(), {
       headers: {
-        "Content-Type": response.headers.get("Content-Type") ?? "image/jpeg",
+        "Content-Type": contentType,
         "Cache-Control": "public, max-age=86400",
-        "Access-Control-Allow-Origin": "*",
       },
     });
   } catch {

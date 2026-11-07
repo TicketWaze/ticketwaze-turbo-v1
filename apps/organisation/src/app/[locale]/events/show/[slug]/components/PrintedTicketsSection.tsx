@@ -8,7 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useLocale, useTranslations } from "next-intl";
-import { Event, PhysicalTicketBatch } from "@ticketwaze/typescript-config";
+import { PhysicalTicketBatch } from "@ticketwaze/typescript-config";
 import FormatDate from "@/lib/FormatDate";
 
 /**
@@ -22,13 +22,19 @@ import FormatDate from "@/lib/FormatDate";
  * money. What is tracked is how many were printed and how many got in.
  *
  * Renders nothing until something has been printed.
+ *
+ * Also the season page's record of printed SEASON tickets (`kind="season"`):
+ * each is good at one match of the holder's choice, so "scanned" reads "used".
  */
 export default function PrintedTicketsSection({
-  event,
   batches,
+  timezone,
+  kind = "event",
 }: {
-  event: Event;
   batches: PhysicalTicketBatch[];
+  /** The activity's timezone, for the print dates. */
+  timezone: string;
+  kind?: "event" | "season";
 }) {
   const t = useTranslations("Events.single_event.printed_tickets");
   const locale = useLocale();
@@ -39,7 +45,6 @@ export default function PrintedTicketsSection({
   const scanned = batches.reduce((sum, batch) => sum + batch.checked, 0);
   // Cancelled by Ticketwaze (lost or unsold): refused at the door.
   const cancelled = batches.reduce((sum, batch) => sum + batch.void, 0);
-  const timezone = event.eventDays[0]?.timezone ?? "local";
 
   return (
     <div className="flex flex-col gap-6 pt-4">
@@ -51,7 +56,10 @@ export default function PrintedTicketsSection({
             {t("title")}
           </h2>
           <span className="px-4 py-[3px] rounded-[30px] bg-neutral-100 text-[1.2rem] font-medium leading-6 text-neutral-600 whitespace-nowrap">
-            {t("summary", { printed, scanned })}
+            {t(kind === "season" ? "season_summary" : "summary", {
+              printed,
+              scanned,
+            })}
           </span>
           {cancelled > 0 && (
             <span className="px-4 py-[3px] rounded-[30px] bg-[#FDECEA] text-[1.2rem] font-medium leading-6 text-[#B3261E] whitespace-nowrap">
@@ -59,7 +67,9 @@ export default function PrintedTicketsSection({
             </span>
           )}
         </div>
-        <p className="text-[1.4rem] leading-8 text-neutral-600">{t("note")}</p>
+        <p className="text-[1.4rem] leading-8 text-neutral-600">
+          {t(kind === "season" ? "season_note" : "note")}
+        </p>
       </div>
 
       <Table className="mt-2">
@@ -80,7 +90,7 @@ export default function PrintedTicketsSection({
               {t("table.face_value")}
             </TableHead>
             <TableHead className="font-bold text-[1.1rem] pb-6 leading-6 text-deep-100 uppercase">
-              {t("table.scanned")}
+              {t(kind === "season" ? "table.used" : "table.scanned")}
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -104,10 +114,10 @@ export default function PrintedTicketsSection({
                 )}
               </TableCell>
               <TableCell className="hidden lg:table-cell text-[1.5rem] leading-8 text-neutral-900">
-                {event.currency === "USD"
+                {batch.currency === "USD"
                   ? batch.ticketUsdPrice
                   : batch.ticketPrice}{" "}
-                {event.currency}
+                {batch.currency}
               </TableCell>
               <TableCell className="text-[1.5rem] leading-8 text-neutral-900">
                 <span

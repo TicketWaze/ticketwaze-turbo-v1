@@ -34,6 +34,7 @@ import { ButtonPrimary } from "@/components/shared/buttons";
 import { isSuspendedResponse } from "@/lib/suspension";
 
 import {
+  MatchSeasonPass,
   AttendeeFormData,
   GuestInfo,
   PaymentType,
@@ -61,6 +62,7 @@ export default function CheckoutFlow({
   event,
   ticketTypes,
   reward = null,
+  seasonPass = null,
   user,
   feeWaiverEligible = false,
   htgExchangeRate = 0,
@@ -71,6 +73,8 @@ export default function CheckoutFlow({
   ticketTypes: EventTicketType[];
   /** The organiser's "buy N, get one free" offer, when there is one. */
   reward?: PublicRewardSummary | null;
+  /** A match of a season: the season pass, shown as another ticket type. */
+  seasonPass?: MatchSeasonPass | null;
   user?: User;
   feeWaiverEligible?: boolean;
   htgExchangeRate?: number;
@@ -915,6 +919,7 @@ export default function CheckoutFlow({
               ticketTypes={ticketTypes}
               event={event}
               reward={reward}
+              seasonPass={seasonPass}
               eventIsAllFree={eventIsAllFree}
               setValue={
                 setValue as (name: string, value: any, options?: object) => void

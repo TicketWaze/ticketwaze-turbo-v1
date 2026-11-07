@@ -13,6 +13,7 @@ import { usePathname, useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { ORDER_BADGE } from "@/components/shared/TransactionDetailsDrawer";
 import { Metric, Unit } from "../analytics/parts";
+import PartnerManager, { type ManagedPartner } from "./PartnerManager";
 
 type Money = { htg: number; usd: number };
 
@@ -63,12 +64,17 @@ const BADGE: Record<string, string> = { ...ORDER_BADGE, CANCELLED: ORDER_BADGE.R
  * partner, so it is never counted in Payments, Finance or Analytics; one tile
  * per partner, then every payment attempt with the same filters as Payments.
  * See the API's services/admin_partner_payments.ts.
+ *
+ * With `partners.manage`, the partners' settings sit between the two: keys,
+ * webhook, pause, delete (`PartnerManager`). `managed` is null without it.
  */
 export default function PartnersPageContent({
   data,
+  managed,
   filters,
 }: {
   data: PartnersData | null;
+  managed: ManagedPartner[] | null;
   filters: { partner: string | null; status: string | null; search: string };
 }) {
   const t = useTranslations("PartnersList");
@@ -151,6 +157,12 @@ export default function PartnersPageContent({
           </div>
         ))}
       </Reveal>
+
+      {managed && (
+        <Reveal delay={0.03}>
+          <PartnerManager initial={managed} />
+        </Reveal>
+      )}
 
       <Reveal delay={0.05} className="flex flex-col gap-6 pt-12">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">

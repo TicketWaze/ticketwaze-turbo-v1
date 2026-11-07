@@ -5,7 +5,8 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import InPerson from "@/assets/images/in-person.jpg";
-import Draw from "@/assets/images/draw.jpg";
+// Raffle cover, unused while the raffle card is hidden.
+// import Draw from "@/assets/images/draw.jpg";
 import RestaurantCover from "@/assets/images/restaurant.jpg";
 // import GoogleMeet from "@/assets/images/meet.jpg";
 import ComingSoonCover from "@/assets/images/coming.jpg";
@@ -16,7 +17,7 @@ import SaleCover from "@/assets/images/online.jpg";
 // import Reservations from "@/assets/images/reservations.jpg";
 // import Transportations from "@/assets/images/transportations.jpg";
 // import Tours from "@/assets/images/tours.jpg";
-// import match from "@/assets/images/match.jpg";
+import SeasonCover from "@/assets/images/match.jpg";
 import { toast } from "sonner";
 import { motion } from "motion/react";
 import { cardMotion } from "@/components/shared/motion";
@@ -64,13 +65,24 @@ export default function EventTypeList({
       image: InPerson,
       value: "event",
     },
-
+    // A match: an in-person event of a season. The card first asks which
+    // season (or a new one); the season itself is only the wrapper that sells
+    // one pass for all its matches.
     {
-      title: t("list.raffle.title"),
-      description: t("list.raffle.description"),
-      image: Draw,
-      value: "raffle",
+      title: t("list.match.title"),
+      description: t("list.match.description"),
+      image: SeasonCover,
+      value: "match",
     },
+
+    // Raffles (tirage) are hidden from the list for now; the flow at
+    // /events/create/raffle and existing raffles still work.
+    // {
+    // title: t("list.raffle.title"),
+    // description: t("list.raffle.description"),
+    // image: Draw,
+    // value: "raffle",
+    // },
     {
       title: t("list.comingSoon.title"),
       description: t("list.comingSoon.description"),

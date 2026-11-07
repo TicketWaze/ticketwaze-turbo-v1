@@ -73,7 +73,12 @@ export default function RestaurantActions({
     <div className="flex items-center justify-between">
       <PageLoader isLoading={isLoading} />
       <div className="flex gap-8">
-        <ShareEvent url={shareUrl} activityId={restaurant.restaurantId} />
+        <ShareEvent
+          url={shareUrl}
+          title={restaurant.name}
+          description={restaurant.description}
+          activityId={restaurant.restaurantId}
+        />
         {session?.user && isFavorite && (
           <button
             disabled={isLoading}

@@ -90,7 +90,12 @@ export default function SaleActions({
     <div className="flex flex-col lg:flex-row lg:items-center gap-6 justify-between">
       <PageLoader isLoading={isLoading} />
       <div className="flex items-center gap-4">
-        <ShareEvent url={saleUrl} activityId={sale.saleId} />
+        <ShareEvent
+          url={saleUrl}
+          title={sale.title}
+          description={sale.description}
+          activityId={sale.saleId}
+        />
         {session?.user && fav && (
           <button
             disabled={isLoading}

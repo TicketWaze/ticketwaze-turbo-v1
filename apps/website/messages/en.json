@@ -79,7 +79,8 @@
       "soldOut": "Sold out",
       "comingSoon": "Coming soon",
       "from": "From",
-      "free": "Free"
+      "free": "Free",
+      "free_and_paid": "Free & paid tickets"
     },
     "details1": {
       "title": "Everything Ticketing, Made Simple",

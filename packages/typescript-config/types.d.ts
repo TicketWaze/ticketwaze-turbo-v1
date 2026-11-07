@@ -468,6 +468,8 @@ export interface Event {
    */
   comingSoonDate?: string | null;
   adminStatus: "review" | "approved" | "rejected" | "requested";
+  /** Set when this event is a match of a season (teams, round). */
+  match?: Match | null;
   /**
    * When an admin featured this event on the website's landing page, or null.
    * It shows there only while it is also public, approved and not over.
@@ -1645,4 +1647,126 @@ export interface EventFormResponse {
   email: string;
   answeredAt: string;
   answers: TicketFormAnswer[];
+}
+
+/* ── Seasons and matches (docs/match-events-plan.md) ─────────────────────── */
+
+export type SeasonSport =
+  | "football"
+  | "basketball"
+  | "volleyball"
+  | "baseball"
+  | "handball"
+  | "rugby"
+  | "boxing"
+  | "other";
+
+export interface Season {
+  seasonId: string;
+  organisationId: string;
+  name: string;
+  description: string;
+  sport: SeasonSport;
+  competition: string;
+  /**
+   * Seasons have no cover of their own since the 2026-11-07 revamp: the API
+   * sends the next match's image (else the organiser's) in its place.
+   */
+  coverImageUrl: string;
+  /** Default home venue: each new match starts from it. */
+  venueName: string | null;
+  address: string;
+  city: string;
+  state: string;
+  country: string;
+  location: { lat: number; lng: number } | null;
+  timezone: string;
+  adminStatus: "requested" | "review" | "approved" | "rejected";
+  rejectionReason?: string | null;
+  suspendedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  /** Organiser list only. */
+  matchCount?: number;
+  /** Organiser list only: first kick-off and last final whistle, ISO. */
+  startsAt?: string | null;
+  endsAt?: string | null;
+}
+
+/** What a match adds to its event. */
+export interface Match {
+  eventId: string;
+  /** Null = a standalone match, in no season. */
+  seasonId: string | null;
+  homeTeamName: string;
+  homeTeamLogoUrl: string | null;
+  awayTeamName: string;
+  awayTeamLogoUrl: string | null;
+  round: string | null;
+  /**
+   * Public event payloads only: the season, while its public page exists
+   * (approved, not suspended). Null otherwise.
+   */
+  season?: Pick<Season, "seasonId" | "name" | "sport" | "competition"> | null;
+}
+
+/** A season in Explore's seasons row (GET /explore/seasons). */
+export interface ExploreSeason extends Season {
+  matchCount: number;
+  upcomingCount: number;
+  nextMatch: {
+    eventId: string;
+    title: string;
+    round: string | null;
+    homeTeamName: string;
+    awayTeamName: string;
+    homeTeamLogoUrl: string | null;
+    awayTeamLogoUrl: string | null;
+    startsAt: string | null;
+  };
+}
+
+/** A match as the season endpoints return it: with its event and title. */
+export interface SeasonMatch extends Match {
+  /** "Home vs Away". */
+  title: string;
+  isOver: boolean;
+  event: Event;
+}
+
+/** A season the signed-in user holds passes for (GET /season-passes/mine). */
+export interface MySeasonPasses {
+  seasonId: string;
+  name: string;
+  sport: SeasonSport;
+  competition: string;
+  coverImageUrl: string;
+  upcomingCount: number;
+  nextMatch: { eventId: string; title: string; startsAt: string | null };
+  passes: { ticketId: string; ticketName: string; ticketType: string }[];
+}
+
+/** One pass as its holder sees it; the QR encodes `ticketId`. */
+export interface HeldSeasonPass {
+  ticketId: string;
+  ticketName: string;
+  ticketType: string;
+  fullName: string;
+  ticketPrice: number;
+  ticketUsdPrice: number;
+}
+
+/** The season pass (one per season, valid at every match). */
+export interface SeasonPassType {
+  seasonPassTypeId: string;
+  seasonId: string;
+  name: string;
+  description: string | null;
+  /** HTG, like ticket types; `usdPrice` is its USD twin. */
+  price: number;
+  usdPrice: number;
+  currency: "HTG" | "USD";
+  /** Null = unlimited, which is how every season pass is created. */
+  quantity: number | null;
+  quantitySold: number;
 }

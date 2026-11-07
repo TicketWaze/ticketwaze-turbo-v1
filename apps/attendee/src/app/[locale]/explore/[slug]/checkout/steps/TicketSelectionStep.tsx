@@ -1,7 +1,10 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { AddCircle, Gift, MinusCirlce } from "iconsax-reactjs";
+import { AddCircle, ArrowRight2, Gift, MinusCirlce } from "iconsax-reactjs";
+import { formatMoney } from "@ticketwaze/currency";
+import { Link } from "@/i18n/navigation";
+import { slugify } from "@/lib/Slugify";
 import { useLocale, useTranslations } from "next-intl";
 import { DateTime } from "luxon";
 import { ticketSalesState } from "@/lib/ticketSalesWindow";
@@ -11,7 +14,7 @@ import {
   PublicRewardSummary,
 } from "@ticketwaze/typescript-config";
 import { FieldArrayWithId } from "react-hook-form";
-import { TicketFormData } from "../checkout.types";
+import { MatchSeasonPass, TicketFormData } from "../checkout.types";
 import TicketSalesCountdown from "@/components/shared/TicketSalesCountdown";
 import { isFreeTicketType } from "../checkoutUtils";
 
@@ -23,6 +26,8 @@ interface Props {
   event: Event;
   /** The organiser's "buy N, get one free" offer, when there is one. */
   reward?: PublicRewardSummary | null;
+  /** A match of a season: its season pass, listed as one more ticket type. */
+  seasonPass?: MatchSeasonPass | null;
   /**
    * EVERY tier on this activity is free.
    *
@@ -44,11 +49,15 @@ export default function TicketSelectionStep({
   ticketTypes,
   event,
   reward = null,
+  seasonPass = null,
   eventIsAllFree,
   setValue,
 }: Props) {
   const t = useTranslations("Checkout");
+  const tPass = useTranslations("Season.inCheckout");
   const locale = useLocale();
+  const passSoldOut =
+    seasonPass?.remaining != null && seasonPass.remaining <= 0;
 
   const [quantities, setQuantities] = useState<number[]>(() =>
     watchedTickets.map((t) => t.quantity),
@@ -249,6 +258,54 @@ export default function TicketSelectionStep({
               </li>
             );
           })}
+        {/*
+          THE SEASON PASS, as one more ticket type. It is its own purchase
+          (one QR code for every match left), so instead of a quantity it
+          opens the pass checkout, which takes the same payment methods.
+        */}
+        {seasonPass && (
+          <li className="border border-primary-500/30 bg-primary-50/40 rounded-[15px] p-6 flex flex-col gap-4">
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between gap-4">
+                <span className="font-semibold text-[1.6rem] leading-10 text-deep-100">
+                  {tPass("title")}
+                </span>
+                <span className="rounded-[30px] bg-primary-500/10 px-4 py-1 text-[1.2rem] font-medium text-primary-500 whitespace-nowrap">
+                  {tPass("matches", { count: seasonPass.matchesLeft })}
+                </span>
+              </div>
+              <p className="text-[1.5rem] leading-12 text-neutral-700">
+                {tPass("description", { season: seasonPass.season.name })}
+              </p>
+            </div>
+            <span className="font-primary font-bold text-[1.8rem] leading-12 text-primary-500">
+              {formatMoney(
+                seasonPass.currency === "USD"
+                  ? seasonPass.usdPrice
+                  : seasonPass.price,
+                seasonPass.currency,
+                locale,
+              )}
+            </span>
+            {passSoldOut ? (
+              <span className="flex items-center justify-center rounded-[10px] bg-neutral-100 py-4 text-[1.5rem] text-neutral-600">
+                {t("ticket.soldout")}
+              </span>
+            ) : (
+              <Link
+                href={`/explore/season/${slugify(seasonPass.season.name, seasonPass.season.seasonId)}/checkout?pass=${seasonPass.seasonPassTypeId}`}
+                className="group flex items-center justify-center gap-2 rounded-[10px] bg-primary-500 hover:bg-primary-600 transition-colors py-4 text-[1.5rem] font-medium text-white"
+              >
+                {tPass("buy")}
+                <ArrowRight2
+                  size={18}
+                  color="#fff"
+                  className="transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            )}
+          </li>
+        )}
       </ul>
     </motion.div>
   );

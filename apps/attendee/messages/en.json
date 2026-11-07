@@ -708,7 +708,9 @@
       "chooseMonth": "Choose month",
       "chooseYear": "Choose year",
       "datePlaceholder": "DD - MM - YYYY",
-      "clear": "Clear filters"
+      "clear": "Clear filters",
+      "sport": "Sport",
+      "allSports": "All sports"
     },
     "raffles": "Raffles",
     "restaurants": "Bar & Restaurant",
@@ -741,7 +743,8 @@
       "empty": "You have no pending purchases. Activities you start buying but don’t finish wait for you here for 24 hours.",
       "resume": "Resume purchase",
       "back": "Back"
-    }
+    },
+    "seasons": "Seasons"
   },
   "Wallet": {
     "title": "Wallet",
@@ -881,7 +884,8 @@
       "drawn": "Draw complete"
     },
     "entries": "entries",
-    "tickets": "{count, plural, one {ticket} other {tickets}}"
+    "tickets": "{count, plural, one {ticket} other {tickets}}",
+    "passes": "{count, plural, one {pass} other {passes}}"
   },
   "History": {
     "title": "Activities history",
@@ -930,6 +934,7 @@
   "Event": {
     "from": "From",
     "free": "Free",
+    "free_and_paid": "Free & paid tickets",
     "coming_soon_label": "Coming soon",
     "reserve_place": {
       "cta": "Reserve my place",
@@ -1817,5 +1822,91 @@
     "description": "Add the details you skipped when you signed up. It only takes a minute.",
     "cta": "Complete my profile",
     "later": "Later"
+  },
+  "Season": {
+    "tag": "Season",
+    "sports": {
+      "football": "Football",
+      "basketball": "Basketball",
+      "volleyball": "Volleyball",
+      "baseball": "Baseball",
+      "handball": "Handball",
+      "rugby": "Rugby",
+      "boxing": "Boxing",
+      "other": "Other sport"
+    },
+    "card": {
+      "next": "Next: {match}",
+      "upcoming": "{count, plural, one {# match} other {# matches}}"
+    },
+    "match": {
+      "home": "Home",
+      "away": "Away",
+      "seeSeason": "All matches of {season}"
+    },
+    "page": {
+      "back": "Back",
+      "upcoming": "Upcoming matches",
+      "played_title": "Played",
+      "noUpcoming": "No match is on sale right now. Follow the organiser to hear about the next ones.",
+      "about": "About this season",
+      "details": "Details",
+      "homeVenue": "Home venue",
+      "direction": "Direction",
+      "open": "Open in Maps",
+      "from": "From",
+      "free": "Free",
+      "free_and_paid": "Free & paid tickets",
+      "soldOut": "Sold out",
+      "cancelled": "Cancelled",
+      "played": "Played"
+    },
+    "mine": {
+      "pass": "Season pass",
+      "gateNote": "Show this QR code at the gate of every match. It lets one person in.",
+      "previous": "Previous pass",
+      "next": "Next pass",
+      "validFor": "Matches this pass gets you into",
+      "laterMatches": "Matches added later are included.",
+      "noUpcoming": "No match is scheduled yet. New matches will show up here.",
+      "seasonPage": "See the season page"
+    },
+    "passes": {
+      "title": "Season pass",
+      "hint": "{count, plural, one {One QR code for the # match left, and every match added later.} other {One QR code for all # matches left, and every match added later.}}",
+      "left": "{count, plural, one {# pass left} other {# passes left}}",
+      "buy": "Buy"
+    },
+    "checkout": {
+      "title": "Buy a season pass",
+      "covers": "Valid at every match of the season still to play, including matches added later. Season passes are non-refundable, even if a match is cancelled.",
+      "quantity": "Passes",
+      "less": "One fewer",
+      "more": "One more",
+      "max": "You can buy {count} at most.",
+      "subtotal": "Subtotal",
+      "fees": "Fees",
+      "total": "Total",
+      "walletBalance": "Wallet balance",
+      "insufficient": "Not enough in your wallet",
+      "sold_out": "Sold out",
+      "success": "Your season pass is confirmed.",
+      "quote_failed": "The price could not be loaded. Please try again.",
+      "account_exists": "An account already uses this email. Log in to buy.",
+      "login": "Log in",
+      "guest": {
+        "title": "Your details",
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "required": "Enter your first name, last name and email."
+      }
+    },
+    "inCheckout": {
+      "title": "Season pass",
+      "matches": "{count, plural, one {# match} other {# matches}}",
+      "description": "One QR code for every match of {season} still to play, and every match added later. Non-refundable.",
+      "buy": "Buy the season pass"
+    }
   }
 }

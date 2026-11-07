@@ -151,3 +151,19 @@ export interface TokenBalance {
   exchangeRate: number;
   value: { htg: number; usd: number };
 }
+
+/**
+ * The season pass a match's checkout offers beside its tickets (the event
+ * payload's `seasonPass`): one pass for every match of the season still to
+ * play. Bought through the season-pass checkout, not this cart.
+ */
+export interface MatchSeasonPass {
+  seasonPassTypeId: string;
+  price: number;
+  usdPrice: number;
+  currency: "HTG" | "USD";
+  /** Null = no limit. */
+  remaining: number | null;
+  matchesLeft: number;
+  season: { seasonId: string; name: string };
+}

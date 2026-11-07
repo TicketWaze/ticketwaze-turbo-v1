@@ -17,7 +17,7 @@ import { ButtonBlack, ButtonNeutral } from "@/components/shared/buttons";
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { cn } from "@/lib/utils";
 
-type Mode = "physical" | "sold";
+type Mode = "physical" | "sold" | "season";
 
 type Batch = {
   batchId: string;
@@ -27,6 +27,20 @@ type Batch = {
   /** Cancelled: refused at the door, left out of a reprint. */
   void: number;
   createdAt: string;
+};
+
+/** GET /admin/season/:id/print/batches — see AdminSeasonPrintController. */
+type SeasonPrint = {
+  /** Why printing is closed (unapproved, suspended, every match over), or null. */
+  blockedReason: string | null;
+  batches: Batch[];
+  passTypes: {
+    seasonPassTypeId: string;
+    name: string;
+    currency: "HTG" | "USD";
+    /** The mapped tier's price at the next match, or null when unmapped. */
+    suggestedPrice: number | null;
+  }[];
 };
 
 /** Mirrors MAX_PHYSICAL_BATCH in the API's services/physical_tickets. */
@@ -42,25 +56,32 @@ const MAX_BATCH = 500;
  *   door like any other.
  * - "Sold tickets": what buyers already hold, with their names, for a guest
  *   list or someone without a phone. Nothing is created.
+ * - "Season tickets" (a match only): a print run for the whole season and one
+ *   of its pass types. Each ticket gets in at any ONE match: the first
+ *   check-in binds it there. Same side stock: no seat, no sale.
  *
  * The API renders the PDF (the same card as the emailed ticket, laid out for
  * paper); this only asks for it and hands the file over.
  */
 export default function PrintTicketsDialog({
   event,
+  season: seasonOnly,
   open,
   onOpenChange,
 }: {
-  event: Event;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-}) {
+} & (
+  | { event: Event; season?: undefined }
+  /** The season page: only the "Season tickets" job, no tabs. */
+  | { event?: undefined; season: { seasonId: string; name: string } }
+)) {
   const locale = useLocale();
   const { data: session } = useSession();
   const token = session?.user.accessToken ?? "";
 
-  const ticketTypes = event.eventTicketTypes ?? [];
-  const [mode, setMode] = useState<Mode>("physical");
+  const ticketTypes = event?.eventTicketTypes ?? [];
+  const [mode, setMode] = useState<Mode>(event ? "physical" : "season");
   const [ticketTypeId, setTicketTypeId] = useState(
     ticketTypes[0]?.eventTicketTypeId ?? "",
   );
@@ -70,7 +91,44 @@ export default function PrintTicketsDialog({
   const [batches, setBatches] = useState<Batch[] | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
 
-  const api = `${process.env.NEXT_PUBLIC_API_URL}/admin/event/${event.eventId}/print`;
+  const api = event
+    ? `${process.env.NEXT_PUBLIC_API_URL}/admin/event/${event.eventId}/print`
+    : "";
+  const seasonId = seasonOnly?.seasonId ?? event?.match?.seasonId ?? null;
+  const seasonApi = seasonId
+    ? `${process.env.NEXT_PUBLIC_API_URL}/admin/season/${seasonId}/print`
+    : null;
+  /** Where the runs of the current tab live. */
+  const runsApi = mode === "season" && seasonApi ? seasonApi : api;
+  const [season, setSeason] = useState<SeasonPrint | null>(null);
+  const [passTypeId, setPassTypeId] = useState("");
+  const [seasonPrice, setSeasonPrice] = useState("");
+
+  const loadSeason = useCallback(async () => {
+    if (!seasonApi) return;
+    try {
+      const res = await fetch(`${seasonApi}/batches`, {
+        headers: { Authorization: `Bearer ${token}`, "Accept-Language": locale },
+      });
+      const data = await res.json();
+      if (data.status !== "success") throw new Error(data.message);
+      setSeason(data);
+      // First load: preselect the first pass type at its next-match price.
+      const first = (data as SeasonPrint).passTypes[0];
+      setPassTypeId((current) => current || first?.seasonPassTypeId || "");
+      setSeasonPrice((current) =>
+        current || first?.suggestedPrice == null
+          ? current
+          : String(first.suggestedPrice),
+      );
+    } catch {
+      setSeason({ blockedReason: null, batches: [], passTypes: [] });
+    }
+  }, [seasonApi, token, locale]);
+
+  useEffect(() => {
+    if (open && token && seasonApi) loadSeason();
+  }, [open, token, seasonApi, loadSeason]);
 
   const loadBatches = useCallback(async () => {
     try {
@@ -88,8 +146,8 @@ export default function PrintTicketsDialog({
   }, [api, token, locale]);
 
   useEffect(() => {
-    if (open && token) loadBatches();
-  }, [open, token, loadBatches]);
+    if (open && token && api) loadBatches();
+  }, [open, token, api, loadBatches]);
 
   /**
    * Fetch a PDF and save it. The API answers JSON when it refuses, so a
@@ -114,34 +172,45 @@ export default function PrintTicketsDialog({
     setTimeout(() => URL.revokeObjectURL(objectUrl), 10_000);
   }
 
-  const slug = event.eventName.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+  const slug = (event?.eventName ?? seasonOnly?.name ?? "tickets").replace(/[^a-z0-9]+/gi, "-").toLowerCase();
   const qty = Number(quantity);
   const qtyValid = Number.isInteger(qty) && qty >= 1 && qty <= MAX_BATCH;
 
+  const price = Number(seasonPrice);
+  const priceValid =
+    seasonPrice.trim() !== "" && Number.isFinite(price) && price >= 0;
+  const seasonPassType = season?.passTypes.find(
+    (p) => p.seasonPassTypeId === passTypeId,
+  );
+
   async function createBatch() {
-    if (!qtyValid || !ticketTypeId || busy) return;
+    const isSeason = mode === "season";
+    if (!qtyValid || busy) return;
+    if (isSeason ? !passTypeId || !priceValid : !ticketTypeId) return;
     setBusy("create");
     try {
-      const res = await fetch(`${api}/batches`, {
+      const res = await fetch(`${runsApi}/batches`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
           "Accept-Language": locale,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          eventTicketTypeId: ticketTypeId,
-          quantity: qty,
-        }),
+        body: JSON.stringify(
+          isSeason
+            ? { seasonPassTypeId: passTypeId, quantity: qty, price }
+            : { eventTicketTypeId: ticketTypeId, quantity: qty },
+        ),
       });
       const data = await res.json();
       if (data.status !== "success") throw new Error(data.message);
       await download(
-        `${api}/batches/${data.batchId}`,
-        `${slug}-printed-tickets.pdf`,
+        `${runsApi}/batches/${data.batchId}`,
+        isSeason ? "season-tickets.pdf" : `${slug}-printed-tickets.pdf`,
       );
       toast.success(`${data.quantity} printed tickets created.`);
-      loadBatches();
+      if (isSeason) loadSeason();
+      else loadBatches();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));
     } finally {
@@ -161,7 +230,7 @@ export default function PrintTicketsDialog({
     if (busy) return;
     setBusy(`void-${batch.batchId}`);
     try {
-      const res = await fetch(`${api}/batches/${batch.batchId}/void`, {
+      const res = await fetch(`${runsApi}/batches/${batch.batchId}/void`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -172,7 +241,8 @@ export default function PrintTicketsDialog({
       if (data.status !== "success") throw new Error(data.message);
       toast.success(`${data.voided} printed ticket(s) cancelled.`);
       setConfirmVoid(null);
-      loadBatches();
+      if (mode === "season") loadSeason();
+      else loadBatches();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));
     } finally {
@@ -185,8 +255,10 @@ export default function PrintTicketsDialog({
     setBusy(batch.batchId);
     try {
       await download(
-        `${api}/batches/${batch.batchId}`,
-        `${slug}-printed-tickets.pdf`,
+        `${runsApi}/batches/${batch.batchId}`,
+        mode === "season"
+          ? "season-tickets.pdf"
+          : `${slug}-printed-tickets.pdf`,
       );
     } catch (error) {
       toast.error(error instanceof Error ? error.message : String(error));
@@ -210,119 +282,17 @@ export default function PrintTicketsDialog({
     }
   }
 
-  const currency = event.currency === "USD" ? "USD" : "HTG";
+  const currency = event?.currency === "USD" ? "USD" : "HTG";
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <DialogTitle>Print tickets</DialogTitle>
-            <DialogDescription className="text-[1.3rem] leading-6 text-neutral-500">
-              {event.eventName} · Letter landscape (11&quot; × 8.5&quot;), 10 tickets per
-              sheet
-            </DialogDescription>
-          </div>
-
-          <div className="flex w-full bg-neutral-100 rounded-full p-1">
-            {(
-              [
-                ["physical", "To sell by hand"],
-                ["sold", "Sold tickets"],
-              ] as const
-            ).map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setMode(value)}
-                className={cn(
-                  "flex-1 py-[8px] rounded-full text-[1.4rem] font-medium transition-colors cursor-pointer",
-                  mode === value
-                    ? "bg-white text-black shadow-sm"
-                    : "text-neutral-500",
-                )}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {mode === "physical" ? (
-            <>
-              <p className="text-[1.3rem] leading-6 text-neutral-600">
-                Creates new tickets with their own QR codes, valid at the door.
-                They are a separate stock: online ticket quantities and sales
-                are not affected. The organisation sees them in its records.
-              </p>
-
-              <div className="flex flex-col gap-3">
-                <label className="text-[1.4rem] font-medium text-black">
-                  Ticket type
-                </label>
-                <div className="flex flex-col gap-2">
-                  {ticketTypes.map((tier) => {
-                    const active = tier.eventTicketTypeId === ticketTypeId;
-                    return (
-                      <button
-                        key={tier.eventTicketTypeId}
-                        type="button"
-                        onClick={() => setTicketTypeId(tier.eventTicketTypeId)}
-                        className={cn(
-                          "flex items-center justify-between rounded-2xl border-2 px-5 py-4 text-left transition-colors cursor-pointer",
-                          active
-                            ? "border-black bg-neutral-100"
-                            : "border-neutral-200 hover:border-neutral-400",
-                        )}
-                      >
-                        <span className="text-[1.4rem] font-medium text-black">
-                          {tier.ticketTypeName}
-                        </span>
-                        <span className="text-[1.35rem] font-medium text-deep-100">
-                          {formatMoney(
-                            currency === "USD"
-                              ? tier.usdPrice
-                              : tier.ticketTypePrice,
-                            currency,
-                            locale,
-                          )}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <label
-                  htmlFor="print-quantity"
-                  className="text-[1.4rem] font-medium text-black"
-                >
-                  How many
-                </label>
-                <input
-                  id="print-quantity"
-                  type="number"
-                  inputMode="numeric"
-                  min={1}
-                  max={MAX_BATCH}
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  className="bg-neutral-100 rounded-[30px] px-6 py-4 text-[1.4rem] outline-none"
-                />
-                <span className="text-[1.2rem] text-neutral-500">
-                  {qtyValid
-                    ? `${Math.ceil(qty / 10)} sheet(s) to print.`
-                    : `Between 1 and ${MAX_BATCH} per run.`}
-                </span>
-              </div>
-
-              {batches && batches.length > 0 && (
-                <div className="flex flex-col gap-3">
+  /** Previous print runs of the current tab, with reprint and cancel. */
+  const renderRuns = (list: Batch[] | null | undefined) =>
+    list && list.length > 0 ? (
+      <div className="flex flex-col gap-3">
                   <span className="text-[1.4rem] font-medium text-black">
                     Previous runs
                   </span>
                   <ul className="flex flex-col divide-y divide-neutral-100 rounded-2xl border border-neutral-200">
-                    {batches.map((batch) => {
+                    {list.map((batch) => {
                       // Still valid and not yet used: what a cancel would void.
                       const unscanned =
                         batch.quantity - batch.checked - batch.void;
@@ -422,7 +392,235 @@ export default function PrintTicketsDialog({
                     })}
                   </ul>
                 </div>
+    ) : null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-h-[90vh] overflow-y-auto">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <DialogTitle>
+              {event ? "Print tickets" : "Print season tickets"}
+            </DialogTitle>
+            <DialogDescription className="text-[1.3rem] leading-6 text-neutral-500">
+              {event ? event.eventName : seasonOnly?.name} · Letter landscape
+              (11&quot; × 8.5&quot;), 10 tickets per sheet
+            </DialogDescription>
+          </div>
+
+          {event && (
+          <div className="flex w-full bg-neutral-100 rounded-full p-1">
+            {(
+              [
+                ["physical", "To sell by hand"],
+                ["sold", "Sold tickets"],
+                ...(seasonId ? ([["season", "Season tickets"]] as const) : []),
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setMode(value)}
+                className={cn(
+                  "flex-1 py-[8px] rounded-full text-[1.4rem] font-medium transition-colors cursor-pointer",
+                  mode === value
+                    ? "bg-white text-black shadow-sm"
+                    : "text-neutral-500",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          )}
+
+          {mode === "physical" ? (
+            <>
+              <p className="text-[1.3rem] leading-6 text-neutral-600">
+                Creates new tickets with their own QR codes, valid at the door.
+                They are a separate stock: online ticket quantities and sales
+                are not affected. The organisation sees them in its records.
+              </p>
+
+              <div className="flex flex-col gap-3">
+                <label className="text-[1.4rem] font-medium text-black">
+                  Ticket type
+                </label>
+                <div className="flex flex-col gap-2">
+                  {ticketTypes.map((tier) => {
+                    const active = tier.eventTicketTypeId === ticketTypeId;
+                    return (
+                      <button
+                        key={tier.eventTicketTypeId}
+                        type="button"
+                        onClick={() => setTicketTypeId(tier.eventTicketTypeId)}
+                        className={cn(
+                          "flex items-center justify-between rounded-2xl border-2 px-5 py-4 text-left transition-colors cursor-pointer",
+                          active
+                            ? "border-black bg-neutral-100"
+                            : "border-neutral-200 hover:border-neutral-400",
+                        )}
+                      >
+                        <span className="text-[1.4rem] font-medium text-black">
+                          {tier.ticketTypeName}
+                        </span>
+                        <span className="text-[1.35rem] font-medium text-deep-100">
+                          {formatMoney(
+                            currency === "USD"
+                              ? tier.usdPrice
+                              : tier.ticketTypePrice,
+                            currency,
+                            locale,
+                          )}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3">
+                <label
+                  htmlFor="print-quantity"
+                  className="text-[1.4rem] font-medium text-black"
+                >
+                  How many
+                </label>
+                <input
+                  id="print-quantity"
+                  type="number"
+                  inputMode="numeric"
+                  min={1}
+                  max={MAX_BATCH}
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className="bg-neutral-100 rounded-[30px] px-6 py-4 text-[1.4rem] outline-none"
+                />
+                <span className="text-[1.2rem] text-neutral-500">
+                  {qtyValid
+                    ? `${Math.ceil(qty / 10)} sheet(s) to print.`
+                    : `Between 1 and ${MAX_BATCH} per run.`}
+                </span>
+              </div>
+
+              {renderRuns(batches)}
+            </>
+          ) : mode === "season" ? (
+            <>
+              <p className="text-[1.3rem] leading-6 text-neutral-600">
+                Tickets for the whole season, in one pass category. Each one
+                gets in at any one match of the holder&apos;s choice: the first
+                check-in binds it to that match (in and out during it, void
+                after). No seat is taken and nothing is sold online; the
+                organisation sees the runs on its season page.
+              </p>
+
+              {season?.blockedReason && (
+                <p className="rounded-[15px] bg-[#FDECEA] px-5 py-4 text-[1.3rem] leading-6 text-[#B3261E]">
+                  {season.blockedReason}
+                </p>
               )}
+
+              {!season ? (
+                <div className="flex justify-center py-6">
+                  <LoadingCircleSmall />
+                </div>
+              ) : season.passTypes.length === 0 ? (
+                <p className="text-[1.3rem] leading-6 text-neutral-600">
+                  This season has no pass types yet. The organiser creates
+                  them on the season page.
+                </p>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-3">
+                    <label className="text-[1.4rem] font-medium text-black">
+                      Pass category
+                    </label>
+                    <div className="flex flex-col gap-2">
+                      {season.passTypes.map((passType) => {
+                        const active =
+                          passType.seasonPassTypeId === passTypeId;
+                        return (
+                          <button
+                            key={passType.seasonPassTypeId}
+                            type="button"
+                            onClick={() => {
+                              setPassTypeId(passType.seasonPassTypeId);
+                              if (passType.suggestedPrice != null)
+                                setSeasonPrice(String(passType.suggestedPrice));
+                            }}
+                            className={cn(
+                              "flex items-center justify-between rounded-2xl border-2 px-5 py-4 text-left transition-colors cursor-pointer",
+                              active
+                                ? "border-black bg-neutral-100"
+                                : "border-neutral-200 hover:border-neutral-400",
+                            )}
+                          >
+                            <span className="text-[1.4rem] font-medium text-black">
+                              {passType.name}
+                            </span>
+                            {passType.suggestedPrice != null && (
+                              <span className="text-[1.25rem] text-neutral-500">
+                                Next match:{" "}
+                                {formatMoney(
+                                  passType.suggestedPrice,
+                                  passType.currency,
+                                  locale,
+                                )}
+                              </span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <label
+                      htmlFor="season-price"
+                      className="text-[1.4rem] font-medium text-black"
+                    >
+                      Price printed, one match (
+                      {seasonPassType?.currency ?? "HTG"})
+                    </label>
+                    <input
+                      id="season-price"
+                      type="number"
+                      inputMode="decimal"
+                      min={0}
+                      value={seasonPrice}
+                      onChange={(e) => setSeasonPrice(e.target.value)}
+                      className="bg-neutral-100 rounded-[30px] px-6 py-4 text-[1.4rem] outline-none"
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-3">
+                    <label
+                      htmlFor="season-quantity"
+                      className="text-[1.4rem] font-medium text-black"
+                    >
+                      How many
+                    </label>
+                    <input
+                      id="season-quantity"
+                      type="number"
+                      inputMode="numeric"
+                      min={1}
+                      max={MAX_BATCH}
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      className="bg-neutral-100 rounded-[30px] px-6 py-4 text-[1.4rem] outline-none"
+                    />
+                    <span className="text-[1.2rem] text-neutral-500">
+                      {qtyValid
+                        ? `${Math.ceil(qty / 10)} sheet(s) to print.`
+                        : `Between 1 and ${MAX_BATCH} per run.`}
+                    </span>
+                  </div>
+                </>
+              )}
+
+              {renderRuns(season?.batches)}
             </>
           ) : (
             <>
@@ -469,10 +667,18 @@ export default function PrintTicketsDialog({
             >
               Close
             </ButtonNeutral>
-            {mode === "physical" ? (
+            {mode !== "sold" ? (
               <ButtonBlack
                 className="flex-1 gap-3"
-                disabled={busy !== null || !qtyValid || !ticketTypeId}
+                disabled={
+                  busy !== null ||
+                  !qtyValid ||
+                  (mode === "season"
+                    ? !passTypeId ||
+                      !priceValid ||
+                      Boolean(season?.blockedReason)
+                    : !ticketTypeId)
+                }
                 onClick={createBatch}
               >
                 {busy === "create" ? (

@@ -31,8 +31,9 @@ export default function ActivityHeaderActions({
 }: {
   kind: ActivityKind;
   activityId: string;
-  editHref: string;
-  editLabel: string;
+  /** Left out when the admin dashboard has no edit form for this kind. */
+  editHref?: string;
+  editLabel?: string;
   editDisabledReason?: string | null;
   suspendedAt: string | null | undefined;
   children?: React.ReactNode;
@@ -66,6 +67,7 @@ export default function ActivityHeaderActions({
           </button>
         ))}
       {canManage &&
+        editHref &&
         (editDisabledReason ? (
           <span
             title={editDisabledReason}

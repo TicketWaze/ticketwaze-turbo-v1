@@ -177,7 +177,11 @@ export default async function OrganizerProfile({
           {/* Desktop shares from the title row; on mobile the button lives
               beside Follow instead, in OrganizerActions. */}
           <div className="hidden lg:flex shrink-0">
-            <ShareEvent url={canonicalUrl} />
+            <ShareEvent
+              url={canonicalUrl}
+              title={organisation.organisationName}
+              description={organisation.organisationDescription}
+            />
           </div>
         </div>
       </div>

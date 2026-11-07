@@ -752,7 +752,9 @@
       "chooseMonth": "Choisir le mois",
       "chooseYear": "Choisir l’année",
       "datePlaceholder": "JJ - MM - AAAA",
-      "clear": "Effacer les filtres"
+      "clear": "Effacer les filtres",
+      "sport": "Sport",
+      "allSports": "Tous les sports"
     },
     "raffles": "Tirages",
     "restaurants": "Bar & Restaurant",
@@ -785,7 +787,8 @@
       "empty": "Vous n’avez aucun achat en attente. Les activités dont vous commencez l’achat sans le terminer vous attendent ici pendant 24 heures.",
       "resume": "Reprendre l’achat",
       "back": "Retour"
-    }
+    },
+    "seasons": "Saisons"
   },
   "Wallet": {
     "title": "Portefeuille",
@@ -925,7 +928,8 @@
       "drawn": "Tirage effectué"
     },
     "entries": "participations",
-    "tickets": "{count, plural, one {billet} other {billets}}"
+    "tickets": "{count, plural, one {billet} other {billets}}",
+    "passes": "{count, plural, one {abonnement} other {abonnements}}"
   },
   "History": {
     "title": "Historique des activités",
@@ -974,6 +978,7 @@
   "Event": {
     "from": "À partir de",
     "free": "Gratuit",
+    "free_and_paid": "Billets gratuits et payants",
     "coming_soon_label": "Bientôt disponible",
     "reserve_place": {
       "cta": "Réserver",
@@ -1861,5 +1866,91 @@
     "description": "Ajoutez les informations laissées de côté à l’inscription. Cela ne prend qu’une minute.",
     "cta": "Compléter mon profil",
     "later": "Plus tard"
+  },
+  "Season": {
+    "tag": "Saison",
+    "sports": {
+      "football": "Football",
+      "basketball": "Basketball",
+      "volleyball": "Volleyball",
+      "baseball": "Baseball",
+      "handball": "Handball",
+      "rugby": "Rugby",
+      "boxing": "Boxe",
+      "other": "Autre sport"
+    },
+    "card": {
+      "next": "Prochain : {match}",
+      "upcoming": "{count, plural, one {# match} other {# matchs}}"
+    },
+    "match": {
+      "home": "Domicile",
+      "away": "Extérieur",
+      "seeSeason": "Tous les matchs de {season}"
+    },
+    "page": {
+      "back": "Retour",
+      "upcoming": "Matchs à venir",
+      "played_title": "Matchs joués",
+      "noUpcoming": "Aucun match en vente pour le moment. Suivez l’organisateur pour être informé des prochains.",
+      "about": "À propos de la saison",
+      "details": "Détails",
+      "homeVenue": "Stade à domicile",
+      "direction": "Itinéraire",
+      "open": "Ouvrir dans Maps",
+      "from": "Dès",
+      "free": "Gratuit",
+      "free_and_paid": "Billets gratuits et payants",
+      "soldOut": "Complet",
+      "cancelled": "Annulé",
+      "played": "Joué"
+    },
+    "mine": {
+      "pass": "Pass saison",
+      "gateNote": "Présentez ce QR code à l’entrée de chaque match. Il fait entrer une personne.",
+      "previous": "Abonnement précédent",
+      "next": "Abonnement suivant",
+      "validFor": "Les matchs de cet abonnement",
+      "laterMatches": "Les matchs ajoutés plus tard sont inclus.",
+      "noUpcoming": "Aucun match n’est encore prévu. Les nouveaux matchs apparaîtront ici.",
+      "seasonPage": "Voir la page de la saison"
+    },
+    "passes": {
+      "title": "Pass saison",
+      "hint": "{count, plural, one {Un seul QR code pour le dernier match, et tous ceux ajoutés plus tard.} other {Un seul QR code pour les # matchs restants, et tous ceux ajoutés plus tard.}}",
+      "left": "{count, plural, one {# abonnement restant} other {# abonnements restants}}",
+      "buy": "Acheter"
+    },
+    "checkout": {
+      "title": "Acheter un abonnement",
+      "covers": "Valable à chaque match de la saison encore à jouer, y compris les matchs ajoutés plus tard. Les abonnements ne sont pas remboursables, même si un match est annulé.",
+      "quantity": "Abonnements",
+      "less": "Un de moins",
+      "more": "Un de plus",
+      "max": "Vous pouvez en acheter {count} au maximum.",
+      "subtotal": "Sous-total",
+      "fees": "Frais",
+      "total": "Total",
+      "walletBalance": "Solde du portefeuille",
+      "insufficient": "Solde insuffisant",
+      "sold_out": "Complet",
+      "success": "Votre abonnement est confirmé.",
+      "quote_failed": "Le prix n’a pas pu être chargé. Réessayez.",
+      "account_exists": "Un compte utilise déjà cet e-mail. Connectez-vous pour acheter.",
+      "login": "Se connecter",
+      "guest": {
+        "title": "Vos coordonnées",
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "E-mail",
+        "required": "Indiquez votre prénom, votre nom et votre e-mail."
+      }
+    },
+    "inCheckout": {
+      "title": "Pass saison",
+      "matches": "{count, plural, one {# match} other {# matchs}}",
+      "description": "Un seul QR code pour tous les matchs de {season} restant à jouer, et ceux ajoutés plus tard. Non remboursable.",
+      "buy": "Acheter le pass saison"
+    }
   }
 }

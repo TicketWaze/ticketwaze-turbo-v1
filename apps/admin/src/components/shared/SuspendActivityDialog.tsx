@@ -15,7 +15,7 @@ import { ButtonNeutral, ButtonPrimary, ButtonRed } from "@/components/shared/but
 import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
 import { useRouter } from "@/i18n/navigation";
 
-export type ActivityKind = "event" | "raffle" | "sale" | "restaurant";
+export type ActivityKind = "event" | "raffle" | "sale" | "restaurant" | "season";
 
 /**
  * Suspend (with a reason) or reactivate any activity — Figma's "Suspend" on
