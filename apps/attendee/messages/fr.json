@@ -1906,7 +1906,7 @@
       "played": "Joué"
     },
     "mine": {
-      "pass": "Abonnement",
+      "pass": "Pass saison",
       "gateNote": "Présentez ce QR code à l’entrée de chaque match. Il fait entrer une personne.",
       "previous": "Abonnement précédent",
       "next": "Abonnement suivant",
@@ -1916,7 +1916,7 @@
       "seasonPage": "Voir la page de la saison"
     },
     "passes": {
-      "title": "Abonnements de saison",
+      "title": "Pass saison",
       "hint": "{count, plural, one {Un seul QR code pour le dernier match, et tous ceux ajoutés plus tard.} other {Un seul QR code pour les # matchs restants, et tous ceux ajoutés plus tard.}}",
       "left": "{count, plural, one {# abonnement restant} other {# abonnements restants}}",
       "buy": "Acheter"
@@ -1945,6 +1945,12 @@
         "email": "E-mail",
         "required": "Indiquez votre prénom, votre nom et votre e-mail."
       }
+    },
+    "inCheckout": {
+      "title": "Pass saison",
+      "matches": "{count, plural, one {# match} other {# matchs}}",
+      "description": "Un seul QR code pour tous les matchs de {season} restant à jouer, et ceux ajoutés plus tard. Non remboursable.",
+      "buy": "Acheter le pass saison"
     }
   }
 }

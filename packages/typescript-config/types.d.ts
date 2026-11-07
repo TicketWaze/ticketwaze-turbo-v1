@@ -1668,6 +1668,10 @@ export interface Season {
   description: string;
   sport: SeasonSport;
   competition: string;
+  /**
+   * Seasons have no cover of their own since the 2026-11-07 revamp: the API
+   * sends the next match's image (else the organiser's) in its place.
+   */
   coverImageUrl: string;
   /** Default home venue: each new match starts from it. */
   venueName: string | null;
@@ -1692,7 +1696,8 @@ export interface Season {
 /** What a match adds to its event. */
 export interface Match {
   eventId: string;
-  seasonId: string;
+  /** Null = a standalone match, in no season. */
+  seasonId: string | null;
   homeTeamName: string;
   homeTeamLogoUrl: string | null;
   awayTeamName: string;
@@ -1751,17 +1756,7 @@ export interface HeldSeasonPass {
   ticketUsdPrice: number;
 }
 
-/** Where a pass type seats its holders at one match. */
-export interface SeasonPassMapping {
-  seasonPassMappingId: string;
-  seasonPassTypeId: string;
-  eventId: string;
-  eventTicketTypeId: string;
-  /** How many of that ticket type's sold seats are this pass's holders. */
-  seatsReserved: number;
-}
-
-/** A season pass type as its organiser manages it. */
+/** The season pass (one per season, valid at every match). */
 export interface SeasonPassType {
   seasonPassTypeId: string;
   seasonId: string;
@@ -1771,7 +1766,7 @@ export interface SeasonPassType {
   price: number;
   usdPrice: number;
   currency: "HTG" | "USD";
-  quantity: number;
+  /** Null = unlimited, which is how every season pass is created. */
+  quantity: number | null;
   quantitySold: number;
-  mappings: SeasonPassMapping[];
 }

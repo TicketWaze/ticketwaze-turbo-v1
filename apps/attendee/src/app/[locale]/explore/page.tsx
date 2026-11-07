@@ -10,7 +10,6 @@ import {
   PublicSale,
   Raffle,
   Restaurant,
-  ExploreSeason,
 } from "@ticketwaze/typescript-config";
 
 /**
@@ -47,7 +46,6 @@ export default async function Explore({
     rafflesRequest,
     restaurantsRequest,
     salesRequest,
-    seasonsRequest,
   ] = await Promise.all([
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/events`, {
       next: { revalidate: 60 },
@@ -59,9 +57,6 @@ export default async function Explore({
       next: { revalidate: 60 },
     }),
     fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/sales`, {
-      next: { revalidate: 60 },
-    }),
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/explore/seasons`, {
       next: { revalidate: 60 },
     }),
   ]);
@@ -111,14 +106,6 @@ export default async function Explore({
     sales = [];
   }
 
-  let seasons: ExploreSeason[] = [];
-  try {
-    const seasonsResponse = await seasonsRequest.json();
-    seasons = seasonsResponse.seasons ?? [];
-  } catch {
-    seasons = [];
-  }
-
   return (
     <AttendeeLayout
       title="Explore"
@@ -132,7 +119,6 @@ export default async function Explore({
         raffles={raffles}
         restaurants={restaurants}
         sales={sales}
-        seasons={seasons}
         wallet={null}
       />
     </AttendeeLayout>

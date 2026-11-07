@@ -1,7 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useState } from "react";
-import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +7,7 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
 import { CloseCircle, InfoCircle, TickCircle } from "iconsax-reactjs";
-import { Season, SeasonSport } from "@ticketwaze/typescript-config";
+import { Season, SeasonPassType } from "@ticketwaze/typescript-config";
 import { useRouter } from "@/i18n/navigation";
 import {
   CreateFooter,
@@ -29,23 +27,12 @@ import {
 } from "@/components/ui/select";
 import countries from "@/lib/Countries";
 import LocationPicker from "@/lib/LocationPicker";
-import UploadDocument from "@/assets/icons/document-upload.svg";
-import { compressImage } from "@/lib/compressImage";
-import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
 import { slugify } from "@/lib/Slugify";
 import useSeasonNameAvailability from "@/hooks/useSeasonNameAvailability";
 import { CreateSeason, UpdateSeason } from "@/actions/SeasonActions";
+import { SEASON_SPORTS } from "./SeasonChoice";
 
-export const SEASON_SPORTS: SeasonSport[] = [
-  "football",
-  "basketball",
-  "volleyball",
-  "baseball",
-  "handball",
-  "rugby",
-  "boxing",
-  "other",
-];
+export { SEASON_SPORTS };
 
 const NAME_MAX_CHARS = 150;
 
@@ -80,6 +67,14 @@ function makeSchema(t: (key: string) => string) {
       { lat: z.number(), lng: z.number() },
       { error: t("errors.location") },
     ),
+    // The season pass: one price, valid at every match, unlimited.
+    passPrice: z
+      .string()
+      .refine(
+        (v) => Number.isFinite(Number(v)) && Number(v) > 0,
+        t("errors.pass_price"),
+      ),
+    passCurrency: z.enum(["HTG", "USD"]),
   });
 }
 
@@ -91,11 +86,19 @@ function FieldError({ message }: { message?: string }) {
 }
 
 /**
- * CREATE OR EDIT A SEASON. Same shell as the other create forms (header, cards,
- * footer, success screen). On create the success screen opens the new season's
- * page, where matches are added.
+ * CREATE OR EDIT A SEASON: the wrapper around its matches, and the price of
+ * the season pass that gets a buyer into every one of them. No cover: each
+ * match has its own image. On create (reached from the Match card) the
+ * success screen opens the first match's form.
  */
-export default function SeasonForm({ season }: { season?: Season }) {
+export default function SeasonForm({
+  season,
+  passType,
+}: {
+  season?: Season;
+  /** The season's one pass, when editing: its price prefills the form. */
+  passType?: SeasonPassType;
+}) {
   const t = useTranslations("Events.season");
   const tCreated = useTranslations("Events.create_event.created");
   const locale = useLocale();
@@ -127,6 +130,14 @@ export default function SeasonForm({ season }: { season?: Season }) {
       state: season?.state ?? "",
       city: season?.city ?? "",
       location: season?.location ?? (undefined as unknown as TForm["location"]),
+      passPrice: passType
+        ? String(
+            passType.currency === "USD"
+              ? Number(passType.usdPrice)
+              : Number(passType.price),
+          )
+        : "",
+      passCurrency: passType?.currency ?? "HTG",
     },
   });
 
@@ -136,29 +147,9 @@ export default function SeasonForm({ season }: { season?: Season }) {
   const states = countries.find((c) => c.name === country)?.state ?? [];
   const cities = states.find((s) => s.name === state)?.cities ?? [];
 
-  const [coverPreview, setCoverPreview] = useState<string | null>(
-    season?.coverImageUrl ?? null,
-  );
-  const [coverFile, setCoverFile] = useState<File | null>(null);
-  const [coverError, setCoverError] = useState("");
   const [created, setCreated] = useState(false);
 
-  async function handleCover(e: React.ChangeEvent<HTMLInputElement>) {
-    const input = e.target;
-    const file = input.files?.[0];
-    if (!file) return;
-    const compressed = await compressImage(file);
-    setCoverFile(compressed);
-    setCoverPreview(URL.createObjectURL(compressed));
-    setCoverError("");
-    input.value = "";
-  }
-
   const onSubmit: SubmitHandler<TForm> = async (data) => {
-    if (!isEdit && !coverFile) {
-      setCoverError(t("errors.cover"));
-      return;
-    }
     if (nameStatus === "taken") return;
     if (!organisationId) return;
 
@@ -177,12 +168,8 @@ export default function SeasonForm({ season }: { season?: Season }) {
       "timezone",
       season?.timezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone,
     );
-    if (coverFile) fd.append("coverImage", coverFile);
-
-    if (formDataSize(fd) > MAX_UPLOAD_BYTES) {
-      toast.error(t("errors.too_large"));
-      return;
-    }
+    fd.append("passPrice", String(Number(data.passPrice)));
+    fd.append("passCurrency", data.passCurrency);
 
     try {
       const result = isEdit
@@ -198,8 +185,9 @@ export default function SeasonForm({ season }: { season?: Season }) {
         router.push(target);
         return;
       }
+      // The organiser came from the Match card: straight on to that match.
       setCreated(true);
-      setTimeout(() => router.push(target), 1800);
+      setTimeout(() => router.push(`${target}/matches/new`), 1800);
     } catch (error) {
       toast.error(
         error instanceof Error && error.message
@@ -229,11 +217,7 @@ export default function SeasonForm({ season }: { season?: Season }) {
 
       <form
         id="season-form"
-        // The cover is outside the schema, so its error is raised alongside
-        // the field errors rather than only once every field is valid.
-        onSubmit={handleSubmit(onSubmit, () => {
-          if (!isEdit && !coverFile) setCoverError(t("errors.cover"));
-        })}
+        onSubmit={handleSubmit(onSubmit)}
         className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden flex flex-col gap-12 pb-28 lg:pb-8"
         noValidate
       >
@@ -436,41 +420,56 @@ export default function SeasonForm({ season }: { season?: Season }) {
               </div>
             </Section>
 
-            <Section title={t("cover")}>
-              {coverPreview ? (
-                <div className="relative w-full h-[18rem] rounded-[1rem] overflow-hidden group">
-                  <img
-                    src={coverPreview}
-                    alt=""
-                    className="w-full h-full object-cover object-top transition-transform duration-300 group-hover:scale-[1.02]"
-                  />
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCover}
-                    className="absolute inset-0 z-10 opacity-0 cursor-pointer"
+            <Section title={t("pass.title")}>
+              <p className="text-[1.3rem] leading-7 text-neutral-600 -mt-2">
+                {t("pass.hint")}
+              </p>
+              <div className="flex flex-col lg:flex-row gap-6">
+                <div className="flex-1">
+                  <Input
+                    {...register("passPrice")}
+                    type="number"
+                    inputMode="decimal"
+                    min={0}
+                    step="any"
+                    error={errors.passPrice?.message}
+                  >
+                    {t("pass.price")}
+                  </Input>
+                </div>
+                <div className="lg:w-[18rem]">
+                  <Controller
+                    control={control}
+                    name="passCurrency"
+                    render={({ field }) => (
+                      <Select value={field.value} onValueChange={field.onChange}>
+                        <SelectTrigger
+                          className={selectTriggerClass}
+                          aria-label={t("pass.currency")}
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {(["HTG", "USD"] as const).map((currency) => (
+                            <SelectItem
+                              key={currency}
+                              value={currency}
+                              className="text-[1.4rem] text-deep-100"
+                            >
+                              {currency}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    )}
                   />
                 </div>
-              ) : (
-                <div className="py-20 px-[1.4rem] rounded-[.75rem] border border-[#e5e5e5] border-dashed bg-[#FBFBFB] hover:bg-primary-50/40 transition-colors flex items-center justify-center relative">
-                  <div className="flex flex-col gap-4 items-center">
-                    <Image src={UploadDocument} alt="" width={24} height={24} />
-                    <p className="text-[1.4rem] leading-6 text-neutral-500 text-center">
-                      {t("cover_text")}{" "}
-                      <span className="font-medium text-primary-500">
-                        {t("browse")}
-                      </span>
-                    </p>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleCover}
-                    className="absolute inset-0 z-10 opacity-0 cursor-pointer"
-                  />
-                </div>
+              </div>
+              {isEdit && (passType?.quantitySold ?? 0) > 0 && (
+                <p className="text-[1.3rem] leading-7 text-neutral-600">
+                  {t("pass.sold_note", { count: passType?.quantitySold ?? 0 })}
+                </p>
               )}
-              <FieldError message={coverError} />
             </Section>
 
             {!isEdit && (

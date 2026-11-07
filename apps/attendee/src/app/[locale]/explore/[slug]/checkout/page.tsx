@@ -1,6 +1,7 @@
 import AttendeeLayout from "@/components/Layouts/AttendeeLayout";
 import { auth } from "@/lib/auth";
 import CheckoutFlow from "./CheckoutFlow";
+import type { MatchSeasonPass } from "./checkout.types";
 import {
   Event,
   EventTicketType,
@@ -55,6 +56,8 @@ export default async function CheckoutPage({
    * checkout never promises a bonus that can no longer be earned.
    */
   const reward: PublicRewardSummary | null = eventResponse.reward ?? null;
+  /** A match of a season: its season pass, offered as another ticket type. */
+  const seasonPass: MatchSeasonPass | null = eventResponse.seasonPass ?? null;
 
   // The HTG/USD rate the backend will charge with. The displayed total must be
   // computed from this same value or checkout and gateway amounts diverge.
@@ -125,6 +128,7 @@ export default async function CheckoutPage({
         event={event}
         ticketTypes={ticketTypes}
         reward={reward}
+        seasonPass={seasonPass}
         user={session?.user as User | undefined}
         feeWaiverEligible={feeWaiverEligible}
         htgExchangeRate={htgExchangeRate}

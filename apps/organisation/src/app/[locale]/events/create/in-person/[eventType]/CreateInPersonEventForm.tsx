@@ -28,12 +28,7 @@ import {
 } from "@/components/create/CreateParts";
 import { slugify } from "@/lib/Slugify";
 import { EventDay } from "./types";
-import {
-  Event,
-  MembershipTier,
-  Season,
-  SeasonPassType,
-} from "@ticketwaze/typescript-config";
+import { Event, MembershipTier, Season } from "@ticketwaze/typescript-config";
 import MatchFields, {
   appendMatchFields,
   emptyTeam,
@@ -41,12 +36,14 @@ import MatchFields, {
   MatchFieldsValue,
   validateMatchFields,
 } from "@/components/season/MatchFields";
-import NewMatchPassMappings, {
-  PassMappingErrors,
-  PassMappingValue,
-  tierNamesOf,
-  validatePassMappings,
-} from "@/components/season/NewMatchPassMappings";
+import SeasonChoice, {
+  SeasonChoiceErrors,
+  SeasonChoiceValue,
+  validateSeasonChoice,
+} from "@/components/season/SeasonChoice";
+import { PickerField } from "@/components/create/FormFields";
+import useSeasonNameAvailability from "@/hooks/useSeasonNameAvailability";
+import { CreateSeason } from "@/actions/SeasonActions";
 
 /** The event name a match gets until the organiser types their own. */
 function matchName(value: MatchFieldsValue): string {
@@ -65,18 +62,22 @@ export default function CreateInPersonEventForm({
   membershipTier,
   teaser,
   season,
-  passTypes = [],
+  seasons,
   topSlot,
   onExit,
 }: {
-  /** A match's season's pass types: each must be seated at the new match. */
-  passTypes?: SeasonPassType[];
   /**
-   * Set when this wizard adds a MATCH to a season: the venue, description,
-   * cover and sport come from the season, the teams are asked first, and the
+   * Set when this wizard adds a MATCH to a season: the venue, description
+   * and sport come from the season, the teams are asked first, and the
    * event is created with the match fields alongside.
    */
   season?: Season;
+  /**
+   * Set when this wizard creates a MATCH from the Match card: the organiser's
+   * seasons, offered in "Add this match to a season?" (optional). A new
+   * season is created with this match and a second one, never with one.
+   */
+  seasons?: Season[];
   /** Initial category (Concert, Festival…); chosen in the form when empty. */
   eventType: string;
   membershipTier: MembershipTier;
@@ -109,8 +110,46 @@ export default function CreateInPersonEventForm({
   const [isPrivate, setIsPrivate] = useState(false);
   // Chosen in Event Details now (it used to be its own page before the form).
   // A match is filed as a tournament, the closest existing category.
+  // A match: from a season page (`season`) or from the Match card (`seasons`).
+  const matchMode = Boolean(season) || seasons !== undefined;
   const [category, setCategory] = useState(
-    eventType || (season ? "tournament" : ""),
+    eventType || (matchMode ? "tournament" : ""),
+  );
+  const tSeason = useTranslations("Events.season");
+  const [seasonChoice, setSeasonChoice] = useState<SeasonChoiceValue>(
+    season ? { kind: "existing", seasonId: season.seasonId } : { kind: "none" },
+  );
+  const [seasonErrors, setSeasonErrors] = useState<SeasonChoiceErrors>({});
+  const seasonNameStatus = useSeasonNameAvailability(
+    seasonChoice.kind === "new" ? seasonChoice.name : "",
+  );
+  /** The season the match joins, when it is an existing one. */
+  const chosenSeason =
+    season ??
+    (seasonChoice.kind === "existing"
+      ? seasons?.find((s) => s.seasonId === seasonChoice.seasonId)
+      : undefined);
+  const isNewSeason = !season && seasonChoice.kind === "new";
+  // A new season's second match: same venue, cover, description and tickets
+  // as the first; only the opponent, round and kick-off change.
+  const [second, setSecond] = useState<{
+    match: MatchFieldsValue;
+    eventDate: string;
+    startTime: string;
+    endTime: string;
+  }>({
+    match: { home: emptyTeam(), away: emptyTeam(), round: "" },
+    eventDate: "",
+    startTime: "",
+    endTime: "",
+  });
+  const [secondErrors, setSecondErrors] = useState<
+    Partial<Record<"away" | "eventDate" | "startTime" | "endTime" | "name", string>>
+  >({});
+  // What a new-season submit already created, so a retry after a failure
+  // carries on instead of creating the season or the first match twice.
+  const progress = useRef<{ seasonId?: string; seasonName?: string; first?: boolean }>(
+    {},
   );
   const tMatch = useTranslations("Events.season.match");
   const [matchState, setMatch] = useState<MatchFieldsValue>({
@@ -127,9 +166,6 @@ export default function CreateInPersonEventForm({
     ),
   };
   const [matchErrors, setMatchErrors] = useState<MatchFieldsErrors>({});
-  const tPasses = useTranslations("Events.season.passes.new_match");
-  const [passMapping, setPassMapping] = useState<PassMappingValue>({});
-  const [passErrors, setPassErrors] = useState<PassMappingErrors>({});
   const [categoryError, setCategoryError] = useState<string>();
   // Set once the event exists: the success screen shows while we open it.
   const [created, setCreated] = useState(false);
@@ -161,6 +197,10 @@ export default function CreateInPersonEventForm({
     },
     { name: t("date_time"), fields: ["eventDays"] },
     { name: t("ticket"), fields: ["ticketTypes"] },
+    // A new season comes with at least two matches.
+    ...(isNewSeason
+      ? [{ name: tSeason("second.step"), fields: [] as string[] }]
+      : []),
   ];
 
   const [previousStep, setPreviousStep] = useState(0);
@@ -253,20 +293,10 @@ export default function CreateInPersonEventForm({
     if (data.ticketSalesEndAt) {
       formData.append("ticketSalesEndAt", data.ticketSalesEndAt);
     }
-    if (season) {
-      formData.append("seasonId", season.seasonId);
+    if (matchMode) {
+      formData.append("isMatch", "true");
       appendMatchFields(formData, match);
-      if (passTypes.length > 0) {
-        formData.append(
-          "passMappings",
-          JSON.stringify(
-            passTypes.map((pass) => ({
-              seasonPassTypeId: pass.seasonPassTypeId,
-              ticketTypeName: (passMapping[pass.seasonPassTypeId] ?? "").trim(),
-            })),
-          ),
-        );
-      }
+      if (chosenSeason) formData.append("seasonId", chosenSeason.seasonId);
     }
     /**
      * A free plan's activity-wide switch still collapses to the one locked
@@ -309,6 +339,11 @@ export default function CreateInPersonEventForm({
       );
     }
 
+    if (isNewSeason && seasonChoice.kind === "new") {
+      await createSeasonWithMatches(data, formData, seasonChoice);
+      return;
+    }
+
     const result = teaser
       ? await PublishComingSoonEvent(
           organisation?.organisationId ?? "",
@@ -327,8 +362,8 @@ export default function CreateInPersonEventForm({
       const newId = "eventId" in result ? result.eventId : undefined;
       const newName = "eventName" in result ? result.eventName : undefined;
       // A new match goes back to its season, where the next one is added.
-      const target = season
-        ? `/events/season/${slugify(season.name, season.seasonId)}`
+      const target = chosenSeason
+        ? `/events/season/${slugify(chosenSeason.name, chosenSeason.seasonId)}`
         : teaser
           ? `/events/show/${slugify(teaser.eventName, teaser.eventId)}`
           : newId
@@ -337,6 +372,120 @@ export default function CreateInPersonEventForm({
       setTimeout(() => router.push(target), 1800);
     }
     if (result.error) toast.error(result.error);
+  };
+
+  /**
+   * A NEW SEASON: the season (its pass price included), this match, then the
+   * second one, in that order. Each step is remembered, so after a failure the
+   * organiser fixes what is wrong and submits again without duplicates.
+   */
+  async function createSeasonWithMatches(
+    data: TForm,
+    firstMatch: FormData,
+    draft: Extract<SeasonChoiceValue, { kind: "new" }>,
+  ) {
+    const organisationId = organisation?.organisationId ?? "";
+    const timezone =
+      data.eventDays[0]?.timezone ??
+      Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    if (!progress.current.seasonId) {
+      const fd = new FormData();
+      fd.append("name", draft.name.trim());
+      // The season starts from the first match's text and venue.
+      fd.append("description", data.eventDescription);
+      fd.append("sport", draft.sport);
+      fd.append("competition", draft.competition.trim());
+      fd.append("address", data.address);
+      fd.append("country", data.country);
+      fd.append("state", data.state);
+      fd.append("city", data.city);
+      fd.append("location", JSON.stringify(data.location));
+      fd.append("timezone", timezone);
+      fd.append("passPrice", String(Number(draft.passPrice)));
+      fd.append("passCurrency", draft.passCurrency);
+      const created = await CreateSeason(organisationId, fd, locale);
+      if (created.status !== "success") {
+        toast.error(created.error);
+        return;
+      }
+      progress.current.seasonId = created.season.seasonId;
+      progress.current.seasonName = created.season.name;
+    }
+    const seasonId = progress.current.seasonId!;
+    firstMatch.append("seasonId", seasonId);
+
+    if (!progress.current.first) {
+      const first = await CreateInPersonEvent(organisationId, firstMatch, locale);
+      if (first.status !== "success") {
+        toast.error(("error" in first && first.error) || tSeason("errors.submit_failed"));
+        return;
+      }
+      progress.current.first = true;
+    }
+
+    // The second match: the first one's request with its own teams and date.
+    const replaced = new Set([
+      "eventName",
+      "eventDays",
+      "awayTeamName",
+      "round",
+      "awayTeamLogo",
+    ]);
+    const secondMatch = new FormData();
+    for (const [key, value] of firstMatch.entries()) {
+      if (!replaced.has(key)) secondMatch.append(key, value);
+    }
+    secondMatch.append("eventName", secondName());
+    secondMatch.append(
+      "eventDays",
+      JSON.stringify([
+        {
+          dayNumber: 1,
+          eventDate: second.eventDate,
+          startTime: second.startTime,
+          endTime: second.endTime,
+          timezone,
+        },
+      ]),
+    );
+    appendMatchFields(secondMatch, second.match);
+    const result = await CreateInPersonEvent(organisationId, secondMatch, locale);
+    if (result.status !== "success") {
+      toast.error(("error" in result && result.error) || tSeason("errors.submit_failed"));
+      return;
+    }
+    setCreated(true);
+    const target = `/events/season/${slugify(
+      progress.current.seasonName ?? draft.name,
+      seasonId,
+    )}`;
+    setTimeout(() => router.push(target), 1800);
+  }
+
+  /** The second match's event name, from its teams and round. */
+  const secondName = () =>
+    matchName({
+      ...second.match,
+      home: emptyTeam(null, organisation?.organisationName ?? ""),
+    });
+
+  /** The second-match step's checks; true when it can be submitted. */
+  const validateSecond = () => {
+    const errors: typeof secondErrors = {};
+    if (!second.match.away.name.trim()) errors.away = tMatch("errors.away");
+    if (!second.eventDate) errors.eventDate = tSeason("second.errors.date");
+    if (!second.startTime) errors.startTime = tSeason("second.errors.time");
+    if (!second.endTime) errors.endTime = tSeason("second.errors.time");
+    if (
+      errors.away === undefined &&
+      secondName().trim().toLowerCase() ===
+        (getValues("eventName") ?? "").trim().toLowerCase()
+    ) {
+      errors.name = tSeason("second.errors.same_name");
+    }
+    setSecondErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   type FieldName = keyof TForm;
@@ -410,6 +559,14 @@ export default function CreateInPersonEventForm({
         `ticketTypes.${i}.ticketTypePrice` as FieldName,
         `ticketTypes.${i}.ticketTypeQuantity` as FieldName,
       ]).flat();
+    } else if (currentStep === 3) {
+      // The second match of a new season: its own small form.
+      if (!validateSecond()) {
+        scrollToFirstError();
+        return;
+      }
+      await handleSubmit(processForm, showFirstInvalidStep)();
+      return;
     } else {
       fields = steps[currentStep]?.fields as FieldName[];
     }
@@ -418,23 +575,21 @@ export default function CreateInPersonEventForm({
       categoryMissing ? t("errors.basicDetails.category") : undefined,
     );
     const teamErrors =
-      currentStep === 0 && season ? validateMatchFields(match, tMatch) : {};
+      currentStep === 0 && matchMode ? validateMatchFields(match, tMatch) : {};
     setMatchErrors(teamErrors);
     const teamsMissing = Object.keys(teamErrors).length > 0;
-    // On the ticket step of a match: where each season pass sits.
-    const seatErrors =
-      currentStep === 2 && season && passTypes.length > 0
-        ? validatePassMappings(
-            passTypes,
-            passMapping,
-            getValues("ticketTypes"),
-            (k, v) => tPasses(k, v),
+    const choiceErrors =
+      currentStep === 0 && matchMode && !season
+        ? validateSeasonChoice(
+            seasonChoice,
+            (k) => tSeason(k),
+            seasonNameStatus === "taken",
           )
         : {};
-    setPassErrors(seatErrors);
-    const passesUnseated = Object.keys(seatErrors).length > 0;
+    setSeasonErrors(choiceErrors);
+    const seasonInvalid = Object.keys(choiceErrors).length > 0;
     const output = await trigger(fields, { shouldFocus: true });
-    if (!output || categoryMissing || teamsMissing || passesUnseated) {
+    if (!output || categoryMissing || teamsMissing || seasonInvalid) {
       scrollToFirstError();
       return;
     }
@@ -467,30 +622,6 @@ export default function CreateInPersonEventForm({
   const [imagePreview, setImagePreview] = useState<string | null>(
     teaser?.eventImageUrl ?? null,
   );
-
-  /**
-   * A match starts with its season's cover. Fetched through our own proxy so it
-   * becomes a File the event create can upload; if it fails the organiser just
-   * picks an image as for any event.
-   */
-  useEffect(() => {
-    if (!season?.coverImageUrl) return;
-    let cancelled = false;
-    fetch(`/api/proxy-image?url=${encodeURIComponent(season.coverImageUrl)}`)
-      .then((response) => (response.ok ? response.blob() : null))
-      .then((blob) => {
-        if (!blob || cancelled) return;
-        const file = new File([blob], "season-cover.jpg", {
-          type: blob.type || "image/jpeg",
-        });
-        setValue("eventImage", file);
-        setImagePreview(URL.createObjectURL(file));
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [season?.coverImageUrl, setValue]);
 
   /**
    * Teams typed → the event name follows ("Home vs Away · Round"), until the
@@ -535,12 +666,18 @@ export default function CreateInPersonEventForm({
     return (
       <CreatedScreen
         title={
-          season
-            ? t("created.match")
-            : t(teaser ? "created.published_title" : "created.title")
+          isNewSeason
+            ? t("created.season")
+            : matchMode
+              ? t("created.match")
+              : t(teaser ? "created.published_title" : "created.title")
         }
         description={t("created.description")}
-        pendingLabel={t(season ? "created.opening_season" : "created.opening")}
+        pendingLabel={t(
+          chosenSeason || isNewSeason
+            ? "created.opening_season"
+            : "created.opening",
+        )}
       />
     );
   }
@@ -552,7 +689,7 @@ export default function CreateInPersonEventForm({
     <div className="relative flex flex-col gap-10 overflow-clip h-full">
       <CreateHeader
         title={
-          season
+          matchMode
             ? tMatch("add_title")
             : t(teaser ? "publish_title" : "title_event")
         }
@@ -584,14 +721,38 @@ export default function CreateInPersonEventForm({
                 nameStatus={nameStatus}
                 nameLocked={isPublishing}
                 topSlot={
-                  season ? (
-                    <Section title={tMatch("section")}>
-                      <MatchFields
-                        value={match}
-                        onChange={onMatchChange}
-                        errors={matchErrors}
-                      />
-                    </Section>
+                  matchMode ? (
+                    <>
+                      {!season && (
+                        <Section title={tSeason("choice.title")}>
+                          <SeasonChoice
+                            seasons={seasons ?? []}
+                            value={seasonChoice}
+                            onChange={(next) => {
+                              setSeasonChoice(next);
+                              if (Object.keys(seasonErrors).length) {
+                                setSeasonErrors(
+                                  validateSeasonChoice(
+                                    next,
+                                    (k) => tSeason(k),
+                                    false,
+                                  ),
+                                );
+                              }
+                            }}
+                            errors={seasonErrors}
+                            nameStatus={seasonNameStatus}
+                          />
+                        </Section>
+                      )}
+                      <Section title={tMatch("section")}>
+                        <MatchFields
+                          value={match}
+                          onChange={onMatchChange}
+                          errors={matchErrors}
+                        />
+                      </Section>
+                    </>
                   ) : (
                     topSlot
                   )
@@ -641,17 +802,69 @@ export default function CreateInPersonEventForm({
                 control={control}
                 membershipTier={membershipTier}
               />
-              {season && passTypes.length > 0 && (
-                <div className="pt-8">
-                  <NewMatchPassMappings
-                    passTypes={passTypes}
-                    tierNames={tierNamesOf(watch("ticketTypes") ?? [])}
-                    value={passMapping}
-                    onChange={setPassMapping}
-                    errors={passErrors}
+            </StepPanel>
+          )}
+          {currentStep === 3 && isNewSeason && (
+            <StepPanel stepKey="second" direction={delta}>
+              <div className="flex flex-col gap-12 pb-28 lg:pb-8">
+                <Section title={tSeason("second.title")}>
+                  <p className="text-[1.3rem] leading-7 text-neutral-600 -mt-2">
+                    {tSeason("second.hint")}
+                  </p>
+                  <MatchFields
+                    value={{
+                      ...second.match,
+                      home: emptyTeam(
+                        organisation?.profileImageUrl ?? null,
+                        organisation?.organisationName ?? "",
+                      ),
+                    }}
+                    onChange={(next) =>
+                      setSecond((current) => ({ ...current, match: next }))
+                    }
+                    errors={{ away: secondErrors.away }}
                   />
-                </div>
-              )}
+                  {secondErrors.name && (
+                    <span className="text-[1.2rem] px-2 text-failure">
+                      {secondErrors.name}
+                    </span>
+                  )}
+                </Section>
+                <Section title={tSeason("second.when")}>
+                  <PickerField
+                    label={t("start_date")}
+                    type="date"
+                    inputProps={{
+                      value: second.eventDate,
+                      onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                        setSecond((c) => ({ ...c, eventDate: e.target.value })),
+                    }}
+                    error={secondErrors.eventDate}
+                  />
+                  <div className="flex gap-4 items-start">
+                    <PickerField
+                      label={t("start_time")}
+                      type="time"
+                      inputProps={{
+                        value: second.startTime,
+                        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                          setSecond((c) => ({ ...c, startTime: e.target.value })),
+                      }}
+                      error={secondErrors.startTime}
+                    />
+                    <PickerField
+                      label={t("end_time")}
+                      type="time"
+                      inputProps={{
+                        value: second.endTime,
+                        onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+                          setSecond((c) => ({ ...c, endTime: e.target.value })),
+                      }}
+                      error={secondErrors.endTime}
+                    />
+                  </div>
+                </Section>
+              </div>
             </StepPanel>
           )}
         </AnimatePresence>
@@ -664,7 +877,7 @@ export default function CreateInPersonEventForm({
         onContinue={next}
         continueLabel={
           currentStep === steps.length - 1
-            ? season
+            ? matchMode
               ? tMatch("create_cta")
               : t(teaser ? "publish_cta" : "create_cta")
             : undefined

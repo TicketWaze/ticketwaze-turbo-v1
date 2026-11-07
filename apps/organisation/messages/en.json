@@ -1779,9 +1779,9 @@
           "title": "Event",
           "description": "Physical or virtual: concerts, conferences, workshops, meetups…"
         },
-        "season": {
-          "title": "Sports season",
-          "description": "A championship or league season: add each match and sell its tickets."
+        "match": {
+          "title": "Match",
+          "description": "A match of a championship or league. Sell it on its own, or add it to a season with a pass for every match."
         }
       },
       "tagPlaceholder": "Type a hashtag and press enter or spacebar",
@@ -2625,9 +2625,6 @@
       "create_title": "Create Season",
       "edit_title": "Edit Season",
       "back": "Back",
-      "cover": "Season cover",
-      "cover_text": "Drag and drop an image, or",
-      "browse": "Browse",
       "details": "Season details",
       "name": "Season name",
       "name_placeholder": "e.g. Violette AC — Championnat National 2027",
@@ -2670,10 +2667,10 @@
         "country": "Choose a country.",
         "state": "Choose a state.",
         "city": "Choose a city.",
-        "cover": "Add a cover image.",
         "too_large": "This image is too large. Try a smaller one.",
         "submit_failed": "Something went wrong. Please try again.",
-        "location": "Pick the venue on the map."
+        "location": "Pick the venue on the map.",
+        "pass_price": "Enter the pass price."
       },
       "page": {
         "matches": "Matches",
@@ -2706,7 +2703,12 @@
           "cancelled": "Cancelled",
           "live": "On sale",
           "over": "Over"
-        }
+        },
+        "details": "Season details",
+        "timezone": "Time zone",
+        "passes_sold": "Season passes sold",
+        "next_match": "Next match in",
+        "days": "{count, plural, one {day} other {days}}"
       },
       "match": {
         "section": "Match",
@@ -2732,49 +2734,29 @@
         "create_cta": "Create match",
         "home_hint": "Your organisation: its name and profile picture."
       },
-      "passes": {
-        "title": "Season passes",
-        "hint": "One QR code for every match of the season. Each pass takes a seat in the ticket type you choose at every match, so a match can never be oversold.",
-        "needs_match": "Add a match first: a pass needs a match to seat its holders at.",
-        "add": "Add a pass",
-        "create_title": "New season pass",
-        "edit_title": "Edit season pass",
-        "name": "Pass name (e.g. Pass Tribune)",
-        "description": "Description (optional)",
-        "price": "Price",
-        "quantity": "Passes for sale",
-        "mapping_title": "Seat at each match",
-        "mapping_hint": "Choose the ticket type pass holders get at each upcoming match. Every pass sold takes one seat there.",
-        "mapping_hint_sold": "{sold, plural, one {# pass is} other {# passes are}} already sold: the ticket type you choose needs that many free seats.",
-        "choose_ticket_type": "Choose a ticket type",
-        "seats_left": "{count, plural, one {# seat left} other {# seats left}}",
-        "sold": "{sold} / {total} sold",
-        "sits_in": "{tiers} at {count, plural, one {# match} other {# matches}}",
-        "create": "Create the pass",
-        "save": "Save changes",
-        "saving": "Saving…",
-        "delete": "Delete",
-        "created": "Season pass created.",
-        "saved": "Season pass saved.",
-        "deleted": "Season pass deleted.",
+      "pass": {
+        "title": "Season pass",
+        "hint": "One pass gets the buyer into every match of the season. There is no limit on how many are sold.",
+        "price": "Pass price",
+        "currency": "Currency",
+        "sold_note": "{count, plural, one {# pass already sold keeps} other {# passes already sold keep}} the price it was bought at."
+      },
+      "choice": {
+        "title": "Season (optional)",
+        "hint": "Add this match to a season so fans can buy one pass for all its matches. Or leave it on its own.",
+        "none": "No season",
+        "new": "New season",
+        "new_hint": "A new season needs at least 2 matches: after this one, you will add the second before anything is saved."
+      },
+      "second": {
+        "step": "Second match",
+        "title": "Second match of the season",
+        "hint": "Same venue, image, description and tickets as the first match. Choose the opponent and when it is played.",
+        "when": "Date and time",
         "errors": {
-          "name": "Give the pass a name of at least 2 characters.",
-          "price": "Enter a price above 0.",
-          "quantity": "Enter a whole number of passes, at least 1.",
-          "quantity_below_sold": "{sold} passes are already sold; the quantity cannot go below that.",
-          "mapping": "Choose a ticket type for this match.",
-          "not_enough_seats": "Only {left} seats left there; {needed} pass holders need one.",
-          "has_sales": "A pass that has been bought cannot be deleted."
-        },
-        "new_match": {
-          "title": "Season passes at this match",
-          "hint": "Pass holders get a seat at every match. Choose the ticket type each pass sits in here; it must have room for all of its holders.",
-          "holders": "{count, plural, =0 {No holder yet} one {# holder} other {# holders}}",
-          "choose": "Choose a ticket type",
-          "errors": {
-            "choose": "Choose one of this match’s ticket types.",
-            "too_small": "This ticket type needs at least {count} seats for pass holders."
-          }
+          "date": "Choose the date.",
+          "time": "Choose the time.",
+          "same_name": "This is the same as the first match. Change the opponent or the round."
         }
       }
     }

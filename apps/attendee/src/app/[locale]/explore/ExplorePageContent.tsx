@@ -6,7 +6,6 @@ import EventCard from "@/components/shared/EventCard";
 import RaffleCard from "@/components/shared/RaffleCard";
 import RestaurantCard from "@/components/shared/RestaurantCard";
 import SaleCard from "@/components/shared/SaleCard";
-import SeasonCard from "@/components/shared/SeasonCard";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import {
   Tooltip,
@@ -16,7 +15,6 @@ import {
 import { Link } from "@/i18n/navigation";
 import {
   Event,
-  ExploreSeason,
   PublicSale,
   Raffle,
   Restaurant,
@@ -38,6 +36,7 @@ import {
   FilterSelect,
   applyExploreFilters,
   hasActiveFilters,
+  matchSport,
 } from "./ExploreFilters";
 
 type ListedEvent = Event & { viewCount?: number };
@@ -64,14 +63,12 @@ export default function ExplorePageContent({
   raffles = [],
   restaurants = [],
   sales = [],
-  seasons = [],
 }: {
   events: ListedEvent[];
   pastEvents?: ListedEvent[];
   raffles?: Raffle[];
   restaurants?: Restaurant[];
   sales?: PublicSale[];
-  seasons?: ExploreSeason[];
   wallet: null;
 }) {
   const t = useTranslations("Explore");
@@ -97,13 +94,10 @@ export default function ExplorePageContent({
       const cities = new Set(
         [...events, ...pastEvents].map((e) => e.city).filter(Boolean),
       );
-      // Sports of the matches and seasons on the page; empty (and the filter
-      // hidden) when there is no sport at all.
+      // Sports of the matches on the page; empty (and the filter hidden)
+      // when there is no match at all.
       const sports = new Set(
-        [
-          ...[...events, ...pastEvents].map((e) => e.match?.season?.sport),
-          ...seasons.map((season) => season.sport),
-        ].filter(Boolean),
+        [...events, ...pastEvents].map((e) => matchSport(e)).filter(Boolean),
       );
       return {
         topCategories: [...counts.entries()]
@@ -114,7 +108,7 @@ export default function ExplorePageContent({
         cityOptions: [...cities].sort() as string[],
         sportOptions: [...sports].sort() as string[],
       };
-    }, [events, pastEvents, seasons]);
+    }, [events, pastEvents]);
 
   const categoryLabel = (category: string) =>
     t.has(`categories.${category}`)
@@ -129,16 +123,6 @@ export default function ExplorePageContent({
     pastEvents.filter((e) => matches(e.eventName)),
     filters,
   );
-  // Seasons answer to the search box and the sport filter; any other filter
-  // is about single activities, so they step aside like the rows below.
-  const otherFiltersActive = hasActiveFilters({ ...filters, sport: undefined });
-  const filteredSeasons = otherFiltersActive
-    ? []
-    : seasons.filter(
-        (season) =>
-          (matches(season.name) || matches(season.competition)) &&
-          (!filters.sport || season.sport === filters.sport),
-      );
   // Raffles, sales and restaurants have no topic, date or view count, so they
   // step aside while any filter is on and only answer to the search box.
   const filteredRaffles = filtersActive
@@ -156,15 +140,13 @@ export default function ExplorePageContent({
     pastEvents.length > 0 ||
     raffles.length > 0 ||
     restaurants.length > 0 ||
-    sales.length > 0 ||
-    seasons.length > 0;
+    sales.length > 0;
   const noResults =
     filteredEvents.length === 0 &&
     filteredPastEvents.length === 0 &&
     filteredRaffles.length === 0 &&
     filteredRestaurants.length === 0 &&
-    filteredSales.length === 0 &&
-    filteredSeasons.length === 0;
+    filteredSales.length === 0;
   // "Similar activities" for an empty search: the most viewed upcoming ones.
   const suggestions = noResults
     ? [...events]
@@ -395,22 +377,6 @@ export default function ExplorePageContent({
                 ))}
               </AnimatePresence>
             </motion.ul>
-          )}
-          {filteredSeasons.length > 0 && (
-            <section className="flex flex-col gap-6">
-              <span className="font-primary font-medium text-[1.8rem] lg:text-[2.2rem] leading-8 text-black lg:px-4">
-                {t("seasons")}
-              </span>
-              <div className="-mx-4">
-                <ul className="list pt-4 px-4 pb-8 lg:pb-0">
-                  {filteredSeasons.map((season, index) => (
-                    <motion.li key={season.seasonId} {...cardMotion(index)}>
-                      <SeasonCard season={season} />
-                    </motion.li>
-                  ))}
-                </ul>
-              </div>
-            </section>
           )}
           {filteredRaffles.length > 0 && (
             <section className="flex flex-col gap-6">

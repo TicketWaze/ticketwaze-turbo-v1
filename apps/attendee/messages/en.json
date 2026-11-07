@@ -1872,7 +1872,7 @@
       "seasonPage": "See the season page"
     },
     "passes": {
-      "title": "Season passes",
+      "title": "Season pass",
       "hint": "{count, plural, one {One QR code for the # match left, and every match added later.} other {One QR code for all # matches left, and every match added later.}}",
       "left": "{count, plural, one {# pass left} other {# passes left}}",
       "buy": "Buy"
@@ -1901,6 +1901,12 @@
         "email": "Email",
         "required": "Enter your first name, last name and email."
       }
+    },
+    "inCheckout": {
+      "title": "Season pass",
+      "matches": "{count, plural, one {# match} other {# matches}}",
+      "description": "One QR code for every match of {season} still to play, and every match added later. Non-refundable.",
+      "buy": "Buy the season pass"
     }
   }
 }

@@ -1778,9 +1778,9 @@
           "title": "Événement",
           "description": "En présentiel ou en ligne : concerts, conférences, ateliers, rencontres…"
         },
-        "season": {
-          "title": "Saison sportive",
-          "description": "Un championnat ou une saison de ligue : ajoutez chaque match et vendez ses billets."
+        "match": {
+          "title": "Match",
+          "description": "Un match de championnat ou de ligue. Vendez-le seul, ou ajoutez-le à une saison avec un pass pour tous les matchs."
         }
       },
       "tagPlaceholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d’espace",
@@ -2620,9 +2620,6 @@
       "create_title": "Créer une saison",
       "edit_title": "Modifier la saison",
       "back": "Retour",
-      "cover": "Image de la saison",
-      "cover_text": "Glissez-déposez une image, ou",
-      "browse": "Parcourir",
       "details": "Détails de la saison",
       "name": "Nom de la saison",
       "name_placeholder": "ex. Violette AC — Championnat National 2027",
@@ -2665,10 +2662,10 @@
         "country": "Choisissez un pays.",
         "state": "Choisissez un département.",
         "city": "Choisissez une ville.",
-        "cover": "Ajoutez une image.",
         "too_large": "Cette image est trop lourde. Essayez-en une plus petite.",
         "submit_failed": "Une erreur est survenue. Veuillez réessayer.",
-        "location": "Placez le lieu sur la carte."
+        "location": "Placez le lieu sur la carte.",
+        "pass_price": "Indiquez le prix du pass."
       },
       "page": {
         "matches": "Matchs",
@@ -2701,7 +2698,12 @@
           "cancelled": "Annulé",
           "live": "En vente",
           "over": "Terminé"
-        }
+        },
+        "details": "Détails de la saison",
+        "timezone": "Fuseau horaire",
+        "passes_sold": "Pass saison vendus",
+        "next_match": "Prochain match dans",
+        "days": "{count, plural, one {jour} other {jours}}"
       },
       "match": {
         "section": "Match",
@@ -2727,49 +2729,29 @@
         "create_cta": "Créer le match",
         "home_hint": "Votre organisation : son nom et sa photo de profil."
       },
-      "passes": {
-        "title": "Abonnements de saison",
-        "hint": "Un seul QR code pour tous les matchs de la saison. Chaque abonnement prend une place dans le type de billet choisi à chaque match, donc aucun match ne peut être survendu.",
-        "needs_match": "Ajoutez d’abord un match : un abonnement a besoin d’un match où placer ses détenteurs.",
-        "add": "Ajouter un abonnement",
-        "create_title": "Nouvel abonnement",
-        "edit_title": "Modifier l’abonnement",
-        "name": "Nom de l’abonnement (ex. Pass Tribune)",
-        "description": "Description (facultative)",
-        "price": "Prix",
-        "quantity": "Abonnements en vente",
-        "mapping_title": "Place à chaque match",
-        "mapping_hint": "Choisissez le type de billet des abonnés à chaque match à venir. Chaque abonnement vendu y prend une place.",
-        "mapping_hint_sold": "{sold, plural, one {# abonnement est déjà vendu} other {# abonnements sont déjà vendus}} : le type de billet choisi doit avoir autant de places libres.",
-        "choose_ticket_type": "Choisir un type de billet",
-        "seats_left": "{count, plural, one {# place restante} other {# places restantes}}",
-        "sold": "{sold} / {total} vendus",
-        "sits_in": "{tiers} à {count, plural, one {# match} other {# matchs}}",
-        "create": "Créer l’abonnement",
-        "save": "Enregistrer",
-        "saving": "Enregistrement…",
-        "delete": "Supprimer",
-        "created": "Abonnement créé.",
-        "saved": "Abonnement enregistré.",
-        "deleted": "Abonnement supprimé.",
+      "pass": {
+        "title": "Pass saison",
+        "hint": "Un seul pass donne accès à tous les matchs de la saison. Le nombre de pass vendus n’est pas limité.",
+        "price": "Prix du pass",
+        "currency": "Devise",
+        "sold_note": "{count, plural, one {# pass déjà vendu garde} other {# pass déjà vendus gardent}} le prix auquel il a été acheté."
+      },
+      "choice": {
+        "title": "Saison (facultatif)",
+        "hint": "Ajoutez ce match à une saison pour que les supporters puissent acheter un pass pour tous ses matchs. Ou laissez-le seul.",
+        "none": "Sans saison",
+        "new": "Nouvelle saison",
+        "new_hint": "Une nouvelle saison compte au moins 2 matchs : après celui-ci, vous ajouterez le second avant que rien ne soit enregistré."
+      },
+      "second": {
+        "step": "Second match",
+        "title": "Second match de la saison",
+        "hint": "Même lieu, image, description et billets que le premier match. Choisissez l’adversaire et la date.",
+        "when": "Date et heure",
         "errors": {
-          "name": "Donnez à l’abonnement un nom d’au moins 2 caractères.",
-          "price": "Indiquez un prix supérieur à 0.",
-          "quantity": "Indiquez un nombre entier d’abonnements, au moins 1.",
-          "quantity_below_sold": "{sold} abonnements sont déjà vendus : la quantité ne peut pas être inférieure.",
-          "mapping": "Choisissez un type de billet pour ce match.",
-          "not_enough_seats": "Il ne reste que {left} places ; {needed} abonnés en ont besoin.",
-          "has_sales": "Un abonnement déjà acheté ne peut pas être supprimé."
-        },
-        "new_match": {
-          "title": "Abonnements à ce match",
-          "hint": "Les abonnés ont une place à chaque match. Choisissez le type de billet de chaque abonnement ici ; il doit avoir de la place pour tous ses détenteurs.",
-          "holders": "{count, plural, =0 {Aucun abonné pour l’instant} one {# abonné} other {# abonnés}}",
-          "choose": "Choisir un type de billet",
-          "errors": {
-            "choose": "Choisissez un des types de billet de ce match.",
-            "too_small": "Ce type de billet doit avoir au moins {count} places pour les abonnés."
-          }
+          "date": "Choisissez la date.",
+          "time": "Choisissez l’heure.",
+          "same_name": "C’est le même que le premier match. Changez l’adversaire ou la journée."
         }
       }
     }

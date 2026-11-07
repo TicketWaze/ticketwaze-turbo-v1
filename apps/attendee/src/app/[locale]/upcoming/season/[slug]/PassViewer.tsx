@@ -28,12 +28,9 @@ export default function PassViewer({
         <span className="font-primary font-medium text-[2.2rem] leading-12 text-black">
           {t("pass")}
         </span>
-        <div className="flex w-full items-center justify-between gap-4 text-[1.4rem] font-mono text-neutral-600">
-          <span className="truncate">{pass.ticketType}</span>
-          <span className="shrink-0 tracking-wider text-deep-100">
-            {pass.ticketName}
-          </span>
-        </div>
+        <span className="text-[1.4rem] font-mono tracking-wider text-deep-100">
+          {pass.ticketName}
+        </span>
         <div className="rounded-[15px] bg-white p-4 shadow-[0_15px_25px_0_rgba(0,0,0,0.05)]">
           <QRCodeCanvas
             value={pass.ticketId.toUpperCase()}

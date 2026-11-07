@@ -26,7 +26,8 @@ type PublicPass = {
   price: number;
   usdPrice: number;
   currency: "HTG" | "USD";
-  remaining: number;
+  /** Null = no limit (every season pass since the 2026-11-07 revamp). */
+  remaining: number | null;
 };
 
 type PublicOrganisation = {
@@ -285,6 +286,13 @@ export default async function SeasonPage({
     </div>
   );
 
+  // One season pass per season since the 2026-11-07 revamp (unlimited unless
+  // the API says otherwise).
+  const pass = passTypes[0];
+  // What the pass gets you into: matches still to play, not cancelled.
+  const playable = upcoming.filter((m) => !m.event.cancelledAt).length;
+  const passSoldOut = pass?.remaining != null && pass.remaining <= 0;
+
   return (
     <AttendeeLayout title={season.name}>
       <TrackActivityView activityId={season.seasonId} />
@@ -304,66 +312,37 @@ export default async function SeasonPage({
               />
               {/* Passes are on sale until the last match: nothing to sell once
                   no match is left to play. */}
-              {passTypes.length > 0 && upcoming.length > 0 && (
-                <section className="flex flex-col gap-6 rounded-[20px] bg-primary-50/50 border border-primary-500/15 p-6">
-                  <div className="flex flex-col gap-1">
+              {pass && playable > 0 && (
+                <section className="flex flex-col lg:flex-row lg:items-center gap-6 rounded-[20px] bg-primary-50/50 border border-primary-500/15 p-6">
+                  <div className="flex-1 min-w-0 flex flex-col gap-1">
                     <span className="font-semibold text-[1.7rem] leading-8 text-deep-100">
                       {t("passes.title")}
                     </span>
                     <span className="text-[1.4rem] leading-8 text-neutral-700">
-                      {t("passes.hint", { count: upcoming.length })}
+                      {t("passes.hint", { count: playable })}
                     </span>
                   </div>
-                  <ul className="flex flex-col gap-4">
-                    {passTypes.map((pass) => {
-                      const soldOut = pass.remaining <= 0;
-                      return (
-                        <li
-                          key={pass.seasonPassTypeId}
-                          className="flex flex-col lg:flex-row lg:items-center gap-4 rounded-[15px] bg-white border border-neutral-100 p-5"
-                        >
-                          <div className="flex-1 min-w-0 flex flex-col gap-1">
-                            <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
-                              {pass.name}
-                            </span>
-                            {pass.description && (
-                              <span className="text-[1.4rem] leading-7 text-neutral-600">
-                                {pass.description}
-                              </span>
-                            )}
-                            <span className="text-[1.3rem] leading-7 text-neutral-600">
-                              {soldOut
-                                ? t("page.soldOut")
-                                : t("passes.left", { count: pass.remaining })}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between lg:justify-end gap-4 shrink-0">
-                            <span className="font-primary font-medium text-[1.8rem] text-primary-500">
-                              {formatMoney(
-                                pass.currency === "USD"
-                                  ? pass.usdPrice
-                                  : pass.price,
-                                pass.currency,
-                                locale,
-                              )}
-                            </span>
-                            {soldOut ? (
-                              <span className="rounded-[30px] bg-neutral-100 px-6 py-3 text-[1.4rem] text-neutral-600">
-                                {t("page.soldOut")}
-                              </span>
-                            ) : (
-                              <Link
-                                href={`/explore/season/${slug}/checkout?pass=${pass.seasonPassTypeId}`}
-                                className="rounded-[30px] bg-primary-500 hover:bg-primary-600 transition-colors px-8 py-3 text-[1.4rem] font-medium text-white"
-                              >
-                                {t("passes.buy")}
-                              </Link>
-                            )}
-                          </div>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                  <div className="flex items-center justify-between lg:justify-end gap-4 shrink-0">
+                    <span className="font-primary font-medium text-[1.8rem] text-primary-500">
+                      {formatMoney(
+                        pass.currency === "USD" ? pass.usdPrice : pass.price,
+                        pass.currency,
+                        locale,
+                      )}
+                    </span>
+                    {passSoldOut ? (
+                      <span className="rounded-[30px] bg-neutral-100 px-6 py-3 text-[1.4rem] text-neutral-600">
+                        {t("page.soldOut")}
+                      </span>
+                    ) : (
+                      <Link
+                        href={`/explore/season/${slug}/checkout?pass=${pass.seasonPassTypeId}`}
+                        className="rounded-[30px] bg-primary-500 hover:bg-primary-600 transition-colors px-8 py-3 text-[1.4rem] font-medium text-white"
+                      >
+                        {t("passes.buy")}
+                      </Link>
+                    )}
+                  </div>
                 </section>
               )}
               <section className="flex flex-col gap-6">

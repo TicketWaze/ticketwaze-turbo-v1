@@ -46,7 +46,8 @@ export type CheckoutPass = {
   name: string;
   description: string | null;
   currency: "HTG" | "USD";
-  remaining: number;
+  /** Null = no limit. */
+  remaining: number | null;
 };
 
 /**
@@ -70,6 +71,7 @@ export default function PassCheckout({
   isLoggedIn: boolean;
 }) {
   const t = useTranslations("Season.checkout");
+  const tMine = useTranslations("Season.mine");
   const ct = useTranslations("Checkout");
   const tSuspension = useTranslations("Suspension");
   const locale = useLocale();
@@ -86,7 +88,10 @@ export default function PassCheckout({
   const [stripeClientSecret, setStripeClientSecret] = useState<string | null>(
     null,
   );
-  const maxQty = Math.max(0, Math.min(MAX_PER_ORDER, pass.remaining));
+  const maxQty = Math.max(
+    0,
+    Math.min(MAX_PER_ORDER, pass.remaining ?? MAX_PER_ORDER),
+  );
   // Waiting on a price for the quantity on screen.
   const quoting = quote?.quantity !== quantity;
 
@@ -233,7 +238,7 @@ export default function PassCheckout({
         <div className="flex flex-col gap-8 lg:h-full lg:min-h-0 lg:overflow-y-auto">
           <div className="flex flex-col gap-2 rounded-[15px] bg-neutral-50 p-6">
             <span className="font-semibold text-[1.7rem] leading-8 text-deep-100">
-              {pass.name}
+              {tMine("pass")}
             </span>
             {pass.description && (
               <span className="text-[1.4rem] leading-8 text-neutral-600">

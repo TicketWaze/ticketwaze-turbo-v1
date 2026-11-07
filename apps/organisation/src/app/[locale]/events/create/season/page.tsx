@@ -1,19 +1,10 @@
-import OrganizerLayout from "@/components/Layouts/OrganizerLayout";
-import UnauthorizedView from "@/components/Layouts/UnauthorizedView";
-import SeasonForm from "@/components/season/SeasonForm";
-import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
-import { auth } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-/** CREATE A SEASON. Same permission as creating an event: its matches are events. */
-export default async function CreateSeasonPage() {
-  const session = await auth();
-  const authorized = OrganisationPolicy.fromSession(
-    session?.activeOrganisation?.myPermissions ?? [],
-  ).createEvent();
-  if (!authorized) return <UnauthorizedView />;
-  return (
-    <OrganizerLayout title="">
-      <SeasonForm />
-    </OrganizerLayout>
-  );
+/**
+ * A season is no longer created on its own: it comes with its first two
+ * matches, from the Match form ("Add this match to a season?" › New season).
+ * Kept as a redirect for old links.
+ */
+export default function CreateSeasonPage() {
+  redirect("/events/create/match");
 }

@@ -1,17 +1,20 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
+import { DateTime } from "luxon";
 import {
   Add,
-  Award,
   Calendar,
   Edit2,
-  Location,
-  Trash,
+  HamburgerMenu,
+  MoreCircle,
   Ticket,
+  Trash,
 } from "iconsax-reactjs";
+import { motion } from "motion/react";
 import {
   PhysicalTicketBatch,
   Season,
@@ -19,22 +22,37 @@ import {
   SeasonPassType,
 } from "@ticketwaze/typescript-config";
 import { Link, useRouter } from "@/i18n/navigation";
-import { Dialog, DialogClose, DialogTrigger } from "@/components/ui/dialog";
-import ModalShell from "@/components/shared/ModalShell";
 import {
-  ButtonPill,
-  ButtonPrimary,
-  ButtonRed,
-} from "@/components/shared/buttons";
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { ButtonPill, ButtonRed } from "@/components/shared/buttons";
+import LoadingCircleSmall from "@/components/shared/LoadingCircleSmall";
+import MountOnOpen from "@/components/shared/MountOnOpen";
 import { Reveal } from "@/components/shared/motion";
+import { Metric, Unit } from "@/app/[locale]/analytics/parts";
 import TeamCrest from "@/components/season/TeamCrest";
-import PassTypesSection from "@/components/season/PassTypesSection";
 import PrintedTicketsSection from "../../show/[slug]/components/PrintedTicketsSection";
-import { seasonDateRange } from "@/components/shared/SeasonCard";
 import { DeleteSeason } from "@/actions/SeasonActions";
 import { slugify } from "@/lib/Slugify";
 import { eventStartsAt } from "@/lib/eventTime";
 import { cn } from "@/lib/utils";
+
+// The details panel downloads on first open, as on the event page.
+const SeasonDrawerContent = dynamic(() => import("./SeasonDrawerContent"), {
+  ssr: false,
+});
 
 type MatchState =
   | "requested"
@@ -84,30 +102,6 @@ function Banner({
       />
       <p className="text-[1.5rem] leading-8 text-deep-100">{children}</p>
     </div>
-  );
-}
-
-function Fact({
-  icon,
-  label,
-  value,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <li className="flex items-center gap-4 min-w-0">
-      <span className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center shrink-0">
-        {icon}
-      </span>
-      <div className="min-w-0">
-        <p className="text-[1.2rem] leading-6 text-neutral-600">{label}</p>
-        <p className="text-[1.5rem] leading-8 text-deep-100 truncate">
-          {value}
-        </p>
-      </div>
-    </li>
   );
 }
 
@@ -187,52 +181,41 @@ function MatchRow({ match }: { match: SeasonMatch }) {
   );
 }
 
+const itemClass =
+  "w-full flex items-center justify-between gap-6 py-4 border-b border-neutral-200 font-sans text-[1.5rem] leading-8 text-neutral-700 cursor-pointer transition-colors hover:text-primary-500";
+
+// 2×2 on mobile, one row of four on desktop (as on the event page).
+const kpiTiles = [
+  "max-lg:pr-6 max-lg:pb-8 max-lg:border-r lg:pr-[2.5rem] lg:pb-10",
+  "max-lg:pl-6 max-lg:pb-8 lg:px-[2.5rem] lg:pb-10",
+  "max-lg:pr-6 max-lg:pt-8 max-lg:border-r max-lg:border-t lg:px-[2.5rem] lg:pb-10",
+  "max-lg:pl-6 max-lg:pt-8 max-lg:border-t lg:pl-[2.5rem] lg:pb-10",
+].map((c) => cn(c, "border-neutral-100"));
+
 /**
- * THE ORGANISER'S SEASON PAGE: who, what and where on top, then the fixture
- * list. Each match row opens the match's own event page, where its tickets,
- * sales and check-in live exactly as for any event.
+ * The season's ⋯ menu, like an event's: details (the side panel), edit, and
+ * delete while the season has no match.
  */
-export default function SeasonPageDetails({
+function SeasonMore({
   season,
-  matches,
-  passTypes,
-  printedBatches,
-  canCreate,
   canEdit,
+  canDelete,
+  editHref,
+  onShowDetails,
 }: {
   season: Season;
-  matches: SeasonMatch[];
-  passTypes: SeasonPassType[];
-  printedBatches: PhysicalTicketBatch[];
-  canCreate: boolean;
   canEdit: boolean;
+  canDelete: boolean;
+  editHref: string;
+  onShowDetails: () => void;
 }) {
   const t = useTranslations("Events.season");
-  const tCard = useTranslations("Events");
+  const tEvent = useTranslations("Events.single_event");
   const locale = useLocale();
   const router = useRouter();
   const { data: session } = useSession();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const slug = slugify(season.name, season.seasonId);
-
-  const upcoming = matches.filter((m) => !m.isOver);
-  const played = matches.filter((m) => m.isOver).reverse();
-  const range = seasonDateRange(
-    {
-      ...season,
-      startsAt: matches[0]
-        ? (eventStartsAt(matches[0].event.eventDays)?.toISO() ?? null)
-        : null,
-      endsAt: matches.length
-        ? (eventStartsAt(
-            matches[matches.length - 1]!.event.eventDays,
-          )?.toISO() ?? null)
-        : null,
-    },
-    locale,
-  );
-  const venue = [season.venueName, season.city].filter(Boolean).join(", ");
-  const rejectedReason = season.rejectionReason?.trim();
 
   async function remove() {
     const organisationId = session?.activeOrganisation?.organisationId;
@@ -250,71 +233,177 @@ export default function SeasonPageDetails({
     router.push("/events");
   }
 
+  const items: React.ReactNode[] = [
+    <button
+      key="details"
+      type="button"
+      className={itemClass}
+      onClick={() => {
+        setMenuOpen(false);
+        onShowDetails();
+      }}
+    >
+      <span>{t("page.details")}</span>
+      <HamburgerMenu size="20" variant="Bulk" color="#2E3237" />
+    </button>,
+    canEdit && (
+      <Link key="edit" href={editHref} className={itemClass}>
+        <span>{t("page.edit")}</span>
+        <Edit2 size="20" variant="Bulk" color="#2E3237" />
+      </Link>
+    ),
+    canEdit && canDelete && (
+      <Dialog key="delete">
+        <DialogTrigger
+          className={cn(
+            itemClass,
+            "border-b-0 text-failure hover:text-failure/80",
+          )}
+        >
+          <span>{t("page.delete")}</span>
+          <Trash size="20" variant="Bulk" color="#DE0028" />
+        </DialogTrigger>
+        <DialogContent className="w-xl lg:w-208">
+          <DialogHeader>
+            <DialogTitle className="font-medium border-b border-neutral-100 pb-8 text-[2.6rem] leading-12 text-black font-primary">
+              {t("page.delete_title")}
+            </DialogTitle>
+            <DialogDescription className="text-[1.5rem] leading-8 text-neutral-600 pt-4">
+              {t("page.delete_body")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex gap-4">
+            <DialogClose asChild>
+              <ButtonPill className="flex-1 justify-center">
+                {t("page.delete_cancel")}
+              </ButtonPill>
+            </DialogClose>
+            <ButtonRed className="flex-1" disabled={deleting} onClick={remove}>
+              {deleting ? <LoadingCircleSmall /> : t("page.delete_confirm")}
+            </ButtonRed>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    ),
+  ].filter(Boolean);
+
   return (
-    <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-10 pb-24 lg:pb-8">
-      <Reveal>
-        <div className="flex flex-col lg:flex-row gap-8 lg:items-end">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={season.coverImageUrl}
-            alt=""
-            className="w-full lg:w-[22rem] h-[16rem] lg:h-[13rem] rounded-[1.5rem] object-cover object-top border border-neutral-100"
-          />
-          <div className="flex-1 min-w-0 flex flex-col gap-4">
-            <span className="text-[1.3rem] leading-6 text-primary-500 font-medium">
-              {t(`sports.${season.sport}`)} · {season.competition}
-            </span>
-            <h1 className="text-[2.6rem] font-medium font-primary leading-12 text-black">
-              {season.name}
-            </h1>
-            <div className="flex flex-wrap items-center gap-3">
-              {canCreate && season.adminStatus !== "rejected" && (
-                <Link href={`/events/season/${slug}/matches/new`}>
-                  <ButtonPill tone="primary" type="button">
-                    <Add size="18" color="#fff" />
-                    {t("page.add_match")}
-                  </ButtonPill>
-                </Link>
-              )}
-              {canEdit && (
-                <Link href={`/events/season/${slug}/edit`}>
-                  <ButtonPill type="button">
-                    <Edit2 size="16" color="#737c8a" variant="Bulk" />
-                    {t("page.edit")}
-                  </ButtonPill>
-                </Link>
-              )}
-              {canEdit && matches.length === 0 && (
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <ButtonPill type="button">
-                      <Trash size="16" color="#DE0028" variant="Bulk" />
-                      {t("page.delete")}
-                    </ButtonPill>
-                  </DialogTrigger>
-                  <ModalShell
-                    title={t("page.delete_title")}
-                    description={t("page.delete_body")}
-                  >
-                    <div className="flex gap-4 pt-8">
-                      <DialogClose asChild>
-                        <ButtonPrimary className="flex-1 bg-neutral-100 text-deep-100 hover:bg-neutral-200">
-                          {t("page.delete_cancel")}
-                        </ButtonPrimary>
-                      </DialogClose>
-                      <ButtonRed
-                        className="flex-1"
-                        disabled={deleting}
-                        onClick={remove}
-                      >
-                        {t("page.delete_confirm")}
-                      </ButtonRed>
-                    </div>
-                  </ModalShell>
-                </Dialog>
-              )}
-            </div>
-          </div>
+    <Popover open={menuOpen} onOpenChange={setMenuOpen}>
+      <PopoverTrigger
+        aria-label={tEvent("more")}
+        className="w-[3.5rem] h-[3.5rem] shrink-0 cursor-pointer rounded-full bg-neutral-100 flex items-center justify-center transition-colors hover:bg-neutral-200 data-[state=open]:bg-neutral-200"
+      >
+        <MoreCircle variant="Bulk" size={20} color="#737C8A" aria-hidden />
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        sideOffset={8}
+        className="w-[23.5rem] p-[1rem] bg-neutral-100 border border-neutral-200 rounded-[1rem] shadow-[0px_10px_30px_rgba(0,0,0,0.12)]"
+      >
+        <p className="font-sans font-medium pb-2 border-b border-neutral-200 text-[1.4rem] text-deep-100 leading-8">
+          {tEvent("more")}
+        </p>
+        <ul className="flex flex-col [&>li:last-child>*]:border-b-0">
+          {items.map((item, i) => (
+            <motion.li
+              key={(item as React.ReactElement).key ?? i}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: i * 0.03 }}
+            >
+              {item}
+            </motion.li>
+          ))}
+        </ul>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
+/**
+ * THE ORGANISER'S SEASON PAGE, laid out like an event's: the name with "Add
+ * match" and the ⋯ menu (details panel, edit, delete) on one row, four KPIs,
+ * then the fixture list. A season is only the wrapper: each match row opens
+ * the match's own event page, where its tickets, sales and check-in live.
+ */
+export default function SeasonPageDetails({
+  season,
+  matches,
+  passTypes,
+  printedBatches,
+  canCreate,
+  canEdit,
+}: {
+  season: Season;
+  matches: SeasonMatch[];
+  passTypes: SeasonPassType[];
+  printedBatches: PhysicalTicketBatch[];
+  canCreate: boolean;
+  canEdit: boolean;
+}) {
+  const t = useTranslations("Events.season");
+  const locale = useLocale();
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const slug = slugify(season.name, season.seasonId);
+  const editHref = `/events/season/${slug}/edit`;
+  const pass = passTypes[0];
+
+  const upcoming = matches.filter((m) => !m.isOver);
+  const played = matches.filter((m) => m.isOver).reverse();
+  const rejectedReason = season.rejectionReason?.trim();
+
+  /* ── KPIs ── */
+  const fmt = (n: number) => n.toLocaleString(locale, { maximumFractionDigits: 2 });
+  const passPrice = pass
+    ? pass.currency === "USD"
+      ? Number(pass.usdPrice)
+      : Number(pass.price)
+    : null;
+  const nextKickOff = upcoming
+    .filter((m) => !m.event.cancelledAt)
+    .map((m) => eventStartsAt(m.event.eventDays))
+    .filter((d): d is DateTime => d !== null && d > DateTime.now())[0];
+  const daysToNext = nextKickOff
+    ? Math.ceil(nextKickOff.diff(DateTime.now(), "days").days)
+    : null;
+
+  const canAddMatch = canCreate && season.adminStatus !== "rejected";
+  const addMatch = canAddMatch && (
+    <Link href={`/events/season/${slug}/matches/new`}>
+      <ButtonPill tone="primary" type="button">
+        <Add size="18" color="#fff" aria-hidden />
+        {t("page.add_match")}
+      </ButtonPill>
+    </Link>
+  );
+  const more = (
+    <SeasonMore
+      season={season}
+      canEdit={canEdit}
+      canDelete={matches.length === 0}
+      editHref={editHref}
+      onShowDetails={() => setDetailsOpen(true)}
+    />
+  );
+
+  return (
+    <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-12 lg:gap-16 pb-24 lg:pb-16">
+      {/* Title + actions */}
+      <Reveal
+        y={-12}
+        className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
+      >
+        <div className="flex flex-col gap-2 min-w-0">
+          <span className="text-[1.3rem] leading-6 text-primary-500 font-medium">
+            {t(`sports.${season.sport}`)} · {season.competition}
+          </span>
+          <h1 className="font-primary font-medium text-[2.2rem] lg:text-[2.6rem] leading-[1.2] text-black break-words">
+            {season.name}
+          </h1>
+        </div>
+        <div className="flex items-center gap-4 shrink-0">
+          {addMatch}
+          <div className="ml-auto lg:ml-0">{more}</div>
         </div>
       </Reveal>
 
@@ -332,43 +421,33 @@ export default function SeasonPageDetails({
         <Banner tone="warning">{t("page.status_review")}</Banner>
       ) : null}
 
-      <ul className="grid grid-cols-1 lg:grid-cols-3 gap-6 border-b border-neutral-100 pb-10">
-        <Fact
-          icon={<Award size="20" color="#0d0d0d" variant="Bulk" />}
-          label={t("page.competition")}
-          value={season.competition}
-        />
-        <Fact
-          icon={<Location size="20" color="#0d0d0d" variant="Bulk" />}
-          label={t("page.venue")}
-          value={venue || season.address}
-        />
-        <Fact
-          icon={<Calendar size="20" color="#0d0d0d" variant="Bulk" />}
-          label={t("page.matches")}
-          value={
-            <>
-              {tCard("seasonCard.matches", { count: matches.length })}
-              {range ? ` · ${range}` : ""}
-            </>
-          }
-        />
-      </ul>
-
-      {season.adminStatus !== "rejected" && (
-        <PassTypesSection
-          seasonId={season.seasonId}
-          passTypes={passTypes}
-          matches={matches}
-          canEdit={canEdit}
-        />
-      )}
-
-      <PrintedTicketsSection
-        batches={printedBatches}
-        timezone={season.timezone}
-        kind="season"
-      />
+      {/* KPIs */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 border-b border-neutral-100 divide-neutral-100 lg:divide-x pb-8 lg:pb-0">
+        <Reveal className={kpiTiles[0]} delay={0.06}>
+          <Metric label={t("pass.price")} size="responsive">
+            {passPrice === null ? "—" : fmt(passPrice)}{" "}
+            {pass && <Unit>{pass.currency}</Unit>}
+          </Metric>
+        </Reveal>
+        <Reveal className={kpiTiles[1]} delay={0.11}>
+          <Metric label={t("page.passes_sold")} size="responsive">
+            {fmt(pass?.quantitySold ?? 0)}
+          </Metric>
+        </Reveal>
+        <Reveal className={kpiTiles[2]} delay={0.16}>
+          <Metric label={t("page.matches")} size="responsive">
+            {fmt(played.length)} <Unit>/ {fmt(matches.length)}</Unit>
+          </Metric>
+        </Reveal>
+        <Reveal className={kpiTiles[3]} delay={0.21}>
+          <Metric label={t("page.next_match")} size="responsive">
+            {daysToNext === null ? "—" : fmt(daysToNext)}{" "}
+            {daysToNext !== null && (
+              <Unit>{t("page.days", { count: daysToNext })}</Unit>
+            )}
+          </Metric>
+        </Reveal>
+      </div>
 
       {matches.length === 0 ? (
         <div className="flex flex-col items-center text-center gap-4 py-16">
@@ -381,6 +460,7 @@ export default function SeasonPageDetails({
           <p className="text-[1.4rem] leading-8 text-neutral-600 max-w-[42rem]">
             {t("page.no_matches_hint")}
           </p>
+          {addMatch && <div className="pt-4">{addMatch}</div>}
         </div>
       ) : (
         <div className="flex flex-col gap-10">
@@ -410,6 +490,22 @@ export default function SeasonPageDetails({
           )}
         </div>
       )}
+
+      <PrintedTicketsSection
+        batches={printedBatches}
+        timezone={season.timezone}
+        kind="season"
+      />
+
+      <MountOnOpen open={detailsOpen}>
+        <SeasonDrawerContent
+          season={season}
+          passType={pass}
+          editHref={canEdit ? editHref : undefined}
+          open={detailsOpen}
+          onOpenChange={setDetailsOpen}
+        />
+      </MountOnOpen>
     </div>
   );
 }

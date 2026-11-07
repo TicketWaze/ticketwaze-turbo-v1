@@ -35,7 +35,7 @@ export default async function EditSeasonPage({
   }
   return (
     <OrganizerLayout title="">
-      <SeasonForm season={loaded.season} />
+      <SeasonForm season={loaded.season} passType={loaded.passTypes[0]} />
     </OrganizerLayout>
   );
 }

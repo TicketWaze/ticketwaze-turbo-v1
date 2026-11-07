@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { revalidatePath } from "next/cache";
-import { Match, Season, SeasonPassType } from "@ticketwaze/typescript-config";
+import { Match, Season } from "@ticketwaze/typescript-config";
 import { auth } from "@/lib/auth";
 
 /**
@@ -15,9 +15,6 @@ type Failed = { status: "failed"; error: string; code?: string };
 type SeasonResult = { status: "success"; season: Season } | Failed;
 type MatchResult = { status: "success"; match: Match } | Failed;
 type DeleteResult = { status: "success" } | Failed;
-type PassTypeResult =
-  | { status: "success"; passType: SeasonPassType }
-  | (Failed & { details?: Record<string, unknown> });
 
 const API = () => process.env.NEXT_PUBLIC_API_URL;
 
@@ -113,60 +110,19 @@ export async function DeleteSeason(
 
 export async function UpdateMatch(
   organisationId: string,
-  seasonId: string,
+  /** Null for a standalone match. */
+  seasonId: string | null,
   eventId: string,
   body: FormData,
   locale: string,
 ): Promise<MatchResult> {
   const result = await send(
     "PUT",
-    `/seasons/${organisationId}/${seasonId}/matches/${eventId}`,
+    seasonId
+      ? `/seasons/${organisationId}/${seasonId}/matches/${eventId}`
+      : `/seasons/${organisationId}/matches/${eventId}`,
     locale,
     body,
-  );
-  if (result.status === "success") revalidatePath("/events");
-  return result;
-}
-
-export type PassTypeInput = {
-  name: string;
-  description: string | null;
-  price: number;
-  currency: "HTG" | "USD";
-  quantity: number;
-  /** One per upcoming match: the ticket type its holders sit in. */
-  mappings: { eventId: string; eventTicketTypeId: string }[];
-};
-
-/** Creates a pass type, or edits one when `passTypeId` is given. */
-export async function SavePassType(
-  organisationId: string,
-  seasonId: string,
-  input: PassTypeInput,
-  locale: string,
-  passTypeId?: string,
-): Promise<PassTypeResult> {
-  const base = `/seasons/${organisationId}/${seasonId}/passes`;
-  const result = await send(
-    passTypeId ? "PUT" : "POST",
-    passTypeId ? `${base}/${passTypeId}` : base,
-    locale,
-    input,
-  );
-  if (result.status === "success") revalidatePath("/events");
-  return result;
-}
-
-export async function DeletePassType(
-  organisationId: string,
-  seasonId: string,
-  passTypeId: string,
-  locale: string,
-): Promise<DeleteResult> {
-  const result = await send(
-    "DELETE",
-    `/seasons/${organisationId}/${seasonId}/passes/${passTypeId}`,
-    locale,
   );
   if (result.status === "success") revalidatePath("/events");
   return result;
