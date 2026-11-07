@@ -697,10 +697,9 @@
           "name": "Nom de la saison",
           "competition": "Compétition / ligue",
           "sport": "Sport",
-          "cover": "Image de couverture",
-          "cover_keep": "Laissez vide pour garder l'image actuelle.",
-          "cover_new": "L'image actuelle sera remplacée à l'enregistrement.",
-          "venue_name": "Nom du stade ou du lieu (facultatif)"
+          "venue_name": "Nom du stade ou du lieu (facultatif)",
+          "pass_price": "Prix du pass",
+          "pass_currency": "Devise"
         },
         "sports": {
           "football": "Football",
@@ -713,11 +712,12 @@
           "other": "Autre"
         },
         "changes": {
-          "cover": "l'image de couverture"
+          "pass_price": "le prix du pass saison"
         },
         "errors": {
           "competition": "La compétition doit compter au moins 2 caractères.",
-          "location": "Placez un repère sur la carte : chaque nouveau match part de lui."
+          "location": "Placez un repère sur la carte : chaque nouveau match part de lui.",
+          "pass_price": "Indiquez le prix du pass saison."
         },
         "match": {
           "part_of": "Match de {season}",
@@ -732,7 +732,11 @@
           "saved": "Match mis à jour.",
           "save": "Enregistrer",
           "cancel": "Annuler"
-        }
+        },
+        "sections": {
+          "pass": "Pass saison"
+        },
+        "pass_hint": "Un seul pass pour tous les matchs de la saison, sans limite de ventes. Un nouveau prix s’applique aux pass vendus à partir de maintenant."
       }
     }
   },

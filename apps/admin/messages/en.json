@@ -849,10 +849,9 @@
           "name": "Season name",
           "competition": "Competition / league",
           "sport": "Sport",
-          "cover": "Cover image",
-          "cover_keep": "Leave empty to keep the current cover.",
-          "cover_new": "The current cover will be replaced when you save.",
-          "venue_name": "Stadium or venue name (optional)"
+          "venue_name": "Stadium or venue name (optional)",
+          "pass_price": "Pass price",
+          "pass_currency": "Currency"
         },
         "sports": {
           "football": "Football",
@@ -865,11 +864,12 @@
           "other": "Other"
         },
         "changes": {
-          "cover": "the cover image"
+          "pass_price": "the season pass price"
         },
         "errors": {
           "competition": "The competition needs at least 2 characters.",
-          "location": "Set a map pin: every new match starts from it."
+          "location": "Set a map pin: every new match starts from it.",
+          "pass_price": "Enter the season pass price."
         },
         "match": {
           "part_of": "Match of {season}",
@@ -884,7 +884,11 @@
           "saved": "Match updated.",
           "save": "Save",
           "cancel": "Cancel"
-        }
+        },
+        "sections": {
+          "pass": "Season pass"
+        },
+        "pass_hint": "One pass for every match of the season, no limit on how many are sold. A new price applies to passes sold from now on."
       }
     }
   },

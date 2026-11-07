@@ -32,7 +32,10 @@ export default async function EditSeasonPage({
 
   return (
     <AdminLayout className="overflow-y-hidden">
-      <EditSeasonForm season={response.season} />
+      <EditSeasonForm
+        season={response.season}
+        passType={response.passTypes?.[0] ?? null}
+      />
     </AdminLayout>
   );
 }

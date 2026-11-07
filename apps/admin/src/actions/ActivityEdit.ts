@@ -194,7 +194,8 @@ export async function UpdateSeasonAsAdminAction(args: {
 
 /** A match's own fields (away team, logo, round). */
 export async function UpdateMatchAsAdminAction(args: {
-  seasonId: string;
+  /** Null for a standalone match. */
+  seasonId: string | null;
   eventId: string;
   formData: FormData;
   accessToken: string;
@@ -202,7 +203,9 @@ export async function UpdateMatchAsAdminAction(args: {
 }): Promise<UpdateEventResult> {
   const { seasonId, eventId, ...rest } = args;
   return putActivity({
-    path: `/admin/season/${seasonId}/matches/${eventId}`,
+    path: seasonId
+      ? `/admin/season/${seasonId}/matches/${eventId}`
+      : `/admin/matches/${eventId}`,
     detailRoute: "/[locale]/activities/[id]",
     ...rest,
   });

@@ -14,7 +14,6 @@ import LocationPicker, {
   SelectedLocation,
 } from "@/components/shared/LocationPicker";
 import {
-  ImageField,
   LABEL_CLASS,
   Section,
   SelectField,
@@ -44,12 +43,25 @@ const SPORTS = [
 
 /**
  * ADMIN EDIT OF A SEASON — the organiser's own fields and rules (unique name,
- * 150+ character description, venue with a map pin, cover), applied at once
+ * 150+ character description, venue with a map pin, season pass price), applied at once
  * and emailed to the organiser. Same layout and confirm step as the other
  * activity edits. Matches keep their own dates, venue and tickets: those are
  * edited on each match's page.
  */
-export default function EditSeasonForm({ season }: { season: Season }) {
+type SeasonPass = {
+  price: number;
+  usdPrice: number;
+  currency: "HTG" | "USD";
+};
+
+export default function EditSeasonForm({
+  season,
+  passType,
+}: {
+  season: Season;
+  /** The season's one pass (null for a season saved before passes existed). */
+  passType: SeasonPass | null;
+}) {
   const t = useTranslations("Activities.edit");
   const ts = useTranslations("Activities.edit.season");
   const locale = useLocale();
@@ -60,7 +72,13 @@ export default function EditSeasonForm({ season }: { season: Season }) {
   const [competition, setCompetition] = useState(season.competition ?? "");
   const [sport, setSport] = useState<string>(season.sport ?? "football");
   const [description, setDescription] = useState(season.description ?? "");
-  const [cover, setCover] = useState<File | null>(null);
+  const initialPassPrice = passType
+    ? String(passType.currency === "USD" ? passType.usdPrice : passType.price)
+    : "";
+  const [passPrice, setPassPrice] = useState(initialPassPrice);
+  const [passCurrency, setPassCurrency] = useState<string>(
+    passType?.currency ?? "HTG",
+  );
   const [venueName, setVenueName] = useState(season.venueName ?? "");
   const [address, setAddress] = useState(season.address ?? "");
   const [city, setCity] = useState(season.city ?? "");
@@ -81,12 +99,14 @@ export default function EditSeasonForm({ season }: { season: Season }) {
       [
         name !== season.name && t("changes.name"),
         description !== season.description && t("changes.description"),
-        Boolean(cover) && ts("changes.cover"),
+        (passPrice !== initialPassPrice ||
+          passCurrency !== (passType?.currency ?? "HTG")) &&
+          ts("changes.pass_price"),
         [venueName, address, city, state, country].join("|") !==
           [season.venueName ?? "", season.address, season.city, season.state, season.country].join("|") &&
           t("changes.venue"),
       ].filter(Boolean) as string[],
-    [name, description, cover, venueName, address, city, state, country, season, t, ts],
+    [name, description, passPrice, passCurrency, initialPassPrice, passType, venueName, address, city, state, country, season, t, ts],
   );
 
   function localProblems(): string[] {
@@ -98,6 +118,9 @@ export default function EditSeasonForm({ season }: { season: Season }) {
     if ([address, city, state, country].some((v) => v.trim().length < 2))
       problems.push(t("errors.address"));
     if (!location) problems.push(ts("errors.location"));
+    const price = Number(passPrice);
+    if (!passPrice || !Number.isFinite(price) || price <= 0)
+      problems.push(ts("errors.pass_price"));
     return problems;
   }
 
@@ -127,7 +150,8 @@ export default function EditSeasonForm({ season }: { season: Season }) {
     formData.append("country", country.trim());
     if (timezone.trim()) formData.append("timezone", timezone.trim());
     if (location) formData.append("location", JSON.stringify(location));
-    if (cover) formData.append("coverImage", cover);
+    formData.append("passPrice", String(Number(passPrice)));
+    formData.append("passCurrency", passCurrency);
 
     try {
       const result = await UpdateSeasonAsAdminAction({
@@ -202,13 +226,30 @@ export default function EditSeasonForm({ season }: { season: Season }) {
           error={fieldErrors.description}
           hint={t("fields.description_hint", { count: description.length })}
         />
-        <ImageField
-          label={ts("fields.cover")}
-          file={cover}
-          onChange={setCover}
-          keepLabel={ts("fields.cover_keep")}
-          replaceLabel={ts("fields.cover_new")}
-        />
+      </Section>
+
+      <Separator />
+
+      <Section title={ts("sections.pass")}>
+        <p className="text-[1.3rem] leading-8 text-neutral-600">{ts("pass_hint")}</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <TextField
+            label={ts("fields.pass_price")}
+            value={passPrice}
+            onChange={setPassPrice}
+            error={fieldErrors.passPrice}
+          />
+          <SelectField
+            label={ts("fields.pass_currency")}
+            value={passCurrency}
+            onChange={setPassCurrency}
+            options={[
+              { value: "HTG", label: "HTG" },
+              { value: "USD", label: "USD" },
+            ]}
+            error={fieldErrors.passCurrency}
+          />
+        </div>
       </Section>
 
       <Separator />

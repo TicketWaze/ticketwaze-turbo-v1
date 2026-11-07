@@ -57,7 +57,8 @@ export type AdminSeasonDetail = {
     currency: "HTG" | "USD";
     price: number;
     usdPrice: number;
-    quantity: number;
+    /** Null = unlimited (every season pass since the 2026-11-07 revamp). */
+    quantity: number | null;
     quantitySold: number;
   }[];
   passMoney: {
@@ -285,7 +286,9 @@ export default function SeasonReviewComponent({ detail }: { detail: AdminSeasonD
                       <InfoRow key={p.seasonPassTypeId} label={p.name}>
                         {formatMoney(p.currency === "USD" ? p.usdPrice : p.price, p.currency, locale)}
                         {" · "}
-                        {p.quantitySold.toLocaleString()} / {p.quantity.toLocaleString()} sold
+                        {p.quantity === null
+                          ? `${p.quantitySold.toLocaleString()} sold · no limit`
+                          : `${p.quantitySold.toLocaleString()} / ${p.quantity.toLocaleString()} sold`}
                       </InfoRow>
                     ))}
                   </InfoList>
