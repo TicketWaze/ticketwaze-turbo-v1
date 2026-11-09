@@ -37,7 +37,7 @@ type ActivityFilter =
   | "raffles"
   | "restaurants"
   | "sales"
-  | "seasons";
+  | "sport";
 /** Where an activity sits in its own lifecycle, whatever kind it is. */
 type StatusFilter = "all" | "ongoing" | "upcoming" | "past";
 type DateFilter = "any" | "today" | "week" | "month" | "next30" | "past";
@@ -336,11 +336,13 @@ export default function EventPageContent({
     };
     return items
       .filter((item) => {
-        if (kind === "events" && item.kind !== "event") return false;
+        // Matches are filed under Sport, not Events.
+        const isMatch = item.kind === "event" && Boolean(item.event.match);
+        if (kind === "events" && (item.kind !== "event" || isMatch)) return false;
+        if (kind === "sport" && !isMatch) return false;
         if (kind === "raffles" && item.kind !== "raffle") return false;
         if (kind === "restaurants" && item.kind !== "restaurant") return false;
         if (kind === "sales" && item.kind !== "sale") return false;
-        if (kind === "seasons" && item.kind !== "season") return false;
         if (status !== "all" && item.category !== status) return false;
         if (location !== "all" && item.city?.trim().toLowerCase() !== location)
           return false;
@@ -369,7 +371,7 @@ export default function EventPageContent({
     { value: "raffles", label: t("filter.raffles") },
     { value: "restaurants", label: t("filter.restaurants") },
     { value: "sales", label: t("filter.sales") },
-    { value: "seasons", label: t("filter.seasons") },
+    { value: "sport", label: t("filter.sport") },
   ];
   const locationOptions: FilterOption[] = [
     { value: "all", label: t("filter.any_location") },

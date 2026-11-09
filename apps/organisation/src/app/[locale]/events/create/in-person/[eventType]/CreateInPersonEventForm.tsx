@@ -63,9 +63,16 @@ export default function CreateInPersonEventForm({
   teaser,
   season,
   seasons,
+  isMatch = false,
   topSlot,
   onExit,
 }: {
+  /**
+   * The Match card (2026-11-09): a plain match, two teams, one day, filed
+   * under Sport. No season; the organiser groups matches afterwards under a
+   * multi-match ticket from a match's More menu.
+   */
+  isMatch?: boolean;
   /**
    * Set when this wizard adds a MATCH to a season: the venue, description
    * and sport come from the season, the teams are asked first, and the
@@ -109,11 +116,10 @@ export default function CreateInPersonEventForm({
   const [isRefundable, setIsRefundable] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
   // Chosen in Event Details now (it used to be its own page before the form).
-  // A match is filed as a tournament, the closest existing category.
-  // A match: from a season page (`season`) or from the Match card (`seasons`).
-  const matchMode = Boolean(season) || seasons !== undefined;
+  // A match is always filed under Sport.
+  const matchMode = Boolean(season) || seasons !== undefined || isMatch;
   const [category, setCategory] = useState(
-    eventType || (matchMode ? "tournament" : ""),
+    matchMode ? "sport" : eventType,
   );
   const tSeason = useTranslations("Events.season");
   const [seasonChoice, setSeasonChoice] = useState<SeasonChoiceValue>(
@@ -579,7 +585,7 @@ export default function CreateInPersonEventForm({
     setMatchErrors(teamErrors);
     const teamsMissing = Object.keys(teamErrors).length > 0;
     const choiceErrors =
-      currentStep === 0 && matchMode && !season
+      currentStep === 0 && matchMode && !season && seasons !== undefined
         ? validateSeasonChoice(
             seasonChoice,
             (k) => tSeason(k),
@@ -723,7 +729,7 @@ export default function CreateInPersonEventForm({
                 topSlot={
                   matchMode ? (
                     <>
-                      {!season && (
+                      {!season && seasons !== undefined && (
                         <Section title={tSeason("choice.title")}>
                           <SeasonChoice
                             seasons={seasons ?? []}
@@ -763,7 +769,7 @@ export default function CreateInPersonEventForm({
                   setCategory(value);
                   setCategoryError(undefined);
                 }}
-                categories={EVENT_CATEGORIES}
+                categories={matchMode ? ["sport"] : EVENT_CATEGORIES}
                 categoryError={categoryError}
               />
             </StepPanel>
@@ -784,6 +790,7 @@ export default function CreateInPersonEventForm({
                 setValue={setValue}
                 t={(k) => t(k)}
                 membershipTier={membershipTier}
+                singleDay={matchMode}
               />
             </StepPanel>
           )}

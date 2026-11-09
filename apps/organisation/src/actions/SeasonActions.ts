@@ -127,3 +127,99 @@ export async function UpdateMatch(
   if (result.status === "success") revalidatePath("/events");
   return result;
 }
+
+/* ── Multi-match tickets (2026-11-09) ─────────────────────────────────────
+   One ticket valid at two or more of the organiser's matches, configured
+   from any of them (More menu). Stored as a hidden season on the API. */
+
+export type BundleMatch = {
+  eventId: string;
+  title: string;
+  eventName: string;
+  round: string | null;
+  startsAt: string | null;
+  isOver: boolean;
+  seasonId: string | null;
+};
+
+export type MatchBundle = {
+  seasonId: string;
+  name: string;
+  description: string | null;
+  seasonPassTypeId: string | null;
+  price: number | null;
+  usdPrice: number | null;
+  currency: "HTG" | "USD";
+  quantity: number | null;
+  quantitySold: number;
+  /** Tickets sold (any status): once one exists, matches cannot leave. */
+  sold: number;
+  matches: BundleMatch[];
+};
+
+export type MatchBundleInput = {
+  name: string;
+  description?: string | null;
+  price: number;
+  currency: "HTG" | "USD";
+  /** Null = unlimited. */
+  quantity: number | null;
+  eventIds: string[];
+};
+
+export async function GetMatchBundle(
+  organisationId: string,
+  eventId: string,
+  locale: string,
+): Promise<
+  | { status: "success"; bundle: MatchBundle | null; candidates: BundleMatch[] }
+  | Failed
+> {
+  try {
+    const request = await fetch(
+      `${API()}/seasons/${organisationId}/matches/${eventId}/bundle`,
+      { headers: await headers(locale), cache: "no-store" },
+    );
+    const response = await request.json().catch(() => null);
+    if (request.ok && response?.status === "success") return response;
+    return { status: "failed", error: messageOf(response) };
+  } catch (error: any) {
+    return {
+      status: "failed",
+      error: error?.message ?? "An unknown error occurred",
+    };
+  }
+}
+
+export async function SaveMatchBundle(
+  organisationId: string,
+  /** Null creates a new one. */
+  seasonId: string | null,
+  body: MatchBundleInput,
+  locale: string,
+): Promise<{ status: "success"; bundle: MatchBundle } | Failed> {
+  const result = await send(
+    seasonId ? "PUT" : "POST",
+    seasonId
+      ? `/seasons/${organisationId}/bundles/${seasonId}`
+      : `/seasons/${organisationId}/bundles`,
+    locale,
+    body,
+  );
+  if (result.status === "success") revalidatePath("/events");
+  return result;
+}
+
+export async function DeleteMatchBundle(
+  organisationId: string,
+  seasonId: string,
+  locale: string,
+): Promise<DeleteResult> {
+  const result = await send(
+    "DELETE",
+    `/seasons/${organisationId}/bundles/${seasonId}`,
+    locale,
+  );
+  if (result.status === "success") revalidatePath("/events");
+  return result;
+}

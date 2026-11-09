@@ -54,8 +54,8 @@ export default async function EventCategoryPicker({
     { label: t("categories.comedy.title"), href: "comedy", Icon: Laugh },
     { label: t("categories.theater.title"), href: "theater", Icon: Drama },
     {
-      label: t("categories.tournament.title"),
-      href: "tournament",
+      label: t("categories.sport.title"),
+      href: "sport",
       Icon: Trophy,
     },
     { label: t("categories.workshop.title"), href: "workshop", Icon: Wrench },

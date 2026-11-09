@@ -765,7 +765,7 @@
       "festival": "Festival",
       "comedy": "Comédie",
       "theater_performance": "Théâtre",
-      "tournament": "Tournoi",
+      "sport": "Sport",
       "workshop": "Atelier",
       "seminar": "Séminaire",
       "networking": "Réseautage",
@@ -1906,14 +1906,14 @@
       "played": "Joué"
     },
     "mine": {
-      "pass": "Pass saison",
+      "pass": "Billet multi-matchs",
       "gateNote": "Présentez ce QR code à l’entrée de chaque match. Il fait entrer une personne.",
-      "previous": "Abonnement précédent",
-      "next": "Abonnement suivant",
-      "validFor": "Les matchs de cet abonnement",
-      "laterMatches": "Les matchs ajoutés plus tard sont inclus.",
+      "previous": "Billet précédent",
+      "next": "Billet suivant",
+      "validFor": "Matchs inclus dans ce billet",
+      "laterMatches": "Les matchs ajoutés plus tard par l'organisateur sont inclus.",
       "noUpcoming": "Aucun match n’est encore prévu. Les nouveaux matchs apparaîtront ici.",
-      "seasonPage": "Voir la page de la saison"
+      "seasonPage": "Voir tous les matchs"
     },
     "passes": {
       "title": "Pass saison",
@@ -1922,9 +1922,9 @@
       "buy": "Acheter"
     },
     "checkout": {
-      "title": "Acheter un abonnement",
-      "covers": "Valable à chaque match de la saison encore à jouer, y compris les matchs ajoutés plus tard. Les abonnements ne sont pas remboursables, même si un match est annulé.",
-      "quantity": "Abonnements",
+      "title": "Acheter un billet multi-matchs",
+      "covers": "Valable à chaque match inclus encore à jouer. Non remboursable, même si un match est annulé.",
+      "quantity": "Billets",
       "less": "Un de moins",
       "more": "Un de plus",
       "max": "Vous pouvez en acheter {count} au maximum.",
@@ -1934,7 +1934,7 @@
       "walletBalance": "Solde du portefeuille",
       "insufficient": "Solde insuffisant",
       "sold_out": "Complet",
-      "success": "Votre abonnement est confirmé.",
+      "success": "Votre billet multi-matchs est confirmé.",
       "quote_failed": "Le prix n’a pas pu être chargé. Réessayez.",
       "account_exists": "Un compte utilise déjà cet e-mail. Connectez-vous pour acheter.",
       "login": "Se connecter",
@@ -1947,10 +1947,10 @@
       }
     },
     "inCheckout": {
-      "title": "Pass saison",
+      "title": "Billet multi-matchs",
       "matches": "{count, plural, one {# match} other {# matchs}}",
-      "description": "Un seul QR code pour tous les matchs de {season} restant à jouer, et ceux ajoutés plus tard. Non remboursable.",
-      "buy": "Acheter le pass saison"
+      "description": "Un seul billet, un seul QR code, valable à {count, plural, one {# match} other {tous les # matchs}} inclus. Non remboursable.",
+      "buy": "Acheter ce billet"
     }
   }
 }

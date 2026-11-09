@@ -268,14 +268,15 @@ export default function TicketSelectionStep({
             <div className="flex flex-col gap-4">
               <div className="flex items-center justify-between gap-4">
                 <span className="font-semibold text-[1.6rem] leading-10 text-deep-100">
-                  {tPass("title")}
+                  {seasonPass.name || tPass("title")}
                 </span>
                 <span className="rounded-[30px] bg-primary-500/10 px-4 py-1 text-[1.2rem] font-medium text-primary-500 whitespace-nowrap">
                   {tPass("matches", { count: seasonPass.matchesLeft })}
                 </span>
               </div>
               <p className="text-[1.5rem] leading-12 text-neutral-700">
-                {tPass("description", { season: seasonPass.season.name })}
+                {seasonPass.description ||
+                  tPass("description", { count: seasonPass.matchesLeft })}
               </p>
             </div>
             <span className="font-primary font-bold text-[1.8rem] leading-12 text-primary-500">

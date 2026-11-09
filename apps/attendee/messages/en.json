@@ -721,7 +721,7 @@
       "festival": "Festival",
       "comedy": "Comedy",
       "theater_performance": "Theater",
-      "tournament": "Tournament",
+      "sport": "Sport",
       "workshop": "Workshop",
       "seminar": "Seminar",
       "networking": "Networking",
@@ -1862,14 +1862,14 @@
       "played": "Played"
     },
     "mine": {
-      "pass": "Season pass",
+      "pass": "Multi-match ticket",
       "gateNote": "Show this QR code at the gate of every match. It lets one person in.",
-      "previous": "Previous pass",
-      "next": "Next pass",
-      "validFor": "Matches this pass gets you into",
-      "laterMatches": "Matches added later are included.",
+      "previous": "Previous ticket",
+      "next": "Next ticket",
+      "validFor": "Matches this ticket gets you into",
+      "laterMatches": "Matches the organiser adds later are included.",
       "noUpcoming": "No match is scheduled yet. New matches will show up here.",
-      "seasonPage": "See the season page"
+      "seasonPage": "See all matches"
     },
     "passes": {
       "title": "Season pass",
@@ -1878,9 +1878,9 @@
       "buy": "Buy"
     },
     "checkout": {
-      "title": "Buy a season pass",
-      "covers": "Valid at every match of the season still to play, including matches added later. Season passes are non-refundable, even if a match is cancelled.",
-      "quantity": "Passes",
+      "title": "Buy a multi-match ticket",
+      "covers": "Valid at every match this ticket covers that is still to play. Non-refundable, even if a match is cancelled.",
+      "quantity": "Tickets",
       "less": "One fewer",
       "more": "One more",
       "max": "You can buy {count} at most.",
@@ -1890,7 +1890,7 @@
       "walletBalance": "Wallet balance",
       "insufficient": "Not enough in your wallet",
       "sold_out": "Sold out",
-      "success": "Your season pass is confirmed.",
+      "success": "Your multi-match ticket is confirmed.",
       "quote_failed": "The price could not be loaded. Please try again.",
       "account_exists": "An account already uses this email. Log in to buy.",
       "login": "Log in",
@@ -1903,10 +1903,10 @@
       }
     },
     "inCheckout": {
-      "title": "Season pass",
+      "title": "Multi-match ticket",
       "matches": "{count, plural, one {# match} other {# matches}}",
-      "description": "One QR code for every match of {season} still to play, and every match added later. Non-refundable.",
-      "buy": "Buy the season pass"
+      "description": "One ticket, one QR code, valid at {count, plural, one {# match} other {all # matches}} it covers. Non-refundable.",
+      "buy": "Buy this ticket"
     }
   }
 }

@@ -28,6 +28,8 @@ import TicketsTable from "./TicketsTable";
 import ReturnedTicketsSection from "./ReturnedTicketsSection";
 import PrintedTicketsSection from "./PrintedTicketsSection";
 import { useRouter } from "@/i18n/navigation";
+import { useSession } from "next-auth/react";
+import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import dynamic from "next/dynamic";
 import MountOnOpen from "@/components/shared/MountOnOpen";
 import MatchHeader from "@/components/season/MatchHeader";
@@ -39,6 +41,10 @@ const ExportDialog = dynamic(() => import("./ExportDialog"), { ssr: false });
 const EventDrawerContent = dynamic(() => import("./EventDrawerContent"), {
   ssr: false,
 });
+const MultiMatchTicketDialog = dynamic(
+  () => import("@/components/season/MultiMatchTicketDialog"),
+  { ssr: false },
+);
 const AddDiscountDrawer = dynamic(
   () => import("../discount-codes/AddDiscountDrawer"),
   { ssr: false },
@@ -208,6 +214,11 @@ export default function EventPageDetails({
     </span>
   );
 
+  const { data: session } = useSession();
+  const [multiMatchOpen, setMultiMatchOpen] = useState(false);
+  const canEditMatch = OrganisationPolicy.fromSession(
+    session?.activeOrganisation?.myPermissions ?? [],
+  ).editEvent();
   const more = (
     <MoreComponent
       daysLeft={daysLeft}
@@ -224,6 +235,9 @@ export default function EventPageDetails({
       onShowDetails={() => setDetailsOpen(true)}
       onExport={() => setExportOpen(true)}
       onAddDiscount={() => setDiscountOpen(true)}
+      onMultiMatch={
+        event.match && canEditMatch ? () => setMultiMatchOpen(true) : undefined
+      }
     />
   );
   const createTicket = canCreateTicket && (
@@ -263,7 +277,7 @@ export default function EventPageDetails({
         </div>
       </Reveal>
 
-      {/* A match of a season: the teams and the way back to the season. */}
+      {/* A match: the teams. */}
       {event.match && (
         <Reveal delay={0.04}>
           <MatchHeader match={event.match} />
@@ -392,6 +406,13 @@ export default function EventPageDetails({
           event={event}
           open={detailsOpen}
           onOpenChange={setDetailsOpen}
+        />
+      </MountOnOpen>
+      <MountOnOpen open={multiMatchOpen}>
+        <MultiMatchTicketDialog
+          eventId={event.eventId}
+          open={multiMatchOpen}
+          onOpenChange={setMultiMatchOpen}
         />
       </MountOnOpen>
       <MountOnOpen open={discountOpen}>

@@ -1605,7 +1605,8 @@
         "resend_ticket_daily": "Ce billet a déjà été renvoyé 3 fois aujourd’hui. Réessayez demain.",
         "resend_org_daily": "Votre organisation a atteint la limite de renvois du jour. Réessayez dans {hours} h."
       },
-      "create_ticket_upgrade": "L'ajout de classes de billets est disponible avec Pro."
+      "create_ticket_upgrade": "L'ajout de classes de billets est disponible avec Pro.",
+      "multi_match": "Billet multi-matchs"
     },
     "create_event": {
       "title": "Créer une activité",
@@ -1644,9 +1645,9 @@
               "title": "Théâtre",
               "value": "theater_performance"
             },
-            "tournament": {
-              "title": "Tournoi",
-              "value": "tournament"
+            "sport": {
+              "title": "Sport",
+              "value": "sport"
             },
             "workshop": {
               "title": "Atelier",
@@ -1780,7 +1781,7 @@
         },
         "match": {
           "title": "Match",
-          "description": "Un match de championnat ou de ligue. Vendez-le seul, ou ajoutez-le à une saison avec un pass pour tous les matchs."
+          "description": "Un match de championnat ou de ligue, sur une seule journée. Regroupez plusieurs matchs ensuite sous un billet multi-matchs."
         }
       },
       "tagPlaceholder": "Tapez un hashtag et appuyez sur Entrée ou la barre d’espace",
@@ -2292,7 +2293,7 @@
         "views": "Les plus vues",
         "sold": "Les plus vendues"
       },
-      "seasons": "Saisons",
+      "sport": "Sport",
       "empty_seasons": "Aucune saison pour le moment. Créez la saison de votre équipe pour vendre des billets de match."
     },
     "restaurantCard": {
@@ -2753,6 +2754,29 @@
           "time": "Choisissez l’heure.",
           "same_name": "C’est le même que le premier match. Changez l’adversaire ou la journée."
         }
+      }
+    },
+    "multi_match": {
+      "title": "Billet multi-matchs",
+      "title_edit": "Modifier le billet multi-matchs",
+      "hint": "Un seul billet valable à chaque match choisi (deux ou plus). Chacun de ces matchs le propose dans son paiement, à côté de ses propres billets.",
+      "name": "Nom du billet (ex. Pass saison)",
+      "price": "Prix",
+      "currency": "Devise",
+      "quantity": "Quantité (vide pour illimité)",
+      "matches": "Matchs inclus",
+      "need_more": "Il faut au moins deux matchs à venir. Créez d'abord un autre match.",
+      "sold_note": "{count, plural, one {# billet vendu} other {# billets vendus}} : vous pouvez ajouter des matchs, pas en retirer. Un nouveau prix s'applique aux billets vendus à partir de maintenant.",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "remove": "Supprimer le billet",
+      "saved": "Billet multi-matchs enregistré",
+      "removed": "Billet multi-matchs supprimé",
+      "errors": {
+        "name": "Indiquez un nom.",
+        "price": "Indiquez un prix.",
+        "quantity": "Indiquez un nombre entier, ou laissez vide.",
+        "matches": "Choisissez au moins deux matchs."
       }
     }
   },

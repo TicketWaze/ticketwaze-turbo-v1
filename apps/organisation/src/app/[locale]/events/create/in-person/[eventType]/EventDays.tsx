@@ -20,6 +20,8 @@ type Props = {
   t: (s: string) => string;
   control: Control<any>;
   membershipTier: MembershipTier;
+  /** A match: one day, no "Add day". */
+  singleDay?: boolean;
 };
 
 /** Day cards (Figma "Day 1 / Day 2"): date, start and end time, add/remove. */
@@ -32,6 +34,7 @@ export default function StepDateTime({
   t,
   control,
   membershipTier,
+  singleDay = false,
 }: Props) {
   const addDay = () => {
     if (membershipTier.membershipName === "free") {
@@ -85,8 +88,14 @@ export default function StepDateTime({
                 )
               }
             >
-              <input type="hidden" {...register(`eventDays.${index}.dayNumber`)} />
-              <input type="hidden" {...register(`eventDays.${index}.timezone`)} />
+              <input
+                type="hidden"
+                {...register(`eventDays.${index}.dayNumber`)}
+              />
+              <input
+                type="hidden"
+                {...register(`eventDays.${index}.timezone`)}
+              />
 
               <PickerField
                 label={t("start_date")}
@@ -125,23 +134,25 @@ export default function StepDateTime({
         ))}
       </AnimatePresence>
 
-      <div className="w-full max-w-[54rem] mx-auto flex justify-end">
-        <button
-          type="button"
-          onClick={addDay}
-          className="cursor-pointer flex gap-3 items-center group"
-        >
-          <AddCircle
-            color="#E45B00"
-            variant="Bulk"
-            size="20"
-            className="transition-transform group-hover:rotate-90"
-          />
-          <span className="text-[1.5rem] leading-8 text-primary-500">
-            {t("add_day")}
-          </span>
-        </button>
-      </div>
+      {!singleDay && (
+        <div className="w-full max-w-[54rem] mx-auto flex justify-end">
+          <button
+            type="button"
+            onClick={addDay}
+            className="cursor-pointer flex gap-3 items-center group"
+          >
+            <AddCircle
+              color="#E45B00"
+              variant="Bulk"
+              size="20"
+              className="transition-transform group-hover:rotate-90"
+            />
+            <span className="text-[1.5rem] leading-8 text-primary-500">
+              {t("add_day")}
+            </span>
+          </button>
+        </div>
+      )}
       <div className="h-24 lg:hidden" />
     </div>
   );
