@@ -1556,7 +1556,8 @@
       "unfollow": "Unfollow",
       "about": "About organisation",
       "contact": "Contact Information",
-      "noResult": "There's no result for "
+      "noResult": "There's no result for ",
+      "multiMatch": "Multi-match tickets"
     },
     "activities": "{count, plural, one {activity} other {activities}}",
     "noResultQuery": "No search result found for “{query}”",
@@ -1879,7 +1880,7 @@
     },
     "checkout": {
       "title": "Buy a multi-match ticket",
-      "covers": "Valid at every match this ticket covers that is still to play. Non-refundable, even if a match is cancelled.",
+      "covers": "Valid at every match this ticket covers that is still to play, and at every match the club adds to it later. Non-refundable, even if a match is cancelled.",
       "quantity": "Tickets",
       "less": "One fewer",
       "more": "One more",
@@ -1905,7 +1906,7 @@
     "inCheckout": {
       "title": "Multi-match ticket",
       "matches": "{count, plural, one {# match} other {# matches}}",
-      "description": "One ticket, one QR code, valid at {count, plural, one {# match} other {all # matches}} it covers. Non-refundable.",
+      "description": "One ticket, one QR code, valid at {count, plural, one {the # match} other {all # matches}} it covers, and at every match the club adds to it later. Non-refundable.",
       "buy": "Buy this ticket"
     }
   }

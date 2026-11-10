@@ -11,6 +11,17 @@ import { MembershipTier } from "@ticketwaze/typescript-config";
 import { Section } from "@/components/create/CreateParts";
 import { PickerField } from "@/components/create/FormFields";
 
+/** A match ends this long after kick-off (the organiser only sets kick-off). */
+export const MATCH_LENGTH_HOURS = 3;
+
+/** "HH:MM" plus MATCH_LENGTH_HOURS, wrapping past midnight. */
+export function matchEndTime(kickOff: string): string {
+  const [h, m] = kickOff.split(":").map(Number);
+  if (!Number.isFinite(h) || !Number.isFinite(m)) return "";
+  const hour = (h + MATCH_LENGTH_HOURS) % 24;
+  return `${String(hour).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+}
+
 type Props = {
   register: UseFormRegister<CreateInPersonFormValues>;
   errors: any;
@@ -74,7 +85,7 @@ export default function StepDateTime({
             transition={{ duration: 0.25 }}
           >
             <Section
-              title={`${t("day")} ${index + 1}`}
+              title={singleDay ? t("match_day") : `${t("day")} ${index + 1}`}
               action={
                 index > 0 && (
                   <button
@@ -104,27 +115,53 @@ export default function StepDateTime({
                 error={errors.eventDays?.[index]?.eventDate?.message}
               />
 
-              <div className="flex gap-4 items-start">
-                <PickerField
-                  label={t("start_time")}
-                  type="time"
-                  inputProps={register(`eventDays.${index}.startTime`)}
-                  error={errors.eventDays?.[index]?.startTime?.message}
-                />
-                <div className="flex-1 min-w-0">
+              {singleDay ? (
+                <div className="flex flex-col gap-2">
+                  {/* A match: kick-off only; it ends MATCH_LENGTH_HOURS later. */}
                   <PickerField
-                    label={t("end_time")}
+                    label={t("kick_off")}
                     type="time"
-                    inputProps={register(`eventDays.${index}.endTime`)}
-                    error={errors.eventDays?.[index]?.endTime?.message}
+                    inputProps={register(`eventDays.${index}.startTime`, {
+                      onChange: (e) =>
+                        setValue(
+                          `eventDays.${index}.endTime`,
+                          matchEndTime(e.target.value),
+                          { shouldValidate: true },
+                        ),
+                    })}
+                    error={errors.eventDays?.[index]?.startTime?.message}
                   />
-                  <NextDayHint
-                    control={control}
-                    index={index}
-                    label={t("errors.dateAndTime.endsNextDay")}
+                  <input
+                    type="hidden"
+                    {...register(`eventDays.${index}.endTime`)}
                   />
+                  <span className="text-neutral-500 text-[1.2rem] px-2">
+                    {t("kick_off_hint")}
+                  </span>
                 </div>
-              </div>
+              ) : (
+                <div className="flex gap-4 items-start">
+                  <PickerField
+                    label={t("start_time")}
+                    type="time"
+                    inputProps={register(`eventDays.${index}.startTime`)}
+                    error={errors.eventDays?.[index]?.startTime?.message}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <PickerField
+                      label={t("end_time")}
+                      type="time"
+                      inputProps={register(`eventDays.${index}.endTime`)}
+                      error={errors.eventDays?.[index]?.endTime?.message}
+                    />
+                    <NextDayHint
+                      control={control}
+                      index={index}
+                      label={t("errors.dateAndTime.endsNextDay")}
+                    />
+                  </div>
+                </div>
+              )}
 
               <span className="text-neutral-500 text-[1.2rem] px-2">
                 {eventDay.timezone}

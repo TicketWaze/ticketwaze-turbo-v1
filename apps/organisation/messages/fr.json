@@ -1780,7 +1780,7 @@
           "description": "En présentiel ou en ligne : concerts, conférences, ateliers, rencontres…"
         },
         "match": {
-          "title": "Match",
+          "title": "Sport",
           "description": "Un match de championnat ou de ligue, sur une seule journée. Regroupez plusieurs matchs ensuite sous un billet multi-matchs."
         }
       },
@@ -2210,7 +2210,12 @@
       "location_search_empty": "Aucun lieu trouvé. Essayez un autre nom ou cliquez sur la carte.",
       "location_search_error": "La recherche n’est pas disponible pour le moment. Cliquez sur la carte pour placer le repère.",
       "location_search_min": "Saisissez au moins {min} caractères pour rechercher.",
-      "location_search_more": "Encore {count, plural, one {# caractère} other {# caractères}} pour lancer la recherche."
+      "location_search_more": "Encore {count, plural, one {# caractère} other {# caractères}} pour lancer la recherche.",
+      "match_day": "Le jour du match",
+      "kick_off": "Coup d'envoi",
+      "kick_off_hint": "Le match se termine automatiquement 3 heures après le coup d'envoi.",
+      "sport_placeholder": "Choisissez le sport",
+      "past_venues": "Vos stades"
     },
     "sale_price_preview": {
       "title": "Ce que vos acheteurs paieront",

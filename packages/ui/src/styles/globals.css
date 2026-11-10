@@ -400,6 +400,12 @@ input:not(:placeholder-shown) + label {
 }
 
 /* ── Rich text display (editor + public pages) ── */
+/* A long unbroken word (a pasted link, keyboard mash) wraps instead of
+   widening its column and pushing the page sideways. */
+.rich-text {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
 .rich-text h2 {
   font-size: 1.8rem;
   font-weight: 600;

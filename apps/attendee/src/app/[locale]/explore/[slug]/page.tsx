@@ -512,7 +512,12 @@ export default async function EventPage({
         <div className="flex flex-col gap-12 lg:min-h-0 lg:overflow-y-auto lg:h-full -mx-4 px-4">
           <main className="w-full gap-8 lg:gap-16 flex flex-col lg:grid lg:grid-cols-[29fr_23fr] lg:items-start">
             <div className="flex flex-col gap-8">
-              {event.match && <MatchBanner match={event.match} />}
+              {event.match && (
+                <MatchBanner
+                  match={event.match}
+                  organiserLogoUrl={organisation?.profileImageUrl ?? null}
+                />
+              )}
               <EventImageLightbox
                 src={event.eventImageUrl}
                 alt={event.eventName}

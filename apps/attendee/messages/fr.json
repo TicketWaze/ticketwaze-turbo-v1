@@ -1600,7 +1600,8 @@
       "unfollow": "Desabonner",
       "about": "À propos de l'organisation",
       "contact": "Informations de contact",
-      "noResult": "Il n'y a aucun résultat pour "
+      "noResult": "Il n'y a aucun résultat pour ",
+      "multiMatch": "Billets multi-matchs"
     },
     "activities": "{count, plural, one {activité} other {activités}}",
     "noResultQuery": "Aucun résultat trouvé pour « {query} »",
@@ -1923,7 +1924,7 @@
     },
     "checkout": {
       "title": "Acheter un billet multi-matchs",
-      "covers": "Valable à chaque match inclus encore à jouer. Non remboursable, même si un match est annulé.",
+      "covers": "Valable pour tous les matchs inclus encore à jouer, et pour tous ceux que le club y ajoutera plus tard. Non remboursable, même si un match est annulé.",
       "quantity": "Billets",
       "less": "Un de moins",
       "more": "Un de plus",
@@ -1949,7 +1950,7 @@
     "inCheckout": {
       "title": "Billet multi-matchs",
       "matches": "{count, plural, one {# match} other {# matchs}}",
-      "description": "Un seul billet, un seul QR code, valable à {count, plural, one {# match} other {tous les # matchs}} inclus. Non remboursable.",
+      "description": "Un seul billet, un seul QR code, valable pour {count, plural, one {le match inclus} other {les # matchs inclus}} et pour tous ceux que le club y ajoutera plus tard. Non remboursable.",
       "buy": "Acheter ce billet"
     }
   }

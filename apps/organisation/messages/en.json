@@ -1781,7 +1781,7 @@
           "description": "Physical or virtual: concerts, conferences, workshops, meetups…"
         },
         "match": {
-          "title": "Match",
+          "title": "Sport",
           "description": "A match of a championship or league, on a single day. Group several matches later under one multi-match ticket."
         }
       },
@@ -2215,7 +2215,12 @@
       "location_search_empty": "No places found. Try another name, or click on the map.",
       "location_search_error": "Search isn’t available right now. Click on the map to place the pin.",
       "location_search_min": "Type at least {min} characters to search.",
-      "location_search_more": "{count, plural, one {# more character} other {# more characters}} to start searching."
+      "location_search_more": "{count, plural, one {# more character} other {# more characters}} to start searching.",
+      "match_day": "Match day",
+      "kick_off": "Kick-off",
+      "kick_off_hint": "The match is set to end 3 hours after kick-off.",
+      "sport_placeholder": "Choose the sport",
+      "past_venues": "Your venues"
     },
     "price_preview": {
       "title": "What your attendees will pay",

@@ -87,7 +87,9 @@ export default function TransactionDetails({
       ? te(`transaction.methods.${order.provider}`)
       : order.provider
     : "—";
-  const canResend = status === "PENDING" && can("tickets.resend");
+  // A multi-match ticket is resent from the buyer side, not per match.
+  const canResend =
+    status === "PENDING" && can("tickets.resend") && !ticket.multiMatch;
   const location =
     event.eventCategory === "meet"
       ? null

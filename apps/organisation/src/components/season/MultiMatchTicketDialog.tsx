@@ -96,7 +96,9 @@ export default function MultiMatchTicketDialog({
   /** Once a ticket is sold, a match already covered cannot be taken out. */
   const locked = (id: string) =>
     id === eventId ||
-    Boolean(bundle && bundle.sold > 0 && bundle.matches.some((m) => m.eventId === id));
+    Boolean(
+      bundle && bundle.sold > 0 && bundle.matches.some((m) => m.eventId === id),
+    );
 
   function toggle(id: string) {
     if (locked(id)) return;
@@ -145,7 +147,11 @@ export default function MultiMatchTicketDialog({
   async function remove() {
     if (!organisationId || !bundle) return;
     setSaving(true);
-    const result = await DeleteMatchBundle(organisationId, bundle.seasonId, locale);
+    const result = await DeleteMatchBundle(
+      organisationId,
+      bundle.seasonId,
+      locale,
+    );
     setSaving(false);
     if (result.status !== "success") {
       toast.error(result.error);
@@ -158,7 +164,9 @@ export default function MultiMatchTicketDialog({
 
   const when = (iso: string | null) =>
     iso
-      ? DateTime.fromISO(iso).setLocale(locale).toLocaleString(DateTime.DATETIME_MED)
+      ? DateTime.fromISO(iso)
+          .setLocale(locale)
+          .toLocaleString(DateTime.DATETIME_MED)
       : "";
 
   return (
@@ -169,11 +177,11 @@ export default function MultiMatchTicketDialog({
         className="lg:w-[64rem] max-w-[64rem]"
       >
         {loading ? (
-          <div className="flex justify-center py-16">
+          <div className="w-full flex justify-center py-16">
             <LoadingCircleSmall />
           </div>
         ) : (
-          <div className="flex flex-col gap-8 pt-8 overflow-y-auto">
+          <div className="w-full flex flex-col gap-8 pt-8 min-w-0">
             <Input
               type="text"
               maxLength={100}
@@ -248,7 +256,7 @@ export default function MultiMatchTicketDialog({
                   {t("need_more")}
                 </p>
               )}
-              <ul className="flex flex-col gap-3">
+              <ul className="flex flex-col gap-3 min-w-0">
                 {candidates.map((m) => {
                   const on = picked.includes(m.eventId);
                   return (
@@ -258,7 +266,7 @@ export default function MultiMatchTicketDialog({
                         onClick={() => toggle(m.eventId)}
                         disabled={locked(m.eventId)}
                         className={cn(
-                          "w-full flex items-center gap-4 rounded-[1.5rem] border p-5 text-left transition-colors",
+                          "w-full min-w-0 flex items-center gap-4 rounded-[1.5rem] border p-5 text-left transition-colors",
                           on
                             ? "border-primary-500 bg-primary-50/40"
                             : "border-neutral-100 hover:border-neutral-300",
@@ -266,19 +274,25 @@ export default function MultiMatchTicketDialog({
                         )}
                       >
                         {on ? (
-                          <TickSquare size="22" variant="Bold" color="#E45B00" />
+                          <TickSquare
+                            size="22"
+                            variant="Bold"
+                            color="#E45B00"
+                          />
                         ) : (
                           <span
                             aria-hidden
                             className="size-[2.2rem] shrink-0 rounded-[0.6rem] border-2 border-neutral-300"
                           />
                         )}
-                        <span className="flex flex-col min-w-0">
+                        <span className="flex flex-1 flex-col min-w-0">
                           <span className="text-[1.5rem] text-deep-100 truncate">
                             {m.eventName}
                           </span>
                           <span className="text-[1.3rem] text-neutral-600">
-                            {[m.round, when(m.startsAt)].filter(Boolean).join(" · ")}
+                            {[m.round, when(m.startsAt)]
+                              .filter(Boolean)
+                              .join(" · ")}
                           </span>
                         </span>
                       </button>

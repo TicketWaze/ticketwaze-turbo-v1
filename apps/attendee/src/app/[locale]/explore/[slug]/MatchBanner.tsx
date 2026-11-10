@@ -6,9 +6,20 @@ import TeamCrest from "@/components/shared/TeamCrest";
  * The top of a match's event page: the two teams and the round. No season
  * since 2026-11-09 (a multi-match ticket shows in the checkout instead).
  */
-export default async function MatchBanner({ match }: { match: Match }) {
+export default async function MatchBanner({
+  match,
+  organiserLogoUrl = null,
+}: {
+  match: Match;
+  /** The home team is the organiser: its picture when the match row has none. */
+  organiserLogoUrl?: string | null;
+}) {
   const t = await getTranslations("Season");
-  const caption = match.round ?? "";
+  const sport =
+    match.sport && t.has(`sports.${match.sport}`)
+      ? t(`sports.${match.sport}`)
+      : null;
+  const caption = [sport, match.round].filter(Boolean).join(" · ");
 
   return (
     <section className="flex flex-col gap-6 rounded-[15px] bg-neutral-50 p-6 lg:p-8">
@@ -21,7 +32,7 @@ export default async function MatchBanner({ match }: { match: Match }) {
         <div className="flex flex-col items-center gap-3 min-w-0 text-center">
           <TeamCrest
             name={match.homeTeamName}
-            logoUrl={match.homeTeamLogoUrl}
+            logoUrl={match.homeTeamLogoUrl ?? organiserLogoUrl}
             size={64}
           />
           <span className="font-primary font-medium text-[1.5rem] lg:text-[1.7rem] leading-8 text-deep-100 break-words max-w-full">

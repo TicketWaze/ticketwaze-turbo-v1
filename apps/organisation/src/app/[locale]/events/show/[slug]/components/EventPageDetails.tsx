@@ -177,7 +177,9 @@ export default function EventPageDetails({
     (sum, c) => sum + Number(c.ticketTypeQuantity || 0),
     0,
   );
-  const left = Math.max(0, capacity - soldCount);
+  // Multi-match ticket holders count as sold but take no seat of the match.
+  const seatsSold = sold(tickets.filter((tk) => !tk.multiMatch));
+  const left = Math.max(0, capacity - seatsSold);
   const checkedIn = tickets.filter((tk) => tk.status === "CHECKED").length;
   const revenue = ticketsOrganisationTotal(
     tickets,
@@ -198,6 +200,7 @@ export default function EventPageDetails({
   const soldThisWeek = tickets.filter(
     (tk) =>
       tk.status !== "RETURNED" &&
+      !tk.multiMatch &&
       DateTime.fromISO(String(tk.createdAt)) >= today.minus({ days: 7 }),
   ).length;
   const leftTrend =
@@ -374,7 +377,8 @@ export default function EventPageDetails({
         />
       )}
 
-      {isUpcoming && !isDeleted && (
+      {/* Performers (DJ, artists) mean nothing on a match. */}
+      {isUpcoming && !isDeleted && !event.match && (
         <Reveal delay={0.3}>
           <EventArtist event={event} eventPerformers={eventPerformers} />
         </Reveal>
