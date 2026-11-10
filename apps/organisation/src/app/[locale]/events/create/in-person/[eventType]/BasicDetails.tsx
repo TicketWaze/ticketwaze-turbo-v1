@@ -111,7 +111,7 @@ export default function BasicDetails({
 
   // A past venue moves the map pin too (LocationPicker follows `value`).
   const [venuePin, setVenuePin] = useState<
-    { lat: number; lng: number } | undefined
+    { lat: number; lng: number } | null | undefined
   >(undefined);
   const watchedAddress = useWatch({ control, name: "address" });
   function pickVenue(venue: PastVenue) {
@@ -124,6 +124,18 @@ export default function BasicDetails({
     if (venue.location) {
       setValue("location", venue.location, { shouldValidate: true });
       setVenuePin(venue.location);
+    } else {
+      // No pin saved for that venue: drop the previous venue's pin so the
+      // required-pin check asks for a new one instead of keeping wrong coordinates.
+      setValue(
+        "location",
+        { lat: undefined, lng: undefined } as unknown as {
+          lat: number;
+          lng: number;
+        },
+        { shouldValidate: true },
+      );
+      setVenuePin(null);
     }
   }
 

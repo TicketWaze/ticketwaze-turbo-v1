@@ -1607,7 +1607,8 @@
         "resend_org_daily": "Your organisation reached today’s resend limit. Try again in {hours} h."
       },
       "create_ticket_upgrade": "Adding ticket classes is available on Pro.",
-      "multi_match": "Multi-match ticket"
+      "multi_match": "Multi-match ticket",
+      "sold_multi_match": "+{count, plural, one {# multi-match ticket} other {# multi-match tickets}}"
     },
     "create_event": {
       "title": "Create Activity",
@@ -1693,6 +1694,10 @@
             "community": {
               "title": "Community",
               "value": "community"
+            },
+            "tournament": {
+              "title": "Sport",
+              "value": "sport"
             }
           }
         },

@@ -2,6 +2,7 @@ import Capitalize from "@/lib/Capitalize";
 import { Event, Ticket } from "@ticketwaze/typescript-config";
 import { DateTime } from "luxon";
 import { loadPdfLogo } from "@/lib/pdfLogo";
+import { ticketOrganisationAmount } from "@/lib/ticketEarnings";
 
 /*
  * The two files of the detail page's Export: the attendee list (Excel) and
@@ -31,6 +32,17 @@ export function downloadBlob(blob: Blob, fileName: string) {
 
 const price = (event: Event, ticket: Ticket) =>
   event.currency === "USD" ? ticket.ticketUsdPrice : ticket.ticketPrice;
+
+/**
+ * What a row adds to this activity's revenue. A multi-match ticket holder's
+ * `ticketPrice` is the whole ticket, paid once for every match it covers, so
+ * a match counts only its share (`organisationAmount`), as the dashboard's
+ * revenue tile does. Per-row "paid" columns keep `price`.
+ */
+const revenueOf = (event: Event, ticket: Ticket) =>
+  ticket.multiMatch
+    ? ticketOrganisationAmount(ticket, event.currency)
+    : Number(price(event, ticket)) || 0;
 
 function statusLabel(t: ReportT, status: Ticket["status"]) {
   if (status === "CHECKED") return t("checked");
@@ -139,7 +151,10 @@ export async function buildReportPdf(
   const contentWidth = pageWidth - margin * 2;
   let y = margin;
 
-  const revenue = tickets.reduce((acc, curr) => acc + price(event, curr), 0);
+  const revenue = tickets.reduce(
+    (acc, curr) => acc + revenueOf(event, curr),
+    0,
+  );
   const checked = tickets.filter((tk) => tk.status === "CHECKED").length;
   const pending = tickets.filter((tk) => tk.status === "PENDING").length;
   const returned = tickets.filter((tk) => tk.status === "RETURNED").length;
@@ -266,7 +281,7 @@ export async function buildReportPdf(
           tk.ticketType.toLowerCase() === type.ticketTypeName.toLowerCase(),
       );
       const typeRevenue = typeTickets.reduce(
-        (acc, curr) => acc + price(event, curr),
+        (acc, curr) => acc + revenueOf(event, curr),
         0,
       );
       const typeChecked = typeTickets.filter(
@@ -276,7 +291,7 @@ export async function buildReportPdf(
         Capitalize(type.ticketTypeName),
         `${typeTickets.length} / ${type.ticketTypeQuantity}`,
         `${typeChecked}`,
-        `${typeRevenue} ${event.currency}`,
+        `${Math.round(typeRevenue * 100) / 100} ${event.currency}`,
       ];
     }),
     foot: [
@@ -284,7 +299,7 @@ export async function buildReportPdf(
         t("total"),
         `${tickets.length}`,
         `${checked}`,
-        `${revenue} ${event.currency}`,
+        `${Math.round(revenue * 100) / 100} ${event.currency}`,
       ],
     ],
     footStyles: {

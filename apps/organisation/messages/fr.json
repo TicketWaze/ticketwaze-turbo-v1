@@ -1606,7 +1606,8 @@
         "resend_org_daily": "Votre organisation a atteint la limite de renvois du jour. Réessayez dans {hours} h."
       },
       "create_ticket_upgrade": "L'ajout de classes de billets est disponible avec Pro.",
-      "multi_match": "Billet multi-matchs"
+      "multi_match": "Billet multi-matchs",
+      "sold_multi_match": "+{count, plural, one {# billet multi-matchs} other {# billets multi-matchs}}"
     },
     "create_event": {
       "title": "Créer une activité",
@@ -1692,6 +1693,10 @@
             "community": {
               "title": "Communauté",
               "value": "community"
+            },
+            "tournament": {
+              "title": "Sport",
+              "value": "sport"
             }
           }
         },

@@ -179,6 +179,7 @@ export default function EventPageDetails({
   );
   // Multi-match ticket holders count as sold but take no seat of the match.
   const seatsSold = sold(tickets.filter((tk) => !tk.multiMatch));
+  const multiMatchHolders = soldCount - seatsSold;
   const left = Math.max(0, capacity - seatsSold);
   const checkedIn = tickets.filter((tk) => tk.status === "CHECKED").length;
   const revenue = ticketsOrganisationTotal(
@@ -195,7 +196,9 @@ export default function EventPageDetails({
           event.eventCategory === "meet",
         ),
       );
-  const soldTrend = weekTrend(tickets, sold);
+  const soldTrend = weekTrend(tickets, (list) =>
+    sold(list.filter((tk) => !tk.multiMatch)),
+  );
   // Tickets left a week ago were today's plus what sold since.
   const soldThisWeek = tickets.filter(
     (tk) =>
@@ -300,7 +303,12 @@ export default function EventPageDetails({
         </Reveal>
         <Reveal className={kpiTiles[1]} delay={0.11}>
           <Metric label={t("sold")} size="responsive" trend={trend(soldTrend)}>
-            {fmt(soldCount)} <Unit>/ {fmt(capacity)}</Unit>
+            {fmt(seatsSold)} <Unit>/ {fmt(capacity)}</Unit>
+            {multiMatchHolders > 0 && (
+              <span className="block text-[1.2rem] leading-6 font-normal text-neutral-600">
+                {t("sold_multi_match", { count: multiMatchHolders })}
+              </span>
+            )}
           </Metric>
         </Reveal>
         <Reveal className={kpiTiles[2]} delay={0.16}>

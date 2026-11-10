@@ -732,7 +732,8 @@
       "charity": "Charity",
       "fundraiser": "Fundraiser",
       "meetup": "Meetup",
-      "community": "Community"
+      "community": "Community",
+      "tournament": "Sport"
     },
     "noResultQuery": "No search result found for “{query}”. Here are similar activities that may interest you!",
     "noResultFilters": "No activities match these filters. Here are other activities that may interest you!",

@@ -776,7 +776,8 @@
       "charity": "Caritatif",
       "fundraiser": "Levée de fonds",
       "meetup": "Rencontre",
-      "community": "Communauté"
+      "community": "Communauté",
+      "tournament": "Sport"
     },
     "noResultQuery": "Aucun résultat pour « {query} ». Voici des activités similaires qui pourraient vous intéresser !",
     "noResultFilters": "Aucune activité ne correspond à ces filtres. Voici d’autres activités qui pourraient vous intéresser !",
