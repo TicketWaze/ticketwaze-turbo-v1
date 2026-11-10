@@ -140,6 +140,13 @@ export interface Ticket {
   ticketId: string;
   ticketName: string;
   ticketType: string;
+  /**
+   * Set on a match's ticket list for a holder of its multi-match ticket: the
+   * ticket covers `matches` matches and takes no seat of this one. Its
+   * `organisationAmount` is then this match's share; `ticketPrice` stays
+   * what the buyer paid for the whole ticket.
+   */
+  multiMatch?: { name: string; matches: number } | null;
   eventId: string;
   orderId: string;
   /** Who paid for the ticket. */
@@ -300,7 +307,7 @@ export interface Organisation {
  */
 export interface OrderActivitySummary {
   activityId: string;
-  activityType: "event" | "raffle";
+  activityType: "event" | "raffle" | "season";
   name: string;
   currency: string;
   timezone: string | null;
@@ -1703,6 +1710,8 @@ export interface Match {
   awayTeamName: string;
   awayTeamLogoUrl: string | null;
   round: string | null;
+  /** Football, basketball… (the category is always Sport). */
+  sport?: string;
   /**
    * Public event payloads only: the season, while its public page exists
    * (approved, not suspended). Null otherwise.

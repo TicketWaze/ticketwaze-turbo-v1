@@ -3,14 +3,13 @@ import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
-import { ArrowRight2, Edit2 } from "iconsax-reactjs";
+import { Edit2 } from "iconsax-reactjs";
 import { Match } from "@ticketwaze/typescript-config";
-import { Link, useRouter } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { Dialog, DialogClose, DialogTrigger } from "@/components/ui/dialog";
 import ModalShell from "@/components/shared/ModalShell";
 import { ButtonPill, ButtonPrimary } from "@/components/shared/buttons";
 import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
-import { slugify } from "@/lib/Slugify";
 import { UpdateMatch } from "@/actions/SeasonActions";
 import { MAX_UPLOAD_BYTES, formDataSize } from "@/lib/uploadLimit";
 import TeamCrest from "./TeamCrest";
@@ -87,15 +86,6 @@ export default function MatchHeader({ match }: { match: MatchWithSeason }) {
   return (
     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 rounded-[1.5rem] border border-neutral-100 p-6">
       <div className="flex flex-col gap-4 min-w-0">
-        {match.season && (
-          <Link
-            href={`/events/season/${slugify(match.season.name, match.season.seasonId)}`}
-            className="inline-flex items-center gap-2 text-[1.3rem] leading-6 text-primary-500 hover:underline w-fit"
-          >
-            {t("part_of", { season: match.season.name })}
-            <ArrowRight2 size="14" color="#E45B00" />
-          </Link>
-        )}
         <div className="flex items-center gap-4 min-w-0 flex-wrap">
           <TeamCrest
             name={match.homeTeamName}

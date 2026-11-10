@@ -720,7 +720,7 @@
           "pass_price": "Indiquez le prix du pass saison."
         },
         "match": {
-          "part_of": "Match de {season}",
+          "part_of": "Billet multi-matchs : {season}",
           "edit": "Modifier le match",
           "title": "Modifier le match",
           "home": "Équipe à domicile : {name} (toujours l'organisateur).",

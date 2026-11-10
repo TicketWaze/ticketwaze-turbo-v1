@@ -9,6 +9,9 @@ import { Event } from "@ticketwaze/typescript-config";
 import BackButton from "@/components/shared/BackButton";
 import Separator from "@/components/shared/Separator";
 import EventCard from "@/components/shared/EventCard";
+import MultiMatchTicketCard, {
+  PublicMultiMatchTicket,
+} from "@/components/shared/MultiMatchTicketCard";
 import VerifiedOrganisationCheckMark from "@/components/VerifiedOrganisationCheckMark";
 import ShareEvent from "@/components/shared/ShareEvent";
 import { getOrganisation } from "@/lib/getOrganisation";
@@ -125,6 +128,29 @@ export default async function OrganizerProfile({
     notFound();
   }
 
+  // A club's multi-match tickets, shown before its matches (public, no auth).
+  const multiMatchTickets: PublicMultiMatchTicket[] = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/explore/organisations/${organisation.organisationId}/multi-match-tickets`,
+    { cache: "no-store" },
+  )
+    .then((r) => (r.ok ? r.json() : null))
+    .then((body) => body?.tickets ?? [])
+    .catch(() => []);
+  const passesBlock = multiMatchTickets.length > 0 && (
+    <div className="flex flex-col gap-4">
+      <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
+        {t("profile.multiMatch")}
+      </span>
+      <ul className="flex flex-col gap-6">
+        {multiMatchTickets.map((ticket) => (
+          <li key={ticket.seasonPassTypeId} className="lg:pr-4">
+            <MultiMatchTicketCard ticket={ticket} />
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+
   const events: Event[] = organisation.events ?? [];
   const upcomingEvents: Event[] = organisation.upcomingEvents ?? [];
   const pastEvents: Event[] = events.filter(
@@ -227,6 +253,7 @@ export default async function OrganizerProfile({
             <Separator />
           </div>
           <div className="lg:hidden flex flex-col gap-8">
+            {passesBlock}
             {upcomingEvents.length > 0 && (
               <div className="flex flex-col gap-8">
                 <span className="font-semibold text-[1.6rem] leading-8 text-deep-100">
@@ -264,6 +291,7 @@ export default async function OrganizerProfile({
           <div></div>
         </div>
         <div className="hidden lg:flex lg:flex-col lg:overflow-y-auto min-h-0 pt-0 gap-20">
+          {passesBlock}
           {/* Figma: with nothing coming up, the column centres the empty state. */}
           {upcomingEvents.length === 0 && (
             <div

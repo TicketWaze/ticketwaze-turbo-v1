@@ -159,6 +159,9 @@ export interface TokenBalance {
  */
 export interface MatchSeasonPass {
   seasonPassTypeId: string;
+  /** The organiser's name for the multi-match ticket. */
+  name: string;
+  description: string | null;
   price: number;
   usdPrice: number;
   currency: "HTG" | "USD";

@@ -37,6 +37,7 @@ import {
   applyExploreFilters,
   hasActiveFilters,
   matchSport,
+  eventCategoryOf,
 } from "./ExploreFilters";
 
 type ListedEvent = Event & { viewCount?: number };
@@ -89,8 +90,11 @@ export default function ExplorePageContent({
     useMemo(() => {
       const counts = new Map<string, number>();
       for (const event of events)
-        counts.set(event.eventType, (counts.get(event.eventType) ?? 0) + 1);
-      const all = new Set([...events, ...pastEvents].map((e) => e.eventType));
+        counts.set(
+          eventCategoryOf(event),
+          (counts.get(eventCategoryOf(event)) ?? 0) + 1,
+        );
+      const all = new Set([...events, ...pastEvents].map(eventCategoryOf));
       const cities = new Set(
         [...events, ...pastEvents].map((e) => e.city).filter(Boolean),
       );

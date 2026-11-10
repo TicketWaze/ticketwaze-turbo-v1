@@ -29,7 +29,7 @@ export default async function EventPage() {
 
   // All six lists are independent, so they load side by side rather than
   // one after another.
-  const [request, raffles, restaurants, sales, seasons, stats] = await Promise.all([
+  const [request, raffles, restaurants, sales, stats] = await Promise.all([
     fetch(`${api}/organisations/${orgId}/events`, { method: "GET", headers }),
     // Raffles live in their own table but share the activities list with events.
     optional(`${api}/raffles/${orgId}`, (b) => b.raffles, []),
@@ -38,8 +38,7 @@ export default async function EventPage() {
     // Digital products are the fourth activity type. The sales endpoint
     // answers under `data`, and omits the key entirely on an error.
     optional(`${api}/sales/${orgId}`, (b) => b.data, []),
-    // Sports seasons; their matches are events and come with the list above.
-    optional(`${api}/seasons/${orgId}`, (b) => b.seasons, []),
+    // No seasons (2026-11-09): matches are events, filed under Sport below.
     // Views and tickets sold per activity, for the Popularity sort.
     optional<ActivityStats>(
       `${api}/organisations/${orgId}/activity-stats`,
@@ -68,7 +67,6 @@ export default async function EventPage() {
         raffles={raffles}
         restaurants={restaurants}
         sales={sales}
-        seasons={seasons}
         stats={stats}
         canCreate={canCreate}
       />

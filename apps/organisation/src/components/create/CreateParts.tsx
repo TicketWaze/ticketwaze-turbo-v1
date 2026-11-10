@@ -300,7 +300,7 @@ export const EVENT_CATEGORIES = [
   "festival",
   "comedy",
   "theater",
-  "tournament",
+  "sport",
   "workshop",
   "seminar",
   "networking",
@@ -314,7 +314,7 @@ export const EVENT_CATEGORIES = [
   "community",
 ] as const;
 
-/** The subset that makes sense online (no festivals or tournaments). */
+/** The subset that makes sense online (no festivals or sport). */
 export const ONLINE_EVENT_CATEGORIES = EVENT_CATEGORIES.filter(
-  (c) => !["festival", "tournament", "food_festival"].includes(c),
+  (c) => !["festival", "sport", "food_festival"].includes(c),
 );

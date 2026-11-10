@@ -37,11 +37,13 @@ import MatchFields, {
   validateMatchFields,
 } from "@/components/season/MatchFields";
 import SeasonChoice, {
+  SEASON_SPORTS,
   SeasonChoiceErrors,
   SeasonChoiceValue,
   validateSeasonChoice,
 } from "@/components/season/SeasonChoice";
 import { PickerField } from "@/components/create/FormFields";
+import type { PastVenue } from "@/lib/pastVenue";
 import useSeasonNameAvailability from "@/hooks/useSeasonNameAvailability";
 import { CreateSeason } from "@/actions/SeasonActions";
 
@@ -63,9 +65,19 @@ export default function CreateInPersonEventForm({
   teaser,
   season,
   seasons,
+  isMatch = false,
+  pastVenues = [],
   topSlot,
   onExit,
 }: {
+  /**
+   * The Match card (2026-11-09): a plain match, two teams, one day, filed
+   * under Sport. No season; the organiser groups matches afterwards under a
+   * multi-match ticket from a match's More menu.
+   */
+  isMatch?: boolean;
+  /** A match: where the club has played, most recent first (its home ground). */
+  pastVenues?: PastVenue[];
   /**
    * Set when this wizard adds a MATCH to a season: the venue, description
    * and sport come from the season, the teams are asked first, and the
@@ -109,13 +121,14 @@ export default function CreateInPersonEventForm({
   const [isRefundable, setIsRefundable] = useState(false);
   const [isPrivate, setIsPrivate] = useState(false);
   // Chosen in Event Details now (it used to be its own page before the form).
-  // A match is filed as a tournament, the closest existing category.
-  // A match: from a season page (`season`) or from the Match card (`seasons`).
-  const matchMode = Boolean(season) || seasons !== undefined;
-  const [category, setCategory] = useState(
-    eventType || (matchMode ? "tournament" : ""),
-  );
+  // A match is always filed under Sport.
+  const matchMode = Boolean(season) || seasons !== undefined || isMatch;
+  const [category, setCategory] = useState(matchMode ? "sport" : eventType);
   const tSeason = useTranslations("Events.season");
+  /** A new match starts at the club's latest venue (its home ground). */
+  const homeVenue = matchMode && !season ? pastVenues[0] : undefined;
+  /** A match's sport (football, basketball…); the category stays Sport. */
+  const [sport, setSport] = useState<string>("football");
   const [seasonChoice, setSeasonChoice] = useState<SeasonChoiceValue>(
     season ? { kind: "existing", seasonId: season.seasonId } : { kind: "none" },
   );
@@ -144,13 +157,17 @@ export default function CreateInPersonEventForm({
     endTime: "",
   });
   const [secondErrors, setSecondErrors] = useState<
-    Partial<Record<"away" | "eventDate" | "startTime" | "endTime" | "name", string>>
+    Partial<
+      Record<"away" | "eventDate" | "startTime" | "endTime" | "name", string>
+    >
   >({});
   // What a new-season submit already created, so a retry after a failure
   // carries on instead of creating the season or the first match twice.
-  const progress = useRef<{ seasonId?: string; seasonName?: string; first?: boolean }>(
-    {},
-  );
+  const progress = useRef<{
+    seasonId?: string;
+    seasonName?: string;
+    first?: boolean;
+  }>({});
   const tMatch = useTranslations("Events.season.match");
   const [matchState, setMatch] = useState<MatchFieldsValue>({
     home: emptyTeam(),
@@ -195,7 +212,10 @@ export default function CreateInPersonEventForm({
         "eventImage",
       ],
     },
-    { name: t("date_time"), fields: ["eventDays"] },
+    {
+      name: matchMode ? t("match_day") : t("date_time"),
+      fields: ["eventDays"],
+    },
     { name: t("ticket"), fields: ["ticketTypes"] },
     // A new season comes with at least two matches.
     ...(isNewSeason
@@ -229,11 +249,13 @@ export default function CreateInPersonEventForm({
       eventName: teaser?.eventName ?? "",
       eventDescription: teaser?.eventDescription ?? season?.description ?? "",
       // A match starts at the season's home venue; the organiser can change it.
-      address: teaser?.address ?? season?.address ?? "",
-      state: teaser?.state ?? season?.state ?? "",
-      city: teaser?.city ?? season?.city ?? "",
-      country: teaser?.country || season?.country || "Haiti",
-      location: season?.location ?? { lat: undefined, lng: undefined },
+      address: teaser?.address ?? season?.address ?? homeVenue?.address ?? "",
+      state: teaser?.state ?? season?.state ?? homeVenue?.state ?? "",
+      city: teaser?.city ?? season?.city ?? homeVenue?.city ?? "",
+      country:
+        teaser?.country || season?.country || homeVenue?.country || "Haiti",
+      location: season?.location ??
+        homeVenue?.location ?? { lat: undefined, lng: undefined },
       eventImage: undefined as unknown as File,
       eventDays: [
         {
@@ -295,6 +317,7 @@ export default function CreateInPersonEventForm({
     }
     if (matchMode) {
       formData.append("isMatch", "true");
+      formData.append("sport", sport);
       appendMatchFields(formData, match);
       if (chosenSeason) formData.append("seasonId", chosenSeason.seasonId);
     }
@@ -416,9 +439,15 @@ export default function CreateInPersonEventForm({
     firstMatch.append("seasonId", seasonId);
 
     if (!progress.current.first) {
-      const first = await CreateInPersonEvent(organisationId, firstMatch, locale);
+      const first = await CreateInPersonEvent(
+        organisationId,
+        firstMatch,
+        locale,
+      );
       if (first.status !== "success") {
-        toast.error(("error" in first && first.error) || tSeason("errors.submit_failed"));
+        toast.error(
+          ("error" in first && first.error) || tSeason("errors.submit_failed"),
+        );
         return;
       }
       progress.current.first = true;
@@ -450,9 +479,15 @@ export default function CreateInPersonEventForm({
       ]),
     );
     appendMatchFields(secondMatch, second.match);
-    const result = await CreateInPersonEvent(organisationId, secondMatch, locale);
+    const result = await CreateInPersonEvent(
+      organisationId,
+      secondMatch,
+      locale,
+    );
     if (result.status !== "success") {
-      toast.error(("error" in result && result.error) || tSeason("errors.submit_failed"));
+      toast.error(
+        ("error" in result && result.error) || tSeason("errors.submit_failed"),
+      );
       return;
     }
     setCreated(true);
@@ -579,7 +614,7 @@ export default function CreateInPersonEventForm({
     setMatchErrors(teamErrors);
     const teamsMissing = Object.keys(teamErrors).length > 0;
     const choiceErrors =
-      currentStep === 0 && matchMode && !season
+      currentStep === 0 && matchMode && !season && seasons !== undefined
         ? validateSeasonChoice(
             seasonChoice,
             (k) => tSeason(k),
@@ -723,7 +758,7 @@ export default function CreateInPersonEventForm({
                 topSlot={
                   matchMode ? (
                     <>
-                      {!season && (
+                      {!season && seasons !== undefined && (
                         <Section title={tSeason("choice.title")}>
                           <SeasonChoice
                             seasons={seasons ?? []}
@@ -757,13 +792,23 @@ export default function CreateInPersonEventForm({
                     topSlot
                   )
                 }
-                initialLocation={season?.location ?? undefined}
-                category={category}
+                initialLocation={
+                  season?.location ?? homeVenue?.location ?? undefined
+                }
+                pastVenues={matchMode ? pastVenues : undefined}
+                category={matchMode ? sport : category}
                 onCategoryChange={(value) => {
-                  setCategory(value);
+                  if (matchMode) setSport(value);
+                  else setCategory(value);
                   setCategoryError(undefined);
                 }}
-                categories={EVENT_CATEGORIES}
+                categories={matchMode ? SEASON_SPORTS : EVENT_CATEGORIES}
+                categoryLabel={
+                  matchMode ? (value) => tSeason(`sports.${value}`) : undefined
+                }
+                categoryPlaceholder={
+                  matchMode ? t("sport_placeholder") : undefined
+                }
                 categoryError={categoryError}
               />
             </StepPanel>
@@ -784,6 +829,7 @@ export default function CreateInPersonEventForm({
                 setValue={setValue}
                 t={(k) => t(k)}
                 membershipTier={membershipTier}
+                singleDay={matchMode}
               />
             </StepPanel>
           )}
@@ -848,7 +894,10 @@ export default function CreateInPersonEventForm({
                       inputProps={{
                         value: second.startTime,
                         onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
-                          setSecond((c) => ({ ...c, startTime: e.target.value })),
+                          setSecond((c) => ({
+                            ...c,
+                            startTime: e.target.value,
+                          })),
                       }}
                       error={secondErrors.startTime}
                     />

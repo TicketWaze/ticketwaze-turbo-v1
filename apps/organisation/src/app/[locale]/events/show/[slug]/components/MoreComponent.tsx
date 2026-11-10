@@ -8,6 +8,7 @@ import {
 import {
   ClipboardText,
   DocumentDownload,
+  Ticket2,
   Gift,
   HamburgerMenu,
   MoreCircle,
@@ -54,7 +55,10 @@ export default function MoreComponent({
   onShowDetails,
   onExport,
   onAddDiscount,
+  onMultiMatch,
 }: {
+  /** A match: opens its multi-match ticket. */
+  onMultiMatch?: () => void;
   event: Event;
   daysLeft: number | null;
   isFree: boolean;
@@ -130,6 +134,21 @@ export default function MoreComponent({
       >
         <span>{t("add_discount")}</span>
         <TicketDiscount size="20" variant="Bulk" color={"#E45B00"} />
+      </button>
+    ),
+    // A match: the ticket it shares with the organiser's other matches.
+    onMultiMatch && !isDeleted && (
+      <button
+        key="multi-match"
+        type="button"
+        className={itemClass}
+        onClick={() => {
+          setMenuOpen(false);
+          onMultiMatch();
+        }}
+      >
+        <span>{t("multi_match")}</span>
+        <Ticket2 size="20" variant="Bulk" color={"#2E3237"} />
       </button>
     ),
     <button

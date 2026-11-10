@@ -59,7 +59,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       getJson<{ raffles?: Raffle[] }>("/explore/raffles"),
       getJson<{ sales?: PublicSale[] }>("/explore/sales"),
       getJson<{ restaurants?: Restaurant[] }>("/explore/restaurants"),
-      getJson<{ seasons?: ExploreSeason[] }>("/explore/seasons"),
+      // No public season list since 2026-11-09.
+      Promise.resolve(null as { seasons?: ExploreSeason[] } | null),
     ]);
 
   const isPublic = (event: Event) => !event.isPrivate;

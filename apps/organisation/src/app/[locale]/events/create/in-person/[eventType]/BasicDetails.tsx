@@ -27,6 +27,8 @@ import { CloseCircle, TickCircle, Warning2 } from "iconsax-reactjs";
 import type { EventNameAvailability } from "@/hooks/useEventNameAvailability";
 import RichTextEditor from "@/components/shared/RichTextEditor";
 import LocationPicker from "@/lib/LocationPicker";
+import { cn } from "@/lib/utils";
+import type { PastVenue } from "@/lib/pastVenue";
 import UploadDocument from "@/assets/icons/document-upload.svg";
 import ToggleIcon from "@/components/shared/ToggleIcon";
 import { Section } from "@/components/create/CreateParts";
@@ -62,8 +64,13 @@ type Props = {
   onCategoryChange?: (value: string) => void;
   categories?: readonly string[];
   categoryError?: string;
+  /** Labels for `categories` when they are not event categories (a match's sports). */
+  categoryLabel?: (value: string) => string;
+  categoryPlaceholder?: string;
   /** The pin the map opens on (the edit form's stored location). */
   initialLocation?: { lat: number; lng: number };
+  /** A match: the club's past venues, one tap to fill the location. */
+  pastVenues?: PastVenue[];
 };
 
 export default function BasicDetails({
@@ -83,7 +90,10 @@ export default function BasicDetails({
   onCategoryChange,
   categories,
   categoryError,
+  categoryLabel,
+  categoryPlaceholder,
   initialLocation,
+  pastVenues,
 }: Props) {
   const t = useTranslations("Events.create_event");
   const tCategory = useTranslations("Events.create_event.list.inPerson");
@@ -98,6 +108,36 @@ export default function BasicDetails({
     countries.find((c) => c.name === selectedCountry)?.state ?? [];
   const availableCities =
     availableStates.find((s) => s.name === selectedState)?.cities ?? [];
+
+  // A past venue moves the map pin too (LocationPicker follows `value`).
+  const [venuePin, setVenuePin] = useState<
+    { lat: number; lng: number } | null | undefined
+  >(undefined);
+  const watchedAddress = useWatch({ control, name: "address" });
+  function pickVenue(venue: PastVenue) {
+    setValue("address", venue.address, { shouldValidate: true });
+    setValue("country", venue.country, { shouldValidate: true });
+    setSelectedCountry(venue.country);
+    setValue("state", venue.state, { shouldValidate: true });
+    setSelectedState(venue.state);
+    setValue("city", venue.city, { shouldValidate: true });
+    if (venue.location) {
+      setValue("location", venue.location, { shouldValidate: true });
+      setVenuePin(venue.location);
+    } else {
+      // No pin saved for that venue: drop the previous venue's pin so the
+      // required-pin check asks for a new one instead of keeping wrong coordinates.
+      setValue(
+        "location",
+        { lat: undefined, lng: undefined } as unknown as {
+          lat: number;
+          lng: number;
+        },
+        { shouldValidate: true },
+      );
+      setVenuePin(null);
+    }
+  }
 
   // `register` leaves the name input uncontrolled; read its length back.
   const nameLength = (useWatch({ control, name: "eventName" }) ?? "").length;
@@ -184,7 +224,9 @@ export default function BasicDetails({
               onValueChange={onCategoryChange}
             >
               <SelectTrigger className={selectTriggerClass}>
-                <SelectValue placeholder={t("category_placeholder")} />
+                <SelectValue
+                  placeholder={categoryPlaceholder ?? t("category_placeholder")}
+                />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((c) => (
@@ -193,7 +235,9 @@ export default function BasicDetails({
                     value={c}
                     className="text-[1.4rem] text-deep-100"
                   >
-                    {tCategory(`categories.${c}.title`)}
+                    {categoryLabel
+                      ? categoryLabel(c)
+                      : tCategory(`categories.${c}.title`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -291,6 +335,35 @@ export default function BasicDetails({
 
       {/* Location */}
       <Section title={t("location")}>
+        {pastVenues && pastVenues.length > 0 && (
+          <div className="flex flex-col gap-3">
+            <span className="text-[1.3rem] leading-7 text-neutral-600 px-2">
+              {t("past_venues")}
+            </span>
+            <div className="flex flex-wrap gap-3">
+              {pastVenues.map((venue) => {
+                const active =
+                  (watchedAddress ?? "").trim().toLowerCase() ===
+                  venue.address.trim().toLowerCase();
+                return (
+                  <button
+                    key={`${venue.address}|${venue.city}`}
+                    type="button"
+                    onClick={() => pickVenue(venue)}
+                    className={cn(
+                      "max-w-full truncate rounded-[3rem] border px-5 py-3 text-[1.3rem] leading-6 transition-colors cursor-pointer",
+                      active
+                        ? "border-primary-500 bg-primary-50 text-primary-500"
+                        : "border-neutral-200 text-deep-100 hover:border-neutral-400",
+                    )}
+                  >
+                    {venue.address}, {venue.city}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
         <Input
           {...register("address")}
           type="text"
@@ -414,6 +487,7 @@ export default function BasicDetails({
         <div>
           <LocationPicker
             initialValue={initialLocation}
+            value={venuePin}
             onLocationSelect={(location) => setValue("location", location!)}
           />
           <span className="text-[1.2rem] px-8 py-2 text-failure">

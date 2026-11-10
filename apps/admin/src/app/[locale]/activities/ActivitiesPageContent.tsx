@@ -91,7 +91,8 @@ const STATUS_FILTER = [
   "deleted",
 ] as const;
 
-const TYPES: ActivityKind[] = ["event", "raffle", "sale", "restaurant", "season"];
+// No seasons since 2026-11-09: matches are reviewed as events.
+const TYPES: ActivityKind[] = ["event", "raffle", "sale", "restaurant"];
 
 /**
  * Figma "Admin" → Events (4264:77180 empty / 4264:82176 data), worded

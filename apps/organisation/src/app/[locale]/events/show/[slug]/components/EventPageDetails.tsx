@@ -28,6 +28,8 @@ import TicketsTable from "./TicketsTable";
 import ReturnedTicketsSection from "./ReturnedTicketsSection";
 import PrintedTicketsSection from "./PrintedTicketsSection";
 import { useRouter } from "@/i18n/navigation";
+import { useSession } from "next-auth/react";
+import { OrganisationPolicy } from "@/lib/role/organisationPolicy";
 import dynamic from "next/dynamic";
 import MountOnOpen from "@/components/shared/MountOnOpen";
 import MatchHeader from "@/components/season/MatchHeader";
@@ -39,6 +41,10 @@ const ExportDialog = dynamic(() => import("./ExportDialog"), { ssr: false });
 const EventDrawerContent = dynamic(() => import("./EventDrawerContent"), {
   ssr: false,
 });
+const MultiMatchTicketDialog = dynamic(
+  () => import("@/components/season/MultiMatchTicketDialog"),
+  { ssr: false },
+);
 const AddDiscountDrawer = dynamic(
   () => import("../discount-codes/AddDiscountDrawer"),
   { ssr: false },
@@ -171,7 +177,10 @@ export default function EventPageDetails({
     (sum, c) => sum + Number(c.ticketTypeQuantity || 0),
     0,
   );
-  const left = Math.max(0, capacity - soldCount);
+  // Multi-match ticket holders count as sold but take no seat of the match.
+  const seatsSold = sold(tickets.filter((tk) => !tk.multiMatch));
+  const multiMatchHolders = soldCount - seatsSold;
+  const left = Math.max(0, capacity - seatsSold);
   const checkedIn = tickets.filter((tk) => tk.status === "CHECKED").length;
   const revenue = ticketsOrganisationTotal(
     tickets,
@@ -187,11 +196,14 @@ export default function EventPageDetails({
           event.eventCategory === "meet",
         ),
       );
-  const soldTrend = weekTrend(tickets, sold);
+  const soldTrend = weekTrend(tickets, (list) =>
+    sold(list.filter((tk) => !tk.multiMatch)),
+  );
   // Tickets left a week ago were today's plus what sold since.
   const soldThisWeek = tickets.filter(
     (tk) =>
       tk.status !== "RETURNED" &&
+      !tk.multiMatch &&
       DateTime.fromISO(String(tk.createdAt)) >= today.minus({ days: 7 }),
   ).length;
   const leftTrend =
@@ -208,6 +220,11 @@ export default function EventPageDetails({
     </span>
   );
 
+  const { data: session } = useSession();
+  const [multiMatchOpen, setMultiMatchOpen] = useState(false);
+  const canEditMatch = OrganisationPolicy.fromSession(
+    session?.activeOrganisation?.myPermissions ?? [],
+  ).editEvent();
   const more = (
     <MoreComponent
       daysLeft={daysLeft}
@@ -224,6 +241,9 @@ export default function EventPageDetails({
       onShowDetails={() => setDetailsOpen(true)}
       onExport={() => setExportOpen(true)}
       onAddDiscount={() => setDiscountOpen(true)}
+      onMultiMatch={
+        event.match && canEditMatch ? () => setMultiMatchOpen(true) : undefined
+      }
     />
   );
   const createTicket = canCreateTicket && (
@@ -263,7 +283,7 @@ export default function EventPageDetails({
         </div>
       </Reveal>
 
-      {/* A match of a season: the teams and the way back to the season. */}
+      {/* A match: the teams. */}
       {event.match && (
         <Reveal delay={0.04}>
           <MatchHeader match={event.match} />
@@ -283,7 +303,12 @@ export default function EventPageDetails({
         </Reveal>
         <Reveal className={kpiTiles[1]} delay={0.11}>
           <Metric label={t("sold")} size="responsive" trend={trend(soldTrend)}>
-            {fmt(soldCount)} <Unit>/ {fmt(capacity)}</Unit>
+            {fmt(seatsSold)} <Unit>/ {fmt(capacity)}</Unit>
+            {multiMatchHolders > 0 && (
+              <span className="block text-[1.2rem] leading-6 font-normal text-neutral-600">
+                {t("sold_multi_match", { count: multiMatchHolders })}
+              </span>
+            )}
           </Metric>
         </Reveal>
         <Reveal className={kpiTiles[2]} delay={0.16}>
@@ -360,7 +385,8 @@ export default function EventPageDetails({
         />
       )}
 
-      {isUpcoming && !isDeleted && (
+      {/* Performers (DJ, artists) mean nothing on a match. */}
+      {isUpcoming && !isDeleted && !event.match && (
         <Reveal delay={0.3}>
           <EventArtist event={event} eventPerformers={eventPerformers} />
         </Reveal>
@@ -392,6 +418,13 @@ export default function EventPageDetails({
           event={event}
           open={detailsOpen}
           onOpenChange={setDetailsOpen}
+        />
+      </MountOnOpen>
+      <MountOnOpen open={multiMatchOpen}>
+        <MultiMatchTicketDialog
+          eventId={event.eventId}
+          open={multiMatchOpen}
+          onOpenChange={setMultiMatchOpen}
         />
       </MountOnOpen>
       <MountOnOpen open={discountOpen}>

@@ -1606,7 +1606,9 @@
         "resend_ticket_daily": "This ticket was already resent 3 times today. Try again tomorrow.",
         "resend_org_daily": "Your organisation reached today’s resend limit. Try again in {hours} h."
       },
-      "create_ticket_upgrade": "Adding ticket classes is available on Pro."
+      "create_ticket_upgrade": "Adding ticket classes is available on Pro.",
+      "multi_match": "Multi-match ticket",
+      "sold_multi_match": "+{count, plural, one {# multi-match ticket} other {# multi-match tickets}}"
     },
     "create_event": {
       "title": "Create Activity",
@@ -1645,9 +1647,9 @@
               "title": "Theater",
               "value": "theater_performance"
             },
-            "tournament": {
-              "title": "Tournament",
-              "value": "tournament"
+            "sport": {
+              "title": "Sport",
+              "value": "sport"
             },
             "workshop": {
               "title": "Workshop",
@@ -1692,6 +1694,10 @@
             "community": {
               "title": "Community",
               "value": "community"
+            },
+            "tournament": {
+              "title": "Sport",
+              "value": "sport"
             }
           }
         },
@@ -1780,8 +1786,8 @@
           "description": "Physical or virtual: concerts, conferences, workshops, meetups…"
         },
         "match": {
-          "title": "Match",
-          "description": "A match of a championship or league. Sell it on its own, or add it to a season with a pass for every match."
+          "title": "Sport",
+          "description": "A match of a championship or league, on a single day. Group several matches later under one multi-match ticket."
         }
       },
       "tagPlaceholder": "Type a hashtag and press enter or spacebar",
@@ -2214,7 +2220,12 @@
       "location_search_empty": "No places found. Try another name, or click on the map.",
       "location_search_error": "Search isn’t available right now. Click on the map to place the pin.",
       "location_search_min": "Type at least {min} characters to search.",
-      "location_search_more": "{count, plural, one {# more character} other {# more characters}} to start searching."
+      "location_search_more": "{count, plural, one {# more character} other {# more characters}} to start searching.",
+      "match_day": "Match day",
+      "kick_off": "Kick-off",
+      "kick_off_hint": "The match is set to end 3 hours after kick-off.",
+      "sport_placeholder": "Choose the sport",
+      "past_venues": "Your venues"
     },
     "price_preview": {
       "title": "What your attendees will pay",
@@ -2297,7 +2308,7 @@
         "views": "Most viewed",
         "sold": "Most sold"
       },
-      "seasons": "Seasons",
+      "sport": "Sport",
       "empty_seasons": "No season yet. Create your team’s season to start selling match tickets."
     },
     "restaurantCard": {
@@ -2758,6 +2769,29 @@
           "time": "Choose the time.",
           "same_name": "This is the same as the first match. Change the opponent or the round."
         }
+      }
+    },
+    "multi_match": {
+      "title": "Multi-match ticket",
+      "title_edit": "Edit multi-match ticket",
+      "hint": "One ticket valid at every match you pick (two or more). Each of these matches offers it in its checkout, beside its own tickets.",
+      "name": "Ticket name (e.g. Season pass)",
+      "price": "Price",
+      "currency": "Currency",
+      "quantity": "Quantity (leave empty for no limit)",
+      "matches": "Matches covered",
+      "need_more": "You need at least two upcoming matches. Create another match first.",
+      "sold_note": "{count, plural, one {# ticket sold} other {# tickets sold}}: matches can be added, none removed. A new price applies to tickets sold from now on.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "remove": "Remove ticket",
+      "saved": "Multi-match ticket saved",
+      "removed": "Multi-match ticket removed",
+      "errors": {
+        "name": "Enter a name.",
+        "price": "Enter a price.",
+        "quantity": "Enter a whole number, or leave it empty.",
+        "matches": "Pick at least two matches."
       }
     }
   },

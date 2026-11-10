@@ -49,15 +49,26 @@ const SPORTS = [
 ];
 
 /**
- * A match's sport: its season's, else (a standalone match) the first sport
- * among its tags, else "other". Undefined for anything that is not a match.
+ * An event's category for grouping and filtering. "tournament" was renamed
+ * "sport" on 2026-11-09 (the API migrates stored rows); a row not yet
+ * migrated still lands in Sport rather than in a tab of its own.
+ */
+export function eventCategoryOf(event: { eventType: string }): string {
+  return event.eventType === "tournament" ? "sport" : event.eventType;
+}
+
+/**
+ * A match's sport: its own (`match.sport`, picked on the form since
+ * 2026-11-10), else its season's, else the first sport among its tags, else
+ * "other". Undefined for anything that is not a match.
  */
 export function matchSport(event: {
-  match?: { season?: { sport?: string } | null } | null;
+  match?: { sport?: string; season?: { sport?: string } | null } | null;
   activityTags?: string[];
 }): string | undefined {
   if (!event.match) return undefined;
   return (
+    event.match.sport ??
     event.match.season?.sport ??
     event.activityTags
       ?.map((tag) => tag.toLowerCase())
@@ -74,7 +85,7 @@ export function applyExploreFilters<T extends WithViews>(
   const from = date?.from;
   const to = date?.to ?? date?.from;
   const filtered = events.filter((event) => {
-    if (category && event.eventType !== category) return false;
+    if (category && eventCategoryOf(event) !== category) return false;
     if (city && event.city !== city) return false;
     if (sport && matchSport(event) !== sport) return false;
     if (from && to) {

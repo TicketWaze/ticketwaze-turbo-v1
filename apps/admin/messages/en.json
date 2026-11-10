@@ -872,7 +872,7 @@
           "pass_price": "Enter the season pass price."
         },
         "match": {
-          "part_of": "Match of {season}",
+          "part_of": "Multi-match ticket: {season}",
           "edit": "Edit match",
           "title": "Edit match",
           "home": "Home team: {name} (always the organiser).",
