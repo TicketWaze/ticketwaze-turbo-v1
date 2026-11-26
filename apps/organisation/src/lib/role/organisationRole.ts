@@ -131,49 +131,6 @@ const EventManagerPermission =
   P["sales.create"] |
   P["sales.edit"];
 
-const AdminPermission =
-  P["organisation.view"] |
-  P["staff.view"] |
-  P["staff.manage"] |
-  // roles.manage is intentionally Owner-only (mirrors the API): only the Owner
-  // may assign roles or edit member permissions.
-  P["events.view"] |
-  P["events.create"] |
-  P["events.edit"] |
-  P["events.delete"] |
-  P["events.publish"] |
-  P["event_days.manage"] |
-  P["sessions.manage"] |
-  P["tickets.view"] |
-  P["tickets.manage"] |
-  P["tickets.refund"] |
-  P["tickets.cancel"] |
-  P["tickets.resend"] |
-  P["attendees.view"] |
-  P["attendees.export"] |
-  P["finance.view"] |
-  P["finance.export"] |
-  P["reports.view"] |
-  P["reports.export"] |
-  P["memberships.manage"] |
-  P["reservations.manage"] |
-  P["checkin.perform"] |
-  P["scanner.use"] |
-  P["integrations.manage"] |
-  P["settings.manage"] |
-  P["branding.manage"] |
-  P["restaurants.view"] |
-  P["restaurants.create"] |
-  P["restaurants.edit"] |
-  P["restaurants.delete"] |
-  P["menu.manage"] |
-  P["pos.charge"] |
-  P["pos.refund"] |
-  P["sales.view"] |
-  P["sales.create"] |
-  P["sales.edit"] |
-  P["sales.delete"];
-
 const OwnerPermission =
   P["organisation.view"] |
   P["organisation.manage"] |
@@ -224,6 +181,17 @@ const OwnerPermission =
   P["sales.create"] |
   P["sales.edit"] |
   P["sales.delete"];
+
+/**
+ * Owner-only, whatever a role or custom set says (mirrors the API): handing the
+ * organisation to someone else, and deleting it. Never assignable.
+ */
+export const OWNER_ONLY_PERMISSIONS =
+  P["organisation.transfer_ownership"] | P["organisation.delete"];
+
+// Admin can do everything the Owner can except the owner-only actions above
+// (decided 2026-11-24, mirrors the API).
+const AdminPermission = OwnerPermission & ~OWNER_ONLY_PERMISSIONS;
 
 export const OrganisationPermissions: Record<TRole, bigint> = {
   [Role.Owner]: OwnerPermission,
