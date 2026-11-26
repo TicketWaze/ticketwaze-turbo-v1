@@ -1,3 +1,10 @@
+import { OWNER_ONLY_PERMISSIONS, Permission } from "./role/organisationRole";
+
+/** The Admin preset: every permission except the owner-only ones (mirrors the API). */
+const ADMIN_PRESET = (Object.keys(Permission) as (keyof typeof Permission)[]).filter(
+  (key) => (Permission[key] & OWNER_ONLY_PERMISSIONS) === BigInt(0),
+);
+
 export const PERMISSION_GROUPS: Record<string, string[]> = {
   organisation: [
     "organisation.view",
@@ -126,36 +133,7 @@ export const PRESET_PERMISSIONS: Record<string, string[]> = {
     "checkin.perform",
     "scanner.use",
   ],
-  Admin: [
-    "organisation.view",
-    "staff.view",
-    "staff.manage",
-    // roles.manage stays Owner-only (mirrors the API and role defaults); it can
-    // still be granted à la carte from the staff group if truly intended.
-    "events.view",
-    "events.create",
-    "events.edit",
-    "events.delete",
-    "events.publish",
-    "event_days.manage",
-    "sessions.manage",
-    "tickets.view",
-    "tickets.manage",
-    "tickets.refund",
-    "tickets.cancel",
-    "tickets.resend",
-    "attendees.view",
-    "attendees.export",
-    "finance.view",
-    "finance.export",
-    "reports.view",
-    "reports.export",
-    "memberships.manage",
-    "reservations.manage",
-    "checkin.perform",
-    "scanner.use",
-    "integrations.manage",
-    "settings.manage",
-    "branding.manage",
-  ],
+  // Everything but the owner-only rights (transfer ownership, delete the
+  // organisation). Sent as-is, the API stores it as the Admin role itself.
+  Admin: ADMIN_PRESET,
 };
